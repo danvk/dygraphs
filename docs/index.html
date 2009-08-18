@@ -4,7 +4,7 @@
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="combined.js"></script>
+    <script type="text/javascript" src="dygraph-combined.js"></script>
     <style type="text/css">
       .thinborder {
         border-width: 1px;
@@ -87,11 +87,11 @@
 
 <h2>Usage</h2>
 
-<p>The DateGraph library depends on two other JS libraries: <a href="http://www.mochikit.com/">MochiKit</a> and <a href="http://www.liquidx.net/plotkit/">PlotKit</a>. Rather than tracking down copies of these libraries, I recommend using a packed version of dygraphs that combines all three libraries into a single JS file. To generate this file, go to a perforce client and run:</p>
+<p>The DateGraph library depends on two other JS libraries: <a href="http://www.mochikit.com/">MochiKit</a> and <a href="http://www.liquidx.net/plotkit/">PlotKit</a>. Rather than tracking down copies of these libraries, I recommend using a packed version of dygraphs that combines all three libraries into a single JS file. Either grab this file from dygraph project's <a href="http://code.google.com/p/dygraphs/downloads/list">downloads</a> page or create it yourself by <a href="http://code.google.com/p/dygraphs/source/checkout">checking out</a> a copy of the code and running:
 
-<pre>blaze build spam/utils/dygraphs:combined</pre>
+<pre>./generate-combined.sh</pre>
 
-<p>The combined JS file is now in <code>blaze-genfiles/spam/utils/dygraphs/combined.js</code>. Here's a basic example to get things started:</p>
+<p>The combined JS file is now in <code>dygraph-combined.js</code>. Here's a basic example to get things started:</p>
 
 <table>
   <tr><th>HTML</th>
