@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>script.aculo.us Drag and drop functional test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="../../MochiKit/MochiKit.js"></script>
+    <script type="text/javascript" src="../../MochiKit/Position.js"></script>
+    <script type="text/javascript" src="../../MochiKit/Visual.js"></script>
+    <script type="text/javascript" src="../../MochiKit/DragAndDrop.js"></script>
+  <style type="text/css" media="screen">
+    div.box { background: green; width:100px; height:100px }
+  </style>
+</head>
+<body>
+<h1>script.aculo.us Drag and drop functional test file</h1>
+
+<h2>Draggables/Droppables</h2>
+
+<div id="box-normal" class="box">
+  Normal box
+</div>
+
+<div id="box-grid-numeric" class="box">
+  snap: 25
+</div>
+
+<div id="box-grid-array" class="box">
+  snap: [5,25]
+</div>
+
+<div id="box-grid-procedural" class="box">
+  snap: procedural (e.g. constrain to box)
+</div>
+
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  new MochiKit.DragAndDrop.Draggable('box-normal',{snap:false,revert:true});
+  new MochiKit.DragAndDrop.Draggable('box-grid-numeric',{snap:25,revert:true});
+  new MochiKit.DragAndDrop.Draggable('box-grid-array',{snap:[5,25],revert:true});
+  new MochiKit.DragAndDrop.Draggable('box-grid-procedural',{
+    snap: function(x,y) {
+      return[
+        x<100 ? (x > 0 ? x : 0 ) : 100,
+        y<50 ? (y > 0 ? y : 0) : 50];
+    },
+    revert:true
+  });
+// ]]>
+</script>
+
+
+</body>
+</html>

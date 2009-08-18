@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>script.aculo.us Effects functional test file</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="../../MochiKit/MochiKit.js" type="text/javascript"></script>
+    <script src="../../MochiKit/Position.js" type="text/javascript"></script>
+    <script src="../../MochiKit/Visual.js" type="text/javascript"></script>
+</head>
+<body>
+<h1>script.aculo.us fade/appear effect functional test</h1>
+<p>Note: these tests use the browser default CSS style rules.</p>
+
+<h2>DIV</h2>
+<div id="test_div">TEST</div>
+<a href="#" onclick="MochiKit.Visual.fade('test_div'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_div'); return false;">MochiKit.Visual.appear</a>
+
+<h2>SPAN</h2>
+<span id="test_span">TEST</span><br/>
+<a href="#" onclick="MochiKit.Visual.fade('test_span'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_span'); return false;">MochiKit.Visual.appear</a>
+
+<h2>P</h2>
+<p id="test_p">TEST</p><br/>
+<a href="#" onclick="MochiKit.Visual.fade('test_p'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_p'); return false;">MochiKit.Visual.appear</a>
+
+<h2>IMG</h2>
+<img id="test_img" src="icon.png" alt="test image" /><br/>
+<a href="#" onclick="MochiKit.Visual.fade('test_img'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_img'); return false;">MochiKit.Visual.appear</a>
+
+
+<hr/>
+
+<p style="color:red;">The following elements are not supported with fade/appear on all browsers!</p>
+
+<h2>TABLE</h2>
+<table id="test_table"><tbody><tr><td>TEST</td></tr></tbody></table>
+<a href="#" onclick="MochiKit.Visual.fade('test_table'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_table'); return false;">MochiKit.Visual.appear</a>
+
+<h2>TBODY</h2>
+<table><tbody id="test_tbody"><tr><td>TEST</td></tr></tbody></table>
+<a href="#" onclick="MochiKit.Visual.fade('test_tbody'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_tbody'); return false;">MochiKit.Visual.appear</a>
+
+<h2>TR</h2>
+<table><tbody><tr id="test_tr"><td>TEST</td></tr></tbody></table>
+<a href="#" onclick="MochiKit.Visual.fade('test_tr'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_tr'); return false;">MochiKit.Visual.appear</a>
+
+<h2>TD</h2>
+<table><tbody><tr><td id="test_td">TEST</td></tr></tbody></table>
+<a href="#" onclick="MochiKit.Visual.fade('test_td'); return false;">MochiKit.Visual.fade</a> | 
+<a href="#" onclick="MochiKit.Visual.appear('test_td'); return false;">MochiKit.Visual.appear</a>
+
+</body>
+</html>

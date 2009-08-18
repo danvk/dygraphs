@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<title>MochiKit.Selector - Selecting elements by CSS selector syntax</title>
+
+<link rel="stylesheet" href="../../../include/css/documentation.css" type="text/css" />
+<script type="text/javascript" src="../../../packed/MochiKit/MochiKit.js"></script>
+<script type="text/javascript" src="../../js/toc.js"></script>
+</head>
+<body>
+<div class="document">
+<div class="section">
+<h1><a id="name" name="name">Name</a></h1>
+<p>MochiKit.Selector - Selecting elements by CSS selector syntax</p>
+</div>
+<div class="section">
+<h1><a id="synopsis" name="synopsis">Synopsis</a></h1>
+<pre class="literal-block">
+MochiKit.Base.map(MochiKit.Visual.fade, $$('p.fademe'));
+</pre>
+</div>
+<div class="section">
+<h1><a id="description" name="description">Description</a></h1>
+<p>MochiKit.Selector provides utilities to select elements by CSS
+selector syntax. In particular it provides the <a class="mochiref reference" href="#fn-$$">$$</a>
+function.</p>
+</div>
+<div class="section">
+<h1><a id="dependencies" name="dependencies">Dependencies</a></h1>
+<ul class="simple">
+<li><a class="mochiref reference" href="Base.html">MochiKit.Base</a></li>
+<li><a class="mochiref reference" href="DOM.html">MochiKit.DOM</a></li>
+<li><a class="mochiref reference" href="Iter.html">MochiKit.Iter</a></li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="overview" name="overview">Overview</a></h1>
+<p>This module provides facilities to select childs of a DOM node by
+using CSS selector syntax. In particular, it provides the
+<a class="mochiref reference" href="#fn-$$">$$</a> function, which performs such a selection on the
+current document.</p>
+<p>Many of CSS3 <a class="footnote-reference" href="#id3" id="id1" name="id1">[1]</a> selectors are supported:</p>
+<ul>
+<li><p class="first">Select by tag name (<tt class="docutils literal"><span class="pre">A</span></tt>)</p>
+</li>
+<li><p class="first">Select by class (<tt class="docutils literal"><span class="pre">.theclass</span></tt>)</p>
+</li>
+<li><p class="first">Select by id (<tt class="docutils literal"><span class="pre">#someid</span></tt>)</p>
+</li>
+<li><dl class="first docutils">
+<dt>Combinators</dt>
+<dd><ul class="first last simple">
+<li>Descendant: <tt class="docutils literal"><span class="pre">E</span> <span class="pre">F</span></tt></li>
+<li>Child: <tt class="docutils literal"><span class="pre">E</span> <span class="pre">&gt;</span> <span class="pre">F</span></tt></li>
+<li>Immediate following sibling: <tt class="docutils literal"><span class="pre">E</span> <span class="pre">+</span> <span class="pre">F</span></tt></li>
+<li>Following sibling: <tt class="docutils literal"><span class="pre">E</span> <span class="pre">~</span> <span class="pre">F</span></tt></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Attribute selectors</dt>
+<dd><ul class="first last simple">
+<li>simple &quot;has attribute&quot; (without operator)</li>
+<li><tt class="docutils literal"><span class="pre">=</span></tt> equal</li>
+<li><tt class="docutils literal"><span class="pre">!=</span></tt> not equal (not in CSS std.)</li>
+<li><tt class="docutils literal"><span class="pre">~=</span></tt> word containment</li>
+<li><tt class="docutils literal"><span class="pre">^=</span></tt> starts-with</li>
+<li><tt class="docutils literal"><span class="pre">$=</span></tt> ends-with</li>
+<li><tt class="docutils literal"><span class="pre">*=</span></tt> substring containment</li>
+<li><tt class="docutils literal"><span class="pre">|=</span></tt> first part of hyphen deleimited (eg. lang|=&quot;en&quot; matches lang=&quot;en-US&quot;)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Pseudo-classes</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">:root</span></tt>, <tt class="docutils literal"><span class="pre">:nth-child</span></tt>, <tt class="docutils literal"><span class="pre">:nth-last-child</span></tt>, <tt class="docutils literal"><span class="pre">:nth-of-type</span></tt>, <tt class="docutils literal"><span class="pre">:nth-last-of-type</span></tt>, <tt class="docutils literal"><span class="pre">:first-child</span></tt>, <tt class="docutils literal"><span class="pre">:last-child</span></tt>, <tt class="docutils literal"><span class="pre">:first-of-type</span></tt>, <tt class="docutils literal"><span class="pre">:last-of-type</span></tt>, <tt class="docutils literal"><span class="pre">:only-child</span></tt>, <tt class="docutils literal"><span class="pre">:only-of-type</span></tt>, <tt class="docutils literal"><span class="pre">:empty</span></tt>, <tt class="docutils literal"><span class="pre">:enabled</span></tt>, <tt class="docutils literal"><span class="pre">:disabled</span></tt>, <tt class="docutils literal"><span class="pre">:checked</span></tt>, <tt class="docutils literal"><span class="pre">:not(&lt;any</span> <span class="pre">other</span> <span class="pre">selector&gt;)</span></tt></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Multiple selectors can be concatenated, like this: <tt class="docutils literal"><span class="pre">P.quote[author~='Torvalds']</span></tt>,
+in which case elements matching <em>all</em> the selectors are returned. Furthermore, such
+concatenations can be <em>combined</em> by joining them with spaces and combinators.
+This invokes the regular CSS behaviour of matching parts of the combination in
+sequence, starting off each part from the elements returned by the preceeding part.</p>
+<p>For the <tt class="docutils literal"><span class="pre">:nth-*</span></tt> pseudoclasses, the <tt class="docutils literal"><span class="pre">an+b</span></tt> syntax is partially
+supported, specifically a and b must be non-negative and only a is
+optional (this differs from the CSS std.) Also, <tt class="docutils literal"><span class="pre">odd</span></tt> and <tt class="docutils literal"><span class="pre">even</span></tt>
+are supported, e.g. <tt class="docutils literal"><span class="pre">table</span> <span class="pre">tr:nth-child(odd)</span></tt> gives you every
+other row of table starting with the first one.</p>
+<p>For further documentation of CSS selectors, refer to the W3C CSS standard. <a class="footnote-reference" href="#id3" id="id2" name="id2">[1]</a></p>
+<p>The original version of this module was ported from Prototype.</p>
+<p><strong>Note:</strong> Due to how Internet Explorer handles node attributes, some attribute
+selectors may not work as expected. In particular <tt class="docutils literal"><span class="pre">a[title]</span></tt> will not work
+as all <tt class="docutils literal"><span class="pre">A</span></tt> elements in the Internet Explorer DOM model have a title attribute
+regardless of whether it's specified in the markup or not.</p>
+</div>
+<div class="section">
+<h1><a id="api-reference" name="api-reference">API Reference</a></h1>
+<div class="section">
+<h2><a id="functions" name="functions">Functions</a></h2>
+<p>
+<a name="fn-$$"></a>
+<a class="mochidef reference" href="#fn-$$">$$(expression[, ...])</a>:</p>
+<blockquote>
+<p>Performs a selection on the active document. Equivalent
+to <tt class="docutils literal"><span class="pre">findChildElements(MochiKit.DOM.currentDocument(),</span> <span class="pre">[expression,</span> <span class="pre">...])</span></tt></p>
+<dl class="docutils">
+<dt><em>Availability</em>:</dt>
+<dd>Available in MochiKit 1.4+</dd>
+</dl>
+</blockquote>
+<p>
+<a name="fn-findchildelements"></a>
+<a class="mochidef reference" href="#fn-findchildelements">findChildElements(element, expressions)</a>:</p>
+<blockquote>
+<p>Traverses the child nodes of <tt class="docutils literal"><span class="pre">element</span></tt> and returns the subset
+of those that match any of the selector expressions in <tt class="docutils literal"><span class="pre">expressions</span></tt>.</p>
+<p>Each expression can be a combination of simple expressions, by concatenating
+them with spaces or combinators. In that case, normal CSS rules apply, each
+simple expression is evaluated in turn and the results of that one is used
+as the scope for the succeeding expression (see <a class="mochiref reference" href="#fn-selector.findelements">Selector.findElements</a>).
+Finally, the results of the last simple expression is returned as the search result.</p>
+<dl class="docutils">
+<dt><em>Availability</em>:</dt>
+<dd>Available in MochiKit 1.4+</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section">
+<h2><a id="constructors" name="constructors">Constructors</a></h2>
+<p>
+<a name="fn-selector"></a>
+<a class="mochidef reference" href="#fn-selector">Selector(simpleExpression)</a>:</p>
+<blockquote>
+<p>An object storing the parsed version of a simple CSS selector expression
+and providing functions for executing searches.</p>
+<p><em>Simple</em> means that the expression is not a combination of expressions,
+i.e. it does not contain any spaces.</p>
+<p>Usually the user would not instantiate or use this object directly, but
+heres how:</p>
+<pre class="literal-block">
+var selector = MochiKit.Selector.Selector('#someelementid');
+var searchResults = selector.findElements(rootElement);
+</pre>
+<dl class="docutils">
+<dt><em>Availability</em>:</dt>
+<dd>Available in MochiKit 1.4+</dd>
+</dl>
+</blockquote>
+<p>
+<a name="fn-selector.findelements"></a>
+<a class="mochidef reference" href="#fn-selector.findelements">Selector.findElements(scope[, axis=&quot;&quot;])</a>:</p>
+<blockquote>
+<p>Performs a search on <tt class="docutils literal"><span class="pre">scope</span></tt>. The value of axis controls what relatives
+of <tt class="docutils literal"><span class="pre">scope</span></tt> are considered.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">scope</span></tt>:</dt>
+<dd>A DOM node that acts as a starting point for the search.</dd>
+<dt><tt class="docutils literal"><span class="pre">axis</span></tt>:</dt>
+<dd>One of <tt class="docutils literal"><span class="pre">&quot;&gt;&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;+&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;~&quot;</span></tt> or the empty string (default).
+If the empty string, all descendant nodes of <tt class="docutils literal"><span class="pre">scope</span></tt> are tested against
+the expression. If <tt class="docutils literal"><span class="pre">&gt;</span></tt> only direct child nodes of <tt class="docutils literal"><span class="pre">scope</span></tt> are tested,
+if <tt class="docutils literal"><span class="pre">+</span></tt> only the next sibling (if any) of <tt class="docutils literal"><span class="pre">scope</span></tt> is tested and if
+<tt class="docutils literal"><span class="pre">~</span></tt> all succeeding siblings of <tt class="docutils literal"><span class="pre">scope</span></tt> are tested.</dd>
+<dt><em>Availability</em>:</dt>
+<dd>Available in MochiKit 1.4+</dd>
+</dl>
+</blockquote>
+</div>
+</div>
+<div class="section">
+<h1><a id="see-also" name="see-also">See Also</a></h1>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a name="id3">[1]</a></td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> CSS Selectors Level 3 (Last Call, oct. 2006):
+<a class="reference" href="http://www.w3.org/TR/2005/WD-css3-selectors-20051215/">http://www.w3.org/TR/2005/WD-css3-selectors-20051215/</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1><a id="authors" name="authors">Authors</a></h1>
+<ul class="simple">
+<li>Arnar Birgisson &lt;<a class="reference" href="mailto:arnarbi&#64;gmail.com">arnarbi&#64;gmail.com</a>&gt;</li>
+<li>Thomas Herve &lt;<a class="reference" href="mailto:therve&#64;gmail.com">therve&#64;gmail.com</a>&gt;</li>
+<li>Originally ported from Prototype &lt;<a class="reference" href="http://prototype.conio.net/">http://prototype.conio.net/</a>&gt;</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="copyright" name="copyright">Copyright</a></h1>
+<p>Copyright 2005 Bob Ippolito &lt;<a class="reference" href="mailto:bob&#64;redivi.com">bob&#64;redivi.com</a>&gt;. This program is
+dual-licensed free software; you can redistribute it and/or modify it
+under the terms of the <a class="reference" href="http://www.opensource.org/licenses/mit-license.php">MIT License</a> or the <a class="reference" href="http://www.opensource.org/licenses/afl-2.1.php">Academic Free License
+v2.1</a>.</p>
+<p>Based on Prototype, (c) 2005 Sam Stephenson, available under the <a class="reference" href="http://dev.rubyonrails.org/browser/spinoffs/prototype/LICENSE?rev=3362">Prototype
+license</a></p>
+</div>
+</div>
+
+</body>
+</html>

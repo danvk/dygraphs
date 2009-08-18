@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <title>PlotKit: Image Labels Example</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <link href="/css/page.css" media="screen" rel="Stylesheet"
+   type="text/css" />
+   <link href="tests.css" media="screen" rel="Stylesheet" type="text/css" />
+   <script src="/js/mochi/MochiKit.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/excanvas.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/PlotKit_Packed.js" type="text/javascript"></script>
+</head>
+
+
+<body>
+    <div id="body">
+    <h2>Image Labels Example.</h2>
+    
+    <div id="example" style="margin: 0 auto 0 auto;" width="400" height="400"></div>
+    
+    <script type="text/javascript">
+        var data = [[0,0], [1,2], [2,3], [3, 7], [4, 8], [5, 6]];
+        var labels = [
+        {v:0, label:IMG({src:"img/konqueror.png", width:16, height:16})},
+        {v:1, label:IMG({src:"img/opera.ico", width:16, height:16})},
+        {v:2, label:IMG({src:"img/msie.gif", width:16, height:16})},
+        {v:3, label:IMG({src:"img/safari.gif", width:16, height:16})},
+        {v:4, label:IMG({src:"img/firefox.png", width:16,height:16})},
+        {v:5, label:IMG({src:"img/mozilla.ico", width:16, height:16})}
+        ];
+        var plotter = EasyPlot("bar", {"xTicks":labels}, $("example"), 
+        [data, "sample.txt"]);
+    </script>
+    </div>
+    
+    <div class="footer"><a href="http://www.liquidx.net/plotkit/">PlotKit</a></div>    
+</div>
+</body></html>

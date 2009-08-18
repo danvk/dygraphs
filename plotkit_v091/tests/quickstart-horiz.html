@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <title>PlotKit: Quickstart Demo</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <link href="/css/page.css" media="screen" rel="Stylesheet"
+   type="text/css" />
+   <link href="tests.css" media="screen" rel="Stylesheet" type="text/css" />
+  
+   <script src="/js/mochi/MochiKit.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/excanvas.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/PlotKit_Packed.js" type="text/javascript"></script>   
+</head>
+
+
+<body>
+    <div id="body">
+    <h2>Quickstart Demo</h2>
+    
+    <div style="margin: 0 auto 0 auto; width: 500px;">
+    <div><canvas id="chart" width="500" height="300"></canvas></div>
+
+    <br/>
+    
+    <table id="values" class="data">
+        <thead>
+            <tr><td>x</td><td>y1</td><td>y2</td></tr>
+        </thead>
+        <tbody>
+            <tr><td>0</td><td>0</td><td>3</td></tr>
+            <tr><td>1</td><td>10</td><td>20</td></tr>
+            <tr><td>2</td><td>5</td><td>10</td></tr>
+            <tr><td>3</td><td>6</td><td>7</td></tr>
+            <tr><td>4</td><td>7</td><td>8</td></tr>
+            <tr><td>5</td><td>6</td><td>7</td></tr>
+            <tr><td>6</td><td>7</td><td>8</td></tr>            
+        </tbody>
+    </table>
+    
+    <script type="text/javascript">
+        var layout = new Layout("bar", {"barOrientation": "horizontal"});
+        layout.addDatasetFromTable("dataset2", $("values"), xcol = 0, ycol = 2);        
+        layout.addDatasetFromTable("dataset1", $("values"), xcol = 0, ycol = 1);
+        layout.evaluate();
+        
+        var chart = new SweetCanvasRenderer($("chart"), layout);
+        chart.render();
+    </script>
+    </div>
+    
+    <div class="footer"><a href="http://www.liquidx.net/plotkit/">PlotKit</a></div>    
+</div>
+</body></html>

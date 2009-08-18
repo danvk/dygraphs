@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <title>PlotKit: Debug</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <link href="/css/page.css" media="screen" rel="Stylesheet"
+   type="text/css" />
+   <link href="tests.css" media="screen" rel="Stylesheet" type="text/css" />
+   <script src="/js/mochi/MochiKit.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/excanvas.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/Base.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/Layout.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/Canvas.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/SweetCanvas.js" type="text/javascript"></script>
+   
+</head>
+
+
+<body>
+    <div id="body">
+    <h2>Debug</h2>
+
+    <div style="margin: 0 auto 0 auto; width: 500px;">
+    <div><canvas id="chart" width="500" height="300"></canvas></div>
+    
+    <script type="text/javascript">
+    var options = {
+       "padding": {left: 20, right: 0, top: 10, bottom: 30},
+       "yAxis": [0, 60]
+    }
+
+    function drawGraph() {
+        var layoutOptions = {
+         "xAxis"         : [1, 4],
+         "xOriginIsZero" : false,
+         "xTicks"        : [ {v: 0}, {v: 1}, {v: 2}, {v: 3}, {v: 4}, {v: 5} ], 
+         "yAxis"         : [1, 4],
+         "yOriginIsZero" : false,
+         "yTicks"        : [ {v: 0}, {v: 1}, {v: 2}, {v: 3}, {v: 4}, {v: 5} ] 
+        };
+        var layout = new PlotKit.Layout("line", layoutOptions);
+        layout.addDataset("myDataset", [ [1, 1], [2, 2], [3, 3], [4, 4] ]);
+        layout.evaluate();
+
+        var canvas = MochiKit.DOM.getElement("chart");
+        var plotter = new PlotKit.SweetCanvasRenderer(canvas, layout, options);
+        plotter.render();
+    }
+    MochiKit.DOM.addLoadEvent(drawGraph);
+
+    </script>
+    </div>
+    
+    <div class="footer"><a href="http://www.liquidx.net/plotkit/">PlotKit</a></div>    
+</div>
+</body></html>

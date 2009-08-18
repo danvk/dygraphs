@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <title>PlotKit : Basic Unit Tests</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <script src="/js/mochi/MochiKit.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/excanvas.js" type="text/javascript"></script>
+   <script src="/js/plotkit-svn/PlotKit_Packed.js" type="text/javascript"></script>
+   <style type="text/css">
+   
+   body {
+       font-family: Lucida Grande, Verdana, Sans;
+       font-size: small;
+   }
+   
+    table#datatable td {
+        padding: 2px;        
+    }
+   
+    table#datatable thead td {
+        border-top: 1px solid #e0e0e0;
+        background-color: #d0d0d0;
+        border-bottom: 1px solid #c0c0c0;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+   
+    table#datatable tbody input {
+        border: 1px solid #eee;
+        padding: 2px;
+        width: 90px;
+    }
+   
+   </style>
+   
+   <script type="text/javascript">
+   
+   var dataTable = null;
+   var layout = null;
+   var renderer = null;
+   var options = null;
+   
+   function initDynamicTable() {
+       dataTable = $('datatable');
+       options = PlotKit.Base.officeBlue();
+       layout = new Layout("line", options);
+       renderer = new SweetCanvasRenderer($('canvasTest'), layout, options);
+   }
+   
+   function newRow() {
+       var tbody = dataTable.tBodies[0];
+       var blankRow = TR({}, [
+                TD({}, INPUT({"class":"xvalue", "size":"6", "type":"text", "value":"0"})),
+                TD({}, INPUT({"class":"yvalue", "size":"6", "type":"text", "value":"0"}))]);
+        tbody.appendChild(blankRow);
+   }
+   
+   function chartReload() {
+        var chartStyleSelected = document.forms["options"].chartStyle.selectedIndex;
+        var chartStyle = document.forms["options"].chartStyle[chartStyleSelected].value;
+
+        var colorSchemeSelected = document.forms["options"].colorScheme.selectedIndex;
+        var colorScheme = document.forms["options"].colorScheme[colorSchemeSelected].value;
+        // grab values
+        var getValue = function(row) {
+           var xElem = MochiKit.DOM.getElementsByTagAndClassName("input", "xvalue", row)[0];
+           var yElem = MochiKit.DOM.getElementsByTagAndClassName("input", "yvalue", row)[0];
+           var xVal = xElem.value;
+           var yVal = yElem.value;
+   
+           if (xVal.length > 0) {
+               xVal = parseFloat(xVal);
+           }
+           else {
+               xVal = 0;
+           }
+   
+           if (yVal.length > 0) {
+               yVal = parseFloat(yVal);
+           }
+           else {
+               yVal = 0;
+           }
+           return [xVal, yVal];
+        }
+       
+        var values = MochiKit.Base.map(getValue, dataTable.tBodies[0].rows);
+
+        // setup layout options
+        var themeName = "office" + colorScheme;
+        var theme = PlotKit.Base[themeName]();
+        MochiKit.Base.update(options, theme);
+                
+        layout.style = chartStyle;
+        MochiKit.Base.update(layout.options, options);
+        MochiKit.Base.update(renderer.options, options);
+                
+        layout.addDataset("data", values);        
+
+        // update
+        layout.evaluate();
+        renderer.clear();
+        renderer.render();
+       
+   }
+   
+   addLoadEvent(initDynamicTable);
+   
+   </script>
+</head>
+
+<body>
+    <div id="body">
+    <h2>PlotKit Dynamic Test</h2>
+    
+    <div style="padding: 20px;">
+        <form name="options">
+            Chart Style: 
+            <select id="chartStyle" name="chartStyle" onChange="chartReload();">
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+                <option value="pie">Pie Chart</option>
+            </select>
+            
+            Colors:
+            <select id="colorScheme" name="colorScheme" onChange="chartReload();">
+                <option value="Blue">Blue</option>
+                <option value="Red">Red</option>
+                <option value="Green">Green</option>
+                <option value="Purple">Purple</option>
+                <option value="Cyan">Cyan</option>
+                <option value="Orange">Orange</option>
+            </select>
+            
+            
+        </form>
+    </div>
+    
+    <div style="float: left; width: 250px;">
+        <table id="datatable" cellspacing="0" cellpadding="0">
+            <thead>
+                <tr><td width="100">X</td><td width="100">Y</td></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input class="xvalue" size="6" type="text" value="0"/></td>
+                    <td><input class="yvalue" size="6" type="text" value="0"/></td>                    
+                </tr>
+            </tbody>
+        </table>
+        <div><a href="#" onclick="newRow(); return false;">add new row</a> <a href="#" onclick="chartReload(); return false;">redraw</a></div>
+    </div>
+    <div style="float: left; width: 400px;">
+        <div><canvas id="canvasTest" width="400" height="400" style="border: 1px solid #eee;"></canvas></div>
+    </div>
+
+    <div style="clear: both;">&nbsp;</div>
+    
+    <div class="footer"><a href="http://www.liquidx.net/plotkit/">PlotKit</a></div>
+</div>
+</body></html>
