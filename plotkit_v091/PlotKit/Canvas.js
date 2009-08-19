@@ -167,64 +167,10 @@ PlotKit.CanvasRenderer.prototype.render = function() {
     if (this.options.drawBackground)
         this._renderBackground();
 
-    if (this.layout.style == "bar") {
-        this._renderBarChart();
-		this._renderBarAxis(); 
-	}
-    else if (this.layout.style == "pie") {
-        this._renderPieChart();
-		this._renderPieAxis();
-	}
-    else if (this.layout.style == "line") {
+    if (this.layout.style == "line") {
         this._renderLineChart();
 		this._renderLineAxis();
 	}
-};
-
-PlotKit.CanvasRenderer.prototype._renderBarChartWrap = function(data, plotFunc) {
-    var context = this.element.getContext("2d");
-    var colorCount = this.options.colorScheme.length;
-    var colorScheme = this.options.colorScheme;
-    var setNames = MochiKit.Base.keys(this.layout.datasets);
-    var setCount = setNames.length;
-
-    for (var i = 0; i < setCount; i++) {
-        var setName = setNames[i];
-        var color = colorScheme[i%colorCount];
-        context.save();
-        context.fillStyle = color.toRGBString();
-        if (this.options.strokeColor)
-            context.strokeStyle = this.options.strokeColor.toRGBString();
-        else if (this.options.strokeColorTransform) 
-            context.strokeStyle = color[this.options.strokeColorTransform]().toRGBString();
-        
-        context.lineWidth = this.options.strokeWidth;
-        var forEachFunc = function(obj) {
-            if (obj.name == setName)
-                plotFunc(context, obj);
-        };                
-
-        MochiKit.Iter.forEach(data, bind(forEachFunc, this));
-        context.restore();
-    }
-};
-
-PlotKit.CanvasRenderer.prototype._renderBarChart = function() {
-    var bind = MochiKit.Base.bind;
-
-    var drawRect = function(context, bar) {
-        var x = this.area.w * bar.x + this.area.x;
-        var y = this.area.h * bar.y + this.area.y;
-        var w = this.area.w * bar.w;
-        var h = this.area.h * bar.h;       
-        if ((w < 1) || (h < 1))
-            return;
-        if (this.options.shouldFill)
-            context.fillRect(x, y, w, h);
-        if (this.options.shouldStroke)
-            context.strokeRect(x, y, w, h);                
-    };
-    this._renderBarChartWrap(this.layout.bars, bind(drawRect, this));
 };
 
 PlotKit.CanvasRenderer.prototype._renderLineChart = function() {
@@ -280,65 +226,6 @@ PlotKit.CanvasRenderer.prototype._renderLineChart = function() {
     }
 };
 
-PlotKit.CanvasRenderer.prototype._renderPieChart = function() {
-    var context = this.element.getContext("2d");
-    var colorCount = this.options.colorScheme.length;
-    var slices = this.layout.slices;
-
-    var centerx = this.area.x + this.area.w * 0.5;
-    var centery = this.area.y + this.area.h * 0.5;
-    var radius = Math.min(this.area.w * this.options.pieRadius, 
-                          this.area.h * this.options.pieRadius);
-
-    if (this.isIE) {
-        centerx = parseInt(centerx);
-        centery = parseInt(centery);
-        radius = parseInt(radius);
-    }
-
-
-	// NOTE NOTE!! Canvas Tag draws the circle clockwise from the y = 0, x = 1
-	// so we have to subtract 90 degrees to make it start at y = 1, x = 0
-
-    for (var i = 0; i < slices.length; i++) {
-        var color = this.options.colorScheme[i%colorCount];
-        context.save();
-        context.fillStyle = color.toRGBString();
-
-        var makePath = function() {
-            context.beginPath();
-            context.moveTo(centerx, centery);
-            context.arc(centerx, centery, radius, 
-                        slices[i].startAngle - Math.PI/2,
-                        slices[i].endAngle - Math.PI/2,
-                        false);
-            context.lineTo(centerx, centery);
-            context.closePath();
-        };
-
-        if (Math.abs(slices[i].startAngle - slices[i].endAngle) > 0.001) {
-            if (this.options.shouldFill) {
-                makePath();
-                context.fill();
-            }
-            
-            if (this.options.shouldStroke) {
-                makePath();
-                context.lineWidth = this.options.strokeWidth;
-                if (this.options.strokeColor)
-                    context.strokeStyle = this.options.strokeColor.toRGBString();
-                else if (this.options.strokeColorTransform)
-                    context.strokeStyle = color[this.options.strokeColorTransform]().toRGBString();
-                context.stroke();
-            }
-        }
-        context.restore();
-    }
-};
-
-PlotKit.CanvasRenderer.prototype._renderBarAxis = function() {
-	this._renderAxis();
-}
 
 PlotKit.CanvasRenderer.prototype._renderLineAxis = function() {
 	this._renderAxis();
@@ -432,86 +319,6 @@ PlotKit.CanvasRenderer.prototype._renderAxis = function() {
 
     context.restore();
 
-};
-
-PlotKit.CanvasRenderer.prototype._renderPieAxis = function() {
-    if (!this.options.drawXAxis)
-        return;
-
-	if (this.layout.xticks) {
-		// make a lookup dict for x->slice values
-		var lookup = new Array();
-		for (var i = 0; i < this.layout.slices.length; i++) {
-			lookup[this.layout.slices[i].xval] = this.layout.slices[i];
-		}
-		
-		var centerx = this.area.x + this.area.w * 0.5;
-	    var centery = this.area.y + this.area.h * 0.5;
-	    var radius = Math.min(this.area.w * this.options.pieRadius,
-	                          this.area.h * this.options.pieRadius);
-		var labelWidth = this.options.axisLabelWidth;
-		
-		for (var i = 0; i < this.layout.xticks.length; i++) {
-			var slice = lookup[this.layout.xticks[i][0]];
-			if (MochiKit.Base.isUndefinedOrNull(slice))
-				continue;
-				
-				
-			var angle = (slice.startAngle + slice.endAngle)/2;
-			// normalize the angle
-			var normalisedAngle = angle;
-			if (normalisedAngle > Math.PI * 2)
-				normalisedAngle = normalisedAngle - Math.PI * 2;
-			else if (normalisedAngle < 0)
-				normalisedAngle = normalisedAngle + Math.PI * 2;
-				
-			var labelx = centerx + Math.sin(normalisedAngle) * (radius + 10);
-	        var labely = centery - Math.cos(normalisedAngle) * (radius + 10);
-
-			var attrib = {"position": "absolute",
-	                      "zIndex": 11,
-	                      "width": labelWidth + "px",
-	                      "fontSize": this.options.axisLabelFontSize + "px",
-	                      "overflow": "hidden",
-						  "color": this.options.axisLabelColor.toHexString()
-						};
-
-			if (normalisedAngle <= Math.PI * 0.5) {
-	            // text on top and align left
-	            attrib["textAlign"] = "left";
-	            attrib["verticalAlign"] = "top";
-	            attrib["left"] = labelx + "px";
-	            attrib["top"] = (labely - this.options.axisLabelFontSize) + "px";
-	        }
-	        else if ((normalisedAngle > Math.PI * 0.5) && (normalisedAngle <= Math.PI)) {
-	            // text on bottom and align left
-	            attrib["textAlign"] = "left";
-	            attrib["verticalAlign"] = "bottom";     
-	            attrib["left"] = labelx + "px";
-	            attrib["top"] = labely + "px";
-
-	        }
-	        else if ((normalisedAngle > Math.PI) && (normalisedAngle <= Math.PI*1.5)) {
-	            // text on bottom and align right
-	            attrib["textAlign"] = "right";
-	            attrib["verticalAlign"] = "bottom"; 
-	            attrib["left"] = (labelx  - labelWidth) + "px";
-	            attrib["top"] = labely + "px";
-	        }
-	        else {
-	            // text on top and align right
-	            attrib["textAlign"] = "right";
-	            attrib["verticalAlign"] = "bottom";  
-	            attrib["left"] = (labelx  - labelWidth) + "px";
-	            attrib["top"] = (labely - this.options.axisLabelFontSize) + "px";
-	        }
-	
-			var label = DIV({'style': attrib}, this.layout.xticks[i][1]);
-			this.xlabels.push(label);
-			MochiKit.DOM.appendChildNodes(this.container, label);
-	  }
-		
-	}
 };
 
 PlotKit.CanvasRenderer.prototype._renderBackground = function() {

@@ -139,40 +139,6 @@ MochiKit.Base.update(PlotKit.Base, {
         return uniq;
     },
     
-    colorScheme: function() {
-        var mb = MochiKit.Base;
-        var mc = MochiKit.Color
-        var scheme = ["red", "orange", "yellow", "green", "cyan", "blue", "purple", "magenta"];
-        
-        var makeColor = function(name) {
-            return mc.Color[name + "Color"]()
-        };
-        
-        return mb.map(makeColor, scheme);
-    },
-
-    baseDarkPrimaryColors: function () {
-        var hexColor = MochiKit.Color.Color.fromHexString;
-        return [hexColor("#ad3f40"),
-                hexColor("#ddac2c"),
-                hexColor("#dfdd0c"),
-                hexColor("#5276c4"),
-                hexColor("#739c5a")];
-    },
-
-    basePrimaryColors: function () {
-        var hexColor = MochiKit.Color.Color.fromHexString;
-        return [hexColor("#d24c4d"),
-                hexColor("#f2b32f"),
-                hexColor("#ece90e"),
-                hexColor("#5d83da"),
-                hexColor("#78a15d")];
-    },
-    
-    baseBlueColors: function () {
-         var hexColor = MochiKit.Color.Color.fromHexString;
-         return [hexColor("#4b6b94"), hexColor("#5d81b4"), hexColor("#acbad2")];
-    },
 
     palette: function(baseColor, fromLevel, toLevel, increment) {
         var isNil = MochiKit.Base.isUndefinedOrNull;
@@ -286,7 +252,6 @@ PlotKit.Base.keys = function(lst) {
 // 
 // colour schemes
 //
-
 PlotKit.Base.baseColors = function () {
    var hexColor = MochiKit.Color.Color.fromHexString;
    return [hexColor("#476fb2"),
@@ -298,90 +263,11 @@ PlotKit.Base.baseColors = function () {
            hexColor("#000000")];
 };
 
-PlotKit.Base.officeBaseStyle = {
-    "axisLineWidth": 2.0,
-    "axisLabelColor": Color.grayColor(),
-    "axisLineColor": Color.whiteColor(),
-    "padding": {top: 5, bottom: 10, left: 30, right: 30}
-};    
-
-MochiKit.Base.update(PlotKit.Base,{
-    officeBlue: function() {
-        var r = {
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[0]),
-        "backgroundColor": PlotKit.Base.baseColors()[0].lighterColorWithLevel(0.45)
-        };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    officeRed: function() {
-        var r = {
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[1]),
-        "backgroundColor": PlotKit.Base.baseColors()[1].lighterColorWithLevel(0.5)
-        };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    officeGreen: function() {
-        var r = {
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[2]),
-        "backgroundColor": PlotKit.Base.baseColors()[2].lighterColorWithLevel(0.5)
-        };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    officePurple: function() {
-        var r = {
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[3]),
-        "backgroundColor": PlotKit.Base.baseColors()[3].lighterColorWithLevel(0.5)
-        };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    
-    officeCyan: function() {
-        var r = {
-            "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[4]),
-            "backgroundColor": PlotKit.Base.baseColors()[4].lighterColorWithLevel(0.5)
-            };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    
-    officeOrange: function() {
-        var r = {
-            "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[5]),
-            "backgroundColor": PlotKit.Base.baseColors()[5].lighterColorWithLevel(0.4)
-            };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    },
-    
-    officeBlack: function() {
-        var r = {
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[6], 0.0, 0.6),
-        "backgroundColor": PlotKit.Base.baseColors()[6].lighterColorWithLevel(0.9)
-        };
-        MochiKit.Base.update(r, PlotKit.Base.officeBaseStyle);
-        return r;
-    }
-});
-
-
 PlotKit.Base.EXPORT = [
    "baseColors",
    "collapse",
-   "colorScheme",
    "findPosX",
    "findPosY",
-   "officeBaseStyle",
-   "officeBlue",
-   "officeRed",
-   "officeGreen",
-   "officePurple",
-   "officeCyan",
-   "officeOrange",
-   "officeBlack",
    "roundInterval",
    "uniq",
    "isFuncLike",
