@@ -144,7 +144,7 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.createRollInterface_();
   this.createDragInterface_();
 
-  MochiKit.DOM.addLoadEvent(this.start_());
+  connect(window, 'onload', this, function(e) { this.start_(); });
 };
 
 /**
