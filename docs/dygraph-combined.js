@@ -5355,1296 +5355,865 @@ PlotKit.Canvas.__new__();
 MochiKit.Base._exportSymbols(this,PlotKit.Canvas);
 
 
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
-
-/**
- * @fileoverview Subclasses various parts of PlotKit to meet the additional
- * needs of DateGraph: grid overlays and error bars
- */
-
-// Subclass PlotKit.Layout to add:
-// 1. Sigma/errorBars properties
-// 2. Copy error terms for PlotKit.CanvasRenderer._renderLineChart
-
-/**
- * Creates a new DateGraphLayout object. Options are the same as those allowed
- * by the PlotKit.Layout constructor.
- * @param {Object} options Options for PlotKit.Layout
- * @return {Object} The DateGraphLayout object
- */
-DateGraphLayout = function(options) {
-  PlotKit.Layout.call(this, "line", options);
+DateGraphLayout=function(_1){
+PlotKit.Layout.call(this,"line",_1);
 };
-DateGraphLayout.prototype = new PlotKit.Layout();
-
-/**
- * Behaves the same way as PlotKit.Layout, but also copies the errors
- * @private
- */
-DateGraphLayout.prototype.evaluateWithError = function() {
-  this.evaluate();
-  if (!this.options.errorBars) return;
-
-  // Copy over the error terms
-  var i = 0; // index in this.points
-  for (var setName in this.datasets) {
-    var j = 0;
-    var dataset = this.datasets[setName];
-    if (PlotKit.Base.isFuncLike(dataset)) continue;
-    for (var j = 0; j < dataset.length; j++, i++) {
-      var item = dataset[j];
-      var xv = parseFloat(item[0]);
-      var yv = parseFloat(item[1]);
-
-      if (xv == this.points[i].xval &&
-          yv == this.points[i].yval) {
-        this.points[i].errorMinus = parseFloat(item[2]);
-        this.points[i].errorPlus = parseFloat(item[3]);
-      }
-    }
-  }
-};
-
-/**
- * Convenience function to remove all the data sets from a graph
- */
-DateGraphLayout.prototype.removeAllDatasets = function() {
-  delete this.datasets;
-  this.datasets = new Array();
-};
-
-/**
- * Change the values of various layout options
- * @param {Object} new_options an associative array of new properties
- */
-DateGraphLayout.prototype.updateOptions = function(new_options) {
-  MochiKit.Base.update(this.options, new_options ? new_options : {});
-};
-
-// Subclass PlotKit.CanvasRenderer to add:
-// 1. X/Y grid overlay
-// 2. Ability to draw error bars (if required)
-
-/**
- * Sets some PlotKit.CanvasRenderer options
- * @param {Object} element The canvas to attach to
- * @param {Layout} layout The DateGraphLayout object for this graph.
- * @param {Object} options Options to pass on to CanvasRenderer
- */
-DateGraphCanvasRenderer = function(element, layout, options) {
-  PlotKit.CanvasRenderer.call(this, element, layout, options);
-  this.options.shouldFill = false;
-  this.options.shouldStroke = true;
-  this.options.drawYGrid = true;
-  this.options.drawXGrid = true;
-  this.options.gridLineColor = MochiKit.Color.Color.grayColor();
-  MochiKit.Base.update(this.options, options);
-
-  // TODO(danvk) This shouldn't be necessary: effects should be overlaid
-  this.options.drawBackground = false;
-};
-DateGraphCanvasRenderer.prototype = new PlotKit.CanvasRenderer();
-
-/**
- * Draw an X/Y grid on top of the existing plot
- */
-DateGraphCanvasRenderer.prototype.render = function() {
-  // Do the ordinary rendering, as before
-  // TODO(danvk) Call super.render()
-  this._renderLineChart();
-  this._renderLineAxis();
-
-  // Draw the new X/Y grid
-  var ctx = this.element.getContext("2d");
-  if (this.options.drawYGrid) {
-    var ticks = this.layout.yticks;
-    ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor.toRGBString();
-    ctx.lineWidth = this.options.axisLineWidth;
-    for (var i = 0; i < ticks.length; i++) {
-      var x = this.area.x;
-      var y = this.area.y + ticks[i][0] * this.area.h;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + this.area.w, y);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-
-  if (this.options.drawXGrid) {
-    var ticks = this.layout.xticks;
-    ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor.toRGBString();
-    ctx.lineWidth = this.options.axisLineWidth;
-    for (var i=0; i<ticks.length; i++) {
-      var x = this.area.x + ticks[i][0] * this.area.w;
-      var y = this.area.y + this.area.h;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, this.area.y);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-};
-
-/**
- * Overrides the CanvasRenderer method to draw error bars
- */
-DateGraphCanvasRenderer.prototype._renderLineChart = function() {
-  var context = this.element.getContext("2d");
-  var colorCount = this.options.colorScheme.length;
-  var colorScheme = this.options.colorScheme;
-  var setNames = MochiKit.Base.keys(this.layout.datasets);
-  var errorBars = this.layout.options.errorBars;
-  var setCount = setNames.length;
-  var bind = MochiKit.Base.bind;
-  var partial = MochiKit.Base.partial;
-
-  //Update Points
-  var updatePoint = function(point) {
-    point.canvasx = this.area.w * point.x + this.area.x;
-    point.canvasy = this.area.h * point.y + this.area.y;
-  }
-  MochiKit.Iter.forEach(this.layout.points, updatePoint, this);
-
-  // create paths
-  var makePath = function(ctx) {
-    for (var i = 0; i < setCount; i++) {
-      var setName = setNames[i];
-      var color = colorScheme[i%colorCount];
-      var strokeX = this.options.strokeColorTransform;
-
-      // setup graphics context
-      context.save();
-      context.strokeStyle = color.toRGBString();
-      context.lineWidth = this.options.strokeWidth;
-      ctx.beginPath();
-      var point = this.layout.points[0];
-      var first_point = true;
-      var addPoint = function(ctx_, point) {
-        if (point.name == setName) {
-          if (first_point)
-            ctx_.moveTo(point.canvasx, point.canvasy);
-          else
-            ctx_.lineTo(point.canvasx, point.canvasy);
-          first_point = false;
-        }
-      };
-      MochiKit.Iter.forEach(this.layout.points, partial(addPoint, ctx), this);
-      ctx.stroke();
-    }
-  };
-
-  var makeErrorBars = function(ctx) {
-    for (var i = 0; i < setCount; i++) {
-      var setName = setNames[i];
-      var color = colorScheme[i % colorCount];
-      var strokeX = this.options.strokeColorTransform;
-
-      // setup graphics context
-      context.save();
-      context.strokeStyle = color.toRGBString();
-      context.lineWidth = this.options.strokeWidth;
-      var prevX = -1;
-      var prevYs = [-1, -1];
-      var count = 0;
-      var yscale = this.layout.yscale;
-      var errorTrapezoid = function(ctx_,point) {
-        count++;
-        if (point.name == setName) {
-          var newYs = [ point.y - point.errorPlus * yscale,
-                        point.y + point.errorMinus * yscale ];
-          newYs[0] = this.area.h * newYs[0] + this.area.y;
-          newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (prevX >= 0) {
-            ctx_.moveTo(prevX, prevYs[0]);
-            ctx_.lineTo(point.canvasx, newYs[0]);
-            ctx_.lineTo(point.canvasx, newYs[1]);
-            ctx_.lineTo(prevX, prevYs[1]);
-            ctx_.closePath();
-          }
-          prevYs[0] = newYs[0];
-          prevYs[1] = newYs[1];
-          prevX = point.canvasx;
-        }
-      };
-      // should be same color as the lines
-      var err_color = color.colorWithAlpha(0.15);
-      ctx.fillStyle = err_color.toRGBString();
-      ctx.beginPath();
-      MochiKit.Iter.forEach(this.layout.points, partial(errorTrapezoid, ctx), this);
-      ctx.fill();
-    }
-  };
-
-  if (errorBars)
-    bind(makeErrorBars, this)(context);
-  bind(makePath, this)(context);
-  context.restore();
-};
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
-
-/**
- * @fileoverview Creates an interactive, zoomable graph based on a CSV file or
- * string. DateGraph can handle multiple series with or without error bars. The
- * date/value ranges will be automatically set. DateGraph uses the
- * &lt;canvas&gt; tag, so it only works in FF1.5+.
- * @author danvdk@gmail.com (Dan Vanderkam)
-
-  Usage:
-   <div id="graphdiv" style="width:800px; height:500px;"></div>
-   <script type="text/javascript">
-     new DateGraph(document.getElementById("graphdiv"),
-                   "datafile.csv",
-                     ["Series 1", "Series 2"],
-                     { }); // options
-   </script>
-
- The CSV file is of the form
-
-   YYYYMMDD,A1,B1,C1
-   YYYYMMDD,A2,B2,C2
-
- If null is passed as the third parameter (series names), then the first line
- of the CSV file is assumed to contain names for each series.
-
- If the 'errorBars' option is set in the constructor, the input should be of
- the form
-
-   YYYYMMDD,A1,sigmaA1,B1,sigmaB1,...
-   YYYYMMDD,A2,sigmaA2,B2,sigmaB2,...
-
- If the 'fractions' option is set, the input should be of the form:
-
-   YYYYMMDD,A1/B1,A2/B2,...
-   YYYYMMDD,A1/B1,A2/B2,...
-
- And error bars will be calculated automatically using a binomial distribution.
-
- For further documentation and examples, see http://www/~danvk/dg/
-
- */
-
-/**
- * An interactive, zoomable graph
- * @param {String | Function} file A file containing CSV data or a function that
- * returns this data. The expected format for each line is
- * YYYYMMDD,val1,val2,... or, if attrs.errorBars is set,
- * YYYYMMDD,val1,stddev1,val2,stddev2,...
- * @param {Array.<String>} labels Labels for the data series
- * @param {Object} attrs Various other attributes, e.g. errorBars determines
- * whether the input data contains error ranges.
- */
-DateGraph = function(div, file, labels, attrs) {
-  if (arguments.length > 0)
-    this.__init__(div, file, labels, attrs);
-};
-
-DateGraph.NAME = "DateGraph";
-DateGraph.VERSION = "1.1";
-DateGraph.__repr__ = function() {
-  return "[" + this.NAME + " " + this.VERSION + "]";
-};
-DateGraph.toString = function() {
-  return this.__repr__();
-};
-
-// Various default values
-DateGraph.DEFAULT_ROLL_PERIOD = 1;
-DateGraph.DEFAULT_WIDTH = 480;
-DateGraph.DEFAULT_HEIGHT = 320;
-DateGraph.DEFAULT_STROKE_WIDTH = 1.0;
-DateGraph.AXIS_LINE_WIDTH = 0.3;
-
-/**
- * Initializes the DateGraph. This creates a new DIV and constructs the PlotKit
- * and interaction &lt;canvas&gt; inside of it. See the constructor for details
- * on the parameters.
- * @param {String | Function} file Source data
- * @param {Array.<String>} labels Names of the data series
- * @param {Object} attrs Miscellaneous other options
- * @private
- */
-DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
-  // Copy the important bits into the object
-  this.maindiv_ = div;
-  this.labels_ = labels;
-  this.file_ = file;
-  this.rollPeriod_ = attrs.rollPeriod || DateGraph.DEFAULT_ROLL_PERIOD;
-  this.previousVerticalX_ = -1;
-  this.width_ = parseInt(div.style.width, 10);
-  this.height_ = parseInt(div.style.height, 10);
-  this.errorBars_ = attrs.errorBars || false;
-  this.fractions_ = attrs.fractions || false;
-  this.strokeWidth_ = attrs.strokeWidth || DateGraph.DEFAULT_STROKE_WIDTH;
-  this.dateWindow_ = attrs.dateWindow || null;
-  this.valueRange_ = attrs.valueRange || null;
-  this.labelsSeparateLines = attrs.labelsSeparateLines || false;
-  this.labelsDiv_ = attrs.labelsDiv || null;
-  this.labelsKMB_ = attrs.labelsKMB || false;
-  this.minTickSize_ = attrs.minTickSize || 0;
-  this.xValueParser_ = attrs.xValueParser || DateGraph.prototype.dateParser;
-  this.xValueFormatter_ = attrs.xValueFormatter ||
-      DateGraph.prototype.dateString_;
-  this.xTicker_ = attrs.xTicker || DateGraph.prototype.dateTicker;
-  this.sigma_ = attrs.sigma || 2.0;
-  this.wilsonInterval_ = attrs.wilsonInterval || true;
-  this.customBars_ = attrs.customBars || false;
-  this.attrs_ = attrs;
-
-  // Make a note of whether labels will be pulled from the CSV file.
-  this.labelsFromCSV_ = (this.labels_ == null);
-  if (this.labels_ == null)
-    this.labels_ = [];
-
-  // Prototype of the callback is "void clickCallback(event, date)"
-  this.clickCallback_ = attrs.clickCallback || null;
-
-  // Prototype of zoom callback is "void dragCallback(minDate, maxDate)"
-  this.zoomCallback_ = attrs.zoomCallback || null;
-
-  // Create the containing DIV and other interactive elements
-  this.createInterface_();
-
-  // Create the PlotKit grapher
-  this.layoutOptions_ = { 'errorBars': (this.errorBars_ || this.customBars_),
-                          'xOriginIsZero': false };
-  MochiKit.Base.update(this.layoutOptions_, attrs);
-  this.setColors_(attrs);
-
-  this.layout_ = new DateGraphLayout(this.layoutOptions_);
-
-  this.renderOptions_ = { colorScheme: this.colors_,
-                          strokeColor: null,
-                          strokeWidth: this.strokeWidth_,
-                          axisLabelFontSize: 14,
-                          axisLineWidth: DateGraph.AXIS_LINE_WIDTH };
-  MochiKit.Base.update(this.renderOptions_, attrs);
-  this.plotter_ = new DateGraphCanvasRenderer(this.hidden_, this.layout_,
-                                              this.renderOptions_);
-
-  this.createStatusMessage_();
-  this.createRollInterface_();
-  this.createDragInterface_();
-
-  connect(window, 'onload', this, function(e) { this.start_(); });
-};
-
-/**
- * Returns the current rolling period, as set by the user or an option.
- * @return {Number} The number of days in the rolling window
- */
-DateGraph.prototype.rollPeriod = function() {
-  return this.rollPeriod_;
+DateGraphLayout.prototype=new PlotKit.Layout();
+DateGraphLayout.prototype.evaluateWithError=function(){
+this.evaluate();
+if(!this.options.errorBars){
+return;
 }
-
-/**
- * Generates interface elements for the DateGraph: a containing div, a div to
- * display the current point, and a textbox to adjust the rolling average
- * period.
- * @private
- */
-DateGraph.prototype.createInterface_ = function() {
-  // Create the all-enclosing graph div
-  var enclosing = this.maindiv_;
-
-  this.graphDiv = MochiKit.DOM.DIV( { style: { 'width': this.width_ + "px",
-                                                'height': this.height_ + "px"
-                                                 }});
-  appendChildNodes(enclosing, this.graphDiv);
-
-  // Create the canvas to store
-  var canvas = MochiKit.DOM.CANVAS;
-  this.canvas_ = canvas( { style: { 'position': 'absolute' },
-                          width: this.width_,
-                          height: this.height_});
-  appendChildNodes(this.graphDiv, this.canvas_);
-
-  this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
-  connect(this.hidden_, 'onmousemove', this, function(e) { this.mouseMove_(e) });
-  connect(this.hidden_, 'onmouseout', this, function(e) { this.mouseOut_(e) });
+var i=0;
+for(var _3 in this.datasets){
+var j=0;
+var _5=this.datasets[_3];
+if(PlotKit.Base.isFuncLike(_5)){
+continue;
 }
-
-/**
- * Creates the canvas containing the PlotKit graph. Only plotkit ever draws on
- * this particular canvas. All DateGraph work is done on this.canvas_.
- * @param {Object} canvas The DateGraph canvas to over which to overlay the plot
- * @return {Object} The newly-created canvas
- * @private
- */
-DateGraph.prototype.createPlotKitCanvas_ = function(canvas) {
-  var h = document.createElement("canvas");
-  h.style.position = "absolute";
-  h.style.top = canvas.style.top;
-  h.style.left = canvas.style.left;
-  h.width = this.width_;
-  h.height = this.height_;
-  MochiKit.DOM.appendChildNodes(this.graphDiv, h);
-  return h;
-};
-
-/**
- * Generate a set of distinct colors for the data series. This is done with a
- * color wheel. Saturation/Value are customizable, and the hue is
- * equally-spaced around the color wheel. If a custom set of colors is
- * specified, that is used instead.
- * @param {Object} attrs Various attributes, e.g. saturation and value
- * @private
- */
-DateGraph.prototype.setColors_ = function(attrs) {
-  var num = this.labels_.length;
-  this.colors_ = [];
-  if (!attrs.colors) {
-    var sat = attrs.colorSaturation || 1.0;
-    var val = attrs.colorValue || 0.5;
-    for (var i = 1; i <= num; i++) {
-      var hue = (1.0*i/(1+num));
-      this.colors_.push( MochiKit.Color.Color.fromHSV(hue, sat, val) );
-    }
-  } else {
-    for (var i = 0; i < num; i++) {
-      var colorStr = attrs.colors[i % attrs.colors.length];
-      this.colors_.push( MochiKit.Color.Color.fromString(colorStr) );
-    }
-  }
+for(var j=0;j<_5.length;j++,i++){
+var _6=_5[j];
+var xv=parseFloat(_6[0]);
+var yv=parseFloat(_6[1]);
+if(xv==this.points[i].xval&&yv==this.points[i].yval){
+this.points[i].errorMinus=parseFloat(_6[2]);
+this.points[i].errorPlus=parseFloat(_6[3]);
 }
-
-/**
- * Create the div that contains information on the selected point(s)
- * This goes in the top right of the canvas, unless an external div has already
- * been specified.
- * @private
- */
-DateGraph.prototype.createStatusMessage_ = function(){
-  if (!this.labelsDiv_) {
-    var divWidth = 250;
-    var messagestyle = { "style": {
-      "position": "absolute",
-      "fontSize": "14px",
-      "zIndex": 10,
-      "width": divWidth + "px",
-      "top": "0px",
-      "left": this.width_ - divWidth + "px",
-      "background": "white",
-      "textAlign": "left",
-      "overflow": "hidden"}};
-    this.labelsDiv_ = MochiKit.DOM.DIV(messagestyle);
-    MochiKit.DOM.appendChildNodes(this.graphDiv, this.labelsDiv_);
-  }
-};
-
-/**
- * Create the text box to adjust the averaging period
- * @return {Object} The newly-created text box
- * @private
- */
-DateGraph.prototype.createRollInterface_ = function() {
-  var padding = this.plotter_.options.padding;
-  var textAttr = { "type": "text",
-                   "size": "2",
-                   "value": this.rollPeriod_,
-                   "style": { "position": "absolute",
-                              "zIndex": 10,
-                              "top": (this.height_ - 25 - padding.bottom) + "px",
-                              "left": (padding.left+1) + "px" }
-                  };
-  var roller = MochiKit.DOM.INPUT(textAttr);
-  var pa = this.graphDiv;
-  MochiKit.DOM.appendChildNodes(pa, roller);
-  connect(roller, 'onchange', this,
-          function() { this.adjustRoll(roller.value); });
-  return roller;
 }
-
-/**
- * Set up all the mouse handlers needed to capture dragging behavior for zoom
- * events. Uses MochiKit.Signal to attach all the event handlers.
- * @private
- */
-DateGraph.prototype.createDragInterface_ = function() {
-  var self = this;
-
-  // Tracks whether the mouse is down right now
-  var mouseDown = false;
-  var dragStartX = null;
-  var dragStartY = null;
-  var dragEndX = null;
-  var dragEndY = null;
-  var prevEndX = null;
-
-  // Utility function to convert page-wide coordinates to canvas coords
-  var px = PlotKit.Base.findPosX(this.canvas_);
-  var py = PlotKit.Base.findPosY(this.canvas_);
-  var getX = function(e) { return e.mouse().page.x - px };
-  var getY = function(e) { return e.mouse().page.y - py };
-
-  // Draw zoom rectangles when the mouse is down and the user moves around
-  connect(this.hidden_, 'onmousemove', function(event) {
-    if (mouseDown) {
-      dragEndX = getX(event);
-      dragEndY = getY(event);
-
-      self.drawZoomRect_(dragStartX, dragEndX, prevEndX);
-      prevEndX = dragEndX;
-    }
-  });
-
-  // Track the beginning of drag events
-  connect(this.hidden_, 'onmousedown', function(event) {
-    mouseDown = true;
-    dragStartX = getX(event);
-    dragStartY = getY(event);
-  });
-
-  // If the user releases the mouse button during a drag, but not over the
-  // canvas, then it doesn't count as a zooming action.
-  connect(document, 'onmouseup', this, function(event) {
-    if (mouseDown) {
-      mouseDown = false;
-      dragStartX = null;
-      dragStartY = null;
-    }
-  });
-
-  // Temporarily cancel the dragging event when the mouse leaves the graph
-  connect(this.hidden_, 'onmouseout', this, function(event) {
-    if (mouseDown) {
-      dragEndX = null;
-      dragEndY = null;
-    }
-  });
-
-  // If the mouse is released on the canvas during a drag event, then it's a
-  // zoom. Only do the zoom if it's over a large enough area (>= 10 pixels)
-  connect(this.hidden_, 'onmouseup', this, function(event) {
-    if (mouseDown) {
-      mouseDown = false;
-      dragEndX = getX(event);
-      dragEndY = getY(event);
-      var regionWidth = Math.abs(dragEndX - dragStartX);
-      var regionHeight = Math.abs(dragEndY - dragStartY);
-
-      if (regionWidth < 2 && regionHeight < 2 &&
-          self.clickCallback_ != null &&
-          self.lastx_ != undefined) {
-        self.clickCallback_(event, new Date(self.lastx_));
-      }
-
-      if (regionWidth >= 10) {
-        self.doZoom_(Math.min(dragStartX, dragEndX),
-                     Math.max(dragStartX, dragEndX));
-      } else {
-        self.canvas_.getContext("2d").clearRect(0, 0,
-                                           self.canvas_.width,
-                                           self.canvas_.height);
-      }
-
-      dragStartX = null;
-      dragStartY = null;
-    }
-  });
-
-  // Double-clicking zooms back out
-  connect(this.hidden_, 'ondblclick', this, function(event) {
-    self.dateWindow_ = null;
-    self.drawGraph_(self.rawData_);
-    var minDate = self.rawData_[0][0];
-    var maxDate = self.rawData_[self.rawData_.length - 1][0];
-    self.zoomCallback_(minDate, maxDate);
-  });
-};
-
-/**
- * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
- * up any previous zoom rectangles that were drawn. This could be optimized to
- * avoid extra redrawing, but it's tricky to avoid interactions with the status
- * dots.
- * @param {Number} startX The X position where the drag started, in canvas
- * coordinates.
- * @param {Number} endX The current X position of the drag, in canvas coords.
- * @param {Number} prevEndX The value of endX on the previous call to this
- * function. Used to avoid excess redrawing
- * @private
- */
-DateGraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
-  var ctx = this.canvas_.getContext("2d");
-
-  // Clean up from the previous rect if necessary
-  if (prevEndX) {
-    ctx.clearRect(Math.min(startX, prevEndX), 0,
-                  Math.abs(startX - prevEndX), this.height_);
-  }
-
-  // Draw a light-grey rectangle to show the new viewing area
-  if (endX && startX) {
-    ctx.fillStyle = "rgba(128,128,128,0.33)";
-    ctx.fillRect(Math.min(startX, endX), 0,
-                 Math.abs(endX - startX), this.height_);
-  }
-};
-
-/**
- * Zoom to something containing [lowX, highX]. These are pixel coordinates
- * in the canvas. The exact zoom window may be slightly larger if there are no
- * data points near lowX or highX. This function redraws the graph.
- * @param {Number} lowX The leftmost pixel value that should be visible.
- * @param {Number} highX The rightmost pixel value that should be visible.
- * @private
- */
-DateGraph.prototype.doZoom_ = function(lowX, highX) {
-  // Find the earliest and latest dates contained in this canvasx range.
-  var points = this.layout_.points;
-  var minDate = null;
-  var maxDate = null;
-  // Find the nearest [minDate, maxDate] that contains [lowX, highX]
-  for (var i = 0; i < points.length; i++) {
-    var cx = points[i].canvasx;
-    var x = points[i].xval;
-    if (cx < lowX  && (minDate == null || x > minDate)) minDate = x;
-    if (cx > highX && (maxDate == null || x < maxDate)) maxDate = x;
-  }
-  // Use the extremes if either is missing
-  if (minDate == null) minDate = points[0].xval;
-  if (maxDate == null) maxDate = points[points.length-1].xval;
-
-  this.dateWindow_ = [minDate, maxDate];
-  this.drawGraph_(this.rawData_);
-  this.zoomCallback_(minDate, maxDate);
-};
-
-/**
- * When the mouse moves in the canvas, display information about a nearby data
- * point and draw dots over those points in the data series. This function
- * takes care of cleanup of previously-drawn dots.
- * @param {Object} event The mousemove event from the browser.
- * @private
- */
-DateGraph.prototype.mouseMove_ = function(event) {
-  var canvasx = event.mouse().page.x - PlotKit.Base.findPosX(this.hidden_);
-  var points = this.layout_.points;
-
-  var lastx = -1;
-  var lasty = -1;
-
-  // Loop through all the points and find the date nearest to our current
-  // location.
-  var minDist = 1e+100;
-  var idx = -1;
-  for (var i = 0; i < points.length; i++) {
-    var dist = Math.abs(points[i].canvasx - canvasx);
-    if (dist > minDist) break;
-    minDist = dist;
-    idx = i;
-  }
-  if (idx >= 0) lastx = points[idx].xval;
-  // Check that you can really highlight the last day's data
-  if (canvasx > points[points.length-1].canvasx)
-    lastx = points[points.length-1].xval;
-
-  // Extract the points we've selected
-  var selPoints = [];
-  for (var i = 0; i < points.length; i++) {
-    if (points[i].xval == lastx) {
-      selPoints.push(points[i]);
-    }
-  }
-
-  // Clear the previously drawn vertical, if there is one
-  var circleSize = 3;
-  var ctx = this.canvas_.getContext("2d");
-  if (this.previousVerticalX_ >= 0) {
-    var px = this.previousVerticalX_;
-    ctx.clearRect(px - circleSize - 1, 0, 2 * circleSize + 2, this.height_);
-  }
-
-  if (selPoints.length > 0) {
-    var canvasx = selPoints[0].canvasx;
-
-    // Set the status message to indicate the selected point(s)
-    var replace = this.xValueFormatter_(lastx) + ":";
-    var clen = this.colors_.length;
-    for (var i = 0; i < selPoints.length; i++) {
-      if (this.labelsSeparateLines) {
-        replace += "<br/>";
-      }
-      var point = selPoints[i];
-      replace += " <b><font color='" + this.colors_[i%clen].toHexString() + "'>"
-              + point.name + "</font></b>:"
-              + this.round_(point.yval, 2);
-    }
-    this.labelsDiv_.innerHTML = replace;
-
-    // Save last x position for callbacks.
-    this.lastx_ = lastx;
-
-    // Draw colored circles over the center of each selected point
-    ctx.save()
-    for (var i = 0; i < selPoints.length; i++) {
-      ctx.beginPath();
-      ctx.fillStyle = this.colors_[i%clen].toRGBString();
-      ctx.arc(canvasx, selPoints[i%clen].canvasy, circleSize, 0, 360, false);
-      ctx.fill();
-    }
-    ctx.restore();
-
-    this.previousVerticalX_ = canvasx;
-  }
-};
-
-/**
- * The mouse has left the canvas. Clear out whatever artifacts remain
- * @param {Object} event the mouseout event from the browser.
- * @private
- */
-DateGraph.prototype.mouseOut_ = function(event) {
-  // Get rid of the overlay data
-  var ctx = this.canvas_.getContext("2d");
-  ctx.clearRect(0, 0, this.width_, this.height_);
-  this.labelsDiv_.innerHTML = "";
-};
-
-/**
- * Convert a JS date (millis since epoch) to YYYY/MM/DD
- * @param {Number} date The JavaScript date (ms since epoch)
- * @return {String} A date of the form "YYYY/MM/DD"
- * @private
- */
-DateGraph.prototype.dateString_ = function(date) {
-  var d = new Date(date);
-
-  // Get the year:
-  var year = "" + d.getFullYear();
-  // Get a 0 padded month string
-  var month = "" + (d.getMonth() + 1);  //months are 0-offset, sigh
-  if (month.length < 2)  month = "0" + month;
-  // Get a 0 padded day string
-  var day = "" + d.getDate();
-  if (day.length < 2)  day = "0" + day;
-
-  return year + "/" + month + "/" + day;
-};
-
-/**
- * Round a number to the specified number of digits past the decimal point.
- * @param {Number} num The number to round
- * @param {Number} places The number of decimals to which to round
- * @return {Number} The rounded number
- * @private
- */
-DateGraph.prototype.round_ = function(num, places) {
-  var shift = Math.pow(10, places);
-  return Math.round(num * shift)/shift;
-};
-
-/**
- * Fires when there's data available to be graphed.
- * @param {String} data Raw CSV data to be plotted
- * @private
- */
-DateGraph.prototype.loadedEvent_ = function(data) {
-  this.rawData_ = this.parseCSV_(data);
-  this.drawGraph_(this.rawData_);
-};
-
-DateGraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-DateGraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
-
-/**
- * Add ticks on the x-axis representing years, months, quarters, weeks, or days
- * @private
- */
-DateGraph.prototype.addXTicks_ = function() {
-  // Determine the correct ticks scale on the x-axis: quarterly, monthly, ...
-  var startDate, endDate;
-  if (this.dateWindow_) {
-    startDate = this.dateWindow_[0];
-    endDate = this.dateWindow_[1];
-  } else {
-    startDate = this.rawData_[0][0];
-    endDate   = this.rawData_[this.rawData_.length - 1][0];
-  }
-
-  var xTicks = this.xTicker_(startDate, endDate);
-  this.layout_.updateOptions({xTicks: xTicks});
 }
-
-/**
- * Add ticks to the x-axis based on a date range.
- * @param {Number} startDate Start of the date window (millis since epoch)
- * @param {Number} endDate End of the date window (millis since epoch)
- * @return {Array.<Object>} Array of {label, value} tuples.
- * @public
- */
-DateGraph.prototype.dateTicker = function(startDate, endDate) {
-  var ONE_DAY = 24*60*60*1000;
-  startDate = startDate / ONE_DAY;
-  endDate = endDate / ONE_DAY;
-  var dateSpan = endDate - startDate;
-
-  var scale = [];
-  var isMonthly = false;
-  var yearMod = 1;
-  if (dateSpan > 30 * 366) {      // decadal
-    isMonthly = true;
-    scale = ["Jan"];
-    yearMod = 10;
-  } else if (dateSpan > 4*366) {  // annual
-    scale = ["Jan"];
-    isMonthly = true;
-  } else if (dateSpan > 366) {    // quarterly
-    scale = this.quarters;
-    isMonthly = true;
-  } else if (dateSpan > 40) {     // monthly
-    scale = this.months;
-    isMonthly = true;
-  } else if (dateSpan > 10) {     // weekly
-    for (var week = startDate - 14; week < endDate + 14; week += 7) {
-      scale.push(week * ONE_DAY);
-    }
-  } else {                        // daily
-    for (var day = startDate - 14; day < endDate + 14; day += 1) {
-      scale.push(day * ONE_DAY);
-    }
-  }
-
-  var xTicks = [];
-
-  if (isMonthly) {
-    var startYear = 1900 + (new Date(startDate* ONE_DAY)).getYear();
-    var endYear   = 1900 + (new Date(endDate  * ONE_DAY)).getYear();
-    for (var i = startYear; i <= endYear; i++) {
-      if (i % yearMod != 0) continue;
-      for (var j = 0; j < scale.length; j++ ) {
-        var date = Date.parse(scale[j] + " 1, " + i);
-        xTicks.push( {label: scale[j] + "'" + ("" + i).substr(2,2), v: date } );
-      }
-    }
-  } else {
-    for (var i = 0; i < scale.length; i++) {
-      var date = new Date(scale[i]);
-      var year = date.getFullYear().toString();
-      var label = this.months[date.getMonth()] + date.getDate();
-      label += "'" + year.substr(year.length - 2, 2);
-      xTicks.push( {label: label, v: date} );
-    }
-  }
-  return xTicks;
+};
+DateGraphLayout.prototype.removeAllDatasets=function(){
+delete this.datasets;
+this.datasets=new Array();
+};
+DateGraphLayout.prototype.updateOptions=function(_9){
+MochiKit.Base.update(this.options,_9?_9:{});
+};
+DateGraphCanvasRenderer=function(_10,_11,_12){
+PlotKit.CanvasRenderer.call(this,_10,_11,_12);
+this.options.shouldFill=false;
+this.options.shouldStroke=true;
+this.options.drawYGrid=true;
+this.options.drawXGrid=true;
+this.options.gridLineColor=MochiKit.Color.Color.grayColor();
+MochiKit.Base.update(this.options,_12);
+this.options.drawBackground=false;
+};
+DateGraphCanvasRenderer.prototype=new PlotKit.CanvasRenderer();
+DateGraphCanvasRenderer.prototype.render=function(){
+this._renderLineChart();
+this._renderLineAxis();
+var ctx=this.element.getContext("2d");
+if(this.options.drawYGrid){
+var _14=this.layout.yticks;
+ctx.save();
+ctx.strokeStyle=this.options.gridLineColor.toRGBString();
+ctx.lineWidth=this.options.axisLineWidth;
+for(var i=0;i<_14.length;i++){
+var x=this.area.x;
+var y=this.area.y+_14[i][0]*this.area.h;
+ctx.beginPath();
+ctx.moveTo(x,y);
+ctx.lineTo(x+this.area.w,y);
+ctx.closePath();
+ctx.stroke();
+}
+}
+if(this.options.drawXGrid){
+var _14=this.layout.xticks;
+ctx.save();
+ctx.strokeStyle=this.options.gridLineColor.toRGBString();
+ctx.lineWidth=this.options.axisLineWidth;
+for(var i=0;i<_14.length;i++){
+var x=this.area.x+_14[i][0]*this.area.w;
+var y=this.area.y+this.area.h;
+ctx.beginPath();
+ctx.moveTo(x,y);
+ctx.lineTo(x,this.area.y);
+ctx.closePath();
+ctx.stroke();
+}
+}
+};
+DateGraphCanvasRenderer.prototype._renderLineChart=function(){
+var _17=this.element.getContext("2d");
+var _18=this.options.colorScheme.length;
+var _19=this.options.colorScheme;
+var _20=MochiKit.Base.keys(this.layout.datasets);
+var _21=this.layout.options.errorBars;
+var _22=_20.length;
+var _23=MochiKit.Base.bind;
+var _24=MochiKit.Base.partial;
+var _25=function(_26){
+_26.canvasx=this.area.w*_26.x+this.area.x;
+_26.canvasy=this.area.h*_26.y+this.area.y;
+};
+MochiKit.Iter.forEach(this.layout.points,_25,this);
+var _27=function(ctx){
+for(var i=0;i<_22;i++){
+var _28=_20[i];
+var _29=_19[i%_18];
+var _30=this.options.strokeColorTransform;
+_17.save();
+_17.strokeStyle=_29.toRGBString();
+_17.lineWidth=this.options.strokeWidth;
+ctx.beginPath();
+var _31=this.layout.points[0];
+var _32=true;
+var _33=function(_34,_31){
+if(_31.name==_28){
+if(_32){
+_34.moveTo(_31.canvasx,_31.canvasy);
+}else{
+_34.lineTo(_31.canvasx,_31.canvasy);
+}
+_32=false;
+}
+};
+MochiKit.Iter.forEach(this.layout.points,_24(_33,ctx),this);
+ctx.stroke();
+}
+};
+var _35=function(ctx){
+for(var i=0;i<_22;i++){
+var _36=_20[i];
+var _37=_19[i%_18];
+var _38=this.options.strokeColorTransform;
+_17.save();
+_17.strokeStyle=_37.toRGBString();
+_17.lineWidth=this.options.strokeWidth;
+var _39=-1;
+var _40=[-1,-1];
+var _41=0;
+var _42=this.layout.yscale;
+var _43=function(_44,_45){
+_41++;
+if(_45.name==_36){
+var _46=[_45.y-_45.errorPlus*_42,_45.y+_45.errorMinus*_42];
+_46[0]=this.area.h*_46[0]+this.area.y;
+_46[1]=this.area.h*_46[1]+this.area.y;
+if(_39>=0){
+_44.moveTo(_39,_40[0]);
+_44.lineTo(_45.canvasx,_46[0]);
+_44.lineTo(_45.canvasx,_46[1]);
+_44.lineTo(_39,_40[1]);
+_44.closePath();
+}
+_40[0]=_46[0];
+_40[1]=_46[1];
+_39=_45.canvasx;
+}
+};
+var _47=_37.colorWithAlpha(0.15);
+ctx.fillStyle=_47.toRGBString();
+ctx.beginPath();
+MochiKit.Iter.forEach(this.layout.points,_24(_43,ctx),this);
+ctx.fill();
+}
+};
+if(_21){
+_23(_35,this)(_17);
+}
+_23(_27,this)(_17);
+_17.restore();
+};
+DateGraph=function(div,_49,_50,_51){
+if(arguments.length>0){
+this.__init__(div,_49,_50,_51);
+}
+};
+DateGraph.NAME="DateGraph";
+DateGraph.VERSION="1.1";
+DateGraph.__repr__=function(){
+return "["+this.NAME+" "+this.VERSION+"]";
+};
+DateGraph.toString=function(){
+return this.__repr__();
+};
+DateGraph.DEFAULT_ROLL_PERIOD=1;
+DateGraph.DEFAULT_WIDTH=480;
+DateGraph.DEFAULT_HEIGHT=320;
+DateGraph.DEFAULT_STROKE_WIDTH=1;
+DateGraph.AXIS_LINE_WIDTH=0.3;
+DateGraph.prototype.__init__=function(div,_52,_53,_54){
+this.maindiv_=div;
+this.labels_=_53;
+this.file_=_52;
+this.rollPeriod_=_54.rollPeriod||DateGraph.DEFAULT_ROLL_PERIOD;
+this.previousVerticalX_=-1;
+this.width_=parseInt(div.style.width,10);
+this.height_=parseInt(div.style.height,10);
+this.errorBars_=_54.errorBars||false;
+this.fractions_=_54.fractions||false;
+this.strokeWidth_=_54.strokeWidth||DateGraph.DEFAULT_STROKE_WIDTH;
+this.dateWindow_=_54.dateWindow||null;
+this.valueRange_=_54.valueRange||null;
+this.labelsSeparateLines=_54.labelsSeparateLines||false;
+this.labelsDiv_=_54.labelsDiv||null;
+this.labelsKMB_=_54.labelsKMB||false;
+this.minTickSize_=_54.minTickSize||0;
+this.xValueParser_=_54.xValueParser||DateGraph.prototype.dateParser;
+this.xValueFormatter_=_54.xValueFormatter||DateGraph.prototype.dateString_;
+this.xTicker_=_54.xTicker||DateGraph.prototype.dateTicker;
+this.sigma_=_54.sigma||2;
+this.wilsonInterval_=_54.wilsonInterval||true;
+this.customBars_=_54.customBars||false;
+this.attrs_=_54;
+this.labelsFromCSV_=(this.labels_==null);
+if(this.labels_==null){
+this.labels_=[];
+}
+this.clickCallback_=_54.clickCallback||null;
+this.zoomCallback_=_54.zoomCallback||null;
+this.createInterface_();
+this.layoutOptions_={"errorBars":(this.errorBars_||this.customBars_),"xOriginIsZero":false};
+MochiKit.Base.update(this.layoutOptions_,_54);
+this.setColors_(_54);
+this.layout_=new DateGraphLayout(this.layoutOptions_);
+this.renderOptions_={colorScheme:this.colors_,strokeColor:null,strokeWidth:this.strokeWidth_,axisLabelFontSize:14,axisLineWidth:DateGraph.AXIS_LINE_WIDTH};
+MochiKit.Base.update(this.renderOptions_,_54);
+this.plotter_=new DateGraphCanvasRenderer(this.hidden_,this.layout_,this.renderOptions_);
+this.createStatusMessage_();
+this.createRollInterface_();
+this.createDragInterface_();
+connect(window,"onload",this,function(e){
+this.start_();
+});
+};
+DateGraph.prototype.rollPeriod=function(){
+return this.rollPeriod_;
+};
+DateGraph.prototype.createInterface_=function(){
+var _56=this.maindiv_;
+this.graphDiv=MochiKit.DOM.DIV({style:{"width":this.width_+"px","height":this.height_+"px"}});
+appendChildNodes(_56,this.graphDiv);
+var _57=MochiKit.DOM.CANVAS;
+this.canvas_=_57({style:{"position":"absolute"},width:this.width_,height:this.height_});
+appendChildNodes(this.graphDiv,this.canvas_);
+this.hidden_=this.createPlotKitCanvas_(this.canvas_);
+connect(this.hidden_,"onmousemove",this,function(e){
+this.mouseMove_(e);
+});
+connect(this.hidden_,"onmouseout",this,function(e){
+this.mouseOut_(e);
+});
+};
+DateGraph.prototype.createPlotKitCanvas_=function(_58){
+var h=document.createElement("canvas");
+h.style.position="absolute";
+h.style.top=_58.style.top;
+h.style.left=_58.style.left;
+h.width=this.width_;
+h.height=this.height_;
+MochiKit.DOM.appendChildNodes(this.graphDiv,h);
+return h;
+};
+DateGraph.prototype.setColors_=function(_60){
+var num=this.labels_.length;
+this.colors_=[];
+if(!_60.colors){
+var sat=_60.colorSaturation||1;
+var val=_60.colorValue||0.5;
+for(var i=1;i<=num;i++){
+var hue=(1*i/(1+num));
+this.colors_.push(MochiKit.Color.Color.fromHSV(hue,sat,val));
+}
+}else{
+for(var i=0;i<num;i++){
+var _65=_60.colors[i%_60.colors.length];
+this.colors_.push(MochiKit.Color.Color.fromString(_65));
+}
+}
+};
+DateGraph.prototype.createStatusMessage_=function(){
+if(!this.labelsDiv_){
+var _66=250;
+var _67={"style":{"position":"absolute","fontSize":"14px","zIndex":10,"width":_66+"px","top":"0px","left":this.width_-_66+"px","background":"white","textAlign":"left","overflow":"hidden"}};
+this.labelsDiv_=MochiKit.DOM.DIV(_67);
+MochiKit.DOM.appendChildNodes(this.graphDiv,this.labelsDiv_);
+}
+};
+DateGraph.prototype.createRollInterface_=function(){
+var _68=this.plotter_.options.padding;
+var _69={"type":"text","size":"2","value":this.rollPeriod_,"style":{"position":"absolute","zIndex":10,"top":(this.height_-25-_68.bottom)+"px","left":(_68.left+1)+"px"}};
+var _70=MochiKit.DOM.INPUT(_69);
+var pa=this.graphDiv;
+MochiKit.DOM.appendChildNodes(pa,_70);
+connect(_70,"onchange",this,function(){
+this.adjustRoll(_70.value);
+});
+return _70;
+};
+DateGraph.prototype.createDragInterface_=function(){
+var _72=this;
+var _73=false;
+var _74=null;
+var _75=null;
+var _76=null;
+var _77=null;
+var _78=null;
+var px=PlotKit.Base.findPosX(this.canvas_);
+var py=PlotKit.Base.findPosY(this.canvas_);
+var _81=function(e){
+return e.mouse().page.x-px;
+};
+var _82=function(e){
+return e.mouse().page.y-py;
+};
+connect(this.hidden_,"onmousemove",function(_83){
+if(_73){
+_76=_81(_83);
+_77=_82(_83);
+_72.drawZoomRect_(_74,_76,_78);
+_78=_76;
+}
+});
+connect(this.hidden_,"onmousedown",function(_84){
+_73=true;
+_74=_81(_84);
+_75=_82(_84);
+});
+connect(document,"onmouseup",this,function(_85){
+if(_73){
+_73=false;
+_74=null;
+_75=null;
+}
+});
+connect(this.hidden_,"onmouseout",this,function(_86){
+if(_73){
+_76=null;
+_77=null;
+}
+});
+connect(this.hidden_,"onmouseup",this,function(_87){
+if(_73){
+_73=false;
+_76=_81(_87);
+_77=_82(_87);
+var _88=Math.abs(_76-_74);
+var _89=Math.abs(_77-_75);
+if(_88<2&&_89<2&&_72.clickCallback_!=null&&_72.lastx_!=undefined){
+_72.clickCallback_(_87,new Date(_72.lastx_));
+}
+if(_88>=10){
+_72.doZoom_(Math.min(_74,_76),Math.max(_74,_76));
+}else{
+_72.canvas_.getContext("2d").clearRect(0,0,_72.canvas_.width,_72.canvas_.height);
+}
+_74=null;
+_75=null;
+}
+});
+connect(this.hidden_,"ondblclick",this,function(_90){
+_72.dateWindow_=null;
+_72.drawGraph_(_72.rawData_);
+var _91=_72.rawData_[0][0];
+var _92=_72.rawData_[_72.rawData_.length-1][0];
+_72.zoomCallback_(_91,_92);
+});
+};
+DateGraph.prototype.drawZoomRect_=function(_93,_94,_95){
+var ctx=this.canvas_.getContext("2d");
+if(_95){
+ctx.clearRect(Math.min(_93,_95),0,Math.abs(_93-_95),this.height_);
+}
+if(_94&&_93){
+ctx.fillStyle="rgba(128,128,128,0.33)";
+ctx.fillRect(Math.min(_93,_94),0,Math.abs(_94-_93),this.height_);
+}
+};
+DateGraph.prototype.doZoom_=function(_96,_97){
+var _98=this.layout_.points;
+var _99=null;
+var _100=null;
+for(var i=0;i<_98.length;i++){
+var cx=_98[i].canvasx;
+var x=_98[i].xval;
+if(cx<_96&&(_99==null||x>_99)){
+_99=x;
+}
+if(cx>_97&&(_100==null||x<_100)){
+_100=x;
+}
+}
+if(_99==null){
+_99=_98[0].xval;
+}
+if(_100==null){
+_100=_98[_98.length-1].xval;
+}
+this.dateWindow_=[_99,_100];
+this.drawGraph_(this.rawData_);
+this.zoomCallback_(_99,_100);
+};
+DateGraph.prototype.mouseMove_=function(_102){
+var _103=_102.mouse().page.x-PlotKit.Base.findPosX(this.hidden_);
+var _104=this.layout_.points;
+var _105=-1;
+var _106=-1;
+var _107=1e+100;
+var idx=-1;
+for(var i=0;i<_104.length;i++){
+var dist=Math.abs(_104[i].canvasx-_103);
+if(dist>_107){
+break;
+}
+_107=dist;
+idx=i;
+}
+if(idx>=0){
+_105=_104[idx].xval;
+}
+if(_103>_104[_104.length-1].canvasx){
+_105=_104[_104.length-1].xval;
+}
+var _110=[];
+for(var i=0;i<_104.length;i++){
+if(_104[i].xval==_105){
+_110.push(_104[i]);
+}
+}
+var _111=3;
+var ctx=this.canvas_.getContext("2d");
+if(this.previousVerticalX_>=0){
+var px=this.previousVerticalX_;
+ctx.clearRect(px-_111-1,0,2*_111+2,this.height_);
+}
+if(_110.length>0){
+var _103=_110[0].canvasx;
+var _112=this.xValueFormatter_(_105)+":";
+var clen=this.colors_.length;
+for(var i=0;i<_110.length;i++){
+if(this.labelsSeparateLines){
+_112+="<br/>";
+}
+var _114=_110[i];
+_112+=" <b><font color='"+this.colors_[i%clen].toHexString()+"'>"+_114.name+"</font></b>:"+this.round_(_114.yval,2);
+}
+this.labelsDiv_.innerHTML=_112;
+this.lastx_=_105;
+ctx.save();
+for(var i=0;i<_110.length;i++){
+ctx.beginPath();
+ctx.fillStyle=this.colors_[i%clen].toRGBString();
+ctx.arc(_103,_110[i%clen].canvasy,_111,0,360,false);
+ctx.fill();
+}
+ctx.restore();
+this.previousVerticalX_=_103;
+}
+};
+DateGraph.prototype.mouseOut_=function(_115){
+var ctx=this.canvas_.getContext("2d");
+ctx.clearRect(0,0,this.width_,this.height_);
+this.labelsDiv_.innerHTML="";
+};
+DateGraph.prototype.dateString_=function(date){
+var d=new Date(date);
+var year=""+d.getFullYear();
+var _119=""+(d.getMonth()+1);
+if(_119.length<2){
+_119="0"+_119;
+}
+var day=""+d.getDate();
+if(day.length<2){
+day="0"+day;
+}
+return year+"/"+_119+"/"+day;
+};
+DateGraph.prototype.round_=function(num,_121){
+var _122=Math.pow(10,_121);
+return Math.round(num*_122)/_122;
+};
+DateGraph.prototype.loadedEvent_=function(data){
+this.rawData_=this.parseCSV_(data);
+this.drawGraph_(this.rawData_);
+};
+DateGraph.prototype.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+DateGraph.prototype.quarters=["Jan","Apr","Jul","Oct"];
+DateGraph.prototype.addXTicks_=function(){
+var _124,endDate;
+if(this.dateWindow_){
+_124=this.dateWindow_[0];
+endDate=this.dateWindow_[1];
+}else{
+_124=this.rawData_[0][0];
+endDate=this.rawData_[this.rawData_.length-1][0];
+}
+var _125=this.xTicker_(_124,endDate);
+this.layout_.updateOptions({xTicks:_125});
+};
+DateGraph.prototype.dateTicker=function(_126,_127){
+var _128=24*60*60*1000;
+_126=_126/_128;
+_127=_127/_128;
+var _129=_127-_126;
+var _130=[];
+var _131=false;
+var _132=1;
+if(_129>30*366){
+_131=true;
+_130=["Jan"];
+_132=10;
+}else{
+if(_129>4*366){
+_130=["Jan"];
+_131=true;
+}else{
+if(_129>366){
+_130=this.quarters;
+_131=true;
+}else{
+if(_129>40){
+_130=this.months;
+_131=true;
+}else{
+if(_129>10){
+for(var week=_126-14;week<_127+14;week+=7){
+_130.push(week*_128);
+}
+}else{
+for(var day=_126-14;day<_127+14;day+=1){
+_130.push(day*_128);
+}
+}
+}
+}
+}
+}
+var _134=[];
+if(_131){
+var _135=1900+(new Date(_126*_128)).getYear();
+var _136=1900+(new Date(_127*_128)).getYear();
+for(var i=_135;i<=_136;i++){
+if(i%_132!=0){
+continue;
+}
+for(var j=0;j<_130.length;j++){
+var date=Date.parse(_130[j]+" 1, "+i);
+_134.push({label:_130[j]+"'"+(""+i).substr(2,2),v:date});
+}
+}
+}else{
+for(var i=0;i<_130.length;i++){
+var date=new Date(_130[i]);
+var year=date.getFullYear().toString();
+var _137=this.months[date.getMonth()]+date.getDate();
+_137+="'"+year.substr(year.length-2,2);
+_134.push({label:_137,v:date});
+}
+}
+return _134;
+};
+DateGraph.prototype.numericTicks=function(minV,maxV){
+var _140;
+if(maxV<=0){
+_140=1;
+}else{
+_140=Math.pow(10,Math.floor(Math.log(maxV)/Math.log(10)));
+}
+var _141=(maxV-minV)/_140;
+while(2*_141<20){
+_141*=2;
+}
+if((maxV-minV)/_141<this.minTickSize_){
+_141=this.round_((maxV-minV)/this.minTickSize_,1);
+}
+var _142=[];
+for(var i=0;i<=_141;i++){
+var _143=minV+i*(maxV-minV)/_141;
+var _144=this.round_(_143,2);
+if(this.labelsKMB_){
+var k=1000;
+if(_143>=k*k*k){
+_144=this.round_(_143/(k*k*k),1)+"B";
+}else{
+if(_143>=k*k){
+_144=this.round_(_143/(k*k),1)+"M";
+}else{
+if(_143>=k){
+_144=this.round_(_143/k,1)+"K";
+}
+}
+}
+}
+_142.push({label:_144,v:_143});
+}
+return _142;
+};
+DateGraph.prototype.addYTicks_=function(minY,maxY){
+var _148=this.numericTicks(minY,maxY);
+this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_148});
+};
+DateGraph.prototype.drawGraph_=function(data){
+var maxY=null;
+this.layout_.removeAllDatasets();
+for(var i=1;i<data[0].length;i++){
+var _149=[];
+for(var j=0;j<data.length;j++){
+var date=data[j][0];
+_149[j]=[date,data[j][i]];
+}
+_149=this.rollingAverage(_149,this.rollPeriod_);
+var bars=this.errorBars_||this.customBars_;
+if(this.dateWindow_){
+var low=this.dateWindow_[0];
+var high=this.dateWindow_[1];
+var _153=[];
+for(var k=0;k<_149.length;k++){
+if(_149[k][0]>=low&&_149[k][0]<=high){
+_153.push(_149[k]);
+var y=bars?_149[k][1][0]:_149[k][1];
+if(maxY==null||y>maxY){
+maxY=y;
+}
+}
+}
+_149=_153;
+}else{
+for(var j=0;j<_149.length;j++){
+var y=bars?_149[j][1][0]:_149[j][1];
+if(maxY==null||y>maxY){
+maxY=bars?y+_149[j][1][1]:y;
+}
+}
+}
+if(bars){
+var vals=[];
+for(var j=0;j<_149.length;j++){
+vals[j]=[_149[j][0],_149[j][1][0],_149[j][1][1],_149[j][1][2]];
+}
+this.layout_.addDataset(this.labels_[i-1],vals);
+}else{
+this.layout_.addDataset(this.labels_[i-1],_149);
+}
+}
+if(this.valueRange_!=null){
+this.addYTicks_(this.valueRange_[0],this.valueRange_[1]);
+}else{
+maxY*=1.1;
+if(maxY<=0){
+maxY=1;
+}else{
+var _155=Math.pow(10,Math.floor(Math.log(maxY)/Math.log(10)));
+maxY=_155*Math.ceil(maxY/_155);
+}
+this.addYTicks_(0,maxY);
+}
+this.addXTicks_();
+this.layout_.evaluateWithError();
+this.plotter_.clear();
+this.plotter_.render();
+this.canvas_.getContext("2d").clearRect(0,0,this.canvas_.width,this.canvas_.height);
+};
+DateGraph.prototype.rollingAverage=function(_156,_157){
+if(_156.length<2){
+return _156;
+}
+var _157=Math.min(_157,_156.length-1);
+var _158=[];
+var _159=this.sigma_;
+if(this.fractions_){
+var num=0;
+var den=0;
+var mult=100;
+for(var i=0;i<_156.length;i++){
+num+=_156[i][1][0];
+den+=_156[i][1][1];
+if(i-_157>=0){
+num-=_156[i-_157][1][0];
+den-=_156[i-_157][1][1];
+}
+var date=_156[i][0];
+var _162=den?num/den:0;
+if(this.errorBars_){
+if(this.wilsonInterval_){
+if(den){
+var p=_162<0?0:_162,n=den;
+var pm=_159*Math.sqrt(p*(1-p)/n+_159*_159/(4*n*n));
+var _165=1+_159*_159/den;
+var low=(p+_159*_159/(2*den)-pm)/_165;
+var high=(p+_159*_159/(2*den)+pm)/_165;
+_158[i]=[date,[p*mult,(p-low)*mult,(high-p)*mult]];
+}else{
+_158[i]=[date,[0,0,0]];
+}
+}else{
+var _166=den?_159*Math.sqrt(_162*(1-_162)/den):1;
+_158[i]=[date,[mult*_162,mult*_166,mult*_166]];
+}
+}else{
+_158[i]=[date,mult*_162];
+}
+}
+}else{
+if(this.customBars_){
+for(var i=0;i<_156.length;i++){
+var data=_156[i][1];
+var y=data[1];
+_158[i]=[_156[i][0],[y,y-data[0],data[2]-y]];
+}
+}else{
+var _167=Math.min(_157-1,_156.length-2);
+if(!this.errorBars_){
+for(var i=0;i<_167;i++){
+var sum=0;
+for(var j=0;j<i+1;j++){
+sum+=_156[j][1];
+}
+_158[i]=[_156[i][0],sum/(i+1)];
+}
+for(var i=Math.min(_157-1,_156.length-2);i<_156.length;i++){
+var sum=0;
+for(var j=i-_157+1;j<i+1;j++){
+sum+=_156[j][1];
+}
+_158[i]=[_156[i][0],sum/_157];
+}
+}else{
+for(var i=0;i<_167;i++){
+var sum=0;
+var _169=0;
+for(var j=0;j<i+1;j++){
+sum+=_156[j][1][0];
+_169+=Math.pow(_156[j][1][1],2);
+}
+var _166=Math.sqrt(_169)/(i+1);
+_158[i]=[_156[i][0],[sum/(i+1),_159*_166,_159*_166]];
+}
+for(var i=Math.min(_157-1,_156.length-2);i<_156.length;i++){
+var sum=0;
+var _169=0;
+for(var j=i-_157+1;j<i+1;j++){
+sum+=_156[j][1][0];
+_169+=Math.pow(_156[j][1][1],2);
+}
+var _166=Math.sqrt(_169)/_157;
+_158[i]=[_156[i][0],[sum/_157,_159*_166,_159*_166]];
+}
+}
+}
+}
+return _158;
+};
+DateGraph.prototype.dateParser=function(_170){
+var _171;
+if(_170.search("-")!=-1){
+_171=_170.replace("-","/","g");
+}else{
+if(_170.search("/")!=-1){
+return Date.parse(_170);
+}else{
+_171=_170.substr(0,4)+"/"+_170.substr(4,2)+"/"+_170.substr(6,2);
+}
+}
+return Date.parse(_171);
+};
+DateGraph.prototype.parseCSV_=function(data){
+var ret=[];
+var _173=data.split("\n");
+var _174=this.labelsFromCSV_?1:0;
+if(this.labelsFromCSV_){
+var _175=_173[0].split(",");
+_175.shift();
+this.labels_=_175;
+this.setColors_(this.attrs_);
+this.renderOptions_.colorScheme=this.colors_;
+MochiKit.Base.update(this.plotter_.options,this.renderOptions_);
+MochiKit.Base.update(this.layoutOptions_,this.attrs_);
+}
+for(var i=_174;i<_173.length;i++){
+var line=_173[i];
+if(line.length==0){
+continue;
+}
+var _177=line.split(",");
+if(_177.length<2){
+continue;
+}
+var _178=[];
+_178[0]=this.xValueParser_(_177[0]);
+if(this.fractions_){
+for(var j=1;j<_177.length;j++){
+var vals=_177[j].split("/");
+_178[j]=[parseFloat(vals[0]),parseFloat(vals[1])];
+}
+}else{
+if(this.errorBars_){
+for(var j=1;j<_177.length;j+=2){
+_178[(j+1)/2]=[parseFloat(_177[j]),parseFloat(_177[j+1])];
+}
+}else{
+if(this.customBars_){
+for(var j=1;j<_177.length;j++){
+var vals=_177[j].split(";");
+_178[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
+}
+}else{
+for(var j=1;j<_177.length;j++){
+_178[j]=parseFloat(_177[j]);
+}
+}
+}
+}
+ret.push(_178);
+}
+return ret;
+};
+DateGraph.prototype.start_=function(){
+if(typeof this.file_=="function"){
+this.loadedEvent_(this.file_());
+}else{
+var req=new XMLHttpRequest();
+var _180=this;
+req.onreadystatechange=function(){
+if(req.readyState==4){
+if(req.status==200){
+_180.loadedEvent_(req.responseText);
+}
+}
+};
+req.open("GET",this.file_,true);
+req.send(null);
+}
+};
+DateGraph.prototype.updateOptions=function(_181){
+if(_181.errorBars){
+this.errorBars_=_181.errorBars;
+}
+if(_181.customBars){
+this.customBars_=_181.customBars;
+}
+if(_181.strokeWidth){
+this.strokeWidth_=_181.strokeWidth;
+}
+if(_181.rollPeriod){
+this.rollPeriod_=_181.rollPeriod;
+}
+if(_181.dateWindow){
+this.dateWindow_=_181.dateWindow;
+}
+if(_181.valueRange){
+this.valueRange_=_181.valueRange;
+}
+if(_181.minTickSize){
+this.minTickSize_=_181.minTickSize;
+}
+if(typeof (_181.labels)!="undefined"){
+this.labels_=_181.labels;
+this.labelsFromCSV_=(_181.labels==null);
+}
+this.layout_.updateOptions({"errorBars":this.errorBars_});
+if(_181["file"]&&_181["file"]!=this.file_){
+this.file_=_181["file"];
+this.start_();
+}else{
+this.drawGraph_(this.rawData_);
+}
+};
+DateGraph.prototype.adjustRoll=function(_182){
+this.rollPeriod_=_182;
+this.drawGraph_(this.rawData_);
 };
 
-/**
- * Add ticks when the x axis has numbers on it (instead of dates)
- * @param {Number} startDate Start of the date window (millis since epoch)
- * @param {Number} endDate End of the date window (millis since epoch)
- * @return {Array.<Object>} Array of {label, value} tuples.
- * @public
- */
-DateGraph.prototype.numericTicks = function(minV, maxV) {
-  var scale;
-  if (maxV <= 0.0) {
-    scale = 1.0;
-  } else {
-    scale = Math.pow( 10, Math.floor(Math.log(maxV)/Math.log(10.0)) );
-  }
-
-  // Add a smallish number of ticks at human-friendly points
-  var nTicks = (maxV - minV) / scale;
-  while (2 * nTicks < 20) {
-    nTicks *= 2;
-  }
-  if ((maxV - minV) / nTicks < this.minTickSize_) {
-    nTicks = this.round_((maxV - minV) / this.minTickSize_, 1);
-  }
-
-  // Construct labels for the ticks
-  var ticks = [];
-  for (var i = 0; i <= nTicks; i++) {
-    var tickV = minV + i * (maxV - minV) / nTicks;
-    var label = this.round_(tickV, 2);
-    if (this.labelsKMB_) {
-      var k = 1000;
-      if (tickV >= k*k*k) {
-        label = this.round_(tickV/(k*k*k), 1) + "B";
-      } else if (tickV >= k*k) {
-        label = this.round_(tickV/(k*k), 1) + "M";
-      } else if (tickV >= k) {
-        label = this.round_(tickV/k, 1) + "K";
-      }
-    }
-    ticks.push( {label: label, v: tickV} );
-  }
-  return ticks;
-};
-
-/**
- * Adds appropriate ticks on the y-axis
- * @param {Number} minY The minimum Y value in the data set
- * @param {Number} maxY The maximum Y value in the data set
- * @private
- */
-DateGraph.prototype.addYTicks_ = function(minY, maxY) {
-  // Set the number of ticks so that the labels are human-friendly.
-  var ticks = this.numericTicks(minY, maxY);
-  this.layout_.updateOptions( { yAxis: [minY, maxY],
-                                yTicks: ticks } );
-};
-
-/**
- * Update the graph with new data. Data is in the format
- * [ [date1, val1, val2, ...], [date2, val1, val2, ...] if errorBars=false
- * or, if errorBars=true,
- * [ [date1, [val1,stddev1], [val2,stddev2], ...], [date2, ...], ...]
- * @param {Array.<Object>} data The data (see above)
- * @private
- */
-DateGraph.prototype.drawGraph_ = function(data) {
-  var maxY = null;
-  this.layout_.removeAllDatasets();
-  // Loop over all fields in the dataset
-  for (var i = 1; i < data[0].length; i++) {
-    var series = [];
-    for (var j = 0; j < data.length; j++) {
-      var date = data[j][0];
-      series[j] = [date, data[j][i]];
-    }
-    series = this.rollingAverage(series, this.rollPeriod_);
-
-    // Prune down to the desired range, if necessary (for zooming)
-    var bars = this.errorBars_ || this.customBars_;
-    if (this.dateWindow_) {
-      var low = this.dateWindow_[0];
-      var high= this.dateWindow_[1];
-      var pruned = [];
-      for (var k = 0; k < series.length; k++) {
-        if (series[k][0] >= low && series[k][0] <= high) {
-          pruned.push(series[k]);
-          var y = bars ? series[k][1][0] : series[k][1];
-          if (maxY == null || y > maxY) maxY = y;
-        }
-      }
-      series = pruned;
-    } else {
-      for (var j = 0; j < series.length; j++) {
-        var y = bars ? series[j][1][0] : series[j][1];
-        if (maxY == null || y > maxY) {
-          maxY = bars ? y + series[j][1][1] : y;
-        }
-      }
-    }
-
-    if (bars) {
-      var vals = [];
-      for (var j=0; j<series.length; j++)
-        vals[j] = [series[j][0],
-                   series[j][1][0], series[j][1][1], series[j][1][2]];
-      this.layout_.addDataset(this.labels_[i - 1], vals);
-    } else {
-      this.layout_.addDataset(this.labels_[i - 1], series);
-    }
-  }
-
-  // Use some heuristics to come up with a good maxY value, unless it's been
-  // set explicitly by the user.
-  if (this.valueRange_ != null) {
-    this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
-  } else {
-    // Add some padding and round up to an integer to be human-friendly.
-    maxY *= 1.1;
-    if (maxY <= 0.0) maxY = 1.0;
-    else {
-      var scale = Math.pow(10, Math.floor(Math.log(maxY) / Math.log(10.0)));
-      maxY = scale * Math.ceil(maxY / scale);
-    }
-    this.addYTicks_(0, maxY);
-  }
-
-  this.addXTicks_();
-
-  // Tell PlotKit to use this new data and render itself
-  this.layout_.evaluateWithError();
-  this.plotter_.clear();
-  this.plotter_.render();
-  this.canvas_.getContext('2d').clearRect(0, 0,
-                                         this.canvas_.width, this.canvas_.height);
-};
-
-/**
- * Calculates the rolling average of a data set.
- * If originalData is [label, val], rolls the average of those.
- * If originalData is [label, [, it's interpreted as [value, stddev]
- *   and the roll is returned in the same form, with appropriately reduced
- *   stddev for each value.
- * Note that this is where fractional input (i.e. '5/10') is converted into
- *   decimal values.
- * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of days over which to average the data
- */
-DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
-  if (originalData.length < 2)
-    return originalData;
-  var rollPeriod = Math.min(rollPeriod, originalData.length - 1);
-  var rollingData = [];
-  var sigma = this.sigma_;
-
-  if (this.fractions_) {
-    var num = 0;
-    var den = 0;  // numerator/denominator
-    var mult = 100.0;
-    for (var i = 0; i < originalData.length; i++) {
-      num += originalData[i][1][0];
-      den += originalData[i][1][1];
-      if (i - rollPeriod >= 0) {
-        num -= originalData[i - rollPeriod][1][0];
-        den -= originalData[i - rollPeriod][1][1];
-      }
-
-      var date = originalData[i][0];
-      var value = den ? num / den : 0.0;
-      if (this.errorBars_) {
-        if (this.wilsonInterval_) {
-          // For more details on this confidence interval, see:
-          // http://en.wikipedia.org/wiki/Binomial_confidence_interval
-          if (den) {
-            var p = value < 0 ? 0 : value, n = den;
-            var pm = sigma * Math.sqrt(p*(1-p)/n + sigma*sigma/(4*n*n));
-            var denom = 1 + sigma * sigma / den;
-            var low  = (p + sigma * sigma / (2 * den) - pm) / denom;
-            var high = (p + sigma * sigma / (2 * den) + pm) / denom;
-            rollingData[i] = [date,
-                              [p * mult, (p - low) * mult, (high - p) * mult]];
-          } else {
-            rollingData[i] = [date, [0, 0, 0]];
-          }
-        } else {
-          var stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
-          rollingData[i] = [date, [mult * value, mult * stddev, mult * stddev]];
-        }
-      } else {
-        rollingData[i] = [date, mult * value];
-      }
-    }
-  } else if (this.customBars_) {
-    // just ignore the rolling for now.
-    // TODO(danvk): do something reasonable.
-    for (var i = 0; i < originalData.length; i++) {
-      var data = originalData[i][1];
-      var y = data[1];
-      rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
-    }
-  } else {
-    // Calculate the rolling average for the first rollPeriod - 1 points where
-    // there is not enough data to roll over the full number of days
-    var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
-    if (!this.errorBars_){
-      for (var i = 0; i < num_init_points; i++) {
-        var sum = 0;
-        for (var j = 0; j < i + 1; j++)
-          sum += originalData[j][1];
-        rollingData[i] = [originalData[i][0], sum / (i + 1)];
-      }
-      // Calculate the rolling average for the remaining points
-      for (var i = Math.min(rollPeriod - 1, originalData.length - 2);
-          i < originalData.length;
-          i++) {
-        var sum = 0;
-        for (var j = i - rollPeriod + 1; j < i + 1; j++)
-          sum += originalData[j][1];
-        rollingData[i] = [originalData[i][0], sum / rollPeriod];
-      }
-    } else {
-      for (var i = 0; i < num_init_points; i++) {
-        var sum = 0;
-        var variance = 0;
-        for (var j = 0; j < i + 1; j++) {
-          sum += originalData[j][1][0];
-          variance += Math.pow(originalData[j][1][1], 2);
-        }
-        var stddev = Math.sqrt(variance)/(i+1);
-        rollingData[i] = [originalData[i][0],
-                          [sum/(i+1), sigma * stddev, sigma * stddev]];
-      }
-      // Calculate the rolling average for the remaining points
-      for (var i = Math.min(rollPeriod - 1, originalData.length - 2);
-          i < originalData.length;
-          i++) {
-        var sum = 0;
-        var variance = 0;
-        for (var j = i - rollPeriod + 1; j < i + 1; j++) {
-          sum += originalData[j][1][0];
-          variance += Math.pow(originalData[j][1][1], 2);
-        }
-        var stddev = Math.sqrt(variance) / rollPeriod;
-        rollingData[i] = [originalData[i][0],
-                          [sum / rollPeriod, sigma * stddev, sigma * stddev]];
-      }
-    }
-  }
-
-  return rollingData;
-};
-
-/**
- * Parses a date, returning the number of milliseconds since epoch. This can be
- * passed in as an xValueParser in the DateGraph constructor.
- * @param {String} A date in YYYYMMDD format.
- * @return {Number} Milliseconds since epoch.
- * @public
- */
-DateGraph.prototype.dateParser = function(dateStr) {
-  var dateStrSlashed;
-  if (dateStr.search("-") != -1) {
-    dateStrSlashed = dateStr.replace("-", "/", "g");
-  } else if (dateStr.search("/") != -1) {
-    return Date.parse(dateStr);
-  } else {
-    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2)
-                       + "/" + dateStr.substr(6,2);
-  }
-  return Date.parse(dateStrSlashed);
-};
-
-/**
- * Parses a string in a special csv format.  We expect a csv file where each
- * line is a date point, and the first field in each line is the date string.
- * We also expect that all remaining fields represent series.
- * if this.errorBars_ is set, then interpret the fields as:
- * date, series1, stddev1, series2, stddev2, ...
- * @param {Array.<Object>} data See above.
- * @private
- */
-DateGraph.prototype.parseCSV_ = function(data) {
-  var ret = [];
-  var lines = data.split("\n");
-  var start = this.labelsFromCSV_ ? 1 : 0;
-  if (this.labelsFromCSV_) {
-    var labels = lines[0].split(",");
-    labels.shift();  // a "date" parameter is assumed.
-    this.labels_ = labels;
-    // regenerate automatic colors.
-    this.setColors_(this.attrs_);
-    this.renderOptions_.colorScheme = this.colors_;
-    MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
-    MochiKit.Base.update(this.layoutOptions_, this.attrs_);
-  }
-
-  for (var i = start; i < lines.length; i++) {
-    var line = lines[i];
-    if (line.length == 0) continue;  // skip blank lines
-    var inFields = line.split(',');
-    if (inFields.length < 2)
-      continue;
-
-    var fields = [];
-    fields[0] = this.xValueParser_(inFields[0]);
-
-    // If fractions are expected, parse the numbers as "A/B"
-    if (this.fractions_) {
-      for (var j = 1; j < inFields.length; j++) {
-        // TODO(danvk): figure out an appropriate way to flag parse errors.
-        var vals = inFields[j].split("/");
-        fields[j] = [parseFloat(vals[0]), parseFloat(vals[1])];
-      }
-    } else if (this.errorBars_) {
-      // If there are error bars, values are (value, stddev) pairs
-      for (var j = 1; j < inFields.length; j += 2)
-        fields[(j + 1) / 2] = [parseFloat(inFields[j]),
-                               parseFloat(inFields[j + 1])];
-    } else if (this.customBars_) {
-      // Bars are a low;center;high tuple
-      for (var j = 1; j < inFields.length; j++) {
-        var vals = inFields[j].split(";");
-        fields[j] = [ parseFloat(vals[0]),
-                      parseFloat(vals[1]),
-                      parseFloat(vals[2]) ];
-      }
-    } else {
-      // Values are just numbers
-      for (var j = 1; j < inFields.length; j++)
-        fields[j] = parseFloat(inFields[j]);
-    }
-    ret.push(fields);
-  }
-  return ret;
-};
-
-/**
- * Get the CSV data. If it's in a function, call that function. If it's in a
- * file, do an XMLHttpRequest to get it.
- * @private
- */
-DateGraph.prototype.start_ = function() {
-  if (typeof this.file_ == 'function') {
-    // Stubbed out to allow this to run off a filesystem
-    this.loadedEvent_(this.file_());
-  } else {
-    var req = new XMLHttpRequest();
-    var caller = this;
-    req.onreadystatechange = function () {
-      if (req.readyState == 4) {
-        if (req.status == 200) {
-          caller.loadedEvent_(req.responseText);
-        }
-      }
-    };
-
-    req.open("GET", this.file_, true);
-    req.send(null);
-  }
-};
-
-/**
- * Changes various properties of the graph. These can include:
- * <ul>
- * <li>file: changes the source data for the graph</li>
- * <li>errorBars: changes whether the data contains stddev</li>
- * </ul>
- * @param {Object} attrs The new properties and values
- */
-DateGraph.prototype.updateOptions = function(attrs) {
-  if (attrs.errorBars) {
-    this.errorBars_ = attrs.errorBars;
-  }
-  if (attrs.customBars) {
-    this.customBars_ = attrs.customBars;
-  }
-  if (attrs.strokeWidth) {
-    this.strokeWidth_ = attrs.strokeWidth;
-  }
-  if (attrs.rollPeriod) {
-    this.rollPeriod_ = attrs.rollPeriod;
-  }
-  if (attrs.dateWindow) {
-    this.dateWindow_ = attrs.dateWindow;
-  }
-  if (attrs.valueRange) {
-    this.valueRange_ = attrs.valueRange;
-  }
-  if (attrs.minTickSize) {
-    this.minTickSize_ = attrs.minTickSize;
-  }
-  if (typeof(attrs.labels) != 'undefined') {
-    this.labels_ = attrs.labels;
-    this.labelsFromCSV_ = (attrs.labels == null);
-  }
-  this.layout_.updateOptions({ 'errorBars': this.errorBars_ });
-  if (attrs['file'] && attrs['file'] != this.file_) {
-    this.file_ = attrs['file'];
-    this.start_();
-  } else {
-    this.drawGraph_(this.rawData_);
-  }
-};
-
-/**
- * Adjusts the number of days in the rolling average. Updates the graph to
- * reflect the new averaging period.
- * @param {Number} length Number of days over which to average the data.
- */
-DateGraph.prototype.adjustRoll = function(length) {
-  this.rollPeriod_ = length;
-  this.drawGraph_(this.rawData_);
-};
