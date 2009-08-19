@@ -19,14 +19,13 @@
 try {    
     if (typeof(MochiKit.Base) == 'undefined'   ||
         typeof(MochiKit.DOM) == 'undefined'    ||
-        typeof(MochiKit.Color) == 'undefined'  ||
-        typeof(MochiKit.Format) == 'undefined')
+        typeof(MochiKit.Color) == 'undefined')
     {
         throw "";    
     }
 } 
 catch (e) {    
-    throw "PlotKit depends on MochiKit.{Base,Color,DOM,Format}"
+    throw "PlotKit depends on MochiKit.{Base,Color,DOM}"
 }
 
 // -------------------------------------------------------------------
@@ -98,13 +97,6 @@ PlotKit.Base.usingPrototype =  function() {
 
 
 MochiKit.Base.update(PlotKit.Base, {
-    roundInterval: function(range, intervals, precision) {
-        // We want to make the interval look regular,
-        var trunc = MochiKit.Format.roundToFixed;
-        var sep = range/intervals;
-        return parseFloat(trunc(sep, precision));
-    },
-
     collapse: function(lst) {
         var m = MochiKit.Base;
         var biggerList = new Array();
@@ -268,7 +260,6 @@ PlotKit.Base.EXPORT = [
    "collapse",
    "findPosX",
    "findPosY",
-   "roundInterval",
    "uniq",
    "isFuncLike",
    "excanvasSupported"

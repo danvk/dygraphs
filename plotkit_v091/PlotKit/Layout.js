@@ -124,40 +124,6 @@ PlotKit.Layout.prototype.removeDataset = function(setname, set_xy) {
     delete this.datasets[setname];
 };
 
-PlotKit.Layout.prototype.addDatasetFromTable = function(name, tableElement, xcol, ycol,  lcol) {
-	var isNil = MochiKit.Base.isUndefinedOrNull;
-	var scrapeText = MochiKit.DOM.scrapeText;
-	var strip = MochiKit.Format.strip;
-	
-	if (isNil(xcol))
-		xcol = 0;
-	if (isNil(ycol))
-		ycol = 1;
-	if (isNil(lcol))
-	    lcol = -1;
-        
-    var rows = tableElement.tBodies[0].rows;
-    var data = new Array();
-    var labels = new Array();
-    
-    if (!isNil(rows)) {
-        for (var i = 0; i < rows.length; i++) {
-            data.push([parseFloat(strip(scrapeText(rows[i].cells[xcol]))),
-                       parseFloat(strip(scrapeText(rows[i].cells[ycol])))]);
-            if (lcol >= 0){
-               labels.push({v: parseFloat(strip(scrapeText(rows[i].cells[xcol]))),
-                            label:  strip(scrapeText(rows[i].cells[lcol]))});
-            }
-        }
-        this.addDataset(name, data);
-        if (lcol >= 0) {
-            this.options.xTicks = labels;
-        }
-        return true;
-    }
-    return false;
-};
-
 // --------------------------------------------------------------------
 // Evaluates the layout for the current data and style.
 // --------------------------------------------------------------------
@@ -343,26 +309,6 @@ PlotKit.Layout.prototype._evaluateLineTicksForYAxis = function() {
             }
         };
         MochiKit.Iter.forEach(this.options.yTicks, bind(makeTicks, this));
-    }
-    else if (this.options.yNumberOfTicks) {
-        // We use the optionally defined number of ticks as a guide        
-        this.yticks = new Array();
-
-        // if we get this separation right, we'll have good looking graphs
-        var roundInt = PlotKit.Base.roundInterval;
-        var prec = this.options.yTickPrecision;
-        var roughSeparation = roundInt(this.yrange, 
-                                       this.options.yNumberOfTicks, prec);
-
-        // round off each value of the y-axis to the precision
-        // eg. 1.3333 at precision 1 -> 1.3
-        for (var i = 0; i <= this.options.yNumberOfTicks; i++) {
-            var yval = this.minyval + (i * roughSeparation);
-            var pos = 1.0 - ((yval - this.minyval) * this.yscale);
-            if ((pos > 1.0) || (pos < 0.0))
-                continue;
-            this.yticks.push([pos, MochiKit.Format.roundToFixed(yval, prec)]);
-        }
     }
 };
 
