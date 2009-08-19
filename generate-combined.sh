@@ -8,8 +8,15 @@ cd plotkit_v091
 ./scripts/pack.py Base Layout Canvas > /tmp/plotkit-packed.js
 cd ..
 
+# Do the same for MochiKit. This save ~90k.
+cd mochikit_v14
+./scripts/pack.py \
+Base Iter Format DOM Style Color Signal \
+> /tmp/mochikit-packed.js
+cd ..
+
 cat \
-mochikit_v14/packed/MochiKit/MochiKit.js \
+/tmp/mochikit-packed.js \
 /tmp/plotkit-packed.js \
 dygraph-canvas.js \
 dygraph.js \
