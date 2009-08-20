@@ -4899,8 +4899,8 @@ var _75=null;
 var _76=null;
 var _77=null;
 var _78=null;
-var px=PlotKit.Base.findPosX(this.canvas_);
-var py=PlotKit.Base.findPosY(this.canvas_);
+var px=-1000;
+var py=-1000;
 var _81=function(e){
 return e.mouse().page.x-px;
 };
@@ -4917,6 +4917,8 @@ _78=_76;
 });
 connect(this.hidden_,"onmousedown",function(_84){
 _73=true;
+px=PlotKit.Base.findPosX(_72.canvas_);
+py=PlotKit.Base.findPosY(_72.canvas_);
 _74=_81(_84);
 _75=_82(_84);
 });
@@ -4957,7 +4959,9 @@ _72.dateWindow_=null;
 _72.drawGraph_(_72.rawData_);
 var _91=_72.rawData_[0][0];
 var _92=_72.rawData_[_72.rawData_.length-1][0];
+if(_72.zoomCallback_){
 _72.zoomCallback_(_91,_92);
+}
 });
 };
 DateGraph.prototype.drawZoomRect_=function(_93,_94,_95){
@@ -4992,7 +4996,9 @@ _100=_98[_98.length-1].xval;
 }
 this.dateWindow_=[_99,_100];
 this.drawGraph_(this.rawData_);
+if(this.zoomCallback_){
 this.zoomCallback_(_99,_100);
+}
 };
 DateGraph.prototype.mouseMove_=function(_102){
 var _103=_102.mouse().page.x-PlotKit.Base.findPosX(this.hidden_);

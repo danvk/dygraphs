@@ -290,8 +290,8 @@ DateGraph.prototype.createDragInterface_ = function() {
   var prevEndX = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
-  var px = PlotKit.Base.findPosX(this.canvas_);
-  var py = PlotKit.Base.findPosY(this.canvas_);
+  var px = 0;
+  var py = 0;
   var getX = function(e) { return e.mouse().page.x - px };
   var getY = function(e) { return e.mouse().page.y - py };
 
@@ -309,6 +309,8 @@ DateGraph.prototype.createDragInterface_ = function() {
   // Track the beginning of drag events
   connect(this.hidden_, 'onmousedown', function(event) {
     mouseDown = true;
+    px = PlotKit.Base.findPosX(self.canvas_);
+    py = PlotKit.Base.findPosY(self.canvas_);
     dragStartX = getX(event);
     dragStartY = getY(event);
   });
@@ -367,7 +369,9 @@ DateGraph.prototype.createDragInterface_ = function() {
     self.drawGraph_(self.rawData_);
     var minDate = self.rawData_[0][0];
     var maxDate = self.rawData_[self.rawData_.length - 1][0];
-    self.zoomCallback_(minDate, maxDate);
+    if (self.zoomCallback_) {
+      self.zoomCallback_(minDate, maxDate);
+    }
   });
 };
 
@@ -426,7 +430,9 @@ DateGraph.prototype.doZoom_ = function(lowX, highX) {
 
   this.dateWindow_ = [minDate, maxDate];
   this.drawGraph_(this.rawData_);
-  this.zoomCallback_(minDate, maxDate);
+  if (this.zoomCallback_) {
+    this.zoomCallback_(minDate, maxDate);
+  }
 };
 
 /**
