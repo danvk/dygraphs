@@ -280,6 +280,25 @@ new DateGraph(
   <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
 </ul>
 
+<h2>One last demo</h2>
+
+<p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
+
+<div id=dow_chart style="width:1000px; height:400px;"></div>
+<script type="text/javascript">
+  // From http://www.econstats.com/eqty/eq_d_mi_3.csv
+  dow = new DateGraph(
+    document.getElementById('dow_chart'),
+    "dow.txt",
+    null,
+    {
+      customBars: true,
+      labelsKMB: true,
+      padding: {left:30, right:30, top:5, bottom:5}
+    });
+</script>
+
+
 <h2>Other Options</h2>
 <p>These are the options that can be passed in through the fourth parameter of the DateGraph constructor.</p>
 

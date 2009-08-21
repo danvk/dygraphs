@@ -917,6 +917,9 @@ DateGraph.prototype.dateParser = function(dateStr) {
   var dateStrSlashed;
   if (dateStr.search("-") != -1) {
     dateStrSlashed = dateStr.replace("-", "/", "g");
+    while (dateStrSlashed.search("-") != -1) {
+      dateStrSlashed = dateStrSlashed.replace("-", "/");
+    }
   } else if (dateStr.search("/") != -1) {
     return Date.parse(dateStr);
   } else {

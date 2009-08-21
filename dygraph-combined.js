@@ -4899,8 +4899,8 @@ var _75=null;
 var _76=null;
 var _77=null;
 var _78=null;
-var px=-1000;
-var py=-1000;
+var px=0;
+var py=0;
 var _81=function(e){
 return e.mouse().page.x-px;
 };
@@ -5354,6 +5354,9 @@ DateGraph.prototype.dateParser=function(_170){
 var _171;
 if(_170.search("-")!=-1){
 _171=_170.replace("-","/","g");
+while(_171.search("-")!=-1){
+_171=_171.replace("-","/");
+}
 }else{
 if(_170.search("/")!=-1){
 return Date.parse(_170);
