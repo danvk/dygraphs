@@ -144,7 +144,8 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.createRollInterface_();
   this.createDragInterface_();
 
-  connect(window, 'onload', this, function(e) { this.start_(); });
+  // connect(window, 'onload', this, function(e) { this.start_(); });
+  this.start_();
 };
 
 /**
@@ -257,13 +258,18 @@ DateGraph.prototype.createStatusMessage_ = function(){
  */
 DateGraph.prototype.createRollInterface_ = function() {
   var padding = this.plotter_.options.padding;
+  if (typeof this.attrs_.showRoller == 'undefined') {
+    this.attrs_.showRoller = false;
+  }
+  var display = this.attrs_.showRoller ? "block" : "none";
   var textAttr = { "type": "text",
                    "size": "2",
                    "value": this.rollPeriod_,
                    "style": { "position": "absolute",
                               "zIndex": 10,
                               "top": (this.height_ - 25 - padding.bottom) + "px",
-                              "left": (padding.left+1) + "px" }
+                              "left": (padding.left+1) + "px",
+                              "display": display }
                   };
   var roller = MochiKit.DOM.INPUT(textAttr);
   var pa = this.graphDiv;

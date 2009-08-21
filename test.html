@@ -58,7 +58,8 @@ function addGraphs() {
             padding: {left: 40, right: 30, top: 5, bottom: 15},
             xValueParser: function(x) { return parseFloat(x); },
             xValueFormatter: function(x) { return x; },
-            xTicker: DateGraph.prototype.numericTicks
+            xTicker: DateGraph.prototype.numericTicks,
+            showRoller: false
           }
       );
 
@@ -72,7 +73,9 @@ function addGraphs() {
       { errorBars: true,
         rollPeriod: 7,
         minTickSize: 1,
-        dateWindow: [end_time - sixmonths, end_time]});
+        dateWindow: [end_time - sixmonths, end_time],
+        showRoller: true
+      });
 
   g3 = new DateGraph(
       document.getElementById('fractiongraph'),
@@ -105,6 +108,7 @@ function addGraphs() {
         errorBars: true,
         rollPeriod: 7,
         fractions: true,
+        showRoller: true
       });
 }
 </script>

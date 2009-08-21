@@ -199,6 +199,7 @@
         document.getElementById("graphdiv"),
         "temperatures.csv", null,
         { rollPeriod: 7,
+          showRoller: true,
           valueRange: [25, 100]
         }
       );
@@ -213,13 +214,14 @@
           document.getElementById("graphdiv3"),
           "temperatures.csv", null,
           { rollPeriod: 7,
+            showRoller: true,
             valueRange: [25, 100]
           }
         );
   </script>
 </td></tr></table>
 
-<p>A rolling average can always be set using the text box in the lower left-hand corner of the graph.</p>
+<p>A rolling average can be set using the text box in the lower left-hand corner of the graph (the showRoller attribute is what makes this appear).</p>
 
 <h2>Error Bars</h2>
 <p>Another significant feature of the dygraphs library is the ability to display error bars around data series. One standard deviation must be specified for each data point. A +/-<i>n</i> sigma band will be drawn around the data series at that point. If a moving average is being displayed, DateGraph will compute the standard deviation of the average at each point. (i.e. <i>&sigma;</i> = sqrt((<i>&sigma;_1</i>^2 + <i>&sigma;_2</i>^2 + ... + <i>&sigma;_n</i>^2)/<i>n</i>))</p>
@@ -248,6 +250,7 @@ g = new DateGraph(
   "twonormals.csv",
   null,
   { rollPeriod: 7,
+    showRoller: true,
     errorBars: true,
     valueRange: [50,125]
   }
@@ -265,6 +268,7 @@ new DateGraph(
   "twonormals.csv",
   null,
   { rollPeriod: 14,
+    showRoller: true,
     errorBars: true,
     valueRange: [50, 125]
   }
@@ -292,6 +296,7 @@ new DateGraph(
     "dow.txt",
     null,
     {
+      showRoller: true,
       customBars: true,
       labelsKMB: true,
       padding: {left:30, right:30, top:5, bottom:5}
@@ -308,6 +313,10 @@ new DateGraph(
     <td><b>rollPeriod</b></td>
     <td><code>7</code></td>
     <td>Number of days over which to average data. Discussed extensively above.</td>
+  </tr><tr>
+    <td><b>showRoller</b></td>
+    <td><code>true</code></td>
+    <td>Should the rolling average period text box be shown? Default is false.</td>
   </tr><tr>
     <td><b>colors</b></td>
     <td><code>['red',&nbsp;'#00FF00']</code></td>
