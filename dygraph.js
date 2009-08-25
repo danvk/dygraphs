@@ -853,13 +853,29 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       }
     }
   } else if (this.customBars_) {
-    // just ignore the rolling for now.
-    // TODO(danvk): do something reasonable.
+    var low = 0;
+    var mid = 0;
+    var high = 0;
+    var count = 0;
     for (var i = 0; i < originalData.length; i++) {
       var data = originalData[i][1];
       var y = data[1];
       rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
-    }
+
+      low += data[0];
+      mid += y;
+      high += data[2];
+      count += 1;
+      if (i - rollPeriod >= 0) {
+        var prev = originalData[i - rollPeriod];
+        low -= prev[1][0];
+        mid -= prev[1][1];
+        high -= prev[1][2];
+        count -= 1;
+      }
+      rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
+                                              1.0 * (mid - low) / count,
+                                              1.0 * (high - mid) / count ]];
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of days
