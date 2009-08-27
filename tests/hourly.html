@@ -9,25 +9,13 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <p>7-day rollup:</p>
+    <p>Hourly data:</p>
     <div id="g" style="width:600px; height:300px;"></div>
-    <p>14-Day Rollup:</p>
-    <div id="g30" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
       g = new DateGraph(
             document.getElementById("g"),
-            NoisyData, null, {
-              rollPeriod: 7,
-              errorBars: true
-            }
-          );
-      g30 = new DateGraph(
-            document.getElementById("g30"),
-            NoisyData, null, {
-              rollPeriod: 14,
-              errorBars: true
-            }
+            HourlyData, null, {}
           );
     </script>
   </body>

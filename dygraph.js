@@ -631,9 +631,14 @@ DateGraph.prototype.dateTicker = function(startDate, endDate) {
     for (var week = startDate - 14; week < endDate + 14; week += 7) {
       scale.push(week * ONE_DAY);
     }
-  } else {                        // daily
+  } else if (dateSpan > 1) {      // daily
     for (var day = startDate - 14; day < endDate + 14; day += 1) {
       scale.push(day * ONE_DAY);
+    }
+  } else {                        // hourly
+    for (var hour = (startDate - 1) * 24;
+         hour < (endDate + 1) * 24; hour += 1) {
+      scale.push(hour * 60*60*1000);
     }
   }
 
@@ -876,6 +881,7 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
                                               1.0 * (mid - low) / count,
                                               1.0 * (high - mid) / count ]];
+    }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of days
@@ -937,18 +943,21 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
  */
 DateGraph.prototype.dateParser = function(dateStr) {
   var dateStrSlashed;
-  if (dateStr.search("-") != -1) {
+  if (dateStr.length == 10 && dateStr.search("-") != -1) {  // e.g. '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
-  } else if (dateStr.search("/") != -1) {
-    return Date.parse(dateStr);
-  } else {
+    return Date.parse(dateStrSlashed);
+  } else if (dateStr.length == 8) {  // e.g. '20090712'
     dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2)
                        + "/" + dateStr.substr(6,2);
+    return Date.parse(dateStrSlashed);
+  } else {
+    // Any format that Date.parse will accept, e.g. "2009/07/12" or
+    // "2009/07/12 12:34:56"
+    return Date.parse(dateStr);
   }
-  return Date.parse(dateStrSlashed);
 };
 
 /**
