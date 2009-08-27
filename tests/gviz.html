@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>noise</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['linechart']});
+
+      function drawVisualization() {
+        data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Column A');
+        data.addColumn('number', 'Column B');
+        data.addRows(4);
+        data.setCell(0, 0, new Date("2009/07/01"));
+        data.setCell(0, 1, 1);
+        data.setCell(0, 2, 7);
+        data.setCell(1, 0, new Date("2009/07/08"));
+        data.setCell(1, 1, 2);
+        data.setCell(1, 2, 4);
+        data.setCell(2, 0, new Date("2009/07/15"));
+        data.setCell(2, 1, 3);
+        data.setCell(2, 2, 3);
+        data.setCell(3, 0, new Date("2009/07/22"));
+        data.setCell(3, 1, 4);
+        data.setCell(3, 2, 0);
+
+        new google.visualization.LineChart(
+            document.getElementById('gviz')). draw(data, null);  
+
+        new DateGraph(document.getElementById('dygraphs'), data, null, {});
+      }
+      google.setOnLoadCallback(drawVisualization);
+    </script>
+  </head>
+  <body>
+    <p>gviz line chart:</p>
+    <div id="gviz" style="width:600px; height:300px;"></div>
+
+    <p>same data drawn using dygraphs:</p>
+    <div id="dygraphs" style="width:600px; height:300px;"></div>
+  </body>
+</html>

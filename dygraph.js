@@ -1059,6 +1059,50 @@ DateGraph.prototype.parseCSV_ = function(data) {
 };
 
 /**
+ * Parses a DataTable object from gviz.
+ * The data is expected to have a first column that is either a date or a
+ * number. All subsequent columns must be numbers. If there is a clear mismatch
+ * between this.xValueParser_ and the type of the first column, it will be
+ * fixed. Returned value is in the same format as return value of parseCSV_.
+ * @param {Array.<Object>} data See above.
+ * @private
+ */
+DateGraph.prototype.parseDataTable_ = function(data) {
+  var cols = data.getNumberOfColumns();
+  var rows = data.getNumberOfRows();
+
+  // Read column labels
+  var labels = [];
+  for (var i = 0; i < cols; i++) {
+    labels.push(data.getColumnLabel(i));
+  }
+  labels.shift();  // a "date" parameter is assumed.
+  this.labels_ = labels;
+  // regenerate automatic colors.
+  this.setColors_(this.attrs_);
+  this.renderOptions_.colorScheme = this.colors_;
+  MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
+  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
+
+  // Assume column 1 is a date type for now.
+  if (data.getColumnType(0) != 'date') {
+    alert("only date type is support for column 1 of DataTable input.");
+    return null;
+  }
+
+  var ret = [];
+  for (var i = 0; i < rows; i++) {
+    var row = [];
+    row.push(data.getValue(i, 0).getTime());
+    for (var j = 1; j < cols; j++) {
+      row.push(data.getValue(i, j));
+    }
+    ret.push(row);
+  }
+  return ret;
+}
+
+/**
  * Get the CSV data. If it's in a function, call that function. If it's in a
  * file, do an XMLHttpRequest to get it.
  * @private
@@ -1067,6 +1111,11 @@ DateGraph.prototype.start_ = function() {
   if (typeof this.file_ == 'function') {
     // Stubbed out to allow this to run off a filesystem
     this.loadedEvent_(this.file_());
+  } else if (typeof this.file_ == 'object' &&
+             typeof this.file_.getColumnRange == 'function') {
+    // must be a DataTable from gviz.
+    this.rawData_ = this.parseDataTable_(this.file_);
+    this.drawGraph_(this.rawData_);
   } else {
     var req = new XMLHttpRequest();
     var caller = this;
