@@ -12,10 +12,28 @@
     <p>Hourly data:</p>
     <div id="g" style="width:600px; height:300px;"></div>
 
+    <p>Minutely data:</p>
+    <div id="gm" style="width:600px; height:300px;"></div>
+
     <script type="text/javascript">
       g = new DateGraph(
             document.getElementById("g"),
             HourlyData, null, {}
+          );
+
+      gm = new DateGraph(
+            document.getElementById("gm"),
+            function() {
+              var ret = "Date,Hours,Minutes\n";
+              var zp = function(x) { if (x<10) return "0"+x; else return ""+x;};
+              for (var h = 0; h < 48; h++) {
+                for (var m = 0; m < 60; m++) {
+                  ret += "2008/07/12 " + zp(h) + ":" + zp(m) +
+                      "," + h + "," + m + "\n";
+                }
+              }
+              return ret;
+            }, null, {}
           );
     </script>
   </body>

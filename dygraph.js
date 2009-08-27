@@ -533,24 +533,51 @@ DateGraph.prototype.mouseOut_ = function(event) {
 };
 
 /**
+ * Return a string version of the hours, minutes and seconds portion of a date.
+ * @param {Number} date The JavaScript date (ms since epoch)
+ * @return {String} A time of the form "HH:MM:SS"
+ * @private
+ */
+DateGraph.prototype.hmsString_ = function(date) {
+  var zeropad = function(x) {
+    if (x < 10) return "0" + x; else return "" + x;
+  };
+  var d = new Date(date);
+  if (d.getSeconds()) {
+    return zeropad(d.getHours()) + ":" +
+           zeropad(d.getMinutes()) + ":" +
+           zeropad(d.getSeconds());
+  } else if (d.getMinutes()) {
+    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
+  } else {
+    return zeropad(d.getHours());
+  }
+}
+
+/**
  * Convert a JS date (millis since epoch) to YYYY/MM/DD
  * @param {Number} date The JavaScript date (ms since epoch)
  * @return {String} A date of the form "YYYY/MM/DD"
  * @private
  */
 DateGraph.prototype.dateString_ = function(date) {
+  var zeropad = function(x) {
+    if (x < 10) return "0" + x; else return "" + x;
+  };
   var d = new Date(date);
 
   // Get the year:
   var year = "" + d.getFullYear();
   // Get a 0 padded month string
-  var month = "" + (d.getMonth() + 1);  //months are 0-offset, sigh
-  if (month.length < 2)  month = "0" + month;
+  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
-  var day = "" + d.getDate();
-  if (day.length < 2)  day = "0" + day;
+  var day = zeropad(d.getDate());
 
-  return year + "/" + month + "/" + day;
+  var ret = "";
+  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  if (frac) ret = " " + this.hmsString_(date);
+
+  return year + "/" + month + "/" + day + ret;
 };
 
 /**
@@ -636,7 +663,7 @@ DateGraph.prototype.dateTicker = function(startDate, endDate) {
       scale.push(day * ONE_DAY);
     }
   } else {                        // hourly
-    for (var hour = (startDate - 1) * 24;
+    for (var hour = Math.floor(startDate - 1) * 24;
          hour < (endDate + 1) * 24; hour += 1) {
       scale.push(hour * 60*60*1000);
     }
@@ -656,11 +683,18 @@ DateGraph.prototype.dateTicker = function(startDate, endDate) {
     }
   } else {
     for (var i = 0; i < scale.length; i++) {
-      var date = new Date(scale[i]);
-      var year = date.getFullYear().toString();
-      var label = this.months[date.getMonth()] + date.getDate();
-      label += "'" + year.substr(year.length - 2, 2);
-      xTicks.push( {label: label, v: date} );
+      // TODO(danvk): this is _gross_. Unify all this with dateString_.
+      var d = new Date(scale[i]);
+      var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+      var label;
+      if (frac == 0) {
+        var year = d.getFullYear().toString();
+        var label = this.months[d.getMonth()] + d.getDate();
+        label += "'" + year.substr(year.length - 2, 2);
+      } else {
+        label = this.hmsString_(d);
+      }
+      xTicks.push( {label: label, v: d} );
     }
   }
   return xTicks;
