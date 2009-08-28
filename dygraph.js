@@ -1184,3 +1184,17 @@ DateGraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
   this.drawGraph_(this.rawData_);
 };
+
+
+/**
+ * A wrapper around DateGraph that implements the gviz API.
+ * @param {Object} container The DOM object the visualization should live in.
+ */
+DateGraph.GVizChart = function(container) {
+  this.container = container;
+}
+
+DateGraph.GVizChart.prototype.draw = function(data, options) {
+  this.container.innerHTML = '';
+  this.date_graph = new DateGraph(this.container, data, null, options || {});
+}

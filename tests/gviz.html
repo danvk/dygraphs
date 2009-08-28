@@ -30,9 +30,10 @@
         data.setCell(3, 2, 0);
 
         new google.visualization.LineChart(
-            document.getElementById('gviz')). draw(data, null);  
+            document.getElementById('gviz')).draw(data, null);  
 
-        new DateGraph(document.getElementById('dygraphs'), data, null, {});
+        new DateGraph.GVizChart(
+            document.getElementById('dygraphs')).draw(data, null);
       }
       google.setOnLoadCallback(drawVisualization);
     </script>
