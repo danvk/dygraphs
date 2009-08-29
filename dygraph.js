@@ -84,6 +84,7 @@ DateGraph.AXIS_LINE_WIDTH = 0.3;
  */
 DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   // Copy the important bits into the object
+  // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
   this.labels_ = labels;
   this.file_ = file;
@@ -108,6 +109,10 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.customBars_ = attrs.customBars || false;
   this.attrs_ = attrs;
+
+  if (typeof this.attrs_.pixelsPerXLabel == 'undefined') {
+    this.attrs_.pixelsPerXLabel = 60;
+  }
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.labels_ == null);
@@ -532,6 +537,10 @@ DateGraph.prototype.mouseOut_ = function(event) {
   this.labelsDiv_.innerHTML = "";
 };
 
+DateGraph.zeropad = function(x) {
+  if (x < 10) return "0" + x; else return "" + x;
+}
+
 /**
  * Return a string version of the hours, minutes and seconds portion of a date.
  * @param {Number} date The JavaScript date (ms since epoch)
@@ -539,9 +548,7 @@ DateGraph.prototype.mouseOut_ = function(event) {
  * @private
  */
 DateGraph.prototype.hmsString_ = function(date) {
-  var zeropad = function(x) {
-    if (x < 10) return "0" + x; else return "" + x;
-  };
+  var zeropad = DateGraph.zeropad;
   var d = new Date(date);
   if (d.getSeconds()) {
     return zeropad(d.getHours()) + ":" +
@@ -561,9 +568,7 @@ DateGraph.prototype.hmsString_ = function(date) {
  * @private
  */
 DateGraph.prototype.dateString_ = function(date) {
-  var zeropad = function(x) {
-    if (x < 10) return "0" + x; else return "" + x;
-  };
+  var zeropad = DateGraph.zeropad;
   var d = new Date(date);
 
   // Get the year:
@@ -623,7 +628,113 @@ DateGraph.prototype.addXTicks_ = function() {
 
   var xTicks = this.xTicker_(startDate, endDate);
   this.layout_.updateOptions({xTicks: xTicks});
-}
+};
+
+// Time granularity enumeration
+DateGraph.SECONDLY = 0;
+DateGraph.MINUTELY = 1;
+DateGraph.HOURLY = 2;
+DateGraph.DAILY = 3;
+DateGraph.WEEKLY = 4;
+DateGraph.MONTHLY = 5;
+DateGraph.QUARTERLY = 6;
+DateGraph.BIANNUAL = 7;
+DateGraph.ANNUAL = 8;
+DateGraph.DECADAL = 9;
+DateGraph.NUM_GRANULARITIES = 10;
+
+DateGraph.SHORT_SPACINGS = [];
+DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY] = 1000 * 1;
+DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY] = 1000 * 60;
+DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]   = 1000 * 3600;
+DateGraph.SHORT_SPACINGS[DateGraph.DAILY]    = 1000 * 86400;
+DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]   = 1000 * 604800;
+
+// NumXTicks()
+//
+//   If we used this time granularity, how many ticks would there be?
+//   This is only an approximation, but it's generally good enough.
+//
+DateGraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
+  if (granularity < DateGraph.MONTHLY) {
+    // Generate one tick mark for every fixed interval of time.
+    var spacing = DateGraph.SHORT_SPACINGS[granularity];
+    return Math.floor(0.5 + 1.0 * (end_time - start_time) / spacing);
+  } else {
+    var year_mod = 1;  // e.g. to only print one point every 10 years.
+    var num_months = 12;
+    if (granularity == DateGraph.QUARTERLY) num_months = 3;
+    if (granularity == DateGraph.BIANNUAL) num_months = 2;
+    if (granularity == DateGraph.ANNUAL) num_months = 1;
+    if (granularity == DateGraph.DECADAL) { num_months = 1; year_mod = 10; }
+
+    var msInYear = 365.2524 * 24 * 3600 * 1000;
+    var num_years = 1.0 * (end_time - start_time) / msInYear;
+    return Math.floor(0.5 + 1.0 * num_years * num_months / year_mod);
+  }
+};
+
+// GetXAxis()
+//
+//   Construct an x-axis of nicely-formatted times on meaningful boundaries
+//   (e.g. 'Jan 09' rather than 'Jan 22, 2009').
+//
+//   Returns an array containing {v: millis, label: label} dictionaries.
+//
+DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
+  var ticks = [];
+  if (granularity < DateGraph.MONTHLY) {
+    // Generate one tick mark for every fixed interval of time.
+    var spacing = DateGraph.SHORT_SPACINGS[granularity];
+    var format = '%d%b';  // e.g. "1 Jan"
+    for (var t = start_time; t <= end_time; t += spacing) {
+      var d = new Date(t);
+      var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+      if (frac == 0 || granularity >= DateGraph.DAILY) {
+        // the extra hour covers DST problems.
+        ticks.push({ v:t, label: new Date(t + 3600*1000).strftime(format) });
+      } else {
+        ticks.push({ v:t, label: this.hmsString_(t) });
+      }
+    }
+  } else {
+    // Display a tick mark on the first of a set of months of each year.
+    // Years get a tick mark iff y % year_mod == 0. This is useful for
+    // displaying a tick mark once every 10 years, say, on long time scales.
+    var months;
+    var year_mod = 1;  // e.g. to only print one point every 10 years.
+
+    // TODO(danvk): use CachingRoundTime where appropriate to get boundaries.
+    if (granularity == DateGraph.MONTHLY) {
+      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
+    } else if (granularity == DateGraph.QUARTERLY) {
+      months = [ 0, 3, 6, 9 ];
+    } else if (granularity == DateGraph.BIANNUAL) {
+      months = [ 0, 6 ];
+    } else if (granularity == DateGraph.ANNUAL) {
+      months = [ 0 ];
+    } else if (granularity == DateGraph.DECADAL) {
+      months = [ 0 ];
+      year_mod = 10;
+    }
+
+    var start_year = new Date(start_time).getFullYear();
+    var end_year   = new Date(end_time).getFullYear();
+    var zeropad = DateGraph.zeropad;
+    for (var i = start_year; i <= end_year; i++) {
+      if (i % year_mod != 0) continue;
+      for (var j = 0; j < months.length; j++) {
+        var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
+        var t = Date.parse(date_str);
+        if (t < start_time || t > end_time) continue;
+        ticks.push({ v:t, label: new Date(t).strftime('%b %y') });
+      }
+    }
+  }
+
+  return ticks;
+};
+
 
 /**
  * Add ticks to the x-axis based on a date range.
@@ -633,71 +744,20 @@ DateGraph.prototype.addXTicks_ = function() {
  * @public
  */
 DateGraph.prototype.dateTicker = function(startDate, endDate) {
-  var ONE_DAY = 24*60*60*1000;
-  startDate = startDate / ONE_DAY;
-  endDate = endDate / ONE_DAY;
-  var dateSpan = endDate - startDate;
-
-  var scale = [];
-  var isMonthly = false;
-  var yearMod = 1;
-  if (dateSpan > 30 * 366) {      // decadal
-    isMonthly = true;
-    scale = ["Jan"];
-    yearMod = 10;
-  } else if (dateSpan > 4*366) {  // annual
-    scale = ["Jan"];
-    isMonthly = true;
-  } else if (dateSpan > 366) {    // quarterly
-    scale = this.quarters;
-    isMonthly = true;
-  } else if (dateSpan > 40) {     // monthly
-    scale = this.months;
-    isMonthly = true;
-  } else if (dateSpan > 10) {     // weekly
-    for (var week = startDate - 14; week < endDate + 14; week += 7) {
-      scale.push(week * ONE_DAY);
-    }
-  } else if (dateSpan > 1) {      // daily
-    for (var day = startDate - 14; day < endDate + 14; day += 1) {
-      scale.push(day * ONE_DAY);
-    }
-  } else {                        // hourly
-    for (var hour = Math.floor(startDate - 1) * 24;
-         hour < (endDate + 1) * 24; hour += 1) {
-      scale.push(hour * 60*60*1000);
+  var chosen = -1;
+  for (var i = 0; i < DateGraph.NUM_GRANULARITIES; i++) {
+    var num_ticks = this.NumXTicks(startDate, endDate, i);
+    if (this.width_ / num_ticks >= this.attrs_.pixelsPerXLabel) {
+      chosen = i;
+      break;
     }
   }
 
-  var xTicks = [];
-
-  if (isMonthly) {
-    var startYear = 1900 + (new Date(startDate* ONE_DAY)).getYear();
-    var endYear   = 1900 + (new Date(endDate  * ONE_DAY)).getYear();
-    for (var i = startYear; i <= endYear; i++) {
-      if (i % yearMod != 0) continue;
-      for (var j = 0; j < scale.length; j++ ) {
-        var date = Date.parse(scale[j] + " 1, " + i);
-        xTicks.push( {label: scale[j] + "'" + ("" + i).substr(2,2), v: date } );
-      }
-    }
+  if (chosen >= 0) {
+    return this.GetXAxis(startDate, endDate, chosen);
   } else {
-    for (var i = 0; i < scale.length; i++) {
-      // TODO(danvk): this is _gross_. Unify all this with dateString_.
-      var d = new Date(scale[i]);
-      var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-      var label;
-      if (frac == 0) {
-        var year = d.getFullYear().toString();
-        var label = this.months[d.getMonth()] + d.getDate();
-        label += "'" + year.substr(year.length - 2, 2);
-      } else {
-        label = this.hmsString_(d);
-      }
-      xTicks.push( {label: label, v: d} );
-    }
+    // TODO(danvk): signal error.
   }
-  return xTicks;
 };
 
 /**
