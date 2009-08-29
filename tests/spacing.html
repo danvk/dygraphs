@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>two series</title>
+    <title>spacing</title>
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
@@ -9,20 +9,23 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <p>No rollup:</p>
+    <p>Wide</p>
     <div id="g" style="width:600px; height:300px;"></div>
-    <p>30-Day Rollup:</p>
-    <div id="g30" style="width:600px; height:300px;"></div>
+
+    <p>Narrow</p>
+    <div id="g2" style="width:300px; height:200px;"></div>
 
     <script type="text/javascript">
       g = new DateGraph(
             document.getElementById("g"),
-            data, null, {}
-          );
-      g30 = new DateGraph(
-            document.getElementById("g30"),
             data, null, {
-              rollPeriod: 30
+              rollPeriod: 7
+            }
+          );
+      g2 = new DateGraph(
+            document.getElementById("g2"),
+            data, null, {
+              rollPeriod: 7,
             }
           );
     </script>
