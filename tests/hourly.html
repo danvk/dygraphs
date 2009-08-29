@@ -6,7 +6,6 @@
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
-    <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
     <p>Hourly data:</p>
@@ -36,10 +35,12 @@
             function() {
               var ret = "Date,Hours,Minutes\n";
               var zp = function(x) { if (x<10) return "0"+x; else return ""+x;};
-              for (var h = 0; h < 48; h++) {
-                for (var m = 0; m < 60; m++) {
-                  ret += "2008/07/12 " + zp(h) + ":" + zp(m) +
-                      "," + h + "," + m + "\n";
+              for (var d = 0; d <= 1; d++) {
+                for (var h = 0; h < 24; h++) {
+                  for (var m = 0; m < 60; m++) {
+                    ret += "2008/07/" + zp(12 + d) + " " + zp(h) + ":" + zp(m) +
+                        "," + (24*d + h) + "," + m + "\n";
+                  }
                 }
               }
               return ret;
