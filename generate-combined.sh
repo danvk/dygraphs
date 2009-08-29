@@ -28,5 +28,6 @@ java -jar plotkit_v091/scripts/custom_rhino.jar -c /tmp/dygraph.js \
 cat \
 /tmp/mochikit-packed.js \
 /tmp/plotkit-packed.js \
+strftime/strftime-min.js \
 /tmp/dygraph-packed.js \
 > dygraph-combined.js

@@ -4602,6 +4602,7 @@ PlotKit.Canvas.__new__();
 MochiKit.Base._exportSymbols(this,PlotKit.Canvas);
 
 
+Date.ext={};Date.ext.util={};Date.ext.util.xPad=function(x,pad,r){if(typeof (r)=="undefined"){r=10}for(;parseInt(x,10)<r&&r>1;r/=10){x=pad.toString()+x}return x.toString()};Date.prototype.locale="en-GB";if(document.getElementsByTagName("html")&&document.getElementsByTagName("html")[0].lang){Date.prototype.locale=document.getElementsByTagName("html")[0].lang}Date.ext.locales={};Date.ext.locales.en={a:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],A:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],b:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],B:["January","February","March","April","May","June","July","August","September","October","November","December"],c:"%a %d %b %Y %T %Z",p:["AM","PM"],P:["am","pm"],x:"%d/%m/%y",X:"%T"};Date.ext.locales["en-US"]=Date.ext.locales.en;Date.ext.locales["en-US"].c="%a %d %b %Y %r %Z";Date.ext.locales["en-US"].x="%D";Date.ext.locales["en-US"].X="%r";Date.ext.locales["en-GB"]=Date.ext.locales.en;Date.ext.locales["en-AU"]=Date.ext.locales["en-GB"];Date.ext.formats={a:function(d){return Date.ext.locales[d.locale].a[d.getDay()]},A:function(d){return Date.ext.locales[d.locale].A[d.getDay()]},b:function(d){return Date.ext.locales[d.locale].b[d.getMonth()]},B:function(d){return Date.ext.locales[d.locale].B[d.getMonth()]},c:"toLocaleString",C:function(d){return Date.ext.util.xPad(parseInt(d.getFullYear()/100,10),0)},d:["getDate","0"],e:["getDate"," "],g:function(d){return Date.ext.util.xPad(parseInt(Date.ext.util.G(d)/100,10),0)},G:function(d){var y=d.getFullYear();var V=parseInt(Date.ext.formats.V(d),10);var W=parseInt(Date.ext.formats.W(d),10);if(W>V){y++}else{if(W===0&&V>=52){y--}}return y},H:["getHours","0"],I:function(d){var I=d.getHours()%12;return Date.ext.util.xPad(I===0?12:I,0)},j:function(d){var ms=d-new Date(""+d.getFullYear()+"/1/1 GMT");ms+=d.getTimezoneOffset()*60000;var doy=parseInt(ms/60000/60/24,10)+1;return Date.ext.util.xPad(doy,0,100)},m:function(d){return Date.ext.util.xPad(d.getMonth()+1,0)},M:["getMinutes","0"],p:function(d){return Date.ext.locales[d.locale].p[d.getHours()>=12?1:0]},P:function(d){return Date.ext.locales[d.locale].P[d.getHours()>=12?1:0]},S:["getSeconds","0"],u:function(d){var dow=d.getDay();return dow===0?7:dow},U:function(d){var doy=parseInt(Date.ext.formats.j(d),10);var rdow=6-d.getDay();var woy=parseInt((doy+rdow)/7,10);return Date.ext.util.xPad(woy,0)},V:function(d){var woy=parseInt(Date.ext.formats.W(d),10);var dow1_1=(new Date(""+d.getFullYear()+"/1/1")).getDay();var idow=woy+(dow1_1>4||dow1_1<=1?0:1);if(idow==53&&(new Date(""+d.getFullYear()+"/12/31")).getDay()<4){idow=1}else{if(idow===0){idow=Date.ext.formats.V(new Date(""+(d.getFullYear()-1)+"/12/31"))}}return Date.ext.util.xPad(idow,0)},w:"getDay",W:function(d){var doy=parseInt(Date.ext.formats.j(d),10);var rdow=7-Date.ext.formats.u(d);var woy=parseInt((doy+rdow)/7,10);return Date.ext.util.xPad(woy,0,10)},y:function(d){return Date.ext.util.xPad(d.getFullYear()%100,0)},Y:"getFullYear",z:function(d){var o=d.getTimezoneOffset();var H=Date.ext.util.xPad(parseInt(Math.abs(o/60),10),0);var M=Date.ext.util.xPad(o%60,0);return(o>0?"-":"+")+H+M},Z:function(d){return d.toString().replace(/^.*\(([^)]+)\)$/,"$1")},"%":function(d){return"%"}};Date.ext.aggregates={c:"locale",D:"%m/%d/%y",h:"%b",n:"\n",r:"%I:%M:%S %p",R:"%H:%M",t:"\t",T:"%H:%M:%S",x:"locale",X:"locale"};Date.ext.aggregates.z=Date.ext.formats.z(new Date());Date.ext.aggregates.Z=Date.ext.formats.Z(new Date());Date.ext.unsupported={};Date.prototype.strftime=function(fmt){if(!(this.locale in Date.ext.locales)){if(this.locale.replace(/-[a-zA-Z]+$/,"") in Date.ext.locales){this.locale=this.locale.replace(/-[a-zA-Z]+$/,"")}else{this.locale="en-GB"}}var d=this;while(fmt.match(/%[cDhnrRtTxXzZ]/)){fmt=fmt.replace(/%([cDhnrRtTxXzZ])/g,function(m0,m1){var f=Date.ext.aggregates[m1];return(f=="locale"?Date.ext.locales[d.locale][m1]:f)})}var str=fmt.replace(/%([aAbBCdegGHIjmMpPSuUVwWyY%])/g,function(m0,m1){var f=Date.ext.formats[m1];if(typeof (f)=="string"){return d[f]()}else{if(typeof (f)=="function"){return f.call(d,d)}else{if(typeof (f)=="object"&&typeof (f[0])=="string"){return Date.ext.util.xPad(d[f[0]](),f[1])}else{return m1}}}});d=null;return str};
 DateGraphLayout=function(_1){
 PlotKit.Layout.call(this,"line",_1);
 };
@@ -5473,59 +5474,99 @@ ret.push(_186);
 }
 return ret;
 };
+DateGraph.prototype.parseDataTable_=function(data){
+var cols=data.getNumberOfColumns();
+var rows=data.getNumberOfRows();
+var _189=[];
+for(var i=0;i<cols;i++){
+_189.push(data.getColumnLabel(i));
+}
+_189.shift();
+this.labels_=_189;
+this.setColors_(this.attrs_);
+this.renderOptions_.colorScheme=this.colors_;
+MochiKit.Base.update(this.plotter_.options,this.renderOptions_);
+MochiKit.Base.update(this.layoutOptions_,this.attrs_);
+if(data.getColumnType(0)!="date"){
+alert("only date type is support for column 1 of DataTable input.");
+return null;
+}
+var ret=[];
+for(var i=0;i<rows;i++){
+var row=[];
+row.push(data.getValue(i,0).getTime());
+for(var j=1;j<cols;j++){
+row.push(data.getValue(i,j));
+}
+ret.push(row);
+}
+return ret;
+};
 DateGraph.prototype.start_=function(){
 if(typeof this.file_=="function"){
 this.loadedEvent_(this.file_());
 }else{
+if(typeof this.file_=="object"&&typeof this.file_.getColumnRange=="function"){
+this.rawData_=this.parseDataTable_(this.file_);
+this.drawGraph_(this.rawData_);
+}else{
 var req=new XMLHttpRequest();
-var _188=this;
+var _192=this;
 req.onreadystatechange=function(){
 if(req.readyState==4){
 if(req.status==200){
-_188.loadedEvent_(req.responseText);
+_192.loadedEvent_(req.responseText);
 }
 }
 };
 req.open("GET",this.file_,true);
 req.send(null);
 }
+}
 };
-DateGraph.prototype.updateOptions=function(_189){
-if(_189.errorBars){
-this.errorBars_=_189.errorBars;
+DateGraph.prototype.updateOptions=function(_193){
+if(_193.errorBars){
+this.errorBars_=_193.errorBars;
 }
-if(_189.customBars){
-this.customBars_=_189.customBars;
+if(_193.customBars){
+this.customBars_=_193.customBars;
 }
-if(_189.strokeWidth){
-this.strokeWidth_=_189.strokeWidth;
+if(_193.strokeWidth){
+this.strokeWidth_=_193.strokeWidth;
 }
-if(_189.rollPeriod){
-this.rollPeriod_=_189.rollPeriod;
+if(_193.rollPeriod){
+this.rollPeriod_=_193.rollPeriod;
 }
-if(_189.dateWindow){
-this.dateWindow_=_189.dateWindow;
+if(_193.dateWindow){
+this.dateWindow_=_193.dateWindow;
 }
-if(_189.valueRange){
-this.valueRange_=_189.valueRange;
+if(_193.valueRange){
+this.valueRange_=_193.valueRange;
 }
-if(_189.minTickSize){
-this.minTickSize_=_189.minTickSize;
+if(_193.minTickSize){
+this.minTickSize_=_193.minTickSize;
 }
-if(typeof (_189.labels)!="undefined"){
-this.labels_=_189.labels;
-this.labelsFromCSV_=(_189.labels==null);
+if(typeof (_193.labels)!="undefined"){
+this.labels_=_193.labels;
+this.labelsFromCSV_=(_193.labels==null);
 }
 this.layout_.updateOptions({"errorBars":this.errorBars_});
-if(_189["file"]&&_189["file"]!=this.file_){
-this.file_=_189["file"];
+if(_193["file"]&&_193["file"]!=this.file_){
+this.file_=_193["file"];
 this.start_();
 }else{
 this.drawGraph_(this.rawData_);
 }
 };
-DateGraph.prototype.adjustRoll=function(_190){
-this.rollPeriod_=_190;
+DateGraph.prototype.adjustRoll=function(_194){
+this.rollPeriod_=_194;
 this.drawGraph_(this.rawData_);
+};
+DateGraph.GVizChart=function(_195){
+this.container=_195;
+};
+DateGraph.GVizChart.prototype.draw=function(data,_196){
+this.container.innerHTML="";
+this.date_graph=new DateGraph(this.container,data,null,_196||{});
 };
 
