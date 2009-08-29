@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+
+  <ModulePrefs
+      title="dygraphs Gadget"
+      description="Interactive, zoomable chart"
+      author="Dan Vanderkam"
+      author_email="danvdk@gmail.com"
+      >
+      <!-- TODO(danvk): change these -->
+      <!--
+      screenshot="http://www.google.com/ig/modules/simple-table.png"
+      thumbnail="http://www.google.com/ig/modules/simple-table-thm.png">
+      -->
+    <Require feature="idi" />
+    <Require feature="locked-domain" />
+  </ModulePrefs>
+
+  <UserPref name="_table_query_url" display_name="Data source url" required="true"/>
+  <UserPref name="_table_query_refresh_interval" display_name="Data refresh interval (minutes)" default_value="300" datatype="enum" required="false">
+    <EnumValue value="0" display_value="Do not refresh"/>
+    <EnumValue value="60" display_value="1"/>
+    <EnumValue value="300" display_value="5"/>
+    <EnumValue value="1800" display_value="30"/>
+  </UserPref>
+  <!--
+  This is a sample gadget, that uses the Google Visualization API to read data
+  from a data source, and displays it as an html table.
+  -->
+
+  <Content type="html"><![CDATA[
+
+  <!-- Load the Google common loader, that is later used to load the Visualization API. -->
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+  <script src="http://danvk.org/dygraphs/dygraph-combined.js" type="text/javascript"></script>
+
+  <div id="chartdiv" style="overflow: auto;"><img src="http://www.google.com/ig/images/spinner.gif" /></div>
+
+  <script>
+    var gadgetHelper = null;
+    var table = null; 
+
+    _IG_RegisterOnloadHandler(loadVisualizationAPI);
+
+    /**
+     * Load the Google Visualization API
+     */
+    function loadVisualizationAPI() {
+      google.load("visualization", "1");
+      google.setOnLoadCallback(sendQuery);
+    }
+
+    /**
+     * Create a query from the user prefs, and then send it to the data source.
+     * This method is called once the visualization API is fully loaded.
+     * Note that in the last line, a callback function is specified to be
+     * called once the response is received from the data source.
+     */
+    function sendQuery() {
+      var prefs = new _IG_Prefs(); // User preferences
+      var chartDiv = _gel('chartdiv');
+      chartDiv.style.width = document.body.clientWidth + 'px';
+      chartDiv.style.height = document.body.clientHeight + 'px';
+      chart = new DateGraph.GVizChart(chartDiv);
+
+      gadgetHelper = new google.visualization.GadgetHelper();
+      var query = gadgetHelper.createQueryFromPrefs(prefs);
+      query.send(handleQueryResponse);
+    }
+
+    /**
+     * Query response handler function.
+     * Called by the Google Visualization API once the response is received.
+     * Takes the query response and formats it as a table.
+     */
+    function handleQueryResponse(response) {
+      // Use the visualization GadgetHelper class to validate the data, and
+      // for error handling.
+      if (!gadgetHelper.validateResponse(response)) {
+        // Default error handling was done, just leave.
+        return;
+      };
+      var data = response.getDataTable();
+
+      // Take the data table from the response, and format it.
+      // var options = {showRowNumber: true};
+      var prefs = new _IG_Prefs(); // User preferences
+      chart.draw(data, {
+        xValueParser: function(x) { return parseFloat(x); },
+        xValueFormatter: function(x) { return x; },
+        xTicker: DateGraph.prototype.numericTicks
+      });
+    };
+
+  </script>
+
+  ]]>
+  </Content>
+</Module>
