@@ -1136,7 +1136,7 @@ DateGraph.prototype.parseDataTable_ = function(data) {
   for (var i = 0; i < cols; i++) {
     labels.push(data.getColumnLabel(i));
   }
-  labels.shift();  // a "date" parameter is assumed.
+  labels.shift();  // the x-axis parameter is assumed and unnamed.
   this.labels_ = labels;
   // regenerate automatic colors.
   this.setColors_(this.attrs_);
@@ -1144,16 +1144,22 @@ DateGraph.prototype.parseDataTable_ = function(data) {
   MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
   MochiKit.Base.update(this.layoutOptions_, this.attrs_);
 
-  // Assume column 1 is a date type for now.
-  if (data.getColumnType(0) != 'date') {
-    alert("only date type is support for column 1 of DataTable input.");
+  var indepType = data.getColumnType(0);
+  if (indepType != 'date' && indepType != 'number') {
+    // TODO(danvk): standardize error reporting.
+    alert("only 'date' and 'number' types are supported for column 1" +
+          "of DataTable input (Got '" + indepType + "')");
     return null;
   }
 
   var ret = [];
   for (var i = 0; i < rows; i++) {
     var row = [];
-    row.push(data.getValue(i, 0).getTime());
+    if (indepType == 'date') {
+      row.push(data.getValue(i, 0).getTime());
+    } else {
+      row.push(data.getValue(i, 0));
+    }
     for (var j = 1; j < cols; j++) {
       row.push(data.getValue(i, j));
     }
