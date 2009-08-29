@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>gadget border</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #bordered {
+      border: 1px solid black;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Hopefully this stays in its border:</p>
+    <div id="bordered" style="width:600px; height:300px;"></div>
+    <script type="text/javascript">
+    new DateGraph(document.getElementById('bordered'),
+                  data, null, {});
+    </script>
+  </body>
+</html>
