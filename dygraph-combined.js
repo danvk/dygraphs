@@ -4783,6 +4783,7 @@ DateGraph.DEFAULT_WIDTH=480;
 DateGraph.DEFAULT_HEIGHT=320;
 DateGraph.DEFAULT_STROKE_WIDTH=1;
 DateGraph.AXIS_LINE_WIDTH=0.3;
+DateGraph.DEFAULT_ATTRS={pixelsPerXLabel:60,labelsDivWidth:250,labelsDivStyles:{}};
 DateGraph.prototype.__init__=function(div,_52,_53,_54){
 this.maindiv_=div;
 this.labels_=_53;
@@ -4806,7 +4807,8 @@ this.xTicker_=_54.xTicker||DateGraph.prototype.dateTicker;
 this.sigma_=_54.sigma||2;
 this.wilsonInterval_=_54.wilsonInterval||true;
 this.customBars_=_54.customBars||false;
-this.attrs_=_54;
+this.attrs_=DateGraph.DEFAULT_ATTRS;
+MochiKit.Base.update(this.attrs_,_54);
 if(typeof this.attrs_.pixelsPerXLabel=="undefined"){
 this.attrs_.pixelsPerXLabel=60;
 }
@@ -4876,8 +4878,9 @@ this.colors_.push(MochiKit.Color.Color.fromString(_65));
 };
 DateGraph.prototype.createStatusMessage_=function(){
 if(!this.labelsDiv_){
-var _66=250;
+var _66=this.attrs_.labelsDivWidth;
 var _67={"style":{"position":"absolute","fontSize":"14px","zIndex":10,"width":_66+"px","top":"0px","left":this.width_-_66+"px","background":"white","textAlign":"left","overflow":"hidden"}};
+MochiKit.Base.update(_67["style"],this.attrs_.labelsDivStyles);
 this.labelsDiv_=MochiKit.DOM.DIV(_67);
 MochiKit.DOM.appendChildNodes(this.graphDiv,this.labelsDiv_);
 }
