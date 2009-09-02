@@ -73,6 +73,17 @@ DateGraph.DEFAULT_HEIGHT = 320;
 DateGraph.DEFAULT_STROKE_WIDTH = 1.0;
 DateGraph.AXIS_LINE_WIDTH = 0.3;
 
+// Default attribute values.
+DateGraph.DEFAULT_ATTRS = {
+  pixelsPerXLabel: 60,
+  labelsDivWidth: 250,
+  labelsDivStyles: {
+    // TODO(danvk): move defaults from createStatusMessage_ here.
+  }
+
+  // TODO(danvk): default padding
+};
+
 /**
  * Initializes the DateGraph. This creates a new DIV and constructs the PlotKit
  * and interaction &lt;canvas&gt; inside of it. See the constructor for details
@@ -108,7 +119,9 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.sigma_ = attrs.sigma || 2.0;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.customBars_ = attrs.customBars || false;
-  this.attrs_ = attrs;
+
+  this.attrs_ = DateGraph.DEFAULT_ATTRS;
+  MochiKit.Base.update(this.attrs_, attrs);
 
   if (typeof this.attrs_.pixelsPerXLabel == 'undefined') {
     this.attrs_.pixelsPerXLabel = 60;
@@ -240,7 +253,7 @@ DateGraph.prototype.setColors_ = function(attrs) {
  */
 DateGraph.prototype.createStatusMessage_ = function(){
   if (!this.labelsDiv_) {
-    var divWidth = 250;
+    var divWidth = this.attrs_.labelsDivWidth;
     var messagestyle = { "style": {
       "position": "absolute",
       "fontSize": "14px",
@@ -251,6 +264,7 @@ DateGraph.prototype.createStatusMessage_ = function(){
       "background": "white",
       "textAlign": "left",
       "overflow": "hidden"}};
+    MochiKit.Base.update(messagestyle["style"], this.attrs_.labelsDivStyles);
     this.labelsDiv_ = MochiKit.DOM.DIV(messagestyle);
     MochiKit.DOM.appendChildNodes(this.graphDiv, this.labelsDiv_);
   }
