@@ -121,7 +121,8 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.customBars_ = attrs.customBars || false;
 
-  this.attrs_ = DateGraph.DEFAULT_ATTRS;
+  this.attrs_ = {};
+  MochiKit.Base.update(this.attrs_, DateGraph.DEFAULT_ATTRS);
   MochiKit.Base.update(this.attrs_, attrs);
 
   if (typeof this.attrs_.pixelsPerXLabel == 'undefined') {

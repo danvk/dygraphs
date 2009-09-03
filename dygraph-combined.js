@@ -4783,7 +4783,7 @@ DateGraph.DEFAULT_WIDTH=480;
 DateGraph.DEFAULT_HEIGHT=320;
 DateGraph.DEFAULT_STROKE_WIDTH=1;
 DateGraph.AXIS_LINE_WIDTH=0.3;
-DateGraph.DEFAULT_ATTRS={pixelsPerXLabel:60,labelsDivWidth:250,labelsDivStyles:{}};
+DateGraph.DEFAULT_ATTRS={highlightCircleSize:3,pixelsPerXLabel:60,labelsDivWidth:250,labelsDivStyles:{}};
 DateGraph.prototype.__init__=function(div,_52,_53,_54){
 this.maindiv_=div;
 this.labels_=_53;
@@ -4807,7 +4807,8 @@ this.xTicker_=_54.xTicker||DateGraph.prototype.dateTicker;
 this.sigma_=_54.sigma||2;
 this.wilsonInterval_=_54.wilsonInterval||true;
 this.customBars_=_54.customBars||false;
-this.attrs_=DateGraph.DEFAULT_ATTRS;
+this.attrs_={};
+MochiKit.Base.update(this.attrs_,DateGraph.DEFAULT_ATTRS);
 MochiKit.Base.update(this.attrs_,_54);
 if(typeof this.attrs_.pixelsPerXLabel=="undefined"){
 this.attrs_.pixelsPerXLabel=60;
@@ -5036,7 +5037,7 @@ if(_105[i].xval==_106){
 _111.push(_105[i]);
 }
 }
-var _112=3;
+var _112=this.attrs_.highlightCircleSize;
 var ctx=this.canvas_.getContext("2d");
 if(this.previousVerticalX_>=0){
 var px=this.previousVerticalX_;
