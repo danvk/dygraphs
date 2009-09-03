@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Custom grid and Dot</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Dot and lines should be extra large. Grid is red.</p>
+    <div id="g14" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g14 = new DateGraph(
+            document.getElementById("g14"),
+            NoisyData, null, {
+              rollPeriod: 14,
+              errorBars: true,
+              gridLineColor: MochiKit.Color.Color.redColor(),
+              highlightCircleSize: 10,
+              strokeWidth: 3,
+              padding: {
+                left: 40,
+                top: 0,
+                right: 10,
+                bottom: 10
+              }
+            }
+          );
+    </script>
+  </body>
+</html>

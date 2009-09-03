@@ -75,6 +75,7 @@ DateGraph.AXIS_LINE_WIDTH = 0.3;
 
 // Default attribute values.
 DateGraph.DEFAULT_ATTRS = {
+  highlightCircleSize: 3,
   pixelsPerXLabel: 60,
   labelsDivWidth: 250,
   labelsDivStyles: {
@@ -498,7 +499,7 @@ DateGraph.prototype.mouseMove_ = function(event) {
   }
 
   // Clear the previously drawn vertical, if there is one
-  var circleSize = 3;
+  var circleSize = this.attrs_.highlightCircleSize;
   var ctx = this.canvas_.getContext("2d");
   if (this.previousVerticalX_ >= 0) {
     var px = this.previousVerticalX_;
