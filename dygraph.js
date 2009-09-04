@@ -77,6 +77,7 @@ DateGraph.AXIS_LINE_WIDTH = 0.3;
 DateGraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   pixelsPerXLabel: 60,
+  pixelsPerYLabel: 30,
   labelsDivWidth: 250,
   labelsDivStyles: {
     // TODO(danvk): move defaults from createStatusMessage_ here.
@@ -112,7 +113,6 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.labelsSeparateLines = attrs.labelsSeparateLines || false;
   this.labelsDiv_ = attrs.labelsDiv || null;
   this.labelsKMB_ = attrs.labelsKMB || false;
-  this.minTickSize_ = attrs.minTickSize || 0;
   this.xValueParser_ = attrs.xValueParser || DateGraph.prototype.dateParser;
   this.xValueFormatter_ = attrs.xValueFormatter ||
       DateGraph.prototype.dateString_;
@@ -784,26 +784,34 @@ DateGraph.prototype.dateTicker = function(startDate, endDate) {
  * @public
  */
 DateGraph.prototype.numericTicks = function(minV, maxV) {
-  var scale;
-  if (maxV <= 0.0) {
-    scale = 1.0;
-  } else {
-    scale = Math.pow( 10, Math.floor(Math.log(maxV)/Math.log(10.0)) );
+  // Basic idea:
+  // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+  // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+  // The first spacing greater than this.attrs_.pixelsPerYLabel is what we use.
+  var mults = [1, 2, 5];
+  var scale, low_val, high_val, nTicks;
+  for (var i = -10; i < 50; i++) {
+    var base_scale = Math.pow(10, i);
+    for (var j = 0; j < mults.length; j++) {
+      scale = base_scale * mults[j];
+      console.log("i/j/scale: " + i + "/" + j + "/" + scale);
+      low_val = Math.floor(minV / scale) * scale;
+      high_val = Math.ceil(maxV / scale) * scale;
+      nTicks = (high_val - low_val) / scale;
+      var spacing = this.height_ / nTicks;
+      // wish I could break out of both loops at once...
+      if (spacing > this.attrs_.pixelsPerYLabel) break;
+    }
+    if (spacing > this.attrs_.pixelsPerYLabel) break;
   }
-
-  // Add a smallish number of ticks at human-friendly points
-  var nTicks = (maxV - minV) / scale;
-  while (2 * nTicks < 20) {
-    nTicks *= 2;
-  }
-  if ((maxV - minV) / nTicks < this.minTickSize_) {
-    nTicks = this.round_((maxV - minV) / this.minTickSize_, 1);
-  }
+  console.log("scale: " + scale);
+  console.log("low_val: " + low_val);
+  console.log("high_val: " + high_val);
 
   // Construct labels for the ticks
   var ticks = [];
-  for (var i = 0; i <= nTicks; i++) {
-    var tickV = minV + i * (maxV - minV) / nTicks;
+  for (var i = 0; i < nTicks; i++) {
+    var tickV = low_val + i * scale;
     var label = this.round_(tickV, 2);
     if (this.labelsKMB_) {
       var k = 1000;
@@ -895,10 +903,6 @@ DateGraph.prototype.drawGraph_ = function(data) {
     // Add some padding and round up to an integer to be human-friendly.
     maxY *= 1.1;
     if (maxY <= 0.0) maxY = 1.0;
-    else {
-      var scale = Math.pow(10, Math.floor(Math.log(maxY) / Math.log(10.0)));
-      maxY = scale * Math.ceil(maxY / scale);
-    }
     this.addYTicks_(0, maxY);
   }
 
@@ -1241,9 +1245,7 @@ DateGraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
-  if (attrs.minTickSize) {
-    this.minTickSize_ = attrs.minTickSize;
-  }
+  MochiKit.Base.update(this.attrs_, attrs);
   if (typeof(attrs.labels) != 'undefined') {
     this.labels_ = attrs.labels;
     this.labelsFromCSV_ = (attrs.labels == null);
