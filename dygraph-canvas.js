@@ -93,11 +93,6 @@ DateGraphCanvasRenderer.prototype = new PlotKit.CanvasRenderer();
  * Draw an X/Y grid on top of the existing plot
  */
 DateGraphCanvasRenderer.prototype.render = function() {
-  // Do the ordinary rendering, as before
-  // TODO(danvk) Call super.render()
-  this._renderLineChart();
-  this._renderLineAxis();
-
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
   if (this.options.drawYGrid) {
@@ -131,6 +126,11 @@ DateGraphCanvasRenderer.prototype.render = function() {
       ctx.stroke();
     }
   }
+
+  // Do the ordinary rendering, as before
+  // TODO(danvk) Call super.render()
+  this._renderLineChart();
+  this._renderLineAxis();
 };
 
 /**
