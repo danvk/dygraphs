@@ -794,7 +794,6 @@ DateGraph.prototype.numericTicks = function(minV, maxV) {
     var base_scale = Math.pow(10, i);
     for (var j = 0; j < mults.length; j++) {
       scale = base_scale * mults[j];
-      console.log("i/j/scale: " + i + "/" + j + "/" + scale);
       low_val = Math.floor(minV / scale) * scale;
       high_val = Math.ceil(maxV / scale) * scale;
       nTicks = (high_val - low_val) / scale;
@@ -804,9 +803,6 @@ DateGraph.prototype.numericTicks = function(minV, maxV) {
     }
     if (spacing > this.attrs_.pixelsPerYLabel) break;
   }
-  console.log("scale: " + scale);
-  console.log("low_val: " + low_val);
-  console.log("high_val: " + high_val);
 
   // Construct labels for the ticks
   var ticks = [];
