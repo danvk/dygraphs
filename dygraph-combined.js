@@ -5127,20 +5127,30 @@ var _130=this.xTicker_(_129,endDate);
 this.layout_.updateOptions({xTicks:_130});
 };
 DateGraph.SECONDLY=0;
-DateGraph.MINUTELY=1;
-DateGraph.HOURLY=2;
-DateGraph.DAILY=3;
-DateGraph.WEEKLY=4;
-DateGraph.MONTHLY=5;
-DateGraph.QUARTERLY=6;
-DateGraph.BIANNUAL=7;
-DateGraph.ANNUAL=8;
-DateGraph.DECADAL=9;
-DateGraph.NUM_GRANULARITIES=10;
+DateGraph.TEN_SECONDLY=1;
+DateGraph.THIRTY_SECONDLY=2;
+DateGraph.MINUTELY=3;
+DateGraph.TEN_MINUTELY=4;
+DateGraph.THIRTY_MINUTELY=5;
+DateGraph.HOURLY=6;
+DateGraph.SIX_HOURLY=7;
+DateGraph.DAILY=8;
+DateGraph.WEEKLY=9;
+DateGraph.MONTHLY=10;
+DateGraph.QUARTERLY=11;
+DateGraph.BIANNUAL=12;
+DateGraph.ANNUAL=13;
+DateGraph.DECADAL=14;
+DateGraph.NUM_GRANULARITIES=15;
 DateGraph.SHORT_SPACINGS=[];
 DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY]=1000*1;
+DateGraph.SHORT_SPACINGS[DateGraph.TEN_SECONDLY]=1000*10;
+DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_SECONDLY]=1000*30;
 DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY]=1000*60;
+DateGraph.SHORT_SPACINGS[DateGraph.TEN_MINUTELY]=1000*60*10;
+DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_MINUTELY]=1000*60*30;
 DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]=1000*3600;
+DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]=1000*3600*6;
 DateGraph.SHORT_SPACINGS[DateGraph.DAILY]=1000*86400;
 DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]=1000*604800;
 DateGraph.prototype.NumXTicks=function(_131,_132,_133){
@@ -5173,6 +5183,9 @@ var _142=[];
 if(_141<DateGraph.MONTHLY){
 var _143=DateGraph.SHORT_SPACINGS[_141];
 var _144="%d%b";
+if(_141<DateGraph.HOURLY){
+_139=_143*Math.floor(0.5+_139/_143);
+}
 for(var t=_139;t<=_140;t+=_143){
 var d=new Date(t);
 var frac=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
