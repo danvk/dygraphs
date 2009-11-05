@@ -14,6 +14,9 @@
     <p>Minutely data:</p>
     <div id="gm" style="width:600px; height:300px;"></div>
 
+    <p>Secondly data:</p>
+    <div id="gs" style="width:600px; height:300px;"></div>
+
     <script type="text/javascript">
       g = new DateGraph(
             document.getElementById("g"),
@@ -40,6 +43,23 @@
                   for (var m = 0; m < 60; m++) {
                     ret += "2008/07/" + zp(12 + d) + " " + zp(h) + ":" + zp(m) +
                         "," + (24*d + h) + "," + m + "\n";
+                  }
+                }
+              }
+              return ret;
+            }, null, {}
+          );
+
+      gs = new DateGraph(
+            document.getElementById("gs"),
+            function() {
+              var ret = "Date,Minutes,Seconds\n";
+              var zp = function(x) { if (x<10) return "0"+x; else return ""+x;};
+              for (var h = 0; h <= 1; h++) {
+                for (var m = 0; m < 60; m++) {
+                  for (var s = 0; s < 60; s++) {
+                    ret += "2008/07/01 " + zp(h) + ":" + zp(m) + ":" + zp(s) +
+                        "," + (h*60 + m) + "," + s + "\n";
                   }
                 }
               }

@@ -648,23 +648,33 @@ DateGraph.prototype.addXTicks_ = function() {
 
 // Time granularity enumeration
 DateGraph.SECONDLY = 0;
-DateGraph.MINUTELY = 1;
-DateGraph.HOURLY = 2;
-DateGraph.DAILY = 3;
-DateGraph.WEEKLY = 4;
-DateGraph.MONTHLY = 5;
-DateGraph.QUARTERLY = 6;
-DateGraph.BIANNUAL = 7;
-DateGraph.ANNUAL = 8;
-DateGraph.DECADAL = 9;
-DateGraph.NUM_GRANULARITIES = 10;
+DateGraph.TEN_SECONDLY = 1;
+DateGraph.THIRTY_SECONDLY  = 2;
+DateGraph.MINUTELY = 3;
+DateGraph.TEN_MINUTELY = 4;
+DateGraph.THIRTY_MINUTELY = 5;
+DateGraph.HOURLY = 6;
+DateGraph.SIX_HOURLY = 7;
+DateGraph.DAILY = 8;
+DateGraph.WEEKLY = 9;
+DateGraph.MONTHLY = 10;
+DateGraph.QUARTERLY = 11;
+DateGraph.BIANNUAL = 12;
+DateGraph.ANNUAL = 13;
+DateGraph.DECADAL = 14;
+DateGraph.NUM_GRANULARITIES = 15;
 
 DateGraph.SHORT_SPACINGS = [];
-DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY] = 1000 * 1;
-DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY] = 1000 * 60;
-DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]   = 1000 * 3600;
-DateGraph.SHORT_SPACINGS[DateGraph.DAILY]    = 1000 * 86400;
-DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]   = 1000 * 604800;
+DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY]        = 1000 * 1;
+DateGraph.SHORT_SPACINGS[DateGraph.TEN_SECONDLY]    = 1000 * 10;
+DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_SECONDLY] = 1000 * 30;
+DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY]        = 1000 * 60;
+DateGraph.SHORT_SPACINGS[DateGraph.TEN_MINUTELY]    = 1000 * 60 * 10;
+DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
+DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]          = 1000 * 3600;
+DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]          = 1000 * 3600 * 6;
+DateGraph.SHORT_SPACINGS[DateGraph.DAILY]           = 1000 * 86400;
+DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]          = 1000 * 604800;
 
 // NumXTicks()
 //
@@ -703,6 +713,10 @@ DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = DateGraph.SHORT_SPACINGS[granularity];
     var format = '%d%b';  // e.g. "1 Jan"
+    // TODO(danvk): be smarter about making sure this really hits a "nice" time.
+    if (granularity < DateGraph.HOURLY) {
+      start_time = spacing * Math.floor(0.5 + start_time / spacing);
+    }
     for (var t = start_time; t <= end_time; t += spacing) {
       var d = new Date(t);
       var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
@@ -720,7 +734,6 @@ DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     var months;
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
-    // TODO(danvk): use CachingRoundTime where appropriate to get boundaries.
     if (granularity == DateGraph.MONTHLY) {
       months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
     } else if (granularity == DateGraph.QUARTERLY) {
