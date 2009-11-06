@@ -771,7 +771,7 @@ MochiKit.Iter.EXPORT_OK = [
     "iteratorRegistry",
     "arrayLikeIter",
     "hasIterateNext",
-    "iterateNextIter",
+    "iterateNextIter"
 ];
 
 MochiKit.Iter.EXPORT = [
