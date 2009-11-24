@@ -5,6 +5,7 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -32,7 +33,7 @@
         new google.visualization.LineChart(
             document.getElementById('gviz')).draw(data, null);  
 
-        new DateGraph.GVizChart(
+        new Dygraph.GVizChart(
             document.getElementById('dygraphs')).draw(data, null);
       }
       google.setOnLoadCallback(drawVisualization);

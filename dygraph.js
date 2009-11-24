@@ -3,42 +3,41 @@
 
 /**
  * @fileoverview Creates an interactive, zoomable graph based on a CSV file or
- * string. DateGraph can handle multiple series with or without error bars. The
- * date/value ranges will be automatically set. DateGraph uses the
+ * string. Dygraph can handle multiple series with or without error bars. The
+ * date/value ranges will be automatically set. Dygraph uses the
  * &lt;canvas&gt; tag, so it only works in FF1.5+.
  * @author danvdk@gmail.com (Dan Vanderkam)
 
   Usage:
    <div id="graphdiv" style="width:800px; height:500px;"></div>
    <script type="text/javascript">
-     new DateGraph(document.getElementById("graphdiv"),
-                   "datafile.csv",
-                     ["Series 1", "Series 2"],
-                     { }); // options
+     new Dygraph(document.getElementById("graphdiv"),
+                 "datafile.csv",  // CSV file with headers
+                 { }); // options
    </script>
 
  The CSV file is of the form
 
+   Date,SeriesA,SeriesB,SeriesC
    YYYYMMDD,A1,B1,C1
    YYYYMMDD,A2,B2,C2
-
- If null is passed as the third parameter (series names), then the first line
- of the CSV file is assumed to contain names for each series.
 
  If the 'errorBars' option is set in the constructor, the input should be of
  the form
 
+   Date,SeriesA,SeriesB,...
    YYYYMMDD,A1,sigmaA1,B1,sigmaB1,...
    YYYYMMDD,A2,sigmaA2,B2,sigmaB2,...
 
  If the 'fractions' option is set, the input should be of the form:
 
+   Date,SeriesA,SeriesB,...
    YYYYMMDD,A1/B1,A2/B2,...
    YYYYMMDD,A1/B1,A2/B2,...
 
  And error bars will be calculated automatically using a binomial distribution.
 
- For further documentation and examples, see http://www/~danvk/dg/
+ For further documentation and examples, see http://www.danvk.org/dygraphs
 
  */
 
@@ -48,46 +47,87 @@
  * returns this data. The expected format for each line is
  * YYYYMMDD,val1,val2,... or, if attrs.errorBars is set,
  * YYYYMMDD,val1,stddev1,val2,stddev2,...
- * @param {Array.<String>} labels Labels for the data series
  * @param {Object} attrs Various other attributes, e.g. errorBars determines
  * whether the input data contains error ranges.
  */
-DateGraph = function(div, file, labels, attrs) {
-  if (arguments.length > 0)
-    this.__init__(div, file, labels, attrs);
+Dygraph = function(div, data, opts) {
+  if (arguments.length > 0) {
+    if (arguments.length == 4) {
+      // Old versions of dygraphs took in the series labels as a constructor
+      // parameter. This doesn't make sense anymore, but it's easy to continue
+      // to support this usage.
+      this.warn("Using deprecated four-argument dygraph constructor");
+      this.__old_init__(div, data, arguments[2], arguments[3]);
+    } else {
+      this.__init__(div, data, opts);
+    }
+  }
 };
 
-DateGraph.NAME = "DateGraph";
-DateGraph.VERSION = "1.1";
-DateGraph.__repr__ = function() {
+Dygraph.NAME = "Dygraph";
+Dygraph.VERSION = "1.2";
+Dygraph.__repr__ = function() {
   return "[" + this.NAME + " " + this.VERSION + "]";
 };
-DateGraph.toString = function() {
+Dygraph.toString = function() {
   return this.__repr__();
 };
 
 // Various default values
-DateGraph.DEFAULT_ROLL_PERIOD = 1;
-DateGraph.DEFAULT_WIDTH = 480;
-DateGraph.DEFAULT_HEIGHT = 320;
-DateGraph.DEFAULT_STROKE_WIDTH = 1.0;
-DateGraph.AXIS_LINE_WIDTH = 0.3;
+Dygraph.DEFAULT_ROLL_PERIOD = 1;
+Dygraph.DEFAULT_WIDTH = 480;
+Dygraph.DEFAULT_HEIGHT = 320;
+Dygraph.AXIS_LINE_WIDTH = 0.3;
 
 // Default attribute values.
-DateGraph.DEFAULT_ATTRS = {
+Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   pixelsPerXLabel: 60,
   pixelsPerYLabel: 30,
+
   labelsDivWidth: 250,
   labelsDivStyles: {
     // TODO(danvk): move defaults from createStatusMessage_ here.
-  }
+  },
+  labelsSeparateLines: false,
+  labelsKMB: false,
+
+  strokeWidth: 1.0,
 
   // TODO(danvk): default padding
+
+  showRoller: false,
+  xValueFormatter: Dygraph.dateString_,
+  xValueParser: Dygraph.dateParser,
+  xTicker: Dygraph.dateTicker,
+
+  sigma: 2.0,
+  errorBars: false,
+  fractions: false,
+  wilsonInterval: true,  // only relevant if fractions is true
+  customBars: false
+};
+
+// Various logging levels.
+Dygraph.DEBUG = 1;
+Dygraph.INFO = 2;
+Dygraph.WARNING = 3;
+Dygraph.ERROR = 3;
+
+Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
+  // Labels is no longer a constructor parameter, since it's typically set
+  // directly from the data source. It also conains a name for the x-axis,
+  // which the previous constructor form did not.
+  if (labels != null) {
+    var new_labels = ["Date"];
+    for (var i = 0; i < labels.length; i++) new_labels.push(labels[i]);
+    MochiKit.Base.update(attrs, { 'labels': new_labels });
+  }
+  this.__init__(div, file, attrs);
 };
 
 /**
- * Initializes the DateGraph. This creates a new DIV and constructs the PlotKit
+ * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
  * and interaction &lt;canvas&gt; inside of it. See the constructor for details
  * on the parameters.
  * @param {String | Function} file Source data
@@ -95,70 +135,73 @@ DateGraph.DEFAULT_ATTRS = {
  * @param {Object} attrs Miscellaneous other options
  * @private
  */
-DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
+Dygraph.prototype.__init__ = function(div, file, attrs) {
+  // Support two-argument constructor
+  if (attrs == null) { attrs = {}; }
+
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
-  this.labels_ = labels;
   this.file_ = file;
-  this.rollPeriod_ = attrs.rollPeriod || DateGraph.DEFAULT_ROLL_PERIOD;
+  this.rollPeriod_ = attrs.rollPeriod || Dygraph.DEFAULT_ROLL_PERIOD;
   this.previousVerticalX_ = -1;
-  this.width_ = parseInt(div.style.width, 10);
-  this.height_ = parseInt(div.style.height, 10);
-  this.errorBars_ = attrs.errorBars || false;
   this.fractions_ = attrs.fractions || false;
-  this.strokeWidth_ = attrs.strokeWidth || DateGraph.DEFAULT_STROKE_WIDTH;
   this.dateWindow_ = attrs.dateWindow || null;
   this.valueRange_ = attrs.valueRange || null;
-  this.labelsSeparateLines = attrs.labelsSeparateLines || false;
-  this.labelsDiv_ = attrs.labelsDiv || null;
-  this.labelsKMB_ = attrs.labelsKMB || false;
-  this.xValueParser_ = attrs.xValueParser || DateGraph.prototype.dateParser;
-  this.xValueFormatter_ = attrs.xValueFormatter ||
-      DateGraph.prototype.dateString_;
-  this.xTicker_ = attrs.xTicker || DateGraph.prototype.dateTicker;
-  this.sigma_ = attrs.sigma || 2.0;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.customBars_ = attrs.customBars || false;
 
-  this.attrs_ = {};
-  MochiKit.Base.update(this.attrs_, DateGraph.DEFAULT_ATTRS);
-  MochiKit.Base.update(this.attrs_, attrs);
-
-  if (typeof this.attrs_.pixelsPerXLabel == 'undefined') {
-    this.attrs_.pixelsPerXLabel = 60;
+  // If the div isn't already sized then give it a default size.
+  if (div.style.width == '') {
+    div.style.width = Dygraph.DEFAULT_WIDTH + "px";
   }
+  if (div.style.height == '') {
+    div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
+  }
+  this.width_ = parseInt(div.style.width, 10);
+  this.height_ = parseInt(div.style.height, 10);
+
+  // Dygraphs has many options, some of which interact with one another.
+  // To keep track of everything, we maintain two sets of options:
+  //
+  //  this.user_attrs_   only options explicitly set by the user. 
+  //  this.attrs_        defaults, options derived from user_attrs_, data.
+  //
+  // Options are then accessed this.attr_('attr'), which first looks at
+  // user_attrs_ and then computed attrs_. This way Dygraphs can set intelligent
+  // defaults without overriding behavior that the user specifically asks for.
+  this.user_attrs_ = {};
+  MochiKit.Base.update(this.user_attrs_, attrs);
+
+  this.attrs_ = {};
+  MochiKit.Base.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
 
   // Make a note of whether labels will be pulled from the CSV file.
-  this.labelsFromCSV_ = (this.labels_ == null);
-  if (this.labels_ == null)
-    this.labels_ = [];
-
-  // Prototype of the callback is "void clickCallback(event, date)"
-  this.clickCallback_ = attrs.clickCallback || null;
-
-  // Prototype of zoom callback is "void dragCallback(minDate, maxDate)"
-  this.zoomCallback_ = attrs.zoomCallback || null;
+  this.labelsFromCSV_ = (this.attr_("labels") == null);
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
   // Create the PlotKit grapher
-  this.layoutOptions_ = { 'errorBars': (this.errorBars_ || this.customBars_),
+  // TODO(danvk): why does the Layout need its own set of options?
+  this.layoutOptions_ = { 'errorBars': (this.attr_("errorBars") ||
+                                        this.customBars_),
                           'xOriginIsZero': false };
-  MochiKit.Base.update(this.layoutOptions_, attrs);
-  this.setColors_(attrs);
+  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
+  MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
 
-  this.layout_ = new DateGraphLayout(this.layoutOptions_);
+  this.layout_ = new DygraphLayout(this.layoutOptions_);
 
+  // TODO(danvk): why does the Renderer need its own set of options?
   this.renderOptions_ = { colorScheme: this.colors_,
                           strokeColor: null,
-                          strokeWidth: this.strokeWidth_,
+                          strokeWidth: this.attr_("strokeWidth"),
                           axisLabelFontSize: 14,
-                          axisLineWidth: DateGraph.AXIS_LINE_WIDTH };
-  MochiKit.Base.update(this.renderOptions_, attrs);
-  this.plotter_ = new DateGraphCanvasRenderer(this.hidden_, this.layout_,
-                                              this.renderOptions_);
+                          axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
+  MochiKit.Base.update(this.renderOptions_, this.attrs_);
+  MochiKit.Base.update(this.renderOptions_, this.user_attrs_);
+  this.plotter_ = new DygraphCanvasRenderer(this.hidden_, this.layout_,
+                                            this.renderOptions_);
 
   this.createStatusMessage_();
   this.createRollInterface_();
@@ -168,21 +211,60 @@ DateGraph.prototype.__init__ = function(div, file, labels, attrs) {
   this.start_();
 };
 
+Dygraph.prototype.attr_ = function(name) {
+  if (typeof(this.user_attrs_[name]) != 'undefined') {
+    return this.user_attrs_[name];
+  } else if (typeof(this.attrs_[name]) != 'undefined') {
+    return this.attrs_[name];
+  } else {
+    return null;
+  }
+};
+
+// TODO(danvk): any way I can get the line numbers to be this.warn call?
+Dygraph.prototype.log = function(severity, message) {
+  if (typeof(console) != 'undefined') {
+    switch (severity) {
+      case Dygraph.DEBUG:
+        console.debug('dygraphs: ' + message);
+        break;
+      case Dygraph.INFO:
+        console.info('dygraphs: ' + message);
+        break;
+      case Dygraph.WARNING:
+        console.warn('dygraphs: ' + message);
+        break;
+      case Dygraph.ERROR:
+        console.error('dygraphs: ' + message);
+        break;
+    }
+  }
+}
+Dygraph.prototype.info = function(message) {
+  this.log(Dygraph.INFO, message);
+}
+Dygraph.prototype.warn = function(message) {
+  this.log(Dygraph.WARNING, message);
+}
+Dygraph.prototype.error = function(message) {
+  this.log(Dygraph.ERROR, message);
+}
+
 /**
  * Returns the current rolling period, as set by the user or an option.
  * @return {Number} The number of days in the rolling window
  */
-DateGraph.prototype.rollPeriod = function() {
+Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
 }
 
 /**
- * Generates interface elements for the DateGraph: a containing div, a div to
+ * Generates interface elements for the Dygraph: a containing div, a div to
  * display the current point, and a textbox to adjust the rolling average
  * period.
  * @private
  */
-DateGraph.prototype.createInterface_ = function() {
+Dygraph.prototype.createInterface_ = function() {
   // Create the all-enclosing graph div
   var enclosing = this.maindiv_;
 
@@ -205,12 +287,12 @@ DateGraph.prototype.createInterface_ = function() {
 
 /**
  * Creates the canvas containing the PlotKit graph. Only plotkit ever draws on
- * this particular canvas. All DateGraph work is done on this.canvas_.
- * @param {Object} canvas The DateGraph canvas to over which to overlay the plot
+ * this particular canvas. All Dygraph work is done on this.canvas_.
+ * @param {Object} canvas The Dygraph canvas to over which to overlay the plot
  * @return {Object} The newly-created canvas
  * @private
  */
-DateGraph.prototype.createPlotKitCanvas_ = function(canvas) {
+Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
   var h = document.createElement("canvas");
   h.style.position = "absolute";
   h.style.top = canvas.style.top;
@@ -226,25 +308,33 @@ DateGraph.prototype.createPlotKitCanvas_ = function(canvas) {
  * color wheel. Saturation/Value are customizable, and the hue is
  * equally-spaced around the color wheel. If a custom set of colors is
  * specified, that is used instead.
- * @param {Object} attrs Various attributes, e.g. saturation and value
  * @private
  */
-DateGraph.prototype.setColors_ = function(attrs) {
-  var num = this.labels_.length;
+Dygraph.prototype.setColors_ = function() {
+  // TODO(danvk): compute this directly into this.attrs_['colorScheme'] and do
+  // away with this.renderOptions_.
+  var num = this.attr_("labels").length - 1;
   this.colors_ = [];
-  if (!attrs.colors) {
-    var sat = attrs.colorSaturation || 1.0;
-    var val = attrs.colorValue || 0.5;
+  var colors = this.attr_('colors');
+  if (!colors) {
+    var sat = this.attr_('colorSaturation') || 1.0;
+    var val = this.attr_('colorValue') || 0.5;
     for (var i = 1; i <= num; i++) {
       var hue = (1.0*i/(1+num));
       this.colors_.push( MochiKit.Color.Color.fromHSV(hue, sat, val) );
     }
   } else {
     for (var i = 0; i < num; i++) {
-      var colorStr = attrs.colors[i % attrs.colors.length];
+      var colorStr = colors[i % colors.length];
       this.colors_.push( MochiKit.Color.Color.fromString(colorStr) );
     }
   }
+
+  // TODO(danvk): update this w/r/t/ the new options system. 
+  this.renderOptions_.colorScheme = this.colors_;
+  MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
+  MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
+  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
 }
 
 /**
@@ -253,9 +343,9 @@ DateGraph.prototype.setColors_ = function(attrs) {
  * been specified.
  * @private
  */
-DateGraph.prototype.createStatusMessage_ = function(){
-  if (!this.labelsDiv_) {
-    var divWidth = this.attrs_.labelsDivWidth;
+Dygraph.prototype.createStatusMessage_ = function(){
+  if (!this.attr_("labelsDiv")) {
+    var divWidth = this.attr_('labelsDivWidth');
     var messagestyle = { "style": {
       "position": "absolute",
       "fontSize": "14px",
@@ -266,9 +356,10 @@ DateGraph.prototype.createStatusMessage_ = function(){
       "background": "white",
       "textAlign": "left",
       "overflow": "hidden"}};
-    MochiKit.Base.update(messagestyle["style"], this.attrs_.labelsDivStyles);
-    this.labelsDiv_ = MochiKit.DOM.DIV(messagestyle);
-    MochiKit.DOM.appendChildNodes(this.graphDiv, this.labelsDiv_);
+    MochiKit.Base.update(messagestyle["style"], this.attr_('labelsDivStyles'));
+    var div = MochiKit.DOM.DIV(messagestyle);
+    MochiKit.DOM.appendChildNodes(this.graphDiv, div);
+    this.attrs_.labelsDiv = div;
   }
 };
 
@@ -277,12 +368,9 @@ DateGraph.prototype.createStatusMessage_ = function(){
  * @return {Object} The newly-created text box
  * @private
  */
-DateGraph.prototype.createRollInterface_ = function() {
+Dygraph.prototype.createRollInterface_ = function() {
   var padding = this.plotter_.options.padding;
-  if (typeof this.attrs_.showRoller == 'undefined') {
-    this.attrs_.showRoller = false;
-  }
-  var display = this.attrs_.showRoller ? "block" : "none";
+  var display = this.attr_('showRoller') ? "block" : "none";
   var textAttr = { "type": "text",
                    "size": "2",
                    "value": this.rollPeriod_,
@@ -305,7 +393,7 @@ DateGraph.prototype.createRollInterface_ = function() {
  * events. Uses MochiKit.Signal to attach all the event handlers.
  * @private
  */
-DateGraph.prototype.createDragInterface_ = function() {
+Dygraph.prototype.createDragInterface_ = function() {
   var self = this;
 
   // Tracks whether the mouse is down right now
@@ -371,9 +459,10 @@ DateGraph.prototype.createDragInterface_ = function() {
       var regionHeight = Math.abs(dragEndY - dragStartY);
 
       if (regionWidth < 2 && regionHeight < 2 &&
-          self.clickCallback_ != null &&
+          self.attr_('clickCallback') != null &&
           self.lastx_ != undefined) {
-        self.clickCallback_(event, new Date(self.lastx_));
+        // TODO(danvk): pass along more info about the point.
+        self.attr_('clickCallback')(event, new Date(self.lastx_));
       }
 
       if (regionWidth >= 10) {
@@ -396,8 +485,8 @@ DateGraph.prototype.createDragInterface_ = function() {
     self.drawGraph_(self.rawData_);
     var minDate = self.rawData_[0][0];
     var maxDate = self.rawData_[self.rawData_.length - 1][0];
-    if (self.zoomCallback_) {
-      self.zoomCallback_(minDate, maxDate);
+    if (self.attr_("zoomCallback")) {
+      self.attr_("zoomCallback")(minDate, maxDate);
     }
   });
 };
@@ -414,7 +503,7 @@ DateGraph.prototype.createDragInterface_ = function() {
  * function. Used to avoid excess redrawing
  * @private
  */
-DateGraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
+Dygraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
   var ctx = this.canvas_.getContext("2d");
 
   // Clean up from the previous rect if necessary
@@ -439,7 +528,7 @@ DateGraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
  * @param {Number} highX The rightmost pixel value that should be visible.
  * @private
  */
-DateGraph.prototype.doZoom_ = function(lowX, highX) {
+Dygraph.prototype.doZoom_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
   var points = this.layout_.points;
   var minDate = null;
@@ -457,8 +546,8 @@ DateGraph.prototype.doZoom_ = function(lowX, highX) {
 
   this.dateWindow_ = [minDate, maxDate];
   this.drawGraph_(this.rawData_);
-  if (this.zoomCallback_) {
-    this.zoomCallback_(minDate, maxDate);
+  if (this.attr_("zoomCallback")) {
+    this.attr_("zoomCallback")(minDate, maxDate);
   }
 };
 
@@ -469,7 +558,7 @@ DateGraph.prototype.doZoom_ = function(lowX, highX) {
  * @param {Object} event The mousemove event from the browser.
  * @private
  */
-DateGraph.prototype.mouseMove_ = function(event) {
+Dygraph.prototype.mouseMove_ = function(event) {
   var canvasx = event.mouse().page.x - PlotKit.Base.findPosX(this.hidden_);
   var points = this.layout_.points;
 
@@ -500,7 +589,7 @@ DateGraph.prototype.mouseMove_ = function(event) {
   }
 
   // Clear the previously drawn vertical, if there is one
-  var circleSize = this.attrs_.highlightCircleSize;
+  var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
   if (this.previousVerticalX_ >= 0) {
     var px = this.previousVerticalX_;
@@ -511,10 +600,10 @@ DateGraph.prototype.mouseMove_ = function(event) {
     var canvasx = selPoints[0].canvasx;
 
     // Set the status message to indicate the selected point(s)
-    var replace = this.xValueFormatter_(lastx) + ":";
+    var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
     var clen = this.colors_.length;
     for (var i = 0; i < selPoints.length; i++) {
-      if (this.labelsSeparateLines) {
+      if (this.attr_("labelsSeparateLines")) {
         replace += "<br/>";
       }
       var point = selPoints[i];
@@ -522,7 +611,7 @@ DateGraph.prototype.mouseMove_ = function(event) {
               + point.name + "</font></b>:"
               + this.round_(point.yval, 2);
     }
-    this.labelsDiv_.innerHTML = replace;
+    this.attr_("labelsDiv").innerHTML = replace;
 
     // Save last x position for callbacks.
     this.lastx_ = lastx;
@@ -546,14 +635,14 @@ DateGraph.prototype.mouseMove_ = function(event) {
  * @param {Object} event the mouseout event from the browser.
  * @private
  */
-DateGraph.prototype.mouseOut_ = function(event) {
+Dygraph.prototype.mouseOut_ = function(event) {
   // Get rid of the overlay data
   var ctx = this.canvas_.getContext("2d");
   ctx.clearRect(0, 0, this.width_, this.height_);
-  this.labelsDiv_.innerHTML = "";
+  this.attr_("labelsDiv").innerHTML = "";
 };
 
-DateGraph.zeropad = function(x) {
+Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
 }
 
@@ -563,8 +652,8 @@ DateGraph.zeropad = function(x) {
  * @return {String} A time of the form "HH:MM:SS"
  * @private
  */
-DateGraph.prototype.hmsString_ = function(date) {
-  var zeropad = DateGraph.zeropad;
+Dygraph.prototype.hmsString_ = function(date) {
+  var zeropad = Dygraph.zeropad;
   var d = new Date(date);
   if (d.getSeconds()) {
     return zeropad(d.getHours()) + ":" +
@@ -582,9 +671,10 @@ DateGraph.prototype.hmsString_ = function(date) {
  * @param {Number} date The JavaScript date (ms since epoch)
  * @return {String} A date of the form "YYYY/MM/DD"
  * @private
+ * TODO(danvk): why is this part of the prototype?
  */
-DateGraph.prototype.dateString_ = function(date) {
-  var zeropad = DateGraph.zeropad;
+Dygraph.dateString_ = function(date, self) {
+  var zeropad = Dygraph.zeropad;
   var d = new Date(date);
 
   // Get the year:
@@ -596,7 +686,7 @@ DateGraph.prototype.dateString_ = function(date) {
 
   var ret = "";
   var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + this.hmsString_(date);
+  if (frac) ret = " " + self.hmsString_(date);
 
   return year + "/" + month + "/" + day + ret;
 };
@@ -608,7 +698,7 @@ DateGraph.prototype.dateString_ = function(date) {
  * @return {Number} The rounded number
  * @private
  */
-DateGraph.prototype.round_ = function(num, places) {
+Dygraph.prototype.round_ = function(num, places) {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
 };
@@ -618,20 +708,20 @@ DateGraph.prototype.round_ = function(num, places) {
  * @param {String} data Raw CSV data to be plotted
  * @private
  */
-DateGraph.prototype.loadedEvent_ = function(data) {
+Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
   this.drawGraph_(this.rawData_);
 };
 
-DateGraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+Dygraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-DateGraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
+Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
 
 /**
  * Add ticks on the x-axis representing years, months, quarters, weeks, or days
  * @private
  */
-DateGraph.prototype.addXTicks_ = function() {
+Dygraph.prototype.addXTicks_ = function() {
   // Determine the correct ticks scale on the x-axis: quarterly, monthly, ...
   var startDate, endDate;
   if (this.dateWindow_) {
@@ -642,57 +732,57 @@ DateGraph.prototype.addXTicks_ = function() {
     endDate   = this.rawData_[this.rawData_.length - 1][0];
   }
 
-  var xTicks = this.xTicker_(startDate, endDate);
+  var xTicks = this.attr_('xTicker')(startDate, endDate, this);
   this.layout_.updateOptions({xTicks: xTicks});
 };
 
 // Time granularity enumeration
-DateGraph.SECONDLY = 0;
-DateGraph.TEN_SECONDLY = 1;
-DateGraph.THIRTY_SECONDLY  = 2;
-DateGraph.MINUTELY = 3;
-DateGraph.TEN_MINUTELY = 4;
-DateGraph.THIRTY_MINUTELY = 5;
-DateGraph.HOURLY = 6;
-DateGraph.SIX_HOURLY = 7;
-DateGraph.DAILY = 8;
-DateGraph.WEEKLY = 9;
-DateGraph.MONTHLY = 10;
-DateGraph.QUARTERLY = 11;
-DateGraph.BIANNUAL = 12;
-DateGraph.ANNUAL = 13;
-DateGraph.DECADAL = 14;
-DateGraph.NUM_GRANULARITIES = 15;
+Dygraph.SECONDLY = 0;
+Dygraph.TEN_SECONDLY = 1;
+Dygraph.THIRTY_SECONDLY  = 2;
+Dygraph.MINUTELY = 3;
+Dygraph.TEN_MINUTELY = 4;
+Dygraph.THIRTY_MINUTELY = 5;
+Dygraph.HOURLY = 6;
+Dygraph.SIX_HOURLY = 7;
+Dygraph.DAILY = 8;
+Dygraph.WEEKLY = 9;
+Dygraph.MONTHLY = 10;
+Dygraph.QUARTERLY = 11;
+Dygraph.BIANNUAL = 12;
+Dygraph.ANNUAL = 13;
+Dygraph.DECADAL = 14;
+Dygraph.NUM_GRANULARITIES = 15;
 
-DateGraph.SHORT_SPACINGS = [];
-DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY]        = 1000 * 1;
-DateGraph.SHORT_SPACINGS[DateGraph.TEN_SECONDLY]    = 1000 * 10;
-DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_SECONDLY] = 1000 * 30;
-DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY]        = 1000 * 60;
-DateGraph.SHORT_SPACINGS[DateGraph.TEN_MINUTELY]    = 1000 * 60 * 10;
-DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
-DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]          = 1000 * 3600;
-DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]          = 1000 * 3600 * 6;
-DateGraph.SHORT_SPACINGS[DateGraph.DAILY]           = 1000 * 86400;
-DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]          = 1000 * 604800;
+Dygraph.SHORT_SPACINGS = [];
+Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]    = 1000 * 10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY] = 1000 * 30;
+Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
+Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
+Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600 * 6;
+Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
+Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
 // NumXTicks()
 //
 //   If we used this time granularity, how many ticks would there be?
 //   This is only an approximation, but it's generally good enough.
 //
-DateGraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
-  if (granularity < DateGraph.MONTHLY) {
+Dygraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
+  if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
-    var spacing = DateGraph.SHORT_SPACINGS[granularity];
+    var spacing = Dygraph.SHORT_SPACINGS[granularity];
     return Math.floor(0.5 + 1.0 * (end_time - start_time) / spacing);
   } else {
     var year_mod = 1;  // e.g. to only print one point every 10 years.
     var num_months = 12;
-    if (granularity == DateGraph.QUARTERLY) num_months = 3;
-    if (granularity == DateGraph.BIANNUAL) num_months = 2;
-    if (granularity == DateGraph.ANNUAL) num_months = 1;
-    if (granularity == DateGraph.DECADAL) { num_months = 1; year_mod = 10; }
+    if (granularity == Dygraph.QUARTERLY) num_months = 3;
+    if (granularity == Dygraph.BIANNUAL) num_months = 2;
+    if (granularity == Dygraph.ANNUAL) num_months = 1;
+    if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
 
     var msInYear = 365.2524 * 24 * 3600 * 1000;
     var num_years = 1.0 * (end_time - start_time) / msInYear;
@@ -707,20 +797,20 @@ DateGraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
 //
 //   Returns an array containing {v: millis, label: label} dictionaries.
 //
-DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
+Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
   var ticks = [];
-  if (granularity < DateGraph.MONTHLY) {
+  if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
-    var spacing = DateGraph.SHORT_SPACINGS[granularity];
+    var spacing = Dygraph.SHORT_SPACINGS[granularity];
     var format = '%d%b';  // e.g. "1 Jan"
     // TODO(danvk): be smarter about making sure this really hits a "nice" time.
-    if (granularity < DateGraph.HOURLY) {
+    if (granularity < Dygraph.HOURLY) {
       start_time = spacing * Math.floor(0.5 + start_time / spacing);
     }
     for (var t = start_time; t <= end_time; t += spacing) {
       var d = new Date(t);
       var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-      if (frac == 0 || granularity >= DateGraph.DAILY) {
+      if (frac == 0 || granularity >= Dygraph.DAILY) {
         // the extra hour covers DST problems.
         ticks.push({ v:t, label: new Date(t + 3600*1000).strftime(format) });
       } else {
@@ -734,22 +824,22 @@ DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     var months;
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
-    if (granularity == DateGraph.MONTHLY) {
+    if (granularity == Dygraph.MONTHLY) {
       months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
-    } else if (granularity == DateGraph.QUARTERLY) {
+    } else if (granularity == Dygraph.QUARTERLY) {
       months = [ 0, 3, 6, 9 ];
-    } else if (granularity == DateGraph.BIANNUAL) {
+    } else if (granularity == Dygraph.BIANNUAL) {
       months = [ 0, 6 ];
-    } else if (granularity == DateGraph.ANNUAL) {
+    } else if (granularity == Dygraph.ANNUAL) {
       months = [ 0 ];
-    } else if (granularity == DateGraph.DECADAL) {
+    } else if (granularity == Dygraph.DECADAL) {
       months = [ 0 ];
       year_mod = 10;
     }
 
     var start_year = new Date(start_time).getFullYear();
     var end_year   = new Date(end_time).getFullYear();
-    var zeropad = DateGraph.zeropad;
+    var zeropad = Dygraph.zeropad;
     for (var i = start_year; i <= end_year; i++) {
       if (i % year_mod != 0) continue;
       for (var j = 0; j < months.length; j++) {
@@ -772,18 +862,18 @@ DateGraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-DateGraph.prototype.dateTicker = function(startDate, endDate) {
+Dygraph.dateTicker = function(startDate, endDate, self) {
   var chosen = -1;
-  for (var i = 0; i < DateGraph.NUM_GRANULARITIES; i++) {
-    var num_ticks = this.NumXTicks(startDate, endDate, i);
-    if (this.width_ / num_ticks >= this.attrs_.pixelsPerXLabel) {
+  for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
+    var num_ticks = self.NumXTicks(startDate, endDate, i);
+    if (self.width_ / num_ticks >= self.attr_('pixelsPerXLabel')) {
       chosen = i;
       break;
     }
   }
 
   if (chosen >= 0) {
-    return this.GetXAxis(startDate, endDate, chosen);
+    return self.GetXAxis(startDate, endDate, chosen);
   } else {
     // TODO(danvk): signal error.
   }
@@ -796,13 +886,15 @@ DateGraph.prototype.dateTicker = function(startDate, endDate) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-DateGraph.prototype.numericTicks = function(minV, maxV) {
+Dygraph.numericTicks = function(minV, maxV, self) {
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-  // The first spacing greater than this.attrs_.pixelsPerYLabel is what we use.
+  // The first spacing greater than pixelsPerYLabel is what we use.
   var mults = [1, 2, 5];
   var scale, low_val, high_val, nTicks;
+  // TODO(danvk): make it possible to set this for x- and y-axes independently.
+  var pixelsPerTick = self.attr_('pixelsPerYLabel');
   for (var i = -10; i < 50; i++) {
     var base_scale = Math.pow(10, i);
     for (var j = 0; j < mults.length; j++) {
@@ -810,26 +902,26 @@ DateGraph.prototype.numericTicks = function(minV, maxV) {
       low_val = Math.floor(minV / scale) * scale;
       high_val = Math.ceil(maxV / scale) * scale;
       nTicks = (high_val - low_val) / scale;
-      var spacing = this.height_ / nTicks;
+      var spacing = self.height_ / nTicks;
       // wish I could break out of both loops at once...
-      if (spacing > this.attrs_.pixelsPerYLabel) break;
+      if (spacing > pixelsPerTick) break;
     }
-    if (spacing > this.attrs_.pixelsPerYLabel) break;
+    if (spacing > pixelsPerTick) break;
   }
 
   // Construct labels for the ticks
   var ticks = [];
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
-    var label = this.round_(tickV, 2);
-    if (this.labelsKMB_) {
+    var label = self.round_(tickV, 2);
+    if (self.attr_("labelsKMB")) {
       var k = 1000;
       if (tickV >= k*k*k) {
-        label = this.round_(tickV/(k*k*k), 1) + "B";
+        label = self.round_(tickV/(k*k*k), 1) + "B";
       } else if (tickV >= k*k) {
-        label = this.round_(tickV/(k*k), 1) + "M";
+        label = self.round_(tickV/(k*k), 1) + "M";
       } else if (tickV >= k) {
-        label = this.round_(tickV/k, 1) + "K";
+        label = self.round_(tickV/k, 1) + "K";
       }
     }
     ticks.push( {label: label, v: tickV} );
@@ -843,9 +935,10 @@ DateGraph.prototype.numericTicks = function(minV, maxV) {
  * @param {Number} maxY The maximum Y value in the data set
  * @private
  */
-DateGraph.prototype.addYTicks_ = function(minY, maxY) {
+Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
-  var ticks = this.numericTicks(minY, maxY);
+  // TODO(danvk): make this an attribute as well.
+  var ticks = Dygraph.numericTicks(minY, maxY, this);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };
@@ -858,9 +951,11 @@ DateGraph.prototype.addYTicks_ = function(minY, maxY) {
  * @param {Array.<Object>} data The data (see above)
  * @private
  */
-DateGraph.prototype.drawGraph_ = function(data) {
+Dygraph.prototype.drawGraph_ = function(data) {
   var maxY = null;
   this.layout_.removeAllDatasets();
+  this.setColors_();
+
   // Loop over all fields in the dataset
   for (var i = 1; i < data[0].length; i++) {
     var series = [];
@@ -871,7 +966,7 @@ DateGraph.prototype.drawGraph_ = function(data) {
     series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
-    var bars = this.errorBars_ || this.customBars_;
+    var bars = this.attr_("errorBars") || this.customBars_;
     if (this.dateWindow_) {
       var low = this.dateWindow_[0];
       var high= this.dateWindow_[1];
@@ -885,10 +980,22 @@ DateGraph.prototype.drawGraph_ = function(data) {
       }
       series = pruned;
     } else {
-      for (var j = 0; j < series.length; j++) {
-        var y = bars ? series[j][1][0] : series[j][1];
-        if (maxY == null || y > maxY) {
-          maxY = bars ? y + series[j][1][1] : y;
+      if (!this.customBars_) {
+        for (var j = 0; j < series.length; j++) {
+          var y = bars ? series[j][1][0] : series[j][1];
+          if (maxY == null || y > maxY) {
+            maxY = bars ? y + series[j][1][1] : y;
+          }
+        }
+      } else {
+        // With custom bars, maxY is the max of the high values.
+        for (var j = 0; j < series.length; j++) {
+          var y = series[j][1][0];
+          var high = series[j][1][2];
+          if (high > y) y = high;
+          if (maxY == null || y > maxY) {
+            maxY = y;
+          }
         }
       }
     }
@@ -898,9 +1005,9 @@ DateGraph.prototype.drawGraph_ = function(data) {
       for (var j=0; j<series.length; j++)
         vals[j] = [series[j][0],
                    series[j][1][0], series[j][1][1], series[j][1][2]];
-      this.layout_.addDataset(this.labels_[i - 1], vals);
+      this.layout_.addDataset(this.attr_("labels")[i], vals);
     } else {
-      this.layout_.addDataset(this.labels_[i - 1], series);
+      this.layout_.addDataset(this.attr_("labels")[i], series);
     }
   }
 
@@ -936,12 +1043,12 @@ DateGraph.prototype.drawGraph_ = function(data) {
  * @param {Array} originalData The data in the appropriate format (see above)
  * @param {Number} rollPeriod The number of days over which to average the data
  */
-DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
+Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
     return originalData;
   var rollPeriod = Math.min(rollPeriod, originalData.length - 1);
   var rollingData = [];
-  var sigma = this.sigma_;
+  var sigma = this.attr_("sigma");
 
   if (this.fractions_) {
     var num = 0;
@@ -957,7 +1064,7 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
 
       var date = originalData[i][0];
       var value = den ? num / den : 0.0;
-      if (this.errorBars_) {
+      if (this.attr_("errorBars")) {
         if (this.wilsonInterval_) {
           // For more details on this confidence interval, see:
           // http://en.wikipedia.org/wiki/Binomial_confidence_interval
@@ -1009,7 +1116,7 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of days
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
-    if (!this.errorBars_){
+    if (!this.attr_("errorBars")){
       for (var i = 0; i < num_init_points; i++) {
         var sum = 0;
         for (var j = 0; j < i + 1; j++)
@@ -1059,27 +1166,63 @@ DateGraph.prototype.rollingAverage = function(originalData, rollPeriod) {
 
 /**
  * Parses a date, returning the number of milliseconds since epoch. This can be
- * passed in as an xValueParser in the DateGraph constructor.
+ * passed in as an xValueParser in the Dygraph constructor.
+ * TODO(danvk): enumerate formats that this understands.
  * @param {String} A date in YYYYMMDD format.
  * @return {Number} Milliseconds since epoch.
  * @public
  */
-DateGraph.prototype.dateParser = function(dateStr) {
+Dygraph.dateParser = function(dateStr, self) {
   var dateStrSlashed;
+  var d;
   if (dateStr.length == 10 && dateStr.search("-") != -1) {  // e.g. '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
-    return Date.parse(dateStrSlashed);
+    d = Date.parse(dateStrSlashed);
   } else if (dateStr.length == 8) {  // e.g. '20090712'
+    // TODO(danvk): remove support for this format. It's confusing.
     dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2)
                        + "/" + dateStr.substr(6,2);
-    return Date.parse(dateStrSlashed);
+    d = Date.parse(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
     // "2009/07/12 12:34:56"
-    return Date.parse(dateStr);
+    d = Date.parse(dateStr);
+  }
+
+  if (!d || isNaN(d)) {
+    self.error("Couldn't parse " + dateStr + " as a date");
+  }
+  return d;
+};
+
+/**
+ * Detects the type of the str (date or numeric) and sets the various
+ * formatting attributes in this.attrs_ based on this type.
+ * @param {String} str An x value.
+ * @private
+ */
+Dygraph.prototype.detectTypeFromString_ = function(str) {
+  var isDate = false;
+  if (str.indexOf('-') >= 0 ||
+      str.indexOf('/') >= 0 ||
+      isNaN(parseFloat(str))) {
+    isDate = true;
+  } else if (str.length == 8 && str > '19700101' && str < '20371231') {
+    // TODO(danvk): remove support for this format.
+    isDate = true;
+  }
+
+  if (isDate) {
+    this.attrs_.xValueFormatter = Dygraph.dateString_;
+    this.attrs_.xValueParser = Dygraph.dateParser;
+    this.attrs_.xTicker = Dygraph.dateTicker;
+  } else {
+    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+    this.attrs_.xTicker = Dygraph.numericTicks;
   }
 };
 
@@ -1087,35 +1230,44 @@ DateGraph.prototype.dateParser = function(dateStr) {
  * Parses a string in a special csv format.  We expect a csv file where each
  * line is a date point, and the first field in each line is the date string.
  * We also expect that all remaining fields represent series.
- * if this.errorBars_ is set, then interpret the fields as:
+ * if the errorBars attribute is set, then interpret the fields as:
  * date, series1, stddev1, series2, stddev2, ...
  * @param {Array.<Object>} data See above.
  * @private
+ *
+ * @return Array.<Object> An array with one entry for each row. These entries
+ * are an array of cells in that row. The first entry is the parsed x-value for
+ * the row. The second, third, etc. are the y-values. These can take on one of
+ * three forms, depending on the CSV and constructor parameters:
+ * 1. numeric value
+ * 2. [ value, stddev ]
+ * 3. [ low value, center value, high value ]
  */
-DateGraph.prototype.parseCSV_ = function(data) {
+Dygraph.prototype.parseCSV_ = function(data) {
   var ret = [];
   var lines = data.split("\n");
-  var start = this.labelsFromCSV_ ? 1 : 0;
+  var start = 0;
   if (this.labelsFromCSV_) {
-    var labels = lines[0].split(",");
-    labels.shift();  // a "date" parameter is assumed.
-    this.labels_ = labels;
-    // regenerate automatic colors.
-    this.setColors_(this.attrs_);
-    this.renderOptions_.colorScheme = this.colors_;
-    MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
-    MochiKit.Base.update(this.layoutOptions_, this.attrs_);
+    start = 1;
+    this.attrs_.labels = lines[0].split(",");
   }
 
+  var xParser;
+  var defaultParserSet = false;  // attempt to auto-detect x value type
+  var expectedCols = this.attr_("labels").length;
   for (var i = start; i < lines.length; i++) {
     var line = lines[i];
     if (line.length == 0) continue;  // skip blank lines
     var inFields = line.split(',');
-    if (inFields.length < 2)
-      continue;
+    if (inFields.length < 2) continue;
 
     var fields = [];
-    fields[0] = this.xValueParser_(inFields[0]);
+    if (!defaultParserSet) {
+      this.detectTypeFromString_(inFields[0]);
+      xParser = this.attr_("xValueParser");
+      defaultParserSet = true;
+    }
+    fields[0] = xParser(inFields[0], this);
 
     // If fractions are expected, parse the numbers as "A/B"
     if (this.fractions_) {
@@ -1124,7 +1276,7 @@ DateGraph.prototype.parseCSV_ = function(data) {
         var vals = inFields[j].split("/");
         fields[j] = [parseFloat(vals[0]), parseFloat(vals[1])];
       }
-    } else if (this.errorBars_) {
+    } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       for (var j = 1; j < inFields.length; j += 2)
         fields[(j + 1) / 2] = [parseFloat(inFields[j]),
@@ -1139,12 +1291,74 @@ DateGraph.prototype.parseCSV_ = function(data) {
       }
     } else {
       // Values are just numbers
-      for (var j = 1; j < inFields.length; j++)
+      for (var j = 1; j < inFields.length; j++) {
         fields[j] = parseFloat(inFields[j]);
+      }
     }
     ret.push(fields);
+
+    if (fields.length != expectedCols) {
+      this.error("Number of columns in line " + i + " (" + fields.length +
+                 ") does not agree with number of labels (" + expectedCols +
+                 ") " + line);
+    }
   }
   return ret;
+};
+
+/**
+ * The user has provided their data as a pre-packaged JS array. If the x values
+ * are numeric, this is the same as dygraphs' internal format. If the x values
+ * are dates, we need to convert them from Date objects to ms since epoch.
+ * @param {Array.<Object>} data
+ * @return {Array.<Object>} data with numeric x values.
+ */
+Dygraph.prototype.parseArray_ = function(data) {
+  // Peek at the first x value to see if it's numeric.
+  if (data.length == 0) {
+    this.error("Can't plot empty data set");
+    return null;
+  }
+  if (data[0].length == 0) {
+    this.error("Data set cannot contain an empty row");
+    return null;
+  }
+
+  if (this.attr_("labels") == null) {
+    this.warn("Using default labels. Set labels explicitly via 'labels' " +
+              "in the options parameter");
+    this.attrs_.labels = [ "X" ];
+    for (var i = 1; i < data[0].length; i++) {
+      this.attrs_.labels.push("Y" + i);
+    }
+  }
+
+  if (MochiKit.Base.isDateLike(data[0][0])) {
+    // Some intelligent defaults for a date x-axis.
+    this.attrs_.xValueFormatter = Dygraph.dateString_;
+    this.attrs_.xTicker = Dygraph.dateTicker;
+
+    // Assume they're all dates.
+    var parsedData = MochiKit.Base.clone(data);
+    for (var i = 0; i < data.length; i++) {
+      if (parsedData[i].length == 0) {
+        this.error("Row " << (1 + i) << " of data is empty");
+        return null;
+      }
+      if (parsedData[i][0] == null
+          || typeof(parsedData[i][0].getTime) != 'function') {
+        this.error("x value in row " << (1 + i) << " is not a Date");
+        return null;
+      }
+      parsedData[i][0] = parsedData[i][0].getTime();
+    }
+    return parsedData;
+  } else {
+    // Some intelligent defaults for a numeric x-axis.
+    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xTicker = Dygraph.numericTicks;
+    return data;
+  }
 };
 
 /**
@@ -1156,7 +1370,7 @@ DateGraph.prototype.parseCSV_ = function(data) {
  * @param {Array.<Object>} data See above.
  * @private
  */
-DateGraph.prototype.parseDataTable_ = function(data) {
+Dygraph.prototype.parseDataTable_ = function(data) {
   var cols = data.getNumberOfColumns();
   var rows = data.getNumberOfRows();
 
@@ -1165,19 +1379,20 @@ DateGraph.prototype.parseDataTable_ = function(data) {
   for (var i = 0; i < cols; i++) {
     labels.push(data.getColumnLabel(i));
   }
-  labels.shift();  // the x-axis parameter is assumed and unnamed.
-  this.labels_ = labels;
-  // regenerate automatic colors.
-  this.setColors_(this.attrs_);
-  this.renderOptions_.colorScheme = this.colors_;
-  MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
-  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
+  this.attrs_.labels = labels;
 
   var indepType = data.getColumnType(0);
-  if (indepType != 'date' && indepType != 'number') {
-    // TODO(danvk): standardize error reporting.
-    alert("only 'date' and 'number' types are supported for column 1" +
-          "of DataTable input (Got '" + indepType + "')");
+  if (indepType == 'date') {
+    this.attrs_.xValueFormatter = Dygraph.dateString_;
+    this.attrs_.xValueParser = Dygraph.dateParser;
+    this.attrs_.xTicker = Dygraph.dateTicker;
+  } else if (indepType != 'number') {
+    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+    this.attrs_.xTicker = Dygraph.numericTicks;
+  } else {
+    this.error("only 'date' and 'number' types are supported for column 1" +
+               "of DataTable input (Got '" + indepType + "')");
     return null;
   }
 
@@ -1202,28 +1417,38 @@ DateGraph.prototype.parseDataTable_ = function(data) {
  * file, do an XMLHttpRequest to get it.
  * @private
  */
-DateGraph.prototype.start_ = function() {
+Dygraph.prototype.start_ = function() {
   if (typeof this.file_ == 'function') {
-    // Stubbed out to allow this to run off a filesystem
+    // CSV string. Pretend we got it via XHR.
     this.loadedEvent_(this.file_());
+  } else if (MochiKit.Base.isArrayLike(this.file_)) {
+    this.rawData_ = this.parseArray_(this.file_);
+    this.drawGraph_(this.rawData_);
   } else if (typeof this.file_ == 'object' &&
              typeof this.file_.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.rawData_ = this.parseDataTable_(this.file_);
     this.drawGraph_(this.rawData_);
-  } else {
-    var req = new XMLHttpRequest();
-    var caller = this;
-    req.onreadystatechange = function () {
-      if (req.readyState == 4) {
-        if (req.status == 200) {
-          caller.loadedEvent_(req.responseText);
+  } else if (typeof this.file_ == 'string') {
+    // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
+    if (this.file_.indexOf('\n') >= 0) {
+      this.loadedEvent_(this.file_);
+    } else {
+      var req = new XMLHttpRequest();
+      var caller = this;
+      req.onreadystatechange = function () {
+        if (req.readyState == 4) {
+          if (req.status == 200) {
+            caller.loadedEvent_(req.responseText);
+          }
         }
-      }
-    };
+      };
 
-    req.open("GET", this.file_, true);
-    req.send(null);
+      req.open("GET", this.file_, true);
+      req.send(null);
+    }
+  } else {
+    this.error("Unknown data format: " + (typeof this.file_));
   }
 };
 
@@ -1235,15 +1460,10 @@ DateGraph.prototype.start_ = function() {
  * </ul>
  * @param {Object} attrs The new properties and values
  */
-DateGraph.prototype.updateOptions = function(attrs) {
-  if (attrs.errorBars) {
-    this.errorBars_ = attrs.errorBars;
-  }
+Dygraph.prototype.updateOptions = function(attrs) {
+  // TODO(danvk): this is a mess. Rethink this function.
   if (attrs.customBars) {
     this.customBars_ = attrs.customBars;
-  }
-  if (attrs.strokeWidth) {
-    this.strokeWidth_ = attrs.strokeWidth;
   }
   if (attrs.rollPeriod) {
     this.rollPeriod_ = attrs.rollPeriod;
@@ -1254,12 +1474,12 @@ DateGraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
-  MochiKit.Base.update(this.attrs_, attrs);
-  if (typeof(attrs.labels) != 'undefined') {
-    this.labels_ = attrs.labels;
-    this.labelsFromCSV_ = (attrs.labels == null);
-  }
-  this.layout_.updateOptions({ 'errorBars': this.errorBars_ });
+  MochiKit.Base.update(this.user_attrs_, attrs);
+
+  this.labelsFromCSV_ = (this.attr_("labels") == null);
+
+  // TODO(danvk): this doesn't match the constructor logic
+  this.layout_.updateOptions({ 'errorBars': this.attr_("errorBars") });
   if (attrs['file'] && attrs['file'] != this.file_) {
     this.file_ = attrs['file'];
     this.start_();
@@ -1273,21 +1493,24 @@ DateGraph.prototype.updateOptions = function(attrs) {
  * reflect the new averaging period.
  * @param {Number} length Number of days over which to average the data.
  */
-DateGraph.prototype.adjustRoll = function(length) {
+Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
   this.drawGraph_(this.rawData_);
 };
 
 
 /**
- * A wrapper around DateGraph that implements the gviz API.
+ * A wrapper around Dygraph that implements the gviz API.
  * @param {Object} container The DOM object the visualization should live in.
  */
-DateGraph.GVizChart = function(container) {
+Dygraph.GVizChart = function(container) {
   this.container = container;
 }
 
-DateGraph.GVizChart.prototype.draw = function(data, options) {
+Dygraph.GVizChart.prototype.draw = function(data, options) {
   this.container.innerHTML = '';
-  this.date_graph = new DateGraph(this.container, data, null, options || {});
+  this.date_graph = new Dygraph(this.container, data, options);
 }
+
+// Older pages may still use this name.
+DateGraph = Dygraph;

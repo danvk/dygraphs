@@ -1,6 +1,5 @@
-function data() {
+function data_nolabel() {
 return "" +
-"Date,High,Low\n" +
 "20070101,62,39\n" +
 "20070102,62,44\n" +
 "20070103,62,42\n" +
@@ -366,6 +365,10 @@ return "" +
 "20071229,57,44\n" +
 "20071230,52,43\n" +
 "20071231,57,42\n";
+}
+
+function data() {
+  return "Date,High,Low\n" + data_nolabel();
 }
 
 function NoisyData() {

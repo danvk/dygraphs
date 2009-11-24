@@ -5,6 +5,7 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
   </head>
@@ -16,7 +17,7 @@
     <div id="gviz" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      g = new DateGraph(
+      g = new Dygraph(
             document.getElementById("g"),
             function() {
               var ret = "X,Y1,Y2\n";
@@ -24,12 +25,8 @@
                 ret += i + "," + i + "," + (i * (100-i) * 100/(50*50)) + "\n";
               }
               return ret;
-            }, null,
-            {
-              xValueParser: function(x) { return parseFloat(x); },
-              xValueFormatter: function(x) { return x; },
-              xTicker: DateGraph.prototype.numericTicks
-            }
+            },
+            { }
           );
 
       google.load('visualization', '1', {packages: ['linechart']});
@@ -45,12 +42,9 @@
           data.setCell(i, 2, i * (100-i) * 100/(50*50));
         }
 
-        new DateGraph.GVizChart(
+        new Dygraph.GVizChart(
           document.getElementById('gviz')).draw(data,
           {
-            xValueParser: function(x) { return parseFloat(x); },
-            xValueFormatter: function(x) { return x; },
-            xTicker: DateGraph.prototype.numericTicks
           });
       }
 

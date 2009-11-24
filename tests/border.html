@@ -5,6 +5,7 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <style type="text/css">
@@ -17,8 +18,7 @@
     <p>Hopefully this stays in its border:</p>
     <div id="bordered" style="width:600px; height:300px;"></div>
     <script type="text/javascript">
-    new DateGraph(document.getElementById('bordered'),
-                  data, null, {});
+    new Dygraph(document.getElementById('bordered'), data);
     </script>
   </body>
 </html>

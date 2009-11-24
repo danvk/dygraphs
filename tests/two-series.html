@@ -5,6 +5,7 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
@@ -15,13 +16,13 @@
     <div id="g30" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      g = new DateGraph(
+      g = new Dygraph(
             document.getElementById("g"),
-            data, null, {}
+            data, {}
           );
-      g30 = new DateGraph(
+      g30 = new Dygraph(
             document.getElementById("g30"),
-            data, null, {
+            data, {
               rollPeriod: 30
             }
           );

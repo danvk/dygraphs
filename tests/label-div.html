@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>noise</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Chart with labels displayed in a separate div:</p>
+    <table><tr>
+    <td valign="top"><div id="graphdiv2"></div></td>
+    <td valign="top">&nbsp; &nbsp;</td>
+    <td valign="top"><div id="labels"></div></td>
+    </tr></table>
+
+    <script type="text/javascript">
+      g2 = new Dygraph(document.getElementById("graphdiv2"),
+                       data_nolabel,
+                       {
+                         labels: [ "High", "Low" ],
+                         labelsDiv: document.getElementById("labels")
+                       });
+    </script>
+  </body>
+</html>

@@ -1593,7 +1593,7 @@ throw MochiKit.Iter.StopIteration;
 return rval;
 }};
 }});
-MochiKit.Iter.EXPORT_OK=["iteratorRegistry","arrayLikeIter","hasIterateNext","iterateNextIter",];
+MochiKit.Iter.EXPORT_OK=["iteratorRegistry","arrayLikeIter","hasIterateNext","iterateNextIter"];
 MochiKit.Iter.EXPORT=["StopIteration","registerIteratorFactory","iter","count","cycle","repeat","next","izip","ifilter","ifilterfalse","islice","imap","applymap","chain","takewhile","dropwhile","tee","list","reduce","range","sum","exhaust","forEach","every","sorted","reversed","some","iextend","groupby","groupby_as_array"];
 MochiKit.Iter.__new__=function(){
 var m=MochiKit.Base;
@@ -4603,11 +4603,11 @@ MochiKit.Base._exportSymbols(this,PlotKit.Canvas);
 
 
 Date.ext={};Date.ext.util={};Date.ext.util.xPad=function(x,pad,r){if(typeof (r)=="undefined"){r=10}for(;parseInt(x,10)<r&&r>1;r/=10){x=pad.toString()+x}return x.toString()};Date.prototype.locale="en-GB";if(document.getElementsByTagName("html")&&document.getElementsByTagName("html")[0].lang){Date.prototype.locale=document.getElementsByTagName("html")[0].lang}Date.ext.locales={};Date.ext.locales.en={a:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],A:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],b:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],B:["January","February","March","April","May","June","July","August","September","October","November","December"],c:"%a %d %b %Y %T %Z",p:["AM","PM"],P:["am","pm"],x:"%d/%m/%y",X:"%T"};Date.ext.locales["en-US"]=Date.ext.locales.en;Date.ext.locales["en-US"].c="%a %d %b %Y %r %Z";Date.ext.locales["en-US"].x="%D";Date.ext.locales["en-US"].X="%r";Date.ext.locales["en-GB"]=Date.ext.locales.en;Date.ext.locales["en-AU"]=Date.ext.locales["en-GB"];Date.ext.formats={a:function(d){return Date.ext.locales[d.locale].a[d.getDay()]},A:function(d){return Date.ext.locales[d.locale].A[d.getDay()]},b:function(d){return Date.ext.locales[d.locale].b[d.getMonth()]},B:function(d){return Date.ext.locales[d.locale].B[d.getMonth()]},c:"toLocaleString",C:function(d){return Date.ext.util.xPad(parseInt(d.getFullYear()/100,10),0)},d:["getDate","0"],e:["getDate"," "],g:function(d){return Date.ext.util.xPad(parseInt(Date.ext.util.G(d)/100,10),0)},G:function(d){var y=d.getFullYear();var V=parseInt(Date.ext.formats.V(d),10);var W=parseInt(Date.ext.formats.W(d),10);if(W>V){y++}else{if(W===0&&V>=52){y--}}return y},H:["getHours","0"],I:function(d){var I=d.getHours()%12;return Date.ext.util.xPad(I===0?12:I,0)},j:function(d){var ms=d-new Date(""+d.getFullYear()+"/1/1 GMT");ms+=d.getTimezoneOffset()*60000;var doy=parseInt(ms/60000/60/24,10)+1;return Date.ext.util.xPad(doy,0,100)},m:function(d){return Date.ext.util.xPad(d.getMonth()+1,0)},M:["getMinutes","0"],p:function(d){return Date.ext.locales[d.locale].p[d.getHours()>=12?1:0]},P:function(d){return Date.ext.locales[d.locale].P[d.getHours()>=12?1:0]},S:["getSeconds","0"],u:function(d){var dow=d.getDay();return dow===0?7:dow},U:function(d){var doy=parseInt(Date.ext.formats.j(d),10);var rdow=6-d.getDay();var woy=parseInt((doy+rdow)/7,10);return Date.ext.util.xPad(woy,0)},V:function(d){var woy=parseInt(Date.ext.formats.W(d),10);var dow1_1=(new Date(""+d.getFullYear()+"/1/1")).getDay();var idow=woy+(dow1_1>4||dow1_1<=1?0:1);if(idow==53&&(new Date(""+d.getFullYear()+"/12/31")).getDay()<4){idow=1}else{if(idow===0){idow=Date.ext.formats.V(new Date(""+(d.getFullYear()-1)+"/12/31"))}}return Date.ext.util.xPad(idow,0)},w:"getDay",W:function(d){var doy=parseInt(Date.ext.formats.j(d),10);var rdow=7-Date.ext.formats.u(d);var woy=parseInt((doy+rdow)/7,10);return Date.ext.util.xPad(woy,0,10)},y:function(d){return Date.ext.util.xPad(d.getFullYear()%100,0)},Y:"getFullYear",z:function(d){var o=d.getTimezoneOffset();var H=Date.ext.util.xPad(parseInt(Math.abs(o/60),10),0);var M=Date.ext.util.xPad(o%60,0);return(o>0?"-":"+")+H+M},Z:function(d){return d.toString().replace(/^.*\(([^)]+)\)$/,"$1")},"%":function(d){return"%"}};Date.ext.aggregates={c:"locale",D:"%m/%d/%y",h:"%b",n:"\n",r:"%I:%M:%S %p",R:"%H:%M",t:"\t",T:"%H:%M:%S",x:"locale",X:"locale"};Date.ext.aggregates.z=Date.ext.formats.z(new Date());Date.ext.aggregates.Z=Date.ext.formats.Z(new Date());Date.ext.unsupported={};Date.prototype.strftime=function(fmt){if(!(this.locale in Date.ext.locales)){if(this.locale.replace(/-[a-zA-Z]+$/,"") in Date.ext.locales){this.locale=this.locale.replace(/-[a-zA-Z]+$/,"")}else{this.locale="en-GB"}}var d=this;while(fmt.match(/%[cDhnrRtTxXzZ]/)){fmt=fmt.replace(/%([cDhnrRtTxXzZ])/g,function(m0,m1){var f=Date.ext.aggregates[m1];return(f=="locale"?Date.ext.locales[d.locale][m1]:f)})}var str=fmt.replace(/%([aAbBCdegGHIjmMpPSuUVwWyY%])/g,function(m0,m1){var f=Date.ext.formats[m1];if(typeof (f)=="string"){return d[f]()}else{if(typeof (f)=="function"){return f.call(d,d)}else{if(typeof (f)=="object"&&typeof (f[0])=="string"){return Date.ext.util.xPad(d[f[0]](),f[1])}else{return m1}}}});d=null;return str};
-DateGraphLayout=function(_1){
+DygraphLayout=function(_1){
 PlotKit.Layout.call(this,"line",_1);
 };
-DateGraphLayout.prototype=new PlotKit.Layout();
-DateGraphLayout.prototype.evaluateWithError=function(){
+DygraphLayout.prototype=new PlotKit.Layout();
+DygraphLayout.prototype.evaluateWithError=function(){
 this.evaluate();
 if(!this.options.errorBars){
 return;
@@ -4630,14 +4630,14 @@ this.points[i].errorPlus=parseFloat(_6[3]);
 }
 }
 };
-DateGraphLayout.prototype.removeAllDatasets=function(){
+DygraphLayout.prototype.removeAllDatasets=function(){
 delete this.datasets;
 this.datasets=new Array();
 };
-DateGraphLayout.prototype.updateOptions=function(_9){
+DygraphLayout.prototype.updateOptions=function(_9){
 MochiKit.Base.update(this.options,_9?_9:{});
 };
-DateGraphCanvasRenderer=function(_10,_11,_12){
+DygraphCanvasRenderer=function(_10,_11,_12){
 PlotKit.CanvasRenderer.call(this,_10,_11,_12);
 this.options.shouldFill=false;
 this.options.shouldStroke=true;
@@ -4647,8 +4647,8 @@ this.options.gridLineColor=MochiKit.Color.Color.grayColor();
 MochiKit.Base.update(this.options,_12);
 this.options.drawBackground=false;
 };
-DateGraphCanvasRenderer.prototype=new PlotKit.CanvasRenderer();
-DateGraphCanvasRenderer.prototype.render=function(){
+DygraphCanvasRenderer.prototype=new PlotKit.CanvasRenderer();
+DygraphCanvasRenderer.prototype.render=function(){
 var ctx=this.element.getContext("2d");
 if(this.options.drawYGrid){
 var _14=this.layout.yticks;
@@ -4683,7 +4683,7 @@ ctx.stroke();
 this._renderLineChart();
 this._renderLineAxis();
 };
-DateGraphCanvasRenderer.prototype._renderLineChart=function(){
+DygraphCanvasRenderer.prototype._renderLineChart=function(){
 var _17=this.element.getContext("2d");
 var _18=this.options.colorScheme.length;
 var _19=this.options.colorScheme;
@@ -4765,81 +4765,130 @@ _23(_35,this)(_17);
 _23(_27,this)(_17);
 _17.restore();
 };
-DateGraph=function(div,_49,_50,_51){
+Dygraph=function(div,_49,_50){
 if(arguments.length>0){
-this.__init__(div,_49,_50,_51);
+if(arguments.length==4){
+this.warn("Using deprecated four-argument dygraph constructor");
+this.__old_init__(div,_49,arguments[2],arguments[3]);
+}else{
+this.__init__(div,_49,_50);
+}
 }
 };
-DateGraph.NAME="DateGraph";
-DateGraph.VERSION="1.1";
-DateGraph.__repr__=function(){
+Dygraph.NAME="Dygraph";
+Dygraph.VERSION="1.2";
+Dygraph.__repr__=function(){
 return "["+this.NAME+" "+this.VERSION+"]";
 };
-DateGraph.toString=function(){
+Dygraph.toString=function(){
 return this.__repr__();
 };
-DateGraph.DEFAULT_ROLL_PERIOD=1;
-DateGraph.DEFAULT_WIDTH=480;
-DateGraph.DEFAULT_HEIGHT=320;
-DateGraph.DEFAULT_STROKE_WIDTH=1;
-DateGraph.AXIS_LINE_WIDTH=0.3;
-DateGraph.DEFAULT_ATTRS={highlightCircleSize:3,pixelsPerXLabel:60,pixelsPerYLabel:30,labelsDivWidth:250,labelsDivStyles:{}};
-DateGraph.prototype.__init__=function(div,_52,_53,_54){
+Dygraph.DEFAULT_ROLL_PERIOD=1;
+Dygraph.DEFAULT_WIDTH=480;
+Dygraph.DEFAULT_HEIGHT=320;
+Dygraph.AXIS_LINE_WIDTH=0.3;
+Dygraph.DEFAULT_ATTRS={highlightCircleSize:3,pixelsPerXLabel:60,pixelsPerYLabel:30,labelsDivWidth:250,labelsDivStyles:{},labelsSeparateLines:false,labelsKMB:false,strokeWidth:1,showRoller:false,xValueFormatter:Dygraph.dateString_,xValueParser:Dygraph.dateParser,xTicker:Dygraph.dateTicker,sigma:2,errorBars:false,fractions:false,wilsonInterval:true,customBars:false};
+Dygraph.DEBUG=1;
+Dygraph.INFO=2;
+Dygraph.WARNING=3;
+Dygraph.ERROR=3;
+Dygraph.prototype.__old_init__=function(div,_51,_52,_53){
+if(_52!=null){
+var _54=["Date"];
+for(var i=0;i<_52.length;i++){
+_54.push(_52[i]);
+}
+MochiKit.Base.update(_53,{"labels":_54});
+}
+this.__init__(div,_51,_53);
+};
+Dygraph.prototype.__init__=function(div,_55,_56){
+if(_56==null){
+_56={};
+}
 this.maindiv_=div;
-this.labels_=_53;
-this.file_=_52;
-this.rollPeriod_=_54.rollPeriod||DateGraph.DEFAULT_ROLL_PERIOD;
+this.file_=_55;
+this.rollPeriod_=_56.rollPeriod||Dygraph.DEFAULT_ROLL_PERIOD;
 this.previousVerticalX_=-1;
+this.fractions_=_56.fractions||false;
+this.dateWindow_=_56.dateWindow||null;
+this.valueRange_=_56.valueRange||null;
+this.wilsonInterval_=_56.wilsonInterval||true;
+this.customBars_=_56.customBars||false;
+if(div.style.width==""){
+div.style.width=Dygraph.DEFAULT_WIDTH+"px";
+}
+if(div.style.height==""){
+div.style.height=Dygraph.DEFAULT_HEIGHT+"px";
+}
 this.width_=parseInt(div.style.width,10);
 this.height_=parseInt(div.style.height,10);
-this.errorBars_=_54.errorBars||false;
-this.fractions_=_54.fractions||false;
-this.strokeWidth_=_54.strokeWidth||DateGraph.DEFAULT_STROKE_WIDTH;
-this.dateWindow_=_54.dateWindow||null;
-this.valueRange_=_54.valueRange||null;
-this.labelsSeparateLines=_54.labelsSeparateLines||false;
-this.labelsDiv_=_54.labelsDiv||null;
-this.labelsKMB_=_54.labelsKMB||false;
-this.xValueParser_=_54.xValueParser||DateGraph.prototype.dateParser;
-this.xValueFormatter_=_54.xValueFormatter||DateGraph.prototype.dateString_;
-this.xTicker_=_54.xTicker||DateGraph.prototype.dateTicker;
-this.sigma_=_54.sigma||2;
-this.wilsonInterval_=_54.wilsonInterval||true;
-this.customBars_=_54.customBars||false;
+this.user_attrs_={};
+MochiKit.Base.update(this.user_attrs_,_56);
 this.attrs_={};
-MochiKit.Base.update(this.attrs_,DateGraph.DEFAULT_ATTRS);
-MochiKit.Base.update(this.attrs_,_54);
-if(typeof this.attrs_.pixelsPerXLabel=="undefined"){
-this.attrs_.pixelsPerXLabel=60;
-}
-this.labelsFromCSV_=(this.labels_==null);
-if(this.labels_==null){
-this.labels_=[];
-}
-this.clickCallback_=_54.clickCallback||null;
-this.zoomCallback_=_54.zoomCallback||null;
+MochiKit.Base.update(this.attrs_,Dygraph.DEFAULT_ATTRS);
+this.labelsFromCSV_=(this.attr_("labels")==null);
 this.createInterface_();
-this.layoutOptions_={"errorBars":(this.errorBars_||this.customBars_),"xOriginIsZero":false};
-MochiKit.Base.update(this.layoutOptions_,_54);
-this.setColors_(_54);
-this.layout_=new DateGraphLayout(this.layoutOptions_);
-this.renderOptions_={colorScheme:this.colors_,strokeColor:null,strokeWidth:this.strokeWidth_,axisLabelFontSize:14,axisLineWidth:DateGraph.AXIS_LINE_WIDTH};
-MochiKit.Base.update(this.renderOptions_,_54);
-this.plotter_=new DateGraphCanvasRenderer(this.hidden_,this.layout_,this.renderOptions_);
+this.layoutOptions_={"errorBars":(this.attr_("errorBars")||this.customBars_),"xOriginIsZero":false};
+MochiKit.Base.update(this.layoutOptions_,this.attrs_);
+MochiKit.Base.update(this.layoutOptions_,this.user_attrs_);
+this.layout_=new DygraphLayout(this.layoutOptions_);
+this.renderOptions_={colorScheme:this.colors_,strokeColor:null,strokeWidth:this.attr_("strokeWidth"),axisLabelFontSize:14,axisLineWidth:Dygraph.AXIS_LINE_WIDTH};
+MochiKit.Base.update(this.renderOptions_,this.attrs_);
+MochiKit.Base.update(this.renderOptions_,this.user_attrs_);
+this.plotter_=new DygraphCanvasRenderer(this.hidden_,this.layout_,this.renderOptions_);
 this.createStatusMessage_();
 this.createRollInterface_();
 this.createDragInterface_();
 this.start_();
 };
-DateGraph.prototype.rollPeriod=function(){
+Dygraph.prototype.attr_=function(_57){
+if(typeof (this.user_attrs_[_57])!="undefined"){
+return this.user_attrs_[_57];
+}else{
+if(typeof (this.attrs_[_57])!="undefined"){
+return this.attrs_[_57];
+}else{
+return null;
+}
+}
+};
+Dygraph.prototype.log=function(_58,_59){
+if(typeof (console)!="undefined"){
+switch(_58){
+case Dygraph.DEBUG:
+console.debug("dygraphs: "+_59);
+break;
+case Dygraph.INFO:
+console.info("dygraphs: "+_59);
+break;
+case Dygraph.WARNING:
+console.warn("dygraphs: "+_59);
+break;
+case Dygraph.ERROR:
+console.error("dygraphs: "+_59);
+break;
+}
+}
+};
+Dygraph.prototype.info=function(_60){
+this.log(Dygraph.INFO,_60);
+};
+Dygraph.prototype.warn=function(_61){
+this.log(Dygraph.WARNING,_61);
+};
+Dygraph.prototype.error=function(_62){
+this.log(Dygraph.ERROR,_62);
+};
+Dygraph.prototype.rollPeriod=function(){
 return this.rollPeriod_;
 };
-DateGraph.prototype.createInterface_=function(){
-var _55=this.maindiv_;
+Dygraph.prototype.createInterface_=function(){
+var _63=this.maindiv_;
 this.graphDiv=MochiKit.DOM.DIV({style:{"width":this.width_+"px","height":this.height_+"px"}});
-appendChildNodes(_55,this.graphDiv);
-var _56=MochiKit.DOM.CANVAS;
-this.canvas_=_56({style:{"position":"absolute"},width:this.width_,height:this.height_});
+appendChildNodes(_63,this.graphDiv);
+var _64=MochiKit.DOM.CANVAS;
+this.canvas_=_64({style:{"position":"absolute"},width:this.width_,height:this.height_});
 appendChildNodes(this.graphDiv,this.canvas_);
 this.hidden_=this.createPlotKitCanvas_(this.canvas_);
 connect(this.hidden_,"onmousemove",this,function(e){
@@ -4849,494 +4898,512 @@ connect(this.hidden_,"onmouseout",this,function(e){
 this.mouseOut_(e);
 });
 };
-DateGraph.prototype.createPlotKitCanvas_=function(_58){
+Dygraph.prototype.createPlotKitCanvas_=function(_66){
 var h=document.createElement("canvas");
 h.style.position="absolute";
-h.style.top=_58.style.top;
-h.style.left=_58.style.left;
+h.style.top=_66.style.top;
+h.style.left=_66.style.left;
 h.width=this.width_;
 h.height=this.height_;
 MochiKit.DOM.appendChildNodes(this.graphDiv,h);
 return h;
 };
-DateGraph.prototype.setColors_=function(_60){
-var num=this.labels_.length;
+Dygraph.prototype.setColors_=function(){
+var num=this.attr_("labels").length-1;
 this.colors_=[];
-if(!_60.colors){
-var sat=_60.colorSaturation||1;
-var val=_60.colorValue||0.5;
+var _69=this.attr_("colors");
+if(!_69){
+var sat=this.attr_("colorSaturation")||1;
+var val=this.attr_("colorValue")||0.5;
 for(var i=1;i<=num;i++){
 var hue=(1*i/(1+num));
 this.colors_.push(MochiKit.Color.Color.fromHSV(hue,sat,val));
 }
 }else{
 for(var i=0;i<num;i++){
-var _65=_60.colors[i%_60.colors.length];
-this.colors_.push(MochiKit.Color.Color.fromString(_65));
+var _73=_69[i%_69.length];
+this.colors_.push(MochiKit.Color.Color.fromString(_73));
 }
+}
+this.renderOptions_.colorScheme=this.colors_;
+MochiKit.Base.update(this.plotter_.options,this.renderOptions_);
+MochiKit.Base.update(this.layoutOptions_,this.user_attrs_);
+MochiKit.Base.update(this.layoutOptions_,this.attrs_);
+};
+Dygraph.prototype.createStatusMessage_=function(){
+if(!this.attr_("labelsDiv")){
+var _74=this.attr_("labelsDivWidth");
+var _75={"style":{"position":"absolute","fontSize":"14px","zIndex":10,"width":_74+"px","top":"0px","left":this.width_-_74+"px","background":"white","textAlign":"left","overflow":"hidden"}};
+MochiKit.Base.update(_75["style"],this.attr_("labelsDivStyles"));
+var div=MochiKit.DOM.DIV(_75);
+MochiKit.DOM.appendChildNodes(this.graphDiv,div);
+this.attrs_.labelsDiv=div;
 }
 };
-DateGraph.prototype.createStatusMessage_=function(){
-if(!this.labelsDiv_){
-var _66=this.attrs_.labelsDivWidth;
-var _67={"style":{"position":"absolute","fontSize":"14px","zIndex":10,"width":_66+"px","top":"0px","left":this.width_-_66+"px","background":"white","textAlign":"left","overflow":"hidden"}};
-MochiKit.Base.update(_67["style"],this.attrs_.labelsDivStyles);
-this.labelsDiv_=MochiKit.DOM.DIV(_67);
-MochiKit.DOM.appendChildNodes(this.graphDiv,this.labelsDiv_);
-}
-};
-DateGraph.prototype.createRollInterface_=function(){
-var _68=this.plotter_.options.padding;
-if(typeof this.attrs_.showRoller=="undefined"){
-this.attrs_.showRoller=false;
-}
-var _69=this.attrs_.showRoller?"block":"none";
-var _70={"type":"text","size":"2","value":this.rollPeriod_,"style":{"position":"absolute","zIndex":10,"top":(this.height_-25-_68.bottom)+"px","left":(_68.left+1)+"px","display":_69}};
-var _71=MochiKit.DOM.INPUT(_70);
+Dygraph.prototype.createRollInterface_=function(){
+var _76=this.plotter_.options.padding;
+var _77=this.attr_("showRoller")?"block":"none";
+var _78={"type":"text","size":"2","value":this.rollPeriod_,"style":{"position":"absolute","zIndex":10,"top":(this.height_-25-_76.bottom)+"px","left":(_76.left+1)+"px","display":_77}};
+var _79=MochiKit.DOM.INPUT(_78);
 var pa=this.graphDiv;
-MochiKit.DOM.appendChildNodes(pa,_71);
-connect(_71,"onchange",this,function(){
-this.adjustRoll(_71.value);
+MochiKit.DOM.appendChildNodes(pa,_79);
+connect(_79,"onchange",this,function(){
+this.adjustRoll(_79.value);
 });
-return _71;
+return _79;
 };
-DateGraph.prototype.createDragInterface_=function(){
-var _73=this;
-var _74=false;
-var _75=null;
-var _76=null;
-var _77=null;
-var _78=null;
-var _79=null;
+Dygraph.prototype.createDragInterface_=function(){
+var _81=this;
+var _82=false;
+var _83=null;
+var _84=null;
+var _85=null;
+var _86=null;
+var _87=null;
 var px=0;
 var py=0;
-var _82=function(e){
+var _90=function(e){
 return e.mouse().page.x-px;
 };
-var _83=function(e){
+var _91=function(e){
 return e.mouse().page.y-py;
 };
-connect(this.hidden_,"onmousemove",function(_84){
-if(_74){
-_77=_82(_84);
-_78=_83(_84);
-_73.drawZoomRect_(_75,_77,_79);
-_79=_77;
+connect(this.hidden_,"onmousemove",function(_92){
+if(_82){
+_85=_90(_92);
+_86=_91(_92);
+_81.drawZoomRect_(_83,_85,_87);
+_87=_85;
 }
 });
-connect(this.hidden_,"onmousedown",function(_85){
-_74=true;
-px=PlotKit.Base.findPosX(_73.canvas_);
-py=PlotKit.Base.findPosY(_73.canvas_);
-_75=_82(_85);
-_76=_83(_85);
+connect(this.hidden_,"onmousedown",function(_93){
+_82=true;
+px=PlotKit.Base.findPosX(_81.canvas_);
+py=PlotKit.Base.findPosY(_81.canvas_);
+_83=_90(_93);
+_84=_91(_93);
 });
-connect(document,"onmouseup",this,function(_86){
-if(_74){
-_74=false;
-_75=null;
-_76=null;
+connect(document,"onmouseup",this,function(_94){
+if(_82){
+_82=false;
+_83=null;
+_84=null;
 }
 });
-connect(this.hidden_,"onmouseout",this,function(_87){
-if(_74){
-_77=null;
-_78=null;
+connect(this.hidden_,"onmouseout",this,function(_95){
+if(_82){
+_85=null;
+_86=null;
 }
 });
-connect(this.hidden_,"onmouseup",this,function(_88){
-if(_74){
-_74=false;
-_77=_82(_88);
-_78=_83(_88);
-var _89=Math.abs(_77-_75);
-var _90=Math.abs(_78-_76);
-if(_89<2&&_90<2&&_73.clickCallback_!=null&&_73.lastx_!=undefined){
-_73.clickCallback_(_88,new Date(_73.lastx_));
+connect(this.hidden_,"onmouseup",this,function(_96){
+if(_82){
+_82=false;
+_85=_90(_96);
+_86=_91(_96);
+var _97=Math.abs(_85-_83);
+var _98=Math.abs(_86-_84);
+if(_97<2&&_98<2&&_81.attr_("clickCallback")!=null&&_81.lastx_!=undefined){
+_81.attr_("clickCallback")(_96,new Date(_81.lastx_));
 }
-if(_89>=10){
-_73.doZoom_(Math.min(_75,_77),Math.max(_75,_77));
+if(_97>=10){
+_81.doZoom_(Math.min(_83,_85),Math.max(_83,_85));
 }else{
-_73.canvas_.getContext("2d").clearRect(0,0,_73.canvas_.width,_73.canvas_.height);
+_81.canvas_.getContext("2d").clearRect(0,0,_81.canvas_.width,_81.canvas_.height);
 }
-_75=null;
-_76=null;
+_83=null;
+_84=null;
 }
 });
-connect(this.hidden_,"ondblclick",this,function(_91){
-_73.dateWindow_=null;
-_73.drawGraph_(_73.rawData_);
-var _92=_73.rawData_[0][0];
-var _93=_73.rawData_[_73.rawData_.length-1][0];
-if(_73.zoomCallback_){
-_73.zoomCallback_(_92,_93);
+connect(this.hidden_,"ondblclick",this,function(_99){
+_81.dateWindow_=null;
+_81.drawGraph_(_81.rawData_);
+var _100=_81.rawData_[0][0];
+var _101=_81.rawData_[_81.rawData_.length-1][0];
+if(_81.attr_("zoomCallback")){
+_81.attr_("zoomCallback")(_100,_101);
 }
 });
 };
-DateGraph.prototype.drawZoomRect_=function(_94,_95,_96){
+Dygraph.prototype.drawZoomRect_=function(_102,endX,_104){
 var ctx=this.canvas_.getContext("2d");
-if(_96){
-ctx.clearRect(Math.min(_94,_96),0,Math.abs(_94-_96),this.height_);
+if(_104){
+ctx.clearRect(Math.min(_102,_104),0,Math.abs(_102-_104),this.height_);
 }
-if(_95&&_94){
+if(endX&&_102){
 ctx.fillStyle="rgba(128,128,128,0.33)";
-ctx.fillRect(Math.min(_94,_95),0,Math.abs(_95-_94),this.height_);
+ctx.fillRect(Math.min(_102,endX),0,Math.abs(endX-_102),this.height_);
 }
 };
-DateGraph.prototype.doZoom_=function(_97,_98){
-var _99=this.layout_.points;
-var _100=null;
-var _101=null;
-for(var i=0;i<_99.length;i++){
-var cx=_99[i].canvasx;
-var x=_99[i].xval;
-if(cx<_97&&(_100==null||x>_100)){
-_100=x;
+Dygraph.prototype.doZoom_=function(lowX,_106){
+var _107=this.layout_.points;
+var _108=null;
+var _109=null;
+for(var i=0;i<_107.length;i++){
+var cx=_107[i].canvasx;
+var x=_107[i].xval;
+if(cx<lowX&&(_108==null||x>_108)){
+_108=x;
 }
-if(cx>_98&&(_101==null||x<_101)){
-_101=x;
+if(cx>_106&&(_109==null||x<_109)){
+_109=x;
 }
 }
-if(_100==null){
-_100=_99[0].xval;
+if(_108==null){
+_108=_107[0].xval;
 }
-if(_101==null){
-_101=_99[_99.length-1].xval;
+if(_109==null){
+_109=_107[_107.length-1].xval;
 }
-this.dateWindow_=[_100,_101];
+this.dateWindow_=[_108,_109];
 this.drawGraph_(this.rawData_);
-if(this.zoomCallback_){
-this.zoomCallback_(_100,_101);
+if(this.attr_("zoomCallback")){
+this.attr_("zoomCallback")(_108,_109);
 }
 };
-DateGraph.prototype.mouseMove_=function(_103){
-var _104=_103.mouse().page.x-PlotKit.Base.findPosX(this.hidden_);
-var _105=this.layout_.points;
-var _106=-1;
-var _107=-1;
-var _108=1e+100;
+Dygraph.prototype.mouseMove_=function(_111){
+var _112=_111.mouse().page.x-PlotKit.Base.findPosX(this.hidden_);
+var _113=this.layout_.points;
+var _114=-1;
+var _115=-1;
+var _116=1e+100;
 var idx=-1;
-for(var i=0;i<_105.length;i++){
-var dist=Math.abs(_105[i].canvasx-_104);
-if(dist>_108){
+for(var i=0;i<_113.length;i++){
+var dist=Math.abs(_113[i].canvasx-_112);
+if(dist>_116){
 break;
 }
-_108=dist;
+_116=dist;
 idx=i;
 }
 if(idx>=0){
-_106=_105[idx].xval;
+_114=_113[idx].xval;
 }
-if(_104>_105[_105.length-1].canvasx){
-_106=_105[_105.length-1].xval;
+if(_112>_113[_113.length-1].canvasx){
+_114=_113[_113.length-1].xval;
 }
-var _111=[];
-for(var i=0;i<_105.length;i++){
-if(_105[i].xval==_106){
-_111.push(_105[i]);
+var _119=[];
+for(var i=0;i<_113.length;i++){
+if(_113[i].xval==_114){
+_119.push(_113[i]);
 }
 }
-var _112=this.attrs_.highlightCircleSize;
+var _120=this.attr_("highlightCircleSize");
 var ctx=this.canvas_.getContext("2d");
 if(this.previousVerticalX_>=0){
 var px=this.previousVerticalX_;
-ctx.clearRect(px-_112-1,0,2*_112+2,this.height_);
+ctx.clearRect(px-_120-1,0,2*_120+2,this.height_);
 }
-if(_111.length>0){
-var _104=_111[0].canvasx;
-var _113=this.xValueFormatter_(_106)+":";
+if(_119.length>0){
+var _112=_119[0].canvasx;
+var _121=this.attr_("xValueFormatter")(_114,this)+":";
 var clen=this.colors_.length;
-for(var i=0;i<_111.length;i++){
-if(this.labelsSeparateLines){
-_113+="<br/>";
+for(var i=0;i<_119.length;i++){
+if(this.attr_("labelsSeparateLines")){
+_121+="<br/>";
 }
-var _115=_111[i];
-_113+=" <b><font color='"+this.colors_[i%clen].toHexString()+"'>"+_115.name+"</font></b>:"+this.round_(_115.yval,2);
+var _123=_119[i];
+_121+=" <b><font color='"+this.colors_[i%clen].toHexString()+"'>"+_123.name+"</font></b>:"+this.round_(_123.yval,2);
 }
-this.labelsDiv_.innerHTML=_113;
-this.lastx_=_106;
+this.attr_("labelsDiv").innerHTML=_121;
+this.lastx_=_114;
 ctx.save();
-for(var i=0;i<_111.length;i++){
+for(var i=0;i<_119.length;i++){
 ctx.beginPath();
 ctx.fillStyle=this.colors_[i%clen].toRGBString();
-ctx.arc(_104,_111[i%clen].canvasy,_112,0,360,false);
+ctx.arc(_112,_119[i%clen].canvasy,_120,0,360,false);
 ctx.fill();
 }
 ctx.restore();
-this.previousVerticalX_=_104;
+this.previousVerticalX_=_112;
 }
 };
-DateGraph.prototype.mouseOut_=function(_116){
+Dygraph.prototype.mouseOut_=function(_124){
 var ctx=this.canvas_.getContext("2d");
 ctx.clearRect(0,0,this.width_,this.height_);
-this.labelsDiv_.innerHTML="";
+this.attr_("labelsDiv").innerHTML="";
 };
-DateGraph.zeropad=function(x){
+Dygraph.zeropad=function(x){
 if(x<10){
 return "0"+x;
 }else{
 return ""+x;
 }
 };
-DateGraph.prototype.hmsString_=function(date){
-var _118=DateGraph.zeropad;
+Dygraph.prototype.hmsString_=function(date){
+var _126=Dygraph.zeropad;
 var d=new Date(date);
 if(d.getSeconds()){
-return _118(d.getHours())+":"+_118(d.getMinutes())+":"+_118(d.getSeconds());
+return _126(d.getHours())+":"+_126(d.getMinutes())+":"+_126(d.getSeconds());
 }else{
 if(d.getMinutes()){
-return _118(d.getHours())+":"+_118(d.getMinutes());
+return _126(d.getHours())+":"+_126(d.getMinutes());
 }else{
-return _118(d.getHours());
+return _126(d.getHours());
 }
 }
 };
-DateGraph.prototype.dateString_=function(date){
-var _120=DateGraph.zeropad;
+Dygraph.dateString_=function(date,self){
+var _129=Dygraph.zeropad;
 var d=new Date(date);
 var year=""+d.getFullYear();
-var _122=_120(d.getMonth()+1);
-var day=_120(d.getDate());
+var _131=_129(d.getMonth()+1);
+var day=_129(d.getDate());
 var ret="";
 var frac=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
 if(frac){
-ret=" "+this.hmsString_(date);
+ret=" "+self.hmsString_(date);
 }
-return year+"/"+_122+"/"+day+ret;
+return year+"/"+_131+"/"+day+ret;
 };
-DateGraph.prototype.round_=function(num,_126){
-var _127=Math.pow(10,_126);
-return Math.round(num*_127)/_127;
+Dygraph.prototype.round_=function(num,_135){
+var _136=Math.pow(10,_135);
+return Math.round(num*_136)/_136;
 };
-DateGraph.prototype.loadedEvent_=function(data){
+Dygraph.prototype.loadedEvent_=function(data){
 this.rawData_=this.parseCSV_(data);
 this.drawGraph_(this.rawData_);
 };
-DateGraph.prototype.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-DateGraph.prototype.quarters=["Jan","Apr","Jul","Oct"];
-DateGraph.prototype.addXTicks_=function(){
-var _129,endDate;
+Dygraph.prototype.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+Dygraph.prototype.quarters=["Jan","Apr","Jul","Oct"];
+Dygraph.prototype.addXTicks_=function(){
+var _138,endDate;
 if(this.dateWindow_){
-_129=this.dateWindow_[0];
+_138=this.dateWindow_[0];
 endDate=this.dateWindow_[1];
 }else{
-_129=this.rawData_[0][0];
+_138=this.rawData_[0][0];
 endDate=this.rawData_[this.rawData_.length-1][0];
 }
-var _130=this.xTicker_(_129,endDate);
-this.layout_.updateOptions({xTicks:_130});
+var _139=this.attr_("xTicker")(_138,endDate,this);
+this.layout_.updateOptions({xTicks:_139});
 };
-DateGraph.SECONDLY=0;
-DateGraph.TEN_SECONDLY=1;
-DateGraph.THIRTY_SECONDLY=2;
-DateGraph.MINUTELY=3;
-DateGraph.TEN_MINUTELY=4;
-DateGraph.THIRTY_MINUTELY=5;
-DateGraph.HOURLY=6;
-DateGraph.SIX_HOURLY=7;
-DateGraph.DAILY=8;
-DateGraph.WEEKLY=9;
-DateGraph.MONTHLY=10;
-DateGraph.QUARTERLY=11;
-DateGraph.BIANNUAL=12;
-DateGraph.ANNUAL=13;
-DateGraph.DECADAL=14;
-DateGraph.NUM_GRANULARITIES=15;
-DateGraph.SHORT_SPACINGS=[];
-DateGraph.SHORT_SPACINGS[DateGraph.SECONDLY]=1000*1;
-DateGraph.SHORT_SPACINGS[DateGraph.TEN_SECONDLY]=1000*10;
-DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_SECONDLY]=1000*30;
-DateGraph.SHORT_SPACINGS[DateGraph.MINUTELY]=1000*60;
-DateGraph.SHORT_SPACINGS[DateGraph.TEN_MINUTELY]=1000*60*10;
-DateGraph.SHORT_SPACINGS[DateGraph.THIRTY_MINUTELY]=1000*60*30;
-DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]=1000*3600;
-DateGraph.SHORT_SPACINGS[DateGraph.HOURLY]=1000*3600*6;
-DateGraph.SHORT_SPACINGS[DateGraph.DAILY]=1000*86400;
-DateGraph.SHORT_SPACINGS[DateGraph.WEEKLY]=1000*604800;
-DateGraph.prototype.NumXTicks=function(_131,_132,_133){
-if(_133<DateGraph.MONTHLY){
-var _134=DateGraph.SHORT_SPACINGS[_133];
-return Math.floor(0.5+1*(_132-_131)/_134);
+Dygraph.SECONDLY=0;
+Dygraph.TEN_SECONDLY=1;
+Dygraph.THIRTY_SECONDLY=2;
+Dygraph.MINUTELY=3;
+Dygraph.TEN_MINUTELY=4;
+Dygraph.THIRTY_MINUTELY=5;
+Dygraph.HOURLY=6;
+Dygraph.SIX_HOURLY=7;
+Dygraph.DAILY=8;
+Dygraph.WEEKLY=9;
+Dygraph.MONTHLY=10;
+Dygraph.QUARTERLY=11;
+Dygraph.BIANNUAL=12;
+Dygraph.ANNUAL=13;
+Dygraph.DECADAL=14;
+Dygraph.NUM_GRANULARITIES=15;
+Dygraph.SHORT_SPACINGS=[];
+Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]=1000*1;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]=1000*10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY]=1000*30;
+Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]=1000*60;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]=1000*60*10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY]=1000*60*30;
+Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]=1000*3600;
+Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]=1000*3600*6;
+Dygraph.SHORT_SPACINGS[Dygraph.DAILY]=1000*86400;
+Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]=1000*604800;
+Dygraph.prototype.NumXTicks=function(_140,_141,_142){
+if(_142<Dygraph.MONTHLY){
+var _143=Dygraph.SHORT_SPACINGS[_142];
+return Math.floor(0.5+1*(_141-_140)/_143);
 }else{
-var _135=1;
-var _136=12;
-if(_133==DateGraph.QUARTERLY){
-_136=3;
+var _144=1;
+var _145=12;
+if(_142==Dygraph.QUARTERLY){
+_145=3;
 }
-if(_133==DateGraph.BIANNUAL){
-_136=2;
+if(_142==Dygraph.BIANNUAL){
+_145=2;
 }
-if(_133==DateGraph.ANNUAL){
-_136=1;
+if(_142==Dygraph.ANNUAL){
+_145=1;
 }
-if(_133==DateGraph.DECADAL){
-_136=1;
-_135=10;
+if(_142==Dygraph.DECADAL){
+_145=1;
+_144=10;
 }
-var _137=365.2524*24*3600*1000;
-var _138=1*(_132-_131)/_137;
-return Math.floor(0.5+1*_138*_136/_135);
+var _146=365.2524*24*3600*1000;
+var _147=1*(_141-_140)/_146;
+return Math.floor(0.5+1*_147*_145/_144);
 }
 };
-DateGraph.prototype.GetXAxis=function(_139,_140,_141){
-var _142=[];
-if(_141<DateGraph.MONTHLY){
-var _143=DateGraph.SHORT_SPACINGS[_141];
-var _144="%d%b";
-if(_141<DateGraph.HOURLY){
-_139=_143*Math.floor(0.5+_139/_143);
+Dygraph.prototype.GetXAxis=function(_148,_149,_150){
+var _151=[];
+if(_150<Dygraph.MONTHLY){
+var _152=Dygraph.SHORT_SPACINGS[_150];
+var _153="%d%b";
+if(_150<Dygraph.HOURLY){
+_148=_152*Math.floor(0.5+_148/_152);
 }
-for(var t=_139;t<=_140;t+=_143){
+for(var t=_148;t<=_149;t+=_152){
 var d=new Date(t);
 var frac=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
-if(frac==0||_141>=DateGraph.DAILY){
-_142.push({v:t,label:new Date(t+3600*1000).strftime(_144)});
+if(frac==0||_150>=Dygraph.DAILY){
+_151.push({v:t,label:new Date(t+3600*1000).strftime(_153)});
 }else{
-_142.push({v:t,label:this.hmsString_(t)});
+_151.push({v:t,label:this.hmsString_(t)});
 }
 }
 }else{
-var _146;
-var _147=1;
-if(_141==DateGraph.MONTHLY){
-_146=[0,1,2,3,4,5,6,7,8,9,10,11,12];
+var _155;
+var _156=1;
+if(_150==Dygraph.MONTHLY){
+_155=[0,1,2,3,4,5,6,7,8,9,10,11,12];
 }else{
-if(_141==DateGraph.QUARTERLY){
-_146=[0,3,6,9];
+if(_150==Dygraph.QUARTERLY){
+_155=[0,3,6,9];
 }else{
-if(_141==DateGraph.BIANNUAL){
-_146=[0,6];
+if(_150==Dygraph.BIANNUAL){
+_155=[0,6];
 }else{
-if(_141==DateGraph.ANNUAL){
-_146=[0];
+if(_150==Dygraph.ANNUAL){
+_155=[0];
 }else{
-if(_141==DateGraph.DECADAL){
-_146=[0];
-_147=10;
+if(_150==Dygraph.DECADAL){
+_155=[0];
+_156=10;
 }
 }
 }
 }
 }
-var _148=new Date(_139).getFullYear();
-var _149=new Date(_140).getFullYear();
-var _150=DateGraph.zeropad;
-for(var i=_148;i<=_149;i++){
-if(i%_147!=0){
+var _157=new Date(_148).getFullYear();
+var _158=new Date(_149).getFullYear();
+var _159=Dygraph.zeropad;
+for(var i=_157;i<=_158;i++){
+if(i%_156!=0){
 continue;
 }
-for(var j=0;j<_146.length;j++){
-var _151=i+"/"+_150(1+_146[j])+"/01";
-var t=Date.parse(_151);
-if(t<_139||t>_140){
+for(var j=0;j<_155.length;j++){
+var _160=i+"/"+_159(1+_155[j])+"/01";
+var t=Date.parse(_160);
+if(t<_148||t>_149){
 continue;
 }
-_142.push({v:t,label:new Date(t).strftime("%b %y")});
+_151.push({v:t,label:new Date(t).strftime("%b %y")});
 }
 }
 }
-return _142;
+return _151;
 };
-DateGraph.prototype.dateTicker=function(_152,_153){
-var _154=-1;
-for(var i=0;i<DateGraph.NUM_GRANULARITIES;i++){
-var _155=this.NumXTicks(_152,_153,i);
-if(this.width_/_155>=this.attrs_.pixelsPerXLabel){
-_154=i;
+Dygraph.dateTicker=function(_161,_162,self){
+var _163=-1;
+for(var i=0;i<Dygraph.NUM_GRANULARITIES;i++){
+var _164=self.NumXTicks(_161,_162,i);
+if(self.width_/_164>=self.attr_("pixelsPerXLabel")){
+_163=i;
 break;
 }
 }
-if(_154>=0){
-return this.GetXAxis(_152,_153,_154);
+if(_163>=0){
+return self.GetXAxis(_161,_162,_163);
 }else{
 }
 };
-DateGraph.prototype.numericTicks=function(minV,maxV){
-var _158=[1,2,5];
-var _159,low_val,high_val,nTicks;
+Dygraph.numericTicks=function(minV,maxV,self){
+var _167=[1,2,5];
+var _168,low_val,high_val,nTicks;
+var _169=self.attr_("pixelsPerYLabel");
 for(var i=-10;i<50;i++){
-var _160=Math.pow(10,i);
-for(var j=0;j<_158.length;j++){
-_159=_160*_158[j];
-low_val=Math.floor(minV/_159)*_159;
-high_val=Math.ceil(maxV/_159)*_159;
-nTicks=(high_val-low_val)/_159;
-var _161=this.height_/nTicks;
-if(_161>this.attrs_.pixelsPerYLabel){
+var _170=Math.pow(10,i);
+for(var j=0;j<_167.length;j++){
+_168=_170*_167[j];
+low_val=Math.floor(minV/_168)*_168;
+high_val=Math.ceil(maxV/_168)*_168;
+nTicks=(high_val-low_val)/_168;
+var _171=self.height_/nTicks;
+if(_171>_169){
 break;
 }
 }
-if(_161>this.attrs_.pixelsPerYLabel){
+if(_171>_169){
 break;
 }
 }
-var _162=[];
+var _172=[];
 for(var i=0;i<nTicks;i++){
-var _163=low_val+i*_159;
-var _164=this.round_(_163,2);
-if(this.labelsKMB_){
+var _173=low_val+i*_168;
+var _174=self.round_(_173,2);
+if(self.attr_("labelsKMB")){
 var k=1000;
-if(_163>=k*k*k){
-_164=this.round_(_163/(k*k*k),1)+"B";
+if(_173>=k*k*k){
+_174=self.round_(_173/(k*k*k),1)+"B";
 }else{
-if(_163>=k*k){
-_164=this.round_(_163/(k*k),1)+"M";
+if(_173>=k*k){
+_174=self.round_(_173/(k*k),1)+"M";
 }else{
-if(_163>=k){
-_164=this.round_(_163/k,1)+"K";
+if(_173>=k){
+_174=self.round_(_173/k,1)+"K";
 }
 }
 }
 }
-_162.push({label:_164,v:_163});
+_172.push({label:_174,v:_173});
 }
-return _162;
+return _172;
 };
-DateGraph.prototype.addYTicks_=function(minY,maxY){
-var _168=this.numericTicks(minY,maxY);
-this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_168});
+Dygraph.prototype.addYTicks_=function(minY,maxY){
+var _178=Dygraph.numericTicks(minY,maxY,this);
+this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_178});
 };
-DateGraph.prototype.drawGraph_=function(data){
+Dygraph.prototype.drawGraph_=function(data){
 var maxY=null;
 this.layout_.removeAllDatasets();
+this.setColors_();
 for(var i=1;i<data[0].length;i++){
-var _169=[];
+var _179=[];
 for(var j=0;j<data.length;j++){
 var date=data[j][0];
-_169[j]=[date,data[j][i]];
+_179[j]=[date,data[j][i]];
 }
-_169=this.rollingAverage(_169,this.rollPeriod_);
-var bars=this.errorBars_||this.customBars_;
+_179=this.rollingAverage(_179,this.rollPeriod_);
+var bars=this.attr_("errorBars")||this.customBars_;
 if(this.dateWindow_){
 var low=this.dateWindow_[0];
 var high=this.dateWindow_[1];
-var _173=[];
-for(var k=0;k<_169.length;k++){
-if(_169[k][0]>=low&&_169[k][0]<=high){
-_173.push(_169[k]);
-var y=bars?_169[k][1][0]:_169[k][1];
+var _183=[];
+for(var k=0;k<_179.length;k++){
+if(_179[k][0]>=low&&_179[k][0]<=high){
+_183.push(_179[k]);
+var y=bars?_179[k][1][0]:_179[k][1];
 if(maxY==null||y>maxY){
 maxY=y;
 }
 }
 }
-_169=_173;
+_179=_183;
 }else{
-for(var j=0;j<_169.length;j++){
-var y=bars?_169[j][1][0]:_169[j][1];
+if(!this.customBars_){
+for(var j=0;j<_179.length;j++){
+var y=bars?_179[j][1][0]:_179[j][1];
 if(maxY==null||y>maxY){
-maxY=bars?y+_169[j][1][1]:y;
+maxY=bars?y+_179[j][1][1]:y;
+}
+}
+}else{
+for(var j=0;j<_179.length;j++){
+var y=_179[j][1][0];
+var high=_179[j][1][2];
+if(high>y){
+y=high;
+}
+if(maxY==null||y>maxY){
+maxY=y;
+}
 }
 }
 }
 if(bars){
 var vals=[];
-for(var j=0;j<_169.length;j++){
-vals[j]=[_169[j][0],_169[j][1][0],_169[j][1][1],_169[j][1][2]];
+for(var j=0;j<_179.length;j++){
+vals[j]=[_179[j][0],_179[j][1][0],_179[j][1][1],_179[j][1][2]];
 }
-this.layout_.addDataset(this.labels_[i-1],vals);
+this.layout_.addDataset(this.attr_("labels")[i],vals);
 }else{
-this.layout_.addDataset(this.labels_[i-1],_169);
+this.layout_.addDataset(this.attr_("labels")[i],_179);
 }
 }
 if(this.valueRange_!=null){
@@ -5354,44 +5421,44 @@ this.plotter_.clear();
 this.plotter_.render();
 this.canvas_.getContext("2d").clearRect(0,0,this.canvas_.width,this.canvas_.height);
 };
-DateGraph.prototype.rollingAverage=function(_175,_176){
-if(_175.length<2){
-return _175;
+Dygraph.prototype.rollingAverage=function(_185,_186){
+if(_185.length<2){
+return _185;
 }
-var _176=Math.min(_176,_175.length-1);
-var _177=[];
-var _178=this.sigma_;
+var _186=Math.min(_186,_185.length-1);
+var _187=[];
+var _188=this.attr_("sigma");
 if(this.fractions_){
 var num=0;
 var den=0;
 var mult=100;
-for(var i=0;i<_175.length;i++){
-num+=_175[i][1][0];
-den+=_175[i][1][1];
-if(i-_176>=0){
-num-=_175[i-_176][1][0];
-den-=_175[i-_176][1][1];
+for(var i=0;i<_185.length;i++){
+num+=_185[i][1][0];
+den+=_185[i][1][1];
+if(i-_186>=0){
+num-=_185[i-_186][1][0];
+den-=_185[i-_186][1][1];
 }
-var date=_175[i][0];
-var _181=den?num/den:0;
-if(this.errorBars_){
+var date=_185[i][0];
+var _191=den?num/den:0;
+if(this.attr_("errorBars")){
 if(this.wilsonInterval_){
 if(den){
-var p=_181<0?0:_181,n=den;
-var pm=_178*Math.sqrt(p*(1-p)/n+_178*_178/(4*n*n));
-var _184=1+_178*_178/den;
-var low=(p+_178*_178/(2*den)-pm)/_184;
-var high=(p+_178*_178/(2*den)+pm)/_184;
-_177[i]=[date,[p*mult,(p-low)*mult,(high-p)*mult]];
+var p=_191<0?0:_191,n=den;
+var pm=_188*Math.sqrt(p*(1-p)/n+_188*_188/(4*n*n));
+var _194=1+_188*_188/den;
+var low=(p+_188*_188/(2*den)-pm)/_194;
+var high=(p+_188*_188/(2*den)+pm)/_194;
+_187[i]=[date,[p*mult,(p-low)*mult,(high-p)*mult]];
 }else{
-_177[i]=[date,[0,0,0]];
+_187[i]=[date,[0,0,0]];
 }
 }else{
-var _185=den?_178*Math.sqrt(_181*(1-_181)/den):1;
-_177[i]=[date,[mult*_181,mult*_185,mult*_185]];
+var _195=den?_188*Math.sqrt(_191*(1-_191)/den):1;
+_187[i]=[date,[mult*_191,mult*_195,mult*_195]];
 }
 }else{
-_177[i]=[date,mult*_181];
+_187[i]=[date,mult*_191];
 }
 }
 }else{
@@ -5399,157 +5466,240 @@ if(this.customBars_){
 var low=0;
 var mid=0;
 var high=0;
-var _187=0;
-for(var i=0;i<_175.length;i++){
-var data=_175[i][1];
+var _197=0;
+for(var i=0;i<_185.length;i++){
+var data=_185[i][1];
 var y=data[1];
-_177[i]=[_175[i][0],[y,y-data[0],data[2]-y]];
+_187[i]=[_185[i][0],[y,y-data[0],data[2]-y]];
 low+=data[0];
 mid+=y;
 high+=data[2];
-_187+=1;
-if(i-_176>=0){
-var prev=_175[i-_176];
+_197+=1;
+if(i-_186>=0){
+var prev=_185[i-_186];
 low-=prev[1][0];
 mid-=prev[1][1];
 high-=prev[1][2];
-_187-=1;
+_197-=1;
 }
-_177[i]=[_175[i][0],[1*mid/_187,1*(mid-low)/_187,1*(high-mid)/_187]];
+_187[i]=[_185[i][0],[1*mid/_197,1*(mid-low)/_197,1*(high-mid)/_197]];
 }
 }else{
-var _189=Math.min(_176-1,_175.length-2);
-if(!this.errorBars_){
-for(var i=0;i<_189;i++){
+var _199=Math.min(_186-1,_185.length-2);
+if(!this.attr_("errorBars")){
+for(var i=0;i<_199;i++){
 var sum=0;
 for(var j=0;j<i+1;j++){
-sum+=_175[j][1];
+sum+=_185[j][1];
 }
-_177[i]=[_175[i][0],sum/(i+1)];
+_187[i]=[_185[i][0],sum/(i+1)];
 }
-for(var i=Math.min(_176-1,_175.length-2);i<_175.length;i++){
+for(var i=Math.min(_186-1,_185.length-2);i<_185.length;i++){
 var sum=0;
-for(var j=i-_176+1;j<i+1;j++){
-sum+=_175[j][1];
+for(var j=i-_186+1;j<i+1;j++){
+sum+=_185[j][1];
 }
-_177[i]=[_175[i][0],sum/_176];
+_187[i]=[_185[i][0],sum/_186];
 }
 }else{
-for(var i=0;i<_189;i++){
+for(var i=0;i<_199;i++){
 var sum=0;
-var _191=0;
+var _201=0;
 for(var j=0;j<i+1;j++){
-sum+=_175[j][1][0];
-_191+=Math.pow(_175[j][1][1],2);
+sum+=_185[j][1][0];
+_201+=Math.pow(_185[j][1][1],2);
 }
-var _185=Math.sqrt(_191)/(i+1);
-_177[i]=[_175[i][0],[sum/(i+1),_178*_185,_178*_185]];
+var _195=Math.sqrt(_201)/(i+1);
+_187[i]=[_185[i][0],[sum/(i+1),_188*_195,_188*_195]];
 }
-for(var i=Math.min(_176-1,_175.length-2);i<_175.length;i++){
+for(var i=Math.min(_186-1,_185.length-2);i<_185.length;i++){
 var sum=0;
-var _191=0;
-for(var j=i-_176+1;j<i+1;j++){
-sum+=_175[j][1][0];
-_191+=Math.pow(_175[j][1][1],2);
+var _201=0;
+for(var j=i-_186+1;j<i+1;j++){
+sum+=_185[j][1][0];
+_201+=Math.pow(_185[j][1][1],2);
 }
-var _185=Math.sqrt(_191)/_176;
-_177[i]=[_175[i][0],[sum/_176,_178*_185,_178*_185]];
-}
-}
+var _195=Math.sqrt(_201)/_186;
+_187[i]=[_185[i][0],[sum/_186,_188*_195,_188*_195]];
 }
 }
-return _177;
+}
+}
+return _187;
 };
-DateGraph.prototype.dateParser=function(_192){
-var _193;
-if(_192.length==10&&_192.search("-")!=-1){
-_193=_192.replace("-","/","g");
-while(_193.search("-")!=-1){
-_193=_193.replace("-","/");
+Dygraph.dateParser=function(_202,self){
+var _203;
+var d;
+if(_202.length==10&&_202.search("-")!=-1){
+_203=_202.replace("-","/","g");
+while(_203.search("-")!=-1){
+_203=_203.replace("-","/");
 }
-return Date.parse(_193);
+d=Date.parse(_203);
 }else{
-if(_192.length==8){
-_193=_192.substr(0,4)+"/"+_192.substr(4,2)+"/"+_192.substr(6,2);
-return Date.parse(_193);
+if(_202.length==8){
+_203=_202.substr(0,4)+"/"+_202.substr(4,2)+"/"+_202.substr(6,2);
+d=Date.parse(_203);
 }else{
-return Date.parse(_192);
+d=Date.parse(_202);
 }
+}
+if(!d||isNaN(d)){
+self.error("Couldn't parse "+_202+" as a date");
+}
+return d;
+};
+Dygraph.prototype.detectTypeFromString_=function(str){
+var _205=false;
+if(str.indexOf("-")>=0||str.indexOf("/")>=0||isNaN(parseFloat(str))){
+_205=true;
+}else{
+if(str.length==8&&str>"19700101"&&str<"20371231"){
+_205=true;
+}
+}
+if(_205){
+this.attrs_.xValueFormatter=Dygraph.dateString_;
+this.attrs_.xValueParser=Dygraph.dateParser;
+this.attrs_.xTicker=Dygraph.dateTicker;
+}else{
+this.attrs_.xValueFormatter=function(x){
+return x;
+};
+this.attrs_.xValueParser=function(x){
+return parseFloat(x);
+};
+this.attrs_.xTicker=Dygraph.numericTicks;
 }
 };
-DateGraph.prototype.parseCSV_=function(data){
+Dygraph.prototype.parseCSV_=function(data){
 var ret=[];
-var _194=data.split("\n");
-var _195=this.labelsFromCSV_?1:0;
+var _206=data.split("\n");
+var _207=0;
 if(this.labelsFromCSV_){
-var _196=_194[0].split(",");
-_196.shift();
-this.labels_=_196;
-this.setColors_(this.attrs_);
-this.renderOptions_.colorScheme=this.colors_;
-MochiKit.Base.update(this.plotter_.options,this.renderOptions_);
-MochiKit.Base.update(this.layoutOptions_,this.attrs_);
+_207=1;
+this.attrs_.labels=_206[0].split(",");
 }
-for(var i=_195;i<_194.length;i++){
-var line=_194[i];
+var _208;
+var _209=false;
+var _210=this.attr_("labels").length;
+for(var i=_207;i<_206.length;i++){
+var line=_206[i];
 if(line.length==0){
 continue;
 }
-var _198=line.split(",");
-if(_198.length<2){
+var _212=line.split(",");
+if(_212.length<2){
 continue;
 }
-var _199=[];
-_199[0]=this.xValueParser_(_198[0]);
+var _213=[];
+if(!_209){
+this.detectTypeFromString_(_212[0]);
+_208=this.attr_("xValueParser");
+_209=true;
+}
+_213[0]=_208(_212[0],this);
 if(this.fractions_){
-for(var j=1;j<_198.length;j++){
-var vals=_198[j].split("/");
-_199[j]=[parseFloat(vals[0]),parseFloat(vals[1])];
+for(var j=1;j<_212.length;j++){
+var vals=_212[j].split("/");
+_213[j]=[parseFloat(vals[0]),parseFloat(vals[1])];
 }
 }else{
-if(this.errorBars_){
-for(var j=1;j<_198.length;j+=2){
-_199[(j+1)/2]=[parseFloat(_198[j]),parseFloat(_198[j+1])];
+if(this.attr_("errorBars")){
+for(var j=1;j<_212.length;j+=2){
+_213[(j+1)/2]=[parseFloat(_212[j]),parseFloat(_212[j+1])];
 }
 }else{
 if(this.customBars_){
-for(var j=1;j<_198.length;j++){
-var vals=_198[j].split(";");
-_199[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
+for(var j=1;j<_212.length;j++){
+var vals=_212[j].split(";");
+_213[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
 }
 }else{
-for(var j=1;j<_198.length;j++){
-_199[j]=parseFloat(_198[j]);
+for(var j=1;j<_212.length;j++){
+_213[j]=parseFloat(_212[j]);
 }
 }
 }
 }
-ret.push(_199);
+ret.push(_213);
+if(_213.length!=_210){
+this.error("Number of columns in line "+i+" ("+_213.length+") does not agree with number of labels ("+_210+") "+line);
+}
 }
 return ret;
 };
-DateGraph.prototype.parseDataTable_=function(data){
+Dygraph.prototype.parseArray_=function(data){
+if(data.length==0){
+this.error("Can't plot empty data set");
+return null;
+}
+if(data[0].length==0){
+this.error("Data set cannot contain an empty row");
+return null;
+}
+if(this.attr_("labels")==null){
+this.warn("Using default labels. Set labels explicitly via 'labels' "+"in the options parameter");
+this.attrs_.labels=["X"];
+for(var i=1;i<data[0].length;i++){
+this.attrs_.labels.push("Y"+i);
+}
+}
+if(MochiKit.Base.isDateLike(data[0][0])){
+this.attrs_.xValueFormatter=Dygraph.dateString_;
+this.attrs_.xTicker=Dygraph.dateTicker;
+var _214=MochiKit.Base.clone(data);
+for(var i=0;i<data.length;i++){
+if(_214[i].length==0){
+this.error("Row "<<(1+i)<<" of data is empty");
+return null;
+}
+if(_214[i][0]==null||typeof (_214[i][0].getTime)!="function"){
+this.error("x value in row "<<(1+i)<<" is not a Date");
+return null;
+}
+_214[i][0]=_214[i][0].getTime();
+}
+return _214;
+}else{
+this.attrs_.xValueFormatter=function(x){
+return x;
+};
+this.attrs_.xTicker=Dygraph.numericTicks;
+return data;
+}
+};
+Dygraph.prototype.parseDataTable_=function(data){
 var cols=data.getNumberOfColumns();
 var rows=data.getNumberOfRows();
-var _202=[];
+var _217=[];
 for(var i=0;i<cols;i++){
-_202.push(data.getColumnLabel(i));
+_217.push(data.getColumnLabel(i));
 }
-_202.shift();
-this.labels_=_202;
-this.setColors_(this.attrs_);
-this.renderOptions_.colorScheme=this.colors_;
-MochiKit.Base.update(this.plotter_.options,this.renderOptions_);
-MochiKit.Base.update(this.layoutOptions_,this.attrs_);
-var _203=data.getColumnType(0);
-if(_203!="date"&&_203!="number"){
-alert("only 'date' and 'number' types are supported for column 1"+"of DataTable input (Got '"+_203+"')");
+this.attrs_.labels=_217;
+var _218=data.getColumnType(0);
+if(_218=="date"){
+this.attrs_.xValueFormatter=Dygraph.dateString_;
+this.attrs_.xValueParser=Dygraph.dateParser;
+this.attrs_.xTicker=Dygraph.dateTicker;
+}else{
+if(_218!="number"){
+this.attrs_.xValueFormatter=function(x){
+return x;
+};
+this.attrs_.xValueParser=function(x){
+return parseFloat(x);
+};
+this.attrs_.xTicker=Dygraph.numericTicks;
+}else{
+this.error("only 'date' and 'number' types are supported for column 1"+"of DataTable input (Got '"+_218+"')");
 return null;
+}
 }
 var ret=[];
 for(var i=0;i<rows;i++){
 var row=[];
-if(_203=="date"){
+if(_218=="date"){
 row.push(data.getValue(i,0).getTime());
 }else{
 row.push(data.getValue(i,0));
@@ -5561,69 +5711,74 @@ ret.push(row);
 }
 return ret;
 };
-DateGraph.prototype.start_=function(){
+Dygraph.prototype.start_=function(){
 if(typeof this.file_=="function"){
 this.loadedEvent_(this.file_());
+}else{
+if(MochiKit.Base.isArrayLike(this.file_)){
+this.rawData_=this.parseArray_(this.file_);
+this.drawGraph_(this.rawData_);
 }else{
 if(typeof this.file_=="object"&&typeof this.file_.getColumnRange=="function"){
 this.rawData_=this.parseDataTable_(this.file_);
 this.drawGraph_(this.rawData_);
 }else{
+if(typeof this.file_=="string"){
+if(this.file_.indexOf("\n")>=0){
+this.loadedEvent_(this.file_);
+}else{
 var req=new XMLHttpRequest();
-var _206=this;
+var _221=this;
 req.onreadystatechange=function(){
 if(req.readyState==4){
 if(req.status==200){
-_206.loadedEvent_(req.responseText);
+_221.loadedEvent_(req.responseText);
 }
 }
 };
 req.open("GET",this.file_,true);
 req.send(null);
 }
+}else{
+this.error("Unknown data format: "+(typeof this.file_));
+}
+}
+}
 }
 };
-DateGraph.prototype.updateOptions=function(_207){
-if(_207.errorBars){
-this.errorBars_=_207.errorBars;
+Dygraph.prototype.updateOptions=function(_222){
+if(_222.customBars){
+this.customBars_=_222.customBars;
 }
-if(_207.customBars){
-this.customBars_=_207.customBars;
+if(_222.rollPeriod){
+this.rollPeriod_=_222.rollPeriod;
 }
-if(_207.strokeWidth){
-this.strokeWidth_=_207.strokeWidth;
+if(_222.dateWindow){
+this.dateWindow_=_222.dateWindow;
 }
-if(_207.rollPeriod){
-this.rollPeriod_=_207.rollPeriod;
+if(_222.valueRange){
+this.valueRange_=_222.valueRange;
 }
-if(_207.dateWindow){
-this.dateWindow_=_207.dateWindow;
-}
-if(_207.valueRange){
-this.valueRange_=_207.valueRange;
-}
-MochiKit.Base.update(this.attrs_,_207);
-if(typeof (_207.labels)!="undefined"){
-this.labels_=_207.labels;
-this.labelsFromCSV_=(_207.labels==null);
-}
-this.layout_.updateOptions({"errorBars":this.errorBars_});
-if(_207["file"]&&_207["file"]!=this.file_){
-this.file_=_207["file"];
+MochiKit.Base.update(this.user_attrs_,_222);
+this.labelsFromCSV_=(this.attr_("labels")==null);
+this.layout_.updateOptions({"errorBars":this.attr_("errorBars")});
+if(_222["file"]&&_222["file"]!=this.file_){
+this.file_=_222["file"];
 this.start_();
 }else{
 this.drawGraph_(this.rawData_);
 }
 };
-DateGraph.prototype.adjustRoll=function(_208){
-this.rollPeriod_=_208;
+Dygraph.prototype.adjustRoll=function(_223){
+this.rollPeriod_=_223;
 this.drawGraph_(this.rawData_);
 };
-DateGraph.GVizChart=function(_209){
-this.container=_209;
+Dygraph.GVizChart=function(_224){
+this.container=_224;
 };
-DateGraph.GVizChart.prototype.draw=function(data,_210){
+Dygraph.GVizChart.prototype.draw=function(data,_225){
 this.container.innerHTML="";
-this.date_graph=new DateGraph(this.container,data,null,_210||{});
+this.date_graph=new Dygraph(this.container,data,_225);
 };
+DateGraph=Dygraph;
 

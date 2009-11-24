@@ -3,7 +3,7 @@
 
 /**
  * @fileoverview Subclasses various parts of PlotKit to meet the additional
- * needs of DateGraph: grid overlays and error bars
+ * needs of Dygraph: grid overlays and error bars
  */
 
 // Subclass PlotKit.Layout to add:
@@ -11,21 +11,21 @@
 // 2. Copy error terms for PlotKit.CanvasRenderer._renderLineChart
 
 /**
- * Creates a new DateGraphLayout object. Options are the same as those allowed
+ * Creates a new DygraphLayout object. Options are the same as those allowed
  * by the PlotKit.Layout constructor.
  * @param {Object} options Options for PlotKit.Layout
- * @return {Object} The DateGraphLayout object
+ * @return {Object} The DygraphLayout object
  */
-DateGraphLayout = function(options) {
+DygraphLayout = function(options) {
   PlotKit.Layout.call(this, "line", options);
 };
-DateGraphLayout.prototype = new PlotKit.Layout();
+DygraphLayout.prototype = new PlotKit.Layout();
 
 /**
  * Behaves the same way as PlotKit.Layout, but also copies the errors
  * @private
  */
-DateGraphLayout.prototype.evaluateWithError = function() {
+DygraphLayout.prototype.evaluateWithError = function() {
   this.evaluate();
   if (!this.options.errorBars) return;
 
@@ -52,7 +52,7 @@ DateGraphLayout.prototype.evaluateWithError = function() {
 /**
  * Convenience function to remove all the data sets from a graph
  */
-DateGraphLayout.prototype.removeAllDatasets = function() {
+DygraphLayout.prototype.removeAllDatasets = function() {
   delete this.datasets;
   this.datasets = new Array();
 };
@@ -61,7 +61,7 @@ DateGraphLayout.prototype.removeAllDatasets = function() {
  * Change the values of various layout options
  * @param {Object} new_options an associative array of new properties
  */
-DateGraphLayout.prototype.updateOptions = function(new_options) {
+DygraphLayout.prototype.updateOptions = function(new_options) {
   MochiKit.Base.update(this.options, new_options ? new_options : {});
 };
 
@@ -72,10 +72,10 @@ DateGraphLayout.prototype.updateOptions = function(new_options) {
 /**
  * Sets some PlotKit.CanvasRenderer options
  * @param {Object} element The canvas to attach to
- * @param {Layout} layout The DateGraphLayout object for this graph.
+ * @param {Layout} layout The DygraphLayout object for this graph.
  * @param {Object} options Options to pass on to CanvasRenderer
  */
-DateGraphCanvasRenderer = function(element, layout, options) {
+DygraphCanvasRenderer = function(element, layout, options) {
   PlotKit.CanvasRenderer.call(this, element, layout, options);
   this.options.shouldFill = false;
   this.options.shouldStroke = true;
@@ -87,12 +87,12 @@ DateGraphCanvasRenderer = function(element, layout, options) {
   // TODO(danvk) This shouldn't be necessary: effects should be overlaid
   this.options.drawBackground = false;
 };
-DateGraphCanvasRenderer.prototype = new PlotKit.CanvasRenderer();
+DygraphCanvasRenderer.prototype = new PlotKit.CanvasRenderer();
 
 /**
  * Draw an X/Y grid on top of the existing plot
  */
-DateGraphCanvasRenderer.prototype.render = function() {
+DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
   if (this.options.drawYGrid) {
@@ -136,7 +136,7 @@ DateGraphCanvasRenderer.prototype.render = function() {
 /**
  * Overrides the CanvasRenderer method to draw error bars
  */
-DateGraphCanvasRenderer.prototype._renderLineChart = function() {
+DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var context = this.element.getContext("2d");
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;

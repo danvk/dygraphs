@@ -5,6 +5,7 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
@@ -13,9 +14,9 @@
     <div id="g14" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      g14 = new DateGraph(
+      g14 = new Dygraph(
             document.getElementById("g14"),
-            NoisyData, null, {
+            NoisyData, {
               rollPeriod: 14,
               errorBars: true,
               gridLineColor: MochiKit.Color.Color.redColor(),
