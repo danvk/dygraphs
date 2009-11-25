@@ -86,9 +86,6 @@
       // var options = {showRowNumber: true};
       var prefs = new _IG_Prefs(); // User preferences
       chart.draw(data, {
-        xValueParser: function(x) { return parseFloat(x); },
-        xValueFormatter: function(x) { return x; },
-        xTicker: DateGraph.prototype.numericTicks
       });
     };
 

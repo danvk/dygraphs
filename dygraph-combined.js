@@ -5707,7 +5707,7 @@ this.attrs_.xValueFormatter=Dygraph.dateString_;
 this.attrs_.xValueParser=Dygraph.dateParser;
 this.attrs_.xTicker=Dygraph.dateTicker;
 }else{
-if(_217!="number"){
+if(_217=="number"){
 this.attrs_.xValueFormatter=function(x){
 return x;
 };
@@ -5716,7 +5716,7 @@ return parseFloat(x);
 };
 this.attrs_.xTicker=Dygraph.numericTicks;
 }else{
-this.error("only 'date' and 'number' types are supported for column 1"+"of DataTable input (Got '"+_217+"')");
+this.error("only 'date' and 'number' types are supported for column 1 "+"of DataTable input (Got '"+_217+"')");
 return null;
 }
 }

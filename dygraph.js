@@ -1397,12 +1397,12 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.xTicker = Dygraph.dateTicker;
-  } else if (indepType != 'number') {
+  } else if (indepType == 'number') {
     this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
   } else {
-    this.error("only 'date' and 'number' types are supported for column 1" +
+    this.error("only 'date' and 'number' types are supported for column 1 " +
                "of DataTable input (Got '" + indepType + "')");
     return null;
   }
