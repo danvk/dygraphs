@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>noise</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <div id="graph"></div>
+    <script type="text/javascript">
+    new Dygraph(
+      document.getElementById("graph"),
+      "Date,Value\n" +
+      "2009/12/01,10\n" +
+      "2009/12/02,15\n" +
+      "2009/12/03,\n" +
+      "2009/12/04,20\n" +
+      "2009/12/05,15\n"
+    );
+    </script>
+  </body>
+</html>
