@@ -5723,15 +5723,24 @@ return null;
 var ret=[];
 for(var i=0;i<rows;i++){
 var row=[];
+if(!data.getValue(i,0)){
+continue;
+}
 if(_217=="date"){
 row.push(data.getValue(i,0).getTime());
 }else{
 row.push(data.getValue(i,0));
 }
+var _219=false;
 for(var j=1;j<cols;j++){
 row.push(data.getValue(i,j));
+if(data.getValue(i,j)){
+_219=true;
 }
+}
+if(_219){
 ret.push(row);
+}
 }
 return ret;
 };
@@ -5752,11 +5761,11 @@ if(this.file_.indexOf("\n")>=0){
 this.loadedEvent_(this.file_);
 }else{
 var req=new XMLHttpRequest();
-var _220=this;
+var _221=this;
 req.onreadystatechange=function(){
 if(req.readyState==4){
 if(req.status==200){
-_220.loadedEvent_(req.responseText);
+_221.loadedEvent_(req.responseText);
 }
 }
 };
@@ -5770,39 +5779,39 @@ this.error("Unknown data format: "+(typeof this.file_));
 }
 }
 };
-Dygraph.prototype.updateOptions=function(_221){
-if(_221.customBars){
-this.customBars_=_221.customBars;
+Dygraph.prototype.updateOptions=function(_222){
+if(_222.customBars){
+this.customBars_=_222.customBars;
 }
-if(_221.rollPeriod){
-this.rollPeriod_=_221.rollPeriod;
+if(_222.rollPeriod){
+this.rollPeriod_=_222.rollPeriod;
 }
-if(_221.dateWindow){
-this.dateWindow_=_221.dateWindow;
+if(_222.dateWindow){
+this.dateWindow_=_222.dateWindow;
 }
-if(_221.valueRange){
-this.valueRange_=_221.valueRange;
+if(_222.valueRange){
+this.valueRange_=_222.valueRange;
 }
-MochiKit.Base.update(this.user_attrs_,_221);
+MochiKit.Base.update(this.user_attrs_,_222);
 this.labelsFromCSV_=(this.attr_("labels")==null);
 this.layout_.updateOptions({"errorBars":this.attr_("errorBars")});
-if(_221["file"]&&_221["file"]!=this.file_){
-this.file_=_221["file"];
+if(_222["file"]&&_222["file"]!=this.file_){
+this.file_=_222["file"];
 this.start_();
 }else{
 this.drawGraph_(this.rawData_);
 }
 };
-Dygraph.prototype.adjustRoll=function(_222){
-this.rollPeriod_=_222;
+Dygraph.prototype.adjustRoll=function(_223){
+this.rollPeriod_=_223;
 this.drawGraph_(this.rawData_);
 };
-Dygraph.GVizChart=function(_223){
-this.container=_223;
+Dygraph.GVizChart=function(_224){
+this.container=_224;
 };
-Dygraph.GVizChart.prototype.draw=function(data,_224){
+Dygraph.GVizChart.prototype.draw=function(data,_225){
 this.container.innerHTML="";
-this.date_graph=new Dygraph(this.container,data,_224);
+this.date_graph=new Dygraph(this.container,data,_225);
 };
 DateGraph=Dygraph;
 

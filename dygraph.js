@@ -1410,15 +1410,18 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var ret = [];
   for (var i = 0; i < rows; i++) {
     var row = [];
+    if (!data.getValue(i, 0)) continue;
     if (indepType == 'date') {
       row.push(data.getValue(i, 0).getTime());
     } else {
       row.push(data.getValue(i, 0));
     }
+    var any_data = false;
     for (var j = 1; j < cols; j++) {
       row.push(data.getValue(i, j));
+      if (data.getValue(i, j)) any_data = true;
     }
-    ret.push(row);
+    if (any_data) ret.push(row);
   }
   return ret;
 }
