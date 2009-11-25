@@ -4445,7 +4445,6 @@ _98.style.top=top+"px";
 }
 _98.style.left="0px";
 _98.style.textAlign="right";
-_98.style.border="1px solid black";
 _98.style.width=this.options.yAxisLabelWidth+"px";
 MochiKit.DOM.appendChildNodes(this.container,_98);
 this.ylabels.push(_98);
@@ -4490,7 +4489,6 @@ left=0;
 _104.style.textAlign="left";
 }
 _104.style.left=left+"px";
-_104.style.border="1px solid black";
 _104.style.width=this.options.xAxisLabelWidth+"px";
 MochiKit.DOM.appendChildNodes(this.container,_104);
 this.xlabels.push(_104);
