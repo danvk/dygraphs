@@ -94,7 +94,11 @@ Dygraph.DEFAULT_ATTRS = {
 
   strokeWidth: 1.0,
 
-  // TODO(danvk): default padding
+  axisTickSize: 3,
+  axisLabelFontSize: 14,
+  xAxisLabelWidth: 50,
+  yAxisLabelWidth: 50,
+  rightGap: 5,
 
   showRoller: false,
   xValueFormatter: Dygraph.dateString_,
@@ -195,8 +199,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // TODO(danvk): why does the Renderer need its own set of options?
   this.renderOptions_ = { colorScheme: this.colors_,
                           strokeColor: null,
-                          strokeWidth: this.attr_("strokeWidth"),
-                          axisLabelFontSize: 14,
                           axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
   MochiKit.Base.update(this.renderOptions_, this.attrs_);
   MochiKit.Base.update(this.renderOptions_, this.user_attrs_);
@@ -274,10 +276,20 @@ Dygraph.prototype.createInterface_ = function() {
   appendChildNodes(enclosing, this.graphDiv);
 
   // Create the canvas to store
+  // We need to subtract out some space for the x- and y-axis labels.
+  // For the x-axis:
+  //   - remove from height: (axisTickSize + height of tick label)
+  //          height of tick label == axisLabelFontSize?
+  //   - remove from width: axisLabelWidth / 2 (maybe on both ends)
+  // For the y-axis:
+  //   - remove axisLabelFontSize from the top
+  //   - remove axisTickSize from the left
+
   var canvas = MochiKit.DOM.CANVAS;
   this.canvas_ = canvas( { style: { 'position': 'absolute' },
                           width: this.width_,
-                          height: this.height_});
+                          height: this.height_
+                         });
   appendChildNodes(this.graphDiv, this.canvas_);
 
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
@@ -288,7 +300,7 @@ Dygraph.prototype.createInterface_ = function() {
 /**
  * Creates the canvas containing the PlotKit graph. Only plotkit ever draws on
  * this particular canvas. All Dygraph work is done on this.canvas_.
- * @param {Object} canvas The Dygraph canvas to over which to overlay the plot
+ * @param {Object} canvas The Dygraph canvas over which to overlay the plot
  * @return {Object} The newly-created canvas
  * @private
  */
@@ -352,7 +364,7 @@ Dygraph.prototype.createStatusMessage_ = function(){
       "zIndex": 10,
       "width": divWidth + "px",
       "top": "0px",
-      "left": this.width_ - divWidth + "px",
+      "left": (this.width_ - divWidth - 2) + "px",
       "background": "white",
       "textAlign": "left",
       "overflow": "hidden"}};
@@ -369,15 +381,14 @@ Dygraph.prototype.createStatusMessage_ = function(){
  * @private
  */
 Dygraph.prototype.createRollInterface_ = function() {
-  var padding = this.plotter_.options.padding;
   var display = this.attr_('showRoller') ? "block" : "none";
   var textAttr = { "type": "text",
                    "size": "2",
                    "value": this.rollPeriod_,
                    "style": { "position": "absolute",
                               "zIndex": 10,
-                              "top": (this.height_ - 25 - padding.bottom) + "px",
-                              "left": (padding.left+1) + "px",
+                              "top": (this.plotter_.area.h - 25) + "px",
+                              "left": (this.plotter_.area.x + 1) + "px",
                               "display": display }
                   };
   var roller = MochiKit.DOM.INPUT(textAttr);
@@ -714,7 +725,7 @@ Dygraph.prototype.loadedEvent_ = function(data) {
 };
 
 Dygraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
 
 /**

@@ -5,12 +5,13 @@
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../plotkit_v091/PlotKit/Canvas.js"></script>
     <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <style type="text/css">
     #bordered {
-      border: 1px solid black;
+      border: 1px solid red;
     }
     </style>
   </head>
@@ -18,7 +19,10 @@
     <p>Hopefully this stays in its border:</p>
     <div id="bordered" style="width:600px; height:300px;"></div>
     <script type="text/javascript">
-    new Dygraph(document.getElementById('bordered'), data);
+    new Dygraph(document.getElementById('bordered'), data,
+    {
+      labelsDivStyles: { border: '1px solid black' }
+    });
     </script>
   </body>
 </html>

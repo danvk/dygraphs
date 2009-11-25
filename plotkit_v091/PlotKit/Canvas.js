@@ -65,7 +65,6 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
     this.options = {
         "drawBackground": true,
         "backgroundColor": Color.whiteColor(),
-        "padding": {left: 30, right: 30, top: 5, bottom: 10},
         "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[0]),
         "strokeColor": Color.whiteColor(),
         "strokeColorTransform": "asStrokeColor",
@@ -121,11 +120,12 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
     this.isFirstRender = true;
 
     this.area = {
-        x: this.options.padding.left,
-        y: this.options.padding.top,
-        w: this.width - this.options.padding.left - this.options.padding.right,
-        h: this.height - this.options.padding.top - this.options.padding.bottom
+        x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
+        y: 0
     };
+    this.area.w = this.width - this.area.x - this.options.rightGap;
+    this.area.h = this.height - this.options.axisLabelFontSize -
+                  2 * this.options.axisTickSize;
 
     MochiKit.DOM.updateNodeAttributes(this.container, 
     {"style":{ "position": "relative", "width": this.width + "px"}});
@@ -267,15 +267,33 @@ PlotKit.CanvasRenderer.prototype._renderAxis = function() {
                 context.stroke();
 
                 var label = DIV(labelStyle, tick[1]);
-                label.style.top = (y - this.options.axisLabelFontSize) + "px";
-                label.style.left = (x - this.options.padding.left - this.options.axisTickSize) + "px";
+                var top = (y - this.options.axisLabelFontSize / 2);
+                if (top < 0) top = 0;
+
+                if (top + this.options.axisLabelFontSize + 3 > this.height) {
+                  label.style.bottom = "0px";
+                } else {
+                  label.style.top = top + "px";
+                }
+                label.style.left = "0px";
                 label.style.textAlign = "right";
-                label.style.width = (this.options.padding.left - this.options.axisTickSize * 2) + "px";
+                label.style.width = this.options.yAxisLabelWidth + "px";
                 MochiKit.DOM.appendChildNodes(this.container, label);
                 this.ylabels.push(label);
             };
             
             MochiKit.Iter.forEach(this.layout.yticks, bind(drawTick, this));
+
+            // The lowest tick on the y-axis often overlaps with the leftmost
+            // tick on the x-axis. Shift the bottom tick up a little bit to
+            // compensate if necessary.
+            var bottomTick = this.ylabels[0];
+            var fontSize = this.options.axisLabelFontSize;
+            var bottom = parseInt(bottomTick.style.top) + fontSize;
+            if (bottom > this.height - fontSize) {
+              bottomTick.style.top = (parseInt(bottomTick.style.top) -
+                                      fontSize / 2) + "px";
+            }
         }
 
         context.beginPath();
@@ -299,10 +317,21 @@ PlotKit.CanvasRenderer.prototype._renderAxis = function() {
                 context.stroke();
 
                 var label = DIV(labelStyle, tick[1]);
-                label.style.top = (y + this.options.axisTickSize) + "px";
-                label.style.left = (x - this.options.axisLabelWidth/2) + "px";
                 label.style.textAlign = "center";
-                label.style.width = this.options.axisLabelWidth + "px";
+                label.style.bottom = "0px";
+
+                var left = (x - this.options.axisLabelWidth/2);
+                if (left + this.options.axisLabelWidth > this.width) {
+                  left = this.width - this.options.xAxisLabelWidth;
+                  label.style.textAlign = "right";
+                }
+                if (left < 0) {
+                  left = 0;
+                  label.style.textAlign = "left";
+                }
+
+                label.style.left = left + "px";
+                label.style.width = this.options.xAxisLabelWidth + "px";
                 MochiKit.DOM.appendChildNodes(this.container, label);
                 this.xlabels.push(label);
             };
