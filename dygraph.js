@@ -1044,12 +1044,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
     var minAxisY = minY - 0.1 * span;
 
     // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-    if (minAxisY < 0 && minY >= 0) {
-      minAxisY = 0;
-    }
-    if (maxAxisY > 0 && maxY <= 0) {
-      maxAxisY = 0;
-    }
+    if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+    if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
 
     if (this.attr_("includeZero")) {
       if (maxY < 0) maxAxisY = 0;
