@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>dygraphs Equation Plotter</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript">
+      function plot() {
+        var eq = document.getElementById("eq").value;
+        eval("fn = " + eq);
+
+        var graph = document.getElementById("graph");
+        var width = parseInt(graph.style.width);
+        var x1 = parseFloat(document.getElementById("x1").value);
+        var x2 = parseFloat(document.getElementById("x2").value);
+        var xs = 1.0 * (x2 - x1) / width;
+
+        var data = [];
+        for (var i = 0; i < width; i++) {
+          var x = x1 + i * xs;
+          var y = fn(x);
+          data.push([x, y]);
+        }
+
+        g = new Dygraph(graph, data, { labels: ["x", "y"] });
+      }
+    </script>
+  </head>
+  <body>
+    <p><b>Equation: </b><br/>
+    <textarea cols="40" rows="10" id="eq">function(x) {
+  return Math.sin(x);
+}</textarea>
+    </p>
+    <p><b>x range: </b> <input type=text width="5" id="x1" value="-10" />
+    to <input type=text width="5" id="x2" value="10" /></p>
+    <p><input type=button value="Plot" onClick="plot()" /></p>
+
+    <div id=graph style="width:1024px; height:400px;"></div>
+  </body>
+</html>
