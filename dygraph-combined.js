@@ -4840,6 +4840,7 @@ this.dateWindow_=_56.dateWindow||null;
 this.valueRange_=_56.valueRange||null;
 this.wilsonInterval_=_56.wilsonInterval||true;
 this.customBars_=_56.customBars||false;
+div.innerHTML="";
 if(div.style.width==""){
 div.style.width=Dygraph.DEFAULT_WIDTH+"px";
 }
