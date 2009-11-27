@@ -293,6 +293,23 @@ new Dygraph(
       padding: {left:30, right:30, top:5, bottom:5}
     });
 </script>
+<!--
+
+Here is a script to regenerate the Dow Jones plot:
+
+# Get unadjusted DJIA data in a nice format:
+curl -O http://www.econstats.com/eqty/eq_d_mi_3.csv
+sed '1,17d' eq_d_mi_3.csv | cut -d, -f1,6 | perl -pe 's/(\d{4}-\d\d)-\d\d/$1/g' | perl -pe 's/, */\t/' | grep -v 'na' | perl -ne 'chomp; ($m,$v) = split/\t/; $close{$m} = $v; if ($low{$m} == 0 || $v < $low{$m}) { $low{$m}=$v } if ($v > $high{$m}) { $high{$m} = $v } END { for $x(sort keys %close) { print "$x\t$low{$x}\t$close{$x}\t$high{$x}\n" } } ' > monthly-djia.tsv
+
+# Fetch and format the CPI data:
+curl 'http://data.bls.gov/PDQ/servlet/SurveyOutputServlet?series_id=CUUR0000SA0&years_option=all_years&periods_option=all_periods&output_type=column&output_format=text&delimiter=comma' > cpi-u.txt
+sed '1,/Series Id,Year,/d' cpi-u.txt | sed '/^$/,$d' | cut -d, -f2,3,4 | perl -ne 'print if /,M(0[0-9]|1[012]),/' | perl -pe 's/(\d{4}),M(\d{2}),/$1-$2\t/g' > cpi-u.tsv
+
+# Merge:
+join -t'       ' cpi-u.tsv monthly-djia.tsv > annotated-djia.tsv
+perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high) = split /\t/; $cpi /= 100.0; print "$m-15,$low;$close;$high,",($low/$cpi),";",($close/$cpi),";",($high/$cpi),"\n"' annotated-djia.tsv > dow.txt
+
+-->
 
 
 <h2>Other Options</h2>
