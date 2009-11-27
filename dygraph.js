@@ -967,7 +967,7 @@ Dygraph.prototype.addYTicks_ = function(minY, maxY) {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(data) {
-  var maxY = null;
+  var minY = null, maxY = null;
   this.layout_.removeAllDatasets();
   this.setColors_();
 
@@ -991,6 +991,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
           pruned.push(series[k]);
           var y = bars ? series[k][1][0] : series[k][1];
           if (maxY == null || y > maxY) maxY = y;
+          if (minY == null || y < minY) minY = y;
         }
       }
       series = pruned;
@@ -1001,6 +1002,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
           if (maxY == null || y > maxY) {
             maxY = bars ? y + series[j][1][1] : y;
           }
+          if (minY == null || y < minY) {
+            minY = bars ? y + series[j][1][1] : y;
+          }
         }
       } else {
         // With custom bars, maxY is the max of the high values.
@@ -1010,6 +1014,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
           if (high > y) y = high;
           if (maxY == null || y > maxY) {
             maxY = y;
+          }
+          if (minY == null || y < minY) {
+            minY = y;
           }
         }
       }
@@ -1032,9 +1039,24 @@ Dygraph.prototype.drawGraph_ = function(data) {
     this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
   } else {
     // Add some padding and round up to an integer to be human-friendly.
-    maxY *= 1.1;
-    if (maxY <= 0.0) maxY = 1.0;
-    this.addYTicks_(0, maxY);
+    var span = maxY - minY;
+    var maxAxisY = maxY + 0.1 * span;
+    var minAxisY = minY - 0.1 * span;
+
+    // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
+    if (minAxisY < 0 && minY >= 0) {
+      minAxisY = 0;
+    }
+    if (maxAxisY > 0 && maxY <= 0) {
+      maxAxisY = 0;
+    }
+
+    if (this.attr_("includeZero")) {
+      if (maxY < 0) maxAxisY = 0;
+      if (minY > 0) minAxisY = 0;
+    }
+
+    this.addYTicks_(minAxisY, maxAxisY);
   }
 
   this.addXTicks_();
