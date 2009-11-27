@@ -155,6 +155,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.customBars_ = attrs.customBars || false;
 
+  // Clear the div. This ensure that, if multiple dygraphs are passed the same
+  // div, then only one will be drawn.
+  div.innerHTML = "";
+
   // If the div isn't already sized then give it a default size.
   if (div.style.width == '') {
     div.style.width = Dygraph.DEFAULT_WIDTH + "px";
