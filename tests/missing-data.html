@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>noise</title>
+    <title>missing data</title>
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
@@ -13,12 +13,14 @@
     <script type="text/javascript">
     new Dygraph(
       document.getElementById("graph"),
-      "Date,Value\n" +
-      "2009/12/01,10\n" +
-      "2009/12/02,15\n" +
-      "2009/12/03,\n" +
-      "2009/12/04,20\n" +
-      "2009/12/05,15\n"
+      "Date,GapSeries1,GapSeries2\n" +
+      "2009/12/01,10,10\n" +
+      "2009/12/02,15,11\n" +
+      "2009/12/03,,12\n" +
+      "2009/12/04,20,13\n" +
+      "2009/12/05,15,\n" +
+      "2009/12/06,18,15\n" +
+      "2009/12/07,12,16\n"
     );
     </script>
   </body>

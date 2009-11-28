@@ -169,11 +169,17 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var first_point = true;
       var addPoint = function(ctx_, point) {
         if (point.name == setName) {
-          if (first_point)
-            ctx_.moveTo(point.canvasx, point.canvasy);
-          else
-            ctx_.lineTo(point.canvasx, point.canvasy);
-          first_point = false;
+          if (isNaN(point.canvasy)) {
+            // this will make us move to the next point, not draw a line to it.
+            first_point = true;
+          } else {
+            if (first_point) {
+              ctx_.moveTo(point.canvasx, point.canvasy);
+              first_point = false;
+            } else {
+              ctx_.lineTo(point.canvasx, point.canvasy);
+            }
+          }
         }
       };
       MochiKit.Iter.forEach(this.layout.points, partial(addPoint, ctx), this);

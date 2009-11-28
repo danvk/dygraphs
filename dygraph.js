@@ -618,6 +618,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
     var clen = this.colors_.length;
     for (var i = 0; i < selPoints.length; i++) {
+      if (isNaN(selPoints[i].canvasy)) continue;
       if (this.attr_("labelsSeparateLines")) {
         replace += "<br/>";
       }
@@ -634,6 +635,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     // Draw colored circles over the center of each selected point
     ctx.save()
     for (var i = 0; i < selPoints.length; i++) {
+      if (isNaN(selPoints[i%clen].canvasy)) continue;
       ctx.beginPath();
       ctx.fillStyle = this.colors_[i%clen].toRGBString();
       ctx.arc(canvasx, selPoints[i%clen].canvasy, circleSize, 0, 360, false);
