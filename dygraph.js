@@ -962,6 +962,46 @@ Dygraph.prototype.addYTicks_ = function(minY, maxY) {
                                 yTicks: ticks } );
 };
 
+// Computes the range of the data series (including confidence intervals).
+// series is either [ [x1, y1], [x2, y2], ... ] or
+// [ [x1, [y1, dev_low, dev_high]], [x2, [y2, dev_low, dev_high]], ...
+// Returns [low, high]
+Dygraph.prototype.extremeValues_ = function(series) {
+  var minY = null, maxY = null;
+
+  var bars = this.attr_("errorBars") || this.customBars_;
+  if (bars) {
+    // With custom bars, maxY is the max of the high values.
+    for (var j = 0; j < series.length; j++) {
+      var y = series[j][1][0];
+      if (!y) continue;
+      var low = y - series[j][1][1];
+      var high = y + series[j][1][2];
+      if (low > y) low = y;    // this can happen with custom bars,
+      if (high < y) high = y;  // e.g. in tests/custom-bars.html
+      if (maxY == null || high > maxY) {
+        maxY = high;
+      }
+      if (minY == null || low < minY) {
+        minY = low;
+      }
+    }
+  } else {
+    for (var j = 0; j < series.length; j++) {
+      var y = series[j][1];
+      if (!y) continue;
+      if (maxY == null || y > maxY) {
+        maxY = y;
+      }
+      if (minY == null || y < minY) {
+        minY = y;
+      }
+    }
+  }
+
+  return [minY, maxY];
+};
+
 /**
  * Update the graph with new data. Data is in the format
  * [ [date1, val1, val2, ...], [date2, val1, val2, ...] if errorBars=false
@@ -993,40 +1033,14 @@ Dygraph.prototype.drawGraph_ = function(data) {
       for (var k = 0; k < series.length; k++) {
         if (series[k][0] >= low && series[k][0] <= high) {
           pruned.push(series[k]);
-          var y = bars ? series[k][1][0] : series[k][1];
-          if (!y) continue;
-          if (maxY == null || y > maxY) maxY = y;
-          if (minY == null || y < minY) minY = y;
         }
       }
       series = pruned;
-    } else {
-      if (!this.customBars_) {
-        for (var j = 0; j < series.length; j++) {
-          var y = bars ? series[j][1][0] : series[j][1];
-          if (!y) continue;
-          if (maxY == null || y > maxY) {
-            maxY = bars ? y + series[j][1][1] : y;
-          }
-          if (minY == null || y < minY) {
-            minY = bars ? y + series[j][1][1] : y;
-          }
-        }
-      } else {
-        // With custom bars, maxY is the max of the high values.
-        for (var j = 0; j < series.length; j++) {
-          var y = series[j][1][0];
-          var high = series[j][1][2];
-          if (high > y) y = high;
-          if (maxY == null || y > maxY) {
-            maxY = y;
-          }
-          if (minY == null || y < minY) {
-            minY = y;
-          }
-        }
-      }
     }
+
+    [thisMinY, thisMaxY] = this.extremeValues_(series);
+    if (!minY || thisMinY < minY) minY = thisMinY;
+    if (!maxY || thisMaxY > maxY) maxY = thisMaxY;
 
     if (bars) {
       var vals = [];
@@ -1152,14 +1166,14 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
                                               1.0 * (high - mid) / count ]];
     }
   } else {
-    if (rollPeriod == 1) {
-      return originalData;
-    }
-
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of days
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
     if (!this.attr_("errorBars")){
+      if (rollPeriod == 1) {
+        return originalData;
+      }
+
       for (var i = 0; i < num_init_points; i++) {
         var sum = 0;
         for (var j = 0; j < i + 1; j++)
@@ -1179,13 +1193,21 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       for (var i = 0; i < num_init_points; i++) {
         var sum = 0;
         var variance = 0;
+        var num_ok = 0;
         for (var j = 0; j < i + 1; j++) {
-          sum += originalData[j][1][0];
+          var y = originalData[j][1][0];
+          if (!y || isNaN(y)) continue;
+          num_ok++;
+          sum += y;
           variance += Math.pow(originalData[j][1][1], 2);
         }
-        var stddev = Math.sqrt(variance)/(i+1);
-        rollingData[i] = [originalData[i][0],
-                          [sum/(i+1), sigma * stddev, sigma * stddev]];
+        if (num_ok) {
+          var stddev = Math.sqrt(variance)/num_ok;
+          rollingData[i] = [originalData[i][0],
+                            [sum/num_ok, sigma * stddev, sigma * stddev]];
+        } else {
+          rollingData[i] = [originalData[i][0], [null, null, null]];
+        }
       }
       // Calculate the rolling average for the remaining points
       for (var i = Math.min(rollPeriod - 1, originalData.length - 2);
@@ -1193,13 +1215,21 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           i++) {
         var sum = 0;
         var variance = 0;
+        var num_ok = 0;
         for (var j = i - rollPeriod + 1; j < i + 1; j++) {
+          var y = originalData[j][1][0];
+          if (!y || isNaN(y)) continue;
+          num_ok++;
           sum += originalData[j][1][0];
           variance += Math.pow(originalData[j][1][1], 2);
         }
-        var stddev = Math.sqrt(variance) / rollPeriod;
-        rollingData[i] = [originalData[i][0],
-                          [sum / rollPeriod, sigma * stddev, sigma * stddev]];
+        if (num_ok) {
+          var stddev = Math.sqrt(variance) / num_ok;
+          rollingData[i] = [originalData[i][0],
+                            [sum / num_ok, sigma * stddev, sigma * stddev]];
+        } else {
+          rollingData[i] = [originalData[i][0], [null, null, null]];
+        }
       }
     }
   }

@@ -10,9 +10,14 @@
     <script type="text/javascript" src="../dygraph.js"></script>
   </head>
   <body>
+    <table>
+    <tr><td valign=top>
     <div id="graph"></div>
     <div id="graph2"></div>
+    </td><td valign=top>
     <div id="graph3"></div>
+    </td></tr>
+    </table>
 
     <script type="text/javascript">
     new Dygraph(
@@ -39,6 +44,23 @@
         [ new Date("2009/12/07"), 12, 16]
       ],
       { labels: ["Date","GapSeries1","GapSeries2"] }
+    );
+
+    new Dygraph(
+      document.getElementById("graph3"),
+      [
+        [1, [10, 2], [20, 3]],
+        [2, [12, 2], [22, 3]],
+        [3, [ 8, 2], [25, 3]],
+        [4, [null, 2], [18, 3]],
+        [5, [11, 2], [20, 3]],
+        [6, [ 9, 2], [22, 3]],
+        [7, [10, 2], [23, 3]],
+      ],
+      {
+        errorBars: true,
+        labels: [ "X", "Series1", "Series2" ]
+      }
     );
     </script>
   </body>

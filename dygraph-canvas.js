@@ -204,6 +204,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var errorTrapezoid = function(ctx_,point) {
         count++;
         if (point.name == setName) {
+          if (!point.y || isNaN(point.y)) {
+            prevX = -1;
+            return;
+          }
           var newYs = [ point.y - point.errorPlus * yscale,
                         point.y + point.errorMinus * yscale ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
