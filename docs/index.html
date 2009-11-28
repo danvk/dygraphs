@@ -81,10 +81,12 @@
                      "rgb(255,100,100)",
                      "#00DD55",
                      "rgba(50,50,200,0.4)"],
-            padding: {left: 40, right: 30, top: 15, bottom: 15}
+            padding: {left: 40, right: 30, top: 15, bottom: 15},
           }
       );
 </script>
+
+<p>For more demos, browse the dygraph <a href="tests/">tests</a> directory.</p>
 
 <h2>Usage</h2>
 
@@ -293,95 +295,218 @@ new Dygraph(
       padding: {left:30, right:30, top:5, bottom:5}
     });
 </script>
+<!--
+
+Here is a script to regenerate the Dow Jones plot:
+
+# Get unadjusted DJIA data in a nice format:
+curl -O http://www.econstats.com/eqty/eq_d_mi_3.csv
+sed '1,17d' eq_d_mi_3.csv | cut -d, -f1,6 | perl -pe 's/(\d{4}-\d\d)-\d\d/$1/g' | perl -pe 's/, */\t/' | grep -v 'na' | perl -ne 'chomp; ($m,$v) = split/\t/; $close{$m} = $v; if ($low{$m} == 0 || $v < $low{$m}) { $low{$m}=$v } if ($v > $high{$m}) { $high{$m} = $v } END { for $x(sort keys %close) { print "$x\t$low{$x}\t$close{$x}\t$high{$x}\n" } } ' > monthly-djia.tsv
+
+# Fetch and format the CPI data:
+curl 'http://data.bls.gov/PDQ/servlet/SurveyOutputServlet?series_id=CUUR0000SA0&years_option=all_years&periods_option=all_periods&output_type=column&output_format=text&delimiter=comma' > cpi-u.txt
+sed '1,/Series Id,Year,/d' cpi-u.txt | sed '/^$/,$d' | cut -d, -f2,3,4 | perl -ne 'print if /,M(0[0-9]|1[012]),/' | perl -pe 's/(\d{4}),M(\d{2}),/$1-$2\t/g' > cpi-u.tsv
+
+# Merge:
+join -t'       ' cpi-u.tsv monthly-djia.tsv > annotated-djia.tsv
+perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high) = split /\t/; $cpi /= 100.0; print "$m-15,$low;$close;$high,",($low/$cpi),";",($close/$cpi),";",($high/$cpi),"\n"' annotated-djia.tsv > dow.txt
+
+-->
 
 
 <h2>Other Options</h2>
-<p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor.</p>
+<p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. To see demonstrations of many of these options, browse the <a href="tests/">dygraphs tests</a> directory.</p>
 
 <table class=thinborder width=1000>
   <tr><th>Name</th><th>Sample Value</th><th>Description</th></tr>
   <tr>
+    <td><b>includeZero</b></td>
+    <td><code>true, false</code></td>
+    <td>Usually, dygraphs will use the range of the data plus some padding to
+    set the range of the y-axis. If this option is set, the y-axis will always
+    include zero, typically as the lowest value. This can be used to avoid
+    exaggerating the variance in the data.</td>
+  </tr>
+  
+  <tr>
     <td><b>rollPeriod</b></td>
     <td><code>7</code></td>
     <td>Number of days over which to average data. Discussed extensively above.</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>showRoller</b></td>
     <td><code>true</code></td>
     <td>Should the rolling average period text box be shown? Default is false.</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>colors</b></td>
     <td><code>['red',&nbsp;'#00FF00']</code></td>
     <td>List of colors for the data series. These can be of the form "#AABBCC"
       or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced
       points around a color wheel are used.</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>colorSaturation</b></td>
     <td><code>1.0</code></td>
     <td>If <b>colors</b> is not specified, saturation of the
       automatically-generated data series colors. (0.0-1.0, default:
       1.0)</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>colorValue</b></td>
     <td><code>0.5</code></td>
     <td>If colors is not specified, value of the data series colors, as in
       hue/saturation/value. (0.0-1.0, default 0.5)</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>clickCallback</b></td>
     <td><code>function(e,date){ alert(date); }</code></td>
     <td>A function to call when a data point is clicked. The function should take
       two arguments, the event object for the click and the date that was
       clicked. (default null)</td>
-  </tr><tr>
-    <td><b>errorBars</b></td>
-    <td><code>false</code></td>
-    <td>Does the data contain standard deviations? Setting this to true alters
-      the input format (see above). (default false)</td>
-  </tr><tr>
+  </tr>
+
+  <tr>
+    <td><b>zoomCallback</b></td>
+    <td><code>function(minDate,maxDate) {}</code></td>
+    <td>A function to call when the zoom window is changed (either by zooming
+    in or out). minDate and maxDate are millis since epoch.</td>
+  </tr>
+  
+  <tr>
     <td><b>strokeWidth</b></td>
     <td><code>2.0</code></td>
     <td>Width of the data lines. This can be used to increase the contrast or
       some graphs. (default 1.0)</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>dateWindow</b></td>
-    <td><code>[(new&nbsp;Date('2006-01-01')).valueOf(),<br/>
+    <td><code>[Date.parse('2006-01-01'),<br/>
         (new&nbsp;Date()).valueOf()]</code></td>
     <td>Initially zoom in on a section of the graph. Is of the form [earliest,
       latest], where earliest/latest are millis since epoch.  By default, the
       full range of the input is shown.</td>
-  </tr><tr>
+  </tr>
+
+  <tr>
     <td><b>valueRange</b></td>
     <td><code>[10, 110]</code></td>
     <td>Explicitly set the vertical range of the graph to [low, high]. By
       default, some clever heuristics are used (see above).</td>
-  </tr><tr>
-    <td><b>minTickSize</b></td>
-    <td><code>1</code</td>
-    <td>The difference between ticks on the y-axis can be greater than or equal
-      to this, but no less. If you set it to 1, for instance, you'll never get
-      nonintegral gaps between ticks.</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>labelsSeparateLines</b></td>
     <td><code>true</code></td>
     <td>Put &lt;br/&gt; between lines in the label string. Often used in
       conjunction with <b>labelsDiv</b>. (default false)</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>labelsDiv</b></td>
     <td><code>document.getElementById('foo')</code></td>
     <td>Show data labels in an external div, rather than on the graph. (default
       null)</td>
-  </tr><tr>
+  </tr>
+  
+  <tr>
     <td><b>labelsKMB</b></td>
     <td><code>true</code></td>
     <td>Show K/M/B for thousands/millions/billions on y-axis (default
       false).</td>
   </tr>
+
   <tr>
-    <td><b>padding</b></td>
-    <td><code>{left:&nbsp;40, right:&nbsp;30,<br/>top:&nbsp;5,
-        bottom:&nbsp;15}</code></td>
-    <td>Adds extra pixels of padding around the graph. Sometimes a dygraph
-      gets clipped by surrounding text (see the Demo at the top of this page).
-      Setting this property appropriately will fix this problem.</td>
+    <td><b>labelsDivWidth</b></td>
+    <td>250</td>
+    <td>Width (in pixels) of the div which shows information on the
+    currently-highlighted points.</td>
+  </tr>
+
+  <tr>
+    <td><b>labelsDivStyles</b></td>
+    <td>{}</td>
+    <td>Additional styles to apply to the currently-highlighted points div. For
+    example, { 'font-weigth': 'bold' } will make the labels bold.</td>
+  </tr>
+  
+  <tr>
+    <td><b>highlightCircleSize</b></td>
+    <td><code>3</code></td>
+    <td>Size (in pixels) of the dot drawn over highlighted points (default 3).</td>
+  </tr>
+
+  <tr>
+    <td><b>pixelsPerXLabel</b>, <b>pixelsPerYLabel</b></td>
+    <td>50</td>
+    <td>Number of pixels to require between each x- and y-label. Larger values
+    will yield a sparser axis with fewer ticks. Defaults: 60 (x-axis), 30
+    (y-axis).</td>
+  </tr>
+
+  <tr>
+    <td><b>xAxisLabelWidth</b>, <b>yAxisLabelWidth</b></td>
+    <td>50</td>
+    <td>Width (in pixels) of the x- and y-axis labels.</td>
+  </tr>
+
+  <tr>
+    <td><b>axisLabelFontSize</b></td>
+    <td>14</td>
+    <td>Size of the font (in pixels) to use in the axis labels, both x- and
+    y-axis.</td>
+  </tr>
+
+  <tr>
+    <td><b>rightGap</b></td>
+    <td>5</td>
+    <td>Number of pixels to leave blank at the right edge of the Dygraph. This
+    makes it easier to highlight the right-most data point.</td>
+  </tr>
+  
+  <tr>
+    <td><b>errorBars</b></td>
+    <td><code>false</code></td>
+    <td>Does the data contain standard deviations? Setting this to true alters
+      the input format (see above). (default false)</td>
+  </tr>
+
+  <tr>
+    <td><b>sigma</b></td>
+    <td>2</td>
+    <td>When errorBars is set, shade this many standard deviations above/below
+    each point.</td>
+  </tr>
+
+  <tr>
+    <td><b>fractions</b></td>
+    <td>false</td>
+    <td>When set, attempt to parse each cell in the CSV file as "a/b", where a
+    and b are integers. The ratio will be plotted. This allows computation of
+    Wilson confidence intervals (see below).</td>
+  </tr>
+
+  <tr>
+    <td><b>wilsonInterval</b></td>
+    <td>true</td>
+    <td>Use in conjunction with the "fractions" option. Instead of plotting +/-
+    N standard deviations, dygraphs will compute a Wilson confidence interval
+    and plot that. This has more reasonable behavior for ratios close to 0 or
+    1.</td>
+  </tr>
+
+  <tr>
+    <td><b>customBars</b></td>
+    <td>false</td>
+    <td>When set, parse each CSV cell as "low;middle;high". Error bars will be
+    drawn for each point between low and high, with the series itself going
+    through middle.</td>
   </tr>
 </table>
 
@@ -411,6 +536,10 @@ dygraphs library.</p>
   milliseconds since epoch, which can be obtained from a JavaScript Date
   object's valueOf method.</li>
 </ul>
+
+<h2>Data Policy</h2>
+<p>dygraphs is purely client-side JavaScript. It does not send your data to any
+servers -- the data is processed entirely in the client's browser.</p>
 
 <p><font size=-1>Created May 9, 2008 by <a href=mailto:danvdk@gmail.com>Dan Vanderkam</a></font></p>
 
