@@ -611,6 +611,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
     ctx.clearRect(px - circleSize - 1, 0, 2 * circleSize + 2, this.height_);
   }
 
+  var isOK = function(x) { return x && !isNaN(x); };
+
   if (selPoints.length > 0) {
     var canvasx = selPoints[0].canvasx;
 
@@ -618,7 +620,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
     var clen = this.colors_.length;
     for (var i = 0; i < selPoints.length; i++) {
-      if (isNaN(selPoints[i].canvasy)) continue;
+      if (!isOK(selPoints[i].canvasy)) continue;
       if (this.attr_("labelsSeparateLines")) {
         replace += "<br/>";
       }
@@ -635,7 +637,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     // Draw colored circles over the center of each selected point
     ctx.save()
     for (var i = 0; i < selPoints.length; i++) {
-      if (isNaN(selPoints[i%clen].canvasy)) continue;
+      if (!isOK(selPoints[i%clen].canvasy)) continue;
       ctx.beginPath();
       ctx.fillStyle = this.colors_[i%clen].toRGBString();
       ctx.arc(canvasx, selPoints[i%clen].canvasy, circleSize, 0, 360, false);
@@ -992,6 +994,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
         if (series[k][0] >= low && series[k][0] <= high) {
           pruned.push(series[k]);
           var y = bars ? series[k][1][0] : series[k][1];
+          if (!y) continue;
           if (maxY == null || y > maxY) maxY = y;
           if (minY == null || y < minY) minY = y;
         }
@@ -1001,6 +1004,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
       if (!this.customBars_) {
         for (var j = 0; j < series.length; j++) {
           var y = bars ? series[j][1][0] : series[j][1];
+          if (!y) continue;
           if (maxY == null || y > maxY) {
             maxY = bars ? y + series[j][1][1] : y;
           }
@@ -1148,6 +1152,10 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
                                               1.0 * (high - mid) / count ]];
     }
   } else {
+    if (rollPeriod == 1) {
+      return originalData;
+    }
+
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of days
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);

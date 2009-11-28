@@ -169,7 +169,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var first_point = true;
       var addPoint = function(ctx_, point) {
         if (point.name == setName) {
-          if (isNaN(point.canvasy)) {
+          if (!point.canvasy || isNaN(point.canvasy)) {
             // this will make us move to the next point, not draw a line to it.
             first_point = true;
           } else {

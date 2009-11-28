@@ -6,10 +6,14 @@
     <![endif]-->
     <script type="text/javascript" src="../dygraph-combined.js"></script>
     <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../plotkit_v091/PlotKit/Layout.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
   </head>
   <body>
     <div id="graph"></div>
+    <div id="graph2"></div>
+    <div id="graph3"></div>
+
     <script type="text/javascript">
     new Dygraph(
       document.getElementById("graph"),
@@ -21,6 +25,20 @@
       "2009/12/05,15,\n" +
       "2009/12/06,18,15\n" +
       "2009/12/07,12,16\n"
+    );
+
+    new Dygraph(
+      document.getElementById("graph2"),
+      [
+        [ new Date("2009/12/01"), 10, 10],
+        [ new Date("2009/12/02"), 15, 11],
+        [ new Date("2009/12/03"), null, 12],
+        [ new Date("2009/12/04"), 20, 13],
+        [ new Date("2009/12/05"), 15, null],
+        [ new Date("2009/12/06"), 18, 15],
+        [ new Date("2009/12/07"), 12, 16]
+      ],
+      { labels: ["Date","GapSeries1","GapSeries2"] }
     );
     </script>
   </body>
