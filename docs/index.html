@@ -320,6 +320,15 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 <table class=thinborder width=1000>
   <tr><th>Name</th><th>Sample Value</th><th>Description</th></tr>
   <tr>
+    <td><b>includeZero</b></td>
+    <td><code>true, false</code></td>
+    <td>Usually, dygraphs will use the range of the data plus some padding to
+    set the range of the y-axis. If this option is set, the y-axis will always
+    include zero, typically as the lowest value. This can be used to avoid
+    exaggerating the variance in the data.</td>
+  </tr>
+  
+  <tr>
     <td><b>rollPeriod</b></td>
     <td><code>7</code></td>
     <td>Number of days over which to average data. Discussed extensively above.</td>
