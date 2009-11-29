@@ -4095,9 +4095,7 @@ this.minyval=0;
 this.maxyval=null;
 this.yscale=null;
 }
-this.bars=new Array();
 this.points=new Array();
-this.slices=new Array();
 this.xticks=new Array();
 this.yticks=new Array();
 this.datasets=new Array();

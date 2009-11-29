@@ -94,9 +94,7 @@ PlotKit.Layout = function(style, options) {
         this.yscale = null;
     }
 
-    this.bars = new Array();   // array of bars to plot for bar charts
     this.points = new Array(); // array of points to plot for line plots
-    this.slices = new Array(); // array of slices to draw for pie charts
 
     this.xticks = new Array();
     this.yticks = new Array();
