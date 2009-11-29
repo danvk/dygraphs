@@ -187,8 +187,6 @@ PlotKit.Layout.prototype._evaluateLimits = function() {
 };
 
 PlotKit.Layout.prototype._evaluateScales = function() {
-    var isNil = MochiKit.Base.isUndefinedOrNull;
-
     this.xrange = this.maxxval - this.minxval;
     if (this.xrange == 0)
         this.xscale = 1.0;
@@ -200,18 +198,6 @@ PlotKit.Layout.prototype._evaluateScales = function() {
         this.yscale = 1.0;
     else
         this.yscale = 1/this.yrange;
-};
-
-PlotKit.Layout.prototype._uniqueXValues = function() {
-    var collapse = PlotKit.Base.collapse;
-    var map = PlotKit.Base.map;
-    var uniq = PlotKit.Base.uniq;
-    var getter = MochiKit.Base.itemgetter;
-    var items = PlotKit.Base.items;
-    
-    var xvalues = map(parseFloat, map(getter(0), collapse(map(getter(1), items(this.datasets)))));
-    xvalues.sort(MochiKit.Base.compare);
-    return uniq(xvalues);
 };
 
 
@@ -257,59 +243,33 @@ PlotKit.Layout.prototype._evaluateLineCharts = function() {
 PlotKit.Layout.prototype._evaluateLineTicksForXAxis = function() {
     var isNil = MochiKit.Base.isUndefinedOrNull;
     
-    if (this.options.xTicks) {
-        // we use use specified ticks with optional labels
-
-        this.xticks = new Array();
-        var makeTicks = function(tick) {
-            var label = tick.label;
-            if (isNil(label))
-                label = tick.v.toString();
-            var pos = this.xscale * (tick.v - this.minxval);
-            if ((pos >= 0.0) && (pos <= 1.0)) {
-                this.xticks.push([pos, label]);
-            }
-        };
-        MochiKit.Iter.forEach(this.options.xTicks, bind(makeTicks, this));
-    }
-    else if (this.options.xNumberOfTicks) {
-        // we use defined number of ticks as hint to auto generate
-        var xvalues = this._uniqueXValues();
-        var roughSeparation = this.xrange / this.options.xNumberOfTicks;
-        var tickCount = 0;
-
-        this.xticks = new Array();
-        for (var i = 0; i <= xvalues.length; i++) {
-            if ((xvalues[i] - this.minxval) >= (tickCount * roughSeparation)) {
-                var pos = this.xscale * (xvalues[i] - this.minxval);
-                if ((pos > 1.0) || (pos < 0.0))
-                    continue;
-                this.xticks.push([pos, xvalues[i]]);
-                tickCount++;
-            }
-            if (tickCount > this.options.xNumberOfTicks)
-                break;
+    this.xticks = new Array();
+    var makeTicks = function(tick) {
+        var label = tick.label;
+        if (isNil(label))
+            label = tick.v.toString();
+        var pos = this.xscale * (tick.v - this.minxval);
+        if ((pos >= 0.0) && (pos <= 1.0)) {
+            this.xticks.push([pos, label]);
         }
-    }
+    };
+    MochiKit.Iter.forEach(this.options.xTicks, bind(makeTicks, this));
 };
 
 PlotKit.Layout.prototype._evaluateLineTicksForYAxis = function() {
     var isNil = MochiKit.Base.isUndefinedOrNull;
 
-
-    if (this.options.yTicks) {
-        this.yticks = new Array();
-        var makeTicks = function(tick) {
-            var label = tick.label;
-            if (isNil(label))
-                label = tick.v.toString();
-            var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-            if ((pos >= 0.0) && (pos <= 1.0)) {
-                this.yticks.push([pos, label]);
-            }
-        };
-        MochiKit.Iter.forEach(this.options.yTicks, bind(makeTicks, this));
-    }
+    this.yticks = new Array();
+    var makeTicks = function(tick) {
+        var label = tick.label;
+        if (isNil(label))
+            label = tick.v.toString();
+        var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+        if ((pos >= 0.0) && (pos <= 1.0)) {
+            this.yticks.push([pos, label]);
+        }
+    };
+    MochiKit.Iter.forEach(this.options.yTicks, bind(makeTicks, this));
 };
 
 PlotKit.Layout.prototype._evaluateLineTicks = function() {
