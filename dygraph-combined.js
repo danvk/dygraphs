@@ -5570,57 +5570,40 @@ if(!this.attr_("errorBars")){
 if(_193==1){
 return _192;
 }
-for(var i=0;i<_206;i++){
-var sum=0;
-for(var j=0;j<i+1;j++){
-sum+=_192[j][1];
-}
-_194[i]=[_192[i][0],sum/(i+1)];
-}
-for(var i=Math.min(_193-1,_192.length-2);i<_192.length;i++){
-var sum=0;
-for(var j=i-_193+1;j<i+1;j++){
-sum+=_192[j][1];
-}
-_194[i]=[_192[i][0],sum/_193];
-}
-}else{
-for(var i=0;i<_206;i++){
+for(var i=0;i<_192.length;i++){
 var sum=0;
 var _208=0;
+for(var j=Math.max(0,i-_193+1);j<i+1;j++){
+var y=_192[j][1];
+if(!y||isNaN(y)){
+continue;
+}
+_208++;
+sum+=_192[j][1];
+}
+if(_208){
+_194[i]=[_192[i][0],sum/_208];
+}else{
+_194[i]=[_192[i][0],null];
+}
+}
+}else{
+for(var i=0;i<_192.length;i++){
+var sum=0;
 var _209=0;
-for(var j=0;j<i+1;j++){
+var _208=0;
+for(var j=Math.max(0,i-_193+1);j<i+1;j++){
 var y=_192[j][1][0];
 if(!y||isNaN(y)){
 continue;
 }
-_209++;
-sum+=y;
-_208+=Math.pow(_192[j][1][1],2);
-}
-if(_209){
-var _202=Math.sqrt(_208)/_209;
-_194[i]=[_192[i][0],[sum/_209,_195*_202,_195*_202]];
-}else{
-_194[i]=[_192[i][0],[null,null,null]];
-}
-}
-for(var i=Math.min(_193-1,_192.length-2);i<_192.length;i++){
-var sum=0;
-var _208=0;
-var _209=0;
-for(var j=i-_193+1;j<i+1;j++){
-var y=_192[j][1][0];
-if(!y||isNaN(y)){
-continue;
-}
-_209++;
+_208++;
 sum+=_192[j][1][0];
-_208+=Math.pow(_192[j][1][1],2);
+_209+=Math.pow(_192[j][1][1],2);
 }
-if(_209){
-var _202=Math.sqrt(_208)/_209;
-_194[i]=[_192[i][0],[sum/_209,_195*_202,_195*_202]];
+if(_208){
+var _202=Math.sqrt(_209)/_208;
+_194[i]=[_192[i][0],[sum/_208,_195*_202,_195*_202]];
 }else{
 _194[i]=[_192[i][0],[null,null,null]];
 }

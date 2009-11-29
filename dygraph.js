@@ -1176,49 +1176,28 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
         return originalData;
       }
 
-      for (var i = 0; i < num_init_points; i++) {
+      for (var i = 0; i < originalData.length; i++) {
         var sum = 0;
-        for (var j = 0; j < i + 1; j++)
-          sum += originalData[j][1];
-        rollingData[i] = [originalData[i][0], sum / (i + 1)];
-      }
-      // Calculate the rolling average for the remaining points
-      for (var i = Math.min(rollPeriod - 1, originalData.length - 2);
-          i < originalData.length;
-          i++) {
-        var sum = 0;
-        for (var j = i - rollPeriod + 1; j < i + 1; j++)
-          sum += originalData[j][1];
-        rollingData[i] = [originalData[i][0], sum / rollPeriod];
-      }
-    } else {
-      for (var i = 0; i < num_init_points; i++) {
-        var sum = 0;
-        var variance = 0;
         var num_ok = 0;
-        for (var j = 0; j < i + 1; j++) {
-          var y = originalData[j][1][0];
+        for (var j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
+          var y = originalData[j][1];
           if (!y || isNaN(y)) continue;
           num_ok++;
-          sum += y;
-          variance += Math.pow(originalData[j][1][1], 2);
+          sum += originalData[j][1];
         }
         if (num_ok) {
-          var stddev = Math.sqrt(variance)/num_ok;
-          rollingData[i] = [originalData[i][0],
-                            [sum/num_ok, sigma * stddev, sigma * stddev]];
+          rollingData[i] = [originalData[i][0], sum / num_ok];
         } else {
-          rollingData[i] = [originalData[i][0], [null, null, null]];
+          rollingData[i] = [originalData[i][0], null];
         }
       }
-      // Calculate the rolling average for the remaining points
-      for (var i = Math.min(rollPeriod - 1, originalData.length - 2);
-          i < originalData.length;
-          i++) {
+
+    } else {
+      for (var i = 0; i < originalData.length; i++) {
         var sum = 0;
         var variance = 0;
         var num_ok = 0;
-        for (var j = i - rollPeriod + 1; j < i + 1; j++) {
+        for (var j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
           var y = originalData[j][1][0];
           if (!y || isNaN(y)) continue;
           num_ok++;
