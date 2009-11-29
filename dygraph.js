@@ -1480,12 +1480,10 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     } else {
       row.push(data.getValue(i, 0));
     }
-    var any_data = false;
     for (var j = 1; j < cols; j++) {
       row.push(data.getValue(i, j));
-      if (data.getValue(i, j)) any_data = true;
     }
-    if (any_data) ret.push(row);
+    ret.push(row);
   }
   return ret;
 }

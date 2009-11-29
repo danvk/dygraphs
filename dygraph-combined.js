@@ -5810,16 +5810,10 @@ row.push(data.getValue(i,0).getTime());
 }else{
 row.push(data.getValue(i,0));
 }
-var _228=false;
 for(var j=1;j<cols;j++){
 row.push(data.getValue(i,j));
-if(data.getValue(i,j)){
-_228=true;
 }
-}
-if(_228){
 ret.push(row);
-}
 }
 return ret;
 };
@@ -5840,11 +5834,11 @@ if(this.file_.indexOf("\n")>=0){
 this.loadedEvent_(this.file_);
 }else{
 var req=new XMLHttpRequest();
-var _230=this;
+var _229=this;
 req.onreadystatechange=function(){
 if(req.readyState==4){
 if(req.status==200){
-_230.loadedEvent_(req.responseText);
+_229.loadedEvent_(req.responseText);
 }
 }
 };
@@ -5858,39 +5852,39 @@ this.error("Unknown data format: "+(typeof this.file_));
 }
 }
 };
-Dygraph.prototype.updateOptions=function(_231){
-if(_231.customBars){
-this.customBars_=_231.customBars;
+Dygraph.prototype.updateOptions=function(_230){
+if(_230.customBars){
+this.customBars_=_230.customBars;
 }
-if(_231.rollPeriod){
-this.rollPeriod_=_231.rollPeriod;
+if(_230.rollPeriod){
+this.rollPeriod_=_230.rollPeriod;
 }
-if(_231.dateWindow){
-this.dateWindow_=_231.dateWindow;
+if(_230.dateWindow){
+this.dateWindow_=_230.dateWindow;
 }
-if(_231.valueRange){
-this.valueRange_=_231.valueRange;
+if(_230.valueRange){
+this.valueRange_=_230.valueRange;
 }
-MochiKit.Base.update(this.user_attrs_,_231);
+MochiKit.Base.update(this.user_attrs_,_230);
 this.labelsFromCSV_=(this.attr_("labels")==null);
 this.layout_.updateOptions({"errorBars":this.attr_("errorBars")});
-if(_231["file"]&&_231["file"]!=this.file_){
-this.file_=_231["file"];
+if(_230["file"]&&_230["file"]!=this.file_){
+this.file_=_230["file"];
 this.start_();
 }else{
 this.drawGraph_(this.rawData_);
 }
 };
-Dygraph.prototype.adjustRoll=function(_232){
-this.rollPeriod_=_232;
+Dygraph.prototype.adjustRoll=function(_231){
+this.rollPeriod_=_231;
 this.drawGraph_(this.rawData_);
 };
-Dygraph.GVizChart=function(_233){
-this.container=_233;
+Dygraph.GVizChart=function(_232){
+this.container=_232;
 };
-Dygraph.GVizChart.prototype.draw=function(data,_234){
+Dygraph.GVizChart.prototype.draw=function(data,_233){
 this.container.innerHTML="";
-this.date_graph=new Dygraph(this.container,data,_234);
+this.date_graph=new Dygraph(this.container,data,_233);
 };
 DateGraph=Dygraph;
 
