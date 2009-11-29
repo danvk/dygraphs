@@ -1038,7 +1038,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
       series = pruned;
     }
 
-    [thisMinY, thisMaxY] = this.extremeValues_(series);
+    var extremes = this.extremeValues_(series);
+    var thisMinY = extremes[0];
+    var thisMaxY = extremes[1];
     if (!minY || thisMinY < minY) minY = thisMinY;
     if (!maxY || thisMaxY > maxY) maxY = thisMaxY;
 
