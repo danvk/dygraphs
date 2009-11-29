@@ -129,101 +129,6 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
 
     MochiKit.DOM.updateNodeAttributes(this.container, 
     {"style":{ "position": "relative", "width": this.width + "px"}});
-
-    // load event system if we have Signals
-    /* Disabled until we have a proper implementation
-    try {
-        this.event_isinside = null;
-        if (MochiKit.Signal && this.options.enableEvents) {
-            this._initialiseEvents();
-        }
-    }
-    catch (e) {
-        // still experimental
-    }
-    */
-};
-
-PlotKit.CanvasRenderer.prototype.render = function() {
-    if (this.isIE) {
-        // VML takes a while to start up, so we just poll every this.IEDelay
-        try {
-            if (this.renderDelay) {
-                this.renderDelay.cancel();
-                this.renderDelay = null;
-            }
-            var context = this.element.getContext("2d");
-        }
-        catch (e) {
-            this.isFirstRender = false;
-            if (this.maxTries-- > 0) {
-                this.renderDelay = MochiKit.Async.wait(this.IEDelay);
-                this.renderDelay.addCallback(bind(this.render, this));
-            }
-            return;
-        }
-    }
-
-    if (this.options.drawBackground)
-        this._renderBackground();
-
-    if (this.layout.style == "line") {
-        this._renderLineChart();
-		this._renderLineAxis();
-	}
-};
-
-PlotKit.CanvasRenderer.prototype._renderLineChart = function() {
-    var context = this.element.getContext("2d");
-    var colorCount = this.options.colorScheme.length;
-    var colorScheme = this.options.colorScheme;
-    var setNames = MochiKit.Base.keys(this.layout.datasets);
-    var setCount = setNames.length;
-    var bind = MochiKit.Base.bind;
-    var partial = MochiKit.Base.partial;
-
-    for (var i = 0; i < setCount; i++) {
-        var setName = setNames[i];
-        var color = colorScheme[i%colorCount];
-        var strokeX = this.options.strokeColorTransform;
-
-        // setup graphics context
-        context.save();
-        context.fillStyle = color.toRGBString();
-        if (this.options.strokeColor)
-            context.strokeStyle = this.options.strokeColor.toRGBString();
-        else if (this.options.strokeColorTransform) 
-            context.strokeStyle = color[strokeX]().toRGBString();
-        
-        context.lineWidth = this.options.strokeWidth;
-        
-        // create paths
-        var makePath = function(ctx) {
-            ctx.beginPath();
-            ctx.moveTo(this.area.x, this.area.y + this.area.h);
-            var addPoint = function(ctx_, point) {
-                if (point.name == setName)
-                    ctx_.lineTo(this.area.w * point.x + this.area.x,
-                                this.area.h * point.y + this.area.y);
-            };
-            MochiKit.Iter.forEach(this.layout.points, partial(addPoint, ctx), this);
-            ctx.lineTo(this.area.w + this.area.x,
-                           this.area.h + this.area.y);
-            ctx.lineTo(this.area.x, this.area.y + this.area.h);
-            ctx.closePath();
-        };
-
-        if (this.options.shouldFill) {
-            bind(makePath, this)(context);
-            context.fill();
-        }
-        if (this.options.shouldStroke) {
-            bind(makePath, this)(context);
-            context.stroke();
-        }
-
-        context.restore();
-    }
 };
 
 
@@ -350,14 +255,6 @@ PlotKit.CanvasRenderer.prototype._renderAxis = function() {
 
 };
 
-PlotKit.CanvasRenderer.prototype._renderBackground = function() {
-    var context = this.element.getContext("2d");
-    context.save();
-    context.fillStyle = this.options.backgroundColor.toRGBString();
-    context.fillRect(0, 0, this.width, this.height);
-    context.restore();
-};
-
 PlotKit.CanvasRenderer.prototype.clear = function() {
     if (this.isIE) {
         // VML takes a while to start up, so we just poll every this.IEDelay
@@ -389,87 +286,6 @@ PlotKit.CanvasRenderer.prototype.clear = function() {
 //  Everything below here is experimental and undocumented.
 // ----------------------------------------------------------------
 
-PlotKit.CanvasRenderer.prototype._initialiseEvents = function() {
-    var connect = MochiKit.Signal.connect;
-    var bind = MochiKit.Base.bind;
-    //MochiKit.Signal.registerSignals(this, ['onmouseover', 'onclick', 'onmouseout', 'onmousemove']);
-    //connect(this.element, 'onmouseover', bind(this.onmouseover, this));
-    //connect(this.element, 'onmouseout', bind(this.onmouseout, this));
-    //connect(this.element, 'onmousemove', bind(this.onmousemove, this));
-    connect(this.element, 'onclick', bind(this.onclick, this));
-};
-
-PlotKit.CanvasRenderer.prototype._resolveObject = function(e) {
-    // does not work in firefox
-	//var x = (e.event().offsetX - this.area.x) / this.area.w;
-	//var y = (e.event().offsetY - this.area.y) / this.area.h;
-
-    var x = (e.mouse().page.x - PlotKit.Base.findPosX(this.element) - this.area.x) / this.area.w;
-    var y = (e.mouse().page.y - PlotKit.Base.findPosY(this.element) - this.area.y) / this.area.h;
-	
-    //log(x, y);
-
-    var isHit = this.layout.hitTest(x, y);
-    if (isHit)
-        return isHit;
-    return null;
-};
-
-PlotKit.CanvasRenderer.prototype._createEventObject = function(layoutObj, e) {
-    if (layoutObj == null) {
-        return null;
-    }
-
-    e.chart = layoutObj
-    return e;
-};
-
-
-PlotKit.CanvasRenderer.prototype.onclick = function(e) {
-    var layoutObject = this._resolveObject(e);
-    var eventObject = this._createEventObject(layoutObject, e);
-    if (eventObject != null)
-        MochiKit.Signal.signal(this, "onclick", eventObject);
-};
-
-PlotKit.CanvasRenderer.prototype.onmouseover = function(e) {
-    var layoutObject = this._resolveObject(e);
-    var eventObject = this._createEventObject(layoutObject, e);
-    if (eventObject != null) 
-        signal(this, "onmouseover", eventObject);
-};
-
-PlotKit.CanvasRenderer.prototype.onmouseout = function(e) {
-    var layoutObject = this._resolveObject(e);
-    var eventObject = this._createEventObject(layoutObject, e);
-    if (eventObject == null)
-        signal(this, "onmouseout", e);
-    else 
-        signal(this, "onmouseout", eventObject);
-
-};
-
-PlotKit.CanvasRenderer.prototype.onmousemove = function(e) {
-    var layoutObject = this._resolveObject(e);
-    var eventObject = this._createEventObject(layoutObject, e);
-
-    if ((layoutObject == null) && (this.event_isinside == null)) {
-        // TODO: should we emit an event anyway?
-        return;
-    }
-
-    if ((layoutObject != null) && (this.event_isinside == null))
-        signal(this, "onmouseover", eventObject);
-
-    if ((layoutObject == null) && (this.event_isinside != null))
-        signal(this, "onmouseout", eventObject);
-
-    if ((layoutObject != null) && (this.event_isinside != null))
-        signal(this, "onmousemove", eventObject);
-
-    this.event_isinside = layoutObject;
-    //log("move", x, y);    
-};
 
 PlotKit.CanvasRenderer.isSupported = function(canvasName) {
     var canvas = null;

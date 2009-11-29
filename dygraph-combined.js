@@ -4301,78 +4301,6 @@ this.area.w=this.width-this.area.x-this.options.rightGap;
 this.area.h=this.height-this.options.axisLabelFontSize-2*this.options.axisTickSize;
 MochiKit.DOM.updateNodeAttributes(this.container,{"style":{"position":"relative","width":this.width+"px"}});
 };
-PlotKit.CanvasRenderer.prototype.render=function(){
-if(this.isIE){
-try{
-if(this.renderDelay){
-this.renderDelay.cancel();
-this.renderDelay=null;
-}
-var _68=this.element.getContext("2d");
-}
-catch(e){
-this.isFirstRender=false;
-if(this.maxTries-->0){
-this.renderDelay=MochiKit.Async.wait(this.IEDelay);
-this.renderDelay.addCallback(bind(this.render,this));
-}
-return;
-}
-}
-if(this.options.drawBackground){
-this._renderBackground();
-}
-if(this.layout.style=="line"){
-this._renderLineChart();
-this._renderLineAxis();
-}
-};
-PlotKit.CanvasRenderer.prototype._renderLineChart=function(){
-var _69=this.element.getContext("2d");
-var _70=this.options.colorScheme.length;
-var _71=this.options.colorScheme;
-var _72=MochiKit.Base.keys(this.layout.datasets);
-var _73=_72.length;
-var _74=MochiKit.Base.bind;
-var _75=MochiKit.Base.partial;
-for(var i=0;i<_73;i++){
-var _76=_72[i];
-var _77=_71[i%_70];
-var _78=this.options.strokeColorTransform;
-_69.save();
-_69.fillStyle=_77.toRGBString();
-if(this.options.strokeColor){
-_69.strokeStyle=this.options.strokeColor.toRGBString();
-}else{
-if(this.options.strokeColorTransform){
-_69.strokeStyle=_77[_78]().toRGBString();
-}
-}
-_69.lineWidth=this.options.strokeWidth;
-var _79=function(ctx){
-ctx.beginPath();
-ctx.moveTo(this.area.x,this.area.y+this.area.h);
-var _81=function(_82,_83){
-if(_83.name==_76){
-_82.lineTo(this.area.w*_83.x+this.area.x,this.area.h*_83.y+this.area.y);
-}
-};
-MochiKit.Iter.forEach(this.layout.points,_75(_81,ctx),this);
-ctx.lineTo(this.area.w+this.area.x,this.area.h+this.area.y);
-ctx.lineTo(this.area.x,this.area.y+this.area.h);
-ctx.closePath();
-};
-if(this.options.shouldFill){
-_74(_79,this)(_69);
-_69.fill();
-}
-if(this.options.shouldStroke){
-_74(_79,this)(_69);
-_69.stroke();
-}
-_69.restore();
-}
-};
 PlotKit.CanvasRenderer.prototype._renderLineAxis=function(){
 this._renderAxis();
 };
@@ -4380,100 +4308,93 @@ PlotKit.CanvasRenderer.prototype._renderAxis=function(){
 if(!this.options.drawXAxis&&!this.options.drawYAxis){
 return;
 }
-var _84=this.element.getContext("2d");
-var _85={"style":{"position":"absolute","fontSize":this.options.axisLabelFontSize+"px","zIndex":10,"color":this.options.axisLabelColor.toRGBString(),"width":this.options.axisLabelWidth+"px","overflow":"hidden"}};
-_84.save();
-_84.strokeStyle=this.options.axisLineColor.toRGBString();
-_84.lineWidth=this.options.axisLineWidth;
+var _68=this.element.getContext("2d");
+var _69={"style":{"position":"absolute","fontSize":this.options.axisLabelFontSize+"px","zIndex":10,"color":this.options.axisLabelColor.toRGBString(),"width":this.options.axisLabelWidth+"px","overflow":"hidden"}};
+_68.save();
+_68.strokeStyle=this.options.axisLineColor.toRGBString();
+_68.lineWidth=this.options.axisLineWidth;
 if(this.options.drawYAxis){
 if(this.layout.yticks){
-var _86=function(_87){
-if(typeof (_87)=="function"){
+var _70=function(_71){
+if(typeof (_71)=="function"){
 return;
 }
 var x=this.area.x;
-var y=this.area.y+_87[0]*this.area.h;
-_84.beginPath();
-_84.moveTo(x,y);
-_84.lineTo(x-this.options.axisTickSize,y);
-_84.closePath();
-_84.stroke();
-var _89=DIV(_85,_87[1]);
+var y=this.area.y+_71[0]*this.area.h;
+_68.beginPath();
+_68.moveTo(x,y);
+_68.lineTo(x-this.options.axisTickSize,y);
+_68.closePath();
+_68.stroke();
+var _73=DIV(_69,_71[1]);
 var top=(y-this.options.axisLabelFontSize/2);
 if(top<0){
 top=0;
 }
 if(top+this.options.axisLabelFontSize+3>this.height){
-_89.style.bottom="0px";
+_73.style.bottom="0px";
 }else{
-_89.style.top=top+"px";
+_73.style.top=top+"px";
 }
-_89.style.left="0px";
-_89.style.textAlign="right";
-_89.style.width=this.options.yAxisLabelWidth+"px";
-MochiKit.DOM.appendChildNodes(this.container,_89);
-this.ylabels.push(_89);
+_73.style.left="0px";
+_73.style.textAlign="right";
+_73.style.width=this.options.yAxisLabelWidth+"px";
+MochiKit.DOM.appendChildNodes(this.container,_73);
+this.ylabels.push(_73);
 };
-MochiKit.Iter.forEach(this.layout.yticks,bind(_86,this));
-var _91=this.ylabels[0];
-var _92=this.options.axisLabelFontSize;
-var _93=parseInt(_91.style.top)+_92;
-if(_93>this.height-_92){
-_91.style.top=(parseInt(_91.style.top)-_92/2)+"px";
+MochiKit.Iter.forEach(this.layout.yticks,bind(_70,this));
+var _75=this.ylabels[0];
+var _76=this.options.axisLabelFontSize;
+var _77=parseInt(_75.style.top)+_76;
+if(_77>this.height-_76){
+_75.style.top=(parseInt(_75.style.top)-_76/2)+"px";
 }
 }
-_84.beginPath();
-_84.moveTo(this.area.x,this.area.y);
-_84.lineTo(this.area.x,this.area.y+this.area.h);
-_84.closePath();
-_84.stroke();
+_68.beginPath();
+_68.moveTo(this.area.x,this.area.y);
+_68.lineTo(this.area.x,this.area.y+this.area.h);
+_68.closePath();
+_68.stroke();
 }
 if(this.options.drawXAxis){
 if(this.layout.xticks){
-var _86=function(_94){
+var _70=function(_78){
 if(typeof (dataset)=="function"){
 return;
 }
-var x=this.area.x+_94[0]*this.area.w;
+var x=this.area.x+_78[0]*this.area.w;
 var y=this.area.y+this.area.h;
-_84.beginPath();
-_84.moveTo(x,y);
-_84.lineTo(x,y+this.options.axisTickSize);
-_84.closePath();
-_84.stroke();
-var _95=DIV(_85,_94[1]);
-_95.style.textAlign="center";
-_95.style.bottom="0px";
-var _96=(x-this.options.axisLabelWidth/2);
-if(_96+this.options.axisLabelWidth>this.width){
-_96=this.width-this.options.xAxisLabelWidth;
-_95.style.textAlign="right";
+_68.beginPath();
+_68.moveTo(x,y);
+_68.lineTo(x,y+this.options.axisTickSize);
+_68.closePath();
+_68.stroke();
+var _79=DIV(_69,_78[1]);
+_79.style.textAlign="center";
+_79.style.bottom="0px";
+var _80=(x-this.options.axisLabelWidth/2);
+if(_80+this.options.axisLabelWidth>this.width){
+_80=this.width-this.options.xAxisLabelWidth;
+_79.style.textAlign="right";
 }
-if(_96<0){
-_96=0;
-_95.style.textAlign="left";
+if(_80<0){
+_80=0;
+_79.style.textAlign="left";
 }
-_95.style.left=_96+"px";
-_95.style.width=this.options.xAxisLabelWidth+"px";
-MochiKit.DOM.appendChildNodes(this.container,_95);
-this.xlabels.push(_95);
+_79.style.left=_80+"px";
+_79.style.width=this.options.xAxisLabelWidth+"px";
+MochiKit.DOM.appendChildNodes(this.container,_79);
+this.xlabels.push(_79);
 };
-MochiKit.Iter.forEach(this.layout.xticks,bind(_86,this));
+MochiKit.Iter.forEach(this.layout.xticks,bind(_70,this));
 }
-_84.beginPath();
-_84.moveTo(this.area.x,this.area.y+this.area.h);
-_84.lineTo(this.area.x+this.area.w,this.area.y+this.area.h);
-_84.closePath();
-_84.stroke();
+_68.beginPath();
+_68.moveTo(this.area.x,this.area.y+this.area.h);
+_68.lineTo(this.area.x+this.area.w,this.area.y+this.area.h);
+_68.closePath();
+_68.stroke();
 }
-_84.restore();
-};
-PlotKit.CanvasRenderer.prototype._renderBackground=function(){
-var _97=this.element.getContext("2d");
-_97.save();
-_97.fillStyle=this.options.backgroundColor.toRGBString();
-_97.fillRect(0,0,this.width,this.height);
-_97.restore();
+_68.restore();
 };
 PlotKit.CanvasRenderer.prototype.clear=function(){
 if(this.isIE){
@@ -4482,7 +4403,7 @@ if(this.clearDelay){
 this.clearDelay.cancel();
 this.clearDelay=null;
 }
-var _98=this.element.getContext("2d");
+var _81=this.element.getContext("2d");
 }
 catch(e){
 this.isFirstRender=false;
@@ -4491,88 +4412,27 @@ this.clearDelay.addCallback(bind(this.clear,this));
 return;
 }
 }
-var _98=this.element.getContext("2d");
-_98.clearRect(0,0,this.width,this.height);
+var _81=this.element.getContext("2d");
+_81.clearRect(0,0,this.width,this.height);
 MochiKit.Iter.forEach(this.xlabels,MochiKit.DOM.removeElement);
 MochiKit.Iter.forEach(this.ylabels,MochiKit.DOM.removeElement);
 this.xlabels=new Array();
 this.ylabels=new Array();
 };
-PlotKit.CanvasRenderer.prototype._initialiseEvents=function(){
-var _99=MochiKit.Signal.connect;
-var bind=MochiKit.Base.bind;
-_99(this.element,"onclick",bind(this.onclick,this));
-};
-PlotKit.CanvasRenderer.prototype._resolveObject=function(e){
-var x=(e.mouse().page.x-PlotKit.Base.findPosX(this.element)-this.area.x)/this.area.w;
-var y=(e.mouse().page.y-PlotKit.Base.findPosY(this.element)-this.area.y)/this.area.h;
-var _102=this.layout.hitTest(x,y);
-if(_102){
-return _102;
-}
-return null;
-};
-PlotKit.CanvasRenderer.prototype._createEventObject=function(_103,e){
-if(_103==null){
-return null;
-}
-e.chart=_103;
-return e;
-};
-PlotKit.CanvasRenderer.prototype.onclick=function(e){
-var _104=this._resolveObject(e);
-var _105=this._createEventObject(_104,e);
-if(_105!=null){
-MochiKit.Signal.signal(this,"onclick",_105);
-}
-};
-PlotKit.CanvasRenderer.prototype.onmouseover=function(e){
-var _106=this._resolveObject(e);
-var _107=this._createEventObject(_106,e);
-if(_107!=null){
-signal(this,"onmouseover",_107);
-}
-};
-PlotKit.CanvasRenderer.prototype.onmouseout=function(e){
-var _108=this._resolveObject(e);
-var _109=this._createEventObject(_108,e);
-if(_109==null){
-signal(this,"onmouseout",e);
-}else{
-signal(this,"onmouseout",_109);
-}
-};
-PlotKit.CanvasRenderer.prototype.onmousemove=function(e){
-var _110=this._resolveObject(e);
-var _111=this._createEventObject(_110,e);
-if((_110==null)&&(this.event_isinside==null)){
-return;
-}
-if((_110!=null)&&(this.event_isinside==null)){
-signal(this,"onmouseover",_111);
-}
-if((_110==null)&&(this.event_isinside!=null)){
-signal(this,"onmouseout",_111);
-}
-if((_110!=null)&&(this.event_isinside!=null)){
-signal(this,"onmousemove",_111);
-}
-this.event_isinside=_110;
-};
-PlotKit.CanvasRenderer.isSupported=function(_112){
-var _113=null;
+PlotKit.CanvasRenderer.isSupported=function(_82){
+var _83=null;
 try{
-if(MochiKit.Base.isUndefinedOrNull(_112)){
-_113=MochiKit.DOM.CANVAS({});
+if(MochiKit.Base.isUndefinedOrNull(_82)){
+_83=MochiKit.DOM.CANVAS({});
 }else{
-_113=MochiKit.DOM.getElement(_112);
+_83=MochiKit.DOM.getElement(_82);
 }
-var _114=_113.getContext("2d");
+var _84=_83.getContext("2d");
 }
 catch(e){
 var ie=navigator.appVersion.match(/MSIE (\d\.\d)/);
-var _116=(navigator.userAgent.toLowerCase().indexOf("opera")!=-1);
-if((!ie)||(ie[1]<6)||(_116)){
+var _86=(navigator.userAgent.toLowerCase().indexOf("opera")!=-1);
+if((!ie)||(ie[1]<6)||(_86)){
 return false;
 }
 return true;
