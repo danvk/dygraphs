@@ -206,7 +206,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
                           axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
   MochiKit.Base.update(this.renderOptions_, this.attrs_);
   MochiKit.Base.update(this.renderOptions_, this.user_attrs_);
-  this.plotter_ = new DygraphCanvasRenderer(this.hidden_, this.layout_,
+  this.plotter_ = new DygraphCanvasRenderer(this,
+                                            this.hidden_, this.layout_,
                                             this.renderOptions_);
 
   this.createStatusMessage_();
@@ -1014,6 +1015,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var minY = null, maxY = null;
   this.layout_.removeAllDatasets();
   this.setColors_();
+  this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
   // Loop over all fields in the dataset
   for (var i = 1; i < data[0].length; i++) {

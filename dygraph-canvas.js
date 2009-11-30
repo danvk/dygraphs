@@ -75,8 +75,10 @@ DygraphLayout.prototype.updateOptions = function(new_options) {
  * @param {Layout} layout The DygraphLayout object for this graph.
  * @param {Object} options Options to pass on to CanvasRenderer
  */
-DygraphCanvasRenderer = function(element, layout, options) {
+DygraphCanvasRenderer = function(dygraph, element, layout, options) {
+  // TODO(danvk): remove options, just use dygraph.attr_.
   PlotKit.CanvasRenderer.call(this, element, layout, options);
+  this.dygraph_ = dygraph;
   this.options.shouldFill = false;
   this.options.shouldStroke = true;
   this.options.drawYGrid = true;
@@ -154,6 +156,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   MochiKit.Iter.forEach(this.layout.points, updatePoint, this);
 
   // create paths
+  var isOK = function(x) { return x && !isNaN(x); };
   var makePath = function(ctx) {
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
@@ -164,26 +167,44 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       context.save();
       context.strokeStyle = color.toRGBString();
       context.lineWidth = this.options.strokeWidth;
-      ctx.beginPath();
       var point = this.layout.points[0];
-      var first_point = true;
-      var addPoint = function(ctx_, point) {
+      var pointSize = this.dygraph_.attr_("pointSize");
+      var prevX = null, prevY = null;
+      var drawPoints = this.dygraph_.attr_("drawPoints");
+      var points = this.layout.points;
+      for (var j = 0; j < points.length; j++) {
+        var point = points[j];
         if (point.name == setName) {
-          if (!point.canvasy || isNaN(point.canvasy)) {
+          if (!isOK(point.canvasy)) {
             // this will make us move to the next point, not draw a line to it.
-            first_point = true;
+            prevX = prevY = null;
           } else {
-            if (first_point) {
-              ctx_.moveTo(point.canvasx, point.canvasy);
-              first_point = false;
+            // A point is "isolated" if it is non-null but both the previous
+            // and next points are null.
+            var isIsolated = (!prevX && (j == points.length - 1 ||
+                                         !isOK(points[j+1].canvasy)));
+
+            if (!prevX) {
+              prevX = point.canvasx;
+              prevY = point.canvasy;
             } else {
-              ctx_.lineTo(point.canvasx, point.canvasy);
+              ctx.beginPath();
+              ctx.moveTo(prevX, prevY);
+              prevX = point.canvasx;
+              prevY = point.canvasy;
+              ctx.lineTo(prevX, prevY);
+              ctx.stroke();
+            }
+
+            if (drawPoints || isIsolated) {
+             ctx.beginPath();
+             ctx.fillStyle = color.toRGBString();
+             ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
+             ctx.fill();
             }
           }
         }
-      };
-      MochiKit.Iter.forEach(this.layout.points, partial(addPoint, ctx), this);
-      ctx.stroke();
+      }
     }
   };
 

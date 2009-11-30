@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>individual points</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>with points:</p>
+    <div id="g" style="width:600px; height:300px;"></div>
+    <div id="g2" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      new Dygraph(
+          document.getElementById("g"),
+          NoisyData, {
+            rollPeriod: 7,
+            errorBars: true,
+            drawPoints: true
+          }
+        );
+
+      new Dygraph(
+          document.getElementById("g2"),
+          NoisyData, {
+            rollPeriod: 7,
+            errorBars: true,
+            drawPoints: false
+          }
+        );
+    </script>
+  </body>
+</html>

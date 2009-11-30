@@ -435,11 +435,28 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
     <td>Additional styles to apply to the currently-highlighted points div. For
     example, { 'font-weigth': 'bold' } will make the labels bold.</td>
   </tr>
-  
+
   <tr>
     <td><b>highlightCircleSize</b></td>
     <td><code>3</code></td>
     <td>Size (in pixels) of the dot drawn over highlighted points (default 3).</td>
+  </tr>
+
+  <tr>
+    <td><b>drawPoints</b></td>
+    <td><code>false</code></td>
+    <td>Draw a small dot at each point, in addition to a line going through
+    the point. This makes the individual data points easier to see, but can
+    increase visual clutter in the chart. Default: false</td>
+  </tr>
+
+  <tr>
+    <td><b>pointSize</b></td>
+    <td><code>1.0</code></td>
+    <td>The size of the dot to draw on each point in pixels (see
+    drawPoints). A dot is always drawn when a point is "isolated", i.e.
+    there is a missing point on either side of it. This also controls the
+    size of those dots.</td>
   </tr>
 
   <tr>
