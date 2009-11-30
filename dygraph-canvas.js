@@ -182,7 +182,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   MochiKit.Base.update(this.options, options);
 
   this.layout = layout;
-  this.element = MochiKit.DOM.getElement(element);
+  this.element = element;
   this.container = this.element.parentNode;
 
   // Stuff relating to Canvas on IE support    
@@ -215,8 +215,8 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.area.h = this.height - this.options.axisLabelFontSize -
                 2 * this.options.axisTickSize;
 
-  MochiKit.DOM.updateNodeAttributes(this.container, 
-    {"style":{ "position": "relative", "width": this.width + "px"}});
+  this.container.style.position = "relative";
+  this.container.style.width = this.width + "px";
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -240,10 +240,12 @@ DygraphCanvasRenderer.prototype.clear = function() {
   context.clearRect(0, 0, this.width, this.height);
 
   for (var i = 0; i < this.xlabels.length; i++) {
-    MochiKit.DOM.removeElement(this.xlabels[i]);
+    var el = this.xlabels[i];
+    el.parentNode.removeChild(el);
   }
   for (var i = 0; i < this.ylabels.length; i++) {
-    MochiKit.DOM.removeElement(this.ylabels[i]);
+    var el = this.ylabels[i];
+    el.parentNode.removeChild(el);
   }
   this.xlabels = new Array();
   this.ylabels = new Array();
@@ -254,9 +256,9 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
   var canvas = null;
   try {
     if (MochiKit.Base.isUndefinedOrNull(canvasName)) 
-      canvas = MochiKit.DOM.CANVAS({});
+      canvas = document.createElement("canvas");
     else
-      canvas = MochiKit.DOM.getElement(canvasName);
+      canvas = canvasName;
     var context = canvas.getContext("2d");
   }
   catch (e) {
@@ -361,7 +363,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         label.style.left = "0px";
         label.style.textAlign = "right";
         label.style.width = this.options.yAxisLabelWidth + "px";
-        MochiKit.DOM.appendChildNodes(this.container, label);
+        this.container.appendChild(label);
         this.ylabels.push(label);
       }
 
@@ -414,7 +416,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
         label.style.left = left + "px";
         label.style.width = this.options.xAxisLabelWidth + "px";
-        MochiKit.DOM.appendChildNodes(this.container, label);
+        this.container.appendChild(label);
         this.xlabels.push(label);
       }
     }

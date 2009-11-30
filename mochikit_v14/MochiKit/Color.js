@@ -11,14 +11,10 @@ See <http://mochikit.com/> for documentation, downloads, license, etc.
 if (typeof(dojo) != 'undefined') {
     dojo.provide('MochiKit.Color');
     dojo.require('MochiKit.Base');
-    dojo.require('MochiKit.DOM');
-    dojo.require('MochiKit.Style');
 }
 
 if (typeof(JSAN) != 'undefined') {
     JSAN.use("MochiKit.Base", []);
-    JSAN.use("MochiKit.DOM", []);
-    JSAN.use("MochiKit.Style", []);
 }
 
 try {
@@ -27,22 +23,6 @@ try {
     }
 } catch (e) {
     throw "MochiKit.Color depends on MochiKit.Base";
-}
-
-try {
-    if (typeof(MochiKit.DOM) == 'undefined') {
-        throw "";
-    }
-} catch (e) {
-    throw "MochiKit.Color depends on MochiKit.DOM";
-}
-
-try {
-    if (typeof(MochiKit.Style) == 'undefined') {
-        throw "";
-    }
-} catch (e) {
-    throw "MochiKit.Color depends on MochiKit.Style";
 }
 
 if (typeof(MochiKit.Color) == "undefined") {
@@ -386,26 +366,6 @@ MochiKit.Base.update(MochiKit.Color.Color, {
             colorFloats.push(val);
         }
         return this[method].apply(this, colorFloats);
-    },
-
-    /** @id MochiKit.Color.Color.fromComputedStyle */
-    fromComputedStyle: function (elem, style) {
-        var d = MochiKit.DOM;
-        var cls = MochiKit.Color.Color;
-        for (elem = d.getElement(elem); elem; elem = elem.parentNode) {
-            var actualColor = MochiKit.Style.getStyle.apply(d, arguments);
-            if (!actualColor) {
-                continue;
-            }
-            var color = cls.fromString(actualColor);
-            if (!color) {
-                break;
-            }
-            if (color.asRGB().a > 0) {
-                return color;
-            }
-        }
-        return null;
     },
 
     /** @id MochiKit.Color.Color.fromBackground */

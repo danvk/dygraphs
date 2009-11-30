@@ -274,28 +274,19 @@ Dygraph.prototype.createInterface_ = function() {
   // Create the all-enclosing graph div
   var enclosing = this.maindiv_;
 
-  this.graphDiv = MochiKit.DOM.DIV( { style: { 'width': this.width_ + "px",
-                                                'height': this.height_ + "px"
-                                                 }});
-  appendChildNodes(enclosing, this.graphDiv);
+  this.graphDiv = document.createElement("div");
+  this.graphDiv.style.width = this.width_ + "px";
+  this.graphDiv.style.height = this.height_ + "px";
+  enclosing.appendChild(this.graphDiv);
 
-  // Create the canvas to store
-  // We need to subtract out some space for the x- and y-axis labels.
-  // For the x-axis:
-  //   - remove from height: (axisTickSize + height of tick label)
-  //          height of tick label == axisLabelFontSize?
-  //   - remove from width: axisLabelWidth / 2 (maybe on both ends)
-  // For the y-axis:
-  //   - remove axisLabelFontSize from the top
-  //   - remove axisTickSize from the left
+  // Create the canvas for interactive parts of the chart.
+  this.canvas_ = document.createElement("canvas");
+  this.canvas_.style.position = "absolute";
+  this.canvas_.width = this.width_;
+  this.canvas_.height = this.height_;
+  this.graphDiv.appendChild(this.canvas_);
 
-  var canvas = MochiKit.DOM.CANVAS;
-  this.canvas_ = canvas( { style: { 'position': 'absolute' },
-                          width: this.width_,
-                          height: this.height_
-                         });
-  appendChildNodes(this.graphDiv, this.canvas_);
-
+  // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
   connect(this.hidden_, 'onmousemove', this, function(e) { this.mouseMove_(e) });
   connect(this.hidden_, 'onmouseout', this, function(e) { this.mouseOut_(e) });
@@ -315,7 +306,7 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
   h.style.left = canvas.style.left;
   h.width = this.width_;
   h.height = this.height_;
-  MochiKit.DOM.appendChildNodes(this.graphDiv, h);
+  this.graphDiv.appendChild(h);
   return h;
 };
 
@@ -390,7 +381,7 @@ Dygraph.findPosY = function(obj) {
 Dygraph.prototype.createStatusMessage_ = function(){
   if (!this.attr_("labelsDiv")) {
     var divWidth = this.attr_('labelsDivWidth');
-    var messagestyle = { "style": {
+    var messagestyle = {
       "position": "absolute",
       "fontSize": "14px",
       "zIndex": 10,
@@ -399,10 +390,13 @@ Dygraph.prototype.createStatusMessage_ = function(){
       "left": (this.width_ - divWidth - 2) + "px",
       "background": "white",
       "textAlign": "left",
-      "overflow": "hidden"}};
-    MochiKit.Base.update(messagestyle["style"], this.attr_('labelsDivStyles'));
-    var div = MochiKit.DOM.DIV(messagestyle);
-    MochiKit.DOM.appendChildNodes(this.graphDiv, div);
+      "overflow": "hidden"};
+    MochiKit.Base.update(messagestyle, this.attr_('labelsDivStyles'));
+    var div = document.createElement("div");
+    for (var name in messagestyle) {
+      div.style[name] = messagestyle[name];
+    }
+    this.graphDiv.appendChild(div);
     this.attrs_.labelsDiv = div;
   }
 };
@@ -414,18 +408,22 @@ Dygraph.prototype.createStatusMessage_ = function(){
  */
 Dygraph.prototype.createRollInterface_ = function() {
   var display = this.attr_('showRoller') ? "block" : "none";
-  var textAttr = { "type": "text",
-                   "size": "2",
-                   "value": this.rollPeriod_,
-                   "style": { "position": "absolute",
-                              "zIndex": 10,
-                              "top": (this.plotter_.area.h - 25) + "px",
-                              "left": (this.plotter_.area.x + 1) + "px",
-                              "display": display }
+  var textAttr = { "position": "absolute",
+                   "zIndex": 10,
+                   "top": (this.plotter_.area.h - 25) + "px",
+                   "left": (this.plotter_.area.x + 1) + "px",
+                   "display": display
                   };
-  var roller = MochiKit.DOM.INPUT(textAttr);
+  var roller = document.createElement("input");
+  roller.type = "text";
+  roller.size = "2";
+  roller.value = this.rollPeriod_;
+  for (var name in textAttr) {
+    roller.style[name] = textAttr[name];
+  }
+
   var pa = this.graphDiv;
-  MochiKit.DOM.appendChildNodes(pa, roller);
+  pa.appendChild(roller);
   connect(roller, 'onchange', this,
           function() { this.adjustRoll(roller.value); });
   return roller;
