@@ -517,7 +517,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
-      var errorTrapezoid = function(ctx_,point) {
+      // should be same color as the lines
+      var err_color = color.colorWithAlpha(0.15);
+      ctx.fillStyle = err_color.toRGBString();
+      ctx.beginPath();
+      for (var j = 0; j < this.layout.points.length; j++) {
+        var point = this.layout.points[j];
         count++;
         if (point.name == setName) {
           if (!point.y || isNaN(point.y)) {
@@ -529,22 +534,17 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
           if (prevX >= 0) {
-            ctx_.moveTo(prevX, prevYs[0]);
-            ctx_.lineTo(point.canvasx, newYs[0]);
-            ctx_.lineTo(point.canvasx, newYs[1]);
-            ctx_.lineTo(prevX, prevYs[1]);
-            ctx_.closePath();
+            ctx.moveTo(prevX, prevYs[0]);
+            ctx.lineTo(point.canvasx, newYs[0]);
+            ctx.lineTo(point.canvasx, newYs[1]);
+            ctx.lineTo(prevX, prevYs[1]);
+            ctx.closePath();
           }
           prevYs[0] = newYs[0];
           prevYs[1] = newYs[1];
           prevX = point.canvasx;
         }
-      };
-      // should be same color as the lines
-      var err_color = color.colorWithAlpha(0.15);
-      ctx.fillStyle = err_color.toRGBString();
-      ctx.beginPath();
-      MochiKit.Iter.forEach(this.layout.points, partial(errorTrapezoid, ctx), this);
+      }
       ctx.fill();
     }
   };
