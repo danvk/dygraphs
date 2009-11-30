@@ -505,7 +505,7 @@ Dygraph.pageY = function(e) {
 
 /**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
- * events. Uses MochiKit.Signal to attach all the event handlers.
+ * events.
  * @private
  */
 Dygraph.prototype.createDragInterface_ = function() {
