@@ -79,9 +79,6 @@ PlotKit.Layout = function(style, options) {
     this.minxdelta = 0;
     this.xrange = 1;
     this.yrange = 1;
-
-    this.hitTestCache = {x2maxy: null};
-    
 };
 
 // --------------------------------------------------------------------
@@ -93,24 +90,15 @@ PlotKit.Layout.prototype.addDataset = function(setname, set_xy) {
     this.datasets[setname] = set_xy;
 };
 
-PlotKit.Layout.prototype.removeDataset = function(setname, set_xy) {
-    delete this.datasets[setname];
-};
-
 // --------------------------------------------------------------------
 // Evaluates the layout for the current data and style.
 // --------------------------------------------------------------------
 
 PlotKit.Layout.prototype.evaluate = function() {
     this._evaluateLimits();
-    this._evaluateScales();
-    if (this.style == "line") {
-        this._evaluateLineCharts();
-        this._evaluateLineTicks();
-    }
+    this._evaluateLineCharts();
+    this._evaluateLineTicks();
 };
-
-
 
 
 // --------------------------------------------------------------------
@@ -127,52 +115,17 @@ PlotKit.Layout.prototype._evaluateLimits = function() {
     var listMax = MochiKit.Base.listMax;
     var isNil = MochiKit.Base.isUndefinedOrNull;
 
-
     var all = collapse(map(itemgetter(1), items(this.datasets)));
-    if (isNil(this.options.xAxis)) {
-        if (this.options.xOriginIsZero)
-            this.minxval = 0;
-        else
-            this.minxval = listMin(map(parseFloat, map(itemgetter(0), all)));
-
-        this.maxxval = listMax(map(parseFloat, map(itemgetter(0), all)));
-    }
-    else {
-        this.minxval = this.options.xAxis[0];
-        this.maxxval = this.options.xAxis[1];
-        this.xscale = this.maxval - this.minxval;
-    }
-    
-    if (isNil(this.options.yAxis)) {
-        if (this.options.yOriginIsZero)
-            this.minyval = 0;
-        else
-            this.minyval = listMin(map(parseFloat, map(itemgetter(1), all)));
-
-        this.maxyval = listMax(map(parseFloat, map(itemgetter(1), all)));
-    }
-    else {
-        this.minyval = this.options.yAxis[0];
-        this.maxyval = this.options.yAxis[1];
-        this.yscale = this.maxyval - this.minyval;
-    }
-
-};
-
-PlotKit.Layout.prototype._evaluateScales = function() {
+    this.minxval = listMin(map(parseFloat, map(itemgetter(0), all)));
+    this.maxxval = listMax(map(parseFloat, map(itemgetter(0), all)));
     this.xrange = this.maxxval - this.minxval;
-    if (this.xrange == 0)
-        this.xscale = 1.0;
-    else
-        this.xscale = 1/this.xrange;
+    this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
 
+    this.minyval = this.options.yAxis[0];
+    this.maxyval = this.options.yAxis[1];
     this.yrange = this.maxyval - this.minyval;
-    if (this.yrange == 0)
-        this.yscale = 1.0;
-    else
-        this.yscale = 1/this.yrange;
+    this.yscale = (this.yrange != 0 ? 1/this.yrange : 1.0);
 };
-
 
 // Create the line charts
 PlotKit.Layout.prototype._evaluateLineCharts = function() {
