@@ -16,10 +16,97 @@
  * @param {Object} options Options for PlotKit.Layout
  * @return {Object} The DygraphLayout object
  */
-DygraphLayout = function(options) {
-  PlotKit.Layout.call(this, "line", options);
+DygraphLayout = function(dygraph, options) {
+  this.dygraph_ = dygraph;
+  this.options = {};  // TODO(danvk): remove, use attr_ instead.
+  MochiKit.Base.update(this.options, options ? options : {});
+  this.datasets = new Array();
 };
-DygraphLayout.prototype = new PlotKit.Layout();
+
+DygraphLayout.prototype.attr_ = function(name) {
+  return this.dygraph_.attr_(name);
+};
+
+DygraphLayout.prototype.addDataset = function(setname, set_xy) {
+  this.datasets[setname] = set_xy;
+};
+
+DygraphLayout.prototype.evaluate = function() {
+  this._evaluateLimits();
+  this._evaluateLineCharts();
+  this._evaluateLineTicks();
+};
+
+DygraphLayout.prototype._evaluateLimits = function() {
+  this.minxval = this.maxxval = null;
+  for (var name in this.datasets) {
+    var series = this.datasets[name];
+    var x1 = series[0][0];
+    if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+
+    var x2 = series[series.length - 1][0];
+    if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+  }
+  this.xrange = this.maxxval - this.minxval;
+  this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
+
+  this.minyval = this.options.yAxis[0];
+  this.maxyval = this.options.yAxis[1];
+  this.yrange = this.maxyval - this.minyval;
+  this.yscale = (this.yrange != 0 ? 1/this.yrange : 1.0);
+};
+
+DygraphLayout.prototype._evaluateLineCharts = function() {
+  // add all the rects
+  this.points = new Array();
+  for (var setName in this.datasets) {
+    var dataset = this.datasets[setName];
+    for (var j = 0; j < dataset.length; j++) {
+      var item = dataset[j];
+      var point = {
+        x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
+        y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
+        xval: parseFloat(item[0]),
+        yval: parseFloat(item[1]),
+        name: setName
+      };
+
+      // limit the x, y values so they do not overdraw
+      if (point.y <= 0.0) {
+        point.y = 0.0;
+      }
+      if (point.y >= 1.0) {
+        point.y = 1.0;
+      }
+      if ((point.x >= 0.0) && (point.x <= 1.0)) {
+        this.points.push(point);
+      }
+    }
+  }
+};
+
+DygraphLayout.prototype._evaluateLineTicks = function() {
+  this.xticks = new Array();
+  for (var i = 0; i < this.options.xTicks.length; i++) {
+    var tick = this.options.xTicks[i];
+    var label = tick.label;
+    var pos = this.xscale * (tick.v - this.minxval);
+    if ((pos >= 0.0) && (pos <= 1.0)) {
+      this.xticks.push([pos, label]);
+    }
+  }
+
+  this.yticks = new Array();
+  for (var i = 0; i < this.options.yTicks.length; i++) {
+    var tick = this.options.yTicks[i];
+    var label = tick.label;
+    var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+    if ((pos >= 0.0) && (pos <= 1.0)) {
+      this.yticks.push([pos, label]);
+    }
+  }
+};
+
 
 /**
  * Behaves the same way as PlotKit.Layout, but also copies the errors

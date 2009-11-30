@@ -197,7 +197,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   MochiKit.Base.update(this.layoutOptions_, this.attrs_);
   MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
 
-  this.layout_ = new DygraphLayout(this.layoutOptions_);
+  this.layout_ = new DygraphLayout(this, this.layoutOptions_);
 
   // TODO(danvk): why does the Renderer need its own set of options?
   this.renderOptions_ = { colorScheme: this.colors_,

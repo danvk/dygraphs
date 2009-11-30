@@ -6,7 +6,7 @@
 # Generate the packed version of the subset of PlotKit needed by dygraphs.
 # This saves ~30k
 cd plotkit_v091
-./scripts/pack.py Base Layout Canvas > /tmp/plotkit-packed.js
+./scripts/pack.py Base Canvas > /tmp/plotkit-packed.js
 cd ..
 
 # Do the same for MochiKit. This save another 77k.

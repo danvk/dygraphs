@@ -22,8 +22,7 @@
 // --------------------------------------------------------------------
 
 try {    
-    if ((typeof(PlotKit.Base) == 'undefined') ||
-        (typeof(PlotKit.Layout) == 'undefined'))
+    if (typeof(PlotKit.Base) == 'undefined')
     {
         throw "";    
     }

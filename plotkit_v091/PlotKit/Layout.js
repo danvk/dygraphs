@@ -80,10 +80,6 @@ PlotKit.Layout.prototype._evaluateLimits = function() {
 
 // Create the line charts
 PlotKit.Layout.prototype._evaluateLineCharts = function() {
-    var items = PlotKit.Base.items;
-
-    var setCount = items(this.datasets).length;
-
     // add all the rects
     this.points = new Array();
     for (var setName in this.datasets) {
