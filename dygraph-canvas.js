@@ -323,21 +323,27 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   var context = this.element.getContext("2d");
 
-  var labelStyle = {"style":
-    {"position": "absolute",
-      "fontSize": this.options.axisLabelFontSize + "px",
-      "zIndex": 10,
-      "color": this.options.axisLabelColor.toRGBString(),
-      "width": this.options.axisLabelWidth + "px",
-      "overflow": "hidden"
+  var labelStyle = {
+    "position": "absolute",
+    "fontSize": this.options.axisLabelFontSize + "px",
+    "zIndex": 10,
+    "color": this.options.axisLabelColor.toRGBString(),
+    "width": this.options.axisLabelWidth + "px",
+    "overflow": "hidden"
+  };
+  var makeDiv = function(txt) {
+    var div = document.createElement("div");
+    for (var name in labelStyle) {
+      div.style[name] = labelStyle[name];
     }
+    div.appendChild(document.createTextNode(txt));
+    return div;
   };
 
   // axis lines
   context.save();
   context.strokeStyle = this.options.axisLineColor.toRGBString();
   context.lineWidth = this.options.axisLineWidth;
-
 
   if (this.options.drawYAxis) {
     if (this.layout.yticks) {
@@ -352,7 +358,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = DIV(labelStyle, tick[1]);
+        var label = makeDiv(tick[1]);
         var top = (y - this.options.axisLabelFontSize / 2);
         if (top < 0) top = 0;
 
@@ -401,7 +407,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = DIV(labelStyle, tick[1]);
+        var label = makeDiv(tick[1]);
         label.style.textAlign = "center";
         label.style.bottom = "0px";
 

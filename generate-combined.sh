@@ -6,7 +6,7 @@
 # Do the same for MochiKit. This save another 77k.
 cd mochikit_v14
 ./scripts/pack.py \
-Base Color DOM Style \
+Base Color \
 > /tmp/mochikit-packed.js
 cd ..
 
