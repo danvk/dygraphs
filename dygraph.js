@@ -153,7 +153,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.dateWindow_ = attrs.dateWindow || null;
   this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
-  this.customBars_ = attrs.customBars || false;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -193,7 +192,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Create the PlotKit grapher
   // TODO(danvk): why does the Layout need its own set of options?
   this.layoutOptions_ = { 'errorBars': (this.attr_("errorBars") ||
-                                        this.customBars_),
+                                        this.attr_("customBars")),
                           'xOriginIsZero': false };
   MochiKit.Base.update(this.layoutOptions_, this.attrs_);
   MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
@@ -970,7 +969,7 @@ Dygraph.prototype.addYTicks_ = function(minY, maxY) {
 Dygraph.prototype.extremeValues_ = function(series) {
   var minY = null, maxY = null;
 
-  var bars = this.attr_("errorBars") || this.customBars_;
+  var bars = this.attr_("errorBars") || this.attr_("customBars");
   if (bars) {
     // With custom bars, maxY is the max of the high values.
     for (var j = 0; j < series.length; j++) {
@@ -1027,7 +1026,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
     series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
-    var bars = this.attr_("errorBars") || this.customBars_;
+    var bars = this.attr_("errorBars") || this.attr_("customBars");
     if (this.dateWindow_) {
       var low = this.dateWindow_[0];
       var high= this.dateWindow_[1];
@@ -1144,7 +1143,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
         rollingData[i] = [date, mult * value];
       }
     }
-  } else if (this.customBars_) {
+  } else if (this.attr_("customBars")) {
     var low = 0;
     var mid = 0;
     var high = 0;
@@ -1337,7 +1336,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j += 2)
         fields[(j + 1) / 2] = [parseFloat(inFields[j]),
                                parseFloat(inFields[j + 1])];
-    } else if (this.customBars_) {
+    } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
         var vals = inFields[j].split(";");
@@ -1519,9 +1518,6 @@ Dygraph.prototype.start_ = function() {
  */
 Dygraph.prototype.updateOptions = function(attrs) {
   // TODO(danvk): this is a mess. Rethink this function.
-  if (attrs.customBars) {
-    this.customBars_ = attrs.customBars;
-  }
   if (attrs.rollPeriod) {
     this.rollPeriod_ = attrs.rollPeriod;
   }
