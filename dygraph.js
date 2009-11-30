@@ -353,6 +353,34 @@ Dygraph.prototype.setColors_ = function() {
   MochiKit.Base.update(this.layoutOptions_, this.attrs_);
 }
 
+// The following functions are from quirksmode.org
+// http://www.quirksmode.org/js/findpos.html
+Dygraph.findPosX = function(obj) {
+  var curleft = 0;
+  if (obj.offsetParent) {
+    while (obj.offsetParent) {
+      curleft += obj.offsetLeft;
+      obj = obj.offsetParent;
+    }
+  }
+  else if (obj.x)
+    curleft += obj.x;
+  return curleft;
+};
+                   
+Dygraph.findPosY = function(obj) {
+  var curtop = 0;
+  if (obj.offsetParent) {
+    while (obj.offsetParent) {
+      curtop += obj.offsetTop;
+      obj = obj.offsetParent;
+    }
+  }
+  else if (obj.y)
+    curtop += obj.y;
+  return curtop;
+};
+
 /**
  * Create the div that contains information on the selected point(s)
  * This goes in the top right of the canvas, unless an external div has already
@@ -439,8 +467,8 @@ Dygraph.prototype.createDragInterface_ = function() {
   // Track the beginning of drag events
   connect(this.hidden_, 'onmousedown', function(event) {
     mouseDown = true;
-    px = PlotKit.Base.findPosX(self.canvas_);
-    py = PlotKit.Base.findPosY(self.canvas_);
+    px = Dygraph.findPosX(self.canvas_);
+    py = Dygraph.findPosY(self.canvas_);
     dragStartX = getX(event);
     dragStartY = getY(event);
   });
@@ -574,7 +602,7 @@ Dygraph.prototype.doZoom_ = function(lowX, highX) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  var canvasx = event.mouse().page.x - PlotKit.Base.findPosX(this.hidden_);
+  var canvasx = event.mouse().page.x - Dygraph.findPosX(this.hidden_);
   var points = this.layout_.points;
 
   var lastx = -1;

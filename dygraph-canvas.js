@@ -2,17 +2,15 @@
 // All Rights Reserved.
 
 /**
- * @fileoverview Subclasses various parts of PlotKit to meet the additional
- * needs of Dygraph: grid overlays and error bars
+ * @fileoverview Based on PlotKit, but modified to meet the needs of dygraphs.
+ * In particular, support for:
+ * - grid overlays 
+ * - error bars
+ * - dygraphs attribute system
  */
 
-// Subclass PlotKit.Layout to add:
-// 1. Sigma/errorBars properties
-// 2. Copy error terms for PlotKit.CanvasRenderer._renderLineChart
-
 /**
- * Creates a new DygraphLayout object. Options are the same as those allowed
- * by the PlotKit.Layout constructor.
+ * Creates a new DygraphLayout object.
  * @param {Object} options Options for PlotKit.Layout
  * @return {Object} The DygraphLayout object
  */
@@ -121,7 +119,6 @@ DygraphLayout.prototype.evaluateWithError = function() {
   for (var setName in this.datasets) {
     var j = 0;
     var dataset = this.datasets[setName];
-    if (PlotKit.Base.isFuncLike(dataset)) continue;
     for (var j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
       var xv = parseFloat(item[0]);
@@ -189,7 +186,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.container = this.element.parentNode;
 
   // Stuff relating to Canvas on IE support    
-  this.isIE = PlotKit.Base.excanvasSupported();
+  this.isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
 
   if (this.isIE && !isNil(G_vmlCanvasManager)) {
       this.IEDelay = 0.5;
