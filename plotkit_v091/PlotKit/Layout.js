@@ -13,16 +13,6 @@
     
 */
 
-try {    
-    if (typeof(PlotKit.Base) == 'undefined')
-    {
-        throw ""
-    }
-} 
-catch (e) {    
-    throw "PlotKit.Layout depends on MochiKit.{Base,Color,DOM,Format} and PlotKit.Base"
-}
-
 // --------------------------------------------------------------------
 // Start of Layout definition
 // --------------------------------------------------------------------
@@ -31,54 +21,18 @@ if (typeof(PlotKit.Layout) == 'undefined') {
     PlotKit.Layout = {};
 }
 
-PlotKit.Layout.NAME = "PlotKit.Layout";
-PlotKit.Layout.VERSION = PlotKit.VERSION;
-
-PlotKit.Layout.__repr__ = function() {
-    return "[" + this.NAME + " " + this.VERSION + "]";
-};
-
-PlotKit.Layout.toString = function() {
-    return this.__repr__();
-}
-
 // --------------------------------------------------------------------
 // Start of Layout definition
 // --------------------------------------------------------------------
 
 PlotKit.Layout = function(style, options) {
-  
-    this.options = {
-        "xOriginIsZero": true,
-        "yOriginIsZero": true,
-        "xAxis": null, // [xmin, xmax]
-        "yAxis": null, // [ymin, ymax]
-        "xTicks": null, // [{label: "somelabel", v: value}, ..] (label opt.)
-        "yTicks": null, // [{label: "somelabel", v: value}, ..] (label opt.)
-    };
+    this.options = { };
 
     // valid external options : TODO: input verification
-    this.style = style; 
     MochiKit.Base.update(this.options, options ? options : {});
-
-    this.minxval = 0;
-    this.maxxval = null;
-    this.xscale = null; // val -> pos factor (eg, xval * xscale = xpos)
-
-    this.minyval = 0;
-    this.maxyval = null;
-    this.yscale = null;
-
-    this.points = new Array(); // array of points to plot for line plots
-
-    this.xticks = new Array();
-    this.yticks = new Array();
 
     // internal states
     this.datasets = new Array();
-    this.minxdelta = 0;
-    this.xrange = 1;
-    this.yrange = 1;
 };
 
 // --------------------------------------------------------------------
@@ -106,18 +60,15 @@ PlotKit.Layout.prototype.evaluate = function() {
 // --------------------------------------------------------------------
 
 PlotKit.Layout.prototype._evaluateLimits = function() {
-    // take all values from all datasets and find max and min
-    var map = PlotKit.Base.map;
-    var items = PlotKit.Base.items;
-    var itemgetter = MochiKit.Base.itemgetter;
-    var collapse = PlotKit.Base.collapse;
-    var listMin = MochiKit.Base.listMin;
-    var listMax = MochiKit.Base.listMax;
-    var isNil = MochiKit.Base.isUndefinedOrNull;
+    this.minxval = this.maxxval = null;
+    for (var name in this.datasets) {
+      var series = this.datasets[name];
+      var x1 = series[0][0];
+      if (!this.minxval || x1 < this.minxval) this.minxval = x1;
 
-    var all = collapse(map(itemgetter(1), items(this.datasets)));
-    this.minxval = listMin(map(parseFloat, map(itemgetter(0), all)));
-    this.maxxval = listMax(map(parseFloat, map(itemgetter(0), all)));
+      var x2 = series[series.length - 1][0];
+      if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+    }
     this.xrange = this.maxxval - this.minxval;
     this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
 
@@ -135,11 +86,8 @@ PlotKit.Layout.prototype._evaluateLineCharts = function() {
 
     // add all the rects
     this.points = new Array();
-    var i = 0;
     for (var setName in this.datasets) {
         var dataset = this.datasets[setName];
-        if (PlotKit.Base.isFuncLike(dataset)) continue;
-        dataset.sort(function(a, b) { return compare(parseFloat(a[0]), parseFloat(b[0])); });
         for (var j = 0; j < dataset.length; j++) {
             var item = dataset[j];
             var point = {
@@ -161,77 +109,28 @@ PlotKit.Layout.prototype._evaluateLineCharts = function() {
                 this.points.push(point);
             }
         }
-        i++;
     }
 };
 
-
-PlotKit.Layout.prototype._evaluateLineTicksForXAxis = function() {
-    var isNil = MochiKit.Base.isUndefinedOrNull;
-    
-    this.xticks = new Array();
-    var makeTicks = function(tick) {
-        var label = tick.label;
-        if (isNil(label))
-            label = tick.v.toString();
-        var pos = this.xscale * (tick.v - this.minxval);
-        if ((pos >= 0.0) && (pos <= 1.0)) {
-            this.xticks.push([pos, label]);
-        }
-    };
-    MochiKit.Iter.forEach(this.options.xTicks, bind(makeTicks, this));
-};
-
-PlotKit.Layout.prototype._evaluateLineTicksForYAxis = function() {
-    var isNil = MochiKit.Base.isUndefinedOrNull;
-
-    this.yticks = new Array();
-    var makeTicks = function(tick) {
-        var label = tick.label;
-        if (isNil(label))
-            label = tick.v.toString();
-        var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-        if ((pos >= 0.0) && (pos <= 1.0)) {
-            this.yticks.push([pos, label]);
-        }
-    };
-    MochiKit.Iter.forEach(this.options.yTicks, bind(makeTicks, this));
-};
-
 PlotKit.Layout.prototype._evaluateLineTicks = function() {
-    this._evaluateLineTicksForXAxis();
-    this._evaluateLineTicksForYAxis();
+  this.xticks = new Array();
+  for (var i = 0; i < this.options.xTicks.length; i++) {
+    var tick = this.options.xTicks[i];
+    var label = tick.label;
+    var pos = this.xscale * (tick.v - this.minxval);
+    if ((pos >= 0.0) && (pos <= 1.0)) {
+      this.xticks.push([pos, label]);
+    }
+  }
+
+  this.yticks = new Array();
+  for (var i = 0; i < this.options.yTicks.length; i++) {
+    var tick = this.options.yTicks[i];
+    var label = tick.label;
+    var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
+    if ((pos >= 0.0) && (pos <= 1.0)) {
+      this.yticks.push([pos, label]);
+    }
+  }
 };
-
-
-// --------------------------------------------------------------------
-// END Internal Functions
-// --------------------------------------------------------------------
-
-
-// Namespace Iniitialisation
-
-PlotKit.LayoutModule = {};
-PlotKit.LayoutModule.Layout = PlotKit.Layout;
-
-PlotKit.LayoutModule.EXPORT = [
-    "Layout"
-];
-
-PlotKit.LayoutModule.EXPORT_OK = [];
-
-PlotKit.LayoutModule.__new__ = function() {
-    var m = MochiKit.Base;
-    
-    m.nameFunctions(this);
-    
-    this.EXPORT_TAGS = {
-        ":common": this.EXPORT,
-        ":all": m.concat(this.EXPORT, this.EXPORT_OK)
-    };
-};
-
-PlotKit.LayoutModule.__new__();
-MochiKit.Base._exportSymbols(this, PlotKit.LayoutModule);
-
 
