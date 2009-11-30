@@ -256,7 +256,7 @@ DygraphCanvasRenderer.prototype.clear = function() {
 DygraphCanvasRenderer.isSupported = function(canvasName) {
   var canvas = null;
   try {
-    if (MochiKit.Base.isUndefinedOrNull(canvasName)) 
+    if (typeof(canvasName) == 'undefined' || canvasName == null)
       canvas = document.createElement("canvas");
     else
       canvas = canvasName;
@@ -445,11 +445,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var context = this.element.getContext("2d");
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
-  var setNames = MochiKit.Base.keys(this.layout.datasets);
   var errorBars = this.layout.options.errorBars;
-  var setCount = setNames.length;
   var bind = MochiKit.Base.bind;
-  var partial = MochiKit.Base.partial;
+
+  var setNames = [];
+  for (var name in this.layout.datasets) setNames.push(name);
+  var setCount = setNames.length;
 
   //Update Points
   for (var i = 0; i < this.layout.points.length; i++) {
