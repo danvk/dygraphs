@@ -1,19 +1,18 @@
 #!/bin/bash
 # Generates a single JS file that's easier to include.
-# This packed JS includes a partial copy of MochiKit and PlotKit.
-# It winds up being 146k uncompressed and 37k gzipped.
 
-# Do the same for MochiKit. This save another 77k.
+# Pack up just the bits of MochiKit that we need.
 cd mochikit_v14
 ./scripts/pack.py \
-Base Color \
+Base \
 > /tmp/mochikit-packed.js
 cd ..
 
-# Pack the dygraphs JS. This saves another 22k.
+# Pack the dygraphs JS and rgbcolor
 cat \
 dygraph-canvas.js \
 dygraph.js \
+rgbcolor/rgbcolor.js \
 > /tmp/dygraph.js
 
 java -jar custom_rhino.jar -c /tmp/dygraph.js \

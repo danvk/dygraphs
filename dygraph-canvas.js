@@ -165,19 +165,19 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   // default options
   this.options = {
-      "strokeWidth": 0.5,
-      "drawXAxis": true,
-      "drawYAxis": true,
-      "axisLineColor": Color.blackColor(),
-      "axisLineWidth": 0.5,
-      "axisTickSize": 3,
-      "axisLabelColor": Color.blackColor(),
-      "axisLabelFont": "Arial",
-      "axisLabelFontSize": 9,
-      "axisLabelWidth": 50,
-      "drawYGrid": true,
-      "drawXGrid": true,
-      "gridLineColor": 'rgb(0.5,0.5,0.5)'
+    "strokeWidth": 0.5,
+    "drawXAxis": true,
+    "drawYAxis": true,
+    "axisLineColor": "black",
+    "axisLineWidth": 0.5,
+    "axisTickSize": 3,
+    "axisLabelColor": "black",
+    "axisLabelFont": "Arial",
+    "axisLabelFontSize": 9,
+    "axisLabelWidth": 50,
+    "drawYGrid": true,
+    "drawXGrid": true,
+    "gridLineColor": "rgb(128,128,128)"
   };
   MochiKit.Base.update(this.options, options);
 
@@ -311,7 +311,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   }
 
   // Do the ordinary rendering, as before
-  // TODO(danvk) Call super.render()
   this._renderLineChart();
   this._renderAxis();
 };
@@ -327,7 +326,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     "position": "absolute",
     "fontSize": this.options.axisLabelFontSize + "px",
     "zIndex": 10,
-    "color": this.options.axisLabelColor.toRGBString(),
+    "color": this.options.axisLabelColor,
     "width": this.options.axisLabelWidth + "px",
     "overflow": "hidden"
   };
@@ -342,7 +341,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   // axis lines
   context.save();
-  context.strokeStyle = this.options.axisLineColor.toRGBString();
+  context.strokeStyle = this.options.axisLineColor;
   context.lineWidth = this.options.axisLineWidth;
 
   if (this.options.drawYAxis) {
@@ -465,12 +464,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
       var color = colorScheme[i%colorCount];
-      var strokeX = this.options.strokeColorTransform;
 
       // setup graphics context
       context.save();
-      context.strokeStyle = color.toRGBString();
-      context.lineWidth = this.options.strokeWidth;
       var point = this.layout.points[0];
       var pointSize = this.dygraph_.attr_("pointSize");
       var prevX = null, prevY = null;
@@ -493,6 +489,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
               prevY = point.canvasy;
             } else {
               ctx.beginPath();
+              ctx.strokeStyle = color;
+              ctx.lineWidth = this.options.strokeWidth;
               ctx.moveTo(prevX, prevY);
               prevX = point.canvasx;
               prevY = point.canvasy;
@@ -502,7 +500,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
             if (drawPoints || isIsolated) {
              ctx.beginPath();
-             ctx.fillStyle = color.toRGBString();
+             ctx.fillStyle = color;
              ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
              ctx.fill();
             }
@@ -516,19 +514,19 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
       var color = colorScheme[i % colorCount];
-      var strokeX = this.options.strokeColorTransform;
 
       // setup graphics context
       context.save();
-      context.strokeStyle = color.toRGBString();
+      context.strokeStyle = color;
       context.lineWidth = this.options.strokeWidth;
       var prevX = -1;
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
-      // should be same color as the lines
-      var err_color = color.colorWithAlpha(0.15);
-      ctx.fillStyle = err_color.toRGBString();
+      // should be same color as the lines but only 15% opaque.
+      var rgb = new RGBColor(color);
+      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)';
+      ctx.fillStyle = err_color;
       ctx.beginPath();
       for (var j = 0; j < this.layout.points.length; j++) {
         var point = this.layout.points[j];
