@@ -42,8 +42,6 @@ PlotKit.Layout.toString = function() {
     return this.__repr__();
 }
 
-PlotKit.Layout.valid_styles = ["bar", "line", "pie", "point"];
-
 // --------------------------------------------------------------------
 // Start of Layout definition
 // --------------------------------------------------------------------
@@ -51,48 +49,25 @@ PlotKit.Layout.valid_styles = ["bar", "line", "pie", "point"];
 PlotKit.Layout = function(style, options) {
   
     this.options = {
-        "barWidthFillFraction": 0.75,
-        "barOrientation": "vertical",
         "xOriginIsZero": true,
         "yOriginIsZero": true,
         "xAxis": null, // [xmin, xmax]
         "yAxis": null, // [ymin, ymax]
         "xTicks": null, // [{label: "somelabel", v: value}, ..] (label opt.)
         "yTicks": null, // [{label: "somelabel", v: value}, ..] (label opt.)
-        "xNumberOfTicks": 10,
-        "yNumberOfTicks": 5,
-        "xTickPrecision": 1,
-        "yTickPrecision": 1,
-        "pieRadius": 0.4
     };
 
     // valid external options : TODO: input verification
     this.style = style; 
     MochiKit.Base.update(this.options, options ? options : {});
 
-    // externally visible states
-    // overriden if xAxis and yAxis are set in options
-    if (!MochiKit.Base.isUndefinedOrNull(this.options.xAxis)) {
-        this.minxval = this.options.xAxis[0];
-        this.maxxval = this.options.xAxis[1];
-        this.xscale = this.maxxval - this.minxval; 
-    }
-    else {
-        this.minxval = 0;
-        this.maxxval = null;
-        this.xscale = null; // val -> pos factor (eg, xval * xscale = xpos)
-    }
+    this.minxval = 0;
+    this.maxxval = null;
+    this.xscale = null; // val -> pos factor (eg, xval * xscale = xpos)
 
-    if (!MochiKit.Base.isUndefinedOrNull(this.options.yAxis)) {
-        this.minyval = this.options.yAxis[0];
-        this.maxyval = this.options.yAxis[1];
-        this.yscale = this.maxyval - this.minyval;
-    }
-    else {
-        this.minyval = 0;
-        this.maxyval = null;
-        this.yscale = null;
-    }
+    this.minyval = 0;
+    this.maxyval = null;
+    this.yscale = null;
 
     this.points = new Array(); // array of points to plot for line plots
 

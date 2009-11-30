@@ -4072,29 +4072,16 @@ return "["+this.NAME+" "+this.VERSION+"]";
 PlotKit.Layout.toString=function(){
 return this.__repr__();
 };
-PlotKit.Layout.valid_styles=["bar","line","pie","point"];
 PlotKit.Layout=function(_28,_29){
-this.options={"barWidthFillFraction":0.75,"barOrientation":"vertical","xOriginIsZero":true,"yOriginIsZero":true,"xAxis":null,"yAxis":null,"xTicks":null,"yTicks":null,"xNumberOfTicks":10,"yNumberOfTicks":5,"xTickPrecision":1,"yTickPrecision":1,"pieRadius":0.4};
+this.options={"xOriginIsZero":true,"yOriginIsZero":true,"xAxis":null,"yAxis":null,"xTicks":null,"yTicks":null,};
 this.style=_28;
 MochiKit.Base.update(this.options,_29?_29:{});
-if(!MochiKit.Base.isUndefinedOrNull(this.options.xAxis)){
-this.minxval=this.options.xAxis[0];
-this.maxxval=this.options.xAxis[1];
-this.xscale=this.maxxval-this.minxval;
-}else{
 this.minxval=0;
 this.maxxval=null;
 this.xscale=null;
-}
-if(!MochiKit.Base.isUndefinedOrNull(this.options.yAxis)){
-this.minyval=this.options.yAxis[0];
-this.maxyval=this.options.yAxis[1];
-this.yscale=this.maxyval-this.minyval;
-}else{
 this.minyval=0;
 this.maxyval=null;
 this.yscale=null;
-}
 this.points=new Array();
 this.xticks=new Array();
 this.yticks=new Array();
@@ -4687,7 +4674,6 @@ this.fractions_=_60.fractions||false;
 this.dateWindow_=_60.dateWindow||null;
 this.valueRange_=_60.valueRange||null;
 this.wilsonInterval_=_60.wilsonInterval||true;
-this.customBars_=_60.customBars||false;
 div.innerHTML="";
 if(div.style.width==""){
 div.style.width=Dygraph.DEFAULT_WIDTH+"px";
@@ -4703,7 +4689,7 @@ this.attrs_={};
 MochiKit.Base.update(this.attrs_,Dygraph.DEFAULT_ATTRS);
 this.labelsFromCSV_=(this.attr_("labels")==null);
 this.createInterface_();
-this.layoutOptions_={"errorBars":(this.attr_("errorBars")||this.customBars_),"xOriginIsZero":false};
+this.layoutOptions_={"errorBars":(this.attr_("errorBars")||this.attr_("customBars")),"xOriginIsZero":false};
 MochiKit.Base.update(this.layoutOptions_,this.attrs_);
 MochiKit.Base.update(this.layoutOptions_,this.user_attrs_);
 this.layout_=new DygraphLayout(this.layoutOptions_);
@@ -5233,7 +5219,7 @@ this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_182});
 };
 Dygraph.prototype.extremeValues_=function(_183){
 var minY=null,maxY=null;
-var bars=this.attr_("errorBars")||this.customBars_;
+var bars=this.attr_("errorBars")||this.attr_("customBars");
 if(bars){
 for(var j=0;j<_183.length;j++){
 var y=_183[j][1][0];
@@ -5283,7 +5269,7 @@ var date=data[j][0];
 _187[j]=[date,data[j][i]];
 }
 _187=this.rollingAverage(_187,this.rollPeriod_);
-var bars=this.attr_("errorBars")||this.customBars_;
+var bars=this.attr_("errorBars")||this.attr_("customBars");
 if(this.dateWindow_){
 var low=this.dateWindow_[0];
 var high=this.dateWindow_[1];
@@ -5383,7 +5369,7 @@ _198[i]=[date,mult*_202];
 }
 }
 }else{
-if(this.customBars_){
+if(this.attr_("customBars")){
 var low=0;
 var mid=0;
 var high=0;
@@ -5537,7 +5523,7 @@ for(var j=1;j<_224.length;j+=2){
 _225[(j+1)/2]=[parseFloat(_224[j]),parseFloat(_224[j+1])];
 }
 }else{
-if(this.customBars_){
+if(this.attr_("customBars")){
 for(var j=1;j<_224.length;j++){
 var vals=_224[j].split(";");
 _225[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
@@ -5677,9 +5663,6 @@ this.error("Unknown data format: "+(typeof this.file_));
 }
 };
 Dygraph.prototype.updateOptions=function(_234){
-if(_234.customBars){
-this.customBars_=_234.customBars;
-}
 if(_234.rollPeriod){
 this.rollPeriod_=_234.rollPeriod;
 }
