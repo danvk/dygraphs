@@ -166,8 +166,6 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   // TODO(danvk): remove options, just use dygraph.attr_.
   PlotKit.CanvasRenderer.call(this, element, layout, options);
   this.dygraph_ = dygraph;
-  this.options.shouldFill = false;
-  this.options.shouldStroke = true;
   this.options.drawYGrid = true;
   this.options.drawXGrid = true;
   this.options.gridLineColor = MochiKit.Color.Color.grayColor();

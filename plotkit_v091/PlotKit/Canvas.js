@@ -62,14 +62,7 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
     
     // default options
     this.options = {
-        "drawBackground": true,
-        "backgroundColor": Color.whiteColor(),
-        "colorScheme": PlotKit.Base.palette(PlotKit.Base.baseColors()[0]),
-        "strokeColor": Color.whiteColor(),
-        "strokeColorTransform": "asStrokeColor",
         "strokeWidth": 0.5,
-        "shouldFill": true,
-        "shouldStroke": true,
         "drawXAxis": true,
         "drawYAxis": true,
         "axisLineColor": Color.blackColor(),
@@ -78,9 +71,7 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
         "axisLabelColor": Color.blackColor(),
         "axisLabelFont": "Arial",
         "axisLabelFontSize": 9,
-		"axisLabelWidth": 50,
-		"pieRadius": 0.4,
-        "enableEvents": true
+        "axisLabelWidth": 50,
     };
     MochiKit.Base.update(this.options, options ? options : {});
 
@@ -304,31 +295,3 @@ PlotKit.CanvasRenderer.isSupported = function(canvasName) {
     }
     return true;
 };
-
-// Namespace Iniitialisation
-
-PlotKit.Canvas = {}
-PlotKit.Canvas.CanvasRenderer = PlotKit.CanvasRenderer;
-
-PlotKit.Canvas.EXPORT = [
-    "CanvasRenderer"
-];
-
-PlotKit.Canvas.EXPORT_OK = [
-    "CanvasRenderer"
-];
-
-PlotKit.Canvas.__new__ = function() {
-    var m = MochiKit.Base;
-    
-    m.nameFunctions(this);
-    
-    this.EXPORT_TAGS = {
-        ":common": this.EXPORT,
-        ":all": m.concat(this.EXPORT, this.EXPORT_OK)
-    };
-};
-
-PlotKit.Canvas.__new__();
-MochiKit.Base._exportSymbols(this, PlotKit.Canvas);
-

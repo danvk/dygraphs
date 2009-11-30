@@ -29,25 +29,6 @@ catch (e) {
 }
 
 // -------------------------------------------------------------------
-// Inject Common Shortcuts we use into MochiKit.Color.Color
-// -------------------------------------------------------------------
-
-MochiKit.Base.update(MochiKit.Color.Color.prototype, {
-    asFillColor: function() {
-        return this.lighterColorWithLevel(0.3);
-    },
-        
-    asStrokeColor: function() {
-        return this.darkerColorWithLevel(0.1);
-    },
-
-    asPointColor: function() {
-        return this.lighterColorWithLevel(0.1);
-    }
-});
-
-
-// -------------------------------------------------------------------
 // Define our own PlotKit namespace
 // -------------------------------------------------------------------
 
