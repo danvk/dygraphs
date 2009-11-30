@@ -230,6 +230,7 @@ DygraphCanvasRenderer.prototype.clear = function() {
       var context = this.element.getContext("2d");
     }
     catch (e) {
+      // TODO(danvk): this is broken, since MochiKit.Async is gone.
       this.clearDelay = MochiKit.Async.wait(this.IEDelay);
       this.clearDelay.addCallback(bind(this.clear, this));
       return;

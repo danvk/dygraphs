@@ -213,7 +213,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.createRollInterface_();
   this.createDragInterface_();
 
-  // connect(window, 'onload', this, function(e) { this.start_(); });
   this.start_();
 };
 
@@ -262,7 +261,19 @@ Dygraph.prototype.error = function(message) {
  */
 Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
-}
+};
+
+Dygraph.addEvent = function(el, evt, fn) {
+  var normed_fn = function(e) {
+    if (!e) var e = window.event;
+    fn(e);
+  };
+  if (window.addEventListener) {  // Mozilla, Netscape, Firefox
+    el.addEventListener(evt, normed_fn, false);
+  } else {  // IE
+    el.attachEvent('on' + evt, normed_fn);
+  }
+};
 
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
@@ -288,8 +299,14 @@ Dygraph.prototype.createInterface_ = function() {
 
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
-  connect(this.hidden_, 'onmousemove', this, function(e) { this.mouseMove_(e) });
-  connect(this.hidden_, 'onmouseout', this, function(e) { this.mouseOut_(e) });
+
+  var dygraph = this;
+  Dygraph.addEvent(this.hidden_, 'mousemove', function(e) {
+    dygraph.mouseMove_(e);
+  });
+  Dygraph.addEvent(this.hidden_, 'mouseout', function(e) {
+    dygraph.mouseOut_(e);
+  });
 }
 
 /**
@@ -424,10 +441,35 @@ Dygraph.prototype.createRollInterface_ = function() {
 
   var pa = this.graphDiv;
   pa.appendChild(roller);
-  connect(roller, 'onchange', this,
-          function() { this.adjustRoll(roller.value); });
+  var dygraph = this;
+  roller.onchange = function() { dygraph.adjustRoll(roller.value); };
   return roller;
-}
+};
+
+// These functions are taken from MochiKit.Signal
+Dygraph.pageX = function(e) {
+  if (e.pageX) {
+    return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
+  } else {
+    var de = document;
+    var b = document.body;
+    return e.clientX +
+        (de.scrollLeft || b.scrollLeft) -
+        (de.clientLeft || 0);
+  }
+};
+
+Dygraph.pageY = function(e) {
+  if (e.pageY) {
+    return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
+  } else {
+    var de = document;
+    var b = document.body;
+    return e.clientY +
+        (de.scrollTop || b.scrollTop) -
+        (de.clientTop || 0);
+  }
+};
 
 /**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
@@ -448,11 +490,11 @@ Dygraph.prototype.createDragInterface_ = function() {
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
   var py = 0;
-  var getX = function(e) { return e.mouse().page.x - px };
-  var getY = function(e) { return e.mouse().page.y - py };
+  var getX = function(e) { return Dygraph.pageX(e) - px };
+  var getY = function(e) { return Dygraph.pageX(e) - py };
 
   // Draw zoom rectangles when the mouse is down and the user moves around
-  connect(this.hidden_, 'onmousemove', function(event) {
+  Dygraph.addEvent(this.hidden_, 'mousemove', function(event) {
     if (mouseDown) {
       dragEndX = getX(event);
       dragEndY = getY(event);
@@ -463,7 +505,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Track the beginning of drag events
-  connect(this.hidden_, 'onmousedown', function(event) {
+  Dygraph.addEvent(this.hidden_, 'mousedown', function(event) {
     mouseDown = true;
     px = Dygraph.findPosX(self.canvas_);
     py = Dygraph.findPosY(self.canvas_);
@@ -473,7 +515,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  connect(document, 'onmouseup', this, function(event) {
+  Dygraph.addEvent(document, 'mouseup', function(event) {
     if (mouseDown) {
       mouseDown = false;
       dragStartX = null;
@@ -482,7 +524,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Temporarily cancel the dragging event when the mouse leaves the graph
-  connect(this.hidden_, 'onmouseout', this, function(event) {
+  Dygraph.addEvent(this.hidden_, 'mouseout', function(event) {
     if (mouseDown) {
       dragEndX = null;
       dragEndY = null;
@@ -491,7 +533,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the mouse is released on the canvas during a drag event, then it's a
   // zoom. Only do the zoom if it's over a large enough area (>= 10 pixels)
-  connect(this.hidden_, 'onmouseup', this, function(event) {
+  Dygraph.addEvent(this.hidden_, 'mouseup', function(event) {
     if (mouseDown) {
       mouseDown = false;
       dragEndX = getX(event);
@@ -521,7 +563,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Double-clicking zooms back out
-  connect(this.hidden_, 'ondblclick', this, function(event) {
+  Dygraph.addEvent(this.hidden_, 'dblclick', function(event) {
     self.dateWindow_ = null;
     self.drawGraph_(self.rawData_);
     var minDate = self.rawData_[0][0];
@@ -600,7 +642,7 @@ Dygraph.prototype.doZoom_ = function(lowX, highX) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  var canvasx = event.mouse().page.x - Dygraph.findPosX(this.hidden_);
+  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.hidden_);
   var points = this.layout_.points;
 
   var lastx = -1;
