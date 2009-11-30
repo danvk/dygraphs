@@ -16,8 +16,10 @@ dygraph-canvas.js \
 dygraph.js \
 > /tmp/dygraph.js
 
-java -jar plotkit_v091/scripts/custom_rhino.jar -c /tmp/dygraph.js \
+java -jar custom_rhino.jar -c /tmp/dygraph.js \
 > /tmp/dygraph-packed.js
+
+# TODO(danvk): ensure the dygraphs copyright, etc. gets into the packed js.
 
 cat \
 /tmp/mochikit-packed.js \
