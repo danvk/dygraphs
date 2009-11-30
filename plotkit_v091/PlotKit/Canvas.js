@@ -1,56 +1,3 @@
-/* 
-    PlotKit Canvas
-    ==============
-    
-    Provides HTML Canvas Renderer. This is supported under:
-    
-    - Safari 2.0
-    - Mozilla Firefox 1.5
-    - Opera 9.0 preview 2
-    - IE 6 (via VML Emulation)
-    
-    It uses DIVs for labels.
-    
-    Copyright
-    ---------
-    Copyright 2005,2006 (c) Alastair Tse <alastair^liquidx.net>
-    For use under the BSD license. <http://www.liquidx.net/plotkit>
-    
-*/
-// --------------------------------------------------------------------
-// Check required components
-// --------------------------------------------------------------------
-
-try {    
-    if (typeof(PlotKit.Base) == 'undefined')
-    {
-        throw "";    
-    }
-} 
-catch (e) {    
-    throw "PlotKit.Layout depends on MochiKit.{Base,Color,DOM,Format} and PlotKit.{Base,Layout}"
-}
-
-
-// ------------------------------------------------------------------------
-//  Defines the renderer class
-// ------------------------------------------------------------------------
-
-if (typeof(PlotKit.CanvasRenderer) == 'undefined') {
-    PlotKit.CanvasRenderer = {};
-}
-
-PlotKit.CanvasRenderer.NAME = "PlotKit.CanvasRenderer";
-PlotKit.CanvasRenderer.VERSION = PlotKit.VERSION;
-
-PlotKit.CanvasRenderer.__repr__ = function() {
-    return "[" + this.NAME + " " + this.VERSION + "]";
-};
-
-PlotKit.CanvasRenderer.toString = function() {
-    return this.__repr__();
-}
-
 PlotKit.CanvasRenderer = function(element, layout, options) {
     if (arguments.length  > 0)
         this.__init__(element, layout, options);
@@ -107,7 +54,6 @@ PlotKit.CanvasRenderer.prototype.__init__ = function(element, layout, options) {
     // internal state
     this.xlabels = new Array();
     this.ylabels = new Array();
-    this.isFirstRender = true;
 
     this.area = {
         x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
@@ -256,7 +202,6 @@ PlotKit.CanvasRenderer.prototype.clear = function() {
             var context = this.element.getContext("2d");
         }
         catch (e) {
-            this.isFirstRender = false;
             this.clearDelay = MochiKit.Async.wait(this.IEDelay);
             this.clearDelay.addCallback(bind(this.clear, this));
             return;
