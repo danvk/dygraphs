@@ -177,7 +177,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
       "axisLabelWidth": 50,
       "drawYGrid": true,
       "drawXGrid": true,
-      "gridLineColor": MochiKit.Color.Color.grayColor()
+      "gridLineColor": 'rgb(0.5,0.5,0.5)'
   };
   MochiKit.Base.update(this.options, options);
 
@@ -281,7 +281,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   if (this.options.drawYGrid) {
     var ticks = this.layout.yticks;
     ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor.toRGBString();
+    ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i = 0; i < ticks.length; i++) {
       var x = this.area.x;
@@ -297,7 +297,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   if (this.options.drawXGrid) {
     var ticks = this.layout.xticks;
     ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor.toRGBString();
+    ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i=0; i<ticks.length; i++) {
       var x = this.area.x + ticks[i][0] * this.area.w;
