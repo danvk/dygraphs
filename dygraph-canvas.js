@@ -239,8 +239,12 @@ DygraphCanvasRenderer.prototype.clear = function() {
   var context = this.element.getContext("2d");
   context.clearRect(0, 0, this.width, this.height);
 
-  MochiKit.Iter.forEach(this.xlabels, MochiKit.DOM.removeElement);
-  MochiKit.Iter.forEach(this.ylabels, MochiKit.DOM.removeElement);
+  for (var i = 0; i < this.xlabels.length; i++) {
+    MochiKit.DOM.removeElement(this.xlabels[i]);
+  }
+  for (var i = 0; i < this.ylabels.length; i++) {
+    MochiKit.DOM.removeElement(this.ylabels[i]);
+  }
   this.xlabels = new Array();
   this.ylabels = new Array();
 };
@@ -334,7 +338,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.options.drawYAxis) {
     if (this.layout.yticks) {
-      var drawTick = function(tick) {
+      for (var i = 0; i < this.layout.yticks.length; i++) {
+        var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
         var y = this.area.y + tick[0] * this.area.h;
@@ -358,9 +363,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         label.style.width = this.options.yAxisLabelWidth + "px";
         MochiKit.DOM.appendChildNodes(this.container, label);
         this.ylabels.push(label);
-      };
-
-      MochiKit.Iter.forEach(this.layout.yticks, bind(drawTick, this));
+      }
 
       // The lowest tick on the y-axis often overlaps with the leftmost
       // tick on the x-axis. Shift the bottom tick up a little bit to
@@ -383,7 +386,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.options.drawXAxis) {
     if (this.layout.xticks) {
-      var drawTick = function(tick) {
+      for (var i = 0; i < this.layout.xticks.length; i++) {
+        var tick = this.layout.xticks[i];
         if (typeof(dataset) == "function") return;
 
         var x = this.area.x + tick[0] * this.area.w;
@@ -412,9 +416,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         label.style.width = this.options.xAxisLabelWidth + "px";
         MochiKit.DOM.appendChildNodes(this.container, label);
         this.xlabels.push(label);
-      };
-
-      MochiKit.Iter.forEach(this.layout.xticks, bind(drawTick, this));
+      }
     }
 
     context.beginPath();
@@ -442,11 +444,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var partial = MochiKit.Base.partial;
 
   //Update Points
-  var updatePoint = function(point) {
+  for (var i = 0; i < this.layout.points.length; i++) {
+    var point = this.layout.points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
     point.canvasy = this.area.h * point.y + this.area.y;
   }
-  MochiKit.Iter.forEach(this.layout.points, updatePoint, this);
 
   // create paths
   var isOK = function(x) { return x && !isNaN(x); };
