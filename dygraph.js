@@ -1569,7 +1569,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   return ret;
 }
 
-// These functions are both based on MochiKit.
+// These functions are all based on MochiKit.
 Dygraph.isArrayLike = function (o) {
   var typ = typeof(o);
   if (
@@ -1590,6 +1590,12 @@ Dygraph.isDateLike = function (o) {
     return false;
   }
   return true;
+};
+
+Dygraph.clone = function(obj) {
+  var me = arguments.callee;
+  me.prototype = obj;
+  return new me();
 };
 
 

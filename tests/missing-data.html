@@ -21,7 +21,7 @@
     </table>
 
     <script type="text/javascript">
-    new Dygraph(
+    g = new Dygraph(
       document.getElementById("graph"),
       "Date,GapSeries1,GapSeries2\n" +
       "2009/12/01,10,10\n" +
@@ -33,7 +33,7 @@
       "2009/12/07,12,16\n"
     );
 
-    new Dygraph(
+    g2 = new Dygraph(
       document.getElementById("graph2"),
       [
         [ new Date("2009/12/01"), 10, 10],
@@ -50,7 +50,7 @@
       }
     );
 
-    new Dygraph(
+    g3 = new Dygraph(
       document.getElementById("graph3"),
       [
         [1, [10, 2], [20, 3]],
@@ -67,7 +67,7 @@
       }
     );
 
-    new Dygraph(
+    g4 = new Dygraph(
       document.getElementById("graph4"),
       [
         [1, [10, 2], [20, 3]],
