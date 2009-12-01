@@ -1495,7 +1495,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     this.attrs_.xTicker = Dygraph.dateTicker;
 
     // Assume they're all dates.
-    var parsedData = MochiKit.Base.clone(data);
+    var parsedData = Dygraph.clone(data);
     for (var i = 0; i < data.length; i++) {
       if (parsedData[i].length == 0) {
         this.error("Row " << (1 + i) << " of data is empty");
@@ -1592,10 +1592,17 @@ Dygraph.isDateLike = function (o) {
   return true;
 };
 
-Dygraph.clone = function(obj) {
-  var me = arguments.callee;
-  me.prototype = obj;
-  return new me();
+Dygraph.clone = function(o) {
+  // TODO(danvk): figure out how MochiKit's version works
+  var r = [];
+  for (var i = 0; i < o.length; i++) {
+    if (Dygraph.isArrayLike(o[i])) {
+      r.push(Dygraph.clone(o[i]));
+    } else {
+      r.push(o[i]);
+    }
+  }
+  return r;
 };
 
 
