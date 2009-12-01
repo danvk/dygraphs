@@ -486,7 +486,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         if (point.name == setName) {
           if (!point.y || isNaN(point.y)) {
             prevX = -1;
-            return;
+            continue;
           }
           var newYs = [ point.y - point.errorPlus * yscale,
                         point.y + point.errorMinus * yscale ];
