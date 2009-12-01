@@ -446,7 +446,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var errorBars = this.layout.options.errorBars;
-  var bind = MochiKit.Base.bind;
 
   var setNames = [];
   for (var name in this.layout.datasets) setNames.push(name);
@@ -461,65 +460,17 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   // create paths
   var isOK = function(x) { return x && !isNaN(x); };
-  var makePath = function(ctx) {
-    for (var i = 0; i < setCount; i++) {
-      var setName = setNames[i];
-      var color = colorScheme[i%colorCount];
 
-      // setup graphics context
-      context.save();
-      var point = this.layout.points[0];
-      var pointSize = this.dygraph_.attr_("pointSize");
-      var prevX = null, prevY = null;
-      var drawPoints = this.dygraph_.attr_("drawPoints");
-      var points = this.layout.points;
-      for (var j = 0; j < points.length; j++) {
-        var point = points[j];
-        if (point.name == setName) {
-          if (!isOK(point.canvasy)) {
-            // this will make us move to the next point, not draw a line to it.
-            prevX = prevY = null;
-          } else {
-            // A point is "isolated" if it is non-null but both the previous
-            // and next points are null.
-            var isIsolated = (!prevX && (j == points.length - 1 ||
-                                         !isOK(points[j+1].canvasy)));
-
-            if (!prevX) {
-              prevX = point.canvasx;
-              prevY = point.canvasy;
-            } else {
-              ctx.beginPath();
-              ctx.strokeStyle = color;
-              ctx.lineWidth = this.options.strokeWidth;
-              ctx.moveTo(prevX, prevY);
-              prevX = point.canvasx;
-              prevY = point.canvasy;
-              ctx.lineTo(prevX, prevY);
-              ctx.stroke();
-            }
-
-            if (drawPoints || isIsolated) {
-             ctx.beginPath();
-             ctx.fillStyle = color;
-             ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
-             ctx.fill();
-            }
-          }
-        }
-      }
-    }
-  };
-
-  var makeErrorBars = function(ctx) {
+  var ctx = context;
+  if (errorBars) {
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
       var color = colorScheme[i % colorCount];
 
       // setup graphics context
-      context.save();
-      context.strokeStyle = color;
-      context.lineWidth = this.options.strokeWidth;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = this.options.strokeWidth;
       var prevX = -1;
       var prevYs = [-1, -1];
       var count = 0;
@@ -555,10 +506,55 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       }
       ctx.fill();
     }
-  };
+  }
 
-  if (errorBars)
-    bind(makeErrorBars, this)(context);
-  bind(makePath, this)(context);
+  for (var i = 0; i < setCount; i++) {
+    var setName = setNames[i];
+    var color = colorScheme[i%colorCount];
+
+    // setup graphics context
+    context.save();
+    var point = this.layout.points[0];
+    var pointSize = this.dygraph_.attr_("pointSize");
+    var prevX = null, prevY = null;
+    var drawPoints = this.dygraph_.attr_("drawPoints");
+    var points = this.layout.points;
+    for (var j = 0; j < points.length; j++) {
+      var point = points[j];
+      if (point.name == setName) {
+        if (!isOK(point.canvasy)) {
+          // this will make us move to the next point, not draw a line to it.
+          prevX = prevY = null;
+        } else {
+          // A point is "isolated" if it is non-null but both the previous
+          // and next points are null.
+          var isIsolated = (!prevX && (j == points.length - 1 ||
+                                       !isOK(points[j+1].canvasy)));
+
+          if (!prevX) {
+            prevX = point.canvasx;
+            prevY = point.canvasy;
+          } else {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = this.options.strokeWidth;
+            ctx.moveTo(prevX, prevY);
+            prevX = point.canvasx;
+            prevY = point.canvasy;
+            ctx.lineTo(prevX, prevY);
+            ctx.stroke();
+          }
+
+          if (drawPoints || isIsolated) {
+           ctx.beginPath();
+           ctx.fillStyle = color;
+           ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
+           ctx.fill();
+          }
+        }
+      }
+    }
+  }
+
   context.restore();
 };
