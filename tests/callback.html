@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>callbacks</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Hover, click and zoom to test the callbacks:</p>
+    <div id="g" style="width:600px; height:300px;"></div>
+
+    <div id="status" style="width:100%; height:200px;"></div>
+
+    <script type="text/javascript">
+      s = document.getElementById("status");
+      pts_info = function(x, pts) {
+        var str = "(" + x + ") ";
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i];
+          if (i) str += ", ";
+          str += p.name + ": " + p.xval + ", " + p.yval;
+        }
+        return str;
+      };
+
+      g = new Dygraph(
+            document.getElementById("g"),
+            NoisyData, {
+              rollPeriod: 7,
+              showRoller: true,
+              errorBars: true,
+
+              highlightCallback: function(e, x, pts) {
+                s.innerHTML += "<b>Highlight</b> " + pts_info(x,pts) + "<br/>";
+              },
+
+              clickCallback: function(e, x, pts) {
+                s.innerHTML += "<b>Click</b> " + pts_info(x,pts) + "<br/>";
+              },
+
+              zoomCallback: function(minX, maxX) {
+                s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + "]<br/>";
+              }
+            }
+          );
+    </script>
+  </body>
+</html>

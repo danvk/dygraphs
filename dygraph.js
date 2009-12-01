@@ -578,8 +578,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       if (regionWidth < 2 && regionHeight < 2 &&
           self.attr_('clickCallback') != null &&
           self.lastx_ != undefined) {
-        // TODO(danvk): pass along more info about the point.
-        self.attr_('clickCallback')(event, new Date(self.lastx_));
+        // TODO(danvk): pass along more info about the points.
+        self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
       }
 
       if (regionWidth >= 10) {
@@ -598,6 +598,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Double-clicking zooms back out
   Dygraph.addEvent(this.hidden_, 'dblclick', function(event) {
+    if (self.dateWindow_ == null) return;
     self.dateWindow_ = null;
     self.drawGraph_(self.rawData_);
     var minDate = self.rawData_[0][0];
@@ -698,11 +699,15 @@ Dygraph.prototype.mouseMove_ = function(event) {
     lastx = points[points.length-1].xval;
 
   // Extract the points we've selected
-  var selPoints = [];
+  this.selPoints_ = [];
   for (var i = 0; i < points.length; i++) {
     if (points[i].xval == lastx) {
-      selPoints.push(points[i]);
+      this.selPoints_.push(points[i]);
     }
+  }
+
+  if (this.attr_("highlightCallback")) {
+    this.attr_("highlightCallback")(event, lastx, this.selPoints_);
   }
 
   // Clear the previously drawn vertical, if there is one
@@ -715,18 +720,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var isOK = function(x) { return x && !isNaN(x); };
 
-  if (selPoints.length > 0) {
-    var canvasx = selPoints[0].canvasx;
+  if (this.selPoints_.length > 0) {
+    var canvasx = this.selPoints_[0].canvasx;
 
     // Set the status message to indicate the selected point(s)
     var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
     var clen = this.colors_.length;
-    for (var i = 0; i < selPoints.length; i++) {
-      if (!isOK(selPoints[i].canvasy)) continue;
+    for (var i = 0; i < this.selPoints_.length; i++) {
+      if (!isOK(this.selPoints_[i].canvasy)) continue;
       if (this.attr_("labelsSeparateLines")) {
         replace += "<br/>";
       }
-      var point = selPoints[i];
+      var point = this.selPoints_[i];
       var c = new RGBColor(this.colors_[i%clen]);
       replace += " <b><font color='" + c.toHex() + "'>"
               + point.name + "</font></b>:"
@@ -739,11 +744,12 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
     // Draw colored circles over the center of each selected point
     ctx.save()
-    for (var i = 0; i < selPoints.length; i++) {
-      if (!isOK(selPoints[i%clen].canvasy)) continue;
+    for (var i = 0; i < this.selPoints_.length; i++) {
+      if (!isOK(this.selPoints_[i%clen].canvasy)) continue;
       ctx.beginPath();
       ctx.fillStyle = this.colors_[i%clen];
-      ctx.arc(canvasx, selPoints[i%clen].canvasy, circleSize, 0, 360, false);
+      ctx.arc(canvasx, this.selPoints_[i%clen].canvasy, circleSize,
+              0, 360, false);
       ctx.fill();
     }
     ctx.restore();
