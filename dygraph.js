@@ -105,6 +105,8 @@ Dygraph.DEFAULT_ATTRS = {
   xValueParser: Dygraph.dateParser,
   xTicker: Dygraph.dateTicker,
 
+  delimiter: ',',
+
   sigma: 2.0,
   errorBars: false,
   fractions: false,
@@ -1402,10 +1404,17 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 Dygraph.prototype.parseCSV_ = function(data) {
   var ret = [];
   var lines = data.split("\n");
+
+  // Use the default delimiter or fall back to a tab if that makes sense.
+  var delim = this.attr_('delimiter');
+  if (lines[0].indexOf(delim) == -1 && lines[0].indexOf('\t') >= 0) {
+    delim = '\t';
+  }
+
   var start = 0;
   if (this.labelsFromCSV_) {
     start = 1;
-    this.attrs_.labels = lines[0].split(",");
+    this.attrs_.labels = lines[0].split(delim);
   }
 
   var xParser;
@@ -1414,7 +1423,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
   for (var i = start; i < lines.length; i++) {
     var line = lines[i];
     if (line.length == 0) continue;  // skip blank lines
-    var inFields = line.split(',');
+    if (line[0] == '#') continue;    // skip comment lines
+    var inFields = line.split(delim);
     if (inFields.length < 2) continue;
 
     var fields = [];

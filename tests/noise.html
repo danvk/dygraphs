@@ -25,7 +25,7 @@
           );
       g30 = new Dygraph(
             document.getElementById("g30"),
-            NoisyData, {
+            NoisyData().replace(/,/g, "\t"), {
               rollPeriod: 14,
               errorBars: true
             }
