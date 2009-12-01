@@ -17,7 +17,7 @@
 DygraphLayout = function(dygraph, options) {
   this.dygraph_ = dygraph;
   this.options = {};  // TODO(danvk): remove, use attr_ instead.
-  MochiKit.Base.update(this.options, options ? options : {});
+  Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
 };
 
@@ -146,7 +146,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
  * @param {Object} new_options an associative array of new properties
  */
 DygraphLayout.prototype.updateOptions = function(new_options) {
-  MochiKit.Base.update(this.options, new_options ? new_options : {});
+  Dygraph.update(this.options, new_options ? new_options : {});
 };
 
 // Subclass PlotKit.CanvasRenderer to add:
@@ -179,7 +179,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     "drawXGrid": true,
     "gridLineColor": "rgb(128,128,128)"
   };
-  MochiKit.Base.update(this.options, options);
+  Dygraph.update(this.options, options);
 
   this.layout = layout;
   this.element = element;

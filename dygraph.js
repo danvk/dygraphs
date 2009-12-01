@@ -125,7 +125,7 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
   if (labels != null) {
     var new_labels = ["Date"];
     for (var i = 0; i < labels.length; i++) new_labels.push(labels[i]);
-    MochiKit.Base.update(attrs, { 'labels': new_labels });
+    Dygraph.update(attrs, { 'labels': new_labels });
   }
   this.__init__(div, file, attrs);
 };
@@ -178,10 +178,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // user_attrs_ and then computed attrs_. This way Dygraphs can set intelligent
   // defaults without overriding behavior that the user specifically asks for.
   this.user_attrs_ = {};
-  MochiKit.Base.update(this.user_attrs_, attrs);
+  Dygraph.update(this.user_attrs_, attrs);
 
   this.attrs_ = {};
-  MochiKit.Base.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
+  Dygraph.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
@@ -194,8 +194,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.layoutOptions_ = { 'errorBars': (this.attr_("errorBars") ||
                                         this.attr_("customBars")),
                           'xOriginIsZero': false };
-  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
-  MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
+  Dygraph.update(this.layoutOptions_, this.attrs_);
+  Dygraph.update(this.layoutOptions_, this.user_attrs_);
 
   this.layout_ = new DygraphLayout(this, this.layoutOptions_);
 
@@ -203,8 +203,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.renderOptions_ = { colorScheme: this.colors_,
                           strokeColor: null,
                           axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
-  MochiKit.Base.update(this.renderOptions_, this.attrs_);
-  MochiKit.Base.update(this.renderOptions_, this.user_attrs_);
+  Dygraph.update(this.renderOptions_, this.attrs_);
+  Dygraph.update(this.renderOptions_, this.user_attrs_);
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_, this.layout_,
                                             this.renderOptions_);
@@ -388,9 +388,9 @@ Dygraph.prototype.setColors_ = function() {
 
   // TODO(danvk): update this w/r/t/ the new options system. 
   this.renderOptions_.colorScheme = this.colors_;
-  MochiKit.Base.update(this.plotter_.options, this.renderOptions_);
-  MochiKit.Base.update(this.layoutOptions_, this.user_attrs_);
-  MochiKit.Base.update(this.layoutOptions_, this.attrs_);
+  Dygraph.update(this.plotter_.options, this.renderOptions_);
+  Dygraph.update(this.layoutOptions_, this.user_attrs_);
+  Dygraph.update(this.layoutOptions_, this.attrs_);
 }
 
 // The following functions are from quirksmode.org
@@ -440,7 +440,7 @@ Dygraph.prototype.createStatusMessage_ = function(){
       "background": "white",
       "textAlign": "left",
       "overflow": "hidden"};
-    MochiKit.Base.update(messagestyle, this.attr_('labelsDivStyles'));
+    Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
     var div = document.createElement("div");
     for (var name in messagestyle) {
       div.style[name] = messagestyle[name];
@@ -1570,6 +1570,15 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 }
 
 // These functions are all based on MochiKit.
+Dygraph.update = function (self, o) {
+  if (typeof(o) != 'undefined' && o !== null) {
+    for (var k in o) {
+      self[k] = o[k];
+    }
+  }
+  return self;
+};
+
 Dygraph.isArrayLike = function (o) {
   var typ = typeof(o);
   if (
@@ -1665,7 +1674,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
-  MochiKit.Base.update(this.user_attrs_, attrs);
+  Dygraph.update(this.user_attrs_, attrs);
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
