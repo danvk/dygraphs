@@ -1489,7 +1489,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     }
   }
 
-  if (MochiKit.Base.isDateLike(data[0][0])) {
+  if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xTicker = Dygraph.dateTicker;
@@ -1569,6 +1569,30 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   return ret;
 }
 
+// These functions are both based on MochiKit.
+Dygraph.isArrayLike = function (o) {
+  var typ = typeof(o);
+  if (
+      (typ != 'object' && !(typ == 'function' && 
+        typeof(o.item) == 'function')) ||
+      o === null ||
+      typeof(o.length) != 'number' ||
+      o.nodeType === 3
+     ) {
+    return false;
+  }
+  return true;
+};
+
+Dygraph.isDateLike = function (o) {
+  if (typeof(o) != "object" || o === null ||
+      typeof(o.getTime) != 'function') {
+    return false;
+  }
+  return true;
+};
+
+
 /**
  * Get the CSV data. If it's in a function, call that function. If it's in a
  * file, do an XMLHttpRequest to get it.
@@ -1578,7 +1602,7 @@ Dygraph.prototype.start_ = function() {
   if (typeof this.file_ == 'function') {
     // CSV string. Pretend we got it via XHR.
     this.loadedEvent_(this.file_());
-  } else if (MochiKit.Base.isArrayLike(this.file_)) {
+  } else if (Dygraph.isArrayLike(this.file_)) {
     this.rawData_ = this.parseArray_(this.file_);
     this.drawGraph_(this.rawData_);
   } else if (typeof this.file_ == 'object' &&
