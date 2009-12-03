@@ -15,9 +15,11 @@
 
     <script type="text/javascript">
       var num_tests = 100;
+      var times = [];
       var start = new Date;
 
       for (var i = 0; i < num_tests; i++) {
+        var this_start = new Date;
         g = new Dygraph(
               document.getElementById("g"),
               NoisyData, {
@@ -25,11 +27,19 @@
                 errorBars: true
               }
             );
+        var this_end = new Date;
+        times.push([i, this_end - this_start]);
       }
 
       var end = new Date;
 
       document.getElementById("status").innerHTML = "Elapsed time: " + (end - start)/num_tests + " ms/instantiation";
+      new Dygraph(
+        document.getElementById("g"),
+        times, {
+          labels: [ "Iteration", "Time (ms)" ]
+        }
+        );
     </script>
 
     <p><b>Some numbers on a MacBook Pro 2.53 GHz Core 2 Duo</b><br/>
