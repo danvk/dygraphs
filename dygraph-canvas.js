@@ -185,17 +185,6 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.element = element;
   this.container = this.element.parentNode;
 
-  // Stuff relating to Canvas on IE support    
-  this.isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-
-  if (this.isIE && !isNil(G_vmlCanvasManager)) {
-      this.IEDelay = 0.5;
-      this.maxTries = 5;
-      this.renderDelay = null;
-      this.clearDelay = null;
-      this.element = G_vmlCanvasManager.initElement(this.element);
-  }
-
   this.height = this.element.height;
   this.width = this.element.width;
 
