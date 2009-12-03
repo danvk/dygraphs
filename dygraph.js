@@ -293,10 +293,13 @@ Dygraph.prototype.createInterface_ = function() {
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
-  this.canvas_ = document.createElement("canvas");
+  // this.canvas_ = document.createElement("canvas");
+  this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
+  this.canvas_.style.width = this.width_ + "px";    // for IE
+  this.canvas_.style.height = this.height_ + "px";  // for IE
   this.graphDiv.appendChild(this.canvas_);
 
   // ... and for static parts of the chart.
@@ -319,12 +322,15 @@ Dygraph.prototype.createInterface_ = function() {
  * @private
  */
 Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
-  var h = document.createElement("canvas");
+  // var h = document.createElement("canvas");
+  var h = Dygraph.createCanvas();
   h.style.position = "absolute";
   h.style.top = canvas.style.top;
   h.style.left = canvas.style.left;
   h.width = this.width_;
   h.height = this.height_;
+  h.style.width = this.width_ + "px";    // for IE
+  h.style.height = this.height_ + "px";  // for IE
   this.graphDiv.appendChild(h);
   return h;
 };
@@ -749,7 +755,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
       ctx.beginPath();
       ctx.fillStyle = this.colors_[i%clen];
       ctx.arc(canvasx, this.selPoints_[i%clen].canvasy, circleSize,
-              0, 360, false);
+              0, 2 * Math.PI, false);
       ctx.fill();
     }
     ctx.restore();
@@ -1712,6 +1718,21 @@ Dygraph.prototype.updateOptions = function(attrs) {
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
   this.drawGraph_(this.rawData_);
+};
+
+/**
+ * Create a new canvas element. This is more complex than a simple
+ * document.createElement("canvas") because of IE and excanvas.
+ */
+Dygraph.createCanvas = function() {
+  var canvas = document.createElement("canvas");
+
+  isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
+  if (isIE) {
+    canvas = G_vmlCanvasManager.initElement(canvas);
+  }
+
+  return canvas;
 };
 
 

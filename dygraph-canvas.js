@@ -185,17 +185,6 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.element = element;
   this.container = this.element.parentNode;
 
-  // Stuff relating to Canvas on IE support    
-  this.isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-
-  if (this.isIE && !isNil(G_vmlCanvasManager)) {
-      this.IEDelay = 0.5;
-      this.maxTries = 5;
-      this.renderDelay = null;
-      this.clearDelay = null;
-      this.element = G_vmlCanvasManager.initElement(this.element);
-  }
-
   this.height = this.element.height;
   this.width = this.element.width;
 
@@ -548,7 +537,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           if (drawPoints || isIsolated) {
            ctx.beginPath();
            ctx.fillStyle = color;
-           ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
+           ctx.arc(point.canvasx, point.canvasy, pointSize,
+                   0, 2 * Math.PI, false);
            ctx.fill();
           }
         }
