@@ -755,7 +755,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
       ctx.beginPath();
       ctx.fillStyle = this.colors_[i%clen];
       ctx.arc(canvasx, this.selPoints_[i%clen].canvasy, circleSize,
-              0, 360, false);
+              0, 2 * Math.PI, false);
       ctx.fill();
     }
     ctx.restore();

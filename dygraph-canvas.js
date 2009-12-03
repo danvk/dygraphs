@@ -537,7 +537,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           if (drawPoints || isIsolated) {
            ctx.beginPath();
            ctx.fillStyle = color;
-           ctx.arc(point.canvasx, point.canvasy, pointSize, 0, 360, false);
+           ctx.arc(point.canvasx, point.canvasy, pointSize,
+                   0, 2 * Math.PI, false);
            ctx.fill();
           }
         }
