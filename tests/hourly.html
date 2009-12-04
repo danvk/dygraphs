@@ -10,17 +10,17 @@
   </head>
   <body>
     <p>Hourly data:</p>
-    <div id="g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:600px; height:300px;"></div>
 
     <p>Minutely data:</p>
-    <div id="gm" style="width:600px; height:300px;"></div>
+    <div id="div_gm" style="width:600px; height:300px;"></div>
 
     <p>Secondly data:</p>
-    <div id="gs" style="width:600px; height:300px;"></div>
+    <div id="div_gs" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
-            document.getElementById("g"),
+            document.getElementById("div_g"),
             function HourlyData() {
               return "" +
               "Date,A,B\n" +
@@ -35,7 +35,7 @@
           );
 
       gm = new Dygraph(
-            document.getElementById("gm"),
+            document.getElementById("div_gm"),
             function() {
               var ret = "Date,Hours,Minutes\n";
               var zp = function(x) { if (x<10) return "0"+x; else return ""+x;};
@@ -52,7 +52,7 @@
           );
 
       gs = new Dygraph(
-            document.getElementById("gs"),
+            document.getElementById("div_gs"),
             function() {
               var ret = "Date,Minutes,Seconds\n";
               var zp = function(x) { if (x<10) return "0"+x; else return ""+x;};

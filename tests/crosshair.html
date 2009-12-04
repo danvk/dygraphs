@@ -11,14 +11,14 @@
   </head>
   <body>
     <p>Hover, click and zoom to test the callbacks:</p>
-    <div id="g" style="width:600px; height:300px; position:relative;">
+    <div id="div_g" style="width:600px; height:300px; position:relative;">
     </div>
 
     <script type="text/javascript">
       var lines = [];
       var xline;
       g = new Dygraph(
-            document.getElementById("g"),
+            document.getElementById("div_g"),
             NoisyData, {
               rollPeriod: 7,
               showRoller: true,
@@ -31,15 +31,7 @@
                   if (i == 0) xline.style.left = pts[i].canvasx + "px";
                 }
 
-              },
-
-              // clickCallback: function(e, x, pts) {
-              //   s.innerHTML += "<b>Click</b> " + pts_info(x,pts) + "<br/>";
-              // },
-
-              // zoomCallback: function(minX, maxX) {
-              //   s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + "]<br/>";
-              // }
+              }
             }
           );
 
@@ -49,7 +41,7 @@
         line.style.height = "1px";
         line.style.backgroundColor = "black";
         line.style.position = "absolute";
-        document.getElementById("g").appendChild(line);
+        document.getElementById("div_g").appendChild(line);
         lines.push(line);
       }
 
@@ -59,7 +51,7 @@
       xline.style.top = "0px";
       xline.style.backgroundColor = "black";
       xline.style.position = "absolute";
-      document.getElementById("g").appendChild(xline);
+      document.getElementById("div_g").appendChild(xline);
     </script>
   </body>
 </html>

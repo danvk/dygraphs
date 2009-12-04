@@ -12,7 +12,7 @@
         var eq = document.getElementById("eq").value;
         eval("fn = " + eq);
 
-        var graph = document.getElementById("graph");
+        var graph = document.getElementById("graph_div");
         var width = parseInt(graph.style.width);
         var x1 = parseFloat(document.getElementById("x1").value);
         var x2 = parseFloat(document.getElementById("x2").value);
@@ -72,6 +72,6 @@
     to <input type=text width="5" id="x2" value="10" /></p>
     <p><input type=button value="Plot" onClick="plot()" /></p>
 
-    <div id=graph style="width:1024px; height:400px;"></div>
+    <div id="graph_div" style="width:1024px; height:400px;"></div>
   </body>
 </html>

@@ -11,17 +11,17 @@
   </head>
   <body>
     <p>No rollup:</p>
-    <div id="g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:600px; height:300px;"></div>
     <p>30-Day Rollup:</p>
-    <div id="g30" style="width:600px; height:300px;"></div>
+    <div id="div_g30" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
-            document.getElementById("g"),
+            document.getElementById("div_g"),
             data, {}
           );
       g30 = new Dygraph(
-            document.getElementById("g30"),
+            document.getElementById("div_g30"),
             data, {
               rollPeriod: 30
             }

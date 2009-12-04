@@ -10,7 +10,7 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <div id="g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:600px; height:300px;"></div>
     <div id="status"></div>
 
     <script type="text/javascript">
@@ -21,7 +21,7 @@
       for (var i = 0; i < num_tests; i++) {
         var this_start = new Date;
         g = new Dygraph(
-              document.getElementById("g"),
+              document.getElementById("div_g"),
               NoisyData, {
                 rollPeriod: 7,
                 errorBars: true
@@ -35,7 +35,7 @@
 
       document.getElementById("status").innerHTML = "Elapsed time: " + (end - start)/num_tests + " ms/instantiation";
       new Dygraph(
-        document.getElementById("g"),
+        document.getElementById("div_g"),
         times, {
           labels: [ "Iteration", "Time (ms)" ]
         }

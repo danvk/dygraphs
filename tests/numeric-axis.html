@@ -11,14 +11,14 @@
   </head>
   <body>
     <p>CSV data source:</p>
-    <div id="g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:600px; height:300px;"></div>
 
     <p>GViz data source:</p>
     <div id="gviz" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
-            document.getElementById("g"),
+            document.getElementById("div_g"),
             function() {
               var ret = "X,Y1,Y2\n";
               for (var i = 0; i < 100; i++) {

@@ -11,21 +11,21 @@
   </head>
   <body>
     <p>Wide</p>
-    <div id="g" style="width:800px; height:300px;"></div>
+    <div id="div_g" style="width:800px; height:300px;"></div>
 
     <p>Narrow</p>
-    <div id="g2" style="width:300px; height:200px;"></div>
+    <div id="div_g2" style="width:300px; height:200px;"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
-            document.getElementById("g"),
+            document.getElementById("div_g"),
             data, {
               rollPeriod: 7,
               pixelsPerYLabel: 20
             }
           );
       g2 = new Dygraph(
-            document.getElementById("g2"),
+            document.getElementById("div_g2"),
             data, {
               rollPeriod: 7,
               pixelsPerYLabel: 20
