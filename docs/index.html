@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>dygraphs JavaScript Library</title>
+    <title>dygraphs JavaScript Visualization Library</title>
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
@@ -19,82 +19,143 @@
         border-style: solid;
         border-color: black;
       }
+
+      #nav {
+        position: absolute;
+        left: 0px;
+        width: 150px;
+      }
+      #content {
+        position: absolute;
+        left: 160px;
+        top: 0px;
+        border-left: 2px solid rgb(229, 236, 249);
+        padding-left: 10px;
+      }
+
+      #nav ul {
+        list-style: none;
+        padding-left: 20px;
+      }
+      #nav ul ul {
+        padding-left: 1em;
+        padding-bottom: 1em;
+      }
+      #nav ul ul li {
+        padding-top: 0.25em;
+      }
     </style>
   </head>
 <body>
-  <center>
-    <p><span style="font-size:28pt;">dygraphs JavaScript Library</span><br/>
-    <a href="http://code.google.com/p/dygraphs/">code.google.com/p/dygraphs</a></p>
-  </center>
 
-<p>The dygraphs JavaScript library produces produces interactive, zoomable charts of time series.</p>
+<div id="nav">
+<ul>
+<li><b>Documentation</b>
+  <ul>
+  <li><a href="#demo">Demo</a>
+  <li><a href="#usage">Usage</a>
+  <li><a href="#stock">Stock chart</a>
+  <li><a href="#options">Options Reference</a>
+  <li><a href="#policy">Data Policy</a>
+  </ul>
+
+<li><b>Project</b>
+  <ul>
+  <li><a href="http://github.com/danvk/dygraphs">Source</a>
+  <li><a href="http://code.google.com/p/dygraphs/issues/">Issues</a>
+  <li><a href="http://code.google.com/p/dygraphs/issues/entry">Report Bug</a>
+  <li><a href="mailto:danvdk [at] gmail">Contact</a>
+  </ul>
+
+
+<li><b>Gallery</b>
+  <ul>
+  <li><a href="tests/demo.html">Basic Demo</a>
+  <li><a href="tests/gviz.html">GViz Demo</a>
+  <li><a href="tests/plotter.html">Equation Plotter</a>
+  <li><a href="tests/perf.html">Performance Test</a>
+
+  <li><a href="tests/label-div.html">Labels in a DIV</a>
+  <li><a href="tests/numeric-axis.html">Numeric Axis</a>
+  <li><a href="tests/draw-points.html">Dotted Points</a>
+
+  <li><a href="tests/native-format.html">Native Format</a>
+  <li><a href="tests/grid_dot.html">Crazy Styles</a>
+  <li><a href="tests/spacing.html">Tick spacing</a>
+  <li><a href="tests/callback.html">Callbacks</a>
+  <li><a href="tests/crosshair.html">Crosshairs</a>
+  <li><a href="tests/hourly.html">Hourly/Minutely data</a>
+
+  <li><a href="tests/isolated-points.html">Isolated Points</a>
+  <li><a href="tests/missing-data.html">Missing Data</a>
+
+  <li><a href="tests/border.html">Bordered chart</a>
+  <li><a href="tests/custom-bars.html">Custom Bars</a>
+  <li><a href="tests/customLabel.html">Custom Label Styles</a>
+  <li><a href="tests/dygraph.html">Minimal Example</a>
+  <li><a href="tests/negative.html">Negative Numbers</a>
+  <li><a href="tests/noise.html">Noisy Data</a>
+  <li><a href="tests/two-series.html">Multiple Series</a>
+  </ul>
+</ul>
+</div>
+
+<div id="content">
+<p><span style="font-size:28pt;">dygraphs JavaScript Visualization Library</span><br/>
+<a href="http://github.com/danvk/dygraphs">http://github.com/danvk/dygraphs</a><br/>
+See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/issues/">open issues</a></p>
+
+<p>The dygraphs JavaScript library produces produces interactive, zoomable charts of time series. It is designed to display dense data sets and enable users to explore and interpret them.</p>
 
 <h3>Features</h3>
 <ul>
   <li>Plots time series without using an external server or Flash</li>
-  <li>Supports multiple data series</li>
   <li>Supports error bands around data series</li>
-  <li>Displays values on mouseover</li>
+  <li>Displays values on mouseover (this makes it easily discoverable)</li>
   <li>Interactive zoom</li>
   <li>Adjustable averaging period</li>
   <li>Customizable click-through actions</li>
   <li>Compatible with the Google Visualization API</li>
+  <li>Works in Internet Explorer (using excanvas)</li>
+  <li>Intelligent defaults make it easy to use</li>
+  <li>Lightweight (45kb) and responsive</li>
 </ul>
 
-<h3>Caveats</h3>
-<ul>
-  <li>Requires Firefox 1.5+ or Safari/WebKit 1.3+.</li>
-  <li>Internet Explorer is poorly supported.</li>
-</ul>
-
-<h2>Demo</h2>
-<font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</font><br/>
-<table><tr><td>
-<div id="demodiv" style="width:480px; height:320px;"></div>
-</td><td valign=top>
-<div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
-</td>
-</tr></table>
+<a name="demo"><h2>Demo</h2>
+<p><font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom back out. Change the number and hit enter to adjust the averaging period.)</font></p>
+<div id="title" style="width:800px; text-align:center; font-weight: bold; font-size: 125%;">Temperatures in New York vs. San Francisco</div>
+<div id="demodiv" style="width:800px; height:320px;"></div>
 <script type="text/javascript">
-  g = new DateGraph(
+  g = new Dygraph(
           document.getElementById("demodiv"),
-          function() {
-            var zp = function(x) { if (x < 10) return "0"+x; else return x; };
-            var r = "date,parabola,line,another line,sine wave\n";
-            for (var i=1; i<=31; i++) {
-            r += "200610" + zp(i);
-            r += "," + 10*(i*(31-i));
-            r += "," + 10*(8*i);
-            r += "," + 10*(250 - 8*i);
-            r += "," + 10*(125 + 125 * Math.sin(0.3*i));
-            r += "\n";
-            }
-            return r;
-          },
-          null,
+          "ny-vs-sf.txt",
           {
-            rollPeriod: 1,
-            labelsDiv: document.getElementById('status'),
-            labelsSeparateLines: true,
-            labelsKMB: true,
-            colors: ["hsl(180,60,50)",
-                     "rgb(255,100,100)",
-                     "#00DD55",
-                     "rgba(50,50,200,0.4)"],
-            padding: {left: 40, right: 30, top: 15, bottom: 15},
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            yAxisLabelWidth: 30
           }
       );
 </script>
 
+<p>Some things to notice:</p>
+<ul>
+<li>There's less seasonal temperature variation in SF than in NY.
+<li>The difference is about 15&deg; F for SF vs. 50&deg; F for NY.
+<li>The daily data (set rolling period to 1) is quite noisy and hides this conclusion.
+<li>Using a 14-day moving average makes it clearer. A 100-day rolling period averages out nearly all the specifics from the data.
+<li>There's a gap in the data for SF, when the weather station was down (zoom into October 2007 to see it).
+<li>The bands around each point indicate average highs and lows.
+<li>There is a <i>lot</i> of data in this chart: low, average and high for each city on each day of a three year period &asymp; 6000 data points in all.
+</ul>
+
 <p>For more demos, browse the dygraph <a href="tests/">tests</a> directory.</p>
 
-<h2>Usage</h2>
+<a name="usage"><h2>Usage</h2>
 
-<p>The dygraphs library depends on two other JS libraries: <a href="http://www.mochikit.com/">MochiKit</a> and <a href="http://www.liquidx.net/plotkit/">PlotKit</a>. Rather than tracking down copies of these libraries, I recommend using a packed version of dygraphs that combines all three libraries into a single JS file. Either grab this file from dygraph project's <a href="http://code.google.com/p/dygraphs/downloads/list">downloads</a> page or create it yourself by <a href="http://code.google.com/p/dygraphs/source/checkout">checking out</a> a copy of the code and running:
+<p>To use dygraphs, include the <code>dygraph-combined.js</code> JavaScript file and instantiate a <code>Dygraph</code> object.</p>
 
-<pre>./generate-combined.sh</pre>
-
-<p>The combined JS file is now in <code>dygraph-combined.js</code>. Here's a basic example to get things started:</p>
+<p>Here's a basic example to get things started:</p>
 
 <table>
   <tr><th>HTML</th>
@@ -105,7 +166,7 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type="text/javascript"
-  src="combined.js"&gt;&lt;/script&gt;
+  src="dygraph-combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id="graphdiv"&gt;&lt;/div&gt;
@@ -115,9 +176,9 @@
         document.getElementById("graphdiv"),
         // CSV or path to a CSV file.
         "Date,Temperature\n" +
-        "20080507,75\n" +
-        "20080508,70\n" +
-        "20080509,80\n",
+        "2008-05-07,75\n" +
+        "2008-05-08,70\n" +
+        "2008-05-09,80\n",
       );
 &lt;/script&gt;
 &lt;/body&gt;
@@ -129,14 +190,16 @@
     g = new Dygraph(
         document.getElementById("graphdiv"),  // containing div
         "Date,Temperature\n" +                // CSV or path to a CSV file.
-        "20080507,75\n" +
-        "20080508,70\n" +
-        "20080509,80\n"
+        "2008-05-07,75\n" +
+        "2008-05-08,70\n" +
+        "2008-05-09,80\n"
       );
   </script>
 </td></tr></table>
 
-<p>In order to keep this example self-contained, the second parameter is a function that returns CSV data. These lines <i>must</i> begin with a date in the form <i>YYYYMMDD</i>. In most applications, it makes more sense to include a CSV file instead. If the second parameter to the constructor is a string, it will be interpreted as the path to a CSV file. The Dygraph will perform an XMLHttpRequest to retrieve this file and display the data when it becomes available. Make sure your CSV file is readable and serving from a place that understands XMLHttpRequest's! In particular, you cannot specify a CSV file using <code>"file:///"</code>. Here's an example: (data from <a href="http://www.wunderground.com/history/airport/KNUQ/2007/1/1/CustomHistory.html?dayend=31&monthend=12&yearend=2007&req_city=NA&req_state=NA&req_statename=NA">Weather Underground</a>)</p>
+<p>In order to keep this example self-contained, the second parameter is raw CSV data. The dygraphs library parses this data (including column headers), resizes the its container to a reasonable default, calculates appropriate axis ranges and tick marks and draws the graph.</p>
+
+<p>In most applications, it makes more sense to include a CSV file instead. If the second parameter to the constructor doesn't contain a newline, it will be interpreted as the path to a CSV file. The Dygraph will perform an XMLHttpRequest to retrieve this file and display the data when it becomes available. Make sure your CSV file is readable and serving from a place that understands XMLHttpRequest's! In particular, you cannot specify a CSV file using <code>"file:///"</code>. Here's an example: (data from <a href="http://www.wunderground.com/history/airport/KNUQ/2007/1/1/CustomHistory.html?dayend=31&monthend=12&yearend=2007&req_city=NA&req_state=NA&req_statename=NA">Weather Underground</a>)</p>
 
 <table>
   <tr><th>HTML</th>
@@ -147,17 +210,17 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type="text/javascript"
-  src="combined.js"&gt;&lt;/script&gt;
+  src="dygraph-combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id="graphdiv"
   style="width:500px; height:300px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
-  g = new Dygraph(
-        document.getElementById("graphdiv"),
-        "temperatures.csv",  // path to CSV file
-        {}                   // options
-      );
+  new Dygraph(
+    document.getElementById("graphdiv"),
+    "temperatures.csv",  // path to CSV file
+    {}                   // options
+  );
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -183,7 +246,7 @@
   <li>The data is very spiky. A moving average would be easier to interpret.</li>
 </ul>
 
-<p>This problem can be fixed by specifying the appropriate options in the "additional options" parameter to the Dygraph constructor. To set the number of days for a moving average, use the <b>rollPeriod</b> option. Here's how it's done:</p>
+<p>This problem can be fixed by specifying the appropriate options in the "additional options" parameter to the Dygraph constructor. To set the number of days for a moving average, use the <code>rollPeriod</code> option. Here's how it's done:</p>
 
 <table>
   <tr><th>HTML</th>
@@ -194,7 +257,7 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type="text/javascript"
-  src="combined.js"&gt;&lt;/script&gt;
+  src="dygraph-combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id="graphdiv"
@@ -224,7 +287,7 @@
   </script>
 </td></tr></table>
 
-<p>A rolling average can be set using the text box in the lower left-hand corner of the graph (the showRoller attribute is what makes this appear).</p>
+<p>A rolling average can be set using the text box in the lower left-hand corner of the graph (the showRoller attribute is what makes this appear). Also note that we've explicitly set the size of the chart div.</p>
 
 <h2>Error Bars</h2>
 <p>Another significant feature of the dygraphs library is the ability to display error bars around data series. One standard deviation must be specified for each data point. A +/-<i>n</i> sigma band will be drawn around the data series at that point. If a moving average is being displayed, dygraphs will compute the standard deviation of the average at each point. (i.e. <i>&sigma;</i> = sqrt((<i>&sigma;_1</i>^2 + <i>&sigma;_2</i>^2 + ... + <i>&sigma;_n</i>^2)/<i>n</i>))</p>
@@ -285,7 +348,7 @@ new Dygraph(
   <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
 </ul>
 
-<h2>One last demo</h2>
+<a name="stock"><h2>One last demo</h2>
 
 <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
 
@@ -321,6 +384,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 -->
 
 
+<a name="options">
 <h2>Other Options</h2>
 <p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. To see demonstrations of many of these options, browse the <a href="tests/">dygraphs tests</a> directory.</p>
 
@@ -561,11 +625,15 @@ dygraphs library.</p>
   object's valueOf method.</li>
 </ul>
 
+<a name="policy">
 <h2>Data Policy</h2>
 <p>dygraphs is purely client-side JavaScript. It does not send your data to any
 servers -- the data is processed entirely in the client's browser.</p>
 
 <p><font size=-1>Created May 9, 2008 by <a href=mailto:danvdk@gmail.com>Dan Vanderkam</a></font></p>
+
+</div>
+
 
 <!-- Google Analytics -->
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
