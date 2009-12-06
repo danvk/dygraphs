@@ -14,10 +14,6 @@ Features
 - Customizable click-through actions
 - Compatible with the Google Visualization API
 
-Caveats
-- Requires Firefox 1.5+ or Safari/WebKit? 1.3+.
-- Internet Explorer is poorly supported.
-
 Demo
 For a gallery and documentation, see http://danvk.org/dygraphs/
 
@@ -43,8 +39,12 @@ Minimal Example
 
 License(s)
 dygraphs uses:
- - MochiKit (MIT License)
- - PlotKit (BSD License)
+ - rgbcolor.js (Public Domain)
+ - strftime.js (BSD License)
  - excanvas.js (Apache License)
+
+rgbcolor: http://www.phpied.com/rgb-color-parser-in-javascript/
+strftime: http://tech.bluesmoon.info/2008/04/strftime-in-javascript.html
+excanvas: http://code.google.com/p/explorercanvas/
 
 dygraphs is available under the MIT license, included in LICENSE.txt.

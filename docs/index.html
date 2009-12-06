@@ -104,14 +104,17 @@
 <td valign=top><pre>
 &lt;html&gt;
 &lt;head&gt;
-&lt;script type="text/javascript" src="combined.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"
+  src="combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id="graphdiv"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
   g = new Dygraph(
-        document.getElementById("graphdiv"),  // containing div
-        "Date,Temperature\n" +                // CSV or path to a CSV file.
+        // containing div
+        document.getElementById("graphdiv"),
+        // CSV or path to a CSV file.
+        "Date,Temperature\n" +
         "20080507,75\n" +
         "20080508,70\n" +
         "20080509,80\n",
@@ -143,22 +146,24 @@
 <td valign=top><pre>
 &lt;html&gt;
 &lt;head&gt;
-&lt;script type="text/javascript" src="combined.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"
+  src="combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;div id="graphdiv" style="width:600px; height:300px;"&gt;&lt;/div&gt;
+&lt;div id="graphdiv"
+  style="width:500px; height:300px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
   g = new Dygraph(
         document.getElementById("graphdiv"),
         "temperatures.csv",  // path to CSV file
-        {}                   // additional options
+        {}                   // options
       );
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </pre>
 </td><td valign=top>
-  <div id="graphdiv2" style="width:600px; height:300px;"></div>
+  <div id="graphdiv2" style="width:500px; height:300px;"></div>
   <script type="text/javascript">
     g2 = new Dygraph(
           document.getElementById("graphdiv2"),
@@ -188,10 +193,12 @@
 <td valign=top><pre>
 &lt;html&gt;
 &lt;head&gt;
-&lt;script type="text/javascript" src="combined.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"
+  src="combined.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;div id="graphdiv" style="width:600px; height:300px;"&gt;&lt;/div&gt;
+&lt;div id="graphdiv"
+  style="width:500px; height:300px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
   g = new Dygraph(
         document.getElementById("graphdiv"),
@@ -205,7 +212,7 @@
 &lt;/html&gt;
 </pre>
 </td><td valign=top>
-  <div id="graphdiv3" style="width:600px; height:300px;"></div>
+  <div id="graphdiv3" style="width:500px; height:300px;"></div>
   <script type="text/javascript">
     g3 = new Dygraph(
           document.getElementById("graphdiv3"),
@@ -237,7 +244,7 @@
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id="graphdiv" 
- style="width:800px; height:400px;"
+ style="width:600px; height:300px;"
  &gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
 $ = document.getElementById;
@@ -255,7 +262,7 @@ g = new Dygraph(
 &lt;/html&gt;
 </pre>
 </td><td valign=top>
-  <div id="graphdiv4" style="width:800px; height:400px;"></div>
+  <div id="graphdiv4" style="width:600px; height:300px;"></div>
   <script type="text/javascript">
 $ = document.getElementById;
 new Dygraph(
@@ -282,7 +289,7 @@ new Dygraph(
 
 <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
 
-<div id=dow_chart style="width:1000px; height:400px;"></div>
+<div id=dow_chart style="width:900px; height:350px;"></div>
 <script type="text/javascript">
   // From http://www.econstats.com/eqty/eq_d_mi_3.csv
   dow = new Dygraph(
@@ -317,7 +324,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 <h2>Other Options</h2>
 <p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. To see demonstrations of many of these options, browse the <a href="tests/">dygraphs tests</a> directory.</p>
 
-<table class=thinborder width=1000>
+<table class=thinborder width=900>
   <tr><th>Name</th><th>Sample Value</th><th>Description</th></tr>
   <tr>
     <td><b>includeZero</b></td>
