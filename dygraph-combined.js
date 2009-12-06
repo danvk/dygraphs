@@ -470,9 +470,10 @@ this.attrs_={};
 Dygraph.update(this.attrs_,Dygraph.DEFAULT_ATTRS);
 this.labelsFromCSV_=(this.attr_("labels")==null);
 this.createInterface_();
-this.layoutOptions_={"errorBars":(this.attr_("errorBars")||this.attr_("customBars")),"xOriginIsZero":false};
+this.layoutOptions_={"xOriginIsZero":false};
 Dygraph.update(this.layoutOptions_,this.attrs_);
 Dygraph.update(this.layoutOptions_,this.user_attrs_);
+Dygraph.update(this.layoutOptions_,{"errorBars":(this.attr_("errorBars")||this.attr_("customBars"))});
 this.layout_=new DygraphLayout(this,this.layoutOptions_);
 this.renderOptions_={colorScheme:this.colors_,strokeColor:null,axisLineWidth:Dygraph.AXIS_LINE_WIDTH};
 Dygraph.update(this.renderOptions_,this.attrs_);
@@ -1297,16 +1298,20 @@ for(var i=0;i<_235.length;i++){
 var data=_235[i][1];
 var y=data[1];
 _237[i]=[_235[i][0],[y,y-data[0],data[2]-y]];
+if(y&&!isNaN(y)){
 low+=data[0];
 mid+=y;
 high+=data[2];
 _246+=1;
+}
 if(i-_236>=0){
 var prev=_235[i-_236];
+if(prev[1][1]&&!isNaN(prev[1][1])){
 low-=prev[1][0];
 mid-=prev[1][1];
 high-=prev[1][2];
 _246-=1;
+}
 }
 _237[i]=[_235[i][0],[1*mid/_246,1*(mid-low)/_246,1*(high-mid)/_246]];
 }

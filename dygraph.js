@@ -193,11 +193,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // Create the PlotKit grapher
   // TODO(danvk): why does the Layout need its own set of options?
-  this.layoutOptions_ = { 'errorBars': (this.attr_("errorBars") ||
-                                        this.attr_("customBars")),
-                          'xOriginIsZero': false };
+  this.layoutOptions_ = { 'xOriginIsZero': false };
   Dygraph.update(this.layoutOptions_, this.attrs_);
   Dygraph.update(this.layoutOptions_, this.user_attrs_);
+  Dygraph.update(this.layoutOptions_, {
+    'errorBars': (this.attr_("errorBars") || this.attr_("customBars")) });
 
   this.layout_ = new DygraphLayout(this, this.layoutOptions_);
 
@@ -1268,16 +1268,20 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       var y = data[1];
       rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
 
-      low += data[0];
-      mid += y;
-      high += data[2];
-      count += 1;
+      if (y && !isNaN(y)) {
+        low += data[0];
+        mid += y;
+        high += data[2];
+        count += 1;
+      }
       if (i - rollPeriod >= 0) {
         var prev = originalData[i - rollPeriod];
-        low -= prev[1][0];
-        mid -= prev[1][1];
-        high -= prev[1][2];
-        count -= 1;
+        if (prev[1][1] && !isNaN(prev[1][1])) {
+          low -= prev[1][0];
+          mid -= prev[1][1];
+          high -= prev[1][2];
+          count -= 1;
+        }
       }
       rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
                                               1.0 * (mid - low) / count,
