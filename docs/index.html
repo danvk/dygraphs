@@ -57,6 +57,7 @@
   <li><a href="#demo">Demo</a>
   <li><a href="#usage">Usage</a>
   <li><a href="#ie">IE Compatibility</a>
+  <li><a href="#gviz">GViz Data</a>
   <li><a href="#baseball">Baseball chart</a>
   <li><a href="#stock">Stock chart</a>
   <li><a href="#options">Options Reference</a>
@@ -388,6 +389,20 @@ commas in parameter lists, e.g.</p>
 })</pre>
 
 <p>Most browsers will ignore the trailing comma, but it will break under IE.</p>
+
+<a name="gviz"><h2>GViz Data</h2>
+<p>The <a
+  href="http://code.google.com/apis/visualization/documentation/index.html">Google
+  Visualization API</a> provides a standard interface for describing data. Once
+you've specified your data using this API, you can plug in any GViz-compatible
+visualization. dygraphs is such a visualization.</p>
+
+<p>For a simple demonstration of how to use dygraphs a GViz visualization, see
+<a href="http://danvk.org/dygraphs/tests/gviz.html">this page</a>. dygraphs can
+also be used as a GViz gadget. This allows it to be embedded inside of a Google
+Spreadsheet. For a demonstration of this, see <a
+  href="http://spreadsheets.google.com/ccc?key=0Anx1yCqeL8YUdDR1c3pPREhraGhkWmdhaURjOXRncXc&hl=en">this
+  spreadsheet</a>.</p>
 
 <a name="baseball"><h2>Charting Fractions</h2>
 <p>Situations often arise where you want to plot fractions, e.g. the fraction of respondents in a poll who said they'd vote for candidate X or the number of hits divided by at bats (baseball's batting average). Fractions require special treatment for two main reasons:</p>
