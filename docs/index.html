@@ -57,6 +57,7 @@
   <li><a href="#demo">Demo</a>
   <li><a href="#usage">Usage</a>
   <li><a href="#ie">IE Compatibility</a>
+  <li><a href="#baseball">Baseball chart</a>
   <li><a href="#stock">Stock chart</a>
   <li><a href="#options">Options Reference</a>
   <li><a href="#policy">Data Policy</a>
@@ -111,21 +112,9 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
 
 <p>The dygraphs JavaScript library produces produces interactive, zoomable charts of time series. It is designed to display dense data sets and enable users to explore and interpret them.</p>
 
-<h3>Features</h3>
-<ul>
-  <li>Plots time series without using an external server or Flash</li>
-  <li>Supports error bands around data series</li>
-  <li>Displays values on mouseover (this makes it easily discoverable)</li>
-  <li>Interactive zoom</li>
-  <li>Adjustable averaging period</li>
-  <li>Customizable click-through actions</li>
-  <li>Compatible with the Google Visualization API</li>
-  <li>Works in Internet Explorer (using excanvas)</li>
-  <li>Intelligent defaults make it easy to use</li>
-  <li>Lightweight (45kb) and responsive</li>
-</ul>
+<a name="demo">
+<p>A demo is worth a thousand words:</p>
 
-<a name="demo"><h2>Demo</h2>
 <p><font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom back out. Change the number and hit enter to adjust the averaging period.)</font></p>
 <div id="title" style="width:800px; text-align:center; font-weight: bold; font-size: 125%;">Temperatures in New York vs. San Francisco</div>
 <div id="demodiv" style="width:800px; height:320px;"></div>
@@ -153,7 +142,25 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
 <li>There is a <i>lot</i> of data in this chart: low, average and high for each city on each day of a three year period &asymp; 6000 data points in all.
 </ul>
 
+<p>dygraphs allows the user to explore the data and discover these facts.</p>
+
 <p>For more demos, browse the dygraph <a href="tests/">tests</a> directory.</p>
+
+<h3>Features</h3>
+<p>Some of the features of dygraphs:</p>
+<ul>
+  <li>Plots time series without using an external server or Flash</li>
+  <li>Works in Internet Explorer (using excanvas)</li>
+  <li>Lightweight (45kb) and responsive</li>
+  <li>Displays values on mouseover (this makes it easily discoverable)</li>
+  <li>Supports error bands around data series</li>
+  <li>Interactive zoom</li>
+  <li>Adjustable averaging period</li>
+  <li>Can intelligently chart fractions</li>
+  <li>Customizable click-through actions</li>
+  <li>Compatible with the Google Visualization API</li>
+  <li>Intelligent defaults make it easy to use</li>
+</ul>
 
 <a name="usage"><h2>Usage</h2>
 
@@ -381,6 +388,53 @@ commas in parameter lists, e.g.</p>
 })</pre>
 
 <p>Most browsers will ignore the trailing comma, but it will break under IE.</p>
+
+<a name="baseball"><h2>Charting Fractions</h2>
+<p>Situations often arise where you want to plot fractions, e.g. the fraction of respondents in a poll who said they'd vote for candidate X or the number of hits divided by at bats (baseball's batting average). Fractions require special treatment for two main reasons:</p>
+
+<ul>
+<li>The average of <code>a1/b1</code> and <code>a2/b2</code> is
+<code>(a1+a2)/(b1+b2)</code>, not <code>(a1/b1 + a2/b2)/2</code>.
+<li>The normal approximation is not always applicable and more sophisticated
+confidence intervals (e.g. the <a
+href="http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson
+confidence interval</a>) must be employed to avoid ratios that exceed 100% or
+go below 0%.
+</ul>
+
+<p>Fortunately, dygraphs handles both of these for you! Here's a chart and the command that generated it:</p>
+
+<div style="width:750px; text-align:center; font-weight: bold; font-size: 125%;">Batting Average for Ichiro Suzuki vs. Mariners (2004)</div>
+<div id="baseballdiv" style="width:750px; height:300px;"></div>
+<script type="text/javascript">
+new Dygraph(document.getElementById("baseballdiv"),
+            "suzuki-mariners.txt", {
+              fractions: true,
+              errorBars: true,
+              showRoller: true,
+              rollPeriod: 15
+            });
+</script>
+
+<p>Command:</p>
+<pre>
+new Dygraph(
+  document.getElementById("baseballdiv"), "suzuki-mariners.txt",
+  {
+    fractions: true, errorBars: true,
+    showRoller: true, rollPeriod: 15
+  });
+</pre>
+
+<p>The <code>fractions</code> option indicates that the values in each column should be parsed as fractions (e.g. "1/2" instead of "0.5"). The <code>errorBars</code> option indicates that we'd like to see a confidence interval around each data point. By default, when <code>fractions</code> is set, you get a Wilson confidence interval. If you look carefully at the chart, you can see that the error bars are asymmetric.</p>
+
+<p>A couple things to notice about this chart:</p>
+<ul>
+<li>The error bars for Ichiro's batting average are larger than for the Mariners', since he has far fewer at bats than his team.
+<li>dygraphs makes it easy to see "batting average over the last 30 games". This is ordinarily quite difficult to compute. It makes it clear where the "hot" and "cold" part of Suzuki's season were.
+<li>If you set the averaging period to something large, like 200, you'll see the team's and player's batting average through that game. The final number is the overall batting average for the season.
+<li>Where the error bars do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.
+</ul>
 
 <a name="stock"><h2>One last demo</h2>
 
