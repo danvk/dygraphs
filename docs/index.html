@@ -56,6 +56,7 @@
   <ul>
   <li><a href="#demo">Demo</a>
   <li><a href="#usage">Usage</a>
+  <li><a href="#ie">IE Compatibility</a>
   <li><a href="#stock">Stock chart</a>
   <li><a href="#options">Options Reference</a>
   <li><a href="#policy">Data Policy</a>
@@ -352,6 +353,34 @@ new Dygraph(
   <li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
   <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
 </ul>
+
+<a name="ie"><h2>Internet Explorer Compatibility</h2>
+
+<p>The dygraphs library relies heavily on HTML's &lt;canvas&gt; tag, which
+Microsoft Internet Explorer does not support. Fortunately, some clever engineers
+created the <a href="http://code.google.com/p/explorercanvas/">excanvas</a>
+library, which imlements the &lt;canvas&gt; tag in IE using VML.</p>
+
+<p>You can add IE support to any page using dygraphs by including the following
+in your page:</p>
+
+<pre>
+&lt;head&gt;
+&lt;!--[if IE]&gt;&lt;script src="excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;
+&lt;/head&gt;
+</pre>
+
+<p>This works quite well in practice. Charts are responsive, even under VML
+emulation.</p>
+
+<p>One common gotcha to look out for: make sure you don't have any trailing
+commas in parameter lists, e.g.</p>
+
+<pre>new Dygraph(el, data, {
+  showRoller:true,  // &lt;-- note trailing comma
+})</pre>
+
+<p>Most browsers will ignore the trailing comma, but it will break under IE.</p>
 
 <a name="stock"><h2>One last demo</h2>
 
