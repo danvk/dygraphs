@@ -56,6 +56,7 @@
   <ul>
   <li><a href="#demo">Demo</a>
   <li><a href="#usage">Usage</a>
+  <li><a href="#baseball">Baseball chart</a>
   <li><a href="#stock">Stock chart</a>
   <li><a href="#options">Options Reference</a>
   <li><a href="#policy">Data Policy</a>
@@ -351,6 +352,53 @@ new Dygraph(
   <li>The first line of the CSV file doesn't mention the error columns. In this case, it's just "Date,Series1,Series2".</li>
   <li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
   <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
+</ul>
+
+<a name="baseball"><h2>Charting Fractions</h2>
+<p>Situations often arise where you want to plot fractions, e.g. the fraction of respondents in a poll who said they'd vote for candidate X or the number of hits divided by at bats (baseball's batting average). Fractions require special treatment for two main reasons:</p>
+
+<ul>
+<li>The average of <code>a1/b1</code> and <code>a2/b2</code> is
+<code>(a1+a2)/(b1+b2)</code>, not <code>(a1/b1 + a2/b2)/2</code>.
+<li>The normal approximation is not always applicable and more sophisticated
+confidence intervals (e.g. the <a
+href="http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson
+confidence interval</a>) must be employed to avoid ratios that exceed 100% or
+go below 0%.
+</ul>
+
+<p>Fortunately, dygraphs handles both of these for you! Here's a chart and the command that generated it:</p>
+
+<div style="width:750px; text-align:center; font-weight: bold; font-size: 125%;">Batting Average for Ichiro Suzuki vs. Mariners (2004)</div>
+<div id="baseballdiv" style="width:750px; height:300px;"></div>
+<script type="text/javascript">
+new Dygraph(document.getElementById("baseballdiv"),
+            "suzuki-mariners.txt", {
+              fractions: true,
+              errorBars: true,
+              showRoller: true,
+              rollPeriod: 15
+            });
+</script>
+
+<p>Command:</p>
+<pre>
+new Dygraph(
+  document.getElementById("baseballdiv"), "suzuki-mariners.txt",
+  {
+    fractions: true, errorBars: true,
+    showRoller: true, rollPeriod: 15
+  });
+</pre>
+
+<p>The <code>fractions</code> option indicates that the values in each column should be parsed as fractions (e.g. "1/2" instead of "0.5"). The <code>errorBars</code> option indicates that we'd like to see a confidence interval around each data point. By default, when <code>fractions</code> is set, you get a Wilson confidence interval. If you look carefully at the chart, you can see that the error bars are asymmetric.</p>
+
+<p>A couple things to notice about this chart:</p>
+<ul>
+<li>The error bars for Ichiro's batting average are larger than for the Mariners', since he has far fewer at bats than his team.
+<li>dygraphs makes it easy to see "batting average over the last 30 games". This is ordinarily quite difficult to compute. It makes it clear where the "hot" and "cold" part of Suzuki's season were.
+<li>If you set the averaging period to something large, like 200, you'll see the team's and player's batting average through that game. The final number is the overall batting average for the season.
+<li>Where the error bars do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.
 </ul>
 
 <a name="stock"><h2>One last demo</h2>
