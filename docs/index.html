@@ -178,7 +178,7 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
         "Date,Temperature\n" +
         "2008-05-07,75\n" +
         "2008-05-08,70\n" +
-        "2008-05-09,80\n",
+        "2008-05-09,80\n"
       );
 &lt;/script&gt;
 &lt;/body&gt;
@@ -186,16 +186,17 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
 </pre>
 </td><td valign=top>
   <div id="graphdiv"></div>
-  <script type="text/javascript">
-    g = new Dygraph(
-        document.getElementById("graphdiv"),  // containing div
-        "Date,Temperature\n" +                // CSV or path to a CSV file.
-        "2008-05-07,75\n" +
-        "2008-05-08,70\n" +
-        "2008-05-09,80\n"
-      );
-  </script>
 </td></tr></table>
+
+<script type="text/javascript">
+  g1 = new Dygraph(
+       document.getElementById("graphdiv"),  // containing div
+       "Date,Temperature\n" +                // CSV or path to a CSV file.
+       "2008-05-07,75\n" +
+       "2008-05-08,70\n" +
+       "2008-05-09,80\n"
+     );
+</script>
 
 <p>In order to keep this example self-contained, the second parameter is raw CSV data. The dygraphs library parses this data (including column headers), resizes the its container to a reasonable default, calculates appropriate axis ranges and tick marks and draws the graph.</p>
 
@@ -227,13 +228,14 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
 </pre>
 </td><td valign=top>
   <div id="graphdiv2" style="width:500px; height:300px;"></div>
-  <script type="text/javascript">
-    g2 = new Dygraph(
-          document.getElementById("graphdiv2"),
-          "temperatures.csv", {}
-        );
-  </script>
 </td></tr></table>
+
+<script type="text/javascript">
+  g2 = new Dygraph(
+        document.getElementById("graphdiv2"),
+        "temperatures.csv", {}
+      );
+</script>
 
 <p>Click <a href="temperatures.csv">here</a> to view the <code>temperatures.csv</code> file. There are a few things to note here:</p>
 
@@ -276,16 +278,15 @@ See <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/
 </pre>
 </td><td valign=top>
   <div id="graphdiv3" style="width:500px; height:300px;"></div>
-  <script type="text/javascript">
-    g3 = new Dygraph(
-          document.getElementById("graphdiv3"),
-          "temperatures.csv",
-          { rollPeriod: 7,
-            showRoller: true,
-          }
-        );
-  </script>
 </td></tr></table>
+
+<script type="text/javascript">
+  g3 = new Dygraph(
+        document.getElementById("graphdiv3"),
+        "temperatures.csv",
+        { rollPeriod: 7,
+          showRoller: true });
+</script>
 
 <p>A rolling average can be set using the text box in the lower left-hand corner of the graph (the showRoller attribute is what makes this appear). Also note that we've explicitly set the size of the chart div.</p>
 
@@ -326,7 +327,9 @@ g = new Dygraph(
 </pre>
 </td><td valign=top>
   <div id="graphdiv4" style="width:600px; height:300px;"></div>
-  <script type="text/javascript">
+</td></tr></table>
+
+<script type="text/javascript">
 $ = document.getElementById;
 new Dygraph(
   document.getElementById("graphdiv4"),
@@ -337,8 +340,7 @@ new Dygraph(
     valueRange: [50, 125]
   }
 );
-  </script>
-</td></tr></table>
+</script>
 
 <p>Things to note here:</p>
 <ul>
@@ -361,9 +363,7 @@ new Dygraph(
     {
       showRoller: true,
       customBars: true,
-      labelsKMB: true,
-      padding: {left:30, right:30, top:5, bottom:5}
-    });
+      labelsKMB: true });
 </script>
 <!--
 
@@ -621,6 +621,10 @@ dygraphs library.</p>
   <li>Don't set the <code>dateWindow</code> property to a date. It expects
   milliseconds since epoch, which can be obtained from a JavaScript Date
   object's valueOf method.</li>
+
+  <li>Make sure you don't have any trailing commas in your call to the Dygraph
+  constructor or in the options parameter. Firefox, Chrome and Safari ignore
+  these but they can cause a graph to not display in Internet Explorer.</li>
 </ul>
 
 <a name="policy">
