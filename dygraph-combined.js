@@ -1298,7 +1298,7 @@ for(var i=0;i<_235.length;i++){
 var data=_235[i][1];
 var y=data[1];
 _237[i]=[_235[i][0],[y,y-data[0],data[2]-y]];
-if(y&&!isNaN(y)){
+if(y!=null&&!isNaN(y)){
 low+=data[0];
 mid+=y;
 high+=data[2];
@@ -1306,7 +1306,7 @@ _246+=1;
 }
 if(i-_236>=0){
 var prev=_235[i-_236];
-if(prev[1][1]&&!isNaN(prev[1][1])){
+if(prev[1][1]!=null&&!isNaN(prev[1][1])){
 low-=prev[1][0];
 mid-=prev[1][1];
 high-=prev[1][2];
@@ -1326,7 +1326,7 @@ var sum=0;
 var _250=0;
 for(var j=Math.max(0,i-_236+1);j<i+1;j++){
 var y=_235[j][1];
-if(!y||isNaN(y)){
+if(y==null||isNaN(y)){
 continue;
 }
 _250++;
@@ -1345,7 +1345,7 @@ var _251=0;
 var _250=0;
 for(var j=Math.max(0,i-_236+1);j<i+1;j++){
 var y=_235[j][1][0];
-if(!y||isNaN(y)){
+if(y==null||isNaN(y)){
 continue;
 }
 _250++;
@@ -1519,8 +1519,12 @@ var rows=data.getNumberOfRows();
 var _268=[];
 for(var i=0;i<cols;i++){
 _268.push(data.getColumnLabel(i));
+if(i!=0&&this.attr_("errorBars")){
+i+=1;
+}
 }
 this.attrs_.labels=_268;
+cols=_268.length;
 var _269=data.getColumnType(0);
 if(_269=="date"){
 this.attrs_.xValueFormatter=Dygraph.dateString_;
@@ -1551,8 +1555,14 @@ row.push(data.getValue(i,0).getTime());
 }else{
 row.push(data.getValue(i,0));
 }
+if(!this.attr_("errorBars")){
 for(var j=1;j<cols;j++){
 row.push(data.getValue(i,j));
+}
+}else{
+for(var j=0;j<cols-1;j++){
+row.push([data.getValue(i,1+2*j),data.getValue(i,2+2*j)]);
+}
 }
 ret.push(row);
 }
