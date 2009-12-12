@@ -1560,8 +1560,10 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var labels = [];
   for (var i = 0; i < cols; i++) {
     labels.push(data.getColumnLabel(i));
+    if (i != 0 && this.attr_("errorBars")) i += 1;
   }
   this.attrs_.labels = labels;
+  cols = labels.length;
 
   var indepType = data.getColumnType(0);
   if (indepType == 'date') {
@@ -1587,8 +1589,14 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     } else {
       row.push(data.getValue(i, 0));
     }
-    for (var j = 1; j < cols; j++) {
-      row.push(data.getValue(i, j));
+    if (!this.attr_("errorBars")) {
+      for (var j = 1; j < cols; j++) {
+        row.push(data.getValue(i, j));
+      }
+    } else {
+      for (var j = 0; j < cols - 1; j++) {
+        row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
+      }
     }
     ret.push(row);
   }

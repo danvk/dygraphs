@@ -34,7 +34,9 @@
             document.getElementById('gviz')).draw(data, null);  
 
         new Dygraph.GVizChart(
-            document.getElementById('dygraphs')).draw(data, null);
+            document.getElementById('dygraphs')).draw(data, {
+              errorBars: true
+            });
       }
       google.setOnLoadCallback(drawVisualization);
     </script>
