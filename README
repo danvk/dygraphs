@@ -1,6 +1,8 @@
 dygraphs JavaScript charting library
 Copyright (c) 2006-, Dan Vanderkam.
 http://code.google.com/p/dygraphs/
+http://github.com/danvk/dygraphs
+
 
 The dygraphs JavaScript library produces produces interactive, zoomable charts of time series.
 
@@ -30,8 +32,7 @@ Minimal Example
         "Date,Temperature\n" +                // the data series
         "2008-05-07,75\n" +
         "2008-05-08,70\n" +
-        "2008-05-09,80\n";
-        }
+        "2008-05-09,80\n"
       );
 </script>
 </body>

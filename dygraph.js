@@ -1268,7 +1268,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       var y = data[1];
       rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
 
-      if (y && !isNaN(y)) {
+      if (y != null && !isNaN(y)) {
         low += data[0];
         mid += y;
         high += data[2];
@@ -1276,7 +1276,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       }
       if (i - rollPeriod >= 0) {
         var prev = originalData[i - rollPeriod];
-        if (prev[1][1] && !isNaN(prev[1][1])) {
+        if (prev[1][1] != null && !isNaN(prev[1][1])) {
           low -= prev[1][0];
           mid -= prev[1][1];
           high -= prev[1][2];
@@ -1301,7 +1301,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
         var num_ok = 0;
         for (var j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
           var y = originalData[j][1];
-          if (!y || isNaN(y)) continue;
+          if (y == null || isNaN(y)) continue;
           num_ok++;
           sum += originalData[j][1];
         }
@@ -1319,7 +1319,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
         var num_ok = 0;
         for (var j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
           var y = originalData[j][1][0];
-          if (!y || isNaN(y)) continue;
+          if (y == null || isNaN(y)) continue;
           num_ok++;
           sum += originalData[j][1][0];
           variance += Math.pow(originalData[j][1][1], 2);
