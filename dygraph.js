@@ -1052,23 +1052,24 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   var ticks = [];
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
+    var absTickV = Math.abs(tickV);
     var label = self.round_(tickV, 2);
     if (self.attr_("labelsKMB")) {
       var k = 1000;
-      if (tickV >= k*k*k) {
+      if (absTickV >= k*k*k) {
         label = self.round_(tickV/(k*k*k), 1) + "B";
-      } else if (tickV >= k*k) {
+      } else if (absTickV >= k*k) {
         label = self.round_(tickV/(k*k), 1) + "M";
-      } else if (tickV >= k) {
+      } else if (absTickV >= k) {
         label = self.round_(tickV/k, 1) + "K";
       }
     } else if (self.attr_("labelsKMG2")) {
       var k = 1024;
-      if (tickV >= k*k*k) {
+      if (absTickV >= k*k*k) {
         label = self.round_(tickV/(k*k*k), 1) + "G";
-      } else if (tickV >= k*k) {
+      } else if (absTickV >= k*k) {
         label = self.round_(tickV/(k*k), 1) + "M";
-      } else if (tickV >= k) {
+      } else if (absTickV >= k) {
         label = self.round_(tickV/k, 1) + "k";
       }
     }
