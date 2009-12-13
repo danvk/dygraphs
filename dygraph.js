@@ -91,6 +91,7 @@ Dygraph.DEFAULT_ATTRS = {
   },
   labelsSeparateLines: false,
   labelsKMB: false,
+  labelsKMG2: false,
 
   strokeWidth: 1.0,
 
@@ -1060,6 +1061,15 @@ Dygraph.numericTicks = function(minV, maxV, self) {
         label = self.round_(tickV/(k*k), 1) + "M";
       } else if (tickV >= k) {
         label = self.round_(tickV/k, 1) + "K";
+      }
+    } else if (self.attr_("labelsKMG2")) {
+      var k = 1024;
+      if (tickV >= k*k*k) {
+        label = self.round_(tickV/(k*k*k), 1) + "G";
+      } else if (tickV >= k*k) {
+        label = self.round_(tickV/(k*k), 1) + "M";
+      } else if (tickV >= k) {
+        label = self.round_(tickV/k, 1) + "k";
       }
     }
     ticks.push( {label: label, v: tickV} );
