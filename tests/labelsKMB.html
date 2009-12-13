@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>labelsKMB</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>labelsKMB:</p>
+    <div id="labelsKMB" style="width:600px; height: 300px;"></div>
+
+    <p>labelsKMG:</p>
+    <div id="labelsKMG2" style="width:600px; height: 300px;"></div>
+
+    <p>The curves are exponentials. Zooming in should reveal each of the 'K',
+    'M', 'B', etc. labels.</p>
+
+    <script type="text/javascript">
+      var data = [];
+      for (var i = 0, n = 1; i < 43; i++, n *= 2) {
+        data.push([i, n]);
+      }
+
+      new Dygraph(document.getElementById("labelsKMB"), data, { labelsKMB: true });
+      new Dygraph(document.getElementById("labelsKMG2"), data, { labelsKMG2: true });
+    </script>
+  </body>
+</html>
