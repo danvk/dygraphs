@@ -1050,27 +1050,30 @@ Dygraph.numericTicks = function(minV, maxV, self) {
 
   // Construct labels for the ticks
   var ticks = [];
+  var k;
+  var k_labels = [];
+  if (self.attr_("labelsKMB")) {
+    k = 1000;
+    k_labels = [ "K", "M", "B", "T" ];
+  }
+  if (self.attr_("labelsKMG2")) {
+    if (k) self.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
+    k = 1024;
+    k_labels = [ "k", "M", "G", "T" ];
+  }
+
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
     var label = self.round_(tickV, 2);
-    if (self.attr_("labelsKMB")) {
-      var k = 1000;
-      if (absTickV >= k*k*k) {
-        label = self.round_(tickV/(k*k*k), 1) + "B";
-      } else if (absTickV >= k*k) {
-        label = self.round_(tickV/(k*k), 1) + "M";
-      } else if (absTickV >= k) {
-        label = self.round_(tickV/k, 1) + "K";
-      }
-    } else if (self.attr_("labelsKMG2")) {
-      var k = 1024;
-      if (absTickV >= k*k*k) {
-        label = self.round_(tickV/(k*k*k), 1) + "G";
-      } else if (absTickV >= k*k) {
-        label = self.round_(tickV/(k*k), 1) + "M";
-      } else if (absTickV >= k) {
-        label = self.round_(tickV/k, 1) + "k";
+    if (k_labels.length) {
+      // Round up to an appropriate unit.
+      var n = k*k*k*k;
+      for (var j = 3; j >= 0; j--, n /= k) {
+        if (absTickV >= n) {
+          label = self.round_(tickV / n, 1) + k_labels[j];
+          break;
+        }
       }
     }
     ticks.push( {label: label, v: tickV} );
