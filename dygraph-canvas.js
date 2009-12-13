@@ -340,7 +340,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   context.lineWidth = this.options.axisLineWidth;
 
   if (this.options.drawYAxis) {
-    if (this.layout.yticks) {
+    if (this.layout.yticks && this.layout.yticks.length > 0) {
       for (var i = 0; i < this.layout.yticks.length; i++) {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
