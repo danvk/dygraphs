@@ -451,7 +451,9 @@ Dygraph.prototype.createStatusMessage_ = function(){
     Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
     var div = document.createElement("div");
     for (var name in messagestyle) {
-      div.style[name] = messagestyle[name];
+		if (messagestyle.hasOwnProperty(name)) {
+      		div.style[name] = messagestyle[name];
+		}
     }
     this.graphDiv.appendChild(div);
     this.attrs_.labelsDiv = div;
@@ -476,7 +478,9 @@ Dygraph.prototype.createRollInterface_ = function() {
   roller.size = "2";
   roller.value = this.rollPeriod_;
   for (var name in textAttr) {
-    roller.style[name] = textAttr[name];
+	  if (textAttr.hasOwnProperty(name)) {
+    	roller.style[name] = textAttr[name];
+	  }
   }
 
   var pa = this.graphDiv;
@@ -1607,7 +1611,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 Dygraph.update = function (self, o) {
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
-      self[k] = o[k];
+		if (o.hasOwnProperty(k)) {
+      		self[k] = o[k];
+		}
     }
   }
   return self;

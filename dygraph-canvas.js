@@ -38,12 +38,14 @@ DygraphLayout.prototype.evaluate = function() {
 DygraphLayout.prototype._evaluateLimits = function() {
   this.minxval = this.maxxval = null;
   for (var name in this.datasets) {
-    var series = this.datasets[name];
-    var x1 = series[0][0];
-    if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+	  if (this.datasets.hasOwnProperty(name)) {
+    	var series = this.datasets[name];
+    	var x1 = series[0][0];
+    	if (!this.minxval || x1 < this.minxval) this.minxval = x1;
 
-    var x2 = series[series.length - 1][0];
-    if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+    	var x2 = series[series.length - 1][0];
+    	if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+	  }
   }
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
@@ -58,28 +60,30 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // add all the rects
   this.points = new Array();
   for (var setName in this.datasets) {
-    var dataset = this.datasets[setName];
-    for (var j = 0; j < dataset.length; j++) {
-      var item = dataset[j];
-      var point = {
-        x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
-        xval: parseFloat(item[0]),
-        yval: parseFloat(item[1]),
-        name: setName
-      };
-
-      // limit the x, y values so they do not overdraw
-      if (point.y <= 0.0) {
-        point.y = 0.0;
-      }
-      if (point.y >= 1.0) {
-        point.y = 1.0;
-      }
-      if ((point.x >= 0.0) && (point.x <= 1.0)) {
-        this.points.push(point);
-      }
-    }
+	  if (this.datasets.hasOwnProperty(setName)) {
+    	var dataset = this.datasets[setName];
+    	for (var j = 0; j < dataset.length; j++) {
+      	var item = dataset[j];
+      	var point = {
+        	x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
+        	y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
+        	xval: parseFloat(item[0]),
+        	yval: parseFloat(item[1]),
+        	name: setName
+      	};
+	
+      	// limit the x, y values so they do not overdraw
+      	if (point.y <= 0.0) {
+        	point.y = 0.0;
+      	}
+      	if (point.y >= 1.0) {
+        	point.y = 1.0;
+      	}
+      	if ((point.x >= 0.0) && (point.x <= 1.0)) {
+        	this.points.push(point);
+      	}
+    	}
+	  }
   }
 };
 
@@ -117,19 +121,21 @@ DygraphLayout.prototype.evaluateWithError = function() {
   // Copy over the error terms
   var i = 0; // index in this.points
   for (var setName in this.datasets) {
-    var j = 0;
-    var dataset = this.datasets[setName];
-    for (var j = 0; j < dataset.length; j++, i++) {
-      var item = dataset[j];
-      var xv = parseFloat(item[0]);
-      var yv = parseFloat(item[1]);
-
-      if (xv == this.points[i].xval &&
-          yv == this.points[i].yval) {
-        this.points[i].errorMinus = parseFloat(item[2]);
-        this.points[i].errorPlus = parseFloat(item[3]);
-      }
-    }
+	  if (this.datasets.hasOwnProperty(setName)) {
+    	var j = 0;
+    	var dataset = this.datasets[setName];
+    	for (var j = 0; j < dataset.length; j++, i++) {
+      	var item = dataset[j];
+      	var xv = parseFloat(item[0]);
+      	var yv = parseFloat(item[1]);
+	
+      	if (xv == this.points[i].xval &&
+          	yv == this.points[i].yval) {
+        	this.points[i].errorMinus = parseFloat(item[2]);
+        	this.points[i].errorPlus = parseFloat(item[3]);
+      	}
+    	}
+  	}
   }
 };
 
@@ -322,7 +328,9 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   var makeDiv = function(txt) {
     var div = document.createElement("div");
     for (var name in labelStyle) {
-      div.style[name] = labelStyle[name];
+		if (labelStyle.hasOwnProperty(name)) {
+      		div.style[name] = labelStyle[name];
+		}
     }
     div.appendChild(document.createTextNode(txt));
     return div;
@@ -437,7 +445,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var errorBars = this.layout.options.errorBars;
 
   var setNames = [];
-  for (var name in this.layout.datasets) setNames.push(name);
+  for (var name in this.layout.datasets) {
+	  if (this.layout.datasets.hasOwnProperty(name)) {
+	  	setNames.push(name);
+	  }
+  }
   var setCount = setNames.length;
 
   //Update Points
