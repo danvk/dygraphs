@@ -234,7 +234,7 @@ _40.save();
 _40.strokeStyle=this.options.axisLineColor;
 _40.lineWidth=this.options.axisLineWidth;
 if(this.options.drawYAxis){
-if(this.layout.yticks){
+if(this.layout.yticks&&this.layout.yticks.length>0){
 for(var i=0;i<this.layout.yticks.length;i++){
 var _46=this.layout.yticks[i];
 if(typeof (_46)=="function"){
