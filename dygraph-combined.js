@@ -19,6 +19,9 @@ this._evaluateLineTicks();
 DygraphLayout.prototype._evaluateLimits=function(){
 this.minxval=this.maxxval=null;
 for(var _6 in this.datasets){
+if(!this.datasets.hasOwnProperty(_6)){
+continue;
+}
 var _7=this.datasets[_6];
 var x1=_7[0][0];
 if(!this.minxval||x1<this.minxval){
@@ -39,6 +42,9 @@ this.yscale=(this.yrange!=0?1/this.yrange:1);
 DygraphLayout.prototype._evaluateLineCharts=function(){
 this.points=new Array();
 for(var _10 in this.datasets){
+if(!this.datasets.hasOwnProperty(_10)){
+continue;
+}
 var _11=this.datasets[_10];
 for(var j=0;j<_11.length;j++){
 var _13=_11[j];
@@ -82,6 +88,9 @@ return;
 }
 var i=0;
 for(var _19 in this.datasets){
+if(!this.datasets.hasOwnProperty(_19)){
+continue;
+}
 var j=0;
 var _20=this.datasets[_19];
 for(var j=0;j<_20.length;j++,i++){
@@ -214,7 +223,9 @@ var _41={"position":"absolute","fontSize":this.options.axisLabelFontSize+"px","z
 var _42=function(txt){
 var div=document.createElement("div");
 for(var _45 in _41){
+if(_41.hasOwnProperty(_45)){
 div.style[_45]=_41[_45];
+}
 }
 div.appendChild(document.createTextNode(txt));
 return div;
@@ -312,7 +323,9 @@ var _55=this.options.colorScheme;
 var _56=this.layout.options.errorBars;
 var _57=[];
 for(var _58 in this.layout.datasets){
+if(this.layout.datasets.hasOwnProperty(_58)){
 _57.push(_58);
+}
 }
 var _59=_57.length;
 for(var i=0;i<this.layout.points.length;i++){
@@ -682,7 +695,9 @@ var _116={"position":"absolute","fontSize":"14px","zIndex":10,"width":_115+"px",
 Dygraph.update(_116,this.attr_("labelsDivStyles"));
 var div=document.createElement("div");
 for(var name in _116){
+if(_116.hasOwnProperty(name)){
 div.style[name]=_116[name];
+}
 }
 this.graphDiv.appendChild(div);
 this.attrs_.labelsDiv=div;
@@ -696,7 +711,9 @@ _120.type="text";
 _120.size="2";
 _120.value=this.rollPeriod_;
 for(var name in _119){
+if(_119.hasOwnProperty(name)){
 _120.style[name]=_119[name];
+}
 }
 var pa=this.graphDiv;
 pa.appendChild(_120);
@@ -1571,7 +1588,9 @@ return ret;
 Dygraph.update=function(self,o){
 if(typeof (o)!="undefined"&&o!==null){
 for(var k in o){
+if(o.hasOwnProperty(k)){
 self[k]=o[k];
+}
 }
 }
 return self;
