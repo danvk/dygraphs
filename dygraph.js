@@ -569,10 +569,12 @@ Dygraph.prototype.createDragInterface_ = function() {
     dragStartX = getX(event);
     dragStartY = getY(event);
 
-    if (event.altKey && self.dateWindow_) {
+    if (event.altKey) {
+      if (!self.dateWindow_) return;  // have to be zoomed in to pan.
       isPanning = true;
       dateRange = self.dateWindow_[1] - self.dateWindow_[0];
-      draggingDate = (dragStartX / self.width_) * dateRange + self.dateWindow_[0];
+      draggingDate = (dragStartX / self.width_) * dateRange +
+        self.dateWindow_[0];
     } else {
       isZooming = true;
     }
@@ -1154,7 +1156,7 @@ Dygraph.prototype.extremeValues_ = function(series) {
   } else {
     for (var j = 0; j < series.length; j++) {
       var y = series[j][1];
-      if (!y) continue;
+      if (y === null || isNaN(y)) continue;
       if (maxY == null || y > maxY) {
         maxY = y;
       }
