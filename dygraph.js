@@ -1746,6 +1746,10 @@ Dygraph.prototype.updateOptions = function(attrs) {
  * Resizes the dygraph. If no parameters are specified, resizes to fill the
  * containing div (which has presumably changed size since the dygraph was
  * instantiated. If the width/height are specified, the div will be resized.
+ *
+ * This is far more efficient than destroying and re-instantiating a
+ * Dygraph, since it doesn't have to reparse the underlying data.
+ *
  * @param {Number} width Width (in pixels)
  * @param {Number} height Height (in pixels)
  */
@@ -1768,6 +1772,7 @@ Dygraph.prototype.resize = function(width, height) {
   }
 
   this.createInterface_();
+  this.drawGraph_(this.rawData_);
 };
 
 /**
