@@ -1248,9 +1248,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.addXTicks_();
 
   // Tell PlotKit to use this new data and render itself
-  if (this.dateWindow_) {
-    this.layout_.updateOptions({dateWindow: this.dateWindow_});
-  }
+  this.layout_.updateOptions({dateWindow: this.dateWindow_});
   this.layout_.evaluateWithError();
   this.plotter_.clear();
   this.plotter_.render();
