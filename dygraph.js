@@ -901,7 +901,7 @@ Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
 Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
 Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
 Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
-Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600 * 6;
+Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
