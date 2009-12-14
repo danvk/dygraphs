@@ -556,6 +556,13 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td>Show K/M/B for thousands/millions/billions on y-axis.</td>
         </tr>
         <tr>
+          <td><strong>labelsKMG2</strong></td>
+          <td><code>true</code></td>
+          <td><code>false</code></td>
+          <td>Show k/M/G for kilo/Mega/Giga on y-axis. This is different than
+          <code>labelsKMB</code> in that it uses base 2, not 10.</td>
+        </tr>
+        <tr>
           <td><strong>labelsDivWidth</strong></td>
           <td><code>250</code></td>
           <td><code></code></td>
