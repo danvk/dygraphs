@@ -192,30 +192,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
-  // Create the PlotKit grapher
-  // TODO(danvk): why does the Layout need its own set of options?
-  this.layoutOptions_ = { 'xOriginIsZero': false };
-  Dygraph.update(this.layoutOptions_, this.attrs_);
-  Dygraph.update(this.layoutOptions_, this.user_attrs_);
-  Dygraph.update(this.layoutOptions_, {
-    'errorBars': (this.attr_("errorBars") || this.attr_("customBars")) });
-
-  this.layout_ = new DygraphLayout(this, this.layoutOptions_);
-
-  // TODO(danvk): why does the Renderer need its own set of options?
-  this.renderOptions_ = { colorScheme: this.colors_,
-                          strokeColor: null,
-                          axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
-  Dygraph.update(this.renderOptions_, this.attrs_);
-  Dygraph.update(this.renderOptions_, this.user_attrs_);
-  this.plotter_ = new DygraphCanvasRenderer(this,
-                                            this.hidden_, this.layout_,
-                                            this.renderOptions_);
-
-  this.createStatusMessage_();
-  this.createRollInterface_();
-  this.createDragInterface_();
-
   this.start_();
 };
 
@@ -281,7 +257,7 @@ Dygraph.addEvent = function(el, evt, fn) {
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
  * display the current point, and a textbox to adjust the rolling average
- * period.
+ * period. Also creates the Renderer/Layout elements.
  * @private
  */
 Dygraph.prototype.createInterface_ = function() {
@@ -313,6 +289,30 @@ Dygraph.prototype.createInterface_ = function() {
   Dygraph.addEvent(this.hidden_, 'mouseout', function(e) {
     dygraph.mouseOut_(e);
   });
+
+  // Create the grapher
+  // TODO(danvk): why does the Layout need its own set of options?
+  this.layoutOptions_ = { 'xOriginIsZero': false };
+  Dygraph.update(this.layoutOptions_, this.attrs_);
+  Dygraph.update(this.layoutOptions_, this.user_attrs_);
+  Dygraph.update(this.layoutOptions_, {
+    'errorBars': (this.attr_("errorBars") || this.attr_("customBars")) });
+
+  this.layout_ = new DygraphLayout(this, this.layoutOptions_);
+
+  // TODO(danvk): why does the Renderer need its own set of options?
+  this.renderOptions_ = { colorScheme: this.colors_,
+                          strokeColor: null,
+                          axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
+  Dygraph.update(this.renderOptions_, this.attrs_);
+  Dygraph.update(this.renderOptions_, this.user_attrs_);
+  this.plotter_ = new DygraphCanvasRenderer(this,
+                                            this.hidden_, this.layout_,
+                                            this.renderOptions_);
+
+  this.createStatusMessage_();
+  this.createRollInterface_();
+  this.createDragInterface_();
 }
 
 /**
@@ -1740,6 +1740,34 @@ Dygraph.prototype.updateOptions = function(attrs) {
   } else {
     this.drawGraph_(this.rawData_);
   }
+};
+
+/**
+ * Resizes the dygraph. If no parameters are specified, resizes to fill the
+ * containing div (which has presumably changed size since the dygraph was
+ * instantiated. If the width/height are specified, the div will be resized.
+ * @param {Number} width Width (in pixels)
+ * @param {Number} height Height (in pixels)
+ */
+Dygraph.prototype.resize = function(width, height) {
+  if ((width === null) != (height === null)) {
+    this.warn("Dygraph.resize() should be called with zero parameters or " +
+              "two non-NULL parameters. Pretending it was zero.");
+    width = height = null;
+  }
+
+  this.maindiv_.innerHTML = "";
+  if (width) {
+    this.maindiv_.style.width = width + "px";
+    this.maindiv_.style.height = height + "px";
+    this.width_ = width;
+    this.height_ = height;
+  } else {
+    this.width_ = this.maindiv_.offsetWidth;
+    this.height_ = this.maindiv_.offsetHeight;
+  }
+
+  this.createInterface_();
 };
 
 /**
