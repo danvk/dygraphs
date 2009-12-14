@@ -12,18 +12,19 @@
     <p>dateWindow is set to something other than an x-value in the data set.
     Grid lines should still go through data points.</p>
 
-    <div id="div_g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:900px; height:300px;"></div>
 
     <script type="text/javascript">
       var data = [];
       for (var i = 0; i < 10; i++) {
-        data.push([i, i%2, i%3]);
+        data.push([new Date("2009/10/0" + i), i%2, i%3]);
       }
 
       g = new Dygraph(
             document.getElementById("div_g"),
             data, {
-              dateWindow: [ -15, 15 ]
+              dateWindow: [ Date.parse("2009/09/29 12:00:00"),
+                            Date.parse("2009/10/10 12:00:00") ]
             }
           );
     </script>
