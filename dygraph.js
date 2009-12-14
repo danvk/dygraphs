@@ -525,12 +525,14 @@ Dygraph.prototype.createDragInterface_ = function() {
   var self = this;
 
   // Tracks whether the mouse is down right now
-  var mouseDown = false;
+  var isZooming = false;
   var dragStartX = null;
   var dragStartY = null;
   var dragEndX = null;
   var dragEndY = null;
   var prevEndX = null;
+  var draggingDate = null;
+  var dateRange = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
@@ -540,37 +542,61 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Draw zoom rectangles when the mouse is down and the user moves around
   Dygraph.addEvent(this.hidden_, 'mousemove', function(event) {
-    if (mouseDown) {
+    if (isZooming) {
       dragEndX = getX(event);
       dragEndY = getY(event);
 
       self.drawZoomRect_(dragStartX, dragEndX, prevEndX);
       prevEndX = dragEndX;
+    } else if (isPanning) {
+      dragEndX = getX(event);
+      dragEndY = getY(event);
+
+      // Want to have it so that:
+      // 1. draggingDate appears at dragEndX
+      // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
+
+      self.dateWindow_[0] = draggingDate - (dragEndX / self.width_) * dateRange;
+      self.dateWindow_[1] = self.dateWindow_[0] + dateRange;
+      self.drawGraph_(self.rawData_);
     }
   });
 
   // Track the beginning of drag events
   Dygraph.addEvent(this.hidden_, 'mousedown', function(event) {
-    mouseDown = true;
     px = Dygraph.findPosX(self.canvas_);
     py = Dygraph.findPosY(self.canvas_);
     dragStartX = getX(event);
     dragStartY = getY(event);
+
+    if (event.altKey && self.dateWindow_) {
+      isPanning = true;
+      dateRange = self.dateWindow_[1] - self.dateWindow_[0];
+      draggingDate = (dragStartX / self.width_) * dateRange + self.dateWindow_[0];
+    } else {
+      isZooming = true;
+    }
   });
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
   Dygraph.addEvent(document, 'mouseup', function(event) {
-    if (mouseDown) {
-      mouseDown = false;
+    if (isZooming || isPanning) {
+      isZooming = false;
       dragStartX = null;
       dragStartY = null;
+    }
+
+    if (isPanning) {
+      isPanning = false;
+      draggingDate = null;
+      dateRange = null;
     }
   });
 
   // Temporarily cancel the dragging event when the mouse leaves the graph
   Dygraph.addEvent(this.hidden_, 'mouseout', function(event) {
-    if (mouseDown) {
+    if (isZooming) {
       dragEndX = null;
       dragEndY = null;
     }
@@ -579,8 +605,8 @@ Dygraph.prototype.createDragInterface_ = function() {
   // If the mouse is released on the canvas during a drag event, then it's a
   // zoom. Only do the zoom if it's over a large enough area (>= 10 pixels)
   Dygraph.addEvent(this.hidden_, 'mouseup', function(event) {
-    if (mouseDown) {
-      mouseDown = false;
+    if (isZooming) {
+      isZooming = false;
       dragEndX = getX(event);
       dragEndY = getY(event);
       var regionWidth = Math.abs(dragEndX - dragStartX);
@@ -604,6 +630,12 @@ Dygraph.prototype.createDragInterface_ = function() {
 
       dragStartX = null;
       dragStartY = null;
+    }
+
+    if (isPanning) {
+      isPanning = false;
+      draggingDate = null;
+      dateRange = null;
     }
   });
 
