@@ -1760,7 +1760,10 @@ Dygraph.prototype.resize = function(width, height) {
     width = height = null;
   }
 
+  // TODO(danvk): there should be a clear() method.
   this.maindiv_.innerHTML = "";
+  this.attrs_.labelsDiv = null;
+
   if (width) {
     this.maindiv_.style.width = width + "px";
     this.maindiv_.style.height = height + "px";
