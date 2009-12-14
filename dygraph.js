@@ -975,7 +975,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
-    var format = '%d%b';  // e.g. "1 Jan"
+    var format = '%d%b';  // e.g. "1Jan"
     // TODO(danvk): be smarter about making sure this really hits a "nice" time.
     if (granularity < Dygraph.HOURLY) {
       start_time = spacing * Math.floor(0.5 + start_time / spacing);

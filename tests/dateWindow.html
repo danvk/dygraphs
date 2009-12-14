@@ -10,9 +10,12 @@
   </head>
   <body>
     <p>dateWindow is set to something other than an x-value in the data set.
-    Grid lines should still go through data points.</p>
+    Grid lines should still go through data points. In the second chart, there
+    should be lines going off the edge of the chart (to data points out of
+    view).</p>
 
-    <div id="div_g" style="width:900px; height:300px;"></div>
+    <div id="div_g1" style="width:900px; height:300px;"></div>
+    <div id="div_g2" style="width:900px; height:300px;"></div>
 
     <script type="text/javascript">
       var data = [];
@@ -20,13 +23,27 @@
         data.push([new Date("2009/10/0" + i), i%2, i%3]);
       }
 
-      g = new Dygraph(
-            document.getElementById("div_g"),
-            data, {
-              dateWindow: [ Date.parse("2009/09/29 12:00:00"),
-                            Date.parse("2009/10/10 12:00:00") ]
-            }
-          );
+      g1 = new Dygraph(
+             document.getElementById("div_g1"),
+             data, {
+               dateWindow: [ Date.parse("2009/09/29 12:00:00"),
+                             Date.parse("2009/10/10 12:00:00") ]
+             }
+           );
+
+      g2 = new Dygraph(
+             document.getElementById("div_g2"),
+             data, {
+               dateWindow: [ Date.parse("2009/10/01 12:00:00"),
+                             Date.parse("2009/10/08 12:00:00") ]
+             }
+           );
     </script>
+
+    <!--
+    To complete panning support:
+    1. Find a way to implement RoundTime() in Dygraph.prototype.GetXAxis().
+    2. Draw lines to points past the edge of the canvas.
+    -->
   </body>
 </html>
