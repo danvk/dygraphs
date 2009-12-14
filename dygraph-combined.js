@@ -1143,11 +1143,19 @@ return self.GetXAxis(_206,_207,_208);
 }
 };
 Dygraph.numericTicks=function(minV,maxV,self){
+if(self.attr_("labelsKMG2")){
+var _212=[1,2,4,8];
+}else{
 var _212=[1,2,5];
+}
 var _213,low_val,high_val,nTicks;
 var _214=self.attr_("pixelsPerYLabel");
 for(var i=-10;i<50;i++){
+if(self.attr_("labelsKMG2")){
+var _215=Math.pow(16,i);
+}else{
 var _215=Math.pow(10,i);
+}
 for(var j=0;j<_212.length;j++){
 _213=_215*_212[j];
 low_val=Math.floor(minV/_213)*_213;

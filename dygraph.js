@@ -1064,12 +1064,20 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
   // The first spacing greater than pixelsPerYLabel is what we use.
-  var mults = [1, 2, 5];
+  if (self.attr_("labelsKMG2")) {
+    var mults = [1, 2, 4, 8];
+  } else {
+    var mults = [1, 2, 5];
+  }
   var scale, low_val, high_val, nTicks;
   // TODO(danvk): make it possible to set this for x- and y-axes independently.
   var pixelsPerTick = self.attr_('pixelsPerYLabel');
   for (var i = -10; i < 50; i++) {
-    var base_scale = Math.pow(10, i);
+    if (self.attr_("labelsKMG2")) {
+      var base_scale = Math.pow(16, i);
+    } else {
+      var base_scale = Math.pow(10, i);
+    }
     for (var j = 0; j < mults.length; j++) {
       scale = base_scale * mults[j];
       low_val = Math.floor(minV / scale) * scale;
