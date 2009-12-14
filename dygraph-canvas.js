@@ -37,14 +37,19 @@ DygraphLayout.prototype.evaluate = function() {
 
 DygraphLayout.prototype._evaluateLimits = function() {
   this.minxval = this.maxxval = null;
-  for (var name in this.datasets) {
-    if (!this.datasets.hasOwnProperty(name)) continue;
-    var series = this.datasets[name];
-    var x1 = series[0][0];
-    if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+  if (this.options.dateWindow) {
+    this.minxval = this.options.dateWindow[0];
+    this.maxxval = this.options.dateWindow[1];
+  } else {
+    for (var name in this.datasets) {
+      if (!this.datasets.hasOwnProperty(name)) continue;
+      var series = this.datasets[name];
+      var x1 = series[0][0];
+      if (!this.minxval || x1 < this.minxval) this.minxval = x1;
 
-    var x2 = series[series.length - 1][0];
-    if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      var x2 = series[series.length - 1][0];
+      if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+    }
   }
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);

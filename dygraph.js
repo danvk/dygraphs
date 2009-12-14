@@ -1248,11 +1248,14 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.addXTicks_();
 
   // Tell PlotKit to use this new data and render itself
+  if (this.dateWindow_) {
+    this.layout_.updateOptions({dateWindow: this.dateWindow_});
+  }
   this.layout_.evaluateWithError();
   this.plotter_.clear();
   this.plotter_.render();
-  this.canvas_.getContext('2d').clearRect(0, 0,
-                                         this.canvas_.width, this.canvas_.height);
+  this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
+                                         this.canvas_.height);
 };
 
 /**

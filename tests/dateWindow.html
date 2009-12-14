@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>dateWindow</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>dateWindow is set to something other than an x-value in the data set.
+    Grid lines should still go through data points.</p>
+
+    <div id="div_g" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      var data = [];
+      for (var i = 0; i < 10; i++) {
+        data.push([i, i%2, i%3]);
+      }
+
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            data, {
+              dateWindow: [ -15, 15 ]
+            }
+          );
+    </script>
+  </body>
+</html>
