@@ -526,6 +526,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Tracks whether the mouse is down right now
   var isZooming = false;
+  var isPanning = false;
   var dragStartX = null;
   var dragStartY = null;
   var dragEndX = null;

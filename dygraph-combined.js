@@ -749,13 +749,14 @@ return e.clientY+(de.scrollTop||b.scrollTop)-(de.clientTop||0);
 Dygraph.prototype.createDragInterface_=function(){
 var self=this;
 var _126=false;
-var _127=null;
+var _127=false;
 var _128=null;
 var _129=null;
 var _130=null;
 var _131=null;
 var _132=null;
 var _133=null;
+var _134=null;
 var px=0;
 var py=0;
 var getX=function(e){
@@ -764,185 +765,185 @@ return Dygraph.pageX(e)-px;
 var getY=function(e){
 return Dygraph.pageX(e)-py;
 };
-Dygraph.addEvent(this.hidden_,"mousemove",function(_138){
+Dygraph.addEvent(this.hidden_,"mousemove",function(_139){
 if(_126){
-_129=getX(_138);
-_130=getY(_138);
-self.drawZoomRect_(_127,_129,_131);
-_131=_129;
+_130=getX(_139);
+_131=getY(_139);
+self.drawZoomRect_(_128,_130,_132);
+_132=_130;
 }else{
-if(isPanning){
-_129=getX(_138);
-_130=getY(_138);
-self.dateWindow_[0]=_132-(_129/self.width_)*_133;
-self.dateWindow_[1]=self.dateWindow_[0]+_133;
+if(_127){
+_130=getX(_139);
+_131=getY(_139);
+self.dateWindow_[0]=_133-(_130/self.width_)*_134;
+self.dateWindow_[1]=self.dateWindow_[0]+_134;
 self.drawGraph_(self.rawData_);
 }
 }
 });
-Dygraph.addEvent(this.hidden_,"mousedown",function(_139){
+Dygraph.addEvent(this.hidden_,"mousedown",function(_140){
 px=Dygraph.findPosX(self.canvas_);
 py=Dygraph.findPosY(self.canvas_);
-_127=getX(_139);
-_128=getY(_139);
-if(_139.altKey){
+_128=getX(_140);
+_129=getY(_140);
+if(_140.altKey){
 if(!self.dateWindow_){
 return;
 }
-isPanning=true;
-_133=self.dateWindow_[1]-self.dateWindow_[0];
-_132=(_127/self.width_)*_133+self.dateWindow_[0];
+_127=true;
+_134=self.dateWindow_[1]-self.dateWindow_[0];
+_133=(_128/self.width_)*_134+self.dateWindow_[0];
 }else{
 _126=true;
 }
 });
-Dygraph.addEvent(document,"mouseup",function(_140){
-if(_126||isPanning){
+Dygraph.addEvent(document,"mouseup",function(_141){
+if(_126||_127){
 _126=false;
-_127=null;
 _128=null;
-}
-if(isPanning){
-isPanning=false;
-_132=null;
-_133=null;
-}
-});
-Dygraph.addEvent(this.hidden_,"mouseout",function(_141){
-if(_126){
 _129=null;
-_130=null;
+}
+if(_127){
+_127=false;
+_133=null;
+_134=null;
 }
 });
-Dygraph.addEvent(this.hidden_,"mouseup",function(_142){
+Dygraph.addEvent(this.hidden_,"mouseout",function(_142){
+if(_126){
+_130=null;
+_131=null;
+}
+});
+Dygraph.addEvent(this.hidden_,"mouseup",function(_143){
 if(_126){
 _126=false;
-_129=getX(_142);
-_130=getY(_142);
-var _143=Math.abs(_129-_127);
+_130=getX(_143);
+_131=getY(_143);
 var _144=Math.abs(_130-_128);
-if(_143<2&&_144<2&&self.attr_("clickCallback")!=null&&self.lastx_!=undefined){
-self.attr_("clickCallback")(_142,self.lastx_,self.selPoints_);
+var _145=Math.abs(_131-_129);
+if(_144<2&&_145<2&&self.attr_("clickCallback")!=null&&self.lastx_!=undefined){
+self.attr_("clickCallback")(_143,self.lastx_,self.selPoints_);
 }
-if(_143>=10){
-self.doZoom_(Math.min(_127,_129),Math.max(_127,_129));
+if(_144>=10){
+self.doZoom_(Math.min(_128,_130),Math.max(_128,_130));
 }else{
 self.canvas_.getContext("2d").clearRect(0,0,self.canvas_.width,self.canvas_.height);
 }
-_127=null;
 _128=null;
+_129=null;
 }
-if(isPanning){
-isPanning=false;
-_132=null;
+if(_127){
+_127=false;
 _133=null;
+_134=null;
 }
 });
-Dygraph.addEvent(this.hidden_,"dblclick",function(_145){
+Dygraph.addEvent(this.hidden_,"dblclick",function(_146){
 if(self.dateWindow_==null){
 return;
 }
 self.dateWindow_=null;
 self.drawGraph_(self.rawData_);
-var _146=self.rawData_[0][0];
-var _147=self.rawData_[self.rawData_.length-1][0];
+var _147=self.rawData_[0][0];
+var _148=self.rawData_[self.rawData_.length-1][0];
 if(self.attr_("zoomCallback")){
-self.attr_("zoomCallback")(_146,_147);
+self.attr_("zoomCallback")(_147,_148);
 }
 });
 };
-Dygraph.prototype.drawZoomRect_=function(_148,endX,_150){
+Dygraph.prototype.drawZoomRect_=function(_149,endX,_151){
 var ctx=this.canvas_.getContext("2d");
-if(_150){
-ctx.clearRect(Math.min(_148,_150),0,Math.abs(_148-_150),this.height_);
+if(_151){
+ctx.clearRect(Math.min(_149,_151),0,Math.abs(_149-_151),this.height_);
 }
-if(endX&&_148){
+if(endX&&_149){
 ctx.fillStyle="rgba(128,128,128,0.33)";
-ctx.fillRect(Math.min(_148,endX),0,Math.abs(endX-_148),this.height_);
+ctx.fillRect(Math.min(_149,endX),0,Math.abs(endX-_149),this.height_);
 }
 };
-Dygraph.prototype.doZoom_=function(lowX,_152){
-var _153=this.layout_.points;
-var _154=null;
+Dygraph.prototype.doZoom_=function(lowX,_153){
+var _154=this.layout_.points;
 var _155=null;
-for(var i=0;i<_153.length;i++){
-var cx=_153[i].canvasx;
-var x=_153[i].xval;
-if(cx<lowX&&(_154==null||x>_154)){
-_154=x;
-}
-if(cx>_152&&(_155==null||x<_155)){
+var _156=null;
+for(var i=0;i<_154.length;i++){
+var cx=_154[i].canvasx;
+var x=_154[i].xval;
+if(cx<lowX&&(_155==null||x>_155)){
 _155=x;
 }
+if(cx>_153&&(_156==null||x<_156)){
+_156=x;
 }
-if(_154==null){
-_154=_153[0].xval;
 }
 if(_155==null){
-_155=_153[_153.length-1].xval;
+_155=_154[0].xval;
 }
-this.dateWindow_=[_154,_155];
+if(_156==null){
+_156=_154[_154.length-1].xval;
+}
+this.dateWindow_=[_155,_156];
 this.drawGraph_(this.rawData_);
 if(this.attr_("zoomCallback")){
-this.attr_("zoomCallback")(_154,_155);
+this.attr_("zoomCallback")(_155,_156);
 }
 };
-Dygraph.prototype.mouseMove_=function(_157){
-var _158=Dygraph.pageX(_157)-Dygraph.findPosX(this.hidden_);
-var _159=this.layout_.points;
-var _160=-1;
+Dygraph.prototype.mouseMove_=function(_158){
+var _159=Dygraph.pageX(_158)-Dygraph.findPosX(this.hidden_);
+var _160=this.layout_.points;
 var _161=-1;
-var _162=1e+100;
+var _162=-1;
+var _163=1e+100;
 var idx=-1;
-for(var i=0;i<_159.length;i++){
-var dist=Math.abs(_159[i].canvasx-_158);
-if(dist>_162){
+for(var i=0;i<_160.length;i++){
+var dist=Math.abs(_160[i].canvasx-_159);
+if(dist>_163){
 break;
 }
-_162=dist;
+_163=dist;
 idx=i;
 }
 if(idx>=0){
-_160=_159[idx].xval;
+_161=_160[idx].xval;
 }
-if(_158>_159[_159.length-1].canvasx){
-_160=_159[_159.length-1].xval;
+if(_159>_160[_160.length-1].canvasx){
+_161=_160[_160.length-1].xval;
 }
 this.selPoints_=[];
-for(var i=0;i<_159.length;i++){
-if(_159[i].xval==_160){
-this.selPoints_.push(_159[i]);
+for(var i=0;i<_160.length;i++){
+if(_160[i].xval==_161){
+this.selPoints_.push(_160[i]);
 }
 }
 if(this.attr_("highlightCallback")){
-this.attr_("highlightCallback")(_157,_160,this.selPoints_);
+this.attr_("highlightCallback")(_158,_161,this.selPoints_);
 }
-var _165=this.attr_("highlightCircleSize");
+var _166=this.attr_("highlightCircleSize");
 var ctx=this.canvas_.getContext("2d");
 if(this.previousVerticalX_>=0){
 var px=this.previousVerticalX_;
-ctx.clearRect(px-_165-1,0,2*_165+2,this.height_);
+ctx.clearRect(px-_166-1,0,2*_166+2,this.height_);
 }
 var isOK=function(x){
 return x&&!isNaN(x);
 };
 if(this.selPoints_.length>0){
-var _158=this.selPoints_[0].canvasx;
-var _167=this.attr_("xValueFormatter")(_160,this)+":";
+var _159=this.selPoints_[0].canvasx;
+var _168=this.attr_("xValueFormatter")(_161,this)+":";
 var clen=this.colors_.length;
 for(var i=0;i<this.selPoints_.length;i++){
 if(!isOK(this.selPoints_[i].canvasy)){
 continue;
 }
 if(this.attr_("labelsSeparateLines")){
-_167+="<br/>";
+_168+="<br/>";
 }
-var _169=this.selPoints_[i];
+var _170=this.selPoints_[i];
 var c=new RGBColor(this.colors_[i%clen]);
-_167+=" <b><font color='"+c.toHex()+"'>"+_169.name+"</font></b>:"+this.round_(_169.yval,2);
+_168+=" <b><font color='"+c.toHex()+"'>"+_170.name+"</font></b>:"+this.round_(_170.yval,2);
 }
-this.attr_("labelsDiv").innerHTML=_167;
-this.lastx_=_160;
+this.attr_("labelsDiv").innerHTML=_168;
+this.lastx_=_161;
 ctx.save();
 for(var i=0;i<this.selPoints_.length;i++){
 if(!isOK(this.selPoints_[i%clen].canvasy)){
@@ -950,14 +951,14 @@ continue;
 }
 ctx.beginPath();
 ctx.fillStyle=this.colors_[i%clen];
-ctx.arc(_158,this.selPoints_[i%clen].canvasy,_165,0,2*Math.PI,false);
+ctx.arc(_159,this.selPoints_[i%clen].canvasy,_166,0,2*Math.PI,false);
 ctx.fill();
 }
 ctx.restore();
-this.previousVerticalX_=_158;
+this.previousVerticalX_=_159;
 }
 };
-Dygraph.prototype.mouseOut_=function(_171){
+Dygraph.prototype.mouseOut_=function(_172){
 var ctx=this.canvas_.getContext("2d");
 ctx.clearRect(0,0,this.width_,this.height_);
 this.attr_("labelsDiv").innerHTML="";
@@ -970,34 +971,34 @@ return ""+x;
 }
 };
 Dygraph.prototype.hmsString_=function(date){
-var _173=Dygraph.zeropad;
+var _174=Dygraph.zeropad;
 var d=new Date(date);
 if(d.getSeconds()){
-return _173(d.getHours())+":"+_173(d.getMinutes())+":"+_173(d.getSeconds());
+return _174(d.getHours())+":"+_174(d.getMinutes())+":"+_174(d.getSeconds());
 }else{
 if(d.getMinutes()){
-return _173(d.getHours())+":"+_173(d.getMinutes());
+return _174(d.getHours())+":"+_174(d.getMinutes());
 }else{
-return _173(d.getHours());
+return _174(d.getHours());
 }
 }
 };
 Dygraph.dateString_=function(date,self){
-var _175=Dygraph.zeropad;
+var _176=Dygraph.zeropad;
 var d=new Date(date);
 var year=""+d.getFullYear();
-var _177=_175(d.getMonth()+1);
-var day=_175(d.getDate());
+var _178=_176(d.getMonth()+1);
+var day=_176(d.getDate());
 var ret="";
 var frac=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
 if(frac){
 ret=" "+self.hmsString_(date);
 }
-return year+"/"+_177+"/"+day+ret;
+return year+"/"+_178+"/"+day+ret;
 };
-Dygraph.prototype.round_=function(num,_181){
-var _182=Math.pow(10,_181);
-return Math.round(num*_182)/_182;
+Dygraph.prototype.round_=function(num,_182){
+var _183=Math.pow(10,_182);
+return Math.round(num*_183)/_183;
 };
 Dygraph.prototype.loadedEvent_=function(data){
 this.rawData_=this.parseCSV_(data);
@@ -1006,16 +1007,16 @@ this.drawGraph_(this.rawData_);
 Dygraph.prototype.months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 Dygraph.prototype.quarters=["Jan","Apr","Jul","Oct"];
 Dygraph.prototype.addXTicks_=function(){
-var _184,endDate;
+var _185,endDate;
 if(this.dateWindow_){
-_184=this.dateWindow_[0];
+_185=this.dateWindow_[0];
 endDate=this.dateWindow_[1];
 }else{
-_184=this.rawData_[0][0];
+_185=this.rawData_[0][0];
 endDate=this.rawData_[this.rawData_.length-1][0];
 }
-var _185=this.attr_("xTicker")(_184,endDate,this);
-this.layout_.updateOptions({xTicks:_185});
+var _186=this.attr_("xTicker")(_185,endDate,this);
+this.layout_.updateOptions({xTicks:_186});
 };
 Dygraph.SECONDLY=0;
 Dygraph.TEN_SECONDLY=1;
@@ -1044,178 +1045,178 @@ Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]=1000*3600;
 Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]=1000*3600*6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]=1000*86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]=1000*604800;
-Dygraph.prototype.NumXTicks=function(_186,_187,_188){
-if(_188<Dygraph.MONTHLY){
-var _189=Dygraph.SHORT_SPACINGS[_188];
-return Math.floor(0.5+1*(_187-_186)/_189);
+Dygraph.prototype.NumXTicks=function(_187,_188,_189){
+if(_189<Dygraph.MONTHLY){
+var _190=Dygraph.SHORT_SPACINGS[_189];
+return Math.floor(0.5+1*(_188-_187)/_190);
 }else{
-var _190=1;
-var _191=12;
-if(_188==Dygraph.QUARTERLY){
-_191=3;
+var _191=1;
+var _192=12;
+if(_189==Dygraph.QUARTERLY){
+_192=3;
 }
-if(_188==Dygraph.BIANNUAL){
-_191=2;
+if(_189==Dygraph.BIANNUAL){
+_192=2;
 }
-if(_188==Dygraph.ANNUAL){
-_191=1;
+if(_189==Dygraph.ANNUAL){
+_192=1;
 }
-if(_188==Dygraph.DECADAL){
-_191=1;
-_190=10;
+if(_189==Dygraph.DECADAL){
+_192=1;
+_191=10;
 }
-var _192=365.2524*24*3600*1000;
-var _193=1*(_187-_186)/_192;
-return Math.floor(0.5+1*_193*_191/_190);
+var _193=365.2524*24*3600*1000;
+var _194=1*(_188-_187)/_193;
+return Math.floor(0.5+1*_194*_192/_191);
 }
 };
-Dygraph.prototype.GetXAxis=function(_194,_195,_196){
-var _197=[];
-if(_196<Dygraph.MONTHLY){
-var _198=Dygraph.SHORT_SPACINGS[_196];
-var _199="%d%b";
-if(_196<Dygraph.HOURLY){
-_194=_198*Math.floor(0.5+_194/_198);
+Dygraph.prototype.GetXAxis=function(_195,_196,_197){
+var _198=[];
+if(_197<Dygraph.MONTHLY){
+var _199=Dygraph.SHORT_SPACINGS[_197];
+var _200="%d%b";
+if(_197<Dygraph.HOURLY){
+_195=_199*Math.floor(0.5+_195/_199);
 }
-for(var t=_194;t<=_195;t+=_198){
+for(var t=_195;t<=_196;t+=_199){
 var d=new Date(t);
 var frac=d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
-if(frac==0||_196>=Dygraph.DAILY){
-_197.push({v:t,label:new Date(t+3600*1000).strftime(_199)});
+if(frac==0||_197>=Dygraph.DAILY){
+_198.push({v:t,label:new Date(t+3600*1000).strftime(_200)});
 }else{
-_197.push({v:t,label:this.hmsString_(t)});
+_198.push({v:t,label:this.hmsString_(t)});
 }
 }
 }else{
-var _200;
-var _201=1;
-if(_196==Dygraph.MONTHLY){
-_200=[0,1,2,3,4,5,6,7,8,9,10,11,12];
+var _201;
+var _202=1;
+if(_197==Dygraph.MONTHLY){
+_201=[0,1,2,3,4,5,6,7,8,9,10,11,12];
 }else{
-if(_196==Dygraph.QUARTERLY){
-_200=[0,3,6,9];
+if(_197==Dygraph.QUARTERLY){
+_201=[0,3,6,9];
 }else{
-if(_196==Dygraph.BIANNUAL){
-_200=[0,6];
+if(_197==Dygraph.BIANNUAL){
+_201=[0,6];
 }else{
-if(_196==Dygraph.ANNUAL){
-_200=[0];
+if(_197==Dygraph.ANNUAL){
+_201=[0];
 }else{
-if(_196==Dygraph.DECADAL){
-_200=[0];
-_201=10;
+if(_197==Dygraph.DECADAL){
+_201=[0];
+_202=10;
 }
 }
 }
 }
 }
-var _202=new Date(_194).getFullYear();
 var _203=new Date(_195).getFullYear();
-var _204=Dygraph.zeropad;
-for(var i=_202;i<=_203;i++){
-if(i%_201!=0){
+var _204=new Date(_196).getFullYear();
+var _205=Dygraph.zeropad;
+for(var i=_203;i<=_204;i++){
+if(i%_202!=0){
 continue;
 }
-for(var j=0;j<_200.length;j++){
-var _205=i+"/"+_204(1+_200[j])+"/01";
-var t=Date.parse(_205);
-if(t<_194||t>_195){
+for(var j=0;j<_201.length;j++){
+var _206=i+"/"+_205(1+_201[j])+"/01";
+var t=Date.parse(_206);
+if(t<_195||t>_196){
 continue;
 }
-_197.push({v:t,label:new Date(t).strftime("%b %y")});
+_198.push({v:t,label:new Date(t).strftime("%b %y")});
 }
 }
 }
-return _197;
+return _198;
 };
-Dygraph.dateTicker=function(_206,_207,self){
-var _208=-1;
+Dygraph.dateTicker=function(_207,_208,self){
+var _209=-1;
 for(var i=0;i<Dygraph.NUM_GRANULARITIES;i++){
-var _209=self.NumXTicks(_206,_207,i);
-if(self.width_/_209>=self.attr_("pixelsPerXLabel")){
-_208=i;
+var _210=self.NumXTicks(_207,_208,i);
+if(self.width_/_210>=self.attr_("pixelsPerXLabel")){
+_209=i;
 break;
 }
 }
-if(_208>=0){
-return self.GetXAxis(_206,_207,_208);
+if(_209>=0){
+return self.GetXAxis(_207,_208,_209);
 }else{
 }
 };
 Dygraph.numericTicks=function(minV,maxV,self){
 if(self.attr_("labelsKMG2")){
-var _212=[1,2,4,8];
+var _213=[1,2,4,8];
 }else{
-var _212=[1,2,5];
+var _213=[1,2,5];
 }
-var _213,low_val,high_val,nTicks;
-var _214=self.attr_("pixelsPerYLabel");
+var _214,low_val,high_val,nTicks;
+var _215=self.attr_("pixelsPerYLabel");
 for(var i=-10;i<50;i++){
 if(self.attr_("labelsKMG2")){
-var _215=Math.pow(16,i);
+var _216=Math.pow(16,i);
 }else{
-var _215=Math.pow(10,i);
+var _216=Math.pow(10,i);
 }
-for(var j=0;j<_212.length;j++){
-_213=_215*_212[j];
-low_val=Math.floor(minV/_213)*_213;
-high_val=Math.ceil(maxV/_213)*_213;
-nTicks=(high_val-low_val)/_213;
-var _216=self.height_/nTicks;
-if(_216>_214){
+for(var j=0;j<_213.length;j++){
+_214=_216*_213[j];
+low_val=Math.floor(minV/_214)*_214;
+high_val=Math.ceil(maxV/_214)*_214;
+nTicks=(high_val-low_val)/_214;
+var _217=self.height_/nTicks;
+if(_217>_215){
 break;
 }
 }
-if(_216>_214){
+if(_217>_215){
 break;
 }
 }
-var _217=[];
+var _218=[];
 var k;
-var _219=[];
+var _220=[];
 if(self.attr_("labelsKMB")){
 k=1000;
-_219=["K","M","B","T"];
+_220=["K","M","B","T"];
 }
 if(self.attr_("labelsKMG2")){
 if(k){
 self.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
 }
 k=1024;
-_219=["k","M","G","T"];
+_220=["k","M","G","T"];
 }
 for(var i=0;i<nTicks;i++){
-var _220=low_val+i*_213;
-var _221=Math.abs(_220);
-var _222=self.round_(_220,2);
-if(_219.length){
+var _221=low_val+i*_214;
+var _222=Math.abs(_221);
+var _223=self.round_(_221,2);
+if(_220.length){
 var n=k*k*k*k;
 for(var j=3;j>=0;j--,n/=k){
-if(_221>=n){
-_222=self.round_(_220/n,1)+_219[j];
+if(_222>=n){
+_223=self.round_(_221/n,1)+_220[j];
 break;
 }
 }
 }
-_217.push({label:_222,v:_220});
+_218.push({label:_223,v:_221});
 }
-return _217;
+return _218;
 };
 Dygraph.prototype.addYTicks_=function(minY,maxY){
-var _226=Dygraph.numericTicks(minY,maxY,this);
-this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_226});
+var _227=Dygraph.numericTicks(minY,maxY,this);
+this.layout_.updateOptions({yAxis:[minY,maxY],yTicks:_227});
 };
-Dygraph.prototype.extremeValues_=function(_227){
+Dygraph.prototype.extremeValues_=function(_228){
 var minY=null,maxY=null;
 var bars=this.attr_("errorBars")||this.attr_("customBars");
 if(bars){
-for(var j=0;j<_227.length;j++){
-var y=_227[j][1][0];
+for(var j=0;j<_228.length;j++){
+var y=_228[j][1][0];
 if(!y){
 continue;
 }
-var low=y-_227[j][1][1];
-var high=y+_227[j][1][2];
+var low=y-_228[j][1][1];
+var high=y+_228[j][1][2];
 if(low>y){
 low=y;
 }
@@ -1230,8 +1231,8 @@ minY=low;
 }
 }
 }else{
-for(var j=0;j<_227.length;j++){
-var y=_227[j][1];
+for(var j=0;j<_228.length;j++){
+var y=_228[j][1];
 if(y===null||isNaN(y)){
 continue;
 }
@@ -1251,64 +1252,64 @@ this.layout_.removeAllDatasets();
 this.setColors_();
 this.attrs_["pointSize"]=0.5*this.attr_("highlightCircleSize");
 for(var i=1;i<data[0].length;i++){
-var _231=[];
+var _232=[];
 for(var j=0;j<data.length;j++){
 var date=data[j][0];
-_231[j]=[date,data[j][i]];
+_232[j]=[date,data[j][i]];
 }
-_231=this.rollingAverage(_231,this.rollPeriod_);
+_232=this.rollingAverage(_232,this.rollPeriod_);
 var bars=this.attr_("errorBars")||this.attr_("customBars");
 if(this.dateWindow_){
 var low=this.dateWindow_[0];
 var high=this.dateWindow_[1];
-var _232=[];
-for(var k=0;k<_231.length;k++){
-if(_231[k][0]>=low&&_231[k][0]<=high){
-_232.push(_231[k]);
+var _233=[];
+for(var k=0;k<_232.length;k++){
+if(_232[k][0]>=low&&_232[k][0]<=high){
+_233.push(_232[k]);
 }
 }
-_231=_232;
+_232=_233;
 }
-var _233=this.extremeValues_(_231);
-var _234=_233[0];
-var _235=_233[1];
-if(!minY||_234<minY){
-minY=_234;
+var _234=this.extremeValues_(_232);
+var _235=_234[0];
+var _236=_234[1];
+if(!minY||_235<minY){
+minY=_235;
 }
-if(!maxY||_235>maxY){
-maxY=_235;
+if(!maxY||_236>maxY){
+maxY=_236;
 }
 if(bars){
 var vals=[];
-for(var j=0;j<_231.length;j++){
-vals[j]=[_231[j][0],_231[j][1][0],_231[j][1][1],_231[j][1][2]];
+for(var j=0;j<_232.length;j++){
+vals[j]=[_232[j][0],_232[j][1][0],_232[j][1][1],_232[j][1][2]];
 }
 this.layout_.addDataset(this.attr_("labels")[i],vals);
 }else{
-this.layout_.addDataset(this.attr_("labels")[i],_231);
+this.layout_.addDataset(this.attr_("labels")[i],_232);
 }
 }
 if(this.valueRange_!=null){
 this.addYTicks_(this.valueRange_[0],this.valueRange_[1]);
 }else{
 var span=maxY-minY;
-var _238=maxY+0.1*span;
-var _239=minY-0.1*span;
-if(_239<0&&minY>=0){
-_239=0;
+var _239=maxY+0.1*span;
+var _240=minY-0.1*span;
+if(_240<0&&minY>=0){
+_240=0;
 }
-if(_238>0&&maxY<=0){
-_238=0;
+if(_239>0&&maxY<=0){
+_239=0;
 }
 if(this.attr_("includeZero")){
 if(maxY<0){
-_238=0;
-}
-if(minY>0){
 _239=0;
 }
+if(minY>0){
+_240=0;
 }
-this.addYTicks_(_239,_238);
+}
+this.addYTicks_(_240,_239);
 }
 this.addXTicks_();
 this.layout_.updateOptions({dateWindow:this.dateWindow_});
@@ -1317,44 +1318,44 @@ this.plotter_.clear();
 this.plotter_.render();
 this.canvas_.getContext("2d").clearRect(0,0,this.canvas_.width,this.canvas_.height);
 };
-Dygraph.prototype.rollingAverage=function(_240,_241){
-if(_240.length<2){
-return _240;
+Dygraph.prototype.rollingAverage=function(_241,_242){
+if(_241.length<2){
+return _241;
 }
-var _241=Math.min(_241,_240.length-1);
-var _242=[];
-var _243=this.attr_("sigma");
+var _242=Math.min(_242,_241.length-1);
+var _243=[];
+var _244=this.attr_("sigma");
 if(this.fractions_){
 var num=0;
 var den=0;
 var mult=100;
-for(var i=0;i<_240.length;i++){
-num+=_240[i][1][0];
-den+=_240[i][1][1];
-if(i-_241>=0){
-num-=_240[i-_241][1][0];
-den-=_240[i-_241][1][1];
+for(var i=0;i<_241.length;i++){
+num+=_241[i][1][0];
+den+=_241[i][1][1];
+if(i-_242>=0){
+num-=_241[i-_242][1][0];
+den-=_241[i-_242][1][1];
 }
-var date=_240[i][0];
-var _246=den?num/den:0;
+var date=_241[i][0];
+var _247=den?num/den:0;
 if(this.attr_("errorBars")){
 if(this.wilsonInterval_){
 if(den){
-var p=_246<0?0:_246,n=den;
-var pm=_243*Math.sqrt(p*(1-p)/n+_243*_243/(4*n*n));
-var _248=1+_243*_243/den;
-var low=(p+_243*_243/(2*den)-pm)/_248;
-var high=(p+_243*_243/(2*den)+pm)/_248;
-_242[i]=[date,[p*mult,(p-low)*mult,(high-p)*mult]];
+var p=_247<0?0:_247,n=den;
+var pm=_244*Math.sqrt(p*(1-p)/n+_244*_244/(4*n*n));
+var _249=1+_244*_244/den;
+var low=(p+_244*_244/(2*den)-pm)/_249;
+var high=(p+_244*_244/(2*den)+pm)/_249;
+_243[i]=[date,[p*mult,(p-low)*mult,(high-p)*mult]];
 }else{
-_242[i]=[date,[0,0,0]];
+_243[i]=[date,[0,0,0]];
 }
 }else{
-var _249=den?_243*Math.sqrt(_246*(1-_246)/den):1;
-_242[i]=[date,[mult*_246,mult*_249,mult*_249]];
+var _250=den?_244*Math.sqrt(_247*(1-_247)/den):1;
+_243[i]=[date,[mult*_247,mult*_250,mult*_250]];
 }
 }else{
-_242[i]=[date,mult*_246];
+_243[i]=[date,mult*_247];
 }
 }
 }else{
@@ -1362,109 +1363,109 @@ if(this.attr_("customBars")){
 var low=0;
 var mid=0;
 var high=0;
-var _251=0;
-for(var i=0;i<_240.length;i++){
-var data=_240[i][1];
+var _252=0;
+for(var i=0;i<_241.length;i++){
+var data=_241[i][1];
 var y=data[1];
-_242[i]=[_240[i][0],[y,y-data[0],data[2]-y]];
+_243[i]=[_241[i][0],[y,y-data[0],data[2]-y]];
 if(y!=null&&!isNaN(y)){
 low+=data[0];
 mid+=y;
 high+=data[2];
-_251+=1;
+_252+=1;
 }
-if(i-_241>=0){
-var prev=_240[i-_241];
+if(i-_242>=0){
+var prev=_241[i-_242];
 if(prev[1][1]!=null&&!isNaN(prev[1][1])){
 low-=prev[1][0];
 mid-=prev[1][1];
 high-=prev[1][2];
-_251-=1;
+_252-=1;
 }
 }
-_242[i]=[_240[i][0],[1*mid/_251,1*(mid-low)/_251,1*(high-mid)/_251]];
+_243[i]=[_241[i][0],[1*mid/_252,1*(mid-low)/_252,1*(high-mid)/_252]];
 }
 }else{
-var _253=Math.min(_241-1,_240.length-2);
+var _254=Math.min(_242-1,_241.length-2);
 if(!this.attr_("errorBars")){
-if(_241==1){
-return _240;
+if(_242==1){
+return _241;
 }
-for(var i=0;i<_240.length;i++){
-var sum=0;
-var _255=0;
-for(var j=Math.max(0,i-_241+1);j<i+1;j++){
-var y=_240[j][1];
-if(y==null||isNaN(y)){
-continue;
-}
-_255++;
-sum+=_240[j][1];
-}
-if(_255){
-_242[i]=[_240[i][0],sum/_255];
-}else{
-_242[i]=[_240[i][0],null];
-}
-}
-}else{
-for(var i=0;i<_240.length;i++){
+for(var i=0;i<_241.length;i++){
 var sum=0;
 var _256=0;
-var _255=0;
-for(var j=Math.max(0,i-_241+1);j<i+1;j++){
-var y=_240[j][1][0];
+for(var j=Math.max(0,i-_242+1);j<i+1;j++){
+var y=_241[j][1];
 if(y==null||isNaN(y)){
 continue;
 }
-_255++;
-sum+=_240[j][1][0];
-_256+=Math.pow(_240[j][1][1],2);
+_256++;
+sum+=_241[j][1];
 }
-if(_255){
-var _249=Math.sqrt(_256)/_255;
-_242[i]=[_240[i][0],[sum/_255,_243*_249,_243*_249]];
+if(_256){
+_243[i]=[_241[i][0],sum/_256];
 }else{
-_242[i]=[_240[i][0],[null,null,null]];
+_243[i]=[_241[i][0],null];
+}
+}
+}else{
+for(var i=0;i<_241.length;i++){
+var sum=0;
+var _257=0;
+var _256=0;
+for(var j=Math.max(0,i-_242+1);j<i+1;j++){
+var y=_241[j][1][0];
+if(y==null||isNaN(y)){
+continue;
+}
+_256++;
+sum+=_241[j][1][0];
+_257+=Math.pow(_241[j][1][1],2);
+}
+if(_256){
+var _250=Math.sqrt(_257)/_256;
+_243[i]=[_241[i][0],[sum/_256,_244*_250,_244*_250]];
+}else{
+_243[i]=[_241[i][0],[null,null,null]];
 }
 }
 }
 }
 }
-return _242;
+return _243;
 };
-Dygraph.dateParser=function(_257,self){
-var _258;
+Dygraph.dateParser=function(_258,self){
+var _259;
 var d;
-if(_257.length==10&&_257.search("-")!=-1){
-_258=_257.replace("-","/","g");
-while(_258.search("-")!=-1){
-_258=_258.replace("-","/");
+if(_258.length==10&&_258.search("-")!=-1){
+_259=_258.replace("-","/","g");
+while(_259.search("-")!=-1){
+_259=_259.replace("-","/");
 }
-d=Date.parse(_258);
+d=Date.parse(_259);
 }else{
-if(_257.length==8){
-_258=_257.substr(0,4)+"/"+_257.substr(4,2)+"/"+_257.substr(6,2);
-d=Date.parse(_258);
+if(_258.length==8){
+_259=_258.substr(0,4)+"/"+_258.substr(4,2)+"/"+_258.substr(6,2);
+d=Date.parse(_259);
 }else{
-d=Date.parse(_257);
+d=Date.parse(_258);
 }
 }
 if(!d||isNaN(d)){
-self.error("Couldn't parse "+_257+" as a date");
+self.error("Couldn't parse "+_258+" as a date");
 }
 return d;
 };
 Dygraph.prototype.detectTypeFromString_=function(str){
-var _260=false;
+var _261=false;
 if(str.indexOf("-")>=0||str.indexOf("/")>=0||isNaN(parseFloat(str))){
-_260=true;
+_261=true;
 }else{
 if(str.length==8&&str>"19700101"&&str<"20371231"){
-_260=true;
+_261=true;
 }
 }
-if(_260){
+if(_261){
 this.attrs_.xValueFormatter=Dygraph.dateString_;
 this.attrs_.xValueParser=Dygraph.dateParser;
 this.attrs_.xTicker=Dygraph.dateTicker;
@@ -1480,64 +1481,64 @@ this.attrs_.xTicker=Dygraph.numericTicks;
 };
 Dygraph.prototype.parseCSV_=function(data){
 var ret=[];
-var _261=data.split("\n");
-var _262=this.attr_("delimiter");
-if(_261[0].indexOf(_262)==-1&&_261[0].indexOf("\t")>=0){
-_262="\t";
+var _262=data.split("\n");
+var _263=this.attr_("delimiter");
+if(_262[0].indexOf(_263)==-1&&_262[0].indexOf("\t")>=0){
+_263="\t";
 }
-var _263=0;
+var _264=0;
 if(this.labelsFromCSV_){
-_263=1;
-this.attrs_.labels=_261[0].split(_262);
+_264=1;
+this.attrs_.labels=_262[0].split(_263);
 }
-var _264;
-var _265=false;
-var _266=this.attr_("labels").length;
-for(var i=_263;i<_261.length;i++){
-var line=_261[i];
+var _265;
+var _266=false;
+var _267=this.attr_("labels").length;
+for(var i=_264;i<_262.length;i++){
+var line=_262[i];
 if(line.length==0){
 continue;
 }
 if(line[0]=="#"){
 continue;
 }
-var _268=line.split(_262);
-if(_268.length<2){
+var _269=line.split(_263);
+if(_269.length<2){
 continue;
 }
-var _269=[];
-if(!_265){
-this.detectTypeFromString_(_268[0]);
-_264=this.attr_("xValueParser");
-_265=true;
+var _270=[];
+if(!_266){
+this.detectTypeFromString_(_269[0]);
+_265=this.attr_("xValueParser");
+_266=true;
 }
-_269[0]=_264(_268[0],this);
+_270[0]=_265(_269[0],this);
 if(this.fractions_){
-for(var j=1;j<_268.length;j++){
-var vals=_268[j].split("/");
-_269[j]=[parseFloat(vals[0]),parseFloat(vals[1])];
+for(var j=1;j<_269.length;j++){
+var vals=_269[j].split("/");
+_270[j]=[parseFloat(vals[0]),parseFloat(vals[1])];
 }
 }else{
 if(this.attr_("errorBars")){
-for(var j=1;j<_268.length;j+=2){
-_269[(j+1)/2]=[parseFloat(_268[j]),parseFloat(_268[j+1])];
+for(var j=1;j<_269.length;j+=2){
+_270[(j+1)/2]=[parseFloat(_269[j]),parseFloat(_269[j+1])];
 }
 }else{
 if(this.attr_("customBars")){
-for(var j=1;j<_268.length;j++){
-var vals=_268[j].split(";");
-_269[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
+for(var j=1;j<_269.length;j++){
+var vals=_269[j].split(";");
+_270[j]=[parseFloat(vals[0]),parseFloat(vals[1]),parseFloat(vals[2])];
 }
 }else{
-for(var j=1;j<_268.length;j++){
-_269[j]=parseFloat(_268[j]);
+for(var j=1;j<_269.length;j++){
+_270[j]=parseFloat(_269[j]);
 }
 }
 }
 }
-ret.push(_269);
-if(_269.length!=_266){
-this.error("Number of columns in line "+i+" ("+_269.length+") does not agree with number of labels ("+_266+") "+line);
+ret.push(_270);
+if(_270.length!=_267){
+this.error("Number of columns in line "+i+" ("+_270.length+") does not agree with number of labels ("+_267+") "+line);
 }
 }
 return ret;
@@ -1561,19 +1562,19 @@ this.attrs_.labels.push("Y"+i);
 if(Dygraph.isDateLike(data[0][0])){
 this.attrs_.xValueFormatter=Dygraph.dateString_;
 this.attrs_.xTicker=Dygraph.dateTicker;
-var _270=Dygraph.clone(data);
+var _271=Dygraph.clone(data);
 for(var i=0;i<data.length;i++){
-if(_270[i].length==0){
+if(_271[i].length==0){
 this.error("Row "<<(1+i)<<" of data is empty");
 return null;
 }
-if(_270[i][0]==null||typeof (_270[i][0].getTime)!="function"){
+if(_271[i][0]==null||typeof (_271[i][0].getTime)!="function"){
 this.error("x value in row "<<(1+i)<<" is not a Date");
 return null;
 }
-_270[i][0]=_270[i][0].getTime();
+_271[i][0]=_271[i][0].getTime();
 }
-return _270;
+return _271;
 }else{
 this.attrs_.xValueFormatter=function(x){
 return x;
@@ -1585,22 +1586,22 @@ return data;
 Dygraph.prototype.parseDataTable_=function(data){
 var cols=data.getNumberOfColumns();
 var rows=data.getNumberOfRows();
-var _273=[];
+var _274=[];
 for(var i=0;i<cols;i++){
-_273.push(data.getColumnLabel(i));
+_274.push(data.getColumnLabel(i));
 if(i!=0&&this.attr_("errorBars")){
 i+=1;
 }
 }
-this.attrs_.labels=_273;
-cols=_273.length;
-var _274=data.getColumnType(0);
-if(_274=="date"){
+this.attrs_.labels=_274;
+cols=_274.length;
+var _275=data.getColumnType(0);
+if(_275=="date"){
 this.attrs_.xValueFormatter=Dygraph.dateString_;
 this.attrs_.xValueParser=Dygraph.dateParser;
 this.attrs_.xTicker=Dygraph.dateTicker;
 }else{
-if(_274=="number"){
+if(_275=="number"){
 this.attrs_.xValueFormatter=function(x){
 return x;
 };
@@ -1609,7 +1610,7 @@ return parseFloat(x);
 };
 this.attrs_.xTicker=Dygraph.numericTicks;
 }else{
-this.error("only 'date' and 'number' types are supported for column 1 "+"of DataTable input (Got '"+_274+"')");
+this.error("only 'date' and 'number' types are supported for column 1 "+"of DataTable input (Got '"+_275+"')");
 return null;
 }
 }
@@ -1619,7 +1620,7 @@ var row=[];
 if(!data.getValue(i,0)){
 continue;
 }
-if(_274=="date"){
+if(_275=="date"){
 row.push(data.getValue(i,0).getTime());
 }else{
 row.push(data.getValue(i,0));
@@ -1688,11 +1689,11 @@ if(this.file_.indexOf("\n")>=0){
 this.loadedEvent_(this.file_);
 }else{
 var req=new XMLHttpRequest();
-var _280=this;
+var _281=this;
 req.onreadystatechange=function(){
 if(req.readyState==4){
 if(req.status==200){
-_280.loadedEvent_(req.responseText);
+_281.loadedEvent_(req.responseText);
 }
 }
 };
@@ -1706,38 +1707,38 @@ this.error("Unknown data format: "+(typeof this.file_));
 }
 }
 };
-Dygraph.prototype.updateOptions=function(_281){
-if(_281.rollPeriod){
-this.rollPeriod_=_281.rollPeriod;
+Dygraph.prototype.updateOptions=function(_282){
+if(_282.rollPeriod){
+this.rollPeriod_=_282.rollPeriod;
 }
-if(_281.dateWindow){
-this.dateWindow_=_281.dateWindow;
+if(_282.dateWindow){
+this.dateWindow_=_282.dateWindow;
 }
-if(_281.valueRange){
-this.valueRange_=_281.valueRange;
+if(_282.valueRange){
+this.valueRange_=_282.valueRange;
 }
-Dygraph.update(this.user_attrs_,_281);
+Dygraph.update(this.user_attrs_,_282);
 this.labelsFromCSV_=(this.attr_("labels")==null);
 this.layout_.updateOptions({"errorBars":this.attr_("errorBars")});
-if(_281["file"]&&_281["file"]!=this.file_){
-this.file_=_281["file"];
+if(_282["file"]&&_282["file"]!=this.file_){
+this.file_=_282["file"];
 this.start_();
 }else{
 this.drawGraph_(this.rawData_);
 }
 };
-Dygraph.prototype.resize=function(_282,_283){
-if((_282===null)!=(_283===null)){
+Dygraph.prototype.resize=function(_283,_284){
+if((_283===null)!=(_284===null)){
 this.warn("Dygraph.resize() should be called with zero parameters or "+"two non-NULL parameters. Pretending it was zero.");
-_282=_283=null;
+_283=_284=null;
 }
 this.maindiv_.innerHTML="";
 this.attrs_.labelsDiv=null;
-if(_282){
-this.maindiv_.style.width=_282+"px";
-this.maindiv_.style.height=_283+"px";
-this.width_=_282;
-this.height_=_283;
+if(_283){
+this.maindiv_.style.width=_283+"px";
+this.maindiv_.style.height=_284+"px";
+this.width_=_283;
+this.height_=_284;
 }else{
 this.width_=this.maindiv_.offsetWidth;
 this.height_=this.maindiv_.offsetHeight;
@@ -1745,52 +1746,52 @@ this.height_=this.maindiv_.offsetHeight;
 this.createInterface_();
 this.drawGraph_(this.rawData_);
 };
-Dygraph.prototype.adjustRoll=function(_284){
-this.rollPeriod_=_284;
+Dygraph.prototype.adjustRoll=function(_285){
+this.rollPeriod_=_285;
 this.drawGraph_(this.rawData_);
 };
 Dygraph.createCanvas=function(){
-var _285=document.createElement("canvas");
+var _286=document.createElement("canvas");
 isIE=(/MSIE/.test(navigator.userAgent)&&!window.opera);
 if(isIE){
-_285=G_vmlCanvasManager.initElement(_285);
+_286=G_vmlCanvasManager.initElement(_286);
 }
-return _285;
+return _286;
 };
-Dygraph.GVizChart=function(_286){
-this.container=_286;
+Dygraph.GVizChart=function(_287){
+this.container=_287;
 };
-Dygraph.GVizChart.prototype.draw=function(data,_287){
+Dygraph.GVizChart.prototype.draw=function(data,_288){
 this.container.innerHTML="";
-this.date_graph=new Dygraph(this.container,data,_287);
+this.date_graph=new Dygraph(this.container,data,_288);
 };
 DateGraph=Dygraph;
-function RGBColor(_288){
+function RGBColor(_289){
 this.ok=false;
-if(_288.charAt(0)=="#"){
-_288=_288.substr(1,6);
+if(_289.charAt(0)=="#"){
+_289=_289.substr(1,6);
 }
-_288=_288.replace(/ /g,"");
-_288=_288.toLowerCase();
-var _289={aliceblue:"f0f8ff",antiquewhite:"faebd7",aqua:"00ffff",aquamarine:"7fffd4",azure:"f0ffff",beige:"f5f5dc",bisque:"ffe4c4",black:"000000",blanchedalmond:"ffebcd",blue:"0000ff",blueviolet:"8a2be2",brown:"a52a2a",burlywood:"deb887",cadetblue:"5f9ea0",chartreuse:"7fff00",chocolate:"d2691e",coral:"ff7f50",cornflowerblue:"6495ed",cornsilk:"fff8dc",crimson:"dc143c",cyan:"00ffff",darkblue:"00008b",darkcyan:"008b8b",darkgoldenrod:"b8860b",darkgray:"a9a9a9",darkgreen:"006400",darkkhaki:"bdb76b",darkmagenta:"8b008b",darkolivegreen:"556b2f",darkorange:"ff8c00",darkorchid:"9932cc",darkred:"8b0000",darksalmon:"e9967a",darkseagreen:"8fbc8f",darkslateblue:"483d8b",darkslategray:"2f4f4f",darkturquoise:"00ced1",darkviolet:"9400d3",deeppink:"ff1493",deepskyblue:"00bfff",dimgray:"696969",dodgerblue:"1e90ff",feldspar:"d19275",firebrick:"b22222",floralwhite:"fffaf0",forestgreen:"228b22",fuchsia:"ff00ff",gainsboro:"dcdcdc",ghostwhite:"f8f8ff",gold:"ffd700",goldenrod:"daa520",gray:"808080",green:"008000",greenyellow:"adff2f",honeydew:"f0fff0",hotpink:"ff69b4",indianred:"cd5c5c",indigo:"4b0082",ivory:"fffff0",khaki:"f0e68c",lavender:"e6e6fa",lavenderblush:"fff0f5",lawngreen:"7cfc00",lemonchiffon:"fffacd",lightblue:"add8e6",lightcoral:"f08080",lightcyan:"e0ffff",lightgoldenrodyellow:"fafad2",lightgrey:"d3d3d3",lightgreen:"90ee90",lightpink:"ffb6c1",lightsalmon:"ffa07a",lightseagreen:"20b2aa",lightskyblue:"87cefa",lightslateblue:"8470ff",lightslategray:"778899",lightsteelblue:"b0c4de",lightyellow:"ffffe0",lime:"00ff00",limegreen:"32cd32",linen:"faf0e6",magenta:"ff00ff",maroon:"800000",mediumaquamarine:"66cdaa",mediumblue:"0000cd",mediumorchid:"ba55d3",mediumpurple:"9370d8",mediumseagreen:"3cb371",mediumslateblue:"7b68ee",mediumspringgreen:"00fa9a",mediumturquoise:"48d1cc",mediumvioletred:"c71585",midnightblue:"191970",mintcream:"f5fffa",mistyrose:"ffe4e1",moccasin:"ffe4b5",navajowhite:"ffdead",navy:"000080",oldlace:"fdf5e6",olive:"808000",olivedrab:"6b8e23",orange:"ffa500",orangered:"ff4500",orchid:"da70d6",palegoldenrod:"eee8aa",palegreen:"98fb98",paleturquoise:"afeeee",palevioletred:"d87093",papayawhip:"ffefd5",peachpuff:"ffdab9",peru:"cd853f",pink:"ffc0cb",plum:"dda0dd",powderblue:"b0e0e6",purple:"800080",red:"ff0000",rosybrown:"bc8f8f",royalblue:"4169e1",saddlebrown:"8b4513",salmon:"fa8072",sandybrown:"f4a460",seagreen:"2e8b57",seashell:"fff5ee",sienna:"a0522d",silver:"c0c0c0",skyblue:"87ceeb",slateblue:"6a5acd",slategray:"708090",snow:"fffafa",springgreen:"00ff7f",steelblue:"4682b4",tan:"d2b48c",teal:"008080",thistle:"d8bfd8",tomato:"ff6347",turquoise:"40e0d0",violet:"ee82ee",violetred:"d02090",wheat:"f5deb3",white:"ffffff",whitesmoke:"f5f5f5",yellow:"ffff00",yellowgreen:"9acd32"};
-for(var key in _289){
-if(_288==key){
-_288=_289[key];
+_289=_289.replace(/ /g,"");
+_289=_289.toLowerCase();
+var _290={aliceblue:"f0f8ff",antiquewhite:"faebd7",aqua:"00ffff",aquamarine:"7fffd4",azure:"f0ffff",beige:"f5f5dc",bisque:"ffe4c4",black:"000000",blanchedalmond:"ffebcd",blue:"0000ff",blueviolet:"8a2be2",brown:"a52a2a",burlywood:"deb887",cadetblue:"5f9ea0",chartreuse:"7fff00",chocolate:"d2691e",coral:"ff7f50",cornflowerblue:"6495ed",cornsilk:"fff8dc",crimson:"dc143c",cyan:"00ffff",darkblue:"00008b",darkcyan:"008b8b",darkgoldenrod:"b8860b",darkgray:"a9a9a9",darkgreen:"006400",darkkhaki:"bdb76b",darkmagenta:"8b008b",darkolivegreen:"556b2f",darkorange:"ff8c00",darkorchid:"9932cc",darkred:"8b0000",darksalmon:"e9967a",darkseagreen:"8fbc8f",darkslateblue:"483d8b",darkslategray:"2f4f4f",darkturquoise:"00ced1",darkviolet:"9400d3",deeppink:"ff1493",deepskyblue:"00bfff",dimgray:"696969",dodgerblue:"1e90ff",feldspar:"d19275",firebrick:"b22222",floralwhite:"fffaf0",forestgreen:"228b22",fuchsia:"ff00ff",gainsboro:"dcdcdc",ghostwhite:"f8f8ff",gold:"ffd700",goldenrod:"daa520",gray:"808080",green:"008000",greenyellow:"adff2f",honeydew:"f0fff0",hotpink:"ff69b4",indianred:"cd5c5c",indigo:"4b0082",ivory:"fffff0",khaki:"f0e68c",lavender:"e6e6fa",lavenderblush:"fff0f5",lawngreen:"7cfc00",lemonchiffon:"fffacd",lightblue:"add8e6",lightcoral:"f08080",lightcyan:"e0ffff",lightgoldenrodyellow:"fafad2",lightgrey:"d3d3d3",lightgreen:"90ee90",lightpink:"ffb6c1",lightsalmon:"ffa07a",lightseagreen:"20b2aa",lightskyblue:"87cefa",lightslateblue:"8470ff",lightslategray:"778899",lightsteelblue:"b0c4de",lightyellow:"ffffe0",lime:"00ff00",limegreen:"32cd32",linen:"faf0e6",magenta:"ff00ff",maroon:"800000",mediumaquamarine:"66cdaa",mediumblue:"0000cd",mediumorchid:"ba55d3",mediumpurple:"9370d8",mediumseagreen:"3cb371",mediumslateblue:"7b68ee",mediumspringgreen:"00fa9a",mediumturquoise:"48d1cc",mediumvioletred:"c71585",midnightblue:"191970",mintcream:"f5fffa",mistyrose:"ffe4e1",moccasin:"ffe4b5",navajowhite:"ffdead",navy:"000080",oldlace:"fdf5e6",olive:"808000",olivedrab:"6b8e23",orange:"ffa500",orangered:"ff4500",orchid:"da70d6",palegoldenrod:"eee8aa",palegreen:"98fb98",paleturquoise:"afeeee",palevioletred:"d87093",papayawhip:"ffefd5",peachpuff:"ffdab9",peru:"cd853f",pink:"ffc0cb",plum:"dda0dd",powderblue:"b0e0e6",purple:"800080",red:"ff0000",rosybrown:"bc8f8f",royalblue:"4169e1",saddlebrown:"8b4513",salmon:"fa8072",sandybrown:"f4a460",seagreen:"2e8b57",seashell:"fff5ee",sienna:"a0522d",silver:"c0c0c0",skyblue:"87ceeb",slateblue:"6a5acd",slategray:"708090",snow:"fffafa",springgreen:"00ff7f",steelblue:"4682b4",tan:"d2b48c",teal:"008080",thistle:"d8bfd8",tomato:"ff6347",turquoise:"40e0d0",violet:"ee82ee",violetred:"d02090",wheat:"f5deb3",white:"ffffff",whitesmoke:"f5f5f5",yellow:"ffff00",yellowgreen:"9acd32"};
+for(var key in _290){
+if(_289==key){
+_289=_290[key];
 }
 }
-var _291=[{re:/^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,example:["rgb(123, 234, 45)","rgb(255,234,245)"],process:function(bits){
+var _292=[{re:/^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,example:["rgb(123, 234, 45)","rgb(255,234,245)"],process:function(bits){
 return [parseInt(bits[1]),parseInt(bits[2]),parseInt(bits[3])];
 }},{re:/^(\w{2})(\w{2})(\w{2})$/,example:["#00ff00","336699"],process:function(bits){
 return [parseInt(bits[1],16),parseInt(bits[2],16),parseInt(bits[3],16)];
 }},{re:/^(\w{1})(\w{1})(\w{1})$/,example:["#fb0","f0f"],process:function(bits){
 return [parseInt(bits[1]+bits[1],16),parseInt(bits[2]+bits[2],16),parseInt(bits[3]+bits[3],16)];
 }}];
-for(var i=0;i<_291.length;i++){
-var re=_291[i].re;
-var _294=_291[i].process;
-var bits=re.exec(_288);
+for(var i=0;i<_292.length;i++){
+var re=_292[i].re;
+var _295=_292[i].process;
+var bits=re.exec(_289);
 if(bits){
-channels=_294(bits);
+channels=_295(bits);
 this.r=channels[0];
 this.g=channels[1];
 this.b=channels[2];
