@@ -786,7 +786,7 @@ px=Dygraph.findPosX(self.canvas_);
 py=Dygraph.findPosY(self.canvas_);
 _128=getX(_140);
 _129=getY(_140);
-if(_140.altKey){
+if(_140.altKey||_140.shiftKey){
 if(!self.dateWindow_){
 return;
 }

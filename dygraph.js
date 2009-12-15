@@ -570,7 +570,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     dragStartX = getX(event);
     dragStartY = getY(event);
 
-    if (event.altKey) {
+    if (event.altKey || event.shiftKey) {
       if (!self.dateWindow_) return;  // have to be zoomed in to pan.
       isPanning = true;
       dateRange = self.dateWindow_[1] - self.dateWindow_[0];
