@@ -1645,7 +1645,13 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var ret = [];
   for (var i = 0; i < rows; i++) {
     var row = [];
-    if (!data.getValue(i, 0)) continue;
+    if (typeof(data.getValue(i, 0)) === 'undefined' ||
+        data.getValue(i, 0) === null) {
+      this.warning("Ignoring row " + i +
+                   " of DataTable because of undefined or null first column.");
+      continue;
+    }
+
     if (indepType == 'date') {
       row.push(data.getValue(i, 0).getTime());
     } else {
