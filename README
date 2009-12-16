@@ -1,7 +1,9 @@
 dygraphs JavaScript charting library
 Copyright (c) 2006-, Dan Vanderkam.
-http://code.google.com/p/dygraphs/
-http://github.com/danvk/dygraphs
+
+Support: http://groups.google.com/group/dygraphs-users
+Source: http://github.com/danvk/dygraphs
+Issues: http://code.google.com/p/dygraphs/
 
 
 The dygraphs JavaScript library produces produces interactive, zoomable charts of time series.

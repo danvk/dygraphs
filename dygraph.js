@@ -912,30 +912,40 @@ Dygraph.prototype.addXTicks_ = function() {
 
 // Time granularity enumeration
 Dygraph.SECONDLY = 0;
-Dygraph.TEN_SECONDLY = 1;
-Dygraph.THIRTY_SECONDLY  = 2;
-Dygraph.MINUTELY = 3;
-Dygraph.TEN_MINUTELY = 4;
-Dygraph.THIRTY_MINUTELY = 5;
-Dygraph.HOURLY = 6;
-Dygraph.SIX_HOURLY = 7;
-Dygraph.DAILY = 8;
-Dygraph.WEEKLY = 9;
-Dygraph.MONTHLY = 10;
-Dygraph.QUARTERLY = 11;
-Dygraph.BIANNUAL = 12;
-Dygraph.ANNUAL = 13;
-Dygraph.DECADAL = 14;
-Dygraph.NUM_GRANULARITIES = 15;
+Dygraph.TWO_SECONDLY = 1;
+Dygraph.FIVE_SECONDLY = 2;
+Dygraph.TEN_SECONDLY = 3;
+Dygraph.THIRTY_SECONDLY  = 4;
+Dygraph.MINUTELY = 5;
+Dygraph.TWO_MINUTELY = 6;
+Dygraph.FIVE_MINUTELY = 7;
+Dygraph.TEN_MINUTELY = 8;
+Dygraph.THIRTY_MINUTELY = 9;
+Dygraph.HOURLY = 10;
+Dygraph.TWO_HOURLY = 11;
+Dygraph.SIX_HOURLY = 12;
+Dygraph.DAILY = 13;
+Dygraph.WEEKLY = 14;
+Dygraph.MONTHLY = 15;
+Dygraph.QUARTERLY = 16;
+Dygraph.BIANNUAL = 17;
+Dygraph.ANNUAL = 18;
+Dygraph.DECADAL = 19;
+Dygraph.NUM_GRANULARITIES = 20;
 
 Dygraph.SHORT_SPACINGS = [];
 Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_SECONDLY]    = 1000 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_SECONDLY]   = 1000 * 5;
 Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]    = 1000 * 10;
 Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY] = 1000 * 30;
 Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_MINUTELY]    = 1000 * 60 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_MINUTELY]   = 1000 * 60 * 5;
 Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
 Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
 Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]      = 1000 * 3600 * 2;
 Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
@@ -977,10 +987,36 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
     var format = '%d%b';  // e.g. "1Jan"
-    // TODO(danvk): be smarter about making sure this really hits a "nice" time.
-    if (granularity < Dygraph.HOURLY) {
-      start_time = spacing * Math.floor(0.5 + start_time / spacing);
+
+    // Find a time less than start_time which occurs on a "nice" time boundary
+    // for this granularity.
+    var g = spacing / 1000;
+    var d = new Date(start_time);
+    if (g <= 60) {  // seconds
+      var x = d.getSeconds(); d.setSeconds(x - x % g);
+    } else {
+      d.setSeconds(0);
+      g /= 60;
+      if (g <= 60) {  // minutes
+        var x = d.getMinutes(); d.setMinutes(x - x % g);
+      } else {
+        d.setMinutes(0);
+        g /= 60;
+
+        if (g <= 24) {  // days
+          var x = d.getHours(); d.setHours(x - x % g);
+        } else {
+          d.setHours(0);
+          g /= 24;
+
+          if (g == 7) {  // one week
+            d.setDate(d.getDate() - d.getDay());
+          }
+        }
+      }
     }
+    start_time = d.getTime();
+
     for (var t = start_time; t <= end_time; t += spacing) {
       var d = new Date(t);
       var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
