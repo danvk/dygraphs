@@ -977,10 +977,37 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
     var format = '%d%b';  // e.g. "1Jan"
-    // TODO(danvk): be smarter about making sure this really hits a "nice" time.
-    if (granularity < Dygraph.HOURLY) {
-      start_time = spacing * Math.floor(0.5 + start_time / spacing);
+
+    // Find a time less than start_time which occurs on a "nice" time boundary
+    // for this granularity.
+    var g = spacing / 1000;
+    this.info(g);
+    var d = new Date(start_time);
+    if (g <= 60) {  // seconds
+      var x = d.getSeconds(); d.setSeconds(x - x % g);
+    } else {
+      d.setSeconds(0);
+      g /= 60;
+      if (g <= 60) {  // minutes
+        var x = d.getMinutes(); d.setMinutes(x - x % g);
+      } else {
+        d.setMinutes(0);
+        g /= 60;
+
+        if (g <= 24) {  // days
+          var x = d.getHours(); d.setHours(x - x % g);
+        } else {
+          d.setHours(0);
+          g /= 24;
+
+          if (g == 7) {  // one week
+            d.setDay(0);
+          }
+        }
+      }
     }
+    start_time = d.getTime();
+
     for (var t = start_time; t <= end_time; t += spacing) {
       var d = new Date(t);
       var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
