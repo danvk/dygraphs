@@ -912,30 +912,40 @@ Dygraph.prototype.addXTicks_ = function() {
 
 // Time granularity enumeration
 Dygraph.SECONDLY = 0;
-Dygraph.TEN_SECONDLY = 1;
-Dygraph.THIRTY_SECONDLY  = 2;
-Dygraph.MINUTELY = 3;
-Dygraph.TEN_MINUTELY = 4;
-Dygraph.THIRTY_MINUTELY = 5;
-Dygraph.HOURLY = 6;
-Dygraph.SIX_HOURLY = 7;
-Dygraph.DAILY = 8;
-Dygraph.WEEKLY = 9;
-Dygraph.MONTHLY = 10;
-Dygraph.QUARTERLY = 11;
-Dygraph.BIANNUAL = 12;
-Dygraph.ANNUAL = 13;
-Dygraph.DECADAL = 14;
-Dygraph.NUM_GRANULARITIES = 15;
+Dygraph.TWO_SECONDLY = 1;
+Dygraph.FIVE_SECONDLY = 2;
+Dygraph.TEN_SECONDLY = 3;
+Dygraph.THIRTY_SECONDLY  = 4;
+Dygraph.MINUTELY = 5;
+Dygraph.TWO_MINUTELY = 6;
+Dygraph.FIVE_MINUTELY = 7;
+Dygraph.TEN_MINUTELY = 8;
+Dygraph.THIRTY_MINUTELY = 9;
+Dygraph.HOURLY = 10;
+Dygraph.TWO_HOURLY = 11;
+Dygraph.SIX_HOURLY = 12;
+Dygraph.DAILY = 13;
+Dygraph.WEEKLY = 14;
+Dygraph.MONTHLY = 15;
+Dygraph.QUARTERLY = 16;
+Dygraph.BIANNUAL = 17;
+Dygraph.ANNUAL = 18;
+Dygraph.DECADAL = 19;
+Dygraph.NUM_GRANULARITIES = 20;
 
 Dygraph.SHORT_SPACINGS = [];
 Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_SECONDLY]    = 1000 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_SECONDLY]   = 1000 * 5;
 Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]    = 1000 * 10;
 Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY] = 1000 * 30;
 Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_MINUTELY]    = 1000 * 60 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_MINUTELY]   = 1000 * 60 * 5;
 Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
 Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
 Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]      = 1000 * 3600 * 2;
 Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
@@ -1001,7 +1011,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
           g /= 24;
 
           if (g == 7) {  // one week
-            d.setDay(0);
+            d.setDate(d.getDate() - d.getDay());
           }
         }
       }
