@@ -29,7 +29,7 @@ Minimal Example
 <body>
 <div id="graphdiv"></div>
 <script type="text/javascript">
-  g = new DateGraph(
+  g = new Dygraph(
         document.getElementById("graphdiv"),  // containing div
         "Date,Temperature\n" +                // the data series
         "2008-05-07,75\n" +
