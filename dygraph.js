@@ -991,7 +991,6 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     // Find a time less than start_time which occurs on a "nice" time boundary
     // for this granularity.
     var g = spacing / 1000;
-    this.info(g);
     var d = new Date(start_time);
     if (g <= 60) {  // seconds
       var x = d.getSeconds(); d.setSeconds(x - x % g);

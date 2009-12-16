@@ -1086,7 +1086,6 @@ if(_197<Dygraph.MONTHLY){
 var _199=Dygraph.SHORT_SPACINGS[_197];
 var _200="%d%b";
 var g=_199/1000;
-this.info(g);
 var d=new Date(_195);
 if(g<=60){
 var x=d.getSeconds();
