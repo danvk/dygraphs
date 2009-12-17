@@ -480,7 +480,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>rollPeriod</strong></td>
-          <td><code>integer >= 1</code></td>
+          <td><code>integer &gt;= 1</code></td>
           <td><code>1</code></td>
           <td>Number of days over which to average data. Discussed extensively above.</td>
         </tr>
@@ -495,6 +495,13 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>['red', '#00FF00']</code></td>
           <td><code></code></td>
           <td>List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used.</td>
+        </tr>
+        <tr>
+          <td><strong>fillGraph</strong></td>
+          <td><code>boolean<br/></code></td>
+          <td><code>true<br/>false</code></td>
+          <td>Should the area underneath the graph be filled? This option is not
+          compatible with error bars.</td>
         </tr>
         <tr>
           <td><strong>colorSaturation</strong></td>
