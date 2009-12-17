@@ -112,7 +112,8 @@ Dygraph.DEFAULT_ATTRS = {
   errorBars: false,
   fractions: false,
   wilsonInterval: true,  // only relevant if fractions is true
-  customBars: false
+  customBars: false,
+  fillGraph: false
 };
 
 // Various logging levels.

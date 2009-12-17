@@ -446,6 +446,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var errorBars = this.layout.options.errorBars;
+  var fillGraph = this.layout.options.fillGraph;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -488,12 +489,60 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         var point = this.layout.points[j];
         count++;
         if (point.name == setName) {
-          if (!point.y || isNaN(point.y)) {
+          if (!isOK(point.y)) {
             prevX = -1;
             continue;
           }
           var newYs = [ point.y - point.errorPlus * yscale,
                         point.y + point.errorMinus * yscale ];
+          newYs[0] = this.area.h * newYs[0] + this.area.y;
+          newYs[1] = this.area.h * newYs[1] + this.area.y;
+          if (prevX >= 0) {
+            ctx.moveTo(prevX, prevYs[0]);
+            ctx.lineTo(point.canvasx, newYs[0]);
+            ctx.lineTo(point.canvasx, newYs[1]);
+            ctx.lineTo(prevX, prevYs[1]);
+            ctx.closePath();
+          }
+          prevYs[0] = newYs[0];
+          prevYs[1] = newYs[1];
+          prevX = point.canvasx;
+        }
+      }
+      ctx.fill();
+    }
+  } else if (fillGraph) {
+    for (var i = 0; i < setCount; i++) {
+      var setName = setNames[i];
+      var setNameLast;
+      if (i>0) setNameLast = setNames[i-1];
+      var color = colorScheme[i % colorCount];
+
+      // setup graphics context
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = this.options.strokeWidth;
+      var prevX = -1;
+      var prevYs = [-1, -1];
+      var count = 0;
+      var yscale = this.layout.yscale;
+      // should be same color as the lines but only 15% opaque.
+      var rgb = new RGBColor(color);
+      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)';
+      ctx.fillStyle = err_color;
+      ctx.beginPath();
+      for (var j = 0; j < this.layout.points.length; j++) {
+        var point = this.layout.points[j];
+        count++;
+        if (point.name == setName) {
+          if (!isOK(point.y)) {
+            prevX = -1;
+            continue;
+          }
+          var pX = 1.0 + this.layout.minyval * this.layout.yscale;
+          if (pX < 0.0) pX = 0.0;
+          else if (pX > 1.0) pX = 1.0;
+          var newYs = [ point.y, pX ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
           if (prevX >= 0) {
