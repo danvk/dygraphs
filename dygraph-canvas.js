@@ -468,6 +468,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   var ctx = context;
   if (errorBars) {
+    if (fillGraph) {
+      this.dygraph_.warn("Can't use fillGraph option with error bars");
+    }
+
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
       var color = colorScheme[i % colorCount];
