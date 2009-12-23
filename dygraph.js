@@ -1884,10 +1884,10 @@ Dygraph.prototype.visibility = function() {
   // Do lazy-initialization, so that this happens after we know the number of
   // data series.
   if (!this.attr_("visibility")) {
-    this.attr_["visibility"] = [];
+    this.attrs_["visibility"] = [];
   }
   while (this.attr_("visibility").length < this.rawData_[0].length - 1) {
-    this.attr_("visibility").push(false);
+    this.attr_("visibility").push(true);
   }
   return this.attr_("visibility");
 };
