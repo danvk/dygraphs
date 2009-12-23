@@ -430,9 +430,16 @@ new Dygraph(el, data, {
     <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
 
     <div id="dow_chart" style="width:900px; height:350px;"></div>
+    <p><b>Display: </b>
+    <input type=checkbox id=0 onClick="stockchange(this)" checked>
+    <label for="0"> Nominal</label>
+    <input type=checkbox id=1 onClick="stockchange(this)" checked>
+    <label for="1"> Real</label>
+    </p>
+
     <script type="text/javascript">
     // From http://www.econstats.com/eqty/eq_d_mi_3.csv
-      new Dygraph(
+      stockchart = new Dygraph(
         document.getElementById('dow_chart'),
         "dow.txt",
         {
@@ -441,6 +448,10 @@ new Dygraph(el, data, {
           labelsKMB: true
         }
       );
+
+      function stockchange(el) {
+        stockchart.setVisibility(el.id, el.checked);
+      }
     </script>
 <!--
 
