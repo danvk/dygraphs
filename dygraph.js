@@ -1231,6 +1231,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
   // Loop over all fields in the dataset
   for (var i = 1; i < data[0].length; i++) {
+    if (!this.visibility()[i - 1]) continue;
+
     var series = [];
     for (var j = 0; j < data.length; j++) {
       var date = data[j][0];
@@ -1873,6 +1875,34 @@ Dygraph.prototype.resize = function(width, height) {
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
   this.drawGraph_(this.rawData_);
+};
+
+/**
+ * Returns a boolean array of visibility statuses.
+ */
+Dygraph.prototype.visibility = function() {
+  // Do lazy-initialization, so that this happens after we know the number of
+  // data series.
+  if (!this.attr_("visibility")) {
+    this.attr_["visibility"] = [];
+  }
+  while (this.attr_("visibility").length < this.rawData_[0].length - 1) {
+    this.attr_("visibility").push(false);
+  }
+  return this.attr_("visibility");
+};
+
+/**
+ * Changes the visiblity of a series.
+ */
+Dygraph.prototype.setVisibility = function(num, value) {
+  var x = this.visibility();
+  if (num < 0 && num >= x.length) {
+    this.warn("invalid series number in setVisibility: " + num);
+  } else {
+    x[num] = value;
+    this.drawGraph_(this.rawData_);
+  }
 };
 
 /**
