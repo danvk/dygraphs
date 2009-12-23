@@ -38,6 +38,7 @@
         <li><a href="tests/perf.html">Performance Test</a></li>
         <li><a href="tests/fillGraph.html">Filled Chart</a></li>
         <li><a href="tests/perf.html">Fractions</a></li>
+        <li><a href="tests/visibility.html">Visibility</li>
         <li><a href="tests/label-div.html">Labels in a DIV</a></li>
         <li><a href="tests/numeric-axis.html">Numeric Axis</a></li>
         <li><a href="tests/draw-points.html">Dotted Points</a></li>
@@ -467,9 +468,9 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
       <thead>
         <tr>
           <th width="150">Name</th>
-          <th>Values</th>
-          <th>Default</th>
-          <th width="150">Description</th>
+          <th width="200">Values</th>
+          <th width="150">Default</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
@@ -505,6 +506,17 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           compatible with error bars.</td>
         </tr>
         <tr>
+          <td><strong>visibility</strong></td>
+          <td><code>Array of booleans<br/></code></td>
+          <td><code>[true, true, ...]</code></td>
+          <td>Which series should initially be visible? Once the Dygraph has
+          been constructed, you can access and modify the visibility of each
+          series using the <code>visibility</code> and
+          <code>setVisibility</code> methods. See the <a
+          href="tests/visibility.html">visibility demo</a> for an example.</td>
+          </td>
+        </tr>
+        <tr>
           <td><strong>colorSaturation</strong></td>
           <td><code>0.0 - 1.0</code></td>
           <td><code>1.0</code></td>
@@ -524,7 +536,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>zoomCallback</strong></td>
-          <td><code>function(minDate, maxDate){}</code></td>
+          <td><code>function(minDate,<br/>maxDate){}</code></td>
           <td><code>null</code></td>
           <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.</td>
         </tr>
@@ -537,7 +549,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         <tr>
           <td><strong>dateWindow</strong></td>
           <td><code>[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]</code></td>
-          <td rowspan="2"><code>Full range of the input is shown</code></td>
+          <td rowspan="2"><code>Full range of the<br/> input is shown</code></td>
           <td>Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch.</td>
         </tr>
         <tr>
@@ -553,7 +565,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>labelsDiv</strong></td>
-          <td><code>document.getElementById('foo')</code></td>
+          <td><code>document.<br/>getElementById('foo')</code></td>
           <td><code>null</code></td>
           <td>Show data labels in an external div, rather than on the graph.</td>
         </tr>
