@@ -70,6 +70,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var point = {
+        // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
         y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
         xval: parseFloat(item[0]),
@@ -456,7 +457,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
   var setCount = setNames.length;
 
-  //Update Points
+  // Update Points
+  // TODO(danvk): here
   for (var i = 0; i < this.layout.points.length; i++) {
     var point = this.layout.points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
@@ -497,6 +499,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = -1;
             continue;
           }
+          // TODO(danvk): here
           var newYs = [ point.y - point.errorPlus * yscale,
                         point.y + point.errorMinus * yscale ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
@@ -516,6 +519,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.fill();
     }
   } else if (fillGraph) {
+    // TODO(danvk): merge this code with the logic above; they're very similar.
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
       var setNameLast;

@@ -108,6 +108,7 @@ Dygraph.DEFAULT_ATTRS = {
 
   delimiter: ',',
 
+  logScale: false,
   sigma: 2.0,
   errorBars: false,
   fractions: false,
@@ -1102,6 +1103,7 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
   // The first spacing greater than pixelsPerYLabel is what we use.
+  // TODO(danvk): version that works on a log scale.
   if (self.attr_("labelsKMG2")) {
     var mults = [1, 2, 4, 8];
   } else {
