@@ -11,9 +11,9 @@
     <script type="text/javascript">
       google.load('visualization', '1', {packages: ['linechart']});
 
-      function drawVisualization() {
+      function createDataTable(dateType) {
         data = new google.visualization.DataTable();
-        data.addColumn('date', 'Date');
+        data.addColumn(dateType, 'Date');
         data.addColumn('number', 'Column A');
         data.addColumn('number', 'Column B');
         data.addRows(4);
@@ -29,13 +29,24 @@
         data.setCell(3, 0, new Date("2009/07/22"));
         data.setCell(3, 1, 4);
         data.setCell(3, 2, 0);
+        return data;
+      }
 
+      function drawVisualization() {
+      data = createDataTable('date');
         new google.visualization.LineChart(
-            document.getElementById('gviz')).draw(data, null);  
+            document.getElementById('gviz')).draw(data, null);
 
         new Dygraph.GVizChart(
             document.getElementById('dygraphs')).draw(data, {
             });
+
+        data = createDataTable('datetime');
+        new Dygraph.GVizChart(
+            document.getElementById('dygraphs_datetime')).draw(data, {
+            });
+
+
       }
       google.setOnLoadCallback(drawVisualization);
     </script>
@@ -45,6 +56,9 @@
     <div id="gviz" style="width:600px; height:300px;"></div>
 
     <p>same data drawn using dygraphs:</p>
+    date column:
     <div id="dygraphs" style="width:600px; height:300px;"></div>
+    datetime column:
+    <div id="dygraphs_datetime" style="width:600px; height:300px;"></div>
   </body>
 </html>

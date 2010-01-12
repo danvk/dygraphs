@@ -163,20 +163,30 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // div, then only one will be drawn.
   div.innerHTML = "";
 
-  // If the div isn't already sized then give it a default size.
+  // If the div isn't already sized then inherit from our attrs or
+  // give it a default size.
   if (div.style.width == '') {
-    div.style.width = Dygraph.DEFAULT_WIDTH + "px";
+    div.style.width = attrs.width || Dygraph.DEFAULT_WIDTH + "px";
   }
   if (div.style.height == '') {
-    div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
+    div.style.height = attrs.height || Dygraph.DEFAULT_HEIGHT + "px";
   }
   this.width_ = parseInt(div.style.width, 10);
   this.height_ = parseInt(div.style.height, 10);
+  // The div might have been specified as percent of the current window size,
+  // convert that to an appropriate number of pixels.
+  if (div.style.width.indexOf("%") == div.style.width.length - 1) {
+    // Minus ten pixels  keeps scrollbars from showing up for a 100% width div.
+    this.width_ = (this.width_ * self.innerWidth / 100) - 10;
+  }
+  if (div.style.height.indexOf("%") == div.style.height.length - 1) {
+    this.height_ = (this.height_ * self.innerHeight / 100) - 10;
+  }
 
   // Dygraphs has many options, some of which interact with one another.
   // To keep track of everything, we maintain two sets of options:
   //
-  //  this.user_attrs_   only options explicitly set by the user. 
+  //  this.user_attrs_   only options explicitly set by the user.
   //  this.attrs_        defaults, options derived from user_attrs_, data.
   //
   // Options are then accessed this.attr_('attr'), which first looks at
@@ -397,7 +407,7 @@ Dygraph.prototype.setColors_ = function() {
     }
   }
 
-  // TODO(danvk): update this w/r/t/ the new options system. 
+  // TODO(danvk): update this w/r/t/ the new options system.
   this.renderOptions_.colorScheme = this.colors_;
   Dygraph.update(this.plotter_.options, this.renderOptions_);
   Dygraph.update(this.layoutOptions_, this.user_attrs_);
@@ -418,7 +428,7 @@ Dygraph.findPosX = function(obj) {
     curleft += obj.x;
   return curleft;
 };
-                   
+
 Dygraph.findPosY = function(obj) {
   var curtop = 0;
   if (obj.offsetParent) {
@@ -1669,7 +1679,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   cols = labels.length;
 
   var indepType = data.getColumnType(0);
-  if (indepType == 'date') {
+  if (indepType == 'date' || 'datetime') {
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.xTicker = Dygraph.dateTicker;
@@ -1678,7 +1688,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
   } else {
-    this.error("only 'date' and 'number' types are supported for column 1 " +
+    this.error("only 'date', 'datetime' and 'number' types are supported for column 1 " +
                "of DataTable input (Got '" + indepType + "')");
     return null;
   }
@@ -1693,7 +1703,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       continue;
     }
 
-    if (indepType == 'date') {
+    if (indepType == 'date' || indepType == 'datetime') {
       row.push(data.getValue(i, 0).getTime());
     } else {
       row.push(data.getValue(i, 0));
@@ -1727,7 +1737,7 @@ Dygraph.update = function (self, o) {
 Dygraph.isArrayLike = function (o) {
   var typ = typeof(o);
   if (
-      (typ != 'object' && !(typ == 'function' && 
+      (typ != 'object' && !(typ == 'function' &&
         typeof(o.item) == 'function')) ||
       o === null ||
       typeof(o.length) != 'number' ||
