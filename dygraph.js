@@ -1549,6 +1549,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   var xParser;
   var defaultParserSet = false;  // attempt to auto-detect x value type
   var expectedCols = this.attr_("labels").length;
+  var outOfOrder = false;
   for (var i = start; i < lines.length; i++) {
     var line = lines[i];
     if (line.length == 0) continue;  // skip blank lines
@@ -1590,6 +1591,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
         fields[j] = parseFloat(inFields[j]);
       }
     }
+    if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
+      outOfOrder = true;
+    }
     ret.push(fields);
 
     if (fields.length != expectedCols) {
@@ -1598,6 +1602,12 @@ Dygraph.prototype.parseCSV_ = function(data) {
                  ") " + line);
     }
   }
+
+  if (outOfOrder) {
+    this.warn("CSV is out of order; order it correctly to speed loading.");
+    ret.sort(function(a,b) { return a[0] - b[0] });
+  }
+
   return ret;
 };
 
@@ -1688,12 +1698,13 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
   } else {
-    this.error("only 'date', 'datetime' and 'number' types are supported for column 1 " +
-               "of DataTable input (Got '" + indepType + "')");
+    this.error("only 'date', 'datetime' and 'number' types are supported for " +
+               "column 1 of DataTable input (Got '" + indepType + "')");
     return null;
   }
 
   var ret = [];
+  var outOfOrder = false;
   for (var i = 0; i < rows; i++) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
@@ -1717,7 +1728,15 @@ Dygraph.prototype.parseDataTable_ = function(data) {
         row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
       }
     }
+    if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
+      outOfOrder = true;
+    }
     ret.push(row);
+  }
+
+  if (outOfOrder) {
+    this.warn("DataTable is out of order; order it correctly to speed loading.");
+    ret.sort(function(a,b) { return a[0] - b[0] });
   }
   return ret;
 }
