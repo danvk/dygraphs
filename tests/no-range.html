@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>no range</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <div id="blah"></div>
+    <script type="text/javascript">
+    new Dygraph(document.getElementById("blah"),
+                "X,Y\n10,12345\n11,12345\n",
+                { width: 640, height: 480 });
+    </script>
+  </body>
+</html>

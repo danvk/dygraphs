@@ -1290,6 +1290,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
   } else {
     // Add some padding and round up to an integer to be human-friendly.
     var span = maxY - minY;
+    // special case: if we have no sense of scale, use +/-10% of the sole value.
+    if (span == 0) { span = maxY; }
     var maxAxisY = maxY + 0.1 * span;
     var minAxisY = minY - 0.1 * span;
 
