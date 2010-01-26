@@ -397,11 +397,13 @@ Dygraph.prototype.setColors_ = function() {
     var sat = this.attr_('colorSaturation') || 1.0;
     var val = this.attr_('colorValue') || 0.5;
     for (var i = 1; i <= num; i++) {
+      if (!this.visibility()[i-1]) continue;
       var hue = (1.0*i/(1+num));
       this.colors_.push( Dygraph.hsvToRGB(hue, sat, val) );
     }
   } else {
     for (var i = 0; i < num; i++) {
+      if (!this.visibility()[i]) continue;
       var colorStr = colors[i % colors.length];
       this.colors_.push(colorStr);
     }
