@@ -1290,6 +1290,11 @@ Dygraph.prototype.drawGraph_ = function(data) {
   if (this.valueRange_ != null) {
     this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
   } else {
+    // This affects the calculation of span, below.
+    if (this.attr_("includeZero") && minY > 0) {
+      minY = 0;
+    }
+
     // Add some padding and round up to an integer to be human-friendly.
     var span = maxY - minY;
     // special case: if we have no sense of scale, use +/-10% of the sole value.
