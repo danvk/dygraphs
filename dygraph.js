@@ -1693,7 +1693,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   cols = labels.length;
 
   var indepType = data.getColumnType(0);
-  if (indepType == 'date' || 'datetime') {
+  if (indepType == 'date' || indepType == 'datetime') {
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.xTicker = Dygraph.dateTicker;
