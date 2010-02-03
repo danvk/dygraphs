@@ -13,6 +13,8 @@
     <p>Hover, click and zoom to test the callbacks:</p>
     <div id="div_g" style="width:600px; height:300px;"></div>
 
+    <input type="button" value="Clear list" onclick="javascript:document.getElementById('status').innerHTML=''" />
+    <input type="checkbox" id="highlight" checked><label for="highlight"> Show 'highlight' events</label>
     <div id="status" style="width:100%; height:200px;"></div>
 
     <script type="text/javascript">
@@ -35,7 +37,9 @@
               errorBars: true,
 
               highlightCallback: function(e, x, pts) {
-                s.innerHTML += "<b>Highlight</b> " + pts_info(x,pts) + "<br/>";
+                if (document.getElementById('highlight').checked) {
+                  s.innerHTML += "<b>Highlight</b> " + pts_info(x,pts) + "<br/>";
+                }
               },
 
               clickCallback: function(e, x, pts) {
@@ -44,6 +48,10 @@
 
               zoomCallback: function(minX, maxX) {
                 s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + "]<br/>";
+              },
+
+              drawCallback: function(g) {
+                s.innerHTML += "<b>Draw</b> [" + g.xAxisRange() + "]<br/>";
               }
             }
           );

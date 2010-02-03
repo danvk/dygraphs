@@ -254,6 +254,21 @@ Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
 };
 
+/**
+ * Returns the currently-visible x-range. This can be affected by zooming,
+ * panning or a call to updateOptions.
+ * Returns a two-element array: [left, right].
+ * If the Dygraph has dates on the x-axis, these will be millis since epoch.
+ */
+Dygraph.prototype.xAxisRange = function() {
+  if (this.dateWindow_) return this.dateWindow_;
+
+  // The entire chart is visible.
+  var left = this.rawData_[0][0];
+  var right = this.rawData_[this.rawData_.length - 1][0];
+  return [left, right];
+};
+
 Dygraph.addEvent = function(el, evt, fn) {
   var normed_fn = function(e) {
     if (!e) var e = window.event;
@@ -1323,6 +1338,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                          this.canvas_.height);
+
+  if (this.attr_("drawCallback") !== null) {
+    this.attr_("drawCallback")(this);
+  }
 };
 
 /**
