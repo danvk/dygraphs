@@ -187,6 +187,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     this.height_ = (this.height_ * self.innerHeight / 100) - 10;
   }
 
+  // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs['stackedGraph']) {
     attrs['fillGraph'] = true;
     // TODO(nikhilk): Add any other stackedGraph checks here.
@@ -808,23 +809,24 @@ Dygraph.prototype.mouseMove_ = function(event) {
     }
   }
 
-  // MERGE: check if this breaks compatibility.
   if (this.attr_("highlightCallback")) {
     var px = this.lastHighlightCallbackX;
     if (px !== null && lastx != px) {
+      // only fire if the selected point has changed.
       this.lastHighlightCallbackX = lastx;
-      this.attr_("highlightCallback")(event, lastx, this.selPoints_);
-      var callbackPoints = this.selPoints_.map(
-          function(p) { return {xval: p.xval, yval: p.yval, name: p.name} });
-      if (this.attr_("stackedGraph")) {
+      if (!this.attr_("stackedGraph")) {
+        this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+      } else {
         // "unstack" the points.
+        var callbackPoints = this.selPoints_.map(
+            function(p) { return {xval: p.xval, yval: p.yval, name: p.name} });
         var cumulative_sum = 0;
         for (var j = callbackPoints.length - 1; j >= 0; j--) {
           callbackPoints[j].yval -= cumulative_sum;
           cumulative_sum += callbackPoints[j].yval;
         }
+        this.attr_("highlightCallback")(event, lastx, callbackPoints);
       }
-      this.attr_("highlightCallback")(event, lastx, callbackPoints);
     }
   }
 
@@ -1305,7 +1307,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
   // For stacked series.
   var cumulative_y = [];
-  var datasets = [];
+  var stacked_datasets = [];
 
   // Loop over all fields in the dataset
 
@@ -1361,17 +1363,16 @@ Dygraph.prototype.drawGraph_ = function(data) {
         if (!maxY || cumulative_y[series[j][0]] > maxY)
           maxY = cumulative_y[series[j][0]];
       }
-      datasets.push([this.attr_("labels")[i], vals]);
+      stacked_datasets.push([this.attr_("labels")[i], vals]);
       //this.layout_.addDataset(this.attr_("labels")[i], vals);
     } else {
       this.layout_.addDataset(this.attr_("labels")[i], series);
     }
   }
 
-// MERGE: move up into the stackedGraph section.
-  if (datasets.length > 0) {
-    for (var i = (datasets.length - 1); i >= 0; i--) {
-      this.layout_.addDataset(datasets[i][0], datasets[i][1]);
+  if (stacked_datasets.length > 0) {
+    for (var i = (stacked_datasets.length - 1); i >= 0; i--) {
+      this.layout_.addDataset(stacked_datasets[i][0], stacked_datasets[i][1]);
     }
   }
 
