@@ -431,33 +431,39 @@ Dygraph.prototype.setColors_ = function() {
   Dygraph.update(this.layoutOptions_, this.attrs_);
 }
 
-// The following functions are from quirksmode.org
+// The following functions are from quirksmode.org with a modification for Safari from
+// http://blog.firetree.net/2005/07/04/javascript-find-position/
 // http://www.quirksmode.org/js/findpos.html
 Dygraph.findPosX = function(obj) {
   var curleft = 0;
-  if (obj.offsetParent) {
-    while (obj.offsetParent) {
+  if(obj.offsetParent)
+    while(1) 
+    {
       curleft += obj.offsetLeft;
+      if(!obj.offsetParent)
+        break;
       obj = obj.offsetParent;
     }
-  }
-  else if (obj.x)
+  else if(obj.x)
     curleft += obj.x;
   return curleft;
 };
 
 Dygraph.findPosY = function(obj) {
   var curtop = 0;
-  if (obj.offsetParent) {
-    while (obj.offsetParent) {
+  if(obj.offsetParent)
+    while(1)
+    {
       curtop += obj.offsetTop;
+      if(!obj.offsetParent)
+        break;
       obj = obj.offsetParent;
     }
-  }
-  else if (obj.y)
+  else if(obj.y)
     curtop += obj.y;
   return curtop;
 };
+
 
 /**
  * Create the div that contains information on the selected point(s)
