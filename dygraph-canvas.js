@@ -187,7 +187,8 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     "axisLabelWidth": 50,
     "drawYGrid": true,
     "drawXGrid": true,
-    "gridLineColor": "rgb(128,128,128)"
+    "gridLineColor": "rgb(128,128,128)",
+    "fillAlpha": 0.15,
   };
   Dygraph.update(this.options, options);
 
@@ -446,6 +447,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var context = this.element.getContext("2d");
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
+  var fillAlpha = this.options.fillAlpha;
   var errorBars = this.layout.options.errorBars;
   var fillGraph = this.layout.options.fillGraph;
 
@@ -488,7 +490,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var yscale = this.layout.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
-      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)';
+      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
+                            fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
       for (var j = 0; j < this.layout.points.length; j++) {
@@ -536,7 +539,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var yscale = this.layout.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
-      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.15)';
+      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
+                            fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
       for (var j = 0; j < this.layout.points.length; j++) {
