@@ -782,7 +782,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
   }
 
   if (this.attr_("highlightCallback")) {
-    this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+    var px = this.lastHighlightCallbackX;
+    if (px !== null && lastx != px) {
+      this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+      this.lastHighlightCallbackX = lastx;
+    }
   }
 
   // Clear the previously drawn vertical, if there is one
