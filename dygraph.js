@@ -1564,7 +1564,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
 Dygraph.dateParser = function(dateStr, self) {
   var dateStrSlashed;
   var d;
-  if (dateStr.length == 10 && dateStr.search("-") != -1) {  // e.g. '2009-07-12'
+  if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
