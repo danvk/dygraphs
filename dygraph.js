@@ -912,7 +912,7 @@ Dygraph.prototype.hmsString_ = function(date) {
   } else if (d.getMinutes()) {
     return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   } else {
-    return zeropad(d.getHours());
+    return zeropad(d.getHours()) + ":00";
   }
 }
 
