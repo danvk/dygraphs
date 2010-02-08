@@ -909,10 +909,8 @@ Dygraph.prototype.hmsString_ = function(date) {
     return zeropad(d.getHours()) + ":" +
            zeropad(d.getMinutes()) + ":" +
            zeropad(d.getSeconds());
-  } else if (d.getMinutes()) {
-    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   } else {
-    return zeropad(d.getHours()) + ":00";
+    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   }
 }
 
