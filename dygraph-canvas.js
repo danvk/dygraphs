@@ -85,9 +85,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       if (point.y >= 1.0) {
         point.y = 1.0;
       }
-      if ((point.x >= 0.0) && (point.x <= 1.0)) {
+      // if ((point.x >= 0.0) && (point.x <= 1.0)) {
         this.points.push(point);
-      }
+      // }
     }
   }
 };
