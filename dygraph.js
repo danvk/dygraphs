@@ -162,6 +162,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.dateWindow_ = attrs.dateWindow || null;
   this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
+  this.is_initial_draw_ = true;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -1298,6 +1299,10 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(data) {
+  // This is used to set the second parameter to drawCallback, below.
+  var is_initial_draw = this.is_initial_draw_;
+  this.is_initial_draw_ = false;
+
   var minY = null, maxY = null;
   this.layout_.removeAllDatasets();
   this.setColors_();
@@ -1414,7 +1419,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
                                          this.canvas_.height);
 
   if (this.attr_("drawCallback") !== null) {
-    this.attr_("drawCallback")(this);
+    this.attr_("drawCallback")(this, is_initial_draw);
   }
 };
 

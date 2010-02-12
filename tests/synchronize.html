@@ -18,7 +18,7 @@
   <body>
     <p>Zooming and panning on any of the charts will zoom and pan all the
     others.</p>
-    
+
     <div id="div1" style="width:500px; height:300px;"></div>
     <div id="div2" style="width:500px; height:300px;"></div>
     <div id="div3" style="width:500px; height:300px;"></div>
@@ -35,10 +35,10 @@
             NoisyData, {
               rollPeriod: 7,
               errorBars: true,
-              drawCallback: function(me) {
-                if (blockRedraw || !initialized) return;
+              drawCallback: function(me, initial) {
+                if (blockRedraw || initial) return;
                 blockRedraw = true;
-                var range = me.xAxisRange(); 
+                var range = me.xAxisRange();
                 for (var j = 0; j < 4; j++) {
                   if (gs[j] == me) continue;
                   gs[j].updateOptions( { dateWindow: range } );
@@ -49,8 +49,6 @@
           )
         );
       }
-
-      initialized = true;
     </script>
   </body>
 </html>
