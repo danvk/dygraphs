@@ -188,7 +188,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     "drawYGrid": true,
     "drawXGrid": true,
     "gridLineColor": "rgb(128,128,128)",
-    "fillAlpha": 0.15,
+    "fillAlpha": 0.15
   };
   Dygraph.update(this.options, options);
 
