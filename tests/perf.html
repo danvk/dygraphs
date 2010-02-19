@@ -14,12 +14,15 @@
     <div id="status"></div>
 
     <script type="text/javascript">
-      var num_tests = 100;
+      var num_tests = 250;
       var times = [];
       var start = new Date;
 
       for (var i = 0; i < num_tests; i++) {
         var this_start = new Date;
+        // Calling destroy() here reduces the memory usage in Chrome by
+        // ~1.2MB/instantiation.
+        if (i) g.destroy();
         g = new Dygraph(
               document.getElementById("div_g"),
               NoisyData, {
@@ -34,7 +37,7 @@
       var end = new Date;
 
       document.getElementById("status").innerHTML = "Elapsed time: " + (end - start)/num_tests + " ms/instantiation";
-      new Dygraph(
+      perf = new Dygraph(
         document.getElementById("div_g"),
         times, {
           labels: [ "Iteration", "Time (ms)" ]

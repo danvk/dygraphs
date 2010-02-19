@@ -351,7 +351,35 @@ Dygraph.prototype.createInterface_ = function() {
   this.createStatusMessage_();
   this.createRollInterface_();
   this.createDragInterface_();
-}
+};
+
+/**
+ * Detach DOM elements in the dygraph and null out all data references.
+ * Calling this when you're done with a dygraph can dramatically reduce memory
+ * usage. See, e.g., the tests/perf.html example.
+ */
+Dygraph.prototype.destroy = function() {
+  var removeRecursive = function(node) {
+    while (node.hasChildNodes()) {
+      removeRecursive(node.firstChild);
+      node.removeChild(node.firstChild);
+    }
+  };
+  removeRecursive(this.maindiv_);
+
+  var nullOut = function(obj) {
+    for (var n in obj) {
+      if (typeof(obj[n]) === 'object') {
+        obj[n] = null;
+      }
+    }
+  };
+
+  // These may not all be necessary, but it can't hurt...
+  nullOut(this.layout_);
+  nullOut(this.plotter_);
+  nullOut(this);
+};
 
 /**
  * Creates the canvas containing the PlotKit graph. Only plotkit ever draws on
