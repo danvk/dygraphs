@@ -308,7 +308,6 @@ Dygraph.prototype.createInterface_ = function() {
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
-  // this.canvas_ = document.createElement("canvas");
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
   this.canvas_.width = this.width_;
