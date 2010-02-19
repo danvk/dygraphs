@@ -188,7 +188,8 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     "drawYGrid": true,
     "drawXGrid": true,
     "gridLineColor": "rgb(128,128,128)",
-    "fillAlpha": 0.15
+    "fillAlpha": 0.15,
+    "underlayCallback": null
   };
   Dygraph.update(this.options, options);
 
@@ -278,6 +279,11 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
 DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
+
+  if (this.options.underlayCallback) {
+    this.options.underlayCallback(ctx, this.area, this.layout);
+  }
+
   if (this.options.drawYGrid) {
     var ticks = this.layout.yticks;
     ctx.save();
