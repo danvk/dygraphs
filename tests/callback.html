@@ -8,6 +8,17 @@
     <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+      #div_g {
+        position: absolute;
+        left: 200px;
+        top: 100px;
+      }
+      #status {
+        position: absolute;
+        top: 400px;
+      }
+    </style>
   </head>
   <body>
     <p>Hover, click and zoom to test the callbacks:</p>
@@ -19,13 +30,21 @@
 
     <script type="text/javascript">
       s = document.getElementById("status");
-      pts_info = function(x, pts) {
+      g = null;
+      pts_info = function(e, x, pts) {
         var str = "(" + x + ") ";
         for (var i = 0; i < pts.length; i++) {
           var p = pts[i];
           if (i) str += ", ";
-          str += p.name + ": " + p.xval + ", " + p.yval;
+          str += p.name + ": " + p.yval;
         }
+
+        var x = e.offsetX;
+        var y = e.offsetY;
+        var dataXY = g.toDataCoords(x, y);
+        str += ", (" + x + ", " + y + ")";
+        str += " -> (" + dataXY[0] + ", " + dataXY[1] + ")";
+
         return str;
       };
 
@@ -38,12 +57,12 @@
 
               highlightCallback: function(e, x, pts) {
                 if (document.getElementById('highlight').checked) {
-                  s.innerHTML += "<b>Highlight</b> " + pts_info(x,pts) + "<br/>";
+                  s.innerHTML += "<b>Highlight</b> " + pts_info(e,x,pts) + "<br/>";
                 }
               },
 
               clickCallback: function(e, x, pts) {
-                s.innerHTML += "<b>Click</b> " + pts_info(x,pts) + "<br/>";
+                s.innerHTML += "<b>Click</b> " + pts_info(e,x,pts) + "<br/>";
               },
 
               zoomCallback: function(minX, maxX) {

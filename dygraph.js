@@ -280,6 +280,55 @@ Dygraph.prototype.xAxisRange = function() {
   return [left, right];
 };
 
+/**
+ * Returns the currently-visible y-range. This can be affected by zooming,
+ * panning or a call to updateOptions.
+ * Returns a two-element array: [bottom, top].
+ */
+Dygraph.prototype.yAxisRange = function() {
+  return this.displayedYRange_;
+};
+
+/**
+ * Convert from data coordinates to canvas/div X/Y coordinates.
+ * Returns a two-element array: [X, Y]
+ */
+Dygraph.prototype.toDomCoords = function(x, y) {
+  var ret = [null, null];
+  var area = this.plotter_.area;
+  if (x !== null) {
+    var xRange = this.xAxisRange();
+    ret[0] = area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
+  }
+
+  if (y !== null) {
+    var yRange = this.yAxisRange();
+    ret[1] = area.y + (yRange[0] - y) / (yRange[1] - yRange[0]) * area.h;
+  }
+
+  return ret;
+};
+
+/**
+ * Convert from canvas/div coords to data coordinates.
+ * Returns a two-element array: [X, Y]
+ */
+Dygraph.prototype.toDataCoords = function(x, y) {
+  var ret = [null, null];
+  var area = this.plotter_.area;
+  if (x !== null) {
+    var xRange = this.xAxisRange();
+    ret[0] = xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+  }
+
+  if (y !== null) {
+    var yRange = this.yAxisRange();
+    ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
+  }
+
+  return ret;
+};
+
 Dygraph.addEvent = function(el, evt, fn) {
   var normed_fn = function(e) {
     if (!e) var e = window.event;
@@ -1446,6 +1495,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   // set explicitly by the user.
   if (this.valueRange_ != null) {
     this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
+    this.displayedYRange_ = this.valueRange_;
   } else {
     // This affects the calculation of span, below.
     if (this.attr_("includeZero") && minY > 0) {
@@ -1469,6 +1519,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
     }
 
     this.addYTicks_(minAxisY, maxAxisY);
+    this.displayedYRange_ = [minAxisY, maxAxisY];
   }
 
   this.addXTicks_();
