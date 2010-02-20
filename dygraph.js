@@ -1809,7 +1809,7 @@ Dygraph.prototype.parseArray_ = function(data) {
       if (parsedData[i][0] == null
           || typeof(parsedData[i][0].getTime) != 'function'
           || isNaN(parsedData[i][0].getTime())) {
-        this.error("x value in row " << (1 + i) << " is not a Date");
+        this.error("x value in row " + (1 + i) + " is not a Date");
         return null;
       }
       parsedData[i][0] = parsedData[i][0].getTime();
