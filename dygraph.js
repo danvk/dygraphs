@@ -303,7 +303,7 @@ Dygraph.prototype.toDomCoords = function(x, y) {
 
   if (y !== null) {
     var yRange = this.yAxisRange();
-    ret[1] = area.y + (yRange[0] - y) / (yRange[1] - yRange[0]) * area.h;
+    ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
   }
 
   return ret;
