@@ -292,6 +292,13 @@ Dygraph.addEvent = function(el, evt, fn) {
   }
 };
 
+Dygraph.clipCanvas_ = function(cnv, clip) {
+  var ctx = cnv.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(clip.left, clip.top, clip.width, clip.height);
+  ctx.clip();
+};
+
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
  * display the current point, and a textbox to adjust the rolling average
@@ -307,6 +314,15 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv.style.height = this.height_ + "px";
   enclosing.appendChild(this.graphDiv);
 
+  var clip = {
+    top: 0,
+    left: this.attr_("yAxisLabelWidth") + 2 * this.attr_("axisTickSize")
+  };
+  clip.width = this.width_ - clip.left - this.attr_("rightGap");
+  clip.height = this.height_ - this.attr_("axisLabelFontSize")
+      - 2 * this.attr_("axisTickSize");
+  this.clippingArea_ = clip;
+
   // Create the canvas for interactive parts of the chart.
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
@@ -318,6 +334,10 @@ Dygraph.prototype.createInterface_ = function() {
 
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+
+  // Make sure we don't overdraw.
+  Dygraph.clipCanvas_(this.hidden_, this.clippingArea_);
+  Dygraph.clipCanvas_(this.canvas_, this.clippingArea_);
 
   var dygraph = this;
   Dygraph.addEvent(this.hidden_, 'mousemove', function(e) {
