@@ -1362,7 +1362,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var stacked_datasets = [];
 
   // Loop over all fields in the dataset
-
   for (var i = 1; i < data[0].length; i++) {
     if (!this.visibility()[i - 1]) continue;
 
@@ -1374,15 +1373,30 @@ Dygraph.prototype.drawGraph_ = function(data) {
     series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
+    // Because there can be lines going to points outside of the visible area,
+    // we actually prune to visible points, plus one on either side.
     var bars = this.attr_("errorBars") || this.attr_("customBars");
     if (this.dateWindow_) {
       var low = this.dateWindow_[0];
       var high= this.dateWindow_[1];
       var pruned = [];
+      // TODO(danvk): do binary search instead of linear search.
+      // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
+      var firstIdx = null, lastIdx = null;
       for (var k = 0; k < series.length; k++) {
-        // if (series[k][0] >= low && series[k][0] <= high) {
-          pruned.push(series[k]);
-        // }
+        if (series[k][0] >= low && firstIdx === null) {
+          firstIdx = k;
+        }
+        if (series[k][0] <= high) {
+          lastIdx = k;
+        }
+      }
+      if (firstIdx === null) firstIdx = 0;
+      if (firstIdx > 0) firstIdx--;
+      if (lastIdx === null) lastIdx = series.length - 1;
+      if (lastIdx < series.length - 1) lastIdx++;
+      for (var k = firstIdx; k <= lastIdx; k++) {
+        pruned.push(series[k]);
       }
       series = pruned;
     }
