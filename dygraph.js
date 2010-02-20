@@ -408,9 +408,11 @@ Dygraph.prototype.destroy = function() {
  * @private
  */
 Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
-  // var h = document.createElement("canvas");
   var h = Dygraph.createCanvas();
   h.style.position = "absolute";
+  // TODO(danvk): h should be offset from canvas. canvas needs to include
+  // some extra area to make it easier to zoom in on the far left and far
+  // right. h needs to be precisely the plot area, so that clipping occurs.
   h.style.top = canvas.style.top;
   h.style.left = canvas.style.left;
   h.width = this.width_;
@@ -1378,9 +1380,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
       var high= this.dateWindow_[1];
       var pruned = [];
       for (var k = 0; k < series.length; k++) {
-        if (series[k][0] >= low && series[k][0] <= high) {
+        // if (series[k][0] >= low && series[k][0] <= high) {
           pruned.push(series[k]);
-        }
+        // }
       }
       series = pruned;
     }
