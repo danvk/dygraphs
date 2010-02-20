@@ -309,6 +309,7 @@ Dygraph.prototype.toDomCoords = function(x, y) {
   return ret;
 };
 
+// TODO(danvk): use these functions throughout dygraphs.
 /**
  * Convert from canvas/div coords to data coordinates.
  * Returns a two-element array: [X, Y]
@@ -850,19 +851,10 @@ Dygraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
  */
 Dygraph.prototype.doZoom_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
-  var points = this.layout_.points;
-  var minDate = null;
-  var maxDate = null;
-  // Find the nearest [minDate, maxDate] that contains [lowX, highX]
-  for (var i = 0; i < points.length; i++) {
-    var cx = points[i].canvasx;
-    var x = points[i].xval;
-    if (cx < lowX  && (minDate == null || x > minDate)) minDate = x;
-    if (cx > highX && (maxDate == null || x < maxDate)) maxDate = x;
-  }
-  // Use the extremes if either is missing
-  if (minDate == null) minDate = points[0].xval;
-  if (maxDate == null) maxDate = points[points.length-1].xval;
+  var r = this.toDataCoords(lowX, null);
+  var minDate = r[0];
+  r = this.toDataCoords(highX, null);
+  var maxDate = r[0];
 
   this.dateWindow_ = [minDate, maxDate];
   this.drawGraph_(this.rawData_);

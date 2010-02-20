@@ -488,7 +488,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = this.options.strokeWidth;
-      var prevX = -1;
+      var prevX = NaN;
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
@@ -503,7 +503,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
-            prevX = -1;
+            prevX = NaN;
             continue;
           }
           // TODO(danvk): here
@@ -511,7 +511,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                         point.y + point.errorMinus * yscale ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (prevX >= 0) {
+          if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
@@ -537,7 +537,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = this.options.strokeWidth;
-      var prevX = -1;
+      var prevX = NaN;
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
@@ -552,7 +552,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
-            prevX = -1;
+            prevX = NaN;
             continue;
           }
           var pX = 1.0 + this.layout.minyval * this.layout.yscale;
@@ -561,7 +561,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           var newYs = [ point.y, pX ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (prevX >= 0) {
+          if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
