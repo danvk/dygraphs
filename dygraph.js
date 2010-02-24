@@ -1028,6 +1028,24 @@ Dygraph.prototype.clearSelection = function() {
   this.lastx_ = -1;
 }
 
+/**
+ * Returns the number of the currently selected row
+ * @return int row number, of -1 if nothing is selected
+ * @public
+ */
+Dygraph.prototype.getSelection = function() {
+  if (!this.selPoints_ || this.selPoints_.length < 1) {
+    return -1;
+  }
+  
+  for (var row=0; row<this.layout_.points.length; row++ ) {
+    if (this.layout_.points[row].x == this.selPoints_[0].x) {
+      return row;
+    }
+  }
+  return -1;
+}
+
 Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
 }
@@ -2237,6 +2255,27 @@ Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
     row = selection_array[0].row;
   }
   this.date_graph.setSelection(row);
+}
+
+/**
+ * Google charts compatible getSelection implementation
+ * @return {Array} array of the selected cells
+ * @public
+ */
+Dygraph.GVizChart.prototype.getSelection = function() {
+  var selection = [];
+  
+  var row = this.date_graph.getSelection();
+  
+  if (row < 0) return selection;
+  
+  col = 1;
+  for (var i in this.date_graph.layout_.datasets) {
+    selection.push({row: row, column: col});
+    col++;
+  }
+
+  return selection;
 }
 
 // Older pages may still use this name.
