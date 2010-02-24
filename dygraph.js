@@ -921,6 +921,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
     }
   }
 
+  // Save last x position for callbacks.
+  this.lastx_ = lastx;
+  
+  this.updateSelection_();
+};
+
+/**
+ * Draw dots over the selectied points in the data series. This function
+ * takes care of cleanup of previously-drawn dots.
+ * @private
+ */
+Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
   var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
@@ -935,7 +947,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var canvasx = this.selPoints_[0].canvasx;
 
     // Set the status message to indicate the selected point(s)
-    var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
+    var replace = this.attr_('xValueFormatter')(this.lastx_, this) + ":";
     var clen = this.colors_.length;
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
@@ -949,9 +961,6 @@ Dygraph.prototype.mouseMove_ = function(event) {
               + this.round_(point.yval, 2);
     }
     this.attr_("labelsDiv").innerHTML = replace;
-
-    // Save last x position for callbacks.
-    this.lastx_ = lastx;
 
     // Draw colored circles over the center of each selected point
     ctx.save();
@@ -970,18 +979,54 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
+ * Set manually set selected dots, and display information about them
+ * @param int row number that should by highlighted
+ *            false value clears the selection
+ * @public
+ */
+Dygraph.prototype.setSelection = function(row) {
+  // Extract the points we've selected
+  this.selPoints_ = [];
+  var pos = 0;
+  
+  if (row !== false) {
+    for (var i in this.layout_.datasets) {
+      this.selPoints_.push(this.layout_.points[pos+row]);
+      pos += this.layout_.datasets[i].length;
+    }
+    
+    this.lastx_ = this.selPoints_[0].xval;
+    this.updateSelection_();
+  } else {
+    this.lastx_ = -1;
+    this.clearSelection();
+  }
+
+};
+
+/**
  * The mouse has left the canvas. Clear out whatever artifacts remain
  * @param {Object} event the mouseout event from the browser.
  * @private
  */
 Dygraph.prototype.mouseOut_ = function(event) {
   if (this.attr_("hideOverlayOnMouseOut")) {
-    // Get rid of the overlay data
-    var ctx = this.canvas_.getContext("2d");
-    ctx.clearRect(0, 0, this.width_, this.height_);
-    this.attr_("labelsDiv").innerHTML = "";
+    this.clearSelection();
   }
 };
+
+/**
+ * Remove all selection from the canvas
+ * @public
+ */
+Dygraph.prototype.clearSelection = function() {
+  // Get rid of the overlay data
+  var ctx = this.canvas_.getContext("2d");
+  ctx.clearRect(0, 0, this.width_, this.height_);
+  this.attr_("labelsDiv").innerHTML = "";
+  this.selPoints_ = [];
+  this.lastx_ = -1;
+}
 
 Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
@@ -2177,6 +2222,21 @@ Dygraph.GVizChart = function(container) {
 Dygraph.GVizChart.prototype.draw = function(data, options) {
   this.container.innerHTML = '';
   this.date_graph = new Dygraph(this.container, data, options);
+}
+
+/**
+ * Google charts compatible setSelection
+ * Only row selection is supported, all points in the 
+ * row will be highlighted
+ * @param {Array} array of the selected cells
+ * @public
+ */
+Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
+  var row = false;
+  if (selection_array.length) {
+    row = selection_array[0].row;
+  }
+  this.date_graph.setSelection(row);
 }
 
 // Older pages may still use this name.
