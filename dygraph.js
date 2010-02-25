@@ -208,6 +208,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.attrs_ = {};
   Dygraph.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
+  
+  this.boundaryIds_ = [];
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
@@ -990,11 +992,19 @@ Dygraph.prototype.setSelection = function(row) {
   var pos = 0;
   
   if (row !== false) {
+    row = row-this.boundaryIds_[0][0];
+  }
+  
+  if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
-      this.selPoints_.push(this.layout_.points[pos+row]);
+      if (row < this.layout_.datasets[i].length) {
+        this.selPoints_.push(this.layout_.points[pos+row]);
+      }
       pos += this.layout_.datasets[i].length;
     }
-    
+  }
+  
+  if (this.selPoints_.length) {
     this.lastx_ = this.selPoints_[0].xval;
     this.updateSelection_();
   } else {
@@ -1040,7 +1050,7 @@ Dygraph.prototype.getSelection = function() {
   
   for (var row=0; row<this.layout_.points.length; row++ ) {
     if (this.layout_.points[row].x == this.selPoints_[0].x) {
-      return row;
+      return row + this.boundaryIds_[0][0];
     }
   }
   return -1;
@@ -1499,10 +1509,13 @@ Dygraph.prototype.drawGraph_ = function(data) {
       if (firstIdx > 0) firstIdx--;
       if (lastIdx === null) lastIdx = series.length - 1;
       if (lastIdx < series.length - 1) lastIdx++;
+      this.boundaryIds_[i-1] = [firstIdx, lastIdx];
       for (var k = firstIdx; k <= lastIdx; k++) {
         pruned.push(series[k]);
       }
       series = pruned;
+    } else {
+      this.boundaryIds_[i-1] = [0, series.length-1];
     }
 
     var extremes = this.extremeValues_(series);
