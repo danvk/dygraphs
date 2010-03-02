@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>gviz</title>
+    <title>gviz selection</title>
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
@@ -9,7 +9,7 @@
     <script type="text/javascript" src="../dygraph.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
-      google.load('visualization', '1', {packages: ['linechart']});
+      google.load('visualization', '1');
 
       function createDataTable(dateType) {
         data = new google.visualization.DataTable();
@@ -49,7 +49,7 @@
         data.setCell(9, 2, 8);
         return data;
       }
-      
+
       var chart;
 
       function drawVisualization() {
@@ -59,7 +59,7 @@
         chart.draw(data, {hideOverlayOnMouseOut: false});
 
       }
-      
+
       function setSelection() {
           var sel = [{column: 1, row: 2}, {column: 2, row: 2}];
           chart.setSelection(sel);
@@ -70,11 +70,12 @@
       }
       function getChartSelection() {
           var sel = chart.getSelection();
-          
+
           var html = '<p>Selection: [';
-          for (var i=0; i<sel.length; i++) {
-              if (i>0) html += ', ';
-              html += i + '=&gt; {row: '+sel[i].row + ' col: '+ sel[i].column + '}';
+          for (var i = 0; i < sel.length; i++) {
+              if (i > 0) html += ', ';
+              html += i + '=&gt; {row: '+ sel[i].row +
+                                ' col: '+ sel[i].column + '}';
           }
           html += ']</p>';
           document.getElementById('output').innerHTML += html;
@@ -83,8 +84,7 @@
     </script>
   </head>
   <body>
-    <p>same data drawn using dygraphs:</p>
-    date column:
+    <p>Get/Set/Clear selection via gviz API:</p>
     <div id="dygraphs" style="width:600px; height:300px;"></div>
     <input type="button" onclick="setSelection()" value="setSelection()"/>
     <input type="button" onclick="clearSelection()" value="clearSelection()"/>
