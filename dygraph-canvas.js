@@ -463,6 +463,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
   var setCount = setNames.length;
 
+  this.colors = {}
+  for (var i = 0; i < setCount; i++) {
+    this.colors[setNames[i]] = colorScheme[i % colorCount];
+  }
+
   // Update Points
   // TODO(danvk): here
   for (var i = 0; i < this.layout.points.length; i++) {
@@ -482,7 +487,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
-      var color = colorScheme[i % colorCount];
+      var color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
@@ -531,7 +536,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var setName = setNames[i];
       var setNameLast;
       if (i>0) setNameLast = setNames[i-1];
-      var color = colorScheme[i % colorCount];
+      var color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
@@ -579,7 +584,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
-    var color = colorScheme[i%colorCount];
+    var color = this.colors[setName];
 
     // setup graphics context
     context.save();

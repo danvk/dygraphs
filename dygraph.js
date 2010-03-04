@@ -116,6 +116,7 @@ Dygraph.DEFAULT_ATTRS = {
   customBars: false,
   fillGraph: false,
   fillAlpha: 0.15,
+  connectSeparatedPoints: false,
 
   stackedGraph: false,
   hideOverlayOnMouseOut: true
@@ -885,7 +886,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var idx = -1;
   for (var i = 0; i < points.length; i++) {
     var dist = Math.abs(points[i].canvasx - canvasx);
-    if (dist > minDist) break;
+    if (dist > minDist) continue;
     minDist = dist;
     idx = i;
   }
@@ -957,7 +958,7 @@ Dygraph.prototype.updateSelection_ = function() {
         replace += "<br/>";
       }
       var point = this.selPoints_[i];
-      var c = new RGBColor(this.colors_[i%clen]);
+      var c = new RGBColor(this.plotter_.colors_[point.name]);
       replace += " <b><font color='" + c.toHex() + "'>"
               + point.name + "</font></b>:"
               + this.round_(point.yval, 2);
@@ -967,10 +968,10 @@ Dygraph.prototype.updateSelection_ = function() {
     // Draw colored circles over the center of each selected point
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
-      if (!isOK(this.selPoints_[i%clen].canvasy)) continue;
+      if (!isOK(this.selPoints_[i].canvasy)) continue;
       ctx.beginPath();
-      ctx.fillStyle = this.colors_[i%clen];
-      ctx.arc(canvasx, this.selPoints_[i%clen].canvasy, circleSize,
+      ctx.fillStyle = this.plotter_.colors_[this.selPoints_[i].name];
+      ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
               0, 2 * Math.PI, false);
       ctx.fill();
     }
@@ -1471,6 +1472,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.setColors_();
   this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
+  var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
+
   // For stacked series.
   var cumulative_y = [];
   var stacked_datasets = [];
@@ -1481,8 +1484,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
-      var date = data[j][0];
-      series[j] = [date, data[j][i]];
+      if (data[j][i] || !connectSeparatedPoints) {
+        var date = data[j][0];
+        series[j] = [date, data[j][i]];
+      }
     }
     series = this.rollingAverage(series, this.rollPeriod_);
 
