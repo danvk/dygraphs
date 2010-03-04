@@ -1358,7 +1358,7 @@ Dygraph.numericTicks = function(minV, maxV, self) {
       scale = base_scale * mults[j];
       low_val = Math.floor(minV / scale) * scale;
       high_val = Math.ceil(maxV / scale) * scale;
-      nTicks = (high_val - low_val) / scale;
+      nTicks = Math.abs(high_val - low_val) / scale;
       var spacing = self.height_ / nTicks;
       // wish I could break out of both loops at once...
       if (spacing > pixelsPerTick) break;
@@ -1379,6 +1379,10 @@ Dygraph.numericTicks = function(minV, maxV, self) {
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
+
+  // Allowing reverce valueRange
+  if (low_val > high_val) 
+      scale *= -1;
 
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
