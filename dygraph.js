@@ -1380,9 +1380,8 @@ Dygraph.numericTicks = function(minV, maxV, self) {
     k_labels = [ "k", "M", "G", "T" ];
   }
 
-  // Allowing reverce valueRange
-  if (low_val > high_val) 
-      scale *= -1;
+  // Allowing reverse valueRange
+  if (low_val > high_val) scale *= -1;
 
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
