@@ -958,7 +958,7 @@ Dygraph.prototype.updateSelection_ = function() {
         replace += "<br/>";
       }
       var point = this.selPoints_[i];
-      var c = new RGBColor(this.plotter_.colors_[point.name]);
+      var c = new RGBColor(this.plotter_.colors[point.name]);
       replace += " <b><font color='" + c.toHex() + "'>"
               + point.name + "</font></b>:"
               + this.round_(point.yval, 2);
@@ -970,7 +970,7 @@ Dygraph.prototype.updateSelection_ = function() {
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
       ctx.beginPath();
-      ctx.fillStyle = this.plotter_.colors_[this.selPoints_[i].name];
+      ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
       ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
               0, 2 * Math.PI, false);
       ctx.fill();
@@ -1486,7 +1486,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
     for (var j = 0; j < data.length; j++) {
       if (data[j][i] || !connectSeparatedPoints) {
         var date = data[j][0];
-        series[j] = [date, data[j][i]];
+        series.push([date, data[j][i]]);
       }
     }
     series = this.rollingAverage(series, this.rollPeriod_);
