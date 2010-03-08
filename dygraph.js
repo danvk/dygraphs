@@ -2147,7 +2147,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
 
   // TODO(danvk): this doesn't match the constructor logic
   this.layout_.updateOptions({ 'errorBars': this.attr_("errorBars") });
-  if (attrs['file'] && attrs['file'] != this.file_) {
+  if (attrs['file']) {
     this.file_ = attrs['file'];
     this.start_();
   } else {
