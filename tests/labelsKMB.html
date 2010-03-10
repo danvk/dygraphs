@@ -12,8 +12,11 @@
     <p>labelsKMB:</p>
     <div id="labelsKMB" style="width:600px; height: 300px;"></div>
 
-    <p>labelsKMG:</p>
+    <p>labelsKMG2:</p>
     <div id="labelsKMG2" style="width:600px; height: 300px;"></div>
+
+    <p>labelsKMG2 with yValueFormatter:</p>
+    <div id="labelsKMG2yValueFormatter" style="width:600px; height: 300px;"></div>
 
     <p>The curves are exponentials. Zooming in should reveal each of the 'K',
     'M', 'B', etc. labels.</p>
@@ -24,8 +27,21 @@
         data.push([i, n]);
       }
 
+      var suffixes = ['', 'k', 'M', 'G', 'T'];
+      function formatValue(v) {
+        if (v < 1000) return v;
+
+        var magnitude = Math.floor(String(Math.floor(v)).length / 3);
+        if (magnitude > suffixes.length - 1)
+          magnitude = suffixes.length - 1;
+        return String(g.round_(v / Math.pow(10, magnitude * 3), 2)) +
+          suffixes[magnitude];
+      }
+
       new Dygraph(document.getElementById("labelsKMB"), data, { labelsKMB: true });
       new Dygraph(document.getElementById("labelsKMG2"), data, { labelsKMG2: true });
+      var g = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data,
+                          { labelsKMG2: true, yValueFormatter: formatValue });
     </script>
   </body>
 </html>

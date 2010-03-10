@@ -8,13 +8,17 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <p>Chart with a stacked graph:</p>
+    <p>Simple graph:</p>
     <div id="graphdiv"></div>
+    <p>Stacked graph:</p>
+    <div id="graphdiv2"></div>
 
     <script type="text/javascript">
-      g = new Dygraph(document.getElementById("graphdiv"),
-                      data,
-                      { stackedGraph: true });
+      var g = new Dygraph(document.getElementById("graphdiv"),
+                           data);
+      var g2 = new Dygraph(document.getElementById("graphdiv2"),
+                           data,
+                           { stackedGraph: true });
     </script>
   </body>
 </html>

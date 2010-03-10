@@ -92,7 +92,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsSeparateLines: false,
   labelsKMB: false,
   labelsKMG2: false,
-  staticLabels: false,
+  showLabelsOnHighlight: true,
 
   yValueFormatter: null,
 
@@ -817,26 +817,28 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var isOK = function(x) { return x && !isNaN(x); };
 
-  if (this.selPoints_.length > 0 && !this.attr_('staticLabels')) {
+  if (this.selPoints_.length > 0) {
     var canvasx = this.selPoints_[0].canvasx;
-
-    // Set the status message to indicate the selected point(s)
-    var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
-    var fmtFunc = this.attr_('yValueFormatter');
     var clen = this.colors_.length;
-    for (var i = 0; i < this.selPoints_.length; i++) {
-      if (!isOK(this.selPoints_[i].canvasy)) continue;
-      if (this.attr_("labelsSeparateLines")) {
-        replace += "<br/>";
+
+    if (this.attr_('showLabelsOnHighlight')) {
+      // Set the status message to indicate the selected point(s)
+      var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
+      var fmtFunc = this.attr_('yValueFormatter');
+      for (var i = 0; i < this.selPoints_.length; i++) {
+        if (!isOK(this.selPoints_[i].canvasy)) continue;
+        if (this.attr_("labelsSeparateLines")) {
+          replace += "<br/>";
+        }
+        var point = this.selPoints_[i];
+        var c = new RGBColor(this.colors_[i%clen]);
+        var yval = fmtFunc ? fmtFunc(point.yval) : this.round_(point.yval, 2);
+        replace += " <b><font color='" + c.toHex() + "'>"
+                + point.name + "</font></b>:"
+                + yval;
       }
-      var point = this.selPoints_[i];
-      var c = new RGBColor(this.colors_[i%clen]);
-      var yval = fmtFunc ? fmtFunc(point.yval) : this.round_(point.yval, 2);
-      replace += " <b><font color='" + c.toHex() + "'>"
-              + point.name + "</font></b>:"
-              + yval;
+      this.attr_("labelsDiv").innerHTML = replace;
     }
-    this.attr_("labelsDiv").innerHTML = replace;
 
     // Save last x position for callbacks.
     this.lastx_ = lastx;
