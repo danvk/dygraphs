@@ -92,6 +92,9 @@ Dygraph.DEFAULT_ATTRS = {
   labelsSeparateLines: false,
   labelsKMB: false,
   labelsKMG2: false,
+  staticLabels: false,
+
+  yValueFormatter: null,
 
   strokeWidth: 1.0,
 
@@ -143,8 +146,8 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
  * and interaction &lt;canvas&gt; inside of it. See the constructor for details
  * on the parameters.
+ * @param {Element} div the Element to render the graph into.
  * @param {String | Function} file Source data
- * @param {Array.<String>} labels Names of the data series
  * @param {Object} attrs Miscellaneous other options
  * @private
  */
@@ -782,23 +785,26 @@ Dygraph.prototype.mouseMove_ = function(event) {
   this.selPoints_ = [];
   for (var i = 0; i < points.length; i++) {
     if (points[i].xval == lastx) {
-      this.selPoints_.push(points[i]);
+      // Clone the point.
+      var p = {};
+      for (var k in points[i]) {
+        p[k] = points[i][k];
+      }
+      this.selPoints_.push(p);
+    }
+  }
+
+  if (this.attr_("stackedGraph")) {
+    // "unstack" the points.
+    var cumulative_sum = 0;
+    for (var j = this.selPoints_.length - 1; j >= 0; j--) {
+      this.selPoints_[j].yval -= cumulative_sum;
+      cumulative_sum += this.selPoints_[j].yval;
     }
   }
 
   if (this.attr_("highlightCallback")) {
-    var callbackPoints = this.selPoints_.map(
-        function(p) { return {xval: p.xval, yval: p.yval, name: p.name} });
-    if (this.attr_("stackedGraph")) {
-      // "unstack" the points.
-      var cumulative_sum = 0;
-      for (var j = callbackPoints.length - 1; j >= 0; j--) {
-        callbackPoints[j].yval -= cumulative_sum;
-        cumulative_sum += callbackPoints[j].yval;
-      }
-    }
-
-    this.attr_("highlightCallback")(event, lastx, callbackPoints);
+    this.attr_("highlightCallback")(event, lastx, this.selPoints_);
   }
 
   // Clear the previously drawn vertical, if there is one
@@ -811,11 +817,12 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var isOK = function(x) { return x && !isNaN(x); };
 
-  if (this.selPoints_.length > 0) {
+  if (this.selPoints_.length > 0 && !this.attr_('staticLabels')) {
     var canvasx = this.selPoints_[0].canvasx;
 
     // Set the status message to indicate the selected point(s)
     var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
+    var fmtFunc = this.attr_('yValueFormatter');
     var clen = this.colors_.length;
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
@@ -824,9 +831,10 @@ Dygraph.prototype.mouseMove_ = function(event) {
       }
       var point = this.selPoints_[i];
       var c = new RGBColor(this.colors_[i%clen]);
+      var yval = fmtFunc ? fmtFunc(point.yval) : this.round_(point.yval, 2);
       replace += " <b><font color='" + c.toHex() + "'>"
               + point.name + "</font></b>:"
-              + this.round_(point.yval, 2);
+              + yval;
     }
     this.attr_("labelsDiv").innerHTML = replace;
 

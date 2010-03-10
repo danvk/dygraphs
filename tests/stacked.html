@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>stacked</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Chart with a stacked graph:</p>
+    <div id="graphdiv"></div>
+
+    <script type="text/javascript">
+      g = new Dygraph(document.getElementById("graphdiv"),
+                      data,
+                      { stackedGraph: true });
+    </script>
+  </body>
+</html>
