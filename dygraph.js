@@ -904,13 +904,17 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var cumulative_sum = 0;  // used only if we have a stackedGraph.
   var l = points.length;
   var isStacked = this.attr_("stackedGraph");
-  for (var i = l - 1; i >= 0; i--) {
-    if (points[i].xval == lastx) {
-      if (!isStacked) {
-        this.selPoints_.unshift(points[i]);
-      } else {
-        // Clone the point, since we need to 'unstack' it below. Stacked points
-        // are in reverse order.
+  if (!this.attr_("stackedGraph")) {
+    for (var i = 0; i < l; i++) {
+      if (points[i].xval == lastx) {
+        this.selPoints_.push(points[i]);
+      }
+    }
+  } else {
+    // Stacked points need to be examined in reverse order.
+    for (var i = l - 1; i >= 0; i--) {
+      if (points[i].xval == lastx) {
+        // Clone the point, since we need to 'unstack' it below.
         var p = {};
         for (var k in points[i]) {
           p[k] = points[i][k];
