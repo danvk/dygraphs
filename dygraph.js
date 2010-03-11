@@ -94,7 +94,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: null,
+  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
 
   strokeWidth: 1.0,
 
@@ -902,9 +902,10 @@ Dygraph.prototype.mouseMove_ = function(event) {
   this.selPoints_ = [];
   var cumulative_sum = 0;  // used only if we have a stackedGraph.
   var l = points.length;
+  var isStacked = this.attr_("stackedGraph");
   for (var i = 0; i < l; i++) {
     if (points[i].xval == lastx) {
-      if (!this.attr_("stackedGraph")) {
+      if (!isStacked) {
         this.selPoints_.push(points[i]);
       } else {
         // Clone the point, since we need to 'unstack' it below. Stacked points
@@ -967,7 +968,7 @@ Dygraph.prototype.updateSelection_ = function() {
         }
         var point = this.selPoints_[i];
         var c = new RGBColor(this.colors_[i%clen]);
-        var yval = fmtFunc ? fmtFunc(point.yval) : this.round_(point.yval, 2);
+        var yval = fmtFunc(point.yval);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
                 + yval;
@@ -1122,7 +1123,7 @@ Dygraph.dateString_ = function(date, self) {
  * @return {Number} The rounded number
  * @private
  */
-Dygraph.prototype.round_ = function(num, places) {
+Dygraph.round_ = function(num, places) {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
 };
@@ -1398,13 +1399,13 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
-    var label = self.round_(tickV, 2);
+    var label = Dygraph.round_(tickV, 2);
     if (k_labels.length) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = self.round_(tickV / n, 1) + k_labels[j];
+          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
           break;
         }
       }
