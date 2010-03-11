@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Custom underlay callback</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Should draw a two-colored background, split horizontally at 2.25:</p>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+
+    <div id="status" style="width:100%; height:200px;"></div>
+
+    <script type="text/javascript">
+      s = document.getElementById("status");
+
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              showRoller: true,
+              errorBars: true,
+
+              underlayCallback: function(canvas, area, layout) {
+                var splitHeight = area.h * (layout.yscale * (2.25 - layout.minyval));
+                canvas.fillStyle = 'pink';
+                canvas.fillRect(area.x, area.y + area.h, area.w, -splitHeight);
+                canvas.fillStyle = 'lightblue';
+                canvas.fillRect(area.x, 0, area.w, area.y + area.h - splitHeight);
+              }
+            }
+          );
+    </script>
+  </body>
+</html>

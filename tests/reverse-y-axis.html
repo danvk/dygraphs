@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>demo</title>
+    <title>reverse y-axis</title>
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
@@ -9,8 +9,9 @@
     <script type="text/javascript" src="../dygraph.js"></script>
   </head>
   <body>
-    <h2>Demo</h2>
-    <font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</font><br/>
+    <h2>Reverse y-axis</h2>
+    <font size=-1>This test uses the same data as the <a
+        href='demo.html'>demo</a> test, but reverses the y-axis.</font><br/>
     <table><tr><td>
     <div id="demodiv"></div>
     </td><td valign=top>
@@ -45,7 +46,8 @@
                          "rgba(50,50,200,0.4)"],
                 padding: {left: 40, right: 30, top: 15, bottom: 15},
                 width: 480,
-                height: 320
+                height: 320,
+                valueRange: [3000, 0]  // Reverse y-axis
               }
           );
     </script>

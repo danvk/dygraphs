@@ -85,9 +85,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       if (point.y >= 1.0) {
         point.y = 1.0;
       }
-      if ((point.x >= 0.0) && (point.x <= 1.0)) {
-        this.points.push(point);
-      }
+      this.points.push(point);
     }
   }
 };
@@ -189,6 +187,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     "drawXGrid": true,
     "gridLineColor": "rgb(128,128,128)",
     "fillAlpha": 0.15,
+    "underlayCallback": null
   };
   Dygraph.update(this.options, options);
 
@@ -278,6 +277,11 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
 DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
+
+  if (this.options.underlayCallback) {
+    this.options.underlayCallback(ctx, this.area, this.layout);
+  }
+
   if (this.options.drawYGrid) {
     var ticks = this.layout.yticks;
     ctx.save();
@@ -459,6 +463,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
   var setCount = setNames.length;
 
+  this.colors = {}
+  for (var i = 0; i < setCount; i++) {
+    this.colors[setNames[i]] = colorScheme[i % colorCount];
+  }
+
   // Update Points
   // TODO(danvk): here
   for (var i = 0; i < this.layout.points.length; i++) {
@@ -478,13 +487,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
-      var color = colorScheme[i % colorCount];
+      var color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = this.options.strokeWidth;
-      var prevX = -1;
+      var prevX = NaN;
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
@@ -499,7 +508,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
-            prevX = -1;
+            prevX = NaN;
             continue;
           }
           // TODO(danvk): here
@@ -507,7 +516,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                         point.y + point.errorMinus * yscale ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (prevX >= 0) {
+          if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
@@ -527,13 +536,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var setName = setNames[i];
       var setNameLast;
       if (i>0) setNameLast = setNames[i-1];
-      var color = colorScheme[i % colorCount];
+      var color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = this.options.strokeWidth;
-      var prevX = -1;
+      var prevX = NaN;
       var prevYs = [-1, -1];
       var count = 0;
       var yscale = this.layout.yscale;
@@ -548,7 +557,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
-            prevX = -1;
+            prevX = NaN;
             continue;
           }
           var pX = 1.0 + this.layout.minyval * this.layout.yscale;
@@ -557,7 +566,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           var newYs = [ point.y, pX ];
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (prevX >= 0) {
+          if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
@@ -575,7 +584,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
-    var color = colorScheme[i%colorCount];
+    var color = this.colors[setName];
 
     // setup graphics context
     context.save();

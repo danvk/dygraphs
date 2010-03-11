@@ -119,6 +119,7 @@ Dygraph.DEFAULT_ATTRS = {
   customBars: false,
   fillGraph: false,
   fillAlpha: 0.15,
+  connectSeparatedPoints: false,
 
   stackedGraph: false,
   hideOverlayOnMouseOut: true
@@ -165,6 +166,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.dateWindow_ = attrs.dateWindow || null;
   this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
+  this.is_initial_draw_ = true;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -190,6 +192,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     this.height_ = (this.height_ * self.innerHeight / 100) - 10;
   }
 
+  // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs['stackedGraph']) {
     attrs['fillGraph'] = true;
     // TODO(nikhilk): Add any other stackedGraph checks here.
@@ -209,6 +212,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.attrs_ = {};
   Dygraph.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
+
+  this.boundaryIds_ = [];
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
@@ -266,6 +271,71 @@ Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
 };
 
+/**
+ * Returns the currently-visible x-range. This can be affected by zooming,
+ * panning or a call to updateOptions.
+ * Returns a two-element array: [left, right].
+ * If the Dygraph has dates on the x-axis, these will be millis since epoch.
+ */
+Dygraph.prototype.xAxisRange = function() {
+  if (this.dateWindow_) return this.dateWindow_;
+
+  // The entire chart is visible.
+  var left = this.rawData_[0][0];
+  var right = this.rawData_[this.rawData_.length - 1][0];
+  return [left, right];
+};
+
+/**
+ * Returns the currently-visible y-range. This can be affected by zooming,
+ * panning or a call to updateOptions.
+ * Returns a two-element array: [bottom, top].
+ */
+Dygraph.prototype.yAxisRange = function() {
+  return this.displayedYRange_;
+};
+
+/**
+ * Convert from data coordinates to canvas/div X/Y coordinates.
+ * Returns a two-element array: [X, Y]
+ */
+Dygraph.prototype.toDomCoords = function(x, y) {
+  var ret = [null, null];
+  var area = this.plotter_.area;
+  if (x !== null) {
+    var xRange = this.xAxisRange();
+    ret[0] = area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
+  }
+
+  if (y !== null) {
+    var yRange = this.yAxisRange();
+    ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
+  }
+
+  return ret;
+};
+
+// TODO(danvk): use these functions throughout dygraphs.
+/**
+ * Convert from canvas/div coords to data coordinates.
+ * Returns a two-element array: [X, Y]
+ */
+Dygraph.prototype.toDataCoords = function(x, y) {
+  var ret = [null, null];
+  var area = this.plotter_.area;
+  if (x !== null) {
+    var xRange = this.xAxisRange();
+    ret[0] = xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+  }
+
+  if (y !== null) {
+    var yRange = this.yAxisRange();
+    ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
+  }
+
+  return ret;
+};
+
 Dygraph.addEvent = function(el, evt, fn) {
   var normed_fn = function(e) {
     if (!e) var e = window.event;
@@ -276,6 +346,13 @@ Dygraph.addEvent = function(el, evt, fn) {
   } else {  // IE
     el.attachEvent('on' + evt, normed_fn);
   }
+};
+
+Dygraph.clipCanvas_ = function(cnv, clip) {
+  var ctx = cnv.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(clip.left, clip.top, clip.width, clip.height);
+  ctx.clip();
 };
 
 /**
@@ -293,8 +370,16 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv.style.height = this.height_ + "px";
   enclosing.appendChild(this.graphDiv);
 
+  var clip = {
+    top: 0,
+    left: this.attr_("yAxisLabelWidth") + 2 * this.attr_("axisTickSize")
+  };
+  clip.width = this.width_ - clip.left - this.attr_("rightGap");
+  clip.height = this.height_ - this.attr_("axisLabelFontSize")
+      - 2 * this.attr_("axisTickSize");
+  this.clippingArea_ = clip;
+
   // Create the canvas for interactive parts of the chart.
-  // this.canvas_ = document.createElement("canvas");
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
   this.canvas_.width = this.width_;
@@ -305,6 +390,10 @@ Dygraph.prototype.createInterface_ = function() {
 
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+
+  // Make sure we don't overdraw.
+  Dygraph.clipCanvas_(this.hidden_, this.clippingArea_);
+  Dygraph.clipCanvas_(this.canvas_, this.clippingArea_);
 
   var dygraph = this;
   Dygraph.addEvent(this.hidden_, 'mousemove', function(e) {
@@ -337,7 +426,35 @@ Dygraph.prototype.createInterface_ = function() {
   this.createStatusMessage_();
   this.createRollInterface_();
   this.createDragInterface_();
-}
+};
+
+/**
+ * Detach DOM elements in the dygraph and null out all data references.
+ * Calling this when you're done with a dygraph can dramatically reduce memory
+ * usage. See, e.g., the tests/perf.html example.
+ */
+Dygraph.prototype.destroy = function() {
+  var removeRecursive = function(node) {
+    while (node.hasChildNodes()) {
+      removeRecursive(node.firstChild);
+      node.removeChild(node.firstChild);
+    }
+  };
+  removeRecursive(this.maindiv_);
+
+  var nullOut = function(obj) {
+    for (var n in obj) {
+      if (typeof(obj[n]) === 'object') {
+        obj[n] = null;
+      }
+    }
+  };
+
+  // These may not all be necessary, but it can't hurt...
+  nullOut(this.layout_);
+  nullOut(this.plotter_);
+  nullOut(this);
+};
 
 /**
  * Creates the canvas containing the PlotKit graph. Only plotkit ever draws on
@@ -347,9 +464,11 @@ Dygraph.prototype.createInterface_ = function() {
  * @private
  */
 Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
-  // var h = document.createElement("canvas");
   var h = Dygraph.createCanvas();
   h.style.position = "absolute";
+  // TODO(danvk): h should be offset from canvas. canvas needs to include
+  // some extra area to make it easier to zoom in on the far left and far
+  // right. h needs to be precisely the plot area, so that clipping occurs.
   h.style.top = canvas.style.top;
   h.style.left = canvas.style.left;
   h.width = this.width_;
@@ -439,33 +558,40 @@ Dygraph.prototype.getColors = function() {
   return this.colors_;
 };
 
-// The following functions are from quirksmode.org
+// The following functions are from quirksmode.org with a modification for Safari from
+// http://blog.firetree.net/2005/07/04/javascript-find-position/
 // http://www.quirksmode.org/js/findpos.html
 Dygraph.findPosX = function(obj) {
   var curleft = 0;
-  if (obj.offsetParent) {
-    while (obj.offsetParent) {
+  if(obj.offsetParent)
+    while(1)
+    {
       curleft += obj.offsetLeft;
+      if(!obj.offsetParent)
+        break;
       obj = obj.offsetParent;
     }
-  }
-  else if (obj.x)
+  else if(obj.x)
     curleft += obj.x;
   return curleft;
 };
 
 Dygraph.findPosY = function(obj) {
   var curtop = 0;
-  if (obj.offsetParent) {
-    while (obj.offsetParent) {
+  if(obj.offsetParent)
+    while(1)
+    {
       curtop += obj.offsetTop;
+      if(!obj.offsetParent)
+        break;
       obj = obj.offsetParent;
     }
-  }
-  else if (obj.y)
+  else if(obj.y)
     curtop += obj.y;
   return curtop;
 };
+
+
 
 /**
  * Create the div that contains information on the selected point(s)
@@ -731,19 +857,10 @@ Dygraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
  */
 Dygraph.prototype.doZoom_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
-  var points = this.layout_.points;
-  var minDate = null;
-  var maxDate = null;
-  // Find the nearest [minDate, maxDate] that contains [lowX, highX]
-  for (var i = 0; i < points.length; i++) {
-    var cx = points[i].canvasx;
-    var x = points[i].xval;
-    if (cx < lowX  && (minDate == null || x > minDate)) minDate = x;
-    if (cx > highX && (maxDate == null || x < maxDate)) maxDate = x;
-  }
-  // Use the extremes if either is missing
-  if (minDate == null) minDate = points[0].xval;
-  if (maxDate == null) maxDate = points[points.length-1].xval;
+  var r = this.toDataCoords(lowX, null);
+  var minDate = r[0];
+  r = this.toDataCoords(highX, null);
+  var maxDate = r[0];
 
   this.dateWindow_ = [minDate, maxDate];
   this.drawGraph_(this.rawData_);
@@ -772,7 +889,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var idx = -1;
   for (var i = 0; i < points.length; i++) {
     var dist = Math.abs(points[i].canvasx - canvasx);
-    if (dist > minDist) break;
+    if (dist > minDist) continue;
     minDist = dist;
     idx = i;
   }
@@ -783,30 +900,46 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   // Extract the points we've selected
   this.selPoints_ = [];
-  for (var i = 0; i < points.length; i++) {
+  var cumulative_sum = 0;  // used only if we have a stackedGraph.
+  var l = points.length;
+  for (var i = 0; i < l; i++) {
     if (points[i].xval == lastx) {
-      // Clone the point.
-      var p = {};
-      for (var k in points[i]) {
-        p[k] = points[i][k];
+      if (!this.attr_("stackedGraph")) {
+        this.selPoints_.push(points[i]);
+      } else {
+        // Clone the point, since we need to 'unstack' it below. Stacked points
+        // are in reverse order.
+        var p = {};
+        for (var k in points[l - i - 1]) {
+          p[k] = points[l - i -1][k];
+        }
+        p.yval -= cumulative_sum;
+        cumulative_sum += p.yval;
       }
-      this.selPoints_.push(p);
-    }
-  }
-
-  if (this.attr_("stackedGraph")) {
-    // "unstack" the points.
-    var cumulative_sum = 0;
-    for (var j = this.selPoints_.length - 1; j >= 0; j--) {
-      this.selPoints_[j].yval -= cumulative_sum;
-      cumulative_sum += this.selPoints_[j].yval;
     }
   }
 
   if (this.attr_("highlightCallback")) {
-    this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+    var px = this.lastHighlightCallbackX;
+    if (px !== null && lastx != px) {
+      // only fire if the selected point has changed.
+      this.lastHighlightCallbackX = lastx;
+      this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+    }
   }
 
+  // Save last x position for callbacks.
+  this.lastx_ = lastx;
+
+  this.updateSelection_();
+};
+
+/**
+ * Draw dots over the selectied points in the data series. This function
+ * takes care of cleanup of previously-drawn dots.
+ * @private
+ */
+Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
   var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
@@ -819,12 +952,14 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   if (this.selPoints_.length > 0) {
     var canvasx = this.selPoints_[0].canvasx;
+
+    // Set the status message to indicate the selected point(s)
+    var replace = this.attr_('xValueFormatter')(this.lastx_, this) + ":";
+    var fmtFunc = this.attr_('yValueFormatter');
     var clen = this.colors_.length;
 
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
-      var replace = this.attr_('xValueFormatter')(lastx, this) + ":";
-      var fmtFunc = this.attr_('yValueFormatter');
       for (var i = 0; i < this.selPoints_.length; i++) {
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
@@ -837,19 +972,17 @@ Dygraph.prototype.mouseMove_ = function(event) {
                 + point.name + "</font></b>:"
                 + yval;
       }
+
       this.attr_("labelsDiv").innerHTML = replace;
     }
-
-    // Save last x position for callbacks.
-    this.lastx_ = lastx;
 
     // Draw colored circles over the center of each selected point
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
-      if (!isOK(this.selPoints_[i%clen].canvasy)) continue;
+      if (!isOK(this.selPoints_[i].canvasy)) continue;
       ctx.beginPath();
-      ctx.fillStyle = this.colors_[i%clen];
-      ctx.arc(canvasx, this.selPoints_[i%clen].canvasy, circleSize,
+      ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
+      ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
               0, 2 * Math.PI, false);
       ctx.fill();
     }
@@ -860,18 +993,80 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
+ * Set manually set selected dots, and display information about them
+ * @param int row number that should by highlighted
+ *            false value clears the selection
+ * @public
+ */
+Dygraph.prototype.setSelection = function(row) {
+  // Extract the points we've selected
+  this.selPoints_ = [];
+  var pos = 0;
+
+  if (row !== false) {
+    row = row-this.boundaryIds_[0][0];
+  }
+
+  if (row !== false && row >= 0) {
+    for (var i in this.layout_.datasets) {
+      if (row < this.layout_.datasets[i].length) {
+        this.selPoints_.push(this.layout_.points[pos+row]);
+      }
+      pos += this.layout_.datasets[i].length;
+    }
+  }
+
+  if (this.selPoints_.length) {
+    this.lastx_ = this.selPoints_[0].xval;
+    this.updateSelection_();
+  } else {
+    this.lastx_ = -1;
+    this.clearSelection();
+  }
+
+};
+
+/**
  * The mouse has left the canvas. Clear out whatever artifacts remain
  * @param {Object} event the mouseout event from the browser.
  * @private
  */
 Dygraph.prototype.mouseOut_ = function(event) {
   if (this.attr_("hideOverlayOnMouseOut")) {
-    // Get rid of the overlay data
-    var ctx = this.canvas_.getContext("2d");
-    ctx.clearRect(0, 0, this.width_, this.height_);
-    this.attr_("labelsDiv").innerHTML = "";
+    this.clearSelection();
   }
 };
+
+/**
+ * Remove all selection from the canvas
+ * @public
+ */
+Dygraph.prototype.clearSelection = function() {
+  // Get rid of the overlay data
+  var ctx = this.canvas_.getContext("2d");
+  ctx.clearRect(0, 0, this.width_, this.height_);
+  this.attr_("labelsDiv").innerHTML = "";
+  this.selPoints_ = [];
+  this.lastx_ = -1;
+}
+
+/**
+ * Returns the number of the currently selected row
+ * @return int row number, of -1 if nothing is selected
+ * @public
+ */
+Dygraph.prototype.getSelection = function() {
+  if (!this.selPoints_ || this.selPoints_.length < 1) {
+    return -1;
+  }
+
+  for (var row=0; row<this.layout_.points.length; row++ ) {
+    if (this.layout_.points[row].x == this.selPoints_[0].x) {
+      return row + this.boundaryIds_[0][0];
+    }
+  }
+  return -1;
+}
 
 Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
@@ -890,10 +1085,8 @@ Dygraph.prototype.hmsString_ = function(date) {
     return zeropad(d.getHours()) + ":" +
            zeropad(d.getMinutes()) + ":" +
            zeropad(d.getSeconds());
-  } else if (d.getMinutes()) {
-    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   } else {
-    return zeropad(d.getHours());
+    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   }
 }
 
@@ -1177,7 +1370,7 @@ Dygraph.numericTicks = function(minV, maxV, self) {
       scale = base_scale * mults[j];
       low_val = Math.floor(minV / scale) * scale;
       high_val = Math.ceil(maxV / scale) * scale;
-      nTicks = (high_val - low_val) / scale;
+      nTicks = Math.abs(high_val - low_val) / scale;
       var spacing = self.height_ / nTicks;
       // wish I could break out of both loops at once...
       if (spacing > pixelsPerTick) break;
@@ -1198,6 +1391,9 @@ Dygraph.numericTicks = function(minV, maxV, self) {
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
+
+  // Allow reverse y-axis if it's explicitly requested.
+  if (low_val > high_val) scale *= -1;
 
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
@@ -1281,39 +1477,64 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(data) {
+  // This is used to set the second parameter to drawCallback, below.
+  var is_initial_draw = this.is_initial_draw_;
+  this.is_initial_draw_ = false;
+
   var minY = null, maxY = null;
   this.layout_.removeAllDatasets();
   this.setColors_();
   this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
+  var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
+
   // For stacked series.
   var cumulative_y = [];
-  var datasets = [];
+  var stacked_datasets = [];
 
   // Loop over all fields in the dataset
-
   for (var i = 1; i < data[0].length; i++) {
     if (!this.visibility()[i - 1]) continue;
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
-      var date = data[j][0];
-      series[j] = [date, data[j][i]];
+      if (data[j][i] || !connectSeparatedPoints) {
+        var date = data[j][0];
+        series.push([date, data[j][i]]);
+      }
     }
     series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
+    // Because there can be lines going to points outside of the visible area,
+    // we actually prune to visible points, plus one on either side.
     var bars = this.attr_("errorBars") || this.attr_("customBars");
     if (this.dateWindow_) {
       var low = this.dateWindow_[0];
       var high= this.dateWindow_[1];
       var pruned = [];
+      // TODO(danvk): do binary search instead of linear search.
+      // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
+      var firstIdx = null, lastIdx = null;
       for (var k = 0; k < series.length; k++) {
-        if (series[k][0] >= low && series[k][0] <= high) {
-          pruned.push(series[k]);
+        if (series[k][0] >= low && firstIdx === null) {
+          firstIdx = k;
+        }
+        if (series[k][0] <= high) {
+          lastIdx = k;
         }
       }
+      if (firstIdx === null) firstIdx = 0;
+      if (firstIdx > 0) firstIdx--;
+      if (lastIdx === null) lastIdx = series.length - 1;
+      if (lastIdx < series.length - 1) lastIdx++;
+      this.boundaryIds_[i-1] = [firstIdx, lastIdx];
+      for (var k = firstIdx; k <= lastIdx; k++) {
+        pruned.push(series[k]);
+      }
       series = pruned;
+    } else {
+      this.boundaryIds_[i-1] = [0, series.length-1];
     }
 
     var extremes = this.extremeValues_(series);
@@ -1344,16 +1565,16 @@ Dygraph.prototype.drawGraph_ = function(data) {
         if (!maxY || cumulative_y[series[j][0]] > maxY)
           maxY = cumulative_y[series[j][0]];
       }
-      datasets.push([this.attr_("labels")[i], vals]);
+      stacked_datasets.push([this.attr_("labels")[i], vals]);
       //this.layout_.addDataset(this.attr_("labels")[i], vals);
     } else {
       this.layout_.addDataset(this.attr_("labels")[i], series);
     }
   }
 
-  if (datasets.length > 0) {
-    for (var i = (datasets.length - 1); i >= 0; i--) {
-      this.layout_.addDataset(datasets[i][0], datasets[i][1]);
+  if (stacked_datasets.length > 0) {
+    for (var i = (stacked_datasets.length - 1); i >= 0; i--) {
+      this.layout_.addDataset(stacked_datasets[i][0], stacked_datasets[i][1]);
     }
   }
 
@@ -1361,6 +1582,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   // set explicitly by the user.
   if (this.valueRange_ != null) {
     this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
+    this.displayedYRange_ = this.valueRange_;
   } else {
     // This affects the calculation of span, below.
     if (this.attr_("includeZero") && minY > 0) {
@@ -1384,6 +1606,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
     }
 
     this.addYTicks_(minAxisY, maxAxisY);
+    this.displayedYRange_ = [minAxisY, maxAxisY];
   }
 
   this.addXTicks_();
@@ -1395,6 +1618,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                          this.canvas_.height);
+
+  if (this.attr_("drawCallback") !== null) {
+    this.attr_("drawCallback")(this, is_initial_draw);
+  }
 };
 
 /**
@@ -1543,7 +1770,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
 Dygraph.dateParser = function(dateStr, self) {
   var dateStrSlashed;
   var d;
-  if (dateStr.length == 10 && dateStr.search("-") != -1) {  // e.g. '2009-07-12'
+  if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
@@ -1732,8 +1959,9 @@ Dygraph.prototype.parseArray_ = function(data) {
         return null;
       }
       if (parsedData[i][0] == null
-          || typeof(parsedData[i][0].getTime) != 'function') {
-        this.error("x value in row " << (1 + i) << " is not a Date");
+          || typeof(parsedData[i][0].getTime) != 'function'
+          || isNaN(parsedData[i][0].getTime())) {
+        this.error("x value in row " + (1 + i) + " is not a Date");
         return null;
       }
       parsedData[i][0] = parsedData[i][0].getTime();
@@ -1935,7 +2163,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
 
   // TODO(danvk): this doesn't match the constructor logic
   this.layout_.updateOptions({ 'errorBars': this.attr_("errorBars") });
-  if (attrs['file'] && attrs['file'] != this.file_) {
+  if (attrs['file']) {
     this.file_ = attrs['file'];
     this.start_();
   } else {
@@ -2044,6 +2272,41 @@ Dygraph.GVizChart = function(container) {
 Dygraph.GVizChart.prototype.draw = function(data, options) {
   this.container.innerHTML = '';
   this.date_graph = new Dygraph(this.container, data, options);
+}
+
+/**
+ * Google charts compatible setSelection
+ * Only row selection is supported, all points in the row will be highlighted
+ * @param {Array} array of the selected cells
+ * @public
+ */
+Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
+  var row = false;
+  if (selection_array.length) {
+    row = selection_array[0].row;
+  }
+  this.date_graph.setSelection(row);
+}
+
+/**
+ * Google charts compatible getSelection implementation
+ * @return {Array} array of the selected cells
+ * @public
+ */
+Dygraph.GVizChart.prototype.getSelection = function() {
+  var selection = [];
+
+  var row = this.date_graph.getSelection();
+
+  if (row < 0) return selection;
+
+  col = 1;
+  for (var i in this.date_graph.layout_.datasets) {
+    selection.push({row: row, column: col});
+    col++;
+  }
+
+  return selection;
 }
 
 // Older pages may still use this name.
