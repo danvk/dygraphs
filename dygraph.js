@@ -527,10 +527,11 @@ Dygraph.prototype.setColors_ = function() {
   if (!colors) {
     var sat = this.attr_('colorSaturation') || 1.0;
     var val = this.attr_('colorValue') || 0.5;
+    var half = Math.ceil(num / 2);
     for (var i = 1; i <= num; i++) {
       if (!this.visibility()[i-1]) continue;
       // alternate colors for high contrast.
-      var idx = i - parseInt(i % 2 ? i / 2 : (i - num)/2, 10);
+      var idx = i % 2 ? Math.ceil(i / 2) : (half + i / 2);
       var hue = (1.0 * idx/ (1 + num));
       this.colors_.push(Dygraph.hsvToRGB(hue, sat, val));
     }
