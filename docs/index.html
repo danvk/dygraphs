@@ -490,32 +490,42 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><strong>includeZero</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data.</td>
+        <td>Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data.
+        <br/>Tests: no-range numeric-gviz small-range-zero
+          </td>
         </tr>
         <tr>
           <td><strong>rollPeriod</strong></td>
           <td><code>integer &gt;= 1</code></td>
           <td><code>1</code></td>
-          <td>Number of days over which to average data. Discussed extensively above.</td>
+          <td>Number of days over which to average data. Discussed extensively above.
+        <br/>Tests: demo two-series noise
+        </td>
         </tr>
         <tr>
           <td><strong>showRoller</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>If the rolling average period text box should be shown.</td>
+          <td>If the rolling average period text box should be shown.
+          <br/>Tests: callback crosshair fractions isolated-points numeric-gviz underlay-callback
+          </td>
         </tr>
         <tr>
           <td><strong>colors</strong></td>
           <td><code>['red', '#00FF00']</code></td>
           <td><code></code></td>
-          <td>List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used.</td>
+          <td>List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used.
+          <br/>Tests: color-visibility demo
+          </td>
         </tr>
         <tr>
           <td><strong>fillGraph</strong></td>
           <td><code>boolean<br/></code></td>
           <td><code>false</code></td>
           <td>Should the area underneath the graph be filled? This option is not
-          compatible with error bars.</td>
+          compatible with error bars.
+          <br/>Tests: fillGraph
+          </td>
         </tr>
         <tr>
           <td><strong>visibility</strong></td>
@@ -524,111 +534,145 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td>Which series should initially be visible? Once the Dygraph has
           been constructed, you can access and modify the visibility of each
           series using the <code>visibility</code> and
-          <code>setVisibility</code> methods. See the <a
-          href="tests/visibility.html">visibility demo</a> for an example.</td>
+          <code>setVisibility</code> methods.
+          <br/>Tests: visibility color-visibility
           </td>
         </tr>
         <tr>
           <td><strong>colorSaturation</strong></td>
           <td><code>0.0 - 1.0</code></td>
           <td><code>1.0</code></td>
-          <td>If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors.</td>
+          <td>If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>colorValue</strong></td>
           <td><code>float (0.0 &mdash; 1.0)</code></td>
           <td><code>1.0</code></td>
-          <td>If colors is not specified, value of the data series colors, as in hue/saturation/value. (0.0-1.0, default 0.5)</td>
+          <td>If colors is not specified, value of the data series colors, as in hue/saturation/value. (0.0-1.0, default 0.5)
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>clickCallback</strong></td>
           <td><code>function(e, date){<br>&nbsp;&nbsp;&nbsp;&nbsp;alert(date);<br>}</code></td>
           <td><code>null</code></td>
-          <td>A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked. (default null)</td>
+          <td>A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked. (default null)
+          <br/>Tests: callback
+          </td>
         </tr>
         <tr>
           <td><strong>zoomCallback</strong></td>
           <td><code>function(minDate,<br/>maxDate){}</code></td>
           <td><code>null</code></td>
-          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.</td>
+          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.
+          <br/>Tests: callback
+          </td>
         </tr>
         <tr>
           <td><strong>strokeWidth</strong></td>
           <td><code>integer</code></td>
           <td><code>1</code></td>
-          <td>Width of the data lines. This can be used to increase the contrast or some graphs.</td>
+          <td>Width of the data lines. This can be used to increase the contrast or some graphs.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>dateWindow</strong></td>
           <td><code>[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]</code></td>
           <td rowspan="2"><code>Full range of the<br/> input is shown</code></td>
-          <td>Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch.</td>
+          <td>Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch.
+          <br/>Tests: dateWindow link-interaction
+          </td>
         </tr>
         <tr>
           <td><strong>valueRange</strong></td>
           <td><code>[10, 110]</code></td>
-          <td>Explicitly set the vertical range of the graph to [low, high].</td>
+          <td>Explicitly set the vertical range of the graph to [low, high].
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>labelsSeparateLines</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>.</td>
+          <td>Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>.
+          <br/>Tests: customLabel demo
+          </td>
         </tr>
         <tr>
           <td><strong>labelsDiv</strong></td>
           <td><code>document.<br/>getElementById('foo')</code></td>
           <td><code>null</code></td>
-          <td>Show data labels in an external div, rather than on the graph.</td>
+          <td>Show data labels in an external div, rather than on the graph.
+          <br/>Tests: demo label-div
+          </td>
         </tr>
         <tr>
           <td><strong>labelsKMB</strong></td>
           <td><code>true</code></td>
           <td><code>false</code></td>
-          <td>Show K/M/B for thousands/millions/billions on y-axis.</td>
+          <td>Show K/M/B for thousands/millions/billions on y-axis.
+          <br/>Tests: demo labelsKMB no-range
+          </td>
         </tr>
         <tr>
           <td><strong>labelsKMG2</strong></td>
           <td><code>true</code></td>
           <td><code>false</code></td>
           <td>Show k/M/G for kilo/Mega/Giga on y-axis. This is different than
-          <code>labelsKMB</code> in that it uses base 2, not 10.</td>
+          <code>labelsKMB</code> in that it uses base 2, not 10.
+          <br/>Tests: labelsKMB
+          </td>
         </tr>
         <tr>
           <td><strong>labelsDivWidth</strong></td>
           <td><code>250</code></td>
           <td><code></code></td>
-          <td>Width (in pixels) of the div which shows information on the currently-highlighted points.</td>
+          <td>Width (in pixels) of the div which shows information on the currently-highlighted points.
+          <br/>Tests: customLabel
+          </td>
         </tr>
         <tr>
           <td><strong>labelsDivStyles</strong></td>
           <td><code>{}</code></td>
           <td><code>null</code></td>
-          <td>Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold.</td>
+          <td>Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold.
+          <br/>Tests: border customLabel
+          </td>
         </tr>
         <tr>
           <td><strong>highlightCircleSize</strong></td>
           <td><code>integer</code></td>
           <td><code>3</code></td>
-          <td>The size in pixels of the dot drawn over highlighted points.</td>
+          <td>The size in pixels of the dot drawn over highlighted points.
+          <br/>Tests: grid_dot
+          </td>
         </tr>
         <tr>
           <td><strong>drawPoints</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart.</td>
+          <td>Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart.
+          <br/>Tests: draw-points
+          </td>
         </tr>
         <tr>
           <td><strong>pointSize</strong></td>
           <td><code>interger</code></td>
           <td><code>1</code></td>
-          <td>The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.</td>
+          <td>The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>pixelsPerXLabel</strong></td>
           <td rowspan="2"><code>integer</code></td>
           <td><code>60</code></td>
-          <td rowspan="2">Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks.</td>
+          <td rowspan="2">Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks.
+          <br/>Tests: spacing
+          </td>
         </tr>
         <tr>
           <td><strong>pixelsPerYLabel</strong></td>
@@ -638,7 +682,9 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><strong>xAxisLabelWidth</strong></td>
           <td rowspan="2"><code>integer</code></td>
           <td><code></code></td>
-          <td rowspan="2">Width (in pixels) of the x- and y-axis labels.</td>
+          <td rowspan="2">Width (in pixels) of the x- and y-axis labels.
+          <br/>Tests: customLabel
+          </td>
         </tr>
         <tr>
           <td><strong>yAxisLabelWidth</strong></td>
@@ -648,43 +694,57 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><strong>axisLabelFontSize</strong></td>
           <td><code>integer</code></td>
           <td><code>14</code></td>
-          <td>Size of the font (in pixels) to use in the axis labels, both x- and y-axis.</td>
+          <td>Size of the font (in pixels) to use in the axis labels, both x- and y-axis.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>rightGap</strong></td>
           <td><code>integer</code></td>
           <td><code></code></td>
-          <td>Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point.</td>
+          <td>Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>errorBars</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>Does the data contain standard deviations? Setting this to true alters the input format (see above).</td>
+          <td>Does the data contain standard deviations? Setting this to true alters the input format (see above).
+          <br/>Tests: noise customLabel draw-points fillGraph fractions
+          </td>
         </tr>
         <tr>
           <td><strong>sigma</strong></td>
           <td><code>integer</code></td>
           <td><code></code></td>
-          <td>When errorBars is set, shade this many standard deviations above/below each point.</td>
+          <td>When errorBars is set, shade this many standard deviations above/below each point.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>fractions</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).</td>
+          <td>When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).
+          <br/>Tests: fractions
+          </td>
         </tr>
         <tr>
           <td><strong>wilsonInterval</strong></td>
           <td><code>boolean</code></td>
           <td><code>true</code></td>
-          <td>Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1.</td>
+          <td>Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1.
+          <br/>Tests: <font color=red>none</font>
+          </td>
         </tr>
         <tr>
           <td><strong>customBars</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
-          <td>When set, parse each CSV cell as "low;middle;high". Error bars will be drawn for each point between low and high, with the series itself going through middle.</td>
+          <td>When set, parse each CSV cell as "low;middle;high". Error bars will be drawn for each point between low and high, with the series itself going through middle.
+          <br/>Tests: custom-bars zero-series
+          </td>
         </tr>
       </tbody>
     </table>
@@ -694,6 +754,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
     <p>Here are a few problems that I've frequently run into while using the dygraphs library.</p>
 
     <ul>
+      <li>If your chart doesn't display, be sure to check your browser's JavaScript error console. dygraphs makes every attempt to log errors and warnings, and these can often guide you in the right direction.</li>
       <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="http://www.getfirebug.com/">Firebug</a>.</li>
       <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYYMMDD, series1, series2, </code>&hellip; . And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
       <li>dygraphs are not happy when placed inside a <code>&lt;center&gt;</code> tag. This applies to the CSS <code>text-align</code> property as well. If you want to center a Dygraph, put it inside a table with <code>align = center</code> set.</li>
