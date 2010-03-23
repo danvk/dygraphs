@@ -57,5 +57,10 @@ padding: 0 10px;
 }
 
 .tests {
-font-size: 80%;
+  font-size: 80%;
+  font-weight: bold;
+}
+.tests a {
+  font-weight: normal;
+  text-decoration: none;
 }
