@@ -474,7 +474,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
     <h2 id="options">Other Options</h2>
 
-    <p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. To see demonstrations of many of these options, browse the <a href="tests/">dygraphs tests</a> directory.</p>
+    <p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. Under each option is a set of links to tests which demonstrate its use.</p>
 
     <table class="thinborder" width="900">
       <thead>
@@ -746,6 +746,56 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <div class="tests">Tests: <a href="tests/custom-bars.html">custom-bars</a> <a href="tests/zero-series.html">zero-series</a> </div>
           </td>
         </tr>
+
+        <tr>
+          <td><strong>drawCallback</strong></td>
+          <td><code>function(dygraph, is_initial)</code></td>
+          <td><code>null</code></td>
+          <td>When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning. The first parameter is the dygraph being drawn. The second is a boolean value indicating whether this is the initial draw.
+          <div class="tests">Tests: callback synchronize</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>gridLineColor</strong></td>
+          <td><code>red, blue</code></td>
+          <td><code>rgb(128,128,128)</code></td>
+          <td>The color of the gridlines.
+          <div class="tests">Tests: grid_dot</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>highlightCallback</strong></td>
+          <td><code>function(event, x, points)</code></td>
+          <td><code>null</td>
+          <td>When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>
+          <div class="tests">Tests: callback crosshair</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>strokeWidth</strong></td>
+          <td><code>0.5, 2.0</code></td>
+          <td><code>1.0</code></td>
+          <td>The width of the lines connecting data points.
+          <div class="tests">Tests: grid_dot</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>width</strong></td>
+          <td rowspan="2"><code>integer</code></td>
+          <td><code>480</code></td>
+          <td rowspan="2">Width/Height (in pixels) of the chart. If the container div has been explicitly sized, these attributes will be ignored.
+          <div class="tests">Tests: demo link-interaction no-range</div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>height</strong></td>
+          <td><code>320</code></td>
+        </tr>
+
       </tbody>
     </table>
 
