@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>stacked</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-combined.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Simple graph:</p>
+    <div id="graphdiv"></div>
+    <p>Stacked graph:</p>
+    <div id="graphdiv2"></div>
+
+    <script type="text/javascript">
+      var g = new Dygraph(document.getElementById("graphdiv"),
+                           data);
+      var g2 = new Dygraph(document.getElementById("graphdiv2"),
+                           data,
+                           { stackedGraph: true });
+    </script>
+  </body>
+</html>

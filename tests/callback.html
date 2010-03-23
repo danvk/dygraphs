@@ -27,6 +27,9 @@
 
     <input type="button" value="Clear list" onclick="javascript:document.getElementById('status').innerHTML=''" />
     <input type="checkbox" id="highlight" checked><label for="highlight"> Show 'highlight' events</label>
+    <input type="checkbox" id="showLabels" checked
+    onclick='g.updateOptions({showLabelsOnHighlight: this.checked});'>
+    <label for="showLabels"> Show Labels on highlight</label>
     <div id="status" style="width:100%; height:200px;"></div>
 
     <script type="text/javascript">
