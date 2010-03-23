@@ -752,7 +752,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>function(dygraph, is_initial)</code></td>
           <td><code>null</code></td>
           <td>When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning. The first parameter is the dygraph being drawn. The second is a boolean value indicating whether this is the initial draw.
-          <div class="tests">Tests: callback synchronize</div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/synchronize.html">synchronize</a> </div>
           </td>
         </tr>
 
@@ -761,7 +761,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>red, blue</code></td>
           <td><code>rgb(128,128,128)</code></td>
           <td>The color of the gridlines.
-          <div class="tests">Tests: grid_dot</div>
+          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
           </td>
         </tr>
 
@@ -770,7 +770,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>function(event, x, points)</code></td>
           <td><code>null</td>
           <td>When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>
-          <div class="tests">Tests: callback crosshair</div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> </div>
           </td>
         </tr>
 
@@ -779,7 +779,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>0.5, 2.0</code></td>
           <td><code>1.0</code></td>
           <td>The width of the lines connecting data points.
-          <div class="tests">Tests: grid_dot</div>
+          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
           </td>
         </tr>
 
@@ -788,7 +788,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td rowspan="2"><code>integer</code></td>
           <td><code>480</code></td>
           <td rowspan="2">Width/Height (in pixels) of the chart. If the container div has been explicitly sized, these attributes will be ignored.
-          <div class="tests">Tests: demo link-interaction no-range</div>
+          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/link-interaction.html">link-interaction</a> <a href="tests/no-range.html">no-range</a> </div>
           </td>
         </tr>
         <tr>
