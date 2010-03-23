@@ -491,7 +491,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
         <td>Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data.
-        <div class="tests">Tests: no-range numeric-gviz small-range-zero</div>
+        <div class="tests">Tests: <a href="tests/no-range.html">no-range</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/small-range-zero.html">small-range-zero</a> </div>
           </td>
         </tr>
         <tr>
@@ -499,7 +499,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>integer &gt;= 1</code></td>
           <td><code>1</code></td>
           <td>Number of days over which to average data. Discussed extensively above.
-        <div class="tests">Tests: demo two-series noise</div>
+        <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/two-series.html">two-series</a> <a href="tests/noise.html">noise</a> </div>
         </td>
         </tr>
         <tr>
@@ -507,7 +507,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>If the rolling average period text box should be shown.
-          <div class="tests">Tests: callback crosshair fractions isolated-points numeric-gviz underlay-callback</div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> <a href="tests/fractions.html">fractions</a> <a href="tests/isolated-points.html">isolated-points</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/underlay-callback.html">underlay-callback</a> </div>
           </td>
         </tr>
         <tr>
@@ -515,7 +515,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>['red', '#00FF00']</code></td>
           <td><code></code></td>
           <td>List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used.
-          <div class="tests">Tests: color-visibility demo</div>
+          <div class="tests">Tests: <a href="tests/color-visibility.html">color-visibility</a> <a href="tests/demo.html">demo</a> </div>
           </td>
         </tr>
         <tr>
@@ -524,7 +524,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>false</code></td>
           <td>Should the area underneath the graph be filled? This option is not
           compatible with error bars.
-          <div class="tests">Tests: fillGraph</div>
+          <div class="tests">Tests: <a href="tests/fillGraph.html">fillGraph</a> </div>
           </td>
         </tr>
         <tr>
@@ -535,7 +535,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           been constructed, you can access and modify the visibility of each
           series using the <code>visibility</code> and
           <code>setVisibility</code> methods.
-          <div class="tests">Tests: visibility color-visibility</div>
+          <div class="tests">Tests: <a href="tests/visibility.html">visibility</a> <a href="tests/color-visibility.html">color-visibility</a> </div>
           </td>
         </tr>
         <tr>
@@ -559,7 +559,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>function(e, date){<br>&nbsp;&nbsp;&nbsp;&nbsp;alert(date);<br>}</code></td>
           <td><code>null</code></td>
           <td>A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked. (default null)
-          <div class="tests">Tests: callback</div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> </div>
           </td>
         </tr>
         <tr>
@@ -567,7 +567,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>function(minDate,<br/>maxDate){}</code></td>
           <td><code>null</code></td>
           <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.
-          <div class="tests">Tests: callback</div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> </div>
           </td>
         </tr>
         <tr>
@@ -583,7 +583,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]</code></td>
           <td rowspan="2"><code>Full range of the<br/> input is shown</code></td>
           <td>Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch.
-          <div class="tests">Tests: dateWindow link-interaction</div>
+          <div class="tests">Tests: <a href="tests/dateWindow.html">dateWindow</a> <a href="tests/link-interaction.html">link-interaction</a> </div>
           </td>
         </tr>
         <tr>
@@ -598,7 +598,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>.
-          <div class="tests">Tests: customLabel demo</div>
+          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> <a href="tests/demo.html">demo</a> </div>
           </td>
         </tr>
         <tr>
@@ -606,7 +606,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>document.<br/>getElementById('foo')</code></td>
           <td><code>null</code></td>
           <td>Show data labels in an external div, rather than on the graph.
-          <div class="tests">Tests: demo label-div</div>
+          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/label-div.html">label-div</a> </div>
           </td>
         </tr>
         <tr>
@@ -614,7 +614,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>true</code></td>
           <td><code>false</code></td>
           <td>Show K/M/B for thousands/millions/billions on y-axis.
-          <div class="tests">Tests: demo labelsKMB no-range</div>
+          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/labelsKMB.html">labelsKMB</a> <a href="tests/no-range.html">no-range</a> </div>
           </td>
         </tr>
         <tr>
@@ -623,7 +623,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>false</code></td>
           <td>Show k/M/G for kilo/Mega/Giga on y-axis. This is different than
           <code>labelsKMB</code> in that it uses base 2, not 10.
-          <div class="tests">Tests: labelsKMB</div>
+          <div class="tests">Tests: <a href="tests/labelsKMB.html">labelsKMB</a> </div>
           </td>
         </tr>
         <tr>
@@ -631,7 +631,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>250</code></td>
           <td><code></code></td>
           <td>Width (in pixels) of the div which shows information on the currently-highlighted points.
-          <div class="tests">Tests: customLabel</div>
+          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> </div>
           </td>
         </tr>
         <tr>
@@ -639,7 +639,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>{}</code></td>
           <td><code>null</code></td>
           <td>Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold.
-          <div class="tests">Tests: border customLabel</div>
+          <div class="tests">Tests: <a href="tests/border.html">border</a> <a href="tests/customLabel.html">customLabel</a> </div>
           </td>
         </tr>
         <tr>
@@ -647,7 +647,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>integer</code></td>
           <td><code>3</code></td>
           <td>The size in pixels of the dot drawn over highlighted points.
-          <div class="tests">Tests: grid_dot</div>
+          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
           </td>
         </tr>
         <tr>
@@ -655,7 +655,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart.
-          <div class="tests">Tests: draw-points</div>
+          <div class="tests">Tests: <a href="tests/draw-points.html">draw-points</a> </div>
           </td>
         </tr>
         <tr>
@@ -671,7 +671,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td rowspan="2"><code>integer</code></td>
           <td><code>60</code></td>
           <td rowspan="2">Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks.
-          <div class="tests">Tests: spacing</div>
+          <div class="tests">Tests: <a href="tests/spacing.html">spacing</a> </div>
           </td>
         </tr>
         <tr>
@@ -683,7 +683,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td rowspan="2"><code>integer</code></td>
           <td><code></code></td>
           <td rowspan="2">Width (in pixels) of the x- and y-axis labels.
-          <div class="tests">Tests: customLabel</div>
+          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> </div>
           </td>
         </tr>
         <tr>
@@ -711,7 +711,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>Does the data contain standard deviations? Setting this to true alters the input format (see above).
-          <div class="tests">Tests: noise customLabel draw-points fillGraph fractions</div>
+          <div class="tests">Tests: <a href="tests/noise.html">noise</a> <a href="tests/customLabel.html">customLabel</a> <a href="tests/draw-points.html">draw-points</a> <a href="tests/fillGraph.html">fillGraph</a> <a href="tests/fractions.html">fractions</a> </div>
           </td>
         </tr>
         <tr>
@@ -727,7 +727,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).
-          <div class="tests">Tests: fractions</div>
+          <div class="tests">Tests: <a href="tests/fractions.html">fractions</a> </div>
           </td>
         </tr>
         <tr>
@@ -743,7 +743,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>When set, parse each CSV cell as "low;middle;high". Error bars will be drawn for each point between low and high, with the series itself going through middle.
-          <div class="tests">Tests: custom-bars zero-series</div>
+          <div class="tests">Tests: <a href="tests/custom-bars.html">custom-bars</a> <a href="tests/zero-series.html">zero-series</a> </div>
           </td>
         </tr>
       </tbody>
