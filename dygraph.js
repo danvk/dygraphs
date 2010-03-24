@@ -102,6 +102,7 @@ Dygraph.DEFAULT_ATTRS = {
   axisLabelFontSize: 14,
   xAxisLabelWidth: 50,
   yAxisLabelWidth: 50,
+  xAxisLabelFormatter: Dygraph.dateAxisFormatter,
   rightGap: 5,
 
   showRoller: false,
@@ -1085,7 +1086,7 @@ Dygraph.zeropad = function(x) {
  * @return {String} A time of the form "HH:MM:SS"
  * @private
  */
-Dygraph.prototype.hmsString_ = function(date) {
+Dygraph.hmsString_ = function(date) {
   var zeropad = Dygraph.zeropad;
   var d = new Date(date);
   if (d.getSeconds()) {
@@ -1098,11 +1099,31 @@ Dygraph.prototype.hmsString_ = function(date) {
 }
 
 /**
+ * Convert a JS date to a string appropriate to display on an axis that
+ * is displaying values at the stated granularity.
+ * @param {Date} date The date to format
+ * @param {Number} granularity One of the Dygraph granularity constants
+ * @return {String} The formatted date
+ * @private
+ */
+Dygraph.dateAxisFormatter = function(date, granularity) {
+  if (granularity >= Dygraph.MONTHLY) {
+    return date.strftime('%b %y');
+  } else {
+    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    if (frac == 0 || granularity >= Dygraph.DAILY) {
+      return new Date(date.getTime() + 3600*1000).strftime('%d%b');
+    } else {
+      return Dygraph.hmsString_(date.getTime());
+    }
+  }
+}
+
+/**
  * Convert a JS date (millis since epoch) to YYYY/MM/DD
  * @param {Number} date The JavaScript date (ms since epoch)
  * @return {String} A date of the form "YYYY/MM/DD"
  * @private
- * TODO(danvk): why is this part of the prototype?
  */
 Dygraph.dateString_ = function(date, self) {
   var zeropad = Dygraph.zeropad;
@@ -1117,7 +1138,7 @@ Dygraph.dateString_ = function(date, self) {
 
   var ret = "";
   var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + self.hmsString_(date);
+  if (frac) ret = " " + Dygraph.hmsString_(date);
 
   return year + "/" + month + "/" + day + ret;
 };
@@ -1239,6 +1260,7 @@ Dygraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
 //   Returns an array containing {v: millis, label: label} dictionaries.
 //
 Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
+  var formatter = this.attr_("xAxisLabelFormatter");
   var ticks = [];
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
@@ -1275,14 +1297,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     start_time = d.getTime();
 
     for (var t = start_time; t <= end_time; t += spacing) {
-      var d = new Date(t);
-      var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-      if (frac == 0 || granularity >= Dygraph.DAILY) {
-        // the extra hour covers DST problems.
-        ticks.push({ v:t, label: new Date(t + 3600*1000).strftime(format) });
-      } else {
-        ticks.push({ v:t, label: this.hmsString_(t) });
-      }
+      ticks.push({ v:t, label: formatter(new Date(t), granularity) });
     }
   } else {
     // Display a tick mark on the first of a set of months of each year.
@@ -1313,7 +1328,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
         var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
         var t = Date.parse(date_str);
         if (t < start_time || t > end_time) continue;
-        ticks.push({ v:t, label: new Date(t).strftime('%b %y') });
+        ticks.push({ v:t, label: formatter(new Date(t), granularity) });
       }
     }
   }
@@ -1821,10 +1836,12 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.xTicker = Dygraph.dateTicker;
+    this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
     this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
+    this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
   }
 };
 
@@ -1956,6 +1973,7 @@ Dygraph.prototype.parseArray_ = function(data) {
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.xValueFormatter = Dygraph.dateString_;
+    this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
     this.attrs_.xTicker = Dygraph.dateTicker;
 
     // Assume they're all dates.
@@ -2009,10 +2027,12 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xValueFormatter = Dygraph.dateString_;
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.xTicker = Dygraph.dateTicker;
+    this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else if (indepType == 'number') {
     this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
+    this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
   } else {
     this.error("only 'date', 'datetime' and 'number' types are supported for " +
                "column 1 of DataTable input (Got '" + indepType + "')");
