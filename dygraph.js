@@ -1110,7 +1110,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
   if (granularity >= Dygraph.MONTHLY) {
     return date.strftime('%b %y');
   } else {
-    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
     if (frac == 0 || granularity >= Dygraph.DAILY) {
       return new Date(date.getTime() + 3600*1000).strftime('%d%b');
     } else {

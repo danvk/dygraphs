@@ -699,6 +699,13 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           </td>
         </tr>
         <tr>
+          <td><strong>xAxisLabelFormatter</strong></td>
+          <td><code>function(date, granularity)</code></td>
+          <td><code>Dygraph.dateAxisFormatter</code></td>
+          <td>Function to call to format values along the x axis.
+            <div class="tests">Tests: <a href="tests/x-axis-formatter.html">xAxisLabelFormatter</a></div>
+          </td>
+        <tr>
           <td><strong>rightGap</strong></td>
           <td><code>integer</code></td>
           <td><code></code></td>
