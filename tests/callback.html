@@ -27,6 +27,7 @@
 
     <input type="button" value="Clear list" onclick="javascript:document.getElementById('status').innerHTML=''" />
     <input type="checkbox" id="highlight" checked><label for="highlight"> Show 'highlight' events</label>
+    <input type="checkbox" id="unhighlight" checked><label for="unhighlight">Show 'unhighlight' events</label>
     <input type="checkbox" id="showLabels" checked
     onclick='g.updateOptions({showLabelsOnHighlight: this.checked});'>
     <label for="showLabels"> Show Labels on highlight</label>
@@ -62,6 +63,12 @@
               highlightCallback: function(e, x, pts) {
                 if (document.getElementById('highlight').checked) {
                   s.innerHTML += "<b>Highlight</b> " + pts_info(e,x,pts) + "<br/>";
+                }
+              },
+
+              unhighlightCallback: function(e) {
+                if (document.getElementById('unhighlight').checked) {
+                  s.innerHTML += "<b>Unhighlight</b><br/>";
                 }
               },
 

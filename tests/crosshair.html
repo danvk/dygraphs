@@ -28,16 +28,25 @@
               highlightCallback: function(e, x, pts) {
                 for (var i = 0; i < pts.length; i++) {
                   var y = pts[i].canvasy;
+                  lines[i].style.display = "";
                   lines[i].style.top = y + "px";
                   if (i == 0) xline.style.left = pts[i].canvasx + "px";
                 }
+                xline.style.display = "";
+              },
 
+              unhighlightCallback: function(e) {
+                for (var i = 0; i < 2; i++) {
+                  lines[i].style.display = "none";
+                }
+                xline.style.display = "none";
               }
             }
           );
 
       for (var i = 0; i < 2; i++) {
         var line = document.createElement("div");
+        line.style.display = "none";
         line.style.width = "100%";
         line.style.height = "1px";
         line.style.backgroundColor = "black";
@@ -47,6 +56,7 @@
       }
 
       xline = document.createElement("div");
+      xline.style.display = "none";
       xline.style.width = "1px";
       xline.style.height = "100%";
       xline.style.top = "0px";

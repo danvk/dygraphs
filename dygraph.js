@@ -928,10 +928,9 @@ Dygraph.prototype.mouseMove_ = function(event) {
   }
 
   if (this.attr_("highlightCallback")) {
-    var px = this.lastHighlightCallbackX;
+    var px = this.lastx_;
     if (px !== null && lastx != px) {
       // only fire if the selected point has changed.
-      this.lastHighlightCallbackX = lastx;
       this.attr_("highlightCallback")(event, lastx, this.selPoints_);
     }
   }
@@ -1040,6 +1039,10 @@ Dygraph.prototype.setSelection = function(row) {
  * @private
  */
 Dygraph.prototype.mouseOut_ = function(event) {
+  if (this.attr_("unhighlightCallback")) {
+    this.attr_("unhighlightCallback")(event);
+  }
+
   if (this.attr_("hideOverlayOnMouseOut")) {
     this.clearSelection();
   }
