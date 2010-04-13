@@ -279,7 +279,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   var ctx = this.element.getContext("2d");
 
   if (this.options.underlayCallback) {
-    this.options.underlayCallback(ctx, this.area, this.layout);
+    this.options.underlayCallback(ctx, this.area, this.layout, this.dygraph_);
   }
 
   if (this.options.drawYGrid) {
