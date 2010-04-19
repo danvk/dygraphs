@@ -19,6 +19,7 @@
         <li><a href="#baseball">Baseball chart</a></li>
         <li><a href="#stock">Stock chart</a></li>
         <li><a href="#options">Options Reference</a></li>
+        <li><a href="#gwt">GWT Compatibility</a></li>
         <li><a href="#policy">Data Policy</a></li>
       </ul>
 
@@ -57,7 +58,7 @@
         <li><a href="tests/negative.html">Negative Numbers</a></li>
         <li><a href="tests/noise.html">Noisy Data</a></li>
         <li><a href="tests/two-series.html">Multiple Series</a></li>
-        <li><a href="tests/underlay-callback.html">Custom Underlay / background</a></li>
+        <li><a href="tests/highlighted-region">Custom Underlay / background</a></li>
       </ul>
     </div>
 
@@ -507,7 +508,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>boolean</code></td>
           <td><code>false</code></td>
           <td>If the rolling average period text box should be shown.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> <a href="tests/fractions.html">fractions</a> <a href="tests/isolated-points.html">isolated-points</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/underlay-callback.html">underlay-callback</a> </div>
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> <a href="tests/fractions.html">fractions</a> <a href="tests/isolated-points.html">isolated-points</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/underlay-callback.html">underlay-callback</a> <a href="tests/highlighted-region.html">highlighted-region</a></div>
           </td>
         </tr>
         <tr>
@@ -827,6 +828,26 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
       <li>Don't set the <code>dateWindow</code> property to a date. It expects milliseconds since epoch, which can be obtained from a JavaScript Date object's valueOf method.</li>
       <li>Make sure you don't have any trailing commas in your call to the Dygraph constructor or in the options parameter. Firefox, Chrome and Safari ignore these but they can cause a graph to not display in Internet Explorer.</li>
     </ul>
+
+    <h2 id="gwt">GWT Compatibility</h2>
+    <p>There is currently no GWT wrapper around Dygraphs, however there is a class that can be used to easily load Dygraphs into the browser.  To use it, include the generated dygraph-gwt.jar file in your classpath and add the following line to your GWT module:</p>
+
+<pre>
+&lt;inherits name=&quot;org.danvk.dygraphs&quot;/&gt;    
+</pre>
+
+    <p>Call org.danvk.Dygraphs.install() when your application starts to install the JavaScript code into the browser.  You can use <a href="http://code.google.com/webtoolkit/doc/latest/DevGuideCodingBasicsJSNI.html">JSNI</a> to call Dygraphs from your GWT code, as in the example below.  The example uses the <a href="http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted">Visualization API for GWT</a> and the <a href="#gviz">Dygraphs GViz API.</a></p>
+
+<pre>
+  public static native JavaScriptObject drawDygraph(Element element, DataTable data, double minY, double maxY) /*-{
+    var chart = new $wnd.Dygraph.GVizChart(element);
+    chart.draw(dataTable,
+      {
+        valueRange: [minY, maxY]
+      });
+    return chart;
+  }-*/;
+</pre>
 
     <h2 id="policy">Data Policy</h2>
     <p>dygraphs is purely client-side JavaScript. It does not send your data to any servers &ndash; the data is processed entirely in the client's browser.</p>

@@ -8,4 +8,10 @@ all: generate-combined
 
 generate-combined:
 	@echo Generating dygraph-combined.js
-	@generate-combined.sh
+	@./generate-combined.sh
+
+gwt: generate-gwt
+
+generate-gwt:
+	@echo Generating GWT JAR file
+	@./generate-jar.sh
