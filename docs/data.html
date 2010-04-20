@@ -2,8 +2,9 @@
   <head>
     <title>dygraphs input types</title>
     <style type="text/css">
-      code { white-space: pre; }
-      pre  { white-space: pre; }
+      code { white-space: pre; border: 1px dashed black; display: block; }
+      pre  { white-space: pre; border: 1px dashed black; }
+      body { max-width: 800px; }
     </style>
   </head>
   <body>
@@ -23,11 +24,11 @@
 
     <p>There are five types of input that dygraphs will accept:</p>
     <ol>
-      <li>CSV data
-      <li>URL
-      <li>array (native format)
-      <li>function
-      <li>DataTable
+      <li><a href="#csv">CSV data</a>
+      <li><a href="#url">URL</a>
+      <li><a href="#array">array (native format)</a>
+      <li><a href="#function">function</a>
+      <li><a href="#datatable">DataTable</a>
     </ol>
 
     <p>These are all discussed below. If you're trying to debug why your input
@@ -46,7 +47,7 @@
     </ul>
     </p>
 
-    <h3>CSV</h3>
+    <a name="csv"><h3>CSV</h3>
     <p>Here's an example of what CSV data should look like:</p>
     <pre>
     Date,Series1,Series2
@@ -226,7 +227,7 @@
     a rolling period, the three values will all be averaged independently.</p>
 
 
-    <h3>URL</h3>
+    <a name="url"><h3>URL</h3>
     <p>If you pass in a URL, dygraphs will issue an XMLHttpRequest for it and
     attempt to parse the returned data as CSV.
     </p>
@@ -237,7 +238,7 @@
     the URL yourself.</p>
 
 
-    <h3>Array (native format)</h3>
+    <a name="array"><h3>Array (native format)</h3>
     <p>If you'll be constructing your data set from a server-side program (or
     from JavaScript) then you're better off producing an array than CSV data.
     This saves the cost of parsing the CSV data and also avoids common parser
@@ -247,22 +248,72 @@
     a JS debugger) and that the data format is a bit less clear for values with
     uncertainties.</p>
 
+    <p>Here's an example of "native format":</p>
 
-    Array
-    - disclaimers
-    - Dates on the x-axis
-    - how to specify fractions
-    - how to specify missing data
-    - how to specify value + std. dev.
-    - how to specify [low, middle, high]
+    <code>
+      new Dygraph(document.getElementById("graphdiv2"),
+                  [
+                    [1,10,100],
+                    [2,20,80],
+                    [3,50,60],
+                    [4,70,80]
+                  ],
+                  {
+                    labels: [ "x", "A", "B" ]
+                  });
+    </code>
 
-    Functions
-    - make sure they work as expected:
-        function() { return x; }
-      is identical as a source to "x".
+    <h4>Headers</h4>
+    <p>Headers for native format must be specified via the <i>labels</i>
+    option. There's no other way to set them.</p>
 
-    DataTable
-    - Links to relevant gviz docs
+    <h4>x-values</h4>
+    <p>If you want your x-values to be dates, you'll need to use specify a Date
+    object in the first column. Otherwise, specify a number. Here's a sample
+    array with dates on the x-axis:</p>
+
+    <code>
+      [
+        [ new Date("2009/07/12"), 100, 200 ],
+        [ new Date("2009/07/19"), 150, 220 ]
+      ]
+    </code>
+
+    <h4>y-values</h4>
+    <p>You can specify <i>errorBars</i>, <i>fractions</i> or <i>customBars</i>
+    with the array format. If you specify any of these, the values become arrays
+    (rather than numbers). Here's what the format looks like for each one:</p>
+
+    <code>
+      <i>errorBars</i>: [x, [value1, std1], [value2, std2], ...]
+      <i>fractions</i>: [x, [num1, den1], [num2, den2], ...]
+      <i>customBars</i>: [x, [low1, val1, high1], [low2, val2, high2], ...]
+    </code>
+
+    <p>To specify missing data, set the value to null. You may not set a value
+    inside an array to null. Use null instead of the entire array.</p>
+
+    <a name="function"><h3>Functions</h3>
+
+    <p>You can specify a function that returns any of the other types. If
+    <i>x</i> is a valid piece of dygraphs input, then so is</p>
+
+    <code>
+      function() { return x; }
+    </code>
+
+    <a name="datatable"><h3>DataTable</h3>
+    <p>You can also specify a Google Visualization Library <a
+      href="http://code.google.com/apis/visualization/documentation/reference.html#DataTable">DataTable</a>
+    object as your input data. This lets you easily switch between dygraphs and
+    other gviz visualizations such as the Annotated Timeline. It also lets you
+    embed a Dygraph in a Google Spreadsheet.</p>
+
+    <p>You'll need to set your first column's type to one of "number", "date"
+    or "datetime".</p>
+
+    <pre>
+    DataTable TODO:
     - When to use Dygraph.GvizWrapper
     - how to specify fractions
     - how to specify missing data
@@ -270,6 +321,7 @@
     - how to specify [low, middle, high]
     - walkthrough of embedding a gadget in google docs/on a web page
     - walkthrough of using std. dev. in a spreadsheet chart
+    </pre>
 
   </body>
 </html>
