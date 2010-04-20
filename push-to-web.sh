@@ -1,6 +1,7 @@
 #!/bin/bash
 # This script generates the combined JS file, pushes all content to a web site
 # and then reverts the combined file.
+set -x
 site=$1
 
 # Produce dygraph-combined.js.
