@@ -4,8 +4,10 @@
     <!--[if IE]>
     <script type="text/javascript" src="excanvas.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="../dygraph-combined.js"></script>
-    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
   </head>
   <body>
     <p>Simple graph:</p>
@@ -14,6 +16,11 @@
     <div id="graphdiv2"></div>
 
     <script type="text/javascript">
+      data = "X,x,100-x\n";
+      for (var i = 0; i < 100; i++) {
+        data += i + "," + i + "," + (100 - i) + "\n";
+      }
+
       var g = new Dygraph(document.getElementById("graphdiv"),
                            data);
       var g2 = new Dygraph(document.getElementById("graphdiv2"),
