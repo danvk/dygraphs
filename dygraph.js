@@ -187,10 +187,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // convert that to an appropriate number of pixels.
   if (div.style.width.indexOf("%") == div.style.width.length - 1) {
     // Minus ten pixels  keeps scrollbars from showing up for a 100% width div.
-    this.width_ = (this.width_ * self.innerWidth / 100) - 10;
+    this.width_ = div.offsetWidth;
   }
   if (div.style.height.indexOf("%") == div.style.height.length - 1) {
-    this.height_ = (this.height_ * self.innerHeight / 100) - 10;
+    this.height_ = div.offsetHeight;
   }
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
