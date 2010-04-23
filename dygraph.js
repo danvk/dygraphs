@@ -2213,6 +2213,11 @@ Dygraph.prototype.updateOptions = function(attrs) {
  * @param {Number} height Height (in pixels)
  */
 Dygraph.prototype.resize = function(width, height) {
+  if (this.resize_lock) {
+    return;
+  }
+  this.resize_lock = true;
+
   if ((width === null) != (height === null)) {
     this.warn("Dygraph.resize() should be called with zero parameters or " +
               "two non-NULL parameters. Pretending it was zero.");
@@ -2235,6 +2240,8 @@ Dygraph.prototype.resize = function(width, height) {
 
   this.createInterface_();
   this.drawGraph_(this.rawData_);
+
+  this.resize_lock = false;
 };
 
 /**
