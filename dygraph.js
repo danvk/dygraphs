@@ -1529,7 +1529,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
-      if (data[j][i] !== undefined || !connectSeparatedPoints) {
+      if (data[j][i] != null || !connectSeparatedPoints) {
         var date = data[j][0];
         series.push([date, data[j][i]]);
       }
