@@ -11,9 +11,15 @@
   </head>
   <body>
     <p>Simple graph:</p>
-    <div id="graphdiv"></div>
+    <div id="simple_div"></div>
     <p>Stacked graph:</p>
-    <div id="graphdiv2"></div>
+    <div id="stacked_div"></div>
+    <p>Simple graph with missing data:</p>
+    <div id="simple_missing_div"></div>
+    <p>Stacked graph with missing data:</p>
+    <div id="stacked_missing_div"></div>
+    <p>Stacked graph with many series:</p>
+    <div id="stacked_many_div"></div>
 
     <script type="text/javascript">
       data = "X,x,100-x\n";
@@ -21,11 +27,40 @@
         data += i + "," + i + "," + (100 - i) + "\n";
       }
 
-      var g = new Dygraph(document.getElementById("graphdiv"),
-                           data);
-      var g2 = new Dygraph(document.getElementById("graphdiv2"),
-                           data,
-                           { stackedGraph: true });
+      new Dygraph(document.getElementById("simple_div"),
+                  data);
+      new Dygraph(document.getElementById("stacked_div"),
+                  data,
+                  { stackedGraph: true });
+
+      missing_data = "X,x,100-x\n";
+      for (var i = 0; i < 100; i++) {
+        if (i >= 20 && i < 40) {
+          missing_data += i + ",," + (100 - i) + "\n";
+        } else if (i >= 60 && i < 80) {
+          missing_data += i + "," + i + ",\n";
+        } else {
+          missing_data += i + "," + i + "," + (100 - i) + "\n";
+        }
+      }
+
+      new Dygraph(document.getElementById("simple_missing_div"),
+                  missing_data);
+      new Dygraph(document.getElementById("stacked_missing_div"),
+                  missing_data,
+                  { stackedGraph: true });
+
+      many_data = "X,a,b,c,d,e,100-a,100-b,100-c,100-d,100-e\n";
+      for (var i = 0; i < 100; i++) {
+        many_data += i + "," + i + "," + i + "," + i + "," + i + "," + i;
+        j = 100 - i;
+        many_data += "," + j + "," + j + "," + j + "," + j + "," + j;
+        many_data += "\n";
+      }
+
+      new Dygraph(document.getElementById("stacked_many_div"),
+                  many_data,
+                  { stackedGraph: true });
     </script>
   </body>
 </html>

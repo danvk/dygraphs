@@ -908,9 +908,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   // Extract the points we've selected
   this.selPoints_ = [];
-  var cumulative_sum = 0;  // used only if we have a stackedGraph.
   var l = points.length;
-  var isStacked = this.attr_("stackedGraph");
   if (!this.attr_("stackedGraph")) {
     for (var i = 0; i < l; i++) {
       if (points[i].xval == lastx) {
@@ -918,11 +916,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
       }
     }
   } else {
-    // Stacked points need to be examined in reverse order.
+    // Need to 'unstack' points starting from the bottom
+    var cumulative_sum = 0;
     for (var i = l - 1; i >= 0; i--) {
       if (points[i].xval == lastx) {
-        // Clone the point, since we need to 'unstack' it below.
-        var p = {};
+        var p = {};  // Clone the point since we modify it
         for (var k in points[i]) {
           p[k] = points[i][k];
         }
@@ -931,6 +929,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
         this.selPoints_.push(p);
       }
     }
+    this.selPoints_.reverse();
   }
 
   if (this.attr_("highlightCallback")) {
@@ -1519,12 +1518,14 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
   var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
 
-  // For stacked series.
-  var cumulative_y = [];
-  var stacked_datasets = [];
+  // Loop over the fields (series).  Go from the last to the first,
+  // because if they're stacked that's how we accumulate the values.
 
-  // Loop over all fields in the dataset
-  for (var i = 1; i < data[0].length; i++) {
+  var cumulative_y = [];  // For stacked series.
+  var datasets = [];
+
+  // Loop over all fields and create datasets
+  for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
     var series = [];
@@ -1575,38 +1576,35 @@ Dygraph.prototype.drawGraph_ = function(data) {
     if (maxY === null || thisMaxY > maxY) maxY = thisMaxY;
 
     if (bars) {
-      var vals = [];
-      for (var j=0; j<series.length; j++)
-        vals[j] = [series[j][0],
-                   series[j][1][0], series[j][1][1], series[j][1][2]];
-      this.layout_.addDataset(this.attr_("labels")[i], vals);
+      for (var j=0; j<series.length; j++) {
+        val = [series[j][0], series[j][1][0], series[j][1][1], series[j][1][2]];
+        series[j] = val;
+      }
     } else if (this.attr_("stackedGraph")) {
-      var vals = [];
       var l = series.length;
       var actual_y;
       for (var j = 0; j < l; j++) {
-        if (cumulative_y[series[j][0]] === undefined)
-          cumulative_y[series[j][0]] = 0;
+        // If one data set has a NaN, let all subsequent stacked
+        // sets inherit the NaN -- only start at 0 for the first set.
+        var x = series[j][0];
+        if (cumulative_y[x] === undefined)
+          cumulative_y[x] = 0;
 
         actual_y = series[j][1];
-        cumulative_y[series[j][0]] += actual_y;
+        cumulative_y[x] += actual_y;
 
-        vals[j] = [series[j][0], cumulative_y[series[j][0]]]
+        series[j] = [x, cumulative_y[x]]
 
-        if (!maxY || cumulative_y[series[j][0]] > maxY)
-          maxY = cumulative_y[series[j][0]];
+        if (!maxY || cumulative_y[x] > maxY)
+          maxY = cumulative_y[x];
       }
-      stacked_datasets.push([this.attr_("labels")[i], vals]);
-      //this.layout_.addDataset(this.attr_("labels")[i], vals);
-    } else {
-      this.layout_.addDataset(this.attr_("labels")[i], series);
     }
+
+    datasets[i] = series;
   }
 
-  if (stacked_datasets.length > 0) {
-    for (var i = (stacked_datasets.length - 1); i >= 0; i--) {
-      this.layout_.addDataset(stacked_datasets[i][0], stacked_datasets[i][1]);
-    }
+  for (var i = 1; i < datasets.length; i++) {
+    this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
   // Use some heuristics to come up with a good maxY value, unless it's been

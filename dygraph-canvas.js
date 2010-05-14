@@ -454,6 +454,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var fillAlpha = this.options.fillAlpha;
   var errorBars = this.layout.options.errorBars;
   var fillGraph = this.layout.options.fillGraph;
+  var stackedGraph = this.layout.options.stackedGraph;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -491,11 +492,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
       // setup graphics context
       ctx.save();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = this.options.strokeWidth;
       var prevX = NaN;
       var prevYs = [-1, -1];
-      var count = 0;
       var yscale = this.layout.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
@@ -505,7 +503,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.beginPath();
       for (var j = 0; j < this.layout.points.length; j++) {
         var point = this.layout.points[j];
-        count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
             prevX = NaN;
@@ -523,28 +520,29 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
           }
-          prevYs[0] = newYs[0];
-          prevYs[1] = newYs[1];
+          prevYs = newYs;
           prevX = point.canvasx;
         }
       }
       ctx.fill();
     }
   } else if (fillGraph) {
-    // TODO(danvk): merge this code with the logic above; they're very similar.
-    for (var i = 0; i < setCount; i++) {
+    var axisY = 1.0 + this.layout.minyval * this.layout.yscale;
+    if (axisY < 0.0) axisY = 0.0;
+    else if (axisY > 1.0) axisY = 1.0;
+    axisY = this.area.h * axisY + this.area.y;
+
+    var baseline = []  // for stacked graphs: baseline for filling
+
+    // process sets in reverse order (needed for stacked graphs)
+    for (var i = setCount - 1; i >= 0; i--) {
       var setName = setNames[i];
-      var setNameLast;
-      if (i>0) setNameLast = setNames[i-1];
       var color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = this.options.strokeWidth;
       var prevX = NaN;
       var prevYs = [-1, -1];
-      var count = 0;
       var yscale = this.layout.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
@@ -554,18 +552,20 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.beginPath();
       for (var j = 0; j < this.layout.points.length; j++) {
         var point = this.layout.points[j];
-        count++;
         if (point.name == setName) {
           if (!isOK(point.y)) {
             prevX = NaN;
             continue;
           }
-          var pX = 1.0 + this.layout.minyval * this.layout.yscale;
-          if (pX < 0.0) pX = 0.0;
-          else if (pX > 1.0) pX = 1.0;
-          var newYs = [ point.y, pX ];
-          newYs[0] = this.area.h * newYs[0] + this.area.y;
-          newYs[1] = this.area.h * newYs[1] + this.area.y;
+          var newYs;
+          if (stackedGraph) {
+            lastY = baseline[point.canvasx];
+            if (lastY === undefined) lastY = axisY;
+            baseline[point.canvasx] = point.canvasy;
+            newYs = [ point.canvasy, lastY ];
+          } else {
+            newYs = [ point.canvasy, axisY ];
+          }
           if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             ctx.lineTo(point.canvasx, newYs[0]);
@@ -573,8 +573,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
           }
-          prevYs[0] = newYs[0];
-          prevYs[1] = newYs[1];
+          prevYs = newYs;
           prevX = point.canvasx;
         }
       }
