@@ -393,20 +393,24 @@ Dygraph.prototype.createInterface_ = function() {
   this.canvas_.height = this.height_;
   this.canvas_.style.width = this.width_ + "px";    // for IE
   this.canvas_.style.height = this.height_ + "px";  // for IE
-  this.graphDiv.appendChild(this.canvas_);
 
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+
+  // The interactive parts of the graph are drawn on top of the chart.
+  this.graphDiv.appendChild(this.hidden_);
+  this.graphDiv.appendChild(this.canvas_);
+  this.mouseEventElement_ = this.canvas_;
 
   // Make sure we don't overdraw.
   Dygraph.clipCanvas_(this.hidden_, this.clippingArea_);
   Dygraph.clipCanvas_(this.canvas_, this.clippingArea_);
 
   var dygraph = this;
-  Dygraph.addEvent(this.hidden_, 'mousemove', function(e) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(e) {
     dygraph.mouseMove_(e);
   });
-  Dygraph.addEvent(this.hidden_, 'mouseout', function(e) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(e) {
     dygraph.mouseOut_(e);
   });
 
@@ -482,7 +486,6 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
   h.height = this.height_;
   h.style.width = this.width_ + "px";    // for IE
   h.style.height = this.height_ + "px";  // for IE
-  this.graphDiv.appendChild(h);
   return h;
 };
 
@@ -713,7 +716,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   var getY = function(e) { return Dygraph.pageX(e) - py };
 
   // Draw zoom rectangles when the mouse is down and the user moves around
-  Dygraph.addEvent(this.hidden_, 'mousemove', function(event) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(event) {
     if (isZooming) {
       dragEndX = getX(event);
       dragEndY = getY(event);
@@ -735,7 +738,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Track the beginning of drag events
-  Dygraph.addEvent(this.hidden_, 'mousedown', function(event) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mousedown', function(event) {
     px = Dygraph.findPosX(self.canvas_);
     py = Dygraph.findPosY(self.canvas_);
     dragStartX = getX(event);
@@ -769,7 +772,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Temporarily cancel the dragging event when the mouse leaves the graph
-  Dygraph.addEvent(this.hidden_, 'mouseout', function(event) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(event) {
     if (isZooming) {
       dragEndX = null;
       dragEndY = null;
@@ -778,7 +781,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the mouse is released on the canvas during a drag event, then it's a
   // zoom. Only do the zoom if it's over a large enough area (>= 10 pixels)
-  Dygraph.addEvent(this.hidden_, 'mouseup', function(event) {
+  Dygraph.addEvent(this.mouseEventElement_, 'mouseup', function(event) {
     if (isZooming) {
       isZooming = false;
       dragEndX = getX(event);
@@ -814,7 +817,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 
   // Double-clicking zooms back out
-  Dygraph.addEvent(this.hidden_, 'dblclick', function(event) {
+  Dygraph.addEvent(this.mouseEventElement_, 'dblclick', function(event) {
     if (self.dateWindow_ == null) return;
     self.dateWindow_ = null;
     self.drawGraph_(self.rawData_);
@@ -885,7 +888,7 @@ Dygraph.prototype.doZoom_ = function(lowX, highX) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.hidden_);
+  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
   var points = this.layout_.points;
 
   var lastx = -1;
