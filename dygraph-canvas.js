@@ -513,26 +513,26 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           // TODO(danvk): here
           if (stepPlot) {
             var newYs = [ prevY - point.errorPlus * yscale,
-                        prevY + point.errorMinus * yscale ];
+                          prevY + point.errorMinus * yscale ];
             prevY = point.y;
           } else {
             var newYs = [ point.y - point.errorPlus * yscale,
-                        point.y + point.errorMinus * yscale ];
+                          point.y + point.errorMinus * yscale ];
           }
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
           if (!isNaN(prevX)) {
             if (stepPlot) {
-                ctx.moveTo(prevX, newYs[0]);
+              ctx.moveTo(prevX, newYs[0]);
             } else {
-                ctx.moveTo(prevX, prevYs[0]);
+              ctx.moveTo(prevX, prevYs[0]);
             }
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
             if (stepPlot) {
-                ctx.lineTo(prevX, newYs[1]);
+              ctx.lineTo(prevX, newYs[1]);
             } else {
-                ctx.lineTo(prevX, prevYs[1]);
+              ctx.lineTo(prevX, prevYs[1]);
             }
             ctx.closePath();
           }
@@ -585,9 +585,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
             if (stepPlot) {
-                ctx.lineTo(point.canvasx, prevYs[0]);
+              ctx.lineTo(point.canvasx, prevYs[0]);
             } else {
-                ctx.lineTo(point.canvasx, newYs[0]);
+              ctx.lineTo(point.canvasx, newYs[0]);
             }
             ctx.lineTo(point.canvasx, newYs[1]);
             ctx.lineTo(prevX, prevYs[1]);
@@ -633,7 +633,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineWidth = this.options.strokeWidth;
             ctx.moveTo(prevX, prevY);
             if (stepPlot) {
-                ctx.lineTo(point.canvasx, prevY);
+              ctx.lineTo(point.canvasx, prevY);
             }
             prevX = point.canvasx;
             prevY = point.canvasy;
