@@ -123,7 +123,9 @@ Dygraph.DEFAULT_ATTRS = {
   connectSeparatedPoints: false,
 
   stackedGraph: false,
-  hideOverlayOnMouseOut: true
+  hideOverlayOnMouseOut: true,
+
+  stepPlot: false
 };
 
 // Various logging levels.

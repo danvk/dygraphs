@@ -455,6 +455,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var errorBars = this.layout.options.errorBars;
   var fillGraph = this.layout.options.fillGraph;
   var stackedGraph = this.layout.options.stackedGraph;
+  var stepPlot = this.layout.options.stepPlot;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -493,6 +494,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       // setup graphics context
       ctx.save();
       var prevX = NaN;
+      var prevY = NaN;
       var prevYs = [-1, -1];
       var yscale = this.layout.yscale;
       // should be same color as the lines but only 15% opaque.
@@ -509,15 +511,29 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             continue;
           }
           // TODO(danvk): here
-          var newYs = [ point.y - point.errorPlus * yscale,
+          if (stepPlot) {
+            var newYs = [ prevY - point.errorPlus * yscale,
+                        prevY + point.errorMinus * yscale ];
+            prevY = point.y;
+          } else {
+            var newYs = [ point.y - point.errorPlus * yscale,
                         point.y + point.errorMinus * yscale ];
+          }
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
           if (!isNaN(prevX)) {
-            ctx.moveTo(prevX, prevYs[0]);
+            if (stepPlot) {
+                ctx.moveTo(prevX, newYs[0]);
+            } else {
+                ctx.moveTo(prevX, prevYs[0]);
+            }
             ctx.lineTo(point.canvasx, newYs[0]);
             ctx.lineTo(point.canvasx, newYs[1]);
-            ctx.lineTo(prevX, prevYs[1]);
+            if (stepPlot) {
+                ctx.lineTo(prevX, newYs[1]);
+            } else {
+                ctx.lineTo(prevX, prevYs[1]);
+            }
             ctx.closePath();
           }
           prevYs = newYs;
@@ -568,7 +584,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           }
           if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
-            ctx.lineTo(point.canvasx, newYs[0]);
+            if (stepPlot) {
+                ctx.lineTo(point.canvasx, prevYs[0]);
+            } else {
+                ctx.lineTo(point.canvasx, newYs[0]);
+            }
             ctx.lineTo(point.canvasx, newYs[1]);
             ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
@@ -612,6 +632,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.strokeStyle = color;
             ctx.lineWidth = this.options.strokeWidth;
             ctx.moveTo(prevX, prevY);
+            if (stepPlot) {
+                ctx.lineTo(point.canvasx, prevY);
+            }
             prevX = point.canvasx;
             prevY = point.canvasy;
             ctx.lineTo(prevX, prevY);
