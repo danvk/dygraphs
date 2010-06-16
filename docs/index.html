@@ -839,7 +839,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
     <p>Call org.danvk.Dygraphs.install() when your application starts to install the JavaScript code into the browser.  You can use <a href="http://code.google.com/webtoolkit/doc/latest/DevGuideCodingBasicsJSNI.html">JSNI</a> to call Dygraphs from your GWT code, as in the example below.  The example uses the <a href="http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted">Visualization API for GWT</a> and the <a href="#gviz">Dygraphs GViz API.</a></p>
 
 <pre>
-  public static native JavaScriptObject drawDygraph(Element element, DataTable data, double minY, double maxY) /*-{
+  public static native JavaScriptObject drawDygraph(Element element, DataTable dataTable, double minY, double maxY) /*-{
     var chart = new $wnd.Dygraph.GVizChart(element);
     chart.draw(dataTable,
       {
