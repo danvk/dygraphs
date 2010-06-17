@@ -616,7 +616,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var point = points[j];
       if (point.name == setName) {
         if (!isOK(point.canvasy)) {
-          if (stepPlot) {
+          if (stepPlot && prevX != null) {
             // Draw a horizontal line to the start of the missing data
             ctx.beginPath();
             ctx.strokeStyle = color;
