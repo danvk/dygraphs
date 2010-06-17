@@ -1378,10 +1378,12 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * Add ticks when the x axis has numbers on it (instead of dates)
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
+ * @param self
+ * @param {function} formatter: Optional formatter to use for each tick value
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self) {
+Dygraph.numericTicks = function(minV, maxV, self, formatter) {
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
@@ -1433,7 +1435,12 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
-    var label = Dygraph.round_(tickV, 2);
+    var label;
+    if (formatter != undefined) {
+      label = formatter(tickV);
+    } else {
+      label = Dygraph.round_(tickV, 2);
+    }
     if (k_labels.length) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
@@ -1458,7 +1465,8 @@ Dygraph.numericTicks = function(minV, maxV, self) {
 Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
   // TODO(danvk): make this an attribute as well.
-  var ticks = Dygraph.numericTicks(minY, maxY, this);
+  var formatter = this.attr_('yAxisLabelFormatter') ? this.attr_('yAxisLabelFormatter') : this.attr_('yValueFormatter');
+  var ticks = Dygraph.numericTicks(minY, maxY, this, formatter);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };

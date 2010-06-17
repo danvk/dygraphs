@@ -706,6 +706,16 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td>Function to call to format values along the x axis.
             <div class="tests">Tests: <a href="tests/x-axis-formatter.html">xAxisLabelFormatter</a></div>
           </td>
+        </tr>
+        <tr>
+          <td><strong>yAxisLabelFormatter</strong></td>
+          <td><code>function(x)</code></td>
+          <td><code>yValueFormatter</code></td>
+          <td>
+            Function used to format values along the Y axis. By default it uses the same as the <code>yValueFormatter</code> unless specified.
+            <div class="tests">Tests: <a href="tests/y-axis-formatter.html">yAxisLabelFormatter</a></div>
+          </td>
+        </tr>
         <tr>
           <td><strong>rightGap</strong></td>
           <td><code>integer</code></td>
@@ -820,6 +830,25 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td>
             When set, display the graph as a step plot instead of a line plot.
             <div class="tests">Tests: <a href="tests/steps.html">steps</a></div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>xValueFormatter</strong></td>
+          <td><code>function(x)</code></td>
+          <td></td>
+          <td>
+            Function to provide a custom display format the X value for mouseover.
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>yValueFormatter</strong></td>
+          <td><code>function(x)</code></td>
+          <td>(Round to 2 decimal places)</td>
+          <td>
+            Function to provide a custom display format for the Y value for mouseover.
+            <div class="tests">Tests: <a href="tests/y-axis-formatter.html">yAxisLabelFormatter</a></div>
           </td>
         </tr>
 
