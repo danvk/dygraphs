@@ -852,6 +852,17 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           </td>
         </tr>
 
+        <tr>
+          <td><strong>avoidMinZero</strong></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>
+            When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled.
+            This is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis.
+            <div class="tests">Tests: <a href="tests/avoidMinZero.html">avoidMinZero</a></div>
+          </td>
+        </tr>
+
       </tbody>
     </table>
 
