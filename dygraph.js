@@ -1609,6 +1609,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   }
 
   for (var i = 1; i < datasets.length; i++) {
+    if (!this.visibility()[i - 1]) continue;
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
