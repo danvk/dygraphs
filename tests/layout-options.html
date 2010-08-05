@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>Layout Options</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <h2>Layout Options Update</h2>
+    <div id="chart" style="width:600px; height:300px;"></div>
+    <script type="text/javascript">
+    g = new Dygraph(document.getElementById('chart'), data,
+    {
+      strokeWidth: 2
+    });
+
+    function change() {
+      g.updateOptions({strokeWidth:
+          parseFloat(document.getElementById("strokeWidth").value)});
+    }
+    </script>
+
+    <p>Stroke Width:
+    <input type=text id="strokeWidth" value="2.0" />
+    <input type=button value="Change Stroke Width" onClick="change()" />
+    </p>
+  </body>
+</html>

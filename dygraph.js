@@ -2198,6 +2198,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
     this.valueRange_ = attrs.valueRange;
   }
   Dygraph.update(this.user_attrs_, attrs);
+  Dygraph.update(this.renderOptions_, attrs);
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
