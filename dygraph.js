@@ -1618,6 +1618,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   }
 
   for (var i = 1; i < datasets.length; i++) {
+    if (!this.visibility()[i - 1]) continue;
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
@@ -2208,6 +2209,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
     this.valueRange_ = attrs.valueRange;
   }
   Dygraph.update(this.user_attrs_, attrs);
+  Dygraph.update(this.renderOptions_, attrs);
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
