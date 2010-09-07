@@ -90,6 +90,7 @@ Dygraph.DEFAULT_ATTRS = {
     // TODO(danvk): move defaults from createStatusMessage_ here.
   },
   labelsSeparateLines: false,
+  labelsShowZeroValues: true,
   labelsKMB: false,
   labelsKMG2: false,
   showLabelsOnHighlight: true,
@@ -983,6 +984,7 @@ Dygraph.prototype.updateSelection_ = function() {
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
       for (var i = 0; i < this.selPoints_.length; i++) {
+    	if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;    	  
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
           replace += "<br/>";
