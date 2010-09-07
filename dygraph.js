@@ -612,7 +612,12 @@ Dygraph.findPosY = function(obj) {
  * been specified.
  * @private
  */
-Dygraph.prototype.createStatusMessage_ = function(){
+Dygraph.prototype.createStatusMessage_ = function() {
+  var userLabelsDiv = this.user_attrs_["labelsDiv"];
+  if (userLabelsDiv && null != userLabelsDiv
+    && (typeof(userLabelsDiv) == "string" || userLabelsDiv instanceof String)) {
+    this.user_attrs_["labelsDiv"] = document.getElementById(userLabelsDiv);
+  }
   if (!this.attr_("labelsDiv")) {
     var divWidth = this.attr_('labelsDivWidth');
     var messagestyle = {
