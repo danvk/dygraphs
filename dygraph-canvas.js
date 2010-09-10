@@ -29,10 +29,31 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.datasets[setname] = set_xy;
 };
 
+// TODO(danvk): CONTRACT remove
+DygraphLayout.prototype.addAnnotation = function() {
+  // Add an annotation to one series.
+  this.annotations = [];
+  for (var x = 10; x < 30; x += 2) {
+    this.annotations.push( {
+      series: 'sine wave',
+      xval: this.attr_('xValueParser')("200610" + x),
+      shortText: x,
+      text: 'Stock Market Crash ' + x
+    } );
+  }
+  this.annotations.push( {
+    series: 'another line',
+    xval: this.attr_('xValueParser')("20061013"),
+    shortText: 'X',
+    text: 'Another one'
+  } );
+};
+
 DygraphLayout.prototype.evaluate = function() {
   this._evaluateLimits();
   this._evaluateLineCharts();
   this._evaluateLineTicks();
+  this._evaluateAnnotations();
 };
 
 DygraphLayout.prototype._evaluateLimits = function() {
@@ -141,6 +162,26 @@ DygraphLayout.prototype.evaluateWithError = function() {
   }
 };
 
+DygraphLayout.prototype._evaluateAnnotations = function() {
+  // Add the annotations to the point to which they belong.
+  // Make a map from (setName, xval) to annotation for quick lookups.
+  var annotations = {};
+  for (var i = 0; i < this.annotations.length; i++) {
+    var a = this.annotations[i];
+    annotations[a.xval + "," + a.series] = a;
+  }
+
+  this.annotated_points = [];
+  for (var i = 0; i < this.points.length; i++) {
+    var p = this.points[i];
+    var k = p.xval + "," + p.name;
+    if (k in annotations) {
+      p.annotation = annotations[k];
+      this.annotated_points.push(p);
+    }
+  }
+};
+
 /**
  * Convenience function to remove all the data sets from a graph
  */
@@ -205,6 +246,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   // internal state
   this.xlabels = new Array();
   this.ylabels = new Array();
+  this.annotations = new Array();
 
   this.area = {
     x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
@@ -247,8 +289,13 @@ DygraphCanvasRenderer.prototype.clear = function() {
     var el = this.ylabels[i];
     el.parentNode.removeChild(el);
   }
+  for (var i = 0; i < this.annotations.length; i++) {
+    var el = this.annotations[i];
+    el.parentNode.removeChild(el);
+  }
   this.xlabels = new Array();
   this.ylabels = new Array();
+  this.annotations = new Array();
 };
 
 
@@ -317,6 +364,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
+  this._renderAnnotations();
 };
 
 
@@ -444,6 +492,40 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 };
 
 
+DygraphCanvasRenderer.prototype._renderAnnotations = function() {
+  var annotationStyle = {
+    "position": "absolute",
+    "fontSize": this.options.axisLabelFontSize + "px",
+    "zIndex": 10,
+    "width": "20px",
+    "overflow": "hidden",
+    "border": "1px solid black",
+    "background-color": "white",
+    "text-align": "center"
+  };
+
+  // Get a list of point with annotations.
+  var points = this.layout.annotated_points;
+  for (var i = 0; i < points.length; i++) {
+    var p = points[i];
+    var div = document.createElement("div");
+    for (var name in annotationStyle) {
+      if (annotationStyle.hasOwnProperty(name)) {
+        div.style[name] = annotationStyle[name];
+      }
+    }
+    div.appendChild(document.createTextNode(p.annotation.shortText));
+    div.style.left = (p.canvasx - 10) + "px";
+    div.style.top = p.canvasy + "px";
+    div.title = p.annotation.text;
+    div.style.color = this.colors[p.name];
+    div.style.borderColor = this.colors[p.name];
+    this.container.appendChild(div);
+    this.annotations.push(div);
+  }
+};
+
+
 /**
  * Overrides the CanvasRenderer method to draw error bars
  */
@@ -510,6 +592,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = NaN;
             continue;
           }
+
           // TODO(danvk): here
           if (stepPlot) {
             var newYs = [ prevY - point.errorPlus * yscale,

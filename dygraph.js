@@ -1646,6 +1646,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
   this.addXTicks_();
 
+  // TODO(danvk): CONTRACT remove
+  this.layout_.addAnnotation();
+
   // Tell PlotKit to use this new data and render itself
   this.layout_.updateOptions({dateWindow: this.dateWindow_});
   this.layout_.evaluateWithError();
