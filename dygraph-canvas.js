@@ -514,6 +514,11 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   var points = this.layout.annotated_points;
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
+    var tick_height = 5;
+    if (p.annotation.hasOwnProperty("tickHeight")) {
+      tick_height = p.annotation.tickHeight;
+    }
+
     var div = document.createElement("div");
     for (var name in annotationStyle) {
       if (annotationStyle.hasOwnProperty(name)) {
@@ -526,18 +531,30 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     }
     div.appendChild(document.createTextNode(p.annotation.shortText));
     div.style.left = (p.canvasx - 10) + "px";
-    div.style.top = p.canvasy + "px";
+    div.style.top = (p.canvasy - 20 - tick_height) + "px";
     div.title = p.annotation.text;
     div.style.color = this.colors[p.name];
     div.style.borderColor = this.colors[p.name];
 
-    Dygraph.addEvent(div, 'click', bindEvt('clickHandler', 'annotationClickHandler', p, this));
-    Dygraph.addEvent(div, 'mouseover', bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
-    Dygraph.addEvent(div, 'mouseout', bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
-    Dygraph.addEvent(div, 'dblclick', bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
+    Dygraph.addEvent(div, 'click',
+        bindEvt('clickHandler', 'annotationClickHandler', p, this));
+    Dygraph.addEvent(div, 'mouseover',
+        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
+    Dygraph.addEvent(div, 'mouseout',
+        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
+    Dygraph.addEvent(div, 'dblclick',
+        bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
 
     this.container.appendChild(div);
     this.annotations.push(div);
+
+    var ctx = this.element.getContext("2d");
+    ctx.strokeStyle = this.colors[p.name];
+    ctx.beginPath();
+    ctx.moveTo(p.canvasx, p.canvasy);
+    ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
+    ctx.closePath();
+    ctx.stroke();
   }
 };
 

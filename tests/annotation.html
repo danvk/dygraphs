@@ -66,7 +66,8 @@
       annotations.push( {
         series: 'another line',
         x: "20061013",
-        shortText: 'X',
+        icon: 'http://www.planscalendar.com/icons/dollar_sign_32x32.gif',
+        shortText: 'A',
         text: 'Another one',
         cssClass: 'annotation',
         clickHandler: function() {
@@ -82,7 +83,8 @@
           series: 'line',
           x: "200610" + x,
           shortText: x,
-          text: 'Line ' + x
+          text: 'Line ' + x,
+          tickHeight: 10
         } );
         last_ann = x;
         g.setAnnotations(annotations);
