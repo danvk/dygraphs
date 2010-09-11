@@ -8,9 +8,15 @@
     <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
     <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
+    <style type="text/css">
+    .annotation {
+      background-color: #dddddd
+    }
+    </style>
   </head>
   <body>
-    <div id="g"></div>
+    <div style="position:absolute; left:100px; top: 200px;" id="g"></div>
+    <div style="position:absolute; left:600px; top: 200px;" id="list"></div>
 
     <script type="text/javascript">
       g = new DateGraph(
@@ -30,10 +36,54 @@
               },
               {
                 rollPeriod: 1,
+                showRoller: true,
                 width: 480,
-                height: 320
+                height: 320,
+                drawCallback: function(g) {
+                  var ann = g.annotations();
+                  var html = "";
+                  for (var i = 0; i < ann.length; i++) {
+                    html += "(" + ann[i].series + ", " + ann[i].x + "): " + ann[i].shortText + " -> " + ann[i].text + "<br/>";
+                  }
+                  document.getElementById("list").innerHTML = html;
+                },
               }
           );
+
+      var last_ann = 0;
+      annotations = [];
+      for (var x = 10; x < 15; x += 2) {
+        annotations.push( {
+          series: 'sine wave',
+          x: "200610" + x,
+          shortText: x,
+          text: 'Stock Market Crash ' + x
+        } );
+        last_ann = x;
+      }
+      annotations.push( {
+        series: 'another line',
+        x: "20061013",
+        shortText: 'X',
+        text: 'Another one',
+        cssClass: 'annotation'
+      } );
+      g.setAnnotations(annotations);
+
+      function add() {
+        var x = last_ann + 2;
+        var annnotations = g.annotations();
+        annotations.push( {
+          series: 'line',
+          x: "200610" + x,
+          shortText: x,
+          text: 'Line ' + x
+        } );
+        last_ann = x;
+        g.setAnnotations(annotations);
+      }
     </script>
+
+    <input type="button" value="Add Annotation" onclick="add()" />
 </body>
 </html>

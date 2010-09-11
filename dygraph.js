@@ -134,6 +134,9 @@ Dygraph.INFO = 2;
 Dygraph.WARNING = 3;
 Dygraph.ERROR = 3;
 
+// Used for initializing annotation CSS rules only once.
+Dygraph.addedAnnotationCSS = false;
+
 Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
   // Labels is no longer a constructor parameter, since it's typically set
   // directly from the data source. It also conains a name for the x-axis,
@@ -170,6 +173,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
+  this.annotations_ = [];
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -226,6 +230,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
+
+  Dygraph.addAnnotationRule();
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -1646,9 +1652,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
   this.addXTicks_();
 
-  // TODO(danvk): CONTRACT remove
-  this.layout_.addAnnotation();
-
   // Tell PlotKit to use this new data and render itself
   this.layout_.updateOptions({dateWindow: this.dateWindow_});
   this.layout_.evaluateWithError();
@@ -2295,6 +2298,39 @@ Dygraph.prototype.setVisibility = function(num, value) {
     this.drawGraph_(this.rawData_);
   }
 };
+
+/**
+ * Update the list of annotations and redraw the chart.
+ */
+Dygraph.prototype.setAnnotations = function(ann) {
+  this.annotations_ = ann;
+  this.layout_.setAnnotations(this.annotations_);
+  this.drawGraph_(this.rawData_);
+};
+
+/**
+ * Return the list of annotations.
+ */
+Dygraph.prototype.annotations = function() {
+  return this.annotations_;
+};
+
+Dygraph.addAnnotationRule = function() {
+  if (Dygraph.addedAnnotationCSS) return;
+
+  var mysheet=document.styleSheets[0]
+  var totalrules=mysheet.cssRules? mysheet.cssRules.length : mysheet.rules.length
+  var rule = "border: 1px solid black; " +
+             "background-color: white; " +
+             "text-align: center;";
+  if (mysheet.insertRule) {  // Firefox
+    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }");
+  } else if (mysheet.addRule) {  // IE
+    mysheet.addRule(".dygraphDefaultAnnotation", rule);
+  }
+
+  Dygraph.addedAnnotationCSS = true;
+}
 
 /**
  * Create a new canvas element. This is more complex than a simple

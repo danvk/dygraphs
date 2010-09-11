@@ -19,6 +19,7 @@ DygraphLayout = function(dygraph, options) {
   this.options = {};  // TODO(danvk): remove, use attr_ instead.
   Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
+  this.annotations = new Array()
 };
 
 DygraphLayout.prototype.attr_ = function(name) {
@@ -30,23 +31,20 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 };
 
 // TODO(danvk): CONTRACT remove
-DygraphLayout.prototype.addAnnotation = function() {
-  // Add an annotation to one series.
-  this.annotations = [];
-  for (var x = 10; x < 30; x += 2) {
-    this.annotations.push( {
-      series: 'sine wave',
-      xval: this.attr_('xValueParser')("200610" + x),
-      shortText: x,
-      text: 'Stock Market Crash ' + x
-    } );
+DygraphLayout.prototype.setAnnotations = function(ann) {
+  // The Dygraph object's annotations aren't parsed. We parse them here and
+  // save a copy.
+  var parse = this.attr_('xValueParser');
+  for (var i = 0; i < ann.length; i++) {
+    var a = {};
+    if (!ann[i].x) {
+      this.dygraph_.error("Annotations must have an 'x' property");
+      return;
+    }
+    Dygraph.update(a, ann[i]);
+    a.xval = parse(a.x);
+    this.annotations.push(a);
   }
-  this.annotations.push( {
-    series: 'another line',
-    xval: this.attr_('xValueParser')("20061013"),
-    shortText: 'X',
-    text: 'Another one'
-  } );
 };
 
 DygraphLayout.prototype.evaluate = function() {
@@ -499,9 +497,6 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     "zIndex": 10,
     "width": "20px",
     "overflow": "hidden",
-    "border": "1px solid black",
-    "background-color": "white",
-    "text-align": "center"
   };
 
   // Get a list of point with annotations.
@@ -513,6 +508,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
       if (annotationStyle.hasOwnProperty(name)) {
         div.style[name] = annotationStyle[name];
       }
+    }
+    div.className = "dygraphDefaultAnnotation";
+    if (p.annotation.hasOwnProperty('cssClass')) {
+      div.className += " " + p.annotation.cssClass;
     }
     div.appendChild(document.createTextNode(p.annotation.shortText));
     div.style.left = (p.canvasx - 10) + "px";
