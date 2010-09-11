@@ -30,14 +30,13 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.datasets[setname] = set_xy;
 };
 
-// TODO(danvk): CONTRACT remove
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy.
   var parse = this.attr_('xValueParser');
   for (var i = 0; i < ann.length; i++) {
     var a = {};
-    if (!ann[i].x) {
+    if (!ann[i].xval && !ann[i].x) {
       this.dygraph_.error("Annotations must have an 'x' property");
       return;
     }
@@ -49,7 +48,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
       return;
     }
     Dygraph.update(a, ann[i]);
-    a.xval = parse(a.x);
+    if (!a.xval) a.xval = parse(a.x);
     this.annotations.push(a);
   }
 };

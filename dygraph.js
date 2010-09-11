@@ -2024,22 +2024,13 @@ Dygraph.prototype.parseArray_ = function(data) {
  * The data is expected to have a first column that is either a date or a
  * number. All subsequent columns must be numbers. If there is a clear mismatch
  * between this.xValueParser_ and the type of the first column, it will be
- * fixed. Returned value is in the same format as return value of parseCSV_.
+ * fixed. Fills out rawData_.
  * @param {Array.<Object>} data See above.
  * @private
  */
 Dygraph.prototype.parseDataTable_ = function(data) {
   var cols = data.getNumberOfColumns();
   var rows = data.getNumberOfRows();
-
-  // Read column labels
-  var labels = [];
-  for (var i = 0; i < cols; i++) {
-    labels.push(data.getColumnLabel(i));
-    if (i != 0 && this.attr_("errorBars")) i += 1;
-  }
-  this.attrs_.labels = labels;
-  cols = labels.length;
 
   var indepType = data.getColumnType(0);
   if (indepType == 'date' || indepType == 'datetime') {
@@ -2058,8 +2049,41 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     return null;
   }
 
+  // Array of the column indices which contain data (and not annotations).
+  var colIdx = [];
+  var annotationCols = {};  // data index -> [annotation cols]
+  var hasAnnotations = false;
+  for (var i = 1; i < cols; i++) {
+    var type = data.getColumnType(i);
+    if (type == 'number') {
+      colIdx.push(i);
+    } else if (type == 'string' && this.attr_('displayAnnotations')) {
+      // This is OK -- it's an annotation column.
+      var dataIdx = colIdx[colIdx.length - 1];
+      if (!annotationCols.hasOwnProperty(dataIdx)) {
+        annotationCols[dataIdx] = [i];
+      } else {
+        annotationCols[dataIdx].push(i);
+      }
+      hasAnnotations = true;
+    } else {
+      this.error("Only 'number' is supported as a dependent type with Gviz." +
+                 " 'string' is only supported if displayAnnotations is true");
+    }
+  }
+
+  // Read column labels
+  // TODO(danvk): add support back for errorBars
+  var labels = [data.getColumnLabel(0)];
+  for (var i = 0; i < colIdx.length; i++) {
+    labels.push(data.getColumnLabel(colIdx[i]));
+  }
+  this.attrs_.labels = labels;
+  cols = labels.length;
+
   var ret = [];
   var outOfOrder = false;
+  var annotations = [];
   for (var i = 0; i < rows; i++) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
@@ -2075,8 +2099,23 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       row.push(data.getValue(i, 0));
     }
     if (!this.attr_("errorBars")) {
-      for (var j = 1; j < cols; j++) {
-        row.push(data.getValue(i, j));
+      for (var j = 0; j < colIdx.length; j++) {
+        var col = colIdx[j];
+        row.push(data.getValue(i, col));
+        if (hasAnnotations &&
+            annotationCols.hasOwnProperty(col) &&
+            data.getValue(i, annotationCols[col][0]) != null) {
+          var ann = {};
+          ann.series = data.getColumnLabel(col);
+          ann.xval = row[0];
+          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length)
+          ann.text = '';
+          for (var k = 0; k < annotationCols[col].length; k++) {
+            if (k) ann.text += "\n";
+            ann.text += data.getValue(i, annotationCols[col][k]);
+          }
+          annotations.push(ann);
+        }
       }
     } else {
       for (var j = 0; j < cols - 1; j++) {
@@ -2093,7 +2132,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.warn("DataTable is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0] });
   }
-  return ret;
+  this.rawData_ = ret;
+
+  if (annotations.length > 0) {
+    this.setAnnotations(annotations, true);
+  }
 }
 
 // These functions are all based on MochiKit.
@@ -2159,7 +2202,7 @@ Dygraph.prototype.start_ = function() {
   } else if (typeof this.file_ == 'object' &&
              typeof this.file_.getColumnRange == 'function') {
     // must be a DataTable from gviz.
-    this.rawData_ = this.parseDataTable_(this.file_);
+    this.parseDataTable_(this.file_);
     this.drawGraph_(this.rawData_);
   } else if (typeof this.file_ == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
@@ -2302,10 +2345,12 @@ Dygraph.prototype.setVisibility = function(num, value) {
 /**
  * Update the list of annotations and redraw the chart.
  */
-Dygraph.prototype.setAnnotations = function(ann) {
+Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   this.annotations_ = ann;
   this.layout_.setAnnotations(this.annotations_);
-  this.drawGraph_(this.rawData_);
+  if (!suppressDraw) {
+    this.drawGraph_(this.rawData_);
+  }
 };
 
 /**
@@ -2319,7 +2364,6 @@ Dygraph.addAnnotationRule = function() {
   if (Dygraph.addedAnnotationCSS) return;
 
   var mysheet=document.styleSheets[0]
-  var totalrules=mysheet.cssRules? mysheet.cssRules.length : mysheet.rules.length
   var rule = "border: 1px solid black; " +
              "background-color: white; " +
              "text-align: center;";
