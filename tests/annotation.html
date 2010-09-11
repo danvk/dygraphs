@@ -10,7 +10,6 @@
     <script type="text/javascript" src="../dygraph.js"></script>
     <style type="text/css">
     .annotation {
-      background-color: #dddddd
     }
     </style>
   </head>
@@ -66,8 +65,10 @@
       annotations.push( {
         series: 'another line',
         x: "20061013",
-        icon: 'http://www.planscalendar.com/icons/dollar_sign_32x32.gif',
-        shortText: 'A',
+        icon: 'dollar.png',
+        iconWidth: 18,
+        iconHeight: 23,
+        tickHeight: 4,
         text: 'Another one',
         cssClass: 'annotation',
         clickHandler: function() {

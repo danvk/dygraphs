@@ -41,6 +41,13 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
       this.dygraph_.error("Annotations must have an 'x' property");
       return;
     }
+    if (ann[i].icon &&
+        !(ann[i].hasOwnProperty('iconWidth') &&
+          ann[i].hasOwnProperty('iconHeight'))) {
+      this.dygraph_.error("Must set iconWidth and iconHeight when setting " +
+                          "annotation.icon property");
+      return;
+    }
     Dygraph.update(a, ann[i]);
     a.xval = parse(a.x);
     this.annotations.push(a);
@@ -495,7 +502,6 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     "position": "absolute",
     "fontSize": this.options.axisLabelFontSize + "px",
     "zIndex": 10,
-    "width": "20px",
     "overflow": "hidden",
   };
 
@@ -514,9 +520,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   var points = this.layout.annotated_points;
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
-    var tick_height = 5;
-    if (p.annotation.hasOwnProperty("tickHeight")) {
-      tick_height = p.annotation.tickHeight;
+    var a = p.annotation;
+    var tick_height = 6;
+    if (a.hasOwnProperty("tickHeight")) {
+      tick_height = a.tickHeight;
     }
 
     var div = document.createElement("div");
@@ -525,13 +532,28 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
         div.style[name] = annotationStyle[name];
       }
     }
-    div.className = "dygraphDefaultAnnotation";
-    if (p.annotation.hasOwnProperty('cssClass')) {
-      div.className += " " + p.annotation.cssClass;
+    if (!a.hasOwnProperty('icon')) {
+      div.className = "dygraphDefaultAnnotation";
     }
-    div.appendChild(document.createTextNode(p.annotation.shortText));
-    div.style.left = (p.canvasx - 10) + "px";
-    div.style.top = (p.canvasy - 20 - tick_height) + "px";
+    if (a.hasOwnProperty('cssClass')) {
+      div.className += " " + a.cssClass;
+    }
+
+    var width = a.hasOwnProperty('height') ? a.height : 20;
+    var height = a.hasOwnProperty('width') ? a.width : 16;
+    if (a.hasOwnProperty('icon')) {
+      var img = document.createElement("img");
+      img.src = a.icon;
+      img.width = width = a.iconWidth;
+      img.height = height = a.iconHeight;
+      div.appendChild(img);
+    } else if (p.annotation.hasOwnProperty('shortText')) {
+      div.appendChild(document.createTextNode(p.annotation.shortText));
+    }
+    div.style.left = (p.canvasx - width / 2) + "px";
+    div.style.top = (p.canvasy - height - tick_height) + "px";
+    div.style.width = width + "px";
+    div.style.height = height + "px";
     div.title = p.annotation.text;
     div.style.color = this.colors[p.name];
     div.style.borderColor = this.colors[p.name];
