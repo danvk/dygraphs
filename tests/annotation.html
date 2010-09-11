@@ -66,7 +66,10 @@
         x: "20061013",
         shortText: 'X',
         text: 'Another one',
-        cssClass: 'annotation'
+        cssClass: 'annotation',
+        clickHandler: function() {
+          document.getElementById("events").innerHTML += "special handler<br/>";
+        }
       } );
       g.setAnnotations(annotations);
 
@@ -82,8 +85,15 @@
         last_ann = x;
         g.setAnnotations(annotations);
       }
+
+      g.updateOptions( {
+        annotationClickHandler: function(ann, point, dg, event) {
+          document.getElementById("events").innerHTML += "click: (" + ann.series + ", " + ann.x + ")<br/>";
+        }
+      });
     </script>
 
     <input type="button" value="Add Annotation" onclick="add()" />
+    <div id="events"> </div>
 </body>
 </html>

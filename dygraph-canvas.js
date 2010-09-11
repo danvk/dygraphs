@@ -499,6 +499,17 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     "overflow": "hidden",
   };
 
+  var bindEvt = function(eventName, classEventName, p, self) {
+    return function(e) {
+      var a = p.annotation;
+      if (a.hasOwnProperty(eventName)) {
+        a[eventName](a, p, self.dygraph_, e);
+      } else if (self.dygraph_.attr_(classEventName)) {
+        self.dygraph_.attr_(classEventName)(a, p, self.dygraph_,e );
+      }
+    };
+  }
+
   // Get a list of point with annotations.
   var points = this.layout.annotated_points;
   for (var i = 0; i < points.length; i++) {
@@ -519,6 +530,16 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     div.title = p.annotation.text;
     div.style.color = this.colors[p.name];
     div.style.borderColor = this.colors[p.name];
+
+    var self = this;
+    Dygraph.addEvent(div, 'click', function(p, self) { return function(e) {
+      if (p.annotation.hasOwnProperty('clickHandler')) {
+        p.annotation.clickHandler(p.annotation, p, self.dygraph_, e);
+      } else if (self.dygraph_.attr_('annotationClickHandler')) {
+        self.dygraph_.attr_('annotationClickHandler')(p.annotation, p, self.dygraph_, e);
+      } }; }(p, self)
+    );
+
     this.container.appendChild(div);
     this.annotations.push(div);
   }
