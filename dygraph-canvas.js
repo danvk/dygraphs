@@ -531,14 +531,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     div.style.color = this.colors[p.name];
     div.style.borderColor = this.colors[p.name];
 
-    var self = this;
-    Dygraph.addEvent(div, 'click', function(p, self) { return function(e) {
-      if (p.annotation.hasOwnProperty('clickHandler')) {
-        p.annotation.clickHandler(p.annotation, p, self.dygraph_, e);
-      } else if (self.dygraph_.attr_('annotationClickHandler')) {
-        self.dygraph_.attr_('annotationClickHandler')(p.annotation, p, self.dygraph_, e);
-      } }; }(p, self)
-    );
+    Dygraph.addEvent(div, 'click', bindEvt('clickHandler', 'annotationClickHandler', p, this));
+    Dygraph.addEvent(div, 'mouseover', bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
+    Dygraph.addEvent(div, 'mouseout', bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
+    Dygraph.addEvent(div, 'dblclick', bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
 
     this.container.appendChild(div);
     this.annotations.push(div);
