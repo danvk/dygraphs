@@ -520,6 +520,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   var points = this.layout.annotated_points;
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
+    if (p.canvasx < this.area.x || p.canvasx > this.area.x + this.area.w) {
+      continue;
+    }
+
     var a = p.annotation;
     var tick_height = 6;
     if (a.hasOwnProperty("tickHeight")) {
@@ -557,6 +561,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     div.title = p.annotation.text;
     div.style.color = this.colors[p.name];
     div.style.borderColor = this.colors[p.name];
+    a.div = div;
 
     Dygraph.addEvent(div, 'click',
         bindEvt('clickHandler', 'annotationClickHandler', p, this));

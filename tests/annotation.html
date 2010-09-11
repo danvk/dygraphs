@@ -16,22 +16,27 @@
   <body>
     <input type="button" value="Add Annotation" onclick="add()" />
     <div id="events"> </div>
-    <div style="position:absolute; left:100px; top: 200px;" id="g"></div>
-    <div style="position:absolute; left:600px; top: 200px;" id="list"></div>
+    <div style="position:absolute; left:200px; top: 200px;" id="g"></div>
+    <div style="position:absolute; left:700px; top: 200px;" id="list"></div>
 
     <script type="text/javascript">
+      var eventDiv = document.getElementById("events");
+      function nameAnnotation(ann) {
+        return "(" + ann.series + ", " + ann.x + ")";
+      }
+
       g = new DateGraph(
               document.getElementById("g"),
               function() {
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
                 var r = "date,parabola,line,another line,sine wave\n";
                 for (var i=1; i<=31; i++) {
-                r += "200610" + zp(i);
-                r += "," + 10*(i*(31-i));
-                r += "," + 10*(8*i);
-                r += "," + 10*(250 - 8*i);
-                r += "," + 10*(125 + 125 * Math.sin(0.3*i));
-                r += "\n";
+                  r += "200610" + zp(i);
+                  r += "," + 10*(i*(31-i));
+                  r += "," + 10*(8*i);
+                  r += "," + 10*(250 - 8*i);
+                  r += "," + 10*(125 + 125 * Math.sin(0.3*i));
+                  r += "\n";
                 }
                 return r;
               },
@@ -44,7 +49,10 @@
                   var ann = g.annotations();
                   var html = "";
                   for (var i = 0; i < ann.length; i++) {
-                    html += "(" + ann[i].series + ", " + ann[i].x + "): " + ann[i].shortText + " -> " + ann[i].text + "<br/>";
+                    var name = nameAnnotation(ann[i]);
+                    html += "<span id='" + name + "'>"
+                    html += name + ": " + ann[i].shortText + " -> ";
+                    html += ann[i].text + "</span><br/>";
                   }
                   document.getElementById("list").innerHTML = html;
                 },
@@ -91,10 +99,7 @@
         g.setAnnotations(annotations);
       }
 
-      var eventDiv = document.getElementById("events");
-      function nameAnnotation(ann) {
-        return "(" + ann.series + ", " + ann.x + ")";
-      }
+      var saveBg = '';
       g.updateOptions( {
         annotationClickHandler: function(ann, point, dg, event) {
           eventDiv.innerHTML += "click: " + nameAnnotation(ann) + "<br/>";
@@ -103,10 +108,13 @@
           eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br/>";
         },
         annotationMouseOverHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "mouseenter: " + nameAnnotation(ann) + "<br/>";
+          document.getElementById(nameAnnotation(ann)).style.fontWeight = 'bold';
+          saveBg = ann.div.style.backgroundColor;
+          ann.div.style.backgroundColor = '#ddd';
         },
         annotationMouseOutHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "mouseout: " + nameAnnotation(ann) + "<br/>";
+          document.getElementById(nameAnnotation(ann)).style.fontWeight = 'normal';
+          ann.div.style.backgroundColor = saveBg;
         }
       });
     </script>
