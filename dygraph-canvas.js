@@ -542,8 +542,8 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
       div.className += " " + a.cssClass;
     }
 
-    var width = a.hasOwnProperty('height') ? a.height : 20;
-    var height = a.hasOwnProperty('width') ? a.width : 16;
+    var width = a.hasOwnProperty('width') ? a.width : 16;
+    var height = a.hasOwnProperty('height') ? a.height : 16;
     if (a.hasOwnProperty('icon')) {
       var img = document.createElement("img");
       img.src = a.icon;
