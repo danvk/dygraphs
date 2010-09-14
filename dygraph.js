@@ -1897,6 +1897,12 @@ Dygraph.prototype.parseCSV_ = function(data) {
     this.attrs_.labels = lines[0].split(delim);
   }
 
+  // Parse the x as a float or return null if it's not a number.
+  var parseFloatOrNull = function(x) {
+    if (x.length == 0) return null;
+    return parseFloat(x);
+  };
+
   var xParser;
   var defaultParserSet = false;  // attempt to auto-detect x value type
   var expectedCols = this.attr_("labels").length;
@@ -1921,25 +1927,25 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j++) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         var vals = inFields[j].split("/");
-        fields[j] = [parseFloat(vals[0]), parseFloat(vals[1])];
+        fields[j] = [parseFloatOrNull(vals[0]), parseFloatOrNull(vals[1])];
       }
     } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       for (var j = 1; j < inFields.length; j += 2)
-        fields[(j + 1) / 2] = [parseFloat(inFields[j]),
-                               parseFloat(inFields[j + 1])];
+        fields[(j + 1) / 2] = [parseFloatOrNull(inFields[j]),
+                               parseFloatOrNull(inFields[j + 1])];
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
         var vals = inFields[j].split(";");
-        fields[j] = [ parseFloat(vals[0]),
-                      parseFloat(vals[1]),
-                      parseFloat(vals[2]) ];
+        fields[j] = [ parseFloatOrNull(vals[0]),
+                      parseFloatOrNull(vals[1]),
+                      parseFloatOrNull(vals[2]) ];
       }
     } else {
       // Values are just numbers
       for (var j = 1; j < inFields.length; j++) {
-        fields[j] = parseFloat(inFields[j]);
+        fields[j] = parseFloatOrNull(inFields[j]);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
