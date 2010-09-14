@@ -1900,8 +1900,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
 
   // Parse the x as a float or return null if it's not a number.
   var parseFloatOrNull = function(x) {
-    if (x.length == 0) return null;
-    return parseFloat(x);
+    var val = parseFloat(x);
+    return isNaN(val) ? null : val;
   };
 
   var xParser;
