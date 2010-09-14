@@ -41,9 +41,9 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
       return;
     }
     if (ann[i].icon &&
-        !(ann[i].hasOwnProperty('iconWidth') &&
-          ann[i].hasOwnProperty('iconHeight'))) {
-      this.dygraph_.error("Must set iconWidth and iconHeight when setting " +
+        !(ann[i].hasOwnProperty('width') &&
+          ann[i].hasOwnProperty('height'))) {
+      this.dygraph_.error("Must set width and height when setting " +
                           "annotation.icon property");
       return;
     }
@@ -547,8 +547,8 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     if (a.hasOwnProperty('icon')) {
       var img = document.createElement("img");
       img.src = a.icon;
-      img.width = width = a.iconWidth;
-      img.height = height = a.iconHeight;
+      img.width = width;
+      img.height = height;
       div.appendChild(img);
     } else if (p.annotation.hasOwnProperty('shortText')) {
       div.appendChild(document.createTextNode(p.annotation.shortText));
