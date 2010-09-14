@@ -727,7 +727,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   var px = 0;
   var py = 0;
   var getX = function(e) { return Dygraph.pageX(e) - px };
-  var getY = function(e) { return Dygraph.pageX(e) - py };
+  var getY = function(e) { return Dygraph.pageY(e) - py };
 
   // Draw zoom rectangles when the mouse is down and the user moves around
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(event) {
@@ -803,11 +803,31 @@ Dygraph.prototype.createDragInterface_ = function() {
       var regionWidth = Math.abs(dragEndX - dragStartX);
       var regionHeight = Math.abs(dragEndY - dragStartY);
 
-      if (regionWidth < 2 && regionHeight < 2 &&
-          self.attr_('clickCallback') != null &&
-          self.lastx_ != undefined) {
-        // TODO(danvk): pass along more info about the points.
-        self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
+      if (regionWidth < 2 && regionHeight < 2 && self.lastx_ != undefined) {
+        if (self.attr_('clickCallback') != null) {
+          // TODO(danvk): pass along more info about the points.
+          self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
+        }
+        if (self.attr_('pointClickCallback')) {
+          // check if the click was on a particular point.
+          var closestIdx = -1;
+          var closestDistance = 0;
+          for (var i = 0; i < self.selPoints_.length; i++) {
+            var p = self.selPoints_[i];
+            var distance = Math.pow(p.canvasx - dragEndX, 2) +
+                           Math.pow(p.canvasy - dragEndY, 2);
+            if (closestIdx == -1 || distance < closestDistance) {
+              closestDistance = distance;
+              closestIdx = i;
+            }
+          }
+
+          // Allow any click within two pixels of the dot.
+          var radius = this.attr_('highlightCircleSize') + 2;
+          if (closestDistance <= 5 * 5) {
+            self.attr_('pointClickCallback')(event, self.selPoints_[closestIdx]);
+          }
+        }
       }
 
       if (regionWidth >= 10) {

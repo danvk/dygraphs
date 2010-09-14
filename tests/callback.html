@@ -76,6 +76,10 @@
                 s.innerHTML += "<b>Click</b> " + pts_info(e,x,pts) + "<br/>";
               },
 
+              pointClickCallback: function(e, p) {
+                s.innerHTML += "<b>Point Click</b> " + p.name + ": " + p.x + "<br/>";
+              },
+
               zoomCallback: function(minX, maxX) {
                 s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + "]<br/>";
               },
