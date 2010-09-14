@@ -501,7 +501,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     "position": "absolute",
     "fontSize": this.options.axisLabelFontSize + "px",
     "zIndex": 10,
-    "overflow": "hidden",
+    "overflow": "hidden"
   };
 
   var bindEvt = function(eventName, classEventName, p, self) {
