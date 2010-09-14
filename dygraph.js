@@ -804,8 +804,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       var regionHeight = Math.abs(dragEndY - dragStartY);
 
       if (regionWidth < 2 && regionHeight < 2 && self.lastx_ != undefined) {
+        // TODO(danvk): pass along more info about the points, e.g. 'x'
         if (self.attr_('clickCallback') != null) {
-          // TODO(danvk): pass along more info about the points.
           self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
         }
         if (self.attr_('pointClickCallback')) {
@@ -823,7 +823,7 @@ Dygraph.prototype.createDragInterface_ = function() {
           }
 
           // Allow any click within two pixels of the dot.
-          var radius = this.attr_('highlightCircleSize') + 2;
+          var radius = self.attr_('highlightCircleSize') + 2;
           if (closestDistance <= 5 * 5) {
             self.attr_('pointClickCallback')(event, self.selPoints_[closestIdx]);
           }
