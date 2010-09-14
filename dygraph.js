@@ -90,6 +90,7 @@ Dygraph.DEFAULT_ATTRS = {
     // TODO(danvk): move defaults from createStatusMessage_ here.
   },
   labelsSeparateLines: false,
+  labelsShowZeroValues: true,
   labelsKMB: false,
   labelsKMG2: false,
   showLabelsOnHighlight: true,
@@ -618,7 +619,12 @@ Dygraph.findPosY = function(obj) {
  * been specified.
  * @private
  */
-Dygraph.prototype.createStatusMessage_ = function(){
+Dygraph.prototype.createStatusMessage_ = function() {
+  var userLabelsDiv = this.user_attrs_["labelsDiv"];
+  if (userLabelsDiv && null != userLabelsDiv
+    && (typeof(userLabelsDiv) == "string" || userLabelsDiv instanceof String)) {
+    this.user_attrs_["labelsDiv"] = document.getElementById(userLabelsDiv);
+  }
   if (!this.attr_("labelsDiv")) {
     var divWidth = this.attr_('labelsDivWidth');
     var messagestyle = {
@@ -984,6 +990,7 @@ Dygraph.prototype.updateSelection_ = function() {
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
       for (var i = 0; i < this.selPoints_.length; i++) {
+    	if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;    	  
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
           replace += "<br/>";
@@ -1899,8 +1906,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
 
   // Parse the x as a float or return null if it's not a number.
   var parseFloatOrNull = function(x) {
-    if (x.length == 0) return null;
-    return parseFloat(x);
+    var val = parseFloat(x);
+    return isNaN(val) ? null : val;
   };
 
   var xParser;
@@ -2005,7 +2012,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     var parsedData = Dygraph.clone(data);
     for (var i = 0; i < data.length; i++) {
       if (parsedData[i].length == 0) {
-        this.error("Row " << (1 + i) << " of data is empty");
+        this.error("Row " + (1 + i) + " of data is empty");
         return null;
       }
       if (parsedData[i][0] == null
