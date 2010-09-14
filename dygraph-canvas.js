@@ -554,7 +554,11 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
       div.appendChild(document.createTextNode(p.annotation.shortText));
     }
     div.style.left = (p.canvasx - width / 2) + "px";
-    div.style.top = (p.canvasy - height - tick_height) + "px";
+    if (a.attachAtBottom) {
+      div.style.top = (this.area.h - height - tick_height) + "px";
+    } else {
+      div.style.top = (p.canvasy - height - tick_height) + "px";
+    }
     div.style.width = width + "px";
     div.style.height = height + "px";
     div.title = p.annotation.text;
@@ -577,8 +581,13 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     var ctx = this.element.getContext("2d");
     ctx.strokeStyle = this.colors[p.name];
     ctx.beginPath();
-    ctx.moveTo(p.canvasx, p.canvasy);
-    ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
+    if (!a.attachAtBottom) {
+      ctx.moveTo(p.canvasx, p.canvasy);
+      ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
+    } else {
+      ctx.moveTo(p.canvasx, this.area.h);
+      ctx.lineTo(p.canvasx, this.area.h - 2 - tick_height);
+    }
     ctx.closePath();
     ctx.stroke();
   }

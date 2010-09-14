@@ -14,7 +14,10 @@
     </style>
   </head>
   <body>
+    <h3>Annotations Demo</h3>
+    <p>Click any point to add an annotation to it or click "Add Annotation".</p>
     <input type="button" value="Add Annotation" onclick="add()" />
+    <input type="button" value="Shove to bottom" onclick="bottom(this)" />
     <div id="events"> </div>
     <div style="position:absolute; left:200px; top: 200px;" id="g"></div>
     <div style="position:absolute; left:700px; top: 200px;" id="list"></div>
@@ -97,6 +100,23 @@
         } );
         last_ann = x;
         g.setAnnotations(annotations);
+      }
+
+      function bottom(el) {
+        var to_bottom = true;
+        if (el.value != 'Shove to bottom') to_bottom = false;
+
+        var anns = g.annotations();
+        for (var i = 0; i < anns.length; i++) {
+          anns[i].attachAtBottom = to_bottom;
+        }
+        g.setAnnotations(anns);
+
+        if (to_bottom) {
+          el.value = 'Lift back up';
+        } else {
+          el.value = 'Shove to bottom';
+        }
       }
 
       var saveBg = '';
