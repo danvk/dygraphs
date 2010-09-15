@@ -8,7 +8,7 @@ site=$1
 ./generate-combined.sh
 
 # Copy everything to the site.
-scp tests/*.html tests/*.js $site/tests/ \
+scp tests/*.html tests/*.js tests/*.html $site/tests/ \
 && \
 scp dygraph*.js gadget.xml excanvas.js thumbnail.png docs/* $site/
 
