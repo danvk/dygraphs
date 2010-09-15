@@ -803,7 +803,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       var regionWidth = Math.abs(dragEndX - dragStartX);
       var regionHeight = Math.abs(dragEndY - dragStartY);
 
-      if (regionWidth < 2 && regionHeight < 2 && self.lastx_ != undefined) {
+      if (regionWidth < 2 && regionHeight < 2 &&
+          self.lastx_ != undefined && self.lastx_ != -1) {
         // TODO(danvk): pass along more info about the points, e.g. 'x'
         if (self.attr_('clickCallback') != null) {
           self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
