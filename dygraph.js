@@ -352,6 +352,32 @@ Dygraph.prototype.toDataCoords = function(x, y) {
   return ret;
 };
 
+/**
+ * Returns the number of columns (including the independent variable).
+ */
+Dygraph.prototype.numColumns = function() {
+  return this.rawData_[0].length;
+};
+
+/**
+ * Returns the number of rows (excluding any header/label row).
+ */
+Dygraph.prototype.numRows = function() {
+  return this.rawData_.length;
+};
+
+/**
+ * Returns the value in the given row and column. If the row and column exceed
+ * the bounds on the data, returns null. Also returns null if the value is
+ * missing.
+ */
+Dygraph.prototype.getValue = function(row, col) {
+  if (row < 0 || row > this.rawData_.length) return null;
+  if (col < 0 || col > this.rawData_[row].length) return null;
+
+  return this.rawData_[row][col];
+};
+
 Dygraph.addEvent = function(el, evt, fn) {
   var normed_fn = function(e) {
     if (!e) var e = window.event;
