@@ -707,13 +707,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <div class="tests">Tests: <font color=red>none</font></div>
           </td>
         </tr>
-        <tr>
-          <td><strong>xAxisLabelFormatter</strong></td>
-          <td><code>function(date, granularity)</code></td>
-          <td><code>Dygraph.dateAxisFormatter</code></td>
-          <td>Function to call to format values along the x axis.
-            <div class="tests">Tests: <a href="tests/x-axis-formatter.html">xAxisLabelFormatter</a></div>
-          </td>
+
         <tr>
           <td><strong>rightGap</strong></td>
           <td><code>integer</code></td>
@@ -827,6 +821,24 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>null</code></td>
           <td>When set, this callback gets called every time the dygraph is panned. The first parameter is the dygraph being drawn.
           <div class="tests">Tests: <a href="tests/callback.html">callback</a></div>
+          </td>
+        </tr>
+        
+       <tr>
+          <td><strong>xAxisLabelFormatter</strong></td>
+          <td><code>function(x)</code></td>
+          <td><code>Dygraph.round_(x, 2)</code></td>
+          <td>Function to call to format values along the x axis.
+            <div class="tests">Tests: <a href="tests/x-axis-formatter.html">xAxisLabelFormatter</a></div>
+          </td>
+        </tr>
+        
+        <tr>
+          <td><strong>yAxisLabelFormatter</strong></td>
+          <td><code>function(y)</code></td>
+          <td><code>Dygraph.round_(y, 2)</code></td>
+          <td>Function to call to format values along the y axis.
+            <div class="tests">Tests: <a href="tests/y-axis-formatter.html">yAxisLabelFormatter</a></div>
           </td>
         </tr>
 

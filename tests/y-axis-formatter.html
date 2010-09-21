@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Y Axis Label Formatting</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>Original data with the default formatter <b>Dygraph.round_(y,2)</b> on Y axis.<br />
+You can observe that this default formatter produces weird labels with values like 0.003...</p>
+    <div id="normal" style="width:600px; height:300px;"></div>
+    
+    <p>Now we use the same data, but with a custom formatter <b>function(y) {return y.toExponential(1);}</b> on Y axis.
+    <br />It's more readable!</p>
+    <div id="exponential" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      function LoadData() {
+        return "" +
+          "Date,A,B\n" +
+          "2009/07/12 00:00:00,0.003,0.002\n" +
+          "2009/07/12 01:00:00,0.005,0.006\n" +
+          "2009/07/12 02:00:00,0.007,0.006\n" +
+          "2009/07/12 03:00:00,0.006,0.005\n" +
+          "2009/07/12 04:00:00,0.004,0.007\n" +
+          "2009/07/12 05:00:00,0.003,0.006\n" +
+          "2009/07/12 06:00:00,0.004,0.006"
+      }
+
+      new Dygraph(
+            document.getElementById("normal"),
+            LoadData()
+          );
+
+      new Dygraph(
+            document.getElementById("exponential"),
+            LoadData(),
+            { 
+              yAxisLabelFormatter:
+                function(y) {
+                  return y.toExponential(1);
+                }
+            });
+    </script>
+  </body>
+</html>

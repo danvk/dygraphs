@@ -95,7 +95,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
+  yValueFormatter: function(y) { return Dygraph.round_(y, 2); },
 
   strokeWidth: 1.0,
 
@@ -103,7 +103,8 @@ Dygraph.DEFAULT_ATTRS = {
   axisLabelFontSize: 14,
   xAxisLabelWidth: 50,
   yAxisLabelWidth: 50,
-  xAxisLabelFormatter: Dygraph.dateAxisFormatter,
+  xAxisLabelFormatter: function(x) { return Dygraph.round_(x, 2); },
+  yAxisLabelFormatter: function(y) { return Dygraph.round_(y, 2); },
   rightGap: 5,
 
   showRoller: false,
@@ -1263,7 +1264,7 @@ Dygraph.prototype.addXTicks_ = function() {
     endDate   = this.rawData_[this.rawData_.length - 1][0];
   }
 
-  var xTicks = this.attr_('xTicker')(startDate, endDate, this);
+  var xTicks = this.attr_('xTicker')('x', startDate, endDate, this);
   this.layout_.updateOptions({xTicks: xTicks});
 };
 
@@ -1423,7 +1424,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.dateTicker = function(startDate, endDate, self) {
+Dygraph.dateTicker = function(axis, startDate, endDate, self) {
   var chosen = -1;
   for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
     var num_ticks = self.NumXTicks(startDate, endDate, i);
@@ -1442,12 +1443,13 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
 
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
- * @param {Number} startDate Start of the date window (millis since epoch)
- * @param {Number} endDate End of the date window (millis since epoch)
+ * @param {String} axis The axis used ('x' or 'y')
+ * @param {Number} minV Minimum value
+ * @param {Number} maxV Maximum value
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self) {
+Dygraph.numericTicks = function(axis, minV, maxV, self) {
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
@@ -1460,7 +1462,15 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   }
   var scale, low_val, high_val, nTicks;
   // TODO(danvk): make it possible to set this for x- and y-axes independently.
-  var pixelsPerTick = self.attr_('pixelsPerYLabel');
+  
+  if (axis=='y' || axis=='Y') {
+	var pixelsPerTick = self.attr_('pixelsPerYLabel');
+	var axisLabelFormatter = self.attr_('yAxisLabelFormatter');
+  } else {
+	var pixelsPerTick = self.attr_('pixelsPerXLabel');
+	var axisLabelFormatter = self.attr_('xAxisLabelFormatter');
+  }
+  
   for (var i = -10; i < 50; i++) {
     if (self.attr_("labelsKMG2")) {
       var base_scale = Math.pow(16, i);
@@ -1499,13 +1509,13 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
-    var label = Dygraph.round_(tickV, 2);
+    var label = axisLabelFormatter(tickV);
     if (k_labels.length) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
+          label = axisLabelFormatter(tickV / n)+ k_labels[j];
           break;
         }
       }
@@ -1524,7 +1534,7 @@ Dygraph.numericTicks = function(minV, maxV, self) {
 Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
   // TODO(danvk): make this an attribute as well.
-  var ticks = Dygraph.numericTicks(minY, maxY, this);
+  var ticks = Dygraph.numericTicks('y', minY, maxY, this);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };
