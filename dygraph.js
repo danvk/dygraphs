@@ -268,16 +268,16 @@ Dygraph.prototype.log = function(severity, message) {
         break;
     }
   }
-}
+};
 Dygraph.prototype.info = function(message) {
   this.log(Dygraph.INFO, message);
-}
+};
 Dygraph.prototype.warn = function(message) {
   this.log(Dygraph.WARNING, message);
-}
+};
 Dygraph.prototype.error = function(message) {
   this.log(Dygraph.ERROR, message);
-}
+};
 
 /**
  * Returns the current rolling period, as set by the user or an option.
@@ -593,7 +593,7 @@ Dygraph.prototype.setColors_ = function() {
   Dygraph.update(this.plotter_.options, this.renderOptions_);
   Dygraph.update(this.layoutOptions_, this.user_attrs_);
   Dygraph.update(this.layoutOptions_, this.attrs_);
-}
+};
 
 /**
  * Return the list of colors. This is either the list of colors passed in the
@@ -752,8 +752,8 @@ Dygraph.prototype.createDragInterface_ = function() {
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
   var py = 0;
-  var getX = function(e) { return Dygraph.pageX(e) - px };
-  var getY = function(e) { return Dygraph.pageY(e) - py };
+  var getX = function(e) { return Dygraph.pageX(e) - px; };
+  var getY = function(e) { return Dygraph.pageY(e) - py; };
 
   // Draw zoom rectangles when the mouse is down and the user moves around
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(event) {
@@ -1129,7 +1129,7 @@ Dygraph.prototype.clearSelection = function() {
   this.attr_("labelsDiv").innerHTML = "";
   this.selPoints_ = [];
   this.lastx_ = -1;
-}
+};
 
 /**
  * Returns the number of the currently selected row
@@ -1147,11 +1147,11 @@ Dygraph.prototype.getSelection = function() {
     }
   }
   return -1;
-}
+};
 
 Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
-}
+};
 
 /**
  * Return a string version of the hours, minutes and seconds portion of a date.
@@ -1169,7 +1169,7 @@ Dygraph.hmsString_ = function(date) {
   } else {
     return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   }
-}
+};
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
@@ -1190,7 +1190,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
       return Dygraph.hmsString_(date.getTime());
     }
   }
-}
+};
 
 /**
  * Convert a JS date (millis since epoch) to YYYY/MM/DD
@@ -1658,7 +1658,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
         actual_y = series[j][1];
         cumulative_y[x] += actual_y;
 
-        series[j] = [x, cumulative_y[x]]
+        series[j] = [x, cumulative_y[x]];
 
         if (!maxY || cumulative_y[x] > maxY)
           maxY = cumulative_y[x];
@@ -2016,7 +2016,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
 
   if (outOfOrder) {
     this.warn("CSV is out of order; order it correctly to speed loading.");
-    ret.sort(function(a,b) { return a[0] - b[0] });
+    ret.sort(function(a,b) { return a[0] - b[0]; });
   }
 
   return ret;
@@ -2168,7 +2168,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           var ann = {};
           ann.series = data.getColumnLabel(col);
           ann.xval = row[0];
-          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length)
+          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length);
           ann.text = '';
           for (var k = 0; k < annotationCols[col].length; k++) {
             if (k) ann.text += "\n";
@@ -2190,14 +2190,14 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 
   if (outOfOrder) {
     this.warn("DataTable is out of order; order it correctly to speed loading.");
-    ret.sort(function(a,b) { return a[0] - b[0] });
+    ret.sort(function(a,b) { return a[0] - b[0]; });
   }
   this.rawData_ = ret;
 
   if (annotations.length > 0) {
     this.setAnnotations(annotations, true);
   }
-}
+};
 
 // These functions are all based on MochiKit.
 Dygraph.update = function (self, o) {
@@ -2446,7 +2446,7 @@ Dygraph.addAnnotationRule = function() {
   }
 
   Dygraph.addedAnnotationCSS = true;
-}
+};
 
 /**
  * Create a new canvas element. This is more complex than a simple
@@ -2470,12 +2470,12 @@ Dygraph.createCanvas = function() {
  */
 Dygraph.GVizChart = function(container) {
   this.container = container;
-}
+};
 
 Dygraph.GVizChart.prototype.draw = function(data, options) {
   this.container.innerHTML = '';
   this.date_graph = new Dygraph(this.container, data, options);
-}
+};
 
 /**
  * Google charts compatible setSelection
@@ -2489,7 +2489,7 @@ Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
     row = selection_array[0].row;
   }
   this.date_graph.setSelection(row);
-}
+};
 
 /**
  * Google charts compatible getSelection implementation
@@ -2510,7 +2510,7 @@ Dygraph.GVizChart.prototype.getSelection = function() {
   }
 
   return selection;
-}
+};
 
 // Older pages may still use this name.
 DateGraph = Dygraph;

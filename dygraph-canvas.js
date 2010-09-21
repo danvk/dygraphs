@@ -19,7 +19,7 @@ DygraphLayout = function(dygraph, options) {
   this.options = {};  // TODO(danvk): remove, use attr_ instead.
   Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
-  this.annotations = new Array()
+  this.annotations = new Array();
 };
 
 DygraphLayout.prototype.attr_ = function(name) {
@@ -513,7 +513,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
         self.dygraph_.attr_(classEventName)(a, p, self.dygraph_,e );
       }
     };
-  }
+  };
 
   // Get a list of point with annotations.
   var points = this.layout.annotated_points;
@@ -615,7 +615,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
   var setCount = setNames.length;
 
-  this.colors = {}
+  this.colors = {};
   for (var i = 0; i < setCount; i++) {
     this.colors[setNames[i]] = colorScheme[i % colorCount];
   }
@@ -699,7 +699,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     else if (axisY > 1.0) axisY = 1.0;
     axisY = this.area.h * axisY + this.area.y;
 
-    var baseline = []  // for stacked graphs: baseline for filling
+    var baseline = [];  // for stacked graphs: baseline for filling
 
     // process sets in reverse order (needed for stacked graphs)
     for (var i = setCount - 1; i >= 0; i--) {
