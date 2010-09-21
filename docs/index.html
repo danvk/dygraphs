@@ -821,6 +821,15 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>320</code></td>
         </tr>
 
+		<tr>
+          <td><strong>panCallback</strong></td>
+          <td><code>function(dygraph)</code></td>
+          <td><code>null</code></td>
+          <td>When set, this callback gets called every time the dygraph is panned. The first parameter is the dygraph being drawn.
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a></div>
+          </td>
+        </tr>
+
       </tbody>
     </table>
 

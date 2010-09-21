@@ -86,6 +86,10 @@
 
               drawCallback: function(g) {
                 s.innerHTML += "<b>Draw</b> [" + g.xAxisRange() + "]<br/>";
+              },
+
+              panCallback: function(g) {
+                  s.innerHTML += "<b>Pan</b> [" + g.xAxisRange() + "]<br/>";
               }
             }
           );

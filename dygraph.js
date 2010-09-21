@@ -808,6 +808,9 @@ Dygraph.prototype.createDragInterface_ = function() {
       isPanning = false;
       draggingDate = null;
       dateRange = null;
+      if (self.attr_("panCallback")) {
+    	  self.attr_("panCallback")(self);
+      }
     }
   });
 
@@ -874,6 +877,9 @@ Dygraph.prototype.createDragInterface_ = function() {
       isPanning = false;
       draggingDate = null;
       dateRange = null;
+      if (self.attr_("panCallback")) {
+    	  self.attr_("panCallback")(self);
+      }
     }
   });
 
