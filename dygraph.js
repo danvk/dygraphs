@@ -1058,8 +1058,8 @@ Dygraph.prototype.doUnzoom_ = function() {
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
       var maxDate = this.rawData_[this.rawData_.length - 1][0];
-      var minValue = this.xAxisRange()[0];
-      var maxValue = this.xAxisRange()[1];
+      var minValue = this.yAxisRange()[0];
+      var maxValue = this.yAxisRange()[1];
       this.attr_("zoomCallback")(minDate, maxDate, minValue, maxValue);
     }
     this.drawGraph_(this.rawData_);

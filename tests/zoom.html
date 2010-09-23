@@ -18,11 +18,12 @@
 
     <p><b>Zoom operations:</b></p>
     <p>
-      <input type="button" value="Zoom operation 1" onclick="sizeGraph(1)">&nbsp;
-      <input type="button" value="Zoom operation 2" onclick="sizeGraph(2)">&nbsp;
-      <input type="button" value="Zoom operation 3" onclick="sizeGraph(3)">&nbsp;
-      <input type="button" value="Zoom operation 4" onclick="sizeGraph(4)">&nbsp;
-      <input type="button" value="Unzoom" onclick="sizeGraph(5)">&nbsp;
+      <input type="button" value="Y (3,5)" onclick="sizeGraph(1)">&nbsp;
+      <input type="button" value="Y (0,4)" onclick="sizeGraph(2)">&nbsp;
+      <input type="button" value="Y (2,4)" onclick="sizeGraph(3)">&nbsp;
+      <input type="button" value="Y (0,2)" onclick="sizeGraph(4)">&nbsp;
+      <input type="button" value="Y (1,0)" onclick="sizeGraph(5)">&nbsp;
+      <input type="button" value="Unzoom" onclick="sizeGraph(0)">&nbsp;
       </p>
 
 
@@ -54,10 +55,18 @@
 
       function sizeGraph(i) {
         switch(i) {
-          case 1: g.doZoomYValues_(4, 2);
+          case 0: g.doUnzoom_();
                   break;
-          case 5: g.doUnzoom_();
-                    break;
+          case 1: g.doZoomYValues_(5, 3);
+                  break;
+          case 2: g.doZoomYValues_(4, 0);
+                  break;
+          case 3: g.doZoomYValues_(4, 2);
+                  break;
+          case 4: g.doZoomYValues_(2, 0);
+                  break;
+          case 5: g.doZoomYValues_(1, 0);
+                  break;
         }
       }
     </script>
