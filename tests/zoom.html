@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <title>noise</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <h3>Click the buttons to change the zoom</h3>
+    <h4>Window coordinates (in dates and values):</h4>
+    <div id = "dimensions"></div>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+
+    <p><b>Zoom operations:</b></p>
+    <p>
+      <input type="button" value="Zoom operation 1" onclick="sizeGraph(1)">&nbsp;
+      <input type="button" value="Zoom operation 2" onclick="sizeGraph(2)">&nbsp;
+      <input type="button" value="Zoom operation 3" onclick="sizeGraph(3)">&nbsp;
+      <input type="button" value="Zoom operation 4" onclick="sizeGraph(4)">&nbsp;
+      <input type="button" value="Unzoom" onclick="sizeGraph(5)">&nbsp;
+      </p>
+
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              zoomCallback : function(a,b,c,d) { showDimensions(a,b,c,d); }
+            }
+          );
+
+      // TODO(konigsberg): Implement a visualization that verifies that initial
+      // displays also show correctly.
+
+      // Pull an initial value for logging.
+      var minDate = g.xAxisRange()[0];
+      var maxDate = g.xAxisRange()[1];
+      var minValue = g.yAxisRange()[0];
+      var maxValue = g.yAxisRange()[1];
+
+      showDimensions(minDate, maxDate, minValue, maxValue);
+
+      function showDimensions(minDate, maxDate, minValue, maxValue) {
+        var elem = document.getElementById("dimensions");
+        elem.innerHTML =
+          "dateWindow : [" + minDate + " , "+ maxDate + "],<br>" +
+          "valueRange : [" + minValue + " , "+ maxValue + "],";
+      }
+
+      function sizeGraph(i) {
+        switch(i) {
+          case 1: g.doZoomYValues_(4, 2);
+                  break;
+          case 5: g.doUnzoom_();
+                    break;
+        }
+      }
+    </script>
+
+  </body>
+</html>
