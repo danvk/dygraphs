@@ -11,19 +11,26 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <h3>Click the buttons to change the zoom</h3>
+    <h3>Click the buttons to change the zoom level or just use the normal
+    click-and drag.</h3>
     <h4>Window coordinates (in dates and values):</h4>
     <div id = "dimensions"></div>
     <div id="div_g" style="width:600px; height:300px;"></div>
 
     <p><b>Zoom operations:</b></p>
     <p>
-      <input type="button" value="Y (3,5)" onclick="sizeGraph(1)">&nbsp;
-      <input type="button" value="Y (0,4)" onclick="sizeGraph(2)">&nbsp;
-      <input type="button" value="Y (2,4)" onclick="sizeGraph(3)">&nbsp;
-      <input type="button" value="Y (0,2)" onclick="sizeGraph(4)">&nbsp;
-      <input type="button" value="Y (1,0)" onclick="sizeGraph(5)">&nbsp;
-      <input type="button" value="Unzoom" onclick="sizeGraph(0)">&nbsp;
+      <input type="button" value="Y (3,5)" onclick="zoomGraphY(3,5)">&nbsp;
+      <input type="button" value="Y (0,4)" onclick="zoomGraphY(0,4)">&nbsp;
+      <input type="button" value="Y (2,4)" onclick="zoomGraphY(2,4)">&nbsp;
+      <input type="button" value="Y (0,2)" onclick="zoomGraphY(0,2)">&nbsp;
+      <input type="button" value="Y (1,0)" onclick="zoomGraphY(1,0)">&nbsp;
+      <br>
+      <input type="button" value="Oct 8-13" onclick="zoomGraphX(1160261979962, 1163905694248)">&nbsp;
+      <input type="button" value="Oct 22-28" onclick="zoomGraphX(1161489164461 , 1162008465957)">&nbsp;
+      <input type="button" value="Oct 23-24" onclick="zoomGraphX(1161575878860, 1161660991675)">&nbsp;
+      <input type="button" value="Oct 26 6AM-noon" onclick="zoomGraphX(1161770537840, 1161792063332)">&nbsp;
+      <br>
+      <input type="button" value="Unzoom" onclick="unzoomGraph()">&nbsp;
       </p>
 
 
@@ -43,7 +50,6 @@
       var maxDate = g.xAxisRange()[1];
       var minValue = g.yAxisRange()[0];
       var maxValue = g.yAxisRange()[1];
-
       showDimensions(minDate, maxDate, minValue, maxValue);
 
       function showDimensions(minDate, maxDate, minValue, maxValue) {
@@ -53,21 +59,16 @@
           "valueRange : [" + minValue + " , "+ maxValue + "],";
       }
 
-      function sizeGraph(i) {
-        switch(i) {
-          case 0: g.doUnzoom_();
-                  break;
-          case 1: g.doZoomYValues_(5, 3);
-                  break;
-          case 2: g.doZoomYValues_(4, 0);
-                  break;
-          case 3: g.doZoomYValues_(4, 2);
-                  break;
-          case 4: g.doZoomYValues_(2, 0);
-                  break;
-          case 5: g.doZoomYValues_(1, 0);
-                  break;
-        }
+      function zoomGraphX(minDate, maxDate) {
+        g.doZoomXDates_(minDate, maxDate);
+      }
+
+      function zoomGraphY(minValue, maxValue) {
+        g.doZoomYValues_(minValue, maxValue);
+      }
+
+      function unzoomGraph() {
+        g.doUnzoom_();
       }
     </script>
 
