@@ -73,7 +73,7 @@
 
       <h3 id="demo">A demo is worth a thousand words:</h3>
 
-      <p style="font-size:0.8em">(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom back out. Change the number and hit enter to adjust the averaging period.)</p>
+      <p style="font-size:0.8em">(Mouse over to highlight individual values. Click and drag to zoom in both axes. Double-click to zoom back out. Change the number and hit enter to adjust the averaging period.)</p>
 
       <div id="title" style="width:800px; margin: 1em;text-align:center; font-weight: bold; font-size: 125%;">Temperatures in New York vs. San Francisco</div>
 
@@ -114,7 +114,7 @@
         <li>Lightweight (45kb) and responsive</li>
         <li>Displays values on mouseover (this makes it easily discoverable)</li>
         <li>Supports error bands around data series</li>
-        <li>Interactive zoom</li>
+        <li>Interactive zoom and pan</li>
         <li>Adjustable averaging period</li>
         <li>Can intelligently chart fractions</li>
         <li>Customizable click-through actions</li>
@@ -566,10 +566,10 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>zoomCallback</strong></td>
-          <td><code>function(minDate,<br/>maxDate){}</code></td>
+          <td><code>function(minDate,<br/>maxDate,<br/>minValue,<br/>maxValue){}</code></td>
           <td><code>null</code></td>
-          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> </div>
+          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. minValue and maxValue are y-axis range values.
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/zoom.html">zoom</a></div>
           </td>
         </tr>
         <tr>
