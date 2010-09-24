@@ -135,6 +135,11 @@ Dygraph.INFO = 2;
 Dygraph.WARNING = 3;
 Dygraph.ERROR = 3;
 
+// Directions for panning and zooming. Use bit operations when combined
+// values are possible.
+Dygraph.HORIZONTAL = 1;
+Dygraph.VERTICAL = 2;
+
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
@@ -175,8 +180,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // locally-stored copy of the attribute. valueWindow starts off the same as
   // valueRange but is impacted by zoom or pan effects. valueRange is kept
   // around to restore the original value back to valueRange.
-  // TODO(konigsberg): There are no vertical pan effects yet, but valueWindow
-  // would change accordingly.
   this.valueRange_ = attrs.valueRange || null;
   this.valueWindow_ = this.valueRange_;
 
@@ -773,7 +776,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
       var xDelta = Math.abs(dragStartX - dragEndX);
       var yDelta = Math.abs(dragStartY - dragEndY);
-      var dragDirection = (xDelta < yDelta) ? "V" : "H";
+      var dragDirection = (xDelta < yDelta) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
 
       self.drawZoomRect_(dragDirection, dragStartX, dragEndX, dragStartY, dragEndY,
                          prevDragDirection, prevEndX, prevEndY);
@@ -914,15 +917,15 @@ Dygraph.prototype.createDragInterface_ = function() {
  * avoid extra redrawing, but it's tricky to avoid interactions with the status
  * dots.
  * 
- * @param {String} direction the direction of the zoom rectangle. "H" and "V"
- * for Horizontal and Vertical.
+ * @param {Number} direction the direction of the zoom rectangle. Acceptable
+ * values are Dygraph.HORIZONTAL and Dygraph.VERTICAL.
  * @param {Number} startX The X position where the drag started, in canvas
  * coordinates.
  * @param {Number} endX The current X position of the drag, in canvas coords.
  * @param {Number} startY The Y position where the drag started, in canvas
  * coordinates.
  * @param {Number} endY The current Y position of the drag, in canvas coords.
- * @param {String} prevDirection the value of direction on the previous call to
+ * @param {Number} prevDirection the value of direction on the previous call to
  * this function. Used to avoid excess redrawing
  * @param {Number} prevEndX The value of endX on the previous call to this
  * function. Used to avoid excess redrawing
@@ -935,23 +938,23 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY
   var ctx = this.canvas_.getContext("2d");
 
   // Clean up from the previous rect if necessary
-  if (prevDirection == "H") {
+  if (prevDirection == Dygraph.HORIZONTAL) {
     ctx.clearRect(Math.min(startX, prevEndX), 0,
                   Math.abs(startX - prevEndX), this.height_);
-  } else if (prevDirection == "V"){
+  } else if (prevDirection == Dygraph.VERTICAL){
     ctx.clearRect(0, Math.min(startY, prevEndY),
                   this.width_, Math.abs(startY - prevEndY));
   }
 
   // Draw a light-grey rectangle to show the new viewing area
-  if (direction == "H") {
+  if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
       ctx.fillRect(Math.min(startX, endX), 0,
                    Math.abs(endX - startX), this.height_);
     }
   }
-  if (direction == "V") {
+  if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
       ctx.fillRect(0, Math.min(startY, endY),
