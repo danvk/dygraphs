@@ -759,8 +759,18 @@ Dygraph.prototype.createDragInterface_ = function() {
   var prevEndX = null;
   var prevEndY = null;
   var prevDragDirection = null;
+
+  // draggingDate and draggingValue represent the [date,value] point on the
+  // graph at which the mouse was pressed. As the mouse moves while panning,
+  // the viewport must pan so that the mouse position points to
+  // [draggingDate, draggingValue]
   var draggingDate = null;
+  var draggingValue = null;
+
+  // The range in second/value units that the viewport encompasses during a
+  // panning operation.
   var dateRange = null;
+  var valueRange = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
@@ -789,11 +799,18 @@ Dygraph.prototype.createDragInterface_ = function() {
       dragEndY = getY(event);
 
       // Want to have it so that:
-      // 1. draggingDate appears at dragEndX
+      // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
       // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
+      // 3. draggingValue appears at dragEndY.
+      // 4. valueRange is unaltered.
 
-      self.dateWindow_[0] = draggingDate - (dragEndX / self.width_) * dateRange;
-      self.dateWindow_[1] = self.dateWindow_[0] + dateRange;
+      var minDate = draggingDate - (dragEndX / self.width_) * dateRange;
+      var maxDate = minDate + dateRange;
+      self.dateWindow_ = [minDate, maxDate];
+
+      var maxValue = draggingValue + (dragEndY / self.height_) * valueRange;
+      var minValue = maxValue - valueRange;
+      self.valueWindow_ = [ minValue, maxValue ];
       self.drawGraph_(self.rawData_);
     }
   });
@@ -806,12 +823,21 @@ Dygraph.prototype.createDragInterface_ = function() {
     dragStartY = getY(event);
 
     if (event.altKey || event.shiftKey) {
-      // TODO(konigsberg): Support vertical panning.
-      if (!self.dateWindow_) return;  // have to be zoomed in to pan.
+      // have to be zoomed in to pan.
+      if (!self.dateWindow_ && !self.valueWindow_) return;
+
       isPanning = true;
-      dateRange = self.dateWindow_[1] - self.dateWindow_[0];
+      var xRange = self.xAxisRange();
+      dateRange = xRange[1] - xRange[0];
+      var yRange = self.yAxisRange();
+      valueRange = yRange[1] - yRange[0];
+
+      // TODO(konigsberg): Switch from all this math to toDataCoords?
+      // Seems to work for the dragging value.
       draggingDate = (dragStartX / self.width_) * dateRange +
-        self.dateWindow_[0];
+        xRange[0];
+      var r = self.toDataCoords(null, dragStartY);
+      draggingValue = r[1];
     } else {
       isZooming = true;
     }
@@ -829,7 +855,9 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
+      draggingValue = null;
       dateRange = null;
+      valueRange = null;
     }
   });
 
@@ -898,7 +926,9 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
+      draggingValue = null;
       dateRange = null;
+      valueRange = null;
     }
   });
 
