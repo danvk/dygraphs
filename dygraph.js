@@ -1012,9 +1012,9 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
 Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   // Find the highest and lowest values in pixel range.
   var r = this.toDataCoords(null, lowY);
-  var minValue = r[1];
-  r = this.toDataCoords(null, highY);
   var maxValue = r[1];
+  r = this.toDataCoords(null, highY);
+  var minValue = r[1];
 
   this.doZoomYValues_(minValue, maxValue);
 };
@@ -1029,7 +1029,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
  * @private
  */
 Dygraph.prototype.doZoomYValues_ = function(minValue, maxValue) {
-  this.valueWindow_ = [maxValue, minValue];
+  this.valueWindow_ = [minValue, maxValue];
   this.drawGraph_(this.rawData_);
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange(); 
