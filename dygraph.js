@@ -240,8 +240,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
-Dygraph.prototype.attr_ = function(name) {
-  if (typeof(this.user_attrs_[name]) != 'undefined') {
+Dygraph.prototype.attr_ = function(name, series) {
+  if (series &&
+      typeof(this.user_attrs_[series]) != 'undefined' &&
+      typeof(this.user_attrs_[series][name]) != 'undefined') {
+    return this.user_attrs_[series][name];
+  } else if (typeof(this.user_attrs_[name]) != 'undefined') {
     return this.user_attrs_[name];
   } else if (typeof(this.attrs_[name]) != 'undefined') {
     return this.attrs_[name];
@@ -1581,8 +1585,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.setColors_();
   this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
-  var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
-
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
 
@@ -1592,6 +1594,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
   // Loop over all fields and create datasets
   for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
+
+    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
@@ -2306,6 +2310,9 @@ Dygraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
+
+  // TODO(danvk): validate per-series options.
+
   Dygraph.update(this.user_attrs_, attrs);
   Dygraph.update(this.renderOptions_, attrs);
 
