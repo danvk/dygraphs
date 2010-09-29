@@ -1037,7 +1037,7 @@ Dygraph.prototype.updateSelection_ = function() {
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
       for (var i = 0; i < this.selPoints_.length; i++) {
-    	if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;    	  
+        if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
           replace += "<br/>";
@@ -2148,8 +2148,8 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
         data.getValue(i, 0) === null) {
-      this.warning("Ignoring row " + i +
-                   " of DataTable because of undefined or null first column.");
+      this.warn("Ignoring row " + i +
+                " of DataTable because of undefined or null first column.");
       continue;
     }
 
