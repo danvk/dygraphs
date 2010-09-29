@@ -243,6 +243,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 Dygraph.prototype.attr_ = function(name, series) {
   if (series &&
       typeof(this.user_attrs_[series]) != 'undefined' &&
+      this.user_attrs_[series] != null &&
       typeof(this.user_attrs_[series][name]) != 'undefined') {
     return this.user_attrs_[series][name];
   } else if (typeof(this.user_attrs_[name]) != 'undefined') {
