@@ -1021,11 +1021,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
  */
 Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
-  var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
   if (this.previousVerticalX_ >= 0) {
+    // Determine the maximum highlight circle size.
+    var maxCircleSize = 0;
+    var num_series = this.attr_('labels').length;
+    for (var i = 1; i < num_series; i++) {
+      var r = this.attr_('highlightCircleSize', i);
+      if (r > maxCircleSize) maxCircleSize = r;
+    }
     var px = this.previousVerticalX_;
-    ctx.clearRect(px - circleSize - 1, 0, 2 * circleSize + 2, this.height_);
+    ctx.clearRect(px - maxCircleSize - 1, 0,
+                  2 * maxCircleSize + 2, this.height_);
   }
 
   var isOK = function(x) { return x && !isNaN(x); };
@@ -1061,6 +1068,8 @@ Dygraph.prototype.updateSelection_ = function() {
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
+      var setIdx = this.indexFromSetName(this.selPoints_[i].name);
+      var circleSize = this.attr_('highlightCircleSize', setIdx);
       ctx.beginPath();
       ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
       ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
@@ -2312,6 +2321,11 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
 
   // TODO(danvk): validate per-series options.
+  // Supported:
+  // strokeWidth
+  // pointSize
+  // drawPoints
+  // highlightCircleSize
 
   Dygraph.update(this.user_attrs_, attrs);
   Dygraph.update(this.renderOptions_, attrs);
@@ -2425,6 +2439,18 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
  */
 Dygraph.prototype.annotations = function() {
   return this.annotations_;
+};
+
+/**
+ * Get the index of a series (column) given its name. The first column is the
+ * x-axis, so the data series start with index 1.
+ */
+Dygraph.prototype.indexFromSetName = function(name) {
+  var labels = this.attr_("labels");
+  for (var i = 0; i < labels.length; i++) {
+    if (labels[i] == name) return i;
+  }
+  return null;
 };
 
 Dygraph.addAnnotationRule = function() {

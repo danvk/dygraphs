@@ -754,14 +754,16 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
+    var setIdx = this.dygraph_.indexFromSetName(setName);
     var color = this.colors[setName];
+    var strokeWidth = this.dygraph_.attr_("strokeWidth", setIdx);
 
     // setup graphics context
     context.save();
     var point = this.layout.points[0];
-    var pointSize = this.dygraph_.attr_("pointSize");
+    var pointSize = this.dygraph_.attr_("pointSize", setIdx);
     var prevX = null, prevY = null;
-    var drawPoints = this.dygraph_.attr_("drawPoints");
+    var drawPoints = this.dygraph_.attr_("drawPoints", setIdx);
     var points = this.layout.points;
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
@@ -779,17 +781,20 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = point.canvasx;
             prevY = point.canvasy;
           } else {
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = this.options.strokeWidth;
-            ctx.moveTo(prevX, prevY);
-            if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
+            // TODO(danvk): figure out why this conditional is necessary.
+            if (strokeWidth) {
+              ctx.beginPath();
+              ctx.strokeStyle = color;
+              ctx.lineWidth = strokeWidth;
+              ctx.moveTo(prevX, prevY);
+              if (stepPlot) {
+                ctx.lineTo(point.canvasx, prevY);
+              }
+              prevX = point.canvasx;
+              prevY = point.canvasy;
+              ctx.lineTo(prevX, prevY);
+              ctx.stroke();
             }
-            prevX = point.canvasx;
-            prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
-            ctx.stroke();
           }
 
           if (drawPoints || isIsolated) {
