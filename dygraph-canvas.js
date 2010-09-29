@@ -754,16 +754,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
-    var setIdx = this.dygraph_.indexFromSetName(setName);
     var color = this.colors[setName];
-    var strokeWidth = this.dygraph_.attr_("strokeWidth", setIdx);
+    var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
     context.save();
     var point = this.layout.points[0];
-    var pointSize = this.dygraph_.attr_("pointSize", setIdx);
+    var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
-    var drawPoints = this.dygraph_.attr_("drawPoints", setIdx);
+    var drawPoints = this.dygraph_.attr_("drawPoints", setName);
     var points = this.layout.points;
     for (var j = 0; j < points.length; j++) {
       var point = points[j];

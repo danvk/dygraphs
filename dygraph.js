@@ -240,12 +240,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
-Dygraph.prototype.attr_ = function(name, series) {
-  if (series &&
-      typeof(this.user_attrs_[series]) != 'undefined' &&
-      this.user_attrs_[series] != null &&
-      typeof(this.user_attrs_[series][name]) != 'undefined') {
-    return this.user_attrs_[series][name];
+Dygraph.prototype.attr_ = function(name, seriesName) {
+  if (seriesName &&
+      typeof(this.user_attrs_[seriesName]) != 'undefined' &&
+      this.user_attrs_[seriesName] != null &&
+      typeof(this.user_attrs_[seriesName][name]) != 'undefined') {
+    return this.user_attrs_[seriesName][name];
   } else if (typeof(this.user_attrs_[name]) != 'undefined') {
     return this.user_attrs_[name];
   } else if (typeof(this.attrs_[name]) != 'undefined') {
@@ -1026,9 +1026,9 @@ Dygraph.prototype.updateSelection_ = function() {
   if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
-    var num_series = this.attr_('labels').length;
-    for (var i = 1; i < num_series; i++) {
-      var r = this.attr_('highlightCircleSize', i);
+    var labels = this.attr_('labels');
+    for (var i = 1; i < labels.length; i++) {
+      var r = this.attr_('highlightCircleSize', labels[i]);
       if (r > maxCircleSize) maxCircleSize = r;
     }
     var px = this.previousVerticalX_;
@@ -1069,8 +1069,8 @@ Dygraph.prototype.updateSelection_ = function() {
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
-      var setIdx = this.indexFromSetName(this.selPoints_[i].name);
-      var circleSize = this.attr_('highlightCircleSize', setIdx);
+      var circleSize =
+        this.attr_('highlightCircleSize', this.selPoints_[i].name);
       ctx.beginPath();
       ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
       ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
