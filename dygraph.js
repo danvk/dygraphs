@@ -1830,7 +1830,7 @@ Dygraph.prototype.computeYaxes_ = function(extremes) {
       var maxY = -Infinity;  // extremes[series[0]][1];
       for (var j = 0; j < series.length; j++) {
         minY = Math.min(extremes[series[j]][0], minY);
-        maxY = Math.max(extremes[series[j]][0], maxY);
+        maxY = Math.max(extremes[series[j]][1], maxY);
       }
       if (axis.includeZero && minY > 0) minY = 0;
 
