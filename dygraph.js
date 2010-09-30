@@ -1697,6 +1697,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var axes = out[0];
   var seriesToAxisMap = out[1];
   this.displayedYRange_ = axes[0].valueRange;
+  // TODO(danvk): remove yAxis, yTicks
   this.layout_.updateOptions( { yAxis: axes[0].valueRange,
                                 yTicks: axes[0].ticks,
                                 yAxes: axes,

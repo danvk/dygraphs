@@ -132,12 +132,15 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   }
 
   this.yticks = new Array();
-  for (var i = 0; i < this.options.yTicks.length; i++) {
-    var tick = this.options.yTicks[i];
-    var label = tick.label;
-    var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-    if ((pos >= 0.0) && (pos <= 1.0)) {
-      this.yticks.push([pos, label]);
+  for (var i = 0; i < 1; i++ ) {
+    var axis = this.options.yAxes[i];
+    for (var j = 0; j < axis.ticks.length; j++) {
+      var tick = axis.ticks[j];
+      var label = tick.label;
+      var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
+      if ((pos >= 0.0) && (pos <= 1.0)) {
+        this.yticks.push([pos, label]);
+      }
     }
   }
 };
