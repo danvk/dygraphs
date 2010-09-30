@@ -79,10 +79,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
 
-  this.minyval = this.options.yAxis[0];
-  this.maxyval = this.options.yAxis[1];
-  this.yrange = this.maxyval - this.minyval;
-  this.yscale = (this.yrange != 0 ? 1/this.yrange : 1.0);
+  for (var i = 0; i < this.options.yAxes.length; i++) {
+    var axis = this.options.yAxes[i];
+    axis.minyval = axis.valueRange[0];
+    axis.maxyval = axis.valueRange[1];
+    axis.yrange = axis.maxyval - axis.minyval;
+    axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
+  }
 };
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
@@ -92,12 +95,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     if (!this.datasets.hasOwnProperty(setName)) continue;
 
     var dataset = this.datasets[setName];
+    var axis = this.options.yAxes[this.options.seriesToAxisMap[setName]];
+
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var point = {
         // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
+        y: 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale),
         xval: parseFloat(item[0]),
         yval: parseFloat(item[1]),
         name: setName
@@ -252,6 +257,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.ylabels = new Array();
   this.annotations = new Array();
 
+  // TODO(danvk): consider all axes in this computation.
   this.area = {
     x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
     y: 0
@@ -639,6 +645,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
+      var axis = this.layout.options.yAxes[
+        this.layout.options.seriesToAxisMap[setName]];
       var color = this.colors[setName];
 
       // setup graphics context
@@ -646,7 +654,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var prevX = NaN;
       var prevY = NaN;
       var prevYs = [-1, -1];
-      var yscale = this.layout.yscale;
+      var yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
       var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
@@ -694,23 +702,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.fill();
     }
   } else if (fillGraph) {
-    var axisY = 1.0 + this.layout.minyval * this.layout.yscale;
-    if (axisY < 0.0) axisY = 0.0;
-    else if (axisY > 1.0) axisY = 1.0;
-    axisY = this.area.h * axisY + this.area.y;
-
     var baseline = []  // for stacked graphs: baseline for filling
 
     // process sets in reverse order (needed for stacked graphs)
     for (var i = setCount - 1; i >= 0; i--) {
       var setName = setNames[i];
       var color = this.colors[setName];
+      var axis = this.layout.options.yAxes[
+        this.layout.options.seriesToAxisMap[setName]];
+      var axisY = 1.0 + axis.minyval * axis.yscale;
+      if (axisY < 0.0) axisY = 0.0;
+      else if (axisY > 1.0) axisY = 1.0;
+      axisY = this.area.h * axisY + this.area.y;
 
       // setup graphics context
       ctx.save();
       var prevX = NaN;
       var prevYs = [-1, -1];
-      var yscale = this.layout.yscale;
+      var yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
       var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +

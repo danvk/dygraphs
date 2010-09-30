@@ -1698,7 +1698,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var seriesToAxisMap = out[1];
   this.displayedYRange_ = axes[0].valueRange;
   this.layout_.updateOptions( { yAxis: axes[0].valueRange,
-                                yTicks: axes[0].ticks } );
+                                yTicks: axes[0].ticks,
+                                yAxes: axes,
+                                seriesToAxisMap: seriesToAxisMap
+                                } );
 
   this.addXTicks_();
 
