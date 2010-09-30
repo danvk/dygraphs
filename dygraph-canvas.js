@@ -132,14 +132,14 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   }
 
   this.yticks = new Array();
-  for (var i = 0; i < 1; i++ ) {
+  for (var i = 0; i < this.options.yAxes.length; i++ ) {
     var axis = this.options.yAxes[i];
     for (var j = 0; j < axis.ticks.length; j++) {
       var tick = axis.ticks[j];
       var label = tick.label;
       var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
       if ((pos >= 0.0) && (pos <= 1.0)) {
-        this.yticks.push([pos, label]);
+        this.yticks.push([i, pos, label]);
       }
     }
   }
@@ -262,6 +262,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   // TODO(danvk): consider all axes in this computation.
   this.area = {
+    // TODO(danvk): per-axis setting.
     x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
     y: 0
   };
@@ -335,6 +336,15 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
  * Draw an X/Y grid on top of the existing plot
  */
 DygraphCanvasRenderer.prototype.render = function() {
+  // Shrink the drawing area to accomodate additional y-axes.
+  if (this.layout.options.yAxes.length == 2) {
+    // TODO(danvk): per-axis setting.
+    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
+  } else if (this.layout.options.yAxes.length > 2) {
+    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                        "to use " + this.layout.yAxes.length + ")");
+  }
+
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
 
@@ -348,8 +358,9 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i = 0; i < ticks.length; i++) {
+      if (ticks[i][0] != 0) continue;  // TODO(danvk): per-axis property
       var x = this.area.x;
-      var y = this.area.y + ticks[i][0] * this.area.h;
+      var y = this.area.y + ticks[i][1] * this.area.h;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.area.w, y);
@@ -364,7 +375,7 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i=0; i<ticks.length; i++) {
-      var x = this.area.x + ticks[i][0] * this.area.w;
+      var x = this.area.x + ticks[i][1] * this.area.w;
       var y = this.area.y + this.area.h;
       ctx.beginPath();
       ctx.moveTo(x, y);
@@ -417,14 +428,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
-        var y = this.area.y + tick[0] * this.area.h;
+        if (tick[0] == 1) {
+          x = this.area.x + this.area.w - labelStyle.width;
+        }
+        var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
         context.moveTo(x, y);
         context.lineTo(x - this.options.axisTickSize, y);
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[1]);
+        var label = makeDiv(tick[2]);
         var top = (y - this.options.axisLabelFontSize / 2);
         if (top < 0) top = 0;
 
@@ -433,8 +447,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         } else {
           label.style.top = top + "px";
         }
-        label.style.left = "0px";
-        label.style.textAlign = "right";
+        if (tick[0] == 0) {
+          label.style.left = "0px";
+          label.style.textAlign = "right";
+        } else if (tick[0] == 1) {
+          label.style.left = (this.area.x + this.area.w +
+                              this.options.axisTickSize) + "px";
+          label.style.textAlign = "left";
+        }
         label.style.width = this.options.yAxisLabelWidth + "px";
         this.container.appendChild(label);
         this.ylabels.push(label);

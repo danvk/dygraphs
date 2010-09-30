@@ -1697,12 +1697,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var axes = out[0];
   var seriesToAxisMap = out[1];
   this.displayedYRange_ = axes[0].valueRange;
-  // TODO(danvk): remove yAxis, yTicks
-  this.layout_.updateOptions( { yAxis: axes[0].valueRange,
-                                yTicks: axes[0].ticks,
-                                yAxes: axes,
+  this.layout_.updateOptions( { yAxes: axes,
                                 seriesToAxisMap: seriesToAxisMap
-                                } );
+                              } );
 
   this.addXTicks_();
 
@@ -1721,10 +1718,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
 
 /**
  * Determine all y-axes.
- * Inputs: mapping from seriesName -> [low, high] for that series,
- *         (implicit) per-series axis attributes.
  * Returns [ axes, seriesToAxisMap ]
- * axes = [ { valueRange: [low, high], otherOptions: ..., ticks: [...] } ]
+ * axes = [ { options } ]
  * seriesToAxisMap = { seriesName: 0, seriesName2: 1, ... }
  *   indices are into the axes array.
  */
@@ -2435,6 +2430,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
   Dygraph.update(this.renderOptions_, attrs);
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
+  this.computeYaxes_();
 
   // TODO(danvk): this doesn't match the constructor logic
   this.layout_.updateOptions({ 'errorBars': this.attr_("errorBars") });
