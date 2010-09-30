@@ -171,7 +171,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.previousVerticalX_ = -1;
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
-  this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
@@ -1455,22 +1454,25 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self) {
+Dygraph.numericTicks = function(minV, maxV, self, attr) {
+  // This is a bit of a hack to allow per-axis attributes.
+  if (!attr) attr = self.attr_;
+
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
   // The first spacing greater than pixelsPerYLabel is what we use.
   // TODO(danvk): version that works on a log scale.
-  if (self.attr_("labelsKMG2")) {
+  if (attr("labelsKMG2")) {
     var mults = [1, 2, 4, 8];
   } else {
     var mults = [1, 2, 5];
   }
   var scale, low_val, high_val, nTicks;
   // TODO(danvk): make it possible to set this for x- and y-axes independently.
-  var pixelsPerTick = self.attr_('pixelsPerYLabel');
+  var pixelsPerTick = attr('pixelsPerYLabel');
   for (var i = -10; i < 50; i++) {
-    if (self.attr_("labelsKMG2")) {
+    if (attr("labelsKMG2")) {
       var base_scale = Math.pow(16, i);
     } else {
       var base_scale = Math.pow(10, i);
@@ -1491,11 +1493,11 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   var ticks = [];
   var k;
   var k_labels = [];
-  if (self.attr_("labelsKMB")) {
+  if (attr("labelsKMB")) {
     k = 1000;
     k_labels = [ "K", "M", "B", "T" ];
   }
-  if (self.attr_("labelsKMG2")) {
+  if (attr("labelsKMG2")) {
     if (k) self.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
@@ -1601,10 +1603,13 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var cumulative_y = [];  // For stacked series.
   var datasets = [];
 
+  var extremes = {};  // series name -> [low, high]
+
   // Loop over all fields and create datasets
   for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
+    var seriesName = this.attr_("labels")[i];
     var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
 
     var series = [];
@@ -1648,9 +1653,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
       this.boundaryIds_[i-1] = [0, series.length-1];
     }
 
-    var extremes = this.extremeValues_(series);
-    var thisMinY = extremes[0];
-    var thisMaxY = extremes[1];
+    var seriesExtremes = this.extremeValues_(series);
+    extremes[seriesName] = seriesExtremes;
+    var thisMinY = seriesExtremes[0];
+    var thisMaxY = seriesExtremes[1];
     if (minY === null || thisMinY < minY) minY = thisMinY;
     if (maxY === null || thisMaxY > maxY) maxY = thisMaxY;
 
@@ -1687,11 +1693,20 @@ Dygraph.prototype.drawGraph_ = function(data) {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
+  var out = this.computeYaxes_(extremes);
+  var axes = out[0];
+  var seriesToAxisMap = out[1];
+  this.displayedYRange_ = axes[0].valueRange;
+  this.layout_.updateOptions( { yAxis: axes[0].valueRange,
+                                yTicks: axes[0].ticks } );
+
   // Use some heuristics to come up with a good maxY value, unless it's been
   // set explicitly by the user.
-  if (this.valueRange_ != null) {
-    this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
-    this.displayedYRange_ = this.valueRange_;
+  /*
+  var valueRange = this.attr_("valueRange");
+  if (valueRange != null) {
+    this.addYTicks_(valueRange[0], valueRange[1]);
+    this.displayedYRange_ = valueRange;
   } else {
     // This affects the calculation of span, below.
     if (this.attr_("includeZero") && minY > 0) {
@@ -1717,6 +1732,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
     this.addYTicks_(minAxisY, maxAxisY);
     this.displayedYRange_ = [minAxisY, maxAxisY];
   }
+  */
 
   this.addXTicks_();
 
@@ -1733,6 +1749,126 @@ Dygraph.prototype.drawGraph_ = function(data) {
   }
 };
 
+/**
+ * Determine all y-axes.
+ * Inputs: mapping from seriesName -> [low, high] for that series,
+ *         (implicit) per-series axis attributes.
+ * Returns [ axes, seriesToAxisMap ]
+ * axes = [ { valueRange: [low, high], otherOptions: ..., ticks: [...] } ]
+ * seriesToAxisMap = { seriesName: 0, seriesName2: 1, ... }
+ *   indices are into the axes array.
+ */
+Dygraph.prototype.computeYaxes_ = function(extremes) {
+  var axes = [{}];  // always have at least one y-axis.
+  var seriesToAxisMap = {};
+  var seriesForAxis = [[]];
+
+  // all options which could be applied per-axis:
+  var axisOptions = [
+    'includeZero',
+    'valueRange',
+    'labelsKMB',
+    'labelsKMG2',
+    'pixelsPerYLabel',
+    'yAxisLabelWidth',
+    'axisLabelFontSize',
+    'axisTickSize'
+  ];
+
+  // Copy global axis options over to the first axis.
+  for (var i = 0; i < axisOptions.length; i++) {
+    var k = axisOptions[i];
+    var v = this.attr_(k);
+    if (v) axes[0][k] = v;
+  }
+
+  // Go through once and add all the axes.
+  for (var seriesName in extremes) {
+    if (!extremes.hasOwnProperty(seriesName)) continue;
+    var axis = this.attr_("axis", seriesName);
+    if (axis == null) {
+      seriesToAxisMap[seriesName] = 0;
+      seriesForAxis[0].push(seriesName);
+      continue;
+    }
+    if (typeof(axis) == 'object') {
+      // Add a new axis, making a copy of its per-axis options.
+      var opts = {};
+      Dygraph.update(opts, axes[0]);
+      Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      Dygraph.update(opts, axis);
+      axes.push(opts);
+      seriesToAxisMap[seriesName] = axes.length - 1;
+      seriesForAxis.push([seriesName]);
+    }
+  }
+
+  // Go through one more time and assign series to an axis defined by another
+  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
+  for (var seriesName in extremes) {
+    if (!extremes.hasOwnProperty(seriesName)) continue;
+    var axis = this.attr_("axis", seriesName);
+    if (typeof(axis) == 'string') {
+      if (!seriesToAxisMap.hasOwnProperty(axis)) {
+        this.error("Series " + seriesName + " wants to share a y-axis with " +
+                   "series " + axis + ", which does not define its own axis.");
+        return null;
+      }
+      var idx = seriesToAxisMap[axis];
+      seriesToAxisMap[seriesName] = idx;
+      seriesForAxis[idx].push(seriesName);
+    }
+  }
+
+  // Compute extreme values, a span and tick marks for each axis.
+  for (var i = 0; i < axes.length; i++) {
+    var axis = axes[i];
+    if (!axis.valueRange) {
+      // Calcuate the extremes of extremes.
+      var series = seriesForAxis[i];
+      var minY = Infinity;  // extremes[series[0]][0];
+      var maxY = -Infinity;  // extremes[series[0]][1];
+      for (var j = 0; j < series.length; j++) {
+        minY = Math.min(extremes[series[j]][0], minY);
+        maxY = Math.max(extremes[series[j]][0], maxY);
+      }
+      if (axis.includeZero && minY > 0) minY = 0;
+
+      // Add some padding and round up to an integer to be human-friendly.
+      var span = maxY - minY;
+      // special case: if we have no sense of scale, use +/-10% of the sole value.
+      if (span == 0) { span = maxY; }
+      var maxAxisY = maxY + 0.1 * span;
+      var minAxisY = minY - 0.1 * span;
+
+      // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
+      if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+      if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+
+      if (this.attr_("includeZero")) {
+        if (maxY < 0) maxAxisY = 0;
+        if (minY > 0) minAxisY = 0;
+      }
+
+      axis.valueRange = [minAxisY, maxAxisY];
+    }
+
+    // Add ticks.
+    axis.ticks =
+      Dygraph.numericTicks(axis.valueRange[0],
+                           axis.valueRange[1],
+                           this,
+                           function(self, axis) {
+                             return function(a) {
+                               if (axis.hasOwnProperty(a)) return axis[a];
+                               return self.attr_(a);
+                             };
+                           }(this, axis));
+  }
+
+  return [axes, seriesToAxisMap];
+};
+ 
 /**
  * Calculates the rolling average of a data set.
  * If originalData is [label, val], rolls the average of those.
@@ -2316,9 +2452,6 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
   if (attrs.dateWindow) {
     this.dateWindow_ = attrs.dateWindow;
-  }
-  if (attrs.valueRange) {
-    this.valueRange_ = attrs.valueRange;
   }
 
   // TODO(danvk): validate per-series options.
