@@ -1700,40 +1700,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.layout_.updateOptions( { yAxis: axes[0].valueRange,
                                 yTicks: axes[0].ticks } );
 
-  // Use some heuristics to come up with a good maxY value, unless it's been
-  // set explicitly by the user.
-  /*
-  var valueRange = this.attr_("valueRange");
-  if (valueRange != null) {
-    this.addYTicks_(valueRange[0], valueRange[1]);
-    this.displayedYRange_ = valueRange;
-  } else {
-    // This affects the calculation of span, below.
-    if (this.attr_("includeZero") && minY > 0) {
-      minY = 0;
-    }
-
-    // Add some padding and round up to an integer to be human-friendly.
-    var span = maxY - minY;
-    // special case: if we have no sense of scale, use +/-10% of the sole value.
-    if (span == 0) { span = maxY; }
-    var maxAxisY = maxY + 0.1 * span;
-    var minAxisY = minY - 0.1 * span;
-
-    // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-    if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-    if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-
-    if (this.attr_("includeZero")) {
-      if (maxY < 0) maxAxisY = 0;
-      if (minY > 0) minAxisY = 0;
-    }
-
-    this.addYTicks_(minAxisY, maxAxisY);
-    this.displayedYRange_ = [minAxisY, maxAxisY];
-  }
-  */
-
   this.addXTicks_();
 
   // Tell PlotKit to use this new data and render itself
