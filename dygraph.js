@@ -1070,6 +1070,36 @@ Dygraph.prototype.updateSelection_ = function() {
 };
 
 /**
+ * Return a copy of the point at the indicated index, with its yval unstacked.
+ * @param int index of point in this.layout_.points
+ * @private
+ */
+Dygraph.prototype.unstackPointAtIndex_ = function(idx) {
+  var point = this.layout_.points[idx];
+  
+  // Clone the point since we modify it
+  var unstackedPoint = {};  
+  for (var i in point) {
+    unstackedPoint[i] = point[i];
+  }
+  
+  if (!this.attr_("stackedGraph")) {
+    return unstackedPoint;
+  }
+  
+  // The unstacked yval is equal to the current yval minus the yval of the 
+  // next point at the same xval.
+  for (var i = idx+1; i < this.layout_.points.length; i++) {
+    if (this.layout_.points[i].xval == point.xval) {
+      unstackedPoint.yval -= this.layout_.points[i].yval; 
+      break;
+    }
+  }
+  
+  return unstackedPoint;
+}  
+
+/**
  * Set manually set selected dots, and display information about them
  * @param int row number that should by highlighted
  *            false value clears the selection
@@ -1087,7 +1117,13 @@ Dygraph.prototype.setSelection = function(row) {
   if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
-        this.selPoints_.push(this.layout_.points[pos+row]);
+        var point = this.layout_.points[pos+row];
+        
+        if (this.attr_("stackedGraph")) {
+          point = this.unstackPointAtIndex_(pos+row);
+        }
+        
+        this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
     }
