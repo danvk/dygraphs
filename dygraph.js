@@ -1717,7 +1717,9 @@ Dygraph.prototype.drawGraph_ = function(data) {
 };
 
 /**
- * Determine all y-axes.
+ * Determine properties of the y axes. These include the number of axes and
+ * data series/styles associated with each. This does not compute the range of
+ * each axis, since that can only be determined when drawing.
  * Returns [ axes, seriesToAxisMap ]
  * axes = [ { options } ]
  * seriesToAxisMap = { seriesName: 0, seriesName2: 1, ... }
