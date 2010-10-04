@@ -202,6 +202,35 @@ DygraphLayout.prototype.updateOptions = function(new_options) {
   Dygraph.update(this.options, new_options ? new_options : {});
 };
 
+/**
+ * Return a copy of the point at the indicated index, with its yval unstacked.
+ * @param int index of point in layout_.points
+ */
+DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
+  var point = this.points[idx];
+  
+  // Clone the point since we modify it
+  var unstackedPoint = {};  
+  for (var i in point) {
+    unstackedPoint[i] = point[i];
+  }
+  
+  if (!this.attr_("stackedGraph")) {
+    return unstackedPoint;
+  }
+  
+  // The unstacked yval is equal to the current yval minus the yval of the 
+  // next point at the same xval.
+  for (var i = idx+1; i < this.points.length; i++) {
+    if (this.points[i].xval == point.xval) {
+      unstackedPoint.yval -= this.points[i].yval; 
+      break;
+    }
+  }
+  
+  return unstackedPoint;
+}  
+
 // Subclass PlotKit.CanvasRenderer to add:
 // 1. X/Y grid overlay
 // 2. Ability to draw error bars (if required)

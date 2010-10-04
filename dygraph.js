@@ -1101,7 +1101,13 @@ Dygraph.prototype.setSelection = function(row) {
   if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
-        this.selPoints_.push(this.layout_.points[pos+row]);
+        var point = this.layout_.points[pos+row];
+        
+        if (this.attr_("stackedGraph")) {
+          point = this.layout_.unstackPointAtIndex(pos+row);
+        }
+        
+        this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
     }
