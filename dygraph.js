@@ -1090,7 +1090,7 @@ Dygraph.prototype.setSelection = function(row) {
         var point = this.layout_.points[pos+row];
         
         if (this.attr_("stackedGraph")) {
-          point = this.layout_.unstackPointAtIndex_(pos+row);
+          point = this.layout_.unstackPointAtIndex(pos+row);
         }
         
         this.selPoints_.push(point);

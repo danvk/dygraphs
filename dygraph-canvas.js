@@ -206,7 +206,7 @@ DygraphLayout.prototype.updateOptions = function(new_options) {
  * Return a copy of the point at the indicated index, with its yval unstacked.
  * @param int index of point in layout_.points
  */
-DygraphLayout.prototype.unstackPointAtIndex_ = function(idx) {
+DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   var point = this.points[idx];
   
   // Clone the point since we modify it
