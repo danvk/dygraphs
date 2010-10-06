@@ -2157,6 +2157,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var labels = [data.getColumnLabel(0)];
   for (var i = 0; i < colIdx.length; i++) {
     labels.push(data.getColumnLabel(colIdx[i]));
+    if (this.attr_("errorBars")) i += 1;
   }
   this.attrs_.labels = labels;
   cols = labels.length;
