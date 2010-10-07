@@ -786,7 +786,9 @@ Dygraph.prototype.createDragInterface_ = function() {
 
       var xDelta = Math.abs(dragStartX - dragEndX);
       var yDelta = Math.abs(dragStartY - dragEndY);
-      var dragDirection = (xDelta < yDelta) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
+
+      // drag direction threshold for y axis is twice as large as x axis
+      var dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
 
       self.drawZoomRect_(dragDirection, dragStartX, dragEndX, dragStartY, dragEndY,
                          prevDragDirection, prevEndX, prevEndY);
