@@ -19,6 +19,7 @@ DygraphLayout = function(dygraph, options) {
   this.options = {};  // TODO(danvk): remove, use attr_ instead.
   Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
+  this.annotations = new Array()
 };
 
 DygraphLayout.prototype.attr_ = function(name) {
@@ -29,10 +30,34 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.datasets[setname] = set_xy;
 };
 
+DygraphLayout.prototype.setAnnotations = function(ann) {
+  // The Dygraph object's annotations aren't parsed. We parse them here and
+  // save a copy.
+  var parse = this.attr_('xValueParser');
+  for (var i = 0; i < ann.length; i++) {
+    var a = {};
+    if (!ann[i].xval && !ann[i].x) {
+      this.dygraph_.error("Annotations must have an 'x' property");
+      return;
+    }
+    if (ann[i].icon &&
+        !(ann[i].hasOwnProperty('width') &&
+          ann[i].hasOwnProperty('height'))) {
+      this.dygraph_.error("Must set width and height when setting " +
+                          "annotation.icon property");
+      return;
+    }
+    Dygraph.update(a, ann[i]);
+    if (!a.xval) a.xval = parse(a.x);
+    this.annotations.push(a);
+  }
+};
+
 DygraphLayout.prototype.evaluate = function() {
   this._evaluateLimits();
   this._evaluateLineCharts();
   this._evaluateLineTicks();
+  this._evaluateAnnotations();
 };
 
 DygraphLayout.prototype._evaluateLimits = function() {
@@ -141,6 +166,26 @@ DygraphLayout.prototype.evaluateWithError = function() {
   }
 };
 
+DygraphLayout.prototype._evaluateAnnotations = function() {
+  // Add the annotations to the point to which they belong.
+  // Make a map from (setName, xval) to annotation for quick lookups.
+  var annotations = {};
+  for (var i = 0; i < this.annotations.length; i++) {
+    var a = this.annotations[i];
+    annotations[a.xval + "," + a.series] = a;
+  }
+
+  this.annotated_points = [];
+  for (var i = 0; i < this.points.length; i++) {
+    var p = this.points[i];
+    var k = p.xval + "," + p.name;
+    if (k in annotations) {
+      p.annotation = annotations[k];
+      this.annotated_points.push(p);
+    }
+  }
+};
+
 /**
  * Convenience function to remove all the data sets from a graph
  */
@@ -156,6 +201,35 @@ DygraphLayout.prototype.removeAllDatasets = function() {
 DygraphLayout.prototype.updateOptions = function(new_options) {
   Dygraph.update(this.options, new_options ? new_options : {});
 };
+
+/**
+ * Return a copy of the point at the indicated index, with its yval unstacked.
+ * @param int index of point in layout_.points
+ */
+DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
+  var point = this.points[idx];
+  
+  // Clone the point since we modify it
+  var unstackedPoint = {};  
+  for (var i in point) {
+    unstackedPoint[i] = point[i];
+  }
+  
+  if (!this.attr_("stackedGraph")) {
+    return unstackedPoint;
+  }
+  
+  // The unstacked yval is equal to the current yval minus the yval of the 
+  // next point at the same xval.
+  for (var i = idx+1; i < this.points.length; i++) {
+    if (this.points[i].xval == point.xval) {
+      unstackedPoint.yval -= this.points[i].yval; 
+      break;
+    }
+  }
+  
+  return unstackedPoint;
+}  
 
 // Subclass PlotKit.CanvasRenderer to add:
 // 1. X/Y grid overlay
@@ -205,6 +279,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   // internal state
   this.xlabels = new Array();
   this.ylabels = new Array();
+  this.annotations = new Array();
 
   this.area = {
     x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
@@ -247,8 +322,13 @@ DygraphCanvasRenderer.prototype.clear = function() {
     var el = this.ylabels[i];
     el.parentNode.removeChild(el);
   }
+  for (var i = 0; i < this.annotations.length; i++) {
+    var el = this.annotations[i];
+    el.parentNode.removeChild(el);
+  }
   this.xlabels = new Array();
   this.ylabels = new Array();
+  this.annotations = new Array();
 };
 
 
@@ -317,6 +397,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
+  this._renderAnnotations();
 };
 
 
@@ -444,6 +525,104 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 };
 
 
+DygraphCanvasRenderer.prototype._renderAnnotations = function() {
+  var annotationStyle = {
+    "position": "absolute",
+    "fontSize": this.options.axisLabelFontSize + "px",
+    "zIndex": 10,
+    "overflow": "hidden"
+  };
+
+  var bindEvt = function(eventName, classEventName, p, self) {
+    return function(e) {
+      var a = p.annotation;
+      if (a.hasOwnProperty(eventName)) {
+        a[eventName](a, p, self.dygraph_, e);
+      } else if (self.dygraph_.attr_(classEventName)) {
+        self.dygraph_.attr_(classEventName)(a, p, self.dygraph_,e );
+      }
+    };
+  }
+
+  // Get a list of point with annotations.
+  var points = this.layout.annotated_points;
+  for (var i = 0; i < points.length; i++) {
+    var p = points[i];
+    if (p.canvasx < this.area.x || p.canvasx > this.area.x + this.area.w) {
+      continue;
+    }
+
+    var a = p.annotation;
+    var tick_height = 6;
+    if (a.hasOwnProperty("tickHeight")) {
+      tick_height = a.tickHeight;
+    }
+
+    var div = document.createElement("div");
+    for (var name in annotationStyle) {
+      if (annotationStyle.hasOwnProperty(name)) {
+        div.style[name] = annotationStyle[name];
+      }
+    }
+    if (!a.hasOwnProperty('icon')) {
+      div.className = "dygraphDefaultAnnotation";
+    }
+    if (a.hasOwnProperty('cssClass')) {
+      div.className += " " + a.cssClass;
+    }
+
+    var width = a.hasOwnProperty('width') ? a.width : 16;
+    var height = a.hasOwnProperty('height') ? a.height : 16;
+    if (a.hasOwnProperty('icon')) {
+      var img = document.createElement("img");
+      img.src = a.icon;
+      img.width = width;
+      img.height = height;
+      div.appendChild(img);
+    } else if (p.annotation.hasOwnProperty('shortText')) {
+      div.appendChild(document.createTextNode(p.annotation.shortText));
+    }
+    div.style.left = (p.canvasx - width / 2) + "px";
+    if (a.attachAtBottom) {
+      div.style.top = (this.area.h - height - tick_height) + "px";
+    } else {
+      div.style.top = (p.canvasy - height - tick_height) + "px";
+    }
+    div.style.width = width + "px";
+    div.style.height = height + "px";
+    div.title = p.annotation.text;
+    div.style.color = this.colors[p.name];
+    div.style.borderColor = this.colors[p.name];
+    a.div = div;
+
+    Dygraph.addEvent(div, 'click',
+        bindEvt('clickHandler', 'annotationClickHandler', p, this));
+    Dygraph.addEvent(div, 'mouseover',
+        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
+    Dygraph.addEvent(div, 'mouseout',
+        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
+    Dygraph.addEvent(div, 'dblclick',
+        bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
+
+    this.container.appendChild(div);
+    this.annotations.push(div);
+
+    var ctx = this.element.getContext("2d");
+    ctx.strokeStyle = this.colors[p.name];
+    ctx.beginPath();
+    if (!a.attachAtBottom) {
+      ctx.moveTo(p.canvasx, p.canvasy);
+      ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
+    } else {
+      ctx.moveTo(p.canvasx, this.area.h);
+      ctx.lineTo(p.canvasx, this.area.h - 2 - tick_height);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+};
+
+
 /**
  * Overrides the CanvasRenderer method to draw error bars
  */
@@ -510,6 +689,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = NaN;
             continue;
           }
+
           // TODO(danvk): here
           if (stepPlot) {
             var newYs = [ prevY - point.errorPlus * yscale,
@@ -604,13 +784,14 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
     var color = this.colors[setName];
+    var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
     context.save();
     var point = this.layout.points[0];
-    var pointSize = this.dygraph_.attr_("pointSize");
+    var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
-    var drawPoints = this.dygraph_.attr_("drawPoints");
+    var drawPoints = this.dygraph_.attr_("drawPoints", setName);
     var points = this.layout.points;
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
@@ -637,17 +818,20 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = point.canvasx;
             prevY = point.canvasy;
           } else {
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = this.options.strokeWidth;
-            ctx.moveTo(prevX, prevY);
-            if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
+            // TODO(danvk): figure out why this conditional is necessary.
+            if (strokeWidth) {
+              ctx.beginPath();
+              ctx.strokeStyle = color;
+              ctx.lineWidth = strokeWidth;
+              ctx.moveTo(prevX, prevY);
+              if (stepPlot) {
+                ctx.lineTo(point.canvasx, prevY);
+              }
+              prevX = point.canvasx;
+              prevY = point.canvasy;
+              ctx.lineTo(prevX, prevY);
+              ctx.stroke();
             }
-            prevX = point.canvasx;
-            prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
-            ctx.stroke();
           }
 
           if (drawPoints || isIsolated) {

@@ -90,6 +90,7 @@ Dygraph.DEFAULT_ATTRS = {
     // TODO(danvk): move defaults from createStatusMessage_ here.
   },
   labelsSeparateLines: false,
+  labelsShowZeroValues: true,
   labelsKMB: false,
   labelsKMG2: false,
   showLabelsOnHighlight: true,
@@ -135,6 +136,9 @@ Dygraph.INFO = 2;
 Dygraph.WARNING = 3;
 Dygraph.ERROR = 3;
 
+// Used for initializing annotation CSS rules only once.
+Dygraph.addedAnnotationCSS = false;
+
 Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
   // Labels is no longer a constructor parameter, since it's typically set
   // directly from the data source. It also conains a name for the x-axis,
@@ -171,6 +175,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.valueRange_ = attrs.valueRange || null;
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
+  this.annotations_ = [];
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -228,14 +233,21 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
+  Dygraph.addAnnotationRule();
+
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
   this.start_();
 };
 
-Dygraph.prototype.attr_ = function(name) {
-  if (typeof(this.user_attrs_[name]) != 'undefined') {
+Dygraph.prototype.attr_ = function(name, seriesName) {
+  if (seriesName &&
+      typeof(this.user_attrs_[seriesName]) != 'undefined' &&
+      this.user_attrs_[seriesName] != null &&
+      typeof(this.user_attrs_[seriesName][name]) != 'undefined') {
+    return this.user_attrs_[seriesName][name];
+  } else if (typeof(this.user_attrs_[name]) != 'undefined') {
     return this.user_attrs_[name];
   } else if (typeof(this.attrs_[name]) != 'undefined') {
     return this.attrs_[name];
@@ -344,6 +356,32 @@ Dygraph.prototype.toDataCoords = function(x, y) {
   }
 
   return ret;
+};
+
+/**
+ * Returns the number of columns (including the independent variable).
+ */
+Dygraph.prototype.numColumns = function() {
+  return this.rawData_[0].length;
+};
+
+/**
+ * Returns the number of rows (excluding any header/label row).
+ */
+Dygraph.prototype.numRows = function() {
+  return this.rawData_.length;
+};
+
+/**
+ * Returns the value in the given row and column. If the row and column exceed
+ * the bounds on the data, returns null. Also returns null if the value is
+ * missing.
+ */
+Dygraph.prototype.getValue = function(row, col) {
+  if (row < 0 || row > this.rawData_.length) return null;
+  if (col < 0 || col > this.rawData_[row].length) return null;
+
+  return this.rawData_[row][col];
 };
 
 Dygraph.addEvent = function(el, evt, fn) {
@@ -613,7 +651,12 @@ Dygraph.findPosY = function(obj) {
  * been specified.
  * @private
  */
-Dygraph.prototype.createStatusMessage_ = function(){
+Dygraph.prototype.createStatusMessage_ = function() {
+  var userLabelsDiv = this.user_attrs_["labelsDiv"];
+  if (userLabelsDiv && null != userLabelsDiv
+    && (typeof(userLabelsDiv) == "string" || userLabelsDiv instanceof String)) {
+    this.user_attrs_["labelsDiv"] = document.getElementById(userLabelsDiv);
+  }
   if (!this.attr_("labelsDiv")) {
     var divWidth = this.attr_('labelsDivWidth');
     var messagestyle = {
@@ -716,7 +759,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   var px = 0;
   var py = 0;
   var getX = function(e) { return Dygraph.pageX(e) - px };
-  var getY = function(e) { return Dygraph.pageX(e) - py };
+  var getY = function(e) { return Dygraph.pageY(e) - py };
 
   // Draw zoom rectangles when the mouse is down and the user moves around
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(event) {
@@ -793,10 +836,31 @@ Dygraph.prototype.createDragInterface_ = function() {
       var regionHeight = Math.abs(dragEndY - dragStartY);
 
       if (regionWidth < 2 && regionHeight < 2 &&
-          self.attr_('clickCallback') != null &&
-          self.lastx_ != undefined) {
-        // TODO(danvk): pass along more info about the points.
-        self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
+          self.lastx_ != undefined && self.lastx_ != -1) {
+        // TODO(danvk): pass along more info about the points, e.g. 'x'
+        if (self.attr_('clickCallback') != null) {
+          self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
+        }
+        if (self.attr_('pointClickCallback')) {
+          // check if the click was on a particular point.
+          var closestIdx = -1;
+          var closestDistance = 0;
+          for (var i = 0; i < self.selPoints_.length; i++) {
+            var p = self.selPoints_[i];
+            var distance = Math.pow(p.canvasx - dragEndX, 2) +
+                           Math.pow(p.canvasy - dragEndY, 2);
+            if (closestIdx == -1 || distance < closestDistance) {
+              closestDistance = distance;
+              closestIdx = i;
+            }
+          }
+
+          // Allow any click within two pixels of the dot.
+          var radius = self.attr_('highlightCircleSize') + 2;
+          if (closestDistance <= 5 * 5) {
+            self.attr_('pointClickCallback')(event, self.selPoints_[closestIdx]);
+          }
+        }
       }
 
       if (regionWidth >= 10) {
@@ -959,11 +1023,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
  */
 Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
-  var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
   if (this.previousVerticalX_ >= 0) {
+    // Determine the maximum highlight circle size.
+    var maxCircleSize = 0;
+    var labels = this.attr_('labels');
+    for (var i = 1; i < labels.length; i++) {
+      var r = this.attr_('highlightCircleSize', labels[i]);
+      if (r > maxCircleSize) maxCircleSize = r;
+    }
     var px = this.previousVerticalX_;
-    ctx.clearRect(px - circleSize - 1, 0, 2 * circleSize + 2, this.height_);
+    ctx.clearRect(px - maxCircleSize - 1, 0,
+                  2 * maxCircleSize + 2, this.height_);
   }
 
   var isOK = function(x) { return x && !isNaN(x); };
@@ -979,6 +1050,7 @@ Dygraph.prototype.updateSelection_ = function() {
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
       for (var i = 0; i < this.selPoints_.length; i++) {
+        if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
           replace += "<br/>";
@@ -998,6 +1070,8 @@ Dygraph.prototype.updateSelection_ = function() {
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
+      var circleSize =
+        this.attr_('highlightCircleSize', this.selPoints_[i].name);
       ctx.beginPath();
       ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
       ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
@@ -1028,7 +1102,13 @@ Dygraph.prototype.setSelection = function(row) {
   if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
-        this.selPoints_.push(this.layout_.points[pos+row]);
+        var point = this.layout_.points[pos+row];
+        
+        if (this.attr_("stackedGraph")) {
+          point = this.layout_.unstackPointAtIndex(pos+row);
+        }
+        
+        this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
     }
@@ -1530,8 +1610,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.setColors_();
   this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
-  var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
-
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
 
@@ -1541,6 +1619,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
   // Loop over all fields and create datasets
   for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
+
+    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
@@ -1902,6 +1982,12 @@ Dygraph.prototype.parseCSV_ = function(data) {
     this.attrs_.labels = lines[0].split(delim);
   }
 
+  // Parse the x as a float or return null if it's not a number.
+  var parseFloatOrNull = function(x) {
+    var val = parseFloat(x);
+    return isNaN(val) ? null : val;
+  };
+
   var xParser;
   var defaultParserSet = false;  // attempt to auto-detect x value type
   var expectedCols = this.attr_("labels").length;
@@ -1926,25 +2012,25 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j++) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         var vals = inFields[j].split("/");
-        fields[j] = [parseFloat(vals[0]), parseFloat(vals[1])];
+        fields[j] = [parseFloatOrNull(vals[0]), parseFloatOrNull(vals[1])];
       }
     } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       for (var j = 1; j < inFields.length; j += 2)
-        fields[(j + 1) / 2] = [parseFloat(inFields[j]),
-                               parseFloat(inFields[j + 1])];
+        fields[(j + 1) / 2] = [parseFloatOrNull(inFields[j]),
+                               parseFloatOrNull(inFields[j + 1])];
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
         var vals = inFields[j].split(";");
-        fields[j] = [ parseFloat(vals[0]),
-                      parseFloat(vals[1]),
-                      parseFloat(vals[2]) ];
+        fields[j] = [ parseFloatOrNull(vals[0]),
+                      parseFloatOrNull(vals[1]),
+                      parseFloatOrNull(vals[2]) ];
       }
     } else {
       // Values are just numbers
       for (var j = 1; j < inFields.length; j++) {
-        fields[j] = parseFloat(inFields[j]);
+        fields[j] = parseFloatOrNull(inFields[j]);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
@@ -2004,7 +2090,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     var parsedData = Dygraph.clone(data);
     for (var i = 0; i < data.length; i++) {
       if (parsedData[i].length == 0) {
-        this.error("Row " << (1 + i) << " of data is empty");
+        this.error("Row " + (1 + i) + " of data is empty");
         return null;
       }
       if (parsedData[i][0] == null
@@ -2029,22 +2115,13 @@ Dygraph.prototype.parseArray_ = function(data) {
  * The data is expected to have a first column that is either a date or a
  * number. All subsequent columns must be numbers. If there is a clear mismatch
  * between this.xValueParser_ and the type of the first column, it will be
- * fixed. Returned value is in the same format as return value of parseCSV_.
+ * fixed. Fills out rawData_.
  * @param {Array.<Object>} data See above.
  * @private
  */
 Dygraph.prototype.parseDataTable_ = function(data) {
   var cols = data.getNumberOfColumns();
   var rows = data.getNumberOfRows();
-
-  // Read column labels
-  var labels = [];
-  for (var i = 0; i < cols; i++) {
-    labels.push(data.getColumnLabel(i));
-    if (i != 0 && this.attr_("errorBars")) i += 1;
-  }
-  this.attrs_.labels = labels;
-  cols = labels.length;
 
   var indepType = data.getColumnType(0);
   if (indepType == 'date' || indepType == 'datetime') {
@@ -2063,14 +2140,48 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     return null;
   }
 
+  // Array of the column indices which contain data (and not annotations).
+  var colIdx = [];
+  var annotationCols = {};  // data index -> [annotation cols]
+  var hasAnnotations = false;
+  for (var i = 1; i < cols; i++) {
+    var type = data.getColumnType(i);
+    if (type == 'number') {
+      colIdx.push(i);
+    } else if (type == 'string' && this.attr_('displayAnnotations')) {
+      // This is OK -- it's an annotation column.
+      var dataIdx = colIdx[colIdx.length - 1];
+      if (!annotationCols.hasOwnProperty(dataIdx)) {
+        annotationCols[dataIdx] = [i];
+      } else {
+        annotationCols[dataIdx].push(i);
+      }
+      hasAnnotations = true;
+    } else {
+      this.error("Only 'number' is supported as a dependent type with Gviz." +
+                 " 'string' is only supported if displayAnnotations is true");
+    }
+  }
+
+  // Read column labels
+  // TODO(danvk): add support back for errorBars
+  var labels = [data.getColumnLabel(0)];
+  for (var i = 0; i < colIdx.length; i++) {
+    labels.push(data.getColumnLabel(colIdx[i]));
+    if (this.attr_("errorBars")) i += 1;
+  }
+  this.attrs_.labels = labels;
+  cols = labels.length;
+
   var ret = [];
   var outOfOrder = false;
+  var annotations = [];
   for (var i = 0; i < rows; i++) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
         data.getValue(i, 0) === null) {
-      this.warning("Ignoring row " + i +
-                   " of DataTable because of undefined or null first column.");
+      this.warn("Ignoring row " + i +
+                " of DataTable because of undefined or null first column.");
       continue;
     }
 
@@ -2080,8 +2191,23 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       row.push(data.getValue(i, 0));
     }
     if (!this.attr_("errorBars")) {
-      for (var j = 1; j < cols; j++) {
-        row.push(data.getValue(i, j));
+      for (var j = 0; j < colIdx.length; j++) {
+        var col = colIdx[j];
+        row.push(data.getValue(i, col));
+        if (hasAnnotations &&
+            annotationCols.hasOwnProperty(col) &&
+            data.getValue(i, annotationCols[col][0]) != null) {
+          var ann = {};
+          ann.series = data.getColumnLabel(col);
+          ann.xval = row[0];
+          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length)
+          ann.text = '';
+          for (var k = 0; k < annotationCols[col].length; k++) {
+            if (k) ann.text += "\n";
+            ann.text += data.getValue(i, annotationCols[col][k]);
+          }
+          annotations.push(ann);
+        }
       }
     } else {
       for (var j = 0; j < cols - 1; j++) {
@@ -2098,7 +2224,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.warn("DataTable is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0] });
   }
-  return ret;
+  this.rawData_ = ret;
+
+  if (annotations.length > 0) {
+    this.setAnnotations(annotations, true);
+  }
 }
 
 // These functions are all based on MochiKit.
@@ -2164,7 +2294,7 @@ Dygraph.prototype.start_ = function() {
   } else if (typeof this.file_ == 'object' &&
              typeof this.file_.getColumnRange == 'function') {
     // must be a DataTable from gviz.
-    this.rawData_ = this.parseDataTable_(this.file_);
+    this.parseDataTable_(this.file_);
     this.drawGraph_(this.rawData_);
   } else if (typeof this.file_ == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
@@ -2208,6 +2338,14 @@ Dygraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
+
+  // TODO(danvk): validate per-series options.
+  // Supported:
+  // strokeWidth
+  // pointSize
+  // drawPoints
+  // highlightCircleSize
+
   Dygraph.update(this.user_attrs_, attrs);
   Dygraph.update(this.renderOptions_, attrs);
 
@@ -2303,6 +2441,64 @@ Dygraph.prototype.setVisibility = function(num, value) {
     this.drawGraph_(this.rawData_);
   }
 };
+
+/**
+ * Update the list of annotations and redraw the chart.
+ */
+Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
+  this.annotations_ = ann;
+  this.layout_.setAnnotations(this.annotations_);
+  if (!suppressDraw) {
+    this.drawGraph_(this.rawData_);
+  }
+};
+
+/**
+ * Return the list of annotations.
+ */
+Dygraph.prototype.annotations = function() {
+  return this.annotations_;
+};
+
+/**
+ * Get the index of a series (column) given its name. The first column is the
+ * x-axis, so the data series start with index 1.
+ */
+Dygraph.prototype.indexFromSetName = function(name) {
+  var labels = this.attr_("labels");
+  for (var i = 0; i < labels.length; i++) {
+    if (labels[i] == name) return i;
+  }
+  return null;
+};
+
+Dygraph.addAnnotationRule = function() {
+  if (Dygraph.addedAnnotationCSS) return;
+
+  var mysheet;
+  if (document.styleSheets.length > 0) {
+    mysheet = document.styleSheets[0];
+  } else {
+    var styleSheetElement = document.createElement("style");
+    styleSheetElement.type = "text/css";
+    document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
+    for(i = 0; i < document.styleSheets.length; i++) {
+      if (document.styleSheets[i].disabled) continue;
+      mysheet = document.styleSheets[i];
+    }
+  }
+
+  var rule = "border: 1px solid black; " +
+             "background-color: white; " +
+             "text-align: center;";
+  if (mysheet.insertRule) {  // Firefox
+    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", 0);
+  } else if (mysheet.addRule) {  // IE
+    mysheet.addRule(".dygraphDefaultAnnotation", rule);
+  }
+
+  Dygraph.addedAnnotationCSS = true;
+}
 
 /**
  * Create a new canvas element. This is more complex than a simple

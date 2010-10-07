@@ -604,10 +604,18 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>labelsDiv</strong></td>
-          <td><code>document.<br/>getElementById('foo')</code></td>
+          <td><code style="font-size: small">document.getElementById('foo')</code><br/>or<br/><code>'foo'</code></td>
           <td><code>null</code></td>
-          <td>Show data labels in an external div, rather than on the graph.
-          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/label-div.html">label-div</a> </div>
+          <td style="vertical-align:top">Show data labels in an external div, rather than on the graph.  This value can either be a div element or a div id.
+          <div class="tests">Tests: <a href="tests/label-div.html">label-div</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>labelsShowZeroValues</strong></td>
+          <td><code>boolean</code></td>
+          <td><code>true</code></td>
+          <td>Show zero value labels in the labelsDiv.
+          <div class="tests">Tests: <a href="tests/label-div.html">label-div</a> </div>
           </td>
         </tr>
         <tr>
