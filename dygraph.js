@@ -2497,7 +2497,7 @@ Dygraph.createCanvas = function() {
   var canvas = document.createElement("canvas");
 
   isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if (isIE) {
+  if (isIE && (typeof(G_vmlCanvasManager) != 'undefined')) {
     canvas = G_vmlCanvasManager.initElement(canvas);
   }
 
