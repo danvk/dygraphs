@@ -251,8 +251,13 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
-Dygraph.prototype.attr_ = function(name) {
-  if (typeof(this.user_attrs_[name]) != 'undefined') {
+Dygraph.prototype.attr_ = function(name, seriesName) {
+  if (seriesName &&
+      typeof(this.user_attrs_[seriesName]) != 'undefined' &&
+      this.user_attrs_[seriesName] != null &&
+      typeof(this.user_attrs_[seriesName][name]) != 'undefined') {
+    return this.user_attrs_[seriesName][name];
+  } else if (typeof(this.user_attrs_[name]) != 'undefined') {
     return this.user_attrs_[name];
   } else if (typeof(this.attrs_[name]) != 'undefined') {
     return this.attrs_[name];
@@ -1185,11 +1190,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
  */
 Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
-  var circleSize = this.attr_('highlightCircleSize');
   var ctx = this.canvas_.getContext("2d");
   if (this.previousVerticalX_ >= 0) {
+    // Determine the maximum highlight circle size.
+    var maxCircleSize = 0;
+    var labels = this.attr_('labels');
+    for (var i = 1; i < labels.length; i++) {
+      var r = this.attr_('highlightCircleSize', labels[i]);
+      if (r > maxCircleSize) maxCircleSize = r;
+    }
     var px = this.previousVerticalX_;
-    ctx.clearRect(px - circleSize - 1, 0, 2 * circleSize + 2, this.height_);
+    ctx.clearRect(px - maxCircleSize - 1, 0,
+                  2 * maxCircleSize + 2, this.height_);
   }
 
   var isOK = function(x) { return x && !isNaN(x); };
@@ -1205,7 +1217,7 @@ Dygraph.prototype.updateSelection_ = function() {
     if (this.attr_('showLabelsOnHighlight')) {
       // Set the status message to indicate the selected point(s)
       for (var i = 0; i < this.selPoints_.length; i++) {
-    	if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;    	  
+        if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;
         if (!isOK(this.selPoints_[i].canvasy)) continue;
         if (this.attr_("labelsSeparateLines")) {
           replace += "<br/>";
@@ -1225,6 +1237,8 @@ Dygraph.prototype.updateSelection_ = function() {
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
       if (!isOK(this.selPoints_[i].canvasy)) continue;
+      var circleSize =
+        this.attr_('highlightCircleSize', this.selPoints_[i].name);
       ctx.beginPath();
       ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
       ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
@@ -1255,7 +1269,13 @@ Dygraph.prototype.setSelection = function(row) {
   if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
-        this.selPoints_.push(this.layout_.points[pos+row]);
+        var point = this.layout_.points[pos+row];
+        
+        if (this.attr_("stackedGraph")) {
+          point = this.layout_.unstackPointAtIndex(pos+row);
+        }
+        
+        this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
     }
@@ -1749,8 +1769,6 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.setColors_();
   this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
 
-  var connectSeparatedPoints = this.attr_('connectSeparatedPoints');
-
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
 
@@ -1760,6 +1778,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
   // Loop over all fields and create datasets
   for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
+
+    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
@@ -2305,6 +2325,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var labels = [data.getColumnLabel(0)];
   for (var i = 0; i < colIdx.length; i++) {
     labels.push(data.getColumnLabel(colIdx[i]));
+    if (this.attr_("errorBars")) i += 1;
   }
   this.attrs_.labels = labels;
   cols = labels.length;
@@ -2316,8 +2337,8 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
         data.getValue(i, 0) === null) {
-      this.warning("Ignoring row " + i +
-                   " of DataTable because of undefined or null first column.");
+      this.warn("Ignoring row " + i +
+                " of DataTable because of undefined or null first column.");
       continue;
     }
 
@@ -2474,6 +2495,14 @@ Dygraph.prototype.updateOptions = function(attrs) {
   if (attrs.valueRange) {
     this.valueRange_ = attrs.valueRange;
   }
+
+  // TODO(danvk): validate per-series options.
+  // Supported:
+  // strokeWidth
+  // pointSize
+  // drawPoints
+  // highlightCircleSize
+
   Dygraph.update(this.user_attrs_, attrs);
   Dygraph.update(this.renderOptions_, attrs);
 
@@ -2586,6 +2615,18 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
  */
 Dygraph.prototype.annotations = function() {
   return this.annotations_;
+};
+
+/**
+ * Get the index of a series (column) given its name. The first column is the
+ * x-axis, so the data series start with index 1.
+ */
+Dygraph.prototype.indexFromSetName = function(name) {
+  var labels = this.attr_("labels");
+  for (var i = 0; i < labels.length; i++) {
+    if (labels[i] == name) return i;
+  }
+  return null;
 };
 
 Dygraph.addAnnotationRule = function() {

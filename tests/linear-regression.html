@@ -35,7 +35,8 @@
               {
                 labels: ['X', 'Y1', 'Y2'],
                 underlayCallback: drawLines,
-                drawPoints: true
+                drawPoints: true,
+                strokeWidth: 0.0
               }
           );
 
@@ -66,7 +67,7 @@
         var b = (sum_y - a * sum_x) / num;
 
         coeffs[series] = [b, a];
-        if (console) {
+        if (typeof(console) != 'undefined') {
           console.log("coeffs(" + series + "): [" + b + ", " + a + "]");
         }
 

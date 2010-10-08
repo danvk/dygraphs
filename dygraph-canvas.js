@@ -195,6 +195,35 @@ DygraphLayout.prototype.updateOptions = function(new_options) {
   Dygraph.update(this.options, new_options ? new_options : {});
 };
 
+/**
+ * Return a copy of the point at the indicated index, with its yval unstacked.
+ * @param int index of point in layout_.points
+ */
+DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
+  var point = this.points[idx];
+  
+  // Clone the point since we modify it
+  var unstackedPoint = {};  
+  for (var i in point) {
+    unstackedPoint[i] = point[i];
+  }
+  
+  if (!this.attr_("stackedGraph")) {
+    return unstackedPoint;
+  }
+  
+  // The unstacked yval is equal to the current yval minus the yval of the 
+  // next point at the same xval.
+  for (var i = idx+1; i < this.points.length; i++) {
+    if (this.points[i].xval == point.xval) {
+      unstackedPoint.yval -= this.points[i].yval; 
+      break;
+    }
+  }
+  
+  return unstackedPoint;
+}  
+
 // Subclass PlotKit.CanvasRenderer to add:
 // 1. X/Y grid overlay
 // 2. Ability to draw error bars (if required)
@@ -748,13 +777,14 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
     var color = this.colors[setName];
+    var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
     context.save();
     var point = this.layout.points[0];
-    var pointSize = this.dygraph_.attr_("pointSize");
+    var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
-    var drawPoints = this.dygraph_.attr_("drawPoints");
+    var drawPoints = this.dygraph_.attr_("drawPoints", setName);
     var points = this.layout.points;
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
@@ -772,17 +802,20 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = point.canvasx;
             prevY = point.canvasy;
           } else {
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = this.options.strokeWidth;
-            ctx.moveTo(prevX, prevY);
-            if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
+            // TODO(danvk): figure out why this conditional is necessary.
+            if (strokeWidth) {
+              ctx.beginPath();
+              ctx.strokeStyle = color;
+              ctx.lineWidth = strokeWidth;
+              ctx.moveTo(prevX, prevY);
+              if (stepPlot) {
+                ctx.lineTo(point.canvasx, prevY);
+              }
+              prevX = point.canvasx;
+              prevY = point.canvasy;
+              ctx.lineTo(prevX, prevY);
+              ctx.stroke();
             }
-            prevX = point.canvasx;
-            prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
-            ctx.stroke();
           }
 
           if (drawPoints || isIsolated) {

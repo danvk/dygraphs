@@ -37,6 +37,7 @@
               {
                 labels: labels,
                 drawPoints: true,
+                strokeWidth: 0.0,
                 drawCallback: function(g, is_initial) {
                   if (!is_initial) return;
                   var c = g.getColors();
@@ -72,7 +73,7 @@
         var b = (sum_y - a * sum_x) / num;
 
         coeffs[series] = [b, a];
-        if (console) {
+        if (typeof(console) != 'undefined') {
           console.log("coeffs(" + series + "): [" + b + ", " + a + "]");
         }
 
@@ -83,17 +84,23 @@
         // Generate a new data set with the regression lines.
         var new_labels = [];
         var new_colors = [];
+        var new_opts = {};
         for (var i = 0; i < labels.length; i++) {
           new_labels.push(labels[i]);
           if (i) new_colors.push(orig_colors[i - 1]);
           if (coeffs[i]) {
             // Darken the series by 50% to generate its regression.
-            new_labels.push(labels[i] + " Regression");
+            var label = labels[i] + " Regression";
+            new_labels.push(label);
             var c = new RGBColor(orig_colors[i - 1]);
             c.r = Math.floor(255 - 0.5 * (255 - c.r));
             c.g = Math.floor(255 - 0.5 * (255 - c.g));
             c.b = Math.floor(255 - 0.5 * (255 - c.b));
             new_colors.push(c.toHex());
+            new_opts[label] = {
+              drawPoints: false,
+              strokeWidth: 1.0
+            };
           }
         }
 
@@ -108,49 +115,16 @@
           }
         }
 
-        // TODO(danvk): set colors intelligently.
-
-        g.updateOptions({
-          file: new_data,
-          labels: new_labels,
-          colors: new_colors
-        });
+        new_opts.file = new_data;
+        new_opts.labels = new_labels;
+        new_opts.colors = new_colors;
+        g.updateOptions(new_opts);
       }
 
       function clearLines() {
         for (var i = 0; i < coeffs.length; i++) coeffs[i] = null;
         updateChart();
       }
-
-      // function drawLines(ctx, area, layout) {
-      //   if (typeof(g) == 'undefined') return;  // won't be set on the initial draw.
-
-      //   var range = g.xAxisRange();
-      //   for (var i = 0; i < coeffs.length; i++) {
-      //     if (!coeffs[i]) continue;
-      //     var a = coeffs[i][1];
-      //     var b = coeffs[i][0];
-
-      //     var x1 = range[0];
-      //     var y1 = a * x1 + b;
-      //     var x2 = range[1];
-      //     var y2 = a * x2 + b;
-
-      //     var p1 = g.toDomCoords(x1, y1);
-      //     var p2 = g.toDomCoords(x2, y2);
-
-      //     var color = g.getColors()[i - 1];
-      //     ctx.save();
-      //     ctx.strokeStyle = color;
-      //     ctx.lineWidth = 1.0;
-      //     ctx.beginPath();
-      //     ctx.moveTo(p1[0], p1[1]);
-      //     ctx.lineTo(p2[0], p2[1]);
-      //     ctx.closePath();
-      //     ctx.stroke();
-      //     ctx.restore();
-      //   }
-      // }
       
     </script>
     
