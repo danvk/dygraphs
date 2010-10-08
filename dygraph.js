@@ -810,9 +810,10 @@ Dygraph.prototype.createDragInterface_ = function() {
       var maxDate = minDate + dateRange;
       self.dateWindow_ = [minDate, maxDate];
 
-      // if a y-axis as been defined then the y-axis scale is maintained.
-      // otherwise don't set a value window, thereby forcing automatic y-axis
-      // scaling.
+
+      // y-axis scaling is automatic unless a valueRange is defiend or
+      // if the user zooms in on the y-axis. If neither is true, valueWindow
+      // will be null.
       if (self.valueWindow_) {
         var maxValue = draggingValue + (dragEndY / self.height_) * valueRange;
         var minValue = maxValue - valueRange;
