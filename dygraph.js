@@ -1666,8 +1666,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
     var extremes = this.extremeValues_(series);
     var thisMinY = extremes[0];
     var thisMaxY = extremes[1];
-    if (minY === null || thisMinY < minY) minY = thisMinY;
-    if (maxY === null || thisMaxY > maxY) maxY = thisMaxY;
+    if (minY === null || (thisMinY != null && thisMinY < minY)) minY = thisMinY;
+    if (maxY === null || (thisMaxY != null && thisMaxY > maxY)) maxY = thisMaxY;
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
