@@ -2486,14 +2486,15 @@ Dygraph.prototype.start_ = function() {
  */
 Dygraph.prototype.updateOptions = function(attrs) {
   // TODO(danvk): this is a mess. Rethink this function.
-  if (attrs.rollPeriod) {
+  if ('rollPeriod' in attrs) {
     this.rollPeriod_ = attrs.rollPeriod;
   }
-  if (attrs.dateWindow) {
+  if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
   }
-  if (attrs.valueRange) {
+  if ('valueRange' in attrs) {
     this.valueRange_ = attrs.valueRange;
+    this.valueWindow_ = attrs.valueRange;
   }
 
   // TODO(danvk): validate per-series options.

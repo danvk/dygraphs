@@ -13,9 +13,9 @@
   <body>
     <h3>Click the buttons to change the zoom level or just use the normal
     click-and drag. While zoom typically works by click-and-drag, the
-    butons are useful for testing.</h3>
+    buttons are useful for testing.</h3>
     <h4>Window coordinates (in dates and values):</h4>
-    <div id = "dimensions"></div>
+    <div id="xdimensions"></div> <div id="ydimensions"></div>
     <div id="div_g" style="width:600px; height:300px;"></div>
 
     <p><b>Zoom operations:</b></p>
@@ -54,22 +54,39 @@
       showDimensions(minDate, maxDate, minValue, maxValue);
 
       function showDimensions(minDate, maxDate, minValue, maxValue) {
-        var elem = document.getElementById("dimensions");
-        elem.innerHTML =
-          "dateWindow : [" + minDate + " , "+ maxDate + "],<br>" +
-          "valueRange : [" + minValue + " , "+ maxValue + "],";
+      	showXDimensions(minDate, maxDate);
+      	showYDimensions(minValue, maxValue);
+      }
+
+      function showXDimensions(first, second) {
+        var elem = document.getElementById("xdimensions");
+        elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
+      }
+
+      function showYDimensions(first, second) {
+        var elem = document.getElementById("ydimensions");
+        elem.innerHTML = "valueRange : [" + first + ", "+ second + "]";
       }
 
       function zoomGraphX(minDate, maxDate) {
-        g.doZoomXDates_(minDate, maxDate);
+        g.updateOptions({
+          dateWindow: [minDate, maxDate]
+        });
+  	    showXDimensions(minDate, maxDate);
       }
 
       function zoomGraphY(minValue, maxValue) {
-        g.doZoomYValues_(minValue, maxValue);
+        g.updateOptions({
+          valueRange: [minValue, maxValue]
+        });
+  	    showYDimensions(minValue, maxValue);
       }
 
       function unzoomGraph() {
-        g.doUnzoom_();
+        g.updateOptions({
+          dateWindow: undefined,
+          valueRange: undefined
+        });
       }
     </script>
 
