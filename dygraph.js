@@ -1056,7 +1056,7 @@ Dygraph.prototype.updateSelection_ = function() {
           replace += "<br/>";
         }
         var point = this.selPoints_[i];
-        var c = new RGBColor(this.colors_[i%clen]);
+        var c = new RGBColor(this.plotter_.colors[point.name]);
         var yval = fmtFunc(point.yval);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
