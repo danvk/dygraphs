@@ -126,7 +126,8 @@ Dygraph.DEFAULT_ATTRS = {
   stackedGraph: false,
   hideOverlayOnMouseOut: true,
 
-  stepPlot: false
+  stepPlot: false,
+  avoidMinZero: false
 };
 
 // Various logging levels.
@@ -1055,7 +1056,7 @@ Dygraph.prototype.updateSelection_ = function() {
           replace += "<br/>";
         }
         var point = this.selPoints_[i];
-        var c = new RGBColor(this.colors_[i%clen]);
+        var c = new RGBColor(this.plotter_.colors[point.name]);
         var yval = fmtFunc(point.yval);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
@@ -1458,10 +1459,12 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * Add ticks when the x axis has numbers on it (instead of dates)
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
+ * @param self
+ * @param {function} formatter: Optional formatter to use for each tick value
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self) {
+Dygraph.numericTicks = function(minV, maxV, self, formatter) {
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
   // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
@@ -1513,7 +1516,12 @@ Dygraph.numericTicks = function(minV, maxV, self) {
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
-    var label = Dygraph.round_(tickV, 2);
+    var label;
+    if (formatter != undefined) {
+      label = formatter(tickV);
+    } else {
+      label = Dygraph.round_(tickV, 2);
+    }
     if (k_labels.length) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
@@ -1538,7 +1546,8 @@ Dygraph.numericTicks = function(minV, maxV, self) {
 Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
   // TODO(danvk): make this an attribute as well.
-  var ticks = Dygraph.numericTicks(minY, maxY, this);
+  var formatter = this.attr_('yAxisLabelFormatter') ? this.attr_('yAxisLabelFormatter') : this.attr_('yValueFormatter');
+  var ticks = Dygraph.numericTicks(minY, maxY, this, formatter);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };
@@ -1657,8 +1666,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
     var extremes = this.extremeValues_(series);
     var thisMinY = extremes[0];
     var thisMaxY = extremes[1];
-    if (minY === null || thisMinY < minY) minY = thisMinY;
-    if (maxY === null || thisMaxY > maxY) maxY = thisMaxY;
+    if (minY === null || (thisMinY != null && thisMinY < minY)) minY = thisMinY;
+    if (maxY === null || (thisMaxY != null && thisMaxY > maxY)) maxY = thisMaxY;
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
@@ -1712,8 +1721,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
     var minAxisY = minY - 0.1 * span;
 
     // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-    if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-    if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+    if (!this.attr_("avoidMinZero")) {
+      if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+      if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+    }
 
     if (this.attr_("includeZero")) {
       if (maxY < 0) maxAxisY = 0;

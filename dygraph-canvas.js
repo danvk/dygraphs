@@ -797,6 +797,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var point = points[j];
       if (point.name == setName) {
         if (!isOK(point.canvasy)) {
+          if (stepPlot && prevX != null) {
+            // Draw a horizontal line to the start of the missing data
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = this.options.strokeWidth;
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(point.canvasx, prevY);
+            ctx.stroke();
+          }
           // this will make us move to the next point, not draw a line to it.
           prevX = prevY = null;
         } else {
