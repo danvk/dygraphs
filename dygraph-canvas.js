@@ -69,11 +69,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
     for (var name in this.datasets) {
       if (!this.datasets.hasOwnProperty(name)) continue;
       var series = this.datasets[name];
-      var x1 = series[0][0];
-      if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-
-      var x2 = series[series.length - 1][0];
-      if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      if (series.length > 1) {
+        var x1 = series[0][0];
+        if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+  
+        var x2 = series[series.length - 1][0];
+        if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      }
     }
   }
   this.xrange = this.maxxval - this.minxval;
