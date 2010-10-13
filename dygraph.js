@@ -233,8 +233,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
-  Dygraph.addAnnotationRule();
-
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
@@ -2446,6 +2444,8 @@ Dygraph.prototype.setVisibility = function(num, value) {
  * Update the list of annotations and redraw the chart.
  */
 Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
+  // Only add the annotation CSS rule once we know it will be used.
+  Dygraph.addAnnotationRule();
   this.annotations_ = ann;
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
