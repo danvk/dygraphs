@@ -2492,7 +2492,8 @@ Dygraph.addAnnotationRule = function() {
              "background-color: white; " +
              "text-align: center;";
   if (mysheet.insertRule) {  // Firefox
-    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", mysheet.cssRules.length);
+    var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
+    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
   } else if (mysheet.addRule) {  // IE
     mysheet.addRule(".dygraphDefaultAnnotation", rule);
   }
