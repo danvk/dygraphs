@@ -126,7 +126,8 @@ Dygraph.DEFAULT_ATTRS = {
   stackedGraph: false,
   hideOverlayOnMouseOut: true,
 
-  stepPlot: false
+  stepPlot: false,
+  avoidMinZero: false
 };
 
 // Various logging levels.
@@ -230,8 +231,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // Make a note of whether labels will be pulled from the CSV file.
   this.labelsFromCSV_ = (this.attr_("labels") == null);
-
-  Dygraph.addAnnotationRule();
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -1054,7 +1053,7 @@ Dygraph.prototype.updateSelection_ = function() {
           replace += "<br/>";
         }
         var point = this.selPoints_[i];
-        var c = new RGBColor(this.colors_[i%clen]);
+        var c = new RGBColor(this.plotter_.colors[point.name]);
         var yval = fmtFunc(point.yval);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
@@ -1100,7 +1099,13 @@ Dygraph.prototype.setSelection = function(row) {
   if (row !== false && row >= 0) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
-        this.selPoints_.push(this.layout_.points[pos+row]);
+        var point = this.layout_.points[pos+row];
+        
+        if (this.attr_("stackedGraph")) {
+          point = this.layout_.unstackPointAtIndex(pos+row);
+        }
+        
+        this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
     }
@@ -1451,6 +1456,8 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * Add ticks when the x axis has numbers on it (instead of dates)
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
+ * @param self
+ * @param {function} attribute accessor function.
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
@@ -1509,7 +1516,12 @@ Dygraph.numericTicks = function(minV, maxV, self, attr) {
   for (var i = 0; i < nTicks; i++) {
     var tickV = low_val + i * scale;
     var absTickV = Math.abs(tickV);
-    var label = Dygraph.round_(tickV, 2);
+    var label;
+    if (formatter != undefined) {
+      label = formatter(tickV);
+    } else {
+      label = Dygraph.round_(tickV, 2);
+    }
     if (k_labels.length) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
@@ -1534,7 +1546,8 @@ Dygraph.numericTicks = function(minV, maxV, self, attr) {
 Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
   // TODO(danvk): make this an attribute as well.
-  var ticks = Dygraph.numericTicks(minY, maxY, this);
+  var formatter = this.attr_('yAxisLabelFormatter') ? this.attr_('yAxisLabelFormatter') : this.attr_('yValueFormatter');
+  var ticks = Dygraph.numericTicks(minY, maxY, this, formatter);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };
@@ -1657,8 +1670,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
     extremes[seriesName] = seriesExtremes;
     var thisMinY = seriesExtremes[0];
     var thisMaxY = seriesExtremes[1];
-    if (minY === null || thisMinY < minY) minY = thisMinY;
-    if (maxY === null || thisMaxY > maxY) maxY = thisMaxY;
+    if (minY === null || (thisMinY != null && thisMinY < minY)) minY = thisMinY;
+    if (maxY === null || (thisMaxY != null && thisMaxY > maxY)) maxY = thisMaxY;
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
@@ -2254,6 +2267,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var labels = [data.getColumnLabel(0)];
   for (var i = 0; i < colIdx.length; i++) {
     labels.push(data.getColumnLabel(colIdx[i]));
+    if (this.attr_("errorBars")) i += 1;
   }
   this.attrs_.labels = labels;
   cols = labels.length;
@@ -2529,6 +2543,8 @@ Dygraph.prototype.setVisibility = function(num, value) {
  * Update the list of annotations and redraw the chart.
  */
 Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
+  // Only add the annotation CSS rule once we know it will be used.
+  Dygraph.addAnnotationRule();
   this.annotations_ = ann;
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
@@ -2575,7 +2591,8 @@ Dygraph.addAnnotationRule = function() {
              "background-color: white; " +
              "text-align: center;";
   if (mysheet.insertRule) {  // Firefox
-    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", 0);
+    var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
+    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
   } else if (mysheet.addRule) {  // IE
     mysheet.addRule(".dygraphDefaultAnnotation", rule);
   }
@@ -2591,7 +2608,7 @@ Dygraph.createCanvas = function() {
   var canvas = document.createElement("canvas");
 
   isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if (isIE) {
+  if (isIE && (typeof(G_vmlCanvasManager) != 'undefined')) {
     canvas = G_vmlCanvasManager.initElement(canvas);
   }
 

@@ -2,7 +2,7 @@
   <head>
     <title>Linear Regression</title>
     <!--[if IE]>
-    <script type="text/javascript" src="excanvas.js"></script>
+    <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../strftime/strftime-min.js"></script>
     <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
@@ -73,7 +73,7 @@
         var b = (sum_y - a * sum_x) / num;
 
         coeffs[series] = [b, a];
-        if (console) {
+        if (typeof(console) != 'undefined') {
           console.log("coeffs(" + series + "): [" + b + ", " + a + "]");
         }
 

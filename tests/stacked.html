@@ -2,7 +2,7 @@
   <head>
     <title>stacked</title>
     <!--[if IE]>
-    <script type="text/javascript" src="excanvas.js"></script>
+    <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../strftime/strftime-min.js"></script>
     <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
@@ -20,18 +20,42 @@
     <div id="stacked_missing_div"></div>
     <p>Stacked graph with many series:</p>
     <div id="stacked_many_div"></div>
+    <p>Change selection/highlighting on all graphs:</p>
+    <div id="graph_selection_div">
+        <select onchange="javascript:setSelection(this.options[this.selectedIndex].value);">
+            <option value="" selected></option>
+            <option value="0">0</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="99">99</option>
+        </select>
+    </div>
 
     <script type="text/javascript">
       data = "X,x,100-x\n";
       for (var i = 0; i < 100; i++) {
         data += i + "," + i + "," + (100 - i) + "\n";
       }
+      
+      var graphs = [];
 
-      new Dygraph(document.getElementById("simple_div"),
-                  data);
-      new Dygraph(document.getElementById("stacked_div"),
-                  data,
-                  { stackedGraph: true });
+      graphs.push(
+          new Dygraph(
+              document.getElementById("simple_div"),
+              data));
+          
+      graphs.push(
+          new Dygraph(
+              document.getElementById("stacked_div"),
+              data,
+              { stackedGraph: true }));
 
       missing_data = "X,x,100-x\n";
       for (var i = 0; i < 100; i++) {
@@ -44,11 +68,16 @@
         }
       }
 
-      new Dygraph(document.getElementById("simple_missing_div"),
-                  missing_data);
-      new Dygraph(document.getElementById("stacked_missing_div"),
-                  missing_data,
-                  { stackedGraph: true });
+      graphs.push(
+          new Dygraph(
+              document.getElementById("simple_missing_div"),
+              missing_data));
+      
+      graphs.push(
+          new Dygraph(
+              document.getElementById("stacked_missing_div"),
+              missing_data,
+              { stackedGraph: true }));
 
       many_data = "X,a,b,c,d,e,100-a,100-b,100-c,100-d,100-e\n";
       for (var i = 0; i < 100; i++) {
@@ -58,9 +87,17 @@
         many_data += "\n";
       }
 
-      new Dygraph(document.getElementById("stacked_many_div"),
-                  many_data,
-                  { stackedGraph: true });
+      graphs.push(
+          new Dygraph(
+              document.getElementById("stacked_many_div"),
+              many_data,
+              { stackedGraph: true }));
+      
+      function setSelection(row) {
+        for (var i = 0; i < graphs.length; i++) {
+          graphs[i].setSelection(row ? row : false);
+        }
+      }
     </script>
   </body>
 </html>

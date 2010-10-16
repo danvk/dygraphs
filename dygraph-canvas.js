@@ -33,6 +33,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy.
+  this.annotations = [];
   var parse = this.attr_('xValueParser');
   for (var i = 0; i < ann.length; i++) {
     var a = {};
@@ -69,11 +70,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
     for (var name in this.datasets) {
       if (!this.datasets.hasOwnProperty(name)) continue;
       var series = this.datasets[name];
-      var x1 = series[0][0];
-      if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-
-      var x2 = series[series.length - 1][0];
-      if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      if (series.length > 1) {
+        var x1 = series[0][0];
+        if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+  
+        var x2 = series[series.length - 1][0];
+        if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      }
     }
   }
   this.xrange = this.maxxval - this.minxval;
@@ -209,6 +212,35 @@ DygraphLayout.prototype.removeAllDatasets = function() {
 DygraphLayout.prototype.updateOptions = function(new_options) {
   Dygraph.update(this.options, new_options ? new_options : {});
 };
+
+/**
+ * Return a copy of the point at the indicated index, with its yval unstacked.
+ * @param int index of point in layout_.points
+ */
+DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
+  var point = this.points[idx];
+  
+  // Clone the point since we modify it
+  var unstackedPoint = {};  
+  for (var i in point) {
+    unstackedPoint[i] = point[i];
+  }
+  
+  if (!this.attr_("stackedGraph")) {
+    return unstackedPoint;
+  }
+  
+  // The unstacked yval is equal to the current yval minus the yval of the 
+  // next point at the same xval.
+  for (var i = idx+1; i < this.points.length; i++) {
+    if (this.points[i].xval == point.xval) {
+      unstackedPoint.yval -= this.points[i].yval; 
+      break;
+    }
+  }
+  
+  return unstackedPoint;
+}  
 
 // Subclass PlotKit.CanvasRenderer to add:
 // 1. X/Y grid overlay
@@ -800,6 +832,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var point = points[j];
       if (point.name == setName) {
         if (!isOK(point.canvasy)) {
+          if (stepPlot && prevX != null) {
+            // Draw a horizontal line to the start of the missing data
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = this.options.strokeWidth;
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(point.canvasx, prevY);
+            ctx.stroke();
+          }
           // this will make us move to the next point, not draw a line to it.
           prevX = prevY = null;
         } else {
