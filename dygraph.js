@@ -761,6 +761,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   var dragStartY = null;
   var dragEndX = null;
   var dragEndY = null;
+  var dragDirection = null;
   var prevEndX = null;
   var prevEndY = null;
   var prevDragDirection = null;
@@ -793,7 +794,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       var yDelta = Math.abs(dragStartY - dragEndY);
 
       // drag direction threshold for y axis is twice as large as x axis
-      var dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
+      dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
 
       self.drawZoomRect_(dragDirection, dragStartX, dragEndX, dragStartY, dragEndY,
                          prevDragDirection, prevEndX, prevEndY);
@@ -920,10 +921,10 @@ Dygraph.prototype.createDragInterface_ = function() {
         }
       }
 
-      if (regionWidth >= 10 && regionWidth > regionHeight) {
+      if (regionWidth >= 10 && dragDirection == Dygraph.HORIZONTAL) {
         self.doZoomX_(Math.min(dragStartX, dragEndX),
                      Math.max(dragStartX, dragEndX));
-      } else if (regionHeight >= 10 && regionHeight > regionWidth){
+      } else if (regionHeight >= 10 && dragDirection == Dygraph.VERTICAL){
         self.doZoomY_(Math.min(dragStartY, dragEndY),
                       Math.max(dragStartY, dragEndY));
       } else {
