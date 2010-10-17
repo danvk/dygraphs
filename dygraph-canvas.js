@@ -33,6 +33,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy.
+  this.annotations = [];
   var parse = this.attr_('xValueParser');
   for (var i = 0; i < ann.length; i++) {
     var a = {};
@@ -69,11 +70,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
     for (var name in this.datasets) {
       if (!this.datasets.hasOwnProperty(name)) continue;
       var series = this.datasets[name];
-      var x1 = series[0][0];
-      if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-
-      var x2 = series[series.length - 1][0];
-      if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      if (series.length > 1) {
+        var x1 = series[0][0];
+        if (!this.minxval || x1 < this.minxval) this.minxval = x1;
+  
+        var x2 = series[series.length - 1][0];
+        if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
+      }
     }
   }
   this.xrange = this.maxxval - this.minxval;
@@ -790,6 +793,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var point = points[j];
       if (point.name == setName) {
         if (!isOK(point.canvasy)) {
+          if (stepPlot && prevX != null) {
+            // Draw a horizontal line to the start of the missing data
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = this.options.strokeWidth;
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(point.canvasx, prevY);
+            ctx.stroke();
+          }
           // this will make us move to the next point, not draw a line to it.
           prevX = prevY = null;
         } else {
