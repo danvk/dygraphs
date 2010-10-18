@@ -1509,6 +1509,7 @@ Dygraph.numericTicks = function(minV, maxV, self, attr) {
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
+  var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
 
   // Allow reverse y-axis if it's explicitly requested.
   if (low_val > high_val) scale *= -1;
