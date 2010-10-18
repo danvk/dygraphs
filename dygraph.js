@@ -1440,45 +1440,59 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self, axis_props) {
+Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   var attr = function(k) {
     if (axis_props && axis_props.hasOwnProperty(k)) return axis_props[k];
     return self.attr_(k);
   };
 
-  // Basic idea:
-  // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
-  // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-  // The first spacing greater than pixelsPerYLabel is what we use.
-  // TODO(danvk): version that works on a log scale.
-  if (attr("labelsKMG2")) {
-    var mults = [1, 2, 4, 8];
-  } else {
-    var mults = [1, 2, 5];
-  }
-  var scale, low_val, high_val, nTicks;
-  // TODO(danvk): make it possible to set this for x- and y-axes independently.
-  var pixelsPerTick = attr('pixelsPerYLabel');
-  for (var i = -10; i < 50; i++) {
-    if (attr("labelsKMG2")) {
-      var base_scale = Math.pow(16, i);
-    } else {
-      var base_scale = Math.pow(10, i);
+  var ticks = [];
+  if (vals) {
+    for (var i = 0; i < vals.length; i++) {
+      ticks.push({v: vals[i]});
     }
-    for (var j = 0; j < mults.length; j++) {
-      scale = base_scale * mults[j];
-      low_val = Math.floor(minV / scale) * scale;
-      high_val = Math.ceil(maxV / scale) * scale;
-      nTicks = Math.abs(high_val - low_val) / scale;
-      var spacing = self.height_ / nTicks;
-      // wish I could break out of both loops at once...
+  } else {
+    // Basic idea:
+    // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+    // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+    // The first spacing greater than pixelsPerYLabel is what we use.
+    // TODO(danvk): version that works on a log scale.
+    if (attr("labelsKMG2")) {
+      var mults = [1, 2, 4, 8];
+    } else {
+      var mults = [1, 2, 5];
+    }
+    var scale, low_val, high_val, nTicks;
+    // TODO(danvk): make it possible to set this for x- and y-axes independently.
+    var pixelsPerTick = attr('pixelsPerYLabel');
+    for (var i = -10; i < 50; i++) {
+      if (attr("labelsKMG2")) {
+        var base_scale = Math.pow(16, i);
+      } else {
+        var base_scale = Math.pow(10, i);
+      }
+      for (var j = 0; j < mults.length; j++) {
+        scale = base_scale * mults[j];
+        low_val = Math.floor(minV / scale) * scale;
+        high_val = Math.ceil(maxV / scale) * scale;
+        nTicks = Math.abs(high_val - low_val) / scale;
+        var spacing = self.height_ / nTicks;
+        // wish I could break out of both loops at once...
+        if (spacing > pixelsPerTick) break;
+      }
       if (spacing > pixelsPerTick) break;
     }
-    if (spacing > pixelsPerTick) break;
+
+    // Construct the set of ticks.
+    // Allow reverse y-axis if it's explicitly requested.
+    if (low_val > high_val) scale *= -1;
+    for (var i = 0; i < nTicks; i++) {
+      var tickV = low_val + i * scale;
+      ticks.push( {v: tickV} );
+    }
   }
 
-  // Construct labels for the ticks
-  var ticks = [];
+  // Add formatted labels to the ticks.
   var k;
   var k_labels = [];
   if (attr("labelsKMB")) {
@@ -1492,11 +1506,8 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props) {
   }
   var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
 
-  // Allow reverse y-axis if it's explicitly requested.
-  if (low_val > high_val) scale *= -1;
-
-  for (var i = 0; i < nTicks; i++) {
-    var tickV = low_val + i * scale;
+  for (var i = 0; i < ticks.length; i++) {
+    var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
     var label;
     if (formatter != undefined) {
@@ -1514,23 +1525,9 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props) {
         }
       }
     }
-    ticks.push( {label: label, v: tickV} );
+    ticks[i].label = label;
   }
   return ticks;
-};
-
-/**
- * Adds appropriate ticks on the y-axis
- * @param {Number} minY The minimum Y value in the data set
- * @param {Number} maxY The maximum Y value in the data set
- * @private
- */
-Dygraph.prototype.addYTicks_ = function(minY, maxY) {
-  // Set the number of ticks so that the labels are human-friendly.
-  // TODO(danvk): make this an attribute as well.
-  var ticks = Dygraph.numericTicks(minY, maxY, this);
-  this.layout_.updateOptions( { yAxis: [minY, maxY],
-                                yTicks: ticks } );
 };
 
 // Computes the range of the data series (including confidence intervals).
@@ -1872,12 +1869,32 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [minAxisY, maxAxisY];
     }
 
-    // Add ticks.
-    axis.ticks =
-      Dygraph.numericTicks(axis.computedValueRange[0],
-                           axis.computedValueRange[1],
-                           this,
-                           axis);
+    // Add ticks. By default, all axes inherit the tick positions of the
+    // primary axis. However, if an axis is specifically marked as having
+    // independent ticks, then that is permissible as well.
+    if (i == 0 || axis.independentTicks) {
+      axis.ticks =
+        Dygraph.numericTicks(axis.computedValueRange[0],
+                             axis.computedValueRange[1],
+                             this,
+                             axis);
+    } else {
+      var p_axis = this.axes_[0];
+      var p_ticks = p_axis.ticks;
+      var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
+      var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
+      var tick_values = [];
+      for (var i = 0; i < p_ticks.length; i++) {
+        var y_frac = (p_ticks[i].v - p_axis.computedValueRange[0]) / p_scale;
+        var y_val = axis.computedValueRange[0] + y_frac * scale;
+        tick_values.push(y_val);
+      }
+
+      axis.ticks =
+        Dygraph.numericTicks(axis.computedValueRange[0],
+                             axis.computedValueRange[1],
+                             this, axis, tick_values);
+    }
   }
 
   return [this.axes_, this.seriesToAxisMap_];
