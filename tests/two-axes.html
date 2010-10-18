@@ -11,7 +11,11 @@
   </head>
   <body>
     <h2>Multiple y-axes</h2>
+    <p>The same data with both one and two y-axes. Two y-axes:</p>
     <div id="demodiv"></div>
+    <p>A single y-axis:</p>
+    <div id="demodiv_one"></div>
+
     <script type="text/javascript">
       var data = [];
       for (var i = 1; i <= 100; i++) {
@@ -27,24 +31,36 @@
                    1e6 * (1 + i * (100 - i) / (50 * 50)),
                    1e6 * (2 - i * (100 - i) / (50 * 50))]);
       }
+
       g = new Dygraph(
-              document.getElementById("demodiv"),
-              data,
-              {
-                labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-                width: 640,
-                height: 350,
-                'Y3': {
-                  axis: {
-                    // set axis-related properties here
-                    labelsKMB: true
-                  }
-                },
-                'Y4': {
-                  axis: 'Y3'  // use the same y-axis as series Y3
-                }
+          document.getElementById("demodiv"),
+          data,
+          {
+            labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+            width: 640,
+            height: 350,
+            'Y3': {
+              axis: {
+                // set axis-related properties here
+                labelsKMB: true
               }
-          );
+            },
+            'Y4': {
+              axis: 'Y3'  // use the same y-axis as series Y3
+            }
+          }
+      );
+
+      g2 = new Dygraph(
+          document.getElementById("demodiv_one"),
+          data,
+          {
+            labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+            width: 640,
+            height: 350,
+            labelsKMB: true
+          }
+      );
     </script>
 </body>
 </html>
