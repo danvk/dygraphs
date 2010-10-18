@@ -521,6 +521,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     context.lineTo(this.area.x, this.area.y + this.area.h);
     context.closePath();
     context.stroke();
+
+    if (this.dygraph_.numAxes() == 2) {
+      context.beginPath();
+      context.moveTo(this.area.x + this.area.w, this.area.y);
+      context.lineTo(this.area.x + this.area.w, this.area.y + this.area.h);
+      context.closePath();
+      context.stroke();
+    }
   }
 
   if (this.options.drawXAxis) {
