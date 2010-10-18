@@ -1440,9 +1440,11 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self, attr) {
-  // This is a bit of a hack to allow per-axis attributes.
-  if (!attr) attr = self.attr_;
+Dygraph.numericTicks = function(minV, maxV, self, axis_props) {
+  var attr = function(k) {
+    if (axis_props && axis_props.hasOwnProperty(k)) return axis_props[k];
+    return self.attr_(k);
+  };
 
   // Basic idea:
   // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
@@ -1526,8 +1528,7 @@ Dygraph.numericTicks = function(minV, maxV, self, attr) {
 Dygraph.prototype.addYTicks_ = function(minY, maxY) {
   // Set the number of ticks so that the labels are human-friendly.
   // TODO(danvk): make this an attribute as well.
-  var formatter = this.attr_('yAxisLabelFormatter') ? this.attr_('yAxisLabelFormatter') : this.attr_('yValueFormatter');
-  var ticks = Dygraph.numericTicks(minY, maxY, this, formatter);
+  var ticks = Dygraph.numericTicks(minY, maxY, this);
   this.layout_.updateOptions( { yAxis: [minY, maxY],
                                 yTicks: ticks } );
 };
@@ -1584,6 +1585,7 @@ Dygraph.prototype.predraw_ = function() {
   this.computeYAxes_();
 
   // Create a new plotter.
+  if (this.plotter_) this.plotter_.clear();
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_, this.layout_,
                                             this.renderOptions_);
@@ -1875,12 +1877,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       Dygraph.numericTicks(axis.computedValueRange[0],
                            axis.computedValueRange[1],
                            this,
-                           function(self, axis) {
-                             return function(a) {
-                               if (axis.hasOwnProperty(a)) return axis[a];
-                               return self.attr_(a);
-                             };
-                           }(this, axis));
+                           axis);
   }
 
   return [this.axes_, this.seriesToAxisMap_];
