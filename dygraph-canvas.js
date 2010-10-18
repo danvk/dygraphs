@@ -84,8 +84,8 @@ DygraphLayout.prototype._evaluateLimits = function() {
 
   for (var i = 0; i < this.options.yAxes.length; i++) {
     var axis = this.options.yAxes[i];
-    axis.minyval = axis.valueRange[0];
-    axis.maxyval = axis.valueRange[1];
+    axis.minyval = axis.computedValueRange[0];
+    axis.maxyval = axis.computedValueRange[1];
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
   }
@@ -302,8 +302,29 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.area.h = this.height - this.options.axisLabelFontSize -
                 2 * this.options.axisTickSize;
 
+  // Shrink the drawing area to accomodate additional y-axes.
+  if (this.dygraph_.numAxes() == 2) {
+    // TODO(danvk): per-axis setting.
+    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
+  } else if (this.dygraph_.numAxes() > 2) {
+    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                        "to use " + this.layout.yAxes.length + ")");
+  }
+
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
+
+  // Set up a clipping area for the canvas (and the interaction canvas).
+  // This ensures that we don't overdraw.
+  var ctx = this.element.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
+
+  var ctx = this.dygraph_.hidden_.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -368,15 +389,6 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
  * Draw an X/Y grid on top of the existing plot
  */
 DygraphCanvasRenderer.prototype.render = function() {
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.layout.options.yAxes.length == 2) {
-    // TODO(danvk): per-axis setting.
-    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
-  } else if (this.layout.options.yAxes.length > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.layout.yAxes.length + ")");
-  }
-
   // Draw the new X/Y grid
   var ctx = this.element.getContext("2d");
 
