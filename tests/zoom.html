@@ -39,6 +39,7 @@
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
+              errorBars: true,
               zoomCallback : function(a,b,c,d) { showDimensions(a,b,c,d); }
             }
           );
