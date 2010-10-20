@@ -308,7 +308,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
     this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
   } else if (this.dygraph_.numAxes() > 2) {
     this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.layout.yAxes.length + ")");
+                        "to use " + this.dygraph_.numAxes() + ")");
   }
 
   this.container.style.position = "relative";
@@ -422,7 +422,7 @@ DygraphCanvasRenderer.prototype.render = function() {
       var x = this.area.x + ticks[i][1] * this.area.w;
       var y = this.area.y + this.area.h;
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(x, y);  // x == NaN
       ctx.lineTo(x, this.area.y);
       ctx.closePath();
       ctx.stroke();
