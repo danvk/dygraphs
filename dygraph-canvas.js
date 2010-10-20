@@ -402,7 +402,8 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i = 0; i < ticks.length; i++) {
-      if (ticks[i][0] != 0) continue;  // TODO(danvk): per-axis property
+      // TODO(danvk): allow secondary axes to draw a grid, too.
+      if (ticks[i][0] != 0) continue;
       var x = this.area.x;
       var y = this.area.y + ticks[i][1] * this.area.h;
       ctx.beginPath();
@@ -419,10 +420,10 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i=0; i<ticks.length; i++) {
-      var x = this.area.x + ticks[i][1] * this.area.w;
+      var x = this.area.x + ticks[i][0] * this.area.w;
       var y = this.area.y + this.area.h;
       ctx.beginPath();
-      ctx.moveTo(x, y);  // x == NaN
+      ctx.moveTo(x, y);
       ctx.lineTo(x, this.area.y);
       ctx.closePath();
       ctx.stroke();
@@ -472,13 +473,15 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
-        if (tick[0] == 1) {
-          x = this.area.x + this.area.w - labelStyle.width;
+        var sgn = 1;
+        if (tick[0] == 1) {  // right-side y-axis
+          x = this.area.x + this.area.w;
+          sgn = -1;
         }
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
         context.moveTo(x, y);
-        context.lineTo(x - this.options.axisTickSize, y);
+        context.lineTo(x - sgn * this.options.axisTickSize, y);
         context.closePath();
         context.stroke();
 
