@@ -22,23 +22,21 @@
     <div id="demodiv" style="width: 480px; height: 320px;"></div>
 
     <script type="text/javascript">
-      var data = "X,Y1,Y2\n";
+      var data = [];
       for (var i = 0; i < 120; i++) {
-        // data.push([i,
-        //            i / 5.0 + 10.0 * Math.sin(i / 3.0),
-        //            30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
-        data += i + "," + i + "/120," + (i*(120-i)) + "/" + (60*60) + "\n";
+        data.push([i,
+                   i / 5.0 + 10.0 * Math.sin(i / 3.0),
+                   30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
       }
 
       g = new Dygraph(
               document.getElementById("demodiv"),
               data,
               {
+                labels: ['X', 'Y1', 'Y2'],
                 underlayCallback: drawLines,
                 drawPoints: true,
-                strokeWidth: 0.0,
-                fractions: true,
-                errorBars: true
+                strokeWidth: 0.0
               }
           );
 
@@ -98,10 +96,6 @@
           var y1 = a * x1 + b;
           var x2 = range[1];
           var y2 = a * x2 + b;
-
-          // Scale up to percentages, rather than fractions.
-          y1 *= 100;
-          y2 *= 100;
 
           var p1 = g.toDomCoords(x1, y1);
           var p2 = g.toDomCoords(x2, y2);
