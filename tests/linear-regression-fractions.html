@@ -22,27 +22,23 @@
     <div id="demodiv" style="width: 480px; height: 320px;"></div>
 
     <script type="text/javascript">
-      var data = [];
+      var data = "X,Y1,Y2\n";
       for (var i = 0; i < 120; i++) {
-        data.push([i,
-                   i / 5.0 + 10.0 * Math.sin(i / 3.0),
-                   30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
+        // data.push([i,
+        //            i / 5.0 + 10.0 * Math.sin(i / 3.0),
+        //            30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
+        data += i + "," + i + "/120," + (i*(120-i)) + "/" + (60*60) + "\n";
       }
-      var labels = ['X', 'Y1', 'Y2'];
-      var orig_colors = [];
 
       g = new Dygraph(
               document.getElementById("demodiv"),
               data,
               {
-                labels: labels,
+                underlayCallback: drawLines,
                 drawPoints: true,
                 strokeWidth: 0.0,
-                drawCallback: function(g, is_initial) {
-                  if (!is_initial) return;
-                  var c = g.getColors();
-                  for (var i = 0; i < c.length; i++) orig_colors.push(c[i]);
-                }
+                fractions: true,
+                errorBars: true
               }
           );
 
@@ -55,11 +51,11 @@
         var range = g.xAxisRange();
 
         var sum_xy = 0.0, sum_x = 0.0, sum_y = 0.0, sum_x2 = 0.0, num = 0;
-        for (var i = 0; i < data.length; i++) {
-          var x = data[i][0];
+        for (var i = 0; i < g.numRows(); i++) {
+          var x = g.getValue(i, 0);
           if (x < range[0] || x > range[1]) continue;
 
-          var y = data[i][series];
+          var y = g.getValue(i, series);
           if (y == null) continue;
           if (y.length == 2) {
             // using fractions
@@ -81,53 +77,50 @@
           console.log("coeffs(" + series + "): [" + b + ", " + a + "]");
         }
 
-        updateChart();
-      }
-
-      function updateChart() {
-        // Generate a new data set with the regression lines.
-        var new_labels = [];
-        var new_colors = [];
-        var new_opts = {};
-        for (var i = 0; i < labels.length; i++) {
-          new_labels.push(labels[i]);
-          if (i) new_colors.push(orig_colors[i - 1]);
-          if (coeffs[i]) {
-            // Darken the series by 50% to generate its regression.
-            var label = labels[i] + " Regression";
-            new_labels.push(label);
-            var c = new RGBColor(orig_colors[i - 1]);
-            c.r = Math.floor(255 - 0.5 * (255 - c.r));
-            c.g = Math.floor(255 - 0.5 * (255 - c.g));
-            c.b = Math.floor(255 - 0.5 * (255 - c.b));
-            new_colors.push(c.toHex());
-            new_opts[label] = {
-              drawPoints: false,
-              strokeWidth: 1.0
-            };
-          }
-        }
-
-        var new_data = [];
-        for (var i = 0; i < data.length; i++) {
-          new_data.push([]);
-          for (var j = 0; j < data[i].length; j++) {
-            new_data[i].push(data[i][j]);
-            if (coeffs[j]) {
-              new_data[i].push(coeffs[j][0] + coeffs[j][1] * data[i][0]);
-            }
-          }
-        }
-
-        new_opts.file = new_data;
-        new_opts.labels = new_labels;
-        new_opts.colors = new_colors;
-        g.updateOptions(new_opts);
+        g.updateOptions({});  // forces a redraw.
       }
 
       function clearLines() {
         for (var i = 0; i < coeffs.length; i++) coeffs[i] = null;
-        updateChart();
+        g.updateOptions({});
+      }
+
+      function drawLines(ctx, area, layout) {
+        if (typeof(g) == 'undefined') return;  // won't be set on the initial draw.
+
+        var range = g.xAxisRange();
+        for (var i = 0; i < coeffs.length; i++) {
+          if (!coeffs[i]) continue;
+          var a = coeffs[i][1];
+          var b = coeffs[i][0];
+
+          var x1 = range[0];
+          var y1 = a * x1 + b;
+          var x2 = range[1];
+          var y2 = a * x2 + b;
+
+          // Scale up to percentages, rather than fractions.
+          y1 *= 100;
+          y2 *= 100;
+
+          var p1 = g.toDomCoords(x1, y1);
+          var p2 = g.toDomCoords(x2, y2);
+
+          var c = new RGBColor(g.getColors()[i - 1]);
+          c.r = Math.floor(255 - 0.5 * (255 - c.r));
+          c.g = Math.floor(255 - 0.5 * (255 - c.g));
+          c.b = Math.floor(255 - 0.5 * (255 - c.b));
+          var color = c.toHex();
+          ctx.save();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          ctx.moveTo(p1[0], p1[1]);
+          ctx.lineTo(p2[0], p2[1]);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+        }
       }
       
     </script>
