@@ -19,7 +19,7 @@ DygraphLayout = function(dygraph, options) {
   this.options = {};  // TODO(danvk): remove, use attr_ instead.
   Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
-  this.annotations = new Array()
+  this.annotations = new Array();
 };
 
 DygraphLayout.prototype.attr_ = function(name) {
@@ -111,13 +111,6 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         name: setName
       };
 
-      // limit the x, y values so they do not overdraw
-      if (point.y <= 0.0) {
-        point.y = 0.0;
-      }
-      if (point.y >= 1.0) {
-        point.y = 1.0;
-      }
       this.points.push(point);
     }
   }

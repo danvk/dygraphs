@@ -68,6 +68,7 @@
         <li><a href="tests/noise.html">Noisy Data</a></li>
         <li><a href="tests/two-series.html">Multiple Series</a></li>
         <li><a href="tests/highlighted-region.html">Custom Underlay / background</a></li>
+        <li><a href="tests/zoom.html">Tests for zoom operations</a></li>
       </ul>
     </div>
 
@@ -624,10 +625,10 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>zoomCallback</strong></td>
-          <td><code>function(minDate,<br/>maxDate){}</code></td>
+          <td><code>function(minDate,<br/>maxDate,<br/>minValue,<br/>maxValue){}</code></td>
           <td><code>null</code></td>
-          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> </div>
+          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. minValue and maxValue are y-axis range values.
+          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/zoom.html">zoom</a></div>
           </td>
         </tr>
         <tr>
