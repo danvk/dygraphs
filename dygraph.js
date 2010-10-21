@@ -655,6 +655,19 @@ Dygraph.prototype.createStatusMessage_ = function() {
 };
 
 /**
+ * Position the labels div so that its right edge is flush with the right edge
+ * of the charting area.
+ */
+Dygraph.prototype.positionLabelsDiv_ = function() {
+  // Don't touch a user-specified labelsDiv.
+  if (this.user_attrs_.hasOwnProperty("labelsDiv")) return;
+
+  var area = this.plotter_.area;
+  var div = this.attr_("labelsDiv");
+  div.style.left = area.x + area.w - this.attr_("labelsDivWidth") + "px";
+};
+
+/**
  * Create the text box to adjust the averaging period
  * @return {Object} The newly-created text box
  * @private
@@ -1587,7 +1600,14 @@ Dygraph.prototype.predraw_ = function() {
                                             this.hidden_, this.layout_,
                                             this.renderOptions_);
 
+  // The roller sits in the bottom left corner of the chart. We don't know where
+  // this will be until the options are available, so it's positioned here.
   this.roller_ = this.createRollInterface_();
+
+  // Same thing applies for the labelsDiv. It's right edge should be flush with
+  // the right edge of the charting area (which may not be the same as the right
+  // edge of the div, if we have two y-axes.
+  this.positionLabelsDiv_();
 
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();

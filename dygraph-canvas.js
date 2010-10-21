@@ -4,7 +4,7 @@
 /**
  * @fileoverview Based on PlotKit, but modified to meet the needs of dygraphs.
  * In particular, support for:
- * - grid overlays 
+ * - grid overlays
  * - error bars
  * - dygraphs attribute system
  */
