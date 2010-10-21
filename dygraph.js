@@ -136,6 +136,11 @@ Dygraph.INFO = 2;
 Dygraph.WARNING = 3;
 Dygraph.ERROR = 3;
 
+// Directions for panning and zooming. Use bit operations when combined
+// values are possible.
+Dygraph.HORIZONTAL = 1;
+Dygraph.VERTICAL = 2;
+
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
@@ -172,7 +177,13 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.previousVerticalX_ = -1;
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
+  // valueRange and valueWindow are similar, but not the same. valueRange is a
+  // locally-stored copy of the attribute. valueWindow starts off the same as
+  // valueRange but is impacted by zoom or pan effects. valueRange is kept
+  // around to restore the original value back to valueRange.
   this.valueRange_ = attrs.valueRange || null;
+  this.valueWindow_ = this.valueRange_;
+
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
@@ -749,9 +760,22 @@ Dygraph.prototype.createDragInterface_ = function() {
   var dragStartY = null;
   var dragEndX = null;
   var dragEndY = null;
+  var dragDirection = null;
   var prevEndX = null;
+  var prevEndY = null;
+  var prevDragDirection = null;
+
+  // draggingDate and draggingValue represent the [date,value] point on the
+  // graph at which the mouse was pressed. As the mouse moves while panning,
+  // the viewport must pan so that the mouse position points to
+  // [draggingDate, draggingValue]
   var draggingDate = null;
+  var draggingValue = null;
+
+  // The range in second/value units that the viewport encompasses during a
+  // panning operation.
   var dateRange = null;
+  var valueRange = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
@@ -765,18 +789,41 @@ Dygraph.prototype.createDragInterface_ = function() {
       dragEndX = getX(event);
       dragEndY = getY(event);
 
-      self.drawZoomRect_(dragStartX, dragEndX, prevEndX);
+      var xDelta = Math.abs(dragStartX - dragEndX);
+      var yDelta = Math.abs(dragStartY - dragEndY);
+
+      // drag direction threshold for y axis is twice as large as x axis
+      dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
+
+      self.drawZoomRect_(dragDirection, dragStartX, dragEndX, dragStartY, dragEndY,
+                         prevDragDirection, prevEndX, prevEndY);
+
       prevEndX = dragEndX;
+      prevEndY = dragEndY;
+      prevDragDirection = dragDirection;
     } else if (isPanning) {
       dragEndX = getX(event);
       dragEndY = getY(event);
 
       // Want to have it so that:
-      // 1. draggingDate appears at dragEndX
+      // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
       // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
+      // 3. draggingValue appears at dragEndY.
+      // 4. valueRange is unaltered.
 
-      self.dateWindow_[0] = draggingDate - (dragEndX / self.width_) * dateRange;
-      self.dateWindow_[1] = self.dateWindow_[0] + dateRange;
+      var minDate = draggingDate - (dragEndX / self.width_) * dateRange;
+      var maxDate = minDate + dateRange;
+      self.dateWindow_ = [minDate, maxDate];
+
+
+      // y-axis scaling is automatic unless a valueRange is defined or
+      // if the user zooms in on the y-axis. If neither is true, valueWindow_
+      // will be null.
+      if (self.valueWindow_) {
+        var maxValue = draggingValue + (dragEndY / self.height_) * valueRange;
+        var minValue = maxValue - valueRange;
+        self.valueWindow_ = [ minValue, maxValue ];
+      }
       self.drawGraph_(self.rawData_);
     }
   });
@@ -789,11 +836,21 @@ Dygraph.prototype.createDragInterface_ = function() {
     dragStartY = getY(event);
 
     if (event.altKey || event.shiftKey) {
-      if (!self.dateWindow_) return;  // have to be zoomed in to pan.
+      // have to be zoomed in to pan.
+      if (!self.dateWindow_ && !self.valueWindow_) return;
+
       isPanning = true;
-      dateRange = self.dateWindow_[1] - self.dateWindow_[0];
+      var xRange = self.xAxisRange();
+      dateRange = xRange[1] - xRange[0];
+      var yRange = self.yAxisRange();
+      valueRange = yRange[1] - yRange[0];
+
+      // TODO(konigsberg): Switch from all this math to toDataCoords?
+      // Seems to work for the dragging value.
       draggingDate = (dragStartX / self.width_) * dateRange +
-        self.dateWindow_[0];
+        xRange[0];
+      var r = self.toDataCoords(null, dragStartY);
+      draggingValue = r[1];
     } else {
       isZooming = true;
     }
@@ -811,7 +868,9 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
+      draggingValue = null;
       dateRange = null;
+      valueRange = null;
     }
   });
 
@@ -861,9 +920,12 @@ Dygraph.prototype.createDragInterface_ = function() {
         }
       }
 
-      if (regionWidth >= 10) {
-        self.doZoom_(Math.min(dragStartX, dragEndX),
+      if (regionWidth >= 10 && dragDirection == Dygraph.HORIZONTAL) {
+        self.doZoomX_(Math.min(dragStartX, dragEndX),
                      Math.max(dragStartX, dragEndX));
+      } else if (regionHeight >= 10 && dragDirection == Dygraph.VERTICAL){
+        self.doZoomY_(Math.min(dragStartY, dragEndY),
+                      Math.max(dragStartY, dragEndY));
       } else {
         self.canvas_.getContext("2d").clearRect(0, 0,
                                            self.canvas_.width,
@@ -877,20 +939,18 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
+      draggingValue = null;
       dateRange = null;
+      valueRange = null;
     }
   });
 
   // Double-clicking zooms back out
   Dygraph.addEvent(this.mouseEventElement_, 'dblclick', function(event) {
-    if (self.dateWindow_ == null) return;
-    self.dateWindow_ = null;
-    self.drawGraph_(self.rawData_);
-    var minDate = self.rawData_[0][0];
-    var maxDate = self.rawData_[self.rawData_.length - 1][0];
-    if (self.attr_("zoomCallback")) {
-      self.attr_("zoomCallback")(minDate, maxDate);
-    }
+    // Disable zooming out if panning.
+    if (event.altKey || event.shiftKey) return;
+
+    self.doUnzoom_();
   });
 };
 
@@ -899,49 +959,158 @@ Dygraph.prototype.createDragInterface_ = function() {
  * up any previous zoom rectangles that were drawn. This could be optimized to
  * avoid extra redrawing, but it's tricky to avoid interactions with the status
  * dots.
+ * 
+ * @param {Number} direction the direction of the zoom rectangle. Acceptable
+ * values are Dygraph.HORIZONTAL and Dygraph.VERTICAL.
  * @param {Number} startX The X position where the drag started, in canvas
  * coordinates.
  * @param {Number} endX The current X position of the drag, in canvas coords.
+ * @param {Number} startY The Y position where the drag started, in canvas
+ * coordinates.
+ * @param {Number} endY The current Y position of the drag, in canvas coords.
+ * @param {Number} prevDirection the value of direction on the previous call to
+ * this function. Used to avoid excess redrawing
  * @param {Number} prevEndX The value of endX on the previous call to this
+ * function. Used to avoid excess redrawing
+ * @param {Number} prevEndY The value of endY on the previous call to this
  * function. Used to avoid excess redrawing
  * @private
  */
-Dygraph.prototype.drawZoomRect_ = function(startX, endX, prevEndX) {
+Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY,
+                                           prevDirection, prevEndX, prevEndY) {
   var ctx = this.canvas_.getContext("2d");
 
   // Clean up from the previous rect if necessary
-  if (prevEndX) {
+  if (prevDirection == Dygraph.HORIZONTAL) {
     ctx.clearRect(Math.min(startX, prevEndX), 0,
                   Math.abs(startX - prevEndX), this.height_);
+  } else if (prevDirection == Dygraph.VERTICAL){
+    ctx.clearRect(0, Math.min(startY, prevEndY),
+                  this.width_, Math.abs(startY - prevEndY));
   }
 
   // Draw a light-grey rectangle to show the new viewing area
-  if (endX && startX) {
-    ctx.fillStyle = "rgba(128,128,128,0.33)";
-    ctx.fillRect(Math.min(startX, endX), 0,
-                 Math.abs(endX - startX), this.height_);
+  if (direction == Dygraph.HORIZONTAL) {
+    if (endX && startX) {
+      ctx.fillStyle = "rgba(128,128,128,0.33)";
+      ctx.fillRect(Math.min(startX, endX), 0,
+                   Math.abs(endX - startX), this.height_);
+    }
+  }
+  if (direction == Dygraph.VERTICAL) {
+    if (endY && startY) {
+      ctx.fillStyle = "rgba(128,128,128,0.33)";
+      ctx.fillRect(0, Math.min(startY, endY),
+                   this.width_, Math.abs(endY - startY));
+    }
   }
 };
 
 /**
- * Zoom to something containing [lowX, highX]. These are pixel coordinates
- * in the canvas. The exact zoom window may be slightly larger if there are no
- * data points near lowX or highX. This function redraws the graph.
+ * Zoom to something containing [lowX, highX]. These are pixel coordinates in
+ * the canvas. The exact zoom window may be slightly larger if there are no data
+ * points near lowX or highX. Don't confuse this function with doZoomXDates,
+ * which accepts dates that match the raw data. This function redraws the graph.
+ * 
  * @param {Number} lowX The leftmost pixel value that should be visible.
  * @param {Number} highX The rightmost pixel value that should be visible.
  * @private
  */
-Dygraph.prototype.doZoom_ = function(lowX, highX) {
+Dygraph.prototype.doZoomX_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
+  // Convert the call to date ranges of the raw data.
   var r = this.toDataCoords(lowX, null);
   var minDate = r[0];
   r = this.toDataCoords(highX, null);
   var maxDate = r[0];
+  this.doZoomXDates_(minDate, maxDate);
+};
 
+/**
+ * Zoom to something containing [minDate, maxDate] values. Don't confuse this
+ * method with doZoomX which accepts pixel coordinates. This function redraws
+ * the graph.
+ * 
+ * @param {Number} minDate The minimum date that should be visible.
+ * @param {Number} maxDate The maximum date that should be visible.
+ * @private
+ */
+Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
   this.drawGraph_(this.rawData_);
   if (this.attr_("zoomCallback")) {
-    this.attr_("zoomCallback")(minDate, maxDate);
+    var yRange = this.yAxisRange();
+    this.attr_("zoomCallback")(minDate, maxDate, yRange[0], yRange[1]);
+  }
+};
+
+/**
+ * Zoom to something containing [lowY, highY]. These are pixel coordinates in
+ * the canvas. The exact zoom window may be slightly larger if there are no
+ * data points near lowY or highY.  Don't confuse this function with
+ * doZoomYValues, which accepts parameters that match the raw data. This
+ * function redraws the graph.
+ * 
+ * @param {Number} lowY The topmost pixel value that should be visible.
+ * @param {Number} highY The lowest pixel value that should be visible.
+ * @private
+ */
+Dygraph.prototype.doZoomY_ = function(lowY, highY) {
+  // Find the highest and lowest values in pixel range.
+  var r = this.toDataCoords(null, lowY);
+  var maxValue = r[1];
+  r = this.toDataCoords(null, highY);
+  var minValue = r[1];
+
+  this.doZoomYValues_(minValue, maxValue);
+};
+
+/**
+ * Zoom to something containing [minValue, maxValue] values. Don't confuse this
+ * method with doZoomY which accepts pixel coordinates. This function redraws
+ * the graph.
+ * 
+ * @param {Number} minValue The minimum Value that should be visible.
+ * @param {Number} maxValue The maximum value that should be visible.
+ * @private
+ */
+Dygraph.prototype.doZoomYValues_ = function(minValue, maxValue) {
+  this.valueWindow_ = [minValue, maxValue];
+  this.drawGraph_(this.rawData_);
+  if (this.attr_("zoomCallback")) {
+    var xRange = this.xAxisRange(); 
+    this.attr_("zoomCallback")(xRange[0], xRange[1], minValue, maxValue);
+  }
+};
+
+/**
+ * Reset the zoom to the original view coordinates. This is the same as
+ * double-clicking on the graph.
+ * 
+ * @private
+ */
+Dygraph.prototype.doUnzoom_ = function() {
+  var dirty = null;
+  if (this.dateWindow_ != null) {
+    dirty = 1;
+    this.dateWindow_ = null;
+  }
+  if (this.valueWindow_ != null) {
+    dirty = 1;
+    this.valueWindow_ = this.valueRange_;
+  }
+
+  if (dirty) {
+    // Putting the drawing operation before the callback because it resets
+    // yAxisRange.
+    this.drawGraph_(this.rawData_);
+    if (this.attr_("zoomCallback")) {
+      var minDate = this.rawData_[0][0];
+      var maxDate = this.rawData_[this.rawData_.length - 1][0];
+      var minValue = this.yAxisRange()[0];
+      var maxValue = this.yAxisRange()[1];
+      this.attr_("zoomCallback")(minDate, maxDate, minValue, maxValue);
+    }
   }
 };
 
@@ -1701,10 +1870,10 @@ Dygraph.prototype.drawGraph_ = function(data) {
   }
 
   // Use some heuristics to come up with a good maxY value, unless it's been
-  // set explicitly by the user.
-  if (this.valueRange_ != null) {
-    this.addYTicks_(this.valueRange_[0], this.valueRange_[1]);
-    this.displayedYRange_ = this.valueRange_;
+  // set explicitly by the developer or end-user (via drag)
+  if (this.valueWindow_ != null) {
+    this.addYTicks_(this.valueWindow_[0], this.valueWindow_[1]);
+    this.displayedYRange_ = this.valueWindow_;
   } else {
     // This affects the calculation of span, below.
     if (this.attr_("includeZero") && minY > 0) {
@@ -2327,14 +2496,15 @@ Dygraph.prototype.start_ = function() {
  */
 Dygraph.prototype.updateOptions = function(attrs) {
   // TODO(danvk): this is a mess. Rethink this function.
-  if (attrs.rollPeriod) {
+  if ('rollPeriod' in attrs) {
     this.rollPeriod_ = attrs.rollPeriod;
   }
-  if (attrs.dateWindow) {
+  if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
   }
-  if (attrs.valueRange) {
+  if ('valueRange' in attrs) {
     this.valueRange_ = attrs.valueRange;
+    this.valueWindow_ = attrs.valueRange;
   }
 
   // TODO(danvk): validate per-series options.
