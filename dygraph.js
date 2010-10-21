@@ -824,7 +824,7 @@ Dygraph.prototype.createDragInterface_ = function() {
         var minValue = maxValue - valueRange;
         self.valueWindow_ = [ minValue, maxValue ];
       }
-      self.drawGraph_(self.rawData_);
+      self.drawGraph_();
     }
   });
 
@@ -1037,7 +1037,7 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var yRange = this.yAxisRange();
     this.attr_("zoomCallback")(minDate, maxDate, yRange[0], yRange[1]);
@@ -1076,7 +1076,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
  */
 Dygraph.prototype.doZoomYValues_ = function(minValue, maxValue) {
   this.valueWindow_ = [minValue, maxValue];
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange(); 
     this.attr_("zoomCallback")(xRange[0], xRange[1], minValue, maxValue);
@@ -1103,7 +1103,7 @@ Dygraph.prototype.doUnzoom_ = function() {
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
       var maxDate = this.rawData_[this.rawData_.length - 1][0];
@@ -1423,7 +1423,7 @@ Dygraph.round_ = function(num, places) {
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
 };
 
 Dygraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -1760,14 +1760,14 @@ Dygraph.prototype.extremeValues_ = function(series) {
 };
 
 /**
- * Update the graph with new data. Data is in the format
- * [ [date1, val1, val2, ...], [date2, val1, val2, ...] if errorBars=false
- * or, if errorBars=true,
- * [ [date1, [val1,stddev1], [val2,stddev2], ...], [date2, ...], ...]
- * @param {Array.<Object>} data The data (see above)
+ * Update the graph with new data. This method is called when the viewing area
+ * has changed. If the underlying data or options have changed, predraw_ will
+ * be called before drawGraph_ is called.
  * @private
  */
-Dygraph.prototype.drawGraph_ = function(data) {
+Dygraph.prototype.drawGraph_ = function() {
+  var data = this.rawData_;
+
   // This is used to set the second parameter to drawCallback, below.
   var is_initial_draw = this.is_initial_draw_;
   this.is_initial_draw_ = false;
@@ -2457,12 +2457,12 @@ Dygraph.prototype.start_ = function() {
     this.loadedEvent_(this.file_());
   } else if (Dygraph.isArrayLike(this.file_)) {
     this.rawData_ = this.parseArray_(this.file_);
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
   } else if (typeof this.file_ == 'object' &&
              typeof this.file_.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(this.file_);
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
   } else if (typeof this.file_ == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
     if (this.file_.indexOf('\n') >= 0) {
@@ -2525,7 +2525,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
     this.file_ = attrs['file'];
     this.start_();
   } else {
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
   }
 };
 
@@ -2567,7 +2567,7 @@ Dygraph.prototype.resize = function(width, height) {
   }
 
   this.createInterface_();
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
 
   this.resize_lock = false;
 };
@@ -2579,7 +2579,7 @@ Dygraph.prototype.resize = function(width, height) {
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
 };
 
 /**
@@ -2606,7 +2606,7 @@ Dygraph.prototype.setVisibility = function(num, value) {
     this.warn("invalid series number in setVisibility: " + num);
   } else {
     x[num] = value;
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
   }
 };
 
@@ -2619,7 +2619,7 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   this.annotations_ = ann;
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
   }
 };
 
