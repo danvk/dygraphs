@@ -320,6 +320,10 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   ctx.clip();
 };
 
+DygraphCanvasRenderer.prototype.attr_ = function(x) {
+  return this.dygraph_.attr_(x);
+};
+
 DygraphCanvasRenderer.prototype.clear = function() {
   if (this.isIE) {
     // VML takes a while to start up, so we just poll every this.IEDelay
@@ -675,12 +679,13 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * Overrides the CanvasRenderer method to draw error bars
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
+  // TODO(danvk): use this.attr_ for many of these.
   var context = this.element.getContext("2d");
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var fillAlpha = this.options.fillAlpha;
   var errorBars = this.layout.options.errorBars;
-  var fillGraph = this.layout.options.fillGraph;
+  var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.layout.options.stackedGraph;
   var stepPlot = this.layout.options.stepPlot;
 

@@ -61,6 +61,13 @@
             labelsKMB: true
           }
       );
+
+      function update(el) {
+        g.updateOptions( { fillGraph: el.checked } );
+        g2.updateOptions( { fillGraph: el.checked } );
+      }
     </script>
+
+    <input type=checkbox id="check" onChange="update(this)"><label for="check"> Fill?</label>
 </body>
 </html>
