@@ -1888,11 +1888,6 @@ Dygraph.prototype.drawGraph_ = function() {
     }
 
     var seriesExtremes = this.extremeValues_(series);
-    extremes[seriesName] = seriesExtremes;
-    var thisMinY = seriesExtremes[0];
-    var thisMaxY = seriesExtremes[1];
-    if (minY === null || (thisMinY != null && thisMinY < minY)) minY = thisMinY;
-    if (maxY === null || (thisMaxY != null && thisMaxY > maxY)) maxY = thisMaxY;
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
@@ -1906,18 +1901,24 @@ Dygraph.prototype.drawGraph_ = function() {
         // If one data set has a NaN, let all subsequent stacked
         // sets inherit the NaN -- only start at 0 for the first set.
         var x = series[j][0];
-        if (cumulative_y[x] === undefined)
+        if (cumulative_y[x] === undefined) {
           cumulative_y[x] = 0;
+        }
 
         actual_y = series[j][1];
         cumulative_y[x] += actual_y;
 
         series[j] = [x, cumulative_y[x]]
 
-        if (!maxY || cumulative_y[x] > maxY)
-          maxY = cumulative_y[x];
+        if (cumulative_y[x] > seriesExtremes[1]) {
+          seriesExtremes[1] = cumulative_y[x];
+        }
+        if (cumulative_y[x] < seriesExtremes[0]) {
+          seriesExtremes[0] = cumulative_y[x];
+        }
       }
     }
+    extremes[seriesName] = seriesExtremes;
 
     datasets[i] = series;
   }
