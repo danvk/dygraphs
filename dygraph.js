@@ -318,7 +318,7 @@ Dygraph.prototype.xAxisRange = function() {
  * Returns a two-element array: [bottom, top].
  */
 Dygraph.prototype.yAxisRange = function(idx) {
-  if (typeof(idx) == "undefined") idx == 0;
+  if (typeof(idx) == "undefined") idx = 0;
   if (idx < 0 || idx >= this.axes_.length) return null;
   return [ this.axes_[idx].computedValueRange[0],
            this.axes_[idx].computedValueRange[1] ];
@@ -897,8 +897,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       draggingDate = null;
       dateRange = null;
       for (var i = 0; i < self.axes_.length; i++) {
-        delete this.axes_[i].draggingValue;
-        delete this.axes_[i].dragValueRange;
+        delete self.axes_[i].draggingValue;
+        delete self.axes_[i].dragValueRange;
       }
     }
   });
