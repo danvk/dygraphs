@@ -312,19 +312,39 @@ Dygraph.prototype.xAxisRange = function() {
 };
 
 /**
- * Returns the currently-visible y-range. This can be affected by zooming,
- * panning or a call to updateOptions.
+ * Returns the currently-visible y-range for an axis. This can be affected by
+ * zooming, panning or a call to updateOptions. Axis indices are zero-based. If
+ * called with no arguments, returns the range of the first axis.
  * Returns a two-element array: [bottom, top].
  */
-Dygraph.prototype.yAxisRange = function() {
-  return this.displayedYRange_;
+Dygraph.prototype.yAxisRange = function(idx) {
+  if (typeof(idx) == "undefined") idx == 0;
+  if (idx < 0 || idx >= this.axes_.length) return null;
+  return [ this.axes_[idx].computedValueRange[0],
+           this.axes_[idx].computedValueRange[1] ];
 };
 
 /**
+ * Returns the currently-visible y-ranges for each axis. This can be affected by
+ * zooming, panning, calls to updateOptions, etc.
+ * Returns an array of [bottom, top] pairs, one for each y-axis.
+ */
+Dygraph.prototype.yAxisRanges = function() {
+  var ret = [];
+  for (var i = 0; i < this.axes_.length; i++) {
+    ret.push(this.yAxisRange(i));
+  }
+  return ret;
+};
+
+// TODO(danvk): use these functions throughout dygraphs.
+/**
  * Convert from data coordinates to canvas/div X/Y coordinates.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
  */
-Dygraph.prototype.toDomCoords = function(x, y) {
+Dygraph.prototype.toDomCoords = function(x, y, axis) {
   var ret = [null, null];
   var area = this.plotter_.area;
   if (x !== null) {
@@ -333,19 +353,20 @@ Dygraph.prototype.toDomCoords = function(x, y) {
   }
 
   if (y !== null) {
-    var yRange = this.yAxisRange();
+    var yRange = this.yAxisRange(axis);
     ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
   }
 
   return ret;
 };
 
-// TODO(danvk): use these functions throughout dygraphs.
 /**
  * Convert from canvas/div coords to data coordinates.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
  */
-Dygraph.prototype.toDataCoords = function(x, y) {
+Dygraph.prototype.toDataCoords = function(x, y, axis) {
   var ret = [null, null];
   var area = this.plotter_.area;
   if (x !== null) {
@@ -354,7 +375,7 @@ Dygraph.prototype.toDataCoords = function(x, y) {
   }
 
   if (y !== null) {
-    var yRange = this.yAxisRange();
+    var yRange = this.yAxisRange(axis);
     ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
   }
 
@@ -741,7 +762,8 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Tracks whether the mouse is down right now
   var isZooming = false;
-  var isPanning = false;
+  var isPanning = false;  // is this drag part of a pan?
+  var is2DPan = false;    // if so, is that pan 1- or 2-dimensional?
   var dragStartX = null;
   var dragStartY = null;
   var dragEndX = null;
@@ -751,17 +773,17 @@ Dygraph.prototype.createDragInterface_ = function() {
   var prevEndY = null;
   var prevDragDirection = null;
 
+  // TODO(danvk): update this comment
   // draggingDate and draggingValue represent the [date,value] point on the
   // graph at which the mouse was pressed. As the mouse moves while panning,
   // the viewport must pan so that the mouse position points to
   // [draggingDate, draggingValue]
   var draggingDate = null;
-  var draggingValue = null;
 
+  // TODO(danvk): update this comment
   // The range in second/value units that the viewport encompasses during a
   // panning operation.
   var dateRange = null;
-  var valueRange = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
@@ -791,6 +813,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       dragEndX = getX(event);
       dragEndY = getY(event);
 
+      // TODO(danvk): update this comment
       // Want to have it so that:
       // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
       // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
@@ -802,14 +825,16 @@ Dygraph.prototype.createDragInterface_ = function() {
       self.dateWindow_ = [minDate, maxDate];
 
 
-      // MERGE
-      // y-axis scaling is automatic unless a valueRange is defined or
-      // if the user zooms in on the y-axis. If neither is true, valueWindow_
-      // will be null.
-      if (self.valueWindow_) {
-        var maxValue = draggingValue + (dragEndY / self.height_) * valueRange;
-        var minValue = maxValue - valueRange;
-        self.valueWindow_ = [ minValue, maxValue ];
+      // y-axis scaling is automatic unless this is a full 2D pan.
+      if (is2DPan) {
+        // Adjust each axis appropriately.
+        var y_frac = dragEndY / self.height_;
+        for (var i = 0; i < self.axes_.length; i++) {
+          var axis = self.axes_[i];
+          var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
+          var minValue = maxValue - axis.dragValueRange;
+          axis.valueWindow = [ minValue, maxValue ];
+        }
       }
 
       self.drawGraph_();
@@ -825,20 +850,34 @@ Dygraph.prototype.createDragInterface_ = function() {
 
     if (event.altKey || event.shiftKey) {
       // have to be zoomed in to pan.
-      if (!self.dateWindow_ && !self.valueWindow_) return;
+      var zoomedY = false;
+      for (var i = 0; i < self.axes_.length; i++) {
+        if (self.axes_[i].valueWindow || self.axes_[i].valueRange) {
+          zoomedY = true;
+          break;
+        }
+      }
+      if (!self.dateWindow_ && !zoomedY) return;
 
       isPanning = true;
       var xRange = self.xAxisRange();
       dateRange = xRange[1] - xRange[0];
-      var yRange = self.yAxisRange();
-      valueRange = yRange[1] - yRange[0];
+
+      // Record the range of each y-axis at the start of the drag.
+      // If any axis has a valueRange or valueWindow, then we want a 2D pan.
+      is2DPan = false;
+      for (var i = 0; i < self.axes_.length; i++) {
+        var axis = self.axes_[i];
+        var yRange = self.yAxisRange(i);
+        axis.dragValueRange = yRange[1] - yRange[0];
+        var r = self.toDataCoords(null, dragStartY, i);
+        axis.draggingValue = r[1];
+        if (axis.valueWindow || axis.valueRange) is2DPan = true;
+      }
 
       // TODO(konigsberg): Switch from all this math to toDataCoords?
       // Seems to work for the dragging value.
-      draggingDate = (dragStartX / self.width_) * dateRange +
-        xRange[0];
-      var r = self.toDataCoords(null, dragStartY);
-      draggingValue = r[1];
+      draggingDate = (dragStartX / self.width_) * dateRange + xRange[0];
     } else {
       isZooming = true;
     }
@@ -856,9 +895,11 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
-      draggingValue = null;
       dateRange = null;
-      valueRange = null;
+      for (var i = 0; i < self.axes_.length; i++) {
+        delete this.axes_[i].draggingValue;
+        delete this.axes_[i].dragValueRange;
+      }
     }
   });
 
@@ -926,8 +967,8 @@ Dygraph.prototype.createDragInterface_ = function() {
 
     if (isPanning) {
       isPanning = false;
+      is2DPan = false;
       draggingDate = null;
-      draggingValue = null;
       dateRange = null;
       valueRange = null;
     }
@@ -999,7 +1040,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY
  * the canvas. The exact zoom window may be slightly larger if there are no data
  * points near lowX or highX. Don't confuse this function with doZoomXDates,
  * which accepts dates that match the raw data. This function redraws the graph.
- * 
+ *
  * @param {Number} lowX The leftmost pixel value that should be visible.
  * @param {Number} highX The rightmost pixel value that should be visible.
  * @private
@@ -1018,7 +1059,7 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
- * 
+ *
  * @param {Number} minDate The minimum date that should be visible.
  * @param {Number} maxDate The maximum date that should be visible.
  * @private
@@ -1034,59 +1075,50 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
 
 /**
  * Zoom to something containing [lowY, highY]. These are pixel coordinates in
- * the canvas. The exact zoom window may be slightly larger if there are no
- * data points near lowY or highY.  Don't confuse this function with
- * doZoomYValues, which accepts parameters that match the raw data. This
- * function redraws the graph.
- * 
+ * the canvas. This function redraws the graph.
+ *
  * @param {Number} lowY The topmost pixel value that should be visible.
  * @param {Number} highY The lowest pixel value that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomY_ = function(lowY, highY) {
-  // Find the highest and lowest values in pixel range.
-  var r = this.toDataCoords(null, lowY);
-  var maxValue = r[1];
-  r = this.toDataCoords(null, highY);
-  var minValue = r[1];
+  // Find the highest and lowest values in pixel range for each axis.
+  // Note that lowY (in pixels) corresponds to the max Value (in data coords).
+  // This is because pixels increase as you go down on the screen, whereas data
+  // coordinates increase as you go up the screen.
+  var valueRanges = [];
+  for (var i = 0; i < this.axes_.length; i++) {
+    var hi = this.toDataCoords(null, lowY, i);
+    var low = this.toDataCoords(null, highY, i);
+    this.axes_[i].valueWindow = [low[1], hi[1]];
+    valueRanges.push([low[1], hi[1]]);
+  }
 
-  this.doZoomYValues_(minValue, maxValue);
-};
-
-/**
- * Zoom to something containing [minValue, maxValue] values. Don't confuse this
- * method with doZoomY which accepts pixel coordinates. This function redraws
- * the graph.
- * 
- * @param {Number} minValue The minimum Value that should be visible.
- * @param {Number} maxValue The maximum value that should be visible.
- * @private
- */
-// MERGE: this doesn't make sense anymore.
-Dygraph.prototype.doZoomYValues_ = function(minValue, maxValue) {
-  this.valueWindow_ = [minValue, maxValue];
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
-    var xRange = this.xAxisRange(); 
-    this.attr_("zoomCallback")(xRange[0], xRange[1], minValue, maxValue);
+    var xRange = this.xAxisRange();
+    this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
   }
 };
 
 /**
  * Reset the zoom to the original view coordinates. This is the same as
  * double-clicking on the graph.
- * 
+ *
  * @private
  */
 Dygraph.prototype.doUnzoom_ = function() {
-  var dirty = null;
+  var dirty = false;
   if (this.dateWindow_ != null) {
-    dirty = 1;
+    dirty = true;
     this.dateWindow_ = null;
   }
-  if (this.valueWindow_ != null) {
-    dirty = 1;
-    this.valueWindow_ = this.valueRange_;
+
+  for (var i = 0; i < this.axes_.length; i++) {
+    if (this.axes_[i].valueWindow != null) {
+      dirty = true;
+      delete this.axes_[i].valueWindow;
+    }
   }
 
   if (dirty) {
@@ -1096,9 +1128,7 @@ Dygraph.prototype.doUnzoom_ = function() {
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
       var maxDate = this.rawData_[this.rawData_.length - 1][0];
-      var minValue = this.yAxisRange()[0];
-      var maxValue = this.yAxisRange()[1];
-      this.attr_("zoomCallback")(minDate, maxDate, minValue, maxValue);
+      this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
     }
   }
 };
@@ -1901,7 +1931,6 @@ Dygraph.prototype.drawGraph_ = function() {
   var out = this.computeYAxisRanges_(extremes);
   var axes = out[0];
   var seriesToAxisMap = out[1];
-  this.displayedYRange_ = axes[0].valueRange;
   this.layout_.updateOptions( { yAxes: axes,
                                 seriesToAxisMap: seriesToAxisMap
                               } );
@@ -2027,7 +2056,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];
-    if (axis.valueRange) {
+    if (axis.valueWindow) {
+      // This is only set if the user has zoomed on the y-axis. It is never set
+      // by a user. It takes precedence over axis.valueRange because, if you set
+      // valueRange, you'd still expect to be able to pan.
+      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+    } else if (axis.valueRange) {
+      // This is a user-set value range for this axis.
       axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
     } else {
       // Calcuate the extremes of extremes.
