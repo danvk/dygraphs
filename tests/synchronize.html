@@ -40,9 +40,13 @@
                 if (blockRedraw || initial) return;
                 blockRedraw = true;
                 var range = me.xAxisRange();
+                var yrange = me.yAxisRange();
                 for (var j = 0; j < 4; j++) {
                   if (gs[j] == me) continue;
-                  gs[j].updateOptions( { dateWindow: range } );
+                  gs[j].updateOptions( {
+                    dateWindow: range,
+                    valueRange: yrange
+                  } );
                 }
                 blockRedraw = false;
               }

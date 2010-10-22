@@ -177,12 +177,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.previousVerticalX_ = -1;
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
-  // valueRange and valueWindow are similar, but not the same. valueRange is a
-  // locally-stored copy of the attribute. valueWindow starts off the same as
-  // valueRange but is impacted by zoom or pan effects. valueRange is kept
-  // around to restore the original value back to valueRange.
-  this.valueRange_ = attrs.valueRange || null;
-  this.valueWindow_ = this.valueRange_;
 
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
@@ -318,19 +312,39 @@ Dygraph.prototype.xAxisRange = function() {
 };
 
 /**
- * Returns the currently-visible y-range. This can be affected by zooming,
- * panning or a call to updateOptions.
+ * Returns the currently-visible y-range for an axis. This can be affected by
+ * zooming, panning or a call to updateOptions. Axis indices are zero-based. If
+ * called with no arguments, returns the range of the first axis.
  * Returns a two-element array: [bottom, top].
  */
-Dygraph.prototype.yAxisRange = function() {
-  return this.displayedYRange_;
+Dygraph.prototype.yAxisRange = function(idx) {
+  if (typeof(idx) == "undefined") idx = 0;
+  if (idx < 0 || idx >= this.axes_.length) return null;
+  return [ this.axes_[idx].computedValueRange[0],
+           this.axes_[idx].computedValueRange[1] ];
 };
 
 /**
+ * Returns the currently-visible y-ranges for each axis. This can be affected by
+ * zooming, panning, calls to updateOptions, etc.
+ * Returns an array of [bottom, top] pairs, one for each y-axis.
+ */
+Dygraph.prototype.yAxisRanges = function() {
+  var ret = [];
+  for (var i = 0; i < this.axes_.length; i++) {
+    ret.push(this.yAxisRange(i));
+  }
+  return ret;
+};
+
+// TODO(danvk): use these functions throughout dygraphs.
+/**
  * Convert from data coordinates to canvas/div X/Y coordinates.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
  */
-Dygraph.prototype.toDomCoords = function(x, y) {
+Dygraph.prototype.toDomCoords = function(x, y, axis) {
   var ret = [null, null];
   var area = this.plotter_.area;
   if (x !== null) {
@@ -339,19 +353,20 @@ Dygraph.prototype.toDomCoords = function(x, y) {
   }
 
   if (y !== null) {
-    var yRange = this.yAxisRange();
+    var yRange = this.yAxisRange(axis);
     ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
   }
 
   return ret;
 };
 
-// TODO(danvk): use these functions throughout dygraphs.
 /**
  * Convert from canvas/div coords to data coordinates.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
  */
-Dygraph.prototype.toDataCoords = function(x, y) {
+Dygraph.prototype.toDataCoords = function(x, y, axis) {
   var ret = [null, null];
   var area = this.plotter_.area;
   if (x !== null) {
@@ -360,7 +375,7 @@ Dygraph.prototype.toDataCoords = function(x, y) {
   }
 
   if (y !== null) {
-    var yRange = this.yAxisRange();
+    var yRange = this.yAxisRange(axis);
     ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
   }
 
@@ -405,13 +420,6 @@ Dygraph.addEvent = function(el, evt, fn) {
   }
 };
 
-Dygraph.clipCanvas_ = function(cnv, clip) {
-  var ctx = cnv.getContext("2d");
-  ctx.beginPath();
-  ctx.rect(clip.left, clip.top, clip.width, clip.height);
-  ctx.clip();
-};
-
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
  * display the current point, and a textbox to adjust the rolling average
@@ -426,15 +434,6 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
   enclosing.appendChild(this.graphDiv);
-
-  var clip = {
-    top: 0,
-    left: this.attr_("yAxisLabelWidth") + 2 * this.attr_("axisTickSize")
-  };
-  clip.width = this.width_ - clip.left - this.attr_("rightGap");
-  clip.height = this.height_ - this.attr_("axisLabelFontSize")
-      - 2 * this.attr_("axisTickSize");
-  this.clippingArea_ = clip;
 
   // Create the canvas for interactive parts of the chart.
   this.canvas_ = Dygraph.createCanvas();
@@ -451,10 +450,6 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
   this.mouseEventElement_ = this.canvas_;
-
-  // Make sure we don't overdraw.
-  Dygraph.clipCanvas_(this.hidden_, this.clippingArea_);
-  Dygraph.clipCanvas_(this.canvas_, this.clippingArea_);
 
   var dygraph = this;
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(e) {
@@ -480,12 +475,8 @@ Dygraph.prototype.createInterface_ = function() {
                           axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
   Dygraph.update(this.renderOptions_, this.attrs_);
   Dygraph.update(this.renderOptions_, this.user_attrs_);
-  this.plotter_ = new DygraphCanvasRenderer(this,
-                                            this.hidden_, this.layout_,
-                                            this.renderOptions_);
 
   this.createStatusMessage_();
-  this.createRollInterface_();
   this.createDragInterface_();
 };
 
@@ -691,33 +682,49 @@ Dygraph.prototype.createStatusMessage_ = function() {
 };
 
 /**
+ * Position the labels div so that its right edge is flush with the right edge
+ * of the charting area.
+ */
+Dygraph.prototype.positionLabelsDiv_ = function() {
+  // Don't touch a user-specified labelsDiv.
+  if (this.user_attrs_.hasOwnProperty("labelsDiv")) return;
+
+  var area = this.plotter_.area;
+  var div = this.attr_("labelsDiv");
+  div.style.left = area.x + area.w - this.attr_("labelsDivWidth") - 1 + "px";
+};
+
+/**
  * Create the text box to adjust the averaging period
- * @return {Object} The newly-created text box
  * @private
  */
 Dygraph.prototype.createRollInterface_ = function() {
-  var display = this.attr_('showRoller') ? "block" : "none";
+  // Create a roller if one doesn't exist already.
+  if (!this.roller_) {
+    this.roller_ = document.createElement("input");
+    this.roller_.type = "text";
+    this.roller_.style.display = "none";
+    this.graphDiv.appendChild(this.roller_);
+  }
+
+  var display = this.attr_('showRoller') ? 'block' : 'none';
+
   var textAttr = { "position": "absolute",
                    "zIndex": 10,
                    "top": (this.plotter_.area.h - 25) + "px",
                    "left": (this.plotter_.area.x + 1) + "px",
                    "display": display
                   };
-  var roller = document.createElement("input");
-  roller.type = "text";
-  roller.size = "2";
-  roller.value = this.rollPeriod_;
+  this.roller_.size = "2";
+  this.roller_.value = this.rollPeriod_;
   for (var name in textAttr) {
     if (textAttr.hasOwnProperty(name)) {
-      roller.style[name] = textAttr[name];
+      this.roller_.style[name] = textAttr[name];
     }
   }
 
-  var pa = this.graphDiv;
-  pa.appendChild(roller);
   var dygraph = this;
-  roller.onchange = function() { dygraph.adjustRoll(roller.value); };
-  return roller;
+  this.roller_.onchange = function() { dygraph.adjustRoll(dygraph.roller_.value); };
 };
 
 // These functions are taken from MochiKit.Signal
@@ -755,7 +762,8 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Tracks whether the mouse is down right now
   var isZooming = false;
-  var isPanning = false;
+  var isPanning = false;  // is this drag part of a pan?
+  var is2DPan = false;    // if so, is that pan 1- or 2-dimensional?
   var dragStartX = null;
   var dragStartY = null;
   var dragEndX = null;
@@ -765,17 +773,17 @@ Dygraph.prototype.createDragInterface_ = function() {
   var prevEndY = null;
   var prevDragDirection = null;
 
+  // TODO(danvk): update this comment
   // draggingDate and draggingValue represent the [date,value] point on the
   // graph at which the mouse was pressed. As the mouse moves while panning,
   // the viewport must pan so that the mouse position points to
   // [draggingDate, draggingValue]
   var draggingDate = null;
-  var draggingValue = null;
 
+  // TODO(danvk): update this comment
   // The range in second/value units that the viewport encompasses during a
   // panning operation.
   var dateRange = null;
-  var valueRange = null;
 
   // Utility function to convert page-wide coordinates to canvas coords
   var px = 0;
@@ -805,6 +813,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       dragEndX = getX(event);
       dragEndY = getY(event);
 
+      // TODO(danvk): update this comment
       // Want to have it so that:
       // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
       // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
@@ -816,15 +825,19 @@ Dygraph.prototype.createDragInterface_ = function() {
       self.dateWindow_ = [minDate, maxDate];
 
 
-      // y-axis scaling is automatic unless a valueRange is defined or
-      // if the user zooms in on the y-axis. If neither is true, valueWindow_
-      // will be null.
-      if (self.valueWindow_) {
-        var maxValue = draggingValue + (dragEndY / self.height_) * valueRange;
-        var minValue = maxValue - valueRange;
-        self.valueWindow_ = [ minValue, maxValue ];
+      // y-axis scaling is automatic unless this is a full 2D pan.
+      if (is2DPan) {
+        // Adjust each axis appropriately.
+        var y_frac = dragEndY / self.height_;
+        for (var i = 0; i < self.axes_.length; i++) {
+          var axis = self.axes_[i];
+          var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
+          var minValue = maxValue - axis.dragValueRange;
+          axis.valueWindow = [ minValue, maxValue ];
+        }
       }
-      self.drawGraph_(self.rawData_);
+
+      self.drawGraph_();
     }
   });
 
@@ -837,20 +850,34 @@ Dygraph.prototype.createDragInterface_ = function() {
 
     if (event.altKey || event.shiftKey) {
       // have to be zoomed in to pan.
-      if (!self.dateWindow_ && !self.valueWindow_) return;
+      var zoomedY = false;
+      for (var i = 0; i < self.axes_.length; i++) {
+        if (self.axes_[i].valueWindow || self.axes_[i].valueRange) {
+          zoomedY = true;
+          break;
+        }
+      }
+      if (!self.dateWindow_ && !zoomedY) return;
 
       isPanning = true;
       var xRange = self.xAxisRange();
       dateRange = xRange[1] - xRange[0];
-      var yRange = self.yAxisRange();
-      valueRange = yRange[1] - yRange[0];
+
+      // Record the range of each y-axis at the start of the drag.
+      // If any axis has a valueRange or valueWindow, then we want a 2D pan.
+      is2DPan = false;
+      for (var i = 0; i < self.axes_.length; i++) {
+        var axis = self.axes_[i];
+        var yRange = self.yAxisRange(i);
+        axis.dragValueRange = yRange[1] - yRange[0];
+        var r = self.toDataCoords(null, dragStartY, i);
+        axis.draggingValue = r[1];
+        if (axis.valueWindow || axis.valueRange) is2DPan = true;
+      }
 
       // TODO(konigsberg): Switch from all this math to toDataCoords?
       // Seems to work for the dragging value.
-      draggingDate = (dragStartX / self.width_) * dateRange +
-        xRange[0];
-      var r = self.toDataCoords(null, dragStartY);
-      draggingValue = r[1];
+      draggingDate = (dragStartX / self.width_) * dateRange + xRange[0];
     } else {
       isZooming = true;
     }
@@ -868,9 +895,11 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (isPanning) {
       isPanning = false;
       draggingDate = null;
-      draggingValue = null;
       dateRange = null;
-      valueRange = null;
+      for (var i = 0; i < self.axes_.length; i++) {
+        delete self.axes_[i].draggingValue;
+        delete self.axes_[i].dragValueRange;
+      }
     }
   });
 
@@ -938,8 +967,8 @@ Dygraph.prototype.createDragInterface_ = function() {
 
     if (isPanning) {
       isPanning = false;
+      is2DPan = false;
       draggingDate = null;
-      draggingValue = null;
       dateRange = null;
       valueRange = null;
     }
@@ -1011,7 +1040,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY
  * the canvas. The exact zoom window may be slightly larger if there are no data
  * points near lowX or highX. Don't confuse this function with doZoomXDates,
  * which accepts dates that match the raw data. This function redraws the graph.
- * 
+ *
  * @param {Number} lowX The leftmost pixel value that should be visible.
  * @param {Number} highX The rightmost pixel value that should be visible.
  * @private
@@ -1030,14 +1059,14 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
- * 
+ *
  * @param {Number} minDate The minimum date that should be visible.
  * @param {Number} maxDate The maximum date that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var yRange = this.yAxisRange();
     this.attr_("zoomCallback")(minDate, maxDate, yRange[0], yRange[1]);
@@ -1046,70 +1075,60 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
 
 /**
  * Zoom to something containing [lowY, highY]. These are pixel coordinates in
- * the canvas. The exact zoom window may be slightly larger if there are no
- * data points near lowY or highY.  Don't confuse this function with
- * doZoomYValues, which accepts parameters that match the raw data. This
- * function redraws the graph.
- * 
+ * the canvas. This function redraws the graph.
+ *
  * @param {Number} lowY The topmost pixel value that should be visible.
  * @param {Number} highY The lowest pixel value that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomY_ = function(lowY, highY) {
-  // Find the highest and lowest values in pixel range.
-  var r = this.toDataCoords(null, lowY);
-  var maxValue = r[1];
-  r = this.toDataCoords(null, highY);
-  var minValue = r[1];
+  // Find the highest and lowest values in pixel range for each axis.
+  // Note that lowY (in pixels) corresponds to the max Value (in data coords).
+  // This is because pixels increase as you go down on the screen, whereas data
+  // coordinates increase as you go up the screen.
+  var valueRanges = [];
+  for (var i = 0; i < this.axes_.length; i++) {
+    var hi = this.toDataCoords(null, lowY, i);
+    var low = this.toDataCoords(null, highY, i);
+    this.axes_[i].valueWindow = [low[1], hi[1]];
+    valueRanges.push([low[1], hi[1]]);
+  }
 
-  this.doZoomYValues_(minValue, maxValue);
-};
-
-/**
- * Zoom to something containing [minValue, maxValue] values. Don't confuse this
- * method with doZoomY which accepts pixel coordinates. This function redraws
- * the graph.
- * 
- * @param {Number} minValue The minimum Value that should be visible.
- * @param {Number} maxValue The maximum value that should be visible.
- * @private
- */
-Dygraph.prototype.doZoomYValues_ = function(minValue, maxValue) {
-  this.valueWindow_ = [minValue, maxValue];
-  this.drawGraph_(this.rawData_);
+  this.drawGraph_();
   if (this.attr_("zoomCallback")) {
-    var xRange = this.xAxisRange(); 
-    this.attr_("zoomCallback")(xRange[0], xRange[1], minValue, maxValue);
+    var xRange = this.xAxisRange();
+    this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
   }
 };
 
 /**
  * Reset the zoom to the original view coordinates. This is the same as
  * double-clicking on the graph.
- * 
+ *
  * @private
  */
 Dygraph.prototype.doUnzoom_ = function() {
-  var dirty = null;
+  var dirty = false;
   if (this.dateWindow_ != null) {
-    dirty = 1;
+    dirty = true;
     this.dateWindow_ = null;
   }
-  if (this.valueWindow_ != null) {
-    dirty = 1;
-    this.valueWindow_ = this.valueRange_;
+
+  for (var i = 0; i < this.axes_.length; i++) {
+    if (this.axes_[i].valueWindow != null) {
+      dirty = true;
+      delete this.axes_[i].valueWindow;
+    }
   }
 
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
-    this.drawGraph_(this.rawData_);
+    this.drawGraph_();
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
       var maxDate = this.rawData_[this.rawData_.length - 1][0];
-      var minValue = this.yAxisRange()[0];
-      var maxValue = this.yAxisRange()[1];
-      this.attr_("zoomCallback")(minDate, maxDate, minValue, maxValue);
+      this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
     }
   }
 };
@@ -1423,7 +1442,7 @@ Dygraph.round_ = function(num, places) {
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
-  this.drawGraph_(this.rawData_);
+  this.predraw_();
 };
 
 Dygraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -1627,61 +1646,78 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
  * @param self
- * @param {function} formatter: Optional formatter to use for each tick value
+ * @param {function} attribute accessor function.
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self, formatter) {
-  // Basic idea:
-  // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
-  // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-  // The first spacing greater than pixelsPerYLabel is what we use.
-  // TODO(danvk): version that works on a log scale.
-  if (self.attr_("labelsKMG2")) {
-    var mults = [1, 2, 4, 8];
-  } else {
-    var mults = [1, 2, 5];
-  }
-  var scale, low_val, high_val, nTicks;
-  // TODO(danvk): make it possible to set this for x- and y-axes independently.
-  var pixelsPerTick = self.attr_('pixelsPerYLabel');
-  for (var i = -10; i < 50; i++) {
-    if (self.attr_("labelsKMG2")) {
-      var base_scale = Math.pow(16, i);
-    } else {
-      var base_scale = Math.pow(10, i);
+Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
+  var attr = function(k) {
+    if (axis_props && axis_props.hasOwnProperty(k)) return axis_props[k];
+    return self.attr_(k);
+  };
+
+  var ticks = [];
+  if (vals) {
+    for (var i = 0; i < vals.length; i++) {
+      ticks.push({v: vals[i]});
     }
-    for (var j = 0; j < mults.length; j++) {
-      scale = base_scale * mults[j];
-      low_val = Math.floor(minV / scale) * scale;
-      high_val = Math.ceil(maxV / scale) * scale;
-      nTicks = Math.abs(high_val - low_val) / scale;
-      var spacing = self.height_ / nTicks;
-      // wish I could break out of both loops at once...
+  } else {
+    // Basic idea:
+    // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+    // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+    // The first spacing greater than pixelsPerYLabel is what we use.
+    // TODO(danvk): version that works on a log scale.
+    if (attr("labelsKMG2")) {
+      var mults = [1, 2, 4, 8];
+    } else {
+      var mults = [1, 2, 5];
+    }
+    var scale, low_val, high_val, nTicks;
+    // TODO(danvk): make it possible to set this for x- and y-axes independently.
+    var pixelsPerTick = attr('pixelsPerYLabel');
+    for (var i = -10; i < 50; i++) {
+      if (attr("labelsKMG2")) {
+        var base_scale = Math.pow(16, i);
+      } else {
+        var base_scale = Math.pow(10, i);
+      }
+      for (var j = 0; j < mults.length; j++) {
+        scale = base_scale * mults[j];
+        low_val = Math.floor(minV / scale) * scale;
+        high_val = Math.ceil(maxV / scale) * scale;
+        nTicks = Math.abs(high_val - low_val) / scale;
+        var spacing = self.height_ / nTicks;
+        // wish I could break out of both loops at once...
+        if (spacing > pixelsPerTick) break;
+      }
       if (spacing > pixelsPerTick) break;
     }
-    if (spacing > pixelsPerTick) break;
+
+    // Construct the set of ticks.
+    // Allow reverse y-axis if it's explicitly requested.
+    if (low_val > high_val) scale *= -1;
+    for (var i = 0; i < nTicks; i++) {
+      var tickV = low_val + i * scale;
+      ticks.push( {v: tickV} );
+    }
   }
 
-  // Construct labels for the ticks
-  var ticks = [];
+  // Add formatted labels to the ticks.
   var k;
   var k_labels = [];
-  if (self.attr_("labelsKMB")) {
+  if (attr("labelsKMB")) {
     k = 1000;
     k_labels = [ "K", "M", "B", "T" ];
   }
-  if (self.attr_("labelsKMG2")) {
+  if (attr("labelsKMG2")) {
     if (k) self.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
+  var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
 
-  // Allow reverse y-axis if it's explicitly requested.
-  if (low_val > high_val) scale *= -1;
-
-  for (var i = 0; i < nTicks; i++) {
-    var tickV = low_val + i * scale;
+  for (var i = 0; i < ticks.length; i++) {
+    var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
     var label;
     if (formatter != undefined) {
@@ -1699,24 +1735,9 @@ Dygraph.numericTicks = function(minV, maxV, self, formatter) {
         }
       }
     }
-    ticks.push( {label: label, v: tickV} );
+    ticks[i].label = label;
   }
   return ticks;
-};
-
-/**
- * Adds appropriate ticks on the y-axis
- * @param {Number} minY The minimum Y value in the data set
- * @param {Number} maxY The maximum Y value in the data set
- * @private
- */
-Dygraph.prototype.addYTicks_ = function(minY, maxY) {
-  // Set the number of ticks so that the labels are human-friendly.
-  // TODO(danvk): make this an attribute as well.
-  var formatter = this.attr_('yAxisLabelFormatter') ? this.attr_('yAxisLabelFormatter') : this.attr_('yValueFormatter');
-  var ticks = Dygraph.numericTicks(minY, maxY, this, formatter);
-  this.layout_.updateOptions( { yAxis: [minY, maxY],
-                                yTicks: ticks } );
 };
 
 // Computes the range of the data series (including confidence intervals).
@@ -1760,14 +1781,45 @@ Dygraph.prototype.extremeValues_ = function(series) {
 };
 
 /**
- * Update the graph with new data. Data is in the format
- * [ [date1, val1, val2, ...], [date2, val1, val2, ...] if errorBars=false
- * or, if errorBars=true,
- * [ [date1, [val1,stddev1], [val2,stddev2], ...], [date2, ...], ...]
- * @param {Array.<Object>} data The data (see above)
+ * This function is called once when the chart's data is changed or the options
+ * dictionary is updated. It is _not_ called when the user pans or zooms. The
+ * idea is that values derived from the chart's data can be computed here,
+ * rather than every time the chart is drawn. This includes things like the
+ * number of axes, rolling averages, etc.
+ */
+Dygraph.prototype.predraw_ = function() {
+  // TODO(danvk): move more computations out of drawGraph_ and into here.
+  this.computeYAxes_();
+
+  // Create a new plotter.
+  if (this.plotter_) this.plotter_.clear();
+  this.plotter_ = new DygraphCanvasRenderer(this,
+                                            this.hidden_, this.layout_,
+                                            this.renderOptions_);
+
+  // The roller sits in the bottom left corner of the chart. We don't know where
+  // this will be until the options are available, so it's positioned here.
+  this.createRollInterface_();
+
+  // Same thing applies for the labelsDiv. It's right edge should be flush with
+  // the right edge of the charting area (which may not be the same as the right
+  // edge of the div, if we have two y-axes.
+  this.positionLabelsDiv_();
+
+  // If the data or options have changed, then we'd better redraw.
+  this.drawGraph_();
+};
+
+/**
+=======
+ * Update the graph with new data. This method is called when the viewing area
+ * has changed. If the underlying data or options have changed, predraw_ will
+ * be called before drawGraph_ is called.
  * @private
  */
-Dygraph.prototype.drawGraph_ = function(data) {
+Dygraph.prototype.drawGraph_ = function() {
+  var data = this.rawData_;
+
   // This is used to set the second parameter to drawCallback, below.
   var is_initial_draw = this.is_initial_draw_;
   this.is_initial_draw_ = false;
@@ -1783,10 +1835,13 @@ Dygraph.prototype.drawGraph_ = function(data) {
   var cumulative_y = [];  // For stacked series.
   var datasets = [];
 
+  var extremes = {};  // series name -> [low, high]
+
   // Loop over all fields and create datasets
   for (var i = data[0].length - 1; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
+    var seriesName = this.attr_("labels")[i];
     var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
 
     var series = [];
@@ -1796,6 +1851,8 @@ Dygraph.prototype.drawGraph_ = function(data) {
         series.push([date, data[j][i]]);
       }
     }
+
+    // TODO(danvk): move this into predraw_. It's insane to do it here.
     series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
@@ -1830,11 +1887,7 @@ Dygraph.prototype.drawGraph_ = function(data) {
       this.boundaryIds_[i-1] = [0, series.length-1];
     }
 
-    var extremes = this.extremeValues_(series);
-    var thisMinY = extremes[0];
-    var thisMaxY = extremes[1];
-    if (minY === null || (thisMinY != null && thisMinY < minY)) minY = thisMinY;
-    if (maxY === null || (thisMaxY != null && thisMaxY > maxY)) maxY = thisMaxY;
+    var seriesExtremes = this.extremeValues_(series);
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
@@ -1848,18 +1901,24 @@ Dygraph.prototype.drawGraph_ = function(data) {
         // If one data set has a NaN, let all subsequent stacked
         // sets inherit the NaN -- only start at 0 for the first set.
         var x = series[j][0];
-        if (cumulative_y[x] === undefined)
+        if (cumulative_y[x] === undefined) {
           cumulative_y[x] = 0;
+        }
 
         actual_y = series[j][1];
         cumulative_y[x] += actual_y;
 
         series[j] = [x, cumulative_y[x]]
 
-        if (!maxY || cumulative_y[x] > maxY)
-          maxY = cumulative_y[x];
+        if (cumulative_y[x] > seriesExtremes[1]) {
+          seriesExtremes[1] = cumulative_y[x];
+        }
+        if (cumulative_y[x] < seriesExtremes[0]) {
+          seriesExtremes[0] = cumulative_y[x];
+        }
       }
     }
+    extremes[seriesName] = seriesExtremes;
 
     datasets[i] = series;
   }
@@ -1869,38 +1928,13 @@ Dygraph.prototype.drawGraph_ = function(data) {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  // Use some heuristics to come up with a good maxY value, unless it's been
-  // set explicitly by the developer or end-user (via drag)
-  if (this.valueWindow_ != null) {
-    this.addYTicks_(this.valueWindow_[0], this.valueWindow_[1]);
-    this.displayedYRange_ = this.valueWindow_;
-  } else {
-    // This affects the calculation of span, below.
-    if (this.attr_("includeZero") && minY > 0) {
-      minY = 0;
-    }
-
-    // Add some padding and round up to an integer to be human-friendly.
-    var span = maxY - minY;
-    // special case: if we have no sense of scale, use +/-10% of the sole value.
-    if (span == 0) { span = maxY; }
-    var maxAxisY = maxY + 0.1 * span;
-    var minAxisY = minY - 0.1 * span;
-
-    // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-    if (!this.attr_("avoidMinZero")) {
-      if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-      if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-    }
-
-    if (this.attr_("includeZero")) {
-      if (maxY < 0) maxAxisY = 0;
-      if (minY > 0) minAxisY = 0;
-    }
-
-    this.addYTicks_(minAxisY, maxAxisY);
-    this.displayedYRange_ = [minAxisY, maxAxisY];
-  }
+  // TODO(danvk): this method doesn't need to return anything.
+  var out = this.computeYAxisRanges_(extremes);
+  var axes = out[0];
+  var seriesToAxisMap = out[1];
+  this.layout_.updateOptions( { yAxes: axes,
+                                seriesToAxisMap: seriesToAxisMap
+                              } );
 
   this.addXTicks_();
 
@@ -1910,13 +1944,201 @@ Dygraph.prototype.drawGraph_ = function(data) {
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
-                                         this.canvas_.height);
+                                          this.canvas_.height);
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
 };
 
+/**
+ * Determine properties of the y-axes which are independent of the data
+ * currently being displayed. This includes things like the number of axes and
+ * the style of the axes. It does not include the range of each axis and its
+ * tick marks.
+ * This fills in this.axes_ and this.seriesToAxisMap_.
+ * axes_ = [ { options } ]
+ * seriesToAxisMap_ = { seriesName: 0, seriesName2: 1, ... }
+ *   indices are into the axes_ array.
+ */
+Dygraph.prototype.computeYAxes_ = function() {
+  this.axes_ = [{}];  // always have at least one y-axis.
+  this.seriesToAxisMap_ = {};
+
+  // Get a list of series names.
+  var labels = this.attr_("labels");
+  var series = {};
+  for (var i = 1; i < labels.length; i++) series[labels[i]] = (i - 1);
+
+  // all options which could be applied per-axis:
+  var axisOptions = [
+    'includeZero',
+    'valueRange',
+    'labelsKMB',
+    'labelsKMG2',
+    'pixelsPerYLabel',
+    'yAxisLabelWidth',
+    'axisLabelFontSize',
+    'axisTickSize'
+  ];
+
+  // Copy global axis options over to the first axis.
+  for (var i = 0; i < axisOptions.length; i++) {
+    var k = axisOptions[i];
+    var v = this.attr_(k);
+    if (v) this.axes_[0][k] = v;
+  }
+
+  // Go through once and add all the axes.
+  for (var seriesName in series) {
+    if (!series.hasOwnProperty(seriesName)) continue;
+    var axis = this.attr_("axis", seriesName);
+    if (axis == null) {
+      this.seriesToAxisMap_[seriesName] = 0;
+      continue;
+    }
+    if (typeof(axis) == 'object') {
+      // Add a new axis, making a copy of its per-axis options.
+      var opts = {};
+      Dygraph.update(opts, this.axes_[0]);
+      Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      Dygraph.update(opts, axis);
+      this.axes_.push(opts);
+      this.seriesToAxisMap_[seriesName] = this.axes_.length - 1;
+    }
+  }
+
+  // Go through one more time and assign series to an axis defined by another
+  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
+  for (var seriesName in series) {
+    if (!series.hasOwnProperty(seriesName)) continue;
+    var axis = this.attr_("axis", seriesName);
+    if (typeof(axis) == 'string') {
+      if (!this.seriesToAxisMap_.hasOwnProperty(axis)) {
+        this.error("Series " + seriesName + " wants to share a y-axis with " +
+                   "series " + axis + ", which does not define its own axis.");
+        return null;
+      }
+      var idx = this.seriesToAxisMap_[axis];
+      this.seriesToAxisMap_[seriesName] = idx;
+    }
+  }
+
+  // Now we remove series from seriesToAxisMap_ which are not visible. We do
+  // this last so that hiding the first series doesn't destroy the axis
+  // properties of the primary axis.
+  var seriesToAxisFiltered = {};
+  var vis = this.visibility();
+  for (var i = 1; i < labels.length; i++) {
+    var s = labels[i];
+    if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
+  }
+  this.seriesToAxisMap_ = seriesToAxisFiltered;
+};
+
+/**
+ * Returns the number of y-axes on the chart.
+ * @return {Number} the number of axes.
+ */
+Dygraph.prototype.numAxes = function() {
+  var last_axis = 0;
+  for (var series in this.seriesToAxisMap_) {
+    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
+    var idx = this.seriesToAxisMap_[series];
+    if (idx > last_axis) last_axis = idx;
+  }
+  return 1 + last_axis;
+};
+
+/**
+ * Determine the value range and tick marks for each axis.
+ * @param {Object} extremes A mapping from seriesName -> [low, high]
+ * This fills in the valueRange and ticks fields in each entry of this.axes_.
+ */
+Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
+  // Build a map from axis number -> [list of series names]
+  var seriesForAxis = [];
+  for (var series in this.seriesToAxisMap_) {
+    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
+    var idx = this.seriesToAxisMap_[series];
+    while (seriesForAxis.length <= idx) seriesForAxis.push([]);
+    seriesForAxis[idx].push(series);
+  }
+
+  // Compute extreme values, a span and tick marks for each axis.
+  for (var i = 0; i < this.axes_.length; i++) {
+    var axis = this.axes_[i];
+    if (axis.valueWindow) {
+      // This is only set if the user has zoomed on the y-axis. It is never set
+      // by a user. It takes precedence over axis.valueRange because, if you set
+      // valueRange, you'd still expect to be able to pan.
+      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+    } else if (axis.valueRange) {
+      // This is a user-set value range for this axis.
+      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+    } else {
+      // Calculate the extremes of extremes.
+      var series = seriesForAxis[i];
+      var minY = Infinity;  // extremes[series[0]][0];
+      var maxY = -Infinity;  // extremes[series[0]][1];
+      for (var j = 0; j < series.length; j++) {
+        minY = Math.min(extremes[series[j]][0], minY);
+        maxY = Math.max(extremes[series[j]][1], maxY);
+      }
+      if (axis.includeZero && minY > 0) minY = 0;
+
+      // Add some padding and round up to an integer to be human-friendly.
+      var span = maxY - minY;
+      // special case: if we have no sense of scale, use +/-10% of the sole value.
+      if (span == 0) { span = maxY; }
+      var maxAxisY = maxY + 0.1 * span;
+      var minAxisY = minY - 0.1 * span;
+
+      // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
+      if (!this.attr_("avoidMinZero")) {
+        if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+        if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+      }
+
+      if (this.attr_("includeZero")) {
+        if (maxY < 0) maxAxisY = 0;
+        if (minY > 0) minAxisY = 0;
+      }
+
+      axis.computedValueRange = [minAxisY, maxAxisY];
+    }
+
+    // Add ticks. By default, all axes inherit the tick positions of the
+    // primary axis. However, if an axis is specifically marked as having
+    // independent ticks, then that is permissible as well.
+    if (i == 0 || axis.independentTicks) {
+      axis.ticks =
+        Dygraph.numericTicks(axis.computedValueRange[0],
+                             axis.computedValueRange[1],
+                             this,
+                             axis);
+    } else {
+      var p_axis = this.axes_[0];
+      var p_ticks = p_axis.ticks;
+      var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
+      var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
+      var tick_values = [];
+      for (var i = 0; i < p_ticks.length; i++) {
+        var y_frac = (p_ticks[i].v - p_axis.computedValueRange[0]) / p_scale;
+        var y_val = axis.computedValueRange[0] + y_frac * scale;
+        tick_values.push(y_val);
+      }
+
+      axis.ticks =
+        Dygraph.numericTicks(axis.computedValueRange[0],
+                             axis.computedValueRange[1],
+                             this, axis, tick_values);
+    }
+  }
+
+  return [this.axes_, this.seriesToAxisMap_];
+};
+ 
 /**
  * Calculates the rolling average of a data set.
  * If originalData is [label, val], rolls the average of those.
@@ -2457,12 +2679,12 @@ Dygraph.prototype.start_ = function() {
     this.loadedEvent_(this.file_());
   } else if (Dygraph.isArrayLike(this.file_)) {
     this.rawData_ = this.parseArray_(this.file_);
-    this.drawGraph_(this.rawData_);
+    this.predraw_();
   } else if (typeof this.file_ == 'object' &&
              typeof this.file_.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(this.file_);
-    this.drawGraph_(this.rawData_);
+    this.predraw_();
   } else if (typeof this.file_ == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
     if (this.file_.indexOf('\n') >= 0) {
@@ -2502,10 +2724,6 @@ Dygraph.prototype.updateOptions = function(attrs) {
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
   }
-  if ('valueRange' in attrs) {
-    this.valueRange_ = attrs.valueRange;
-    this.valueWindow_ = attrs.valueRange;
-  }
 
   // TODO(danvk): validate per-series options.
   // Supported:
@@ -2525,7 +2743,7 @@ Dygraph.prototype.updateOptions = function(attrs) {
     this.file_ = attrs['file'];
     this.start_();
   } else {
-    this.drawGraph_(this.rawData_);
+    this.predraw_();
   }
 };
 
@@ -2567,7 +2785,7 @@ Dygraph.prototype.resize = function(width, height) {
   }
 
   this.createInterface_();
-  this.drawGraph_(this.rawData_);
+  this.predraw_();
 
   this.resize_lock = false;
 };
@@ -2579,7 +2797,7 @@ Dygraph.prototype.resize = function(width, height) {
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
-  this.drawGraph_(this.rawData_);
+  this.predraw_();
 };
 
 /**
@@ -2606,7 +2824,7 @@ Dygraph.prototype.setVisibility = function(num, value) {
     this.warn("invalid series number in setVisibility: " + num);
   } else {
     x[num] = value;
-    this.drawGraph_(this.rawData_);
+    this.predraw_();
   }
 };
 
@@ -2619,7 +2837,7 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   this.annotations_ = ann;
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
-    this.drawGraph_(this.rawData_);
+    this.predraw_();
   }
 };
 
