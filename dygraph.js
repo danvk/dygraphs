@@ -691,7 +691,7 @@ Dygraph.prototype.positionLabelsDiv_ = function() {
 
   var area = this.plotter_.area;
   var div = this.attr_("labelsDiv");
-  div.style.left = area.x + area.w - this.attr_("labelsDivWidth") + "px";
+  div.style.left = area.x + area.w - this.attr_("labelsDivWidth") - 1 + "px";
 };
 
 /**

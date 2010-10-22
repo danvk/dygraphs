@@ -309,12 +309,12 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  var ctx = this.element.getContext("2d");
+  var ctx = this.dygraph_.canvas_.getContext("2d");
   ctx.beginPath();
   ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
   ctx.clip();
 
-  var ctx = this.dygraph_.hidden_.getContext("2d");
+  ctx = this.dygraph_.hidden_.getContext("2d");
   ctx.beginPath();
   ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
   ctx.clip();
