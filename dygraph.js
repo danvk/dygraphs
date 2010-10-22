@@ -1967,7 +1967,7 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   // Get a list of series names.
   var labels = this.attr_("labels");
-  var series = [];
+  var series = {};
   for (var i = 1; i < labels.length; i++) series[labels[i]] = (i - 1);
 
   // all options which could be applied per-axis:
@@ -2023,6 +2023,17 @@ Dygraph.prototype.computeYAxes_ = function() {
       this.seriesToAxisMap_[seriesName] = idx;
     }
   }
+
+  // Now we remove series from seriesToAxisMap_ which are not visible. We do
+  // this last so that hiding the first series doesn't destroy the axis
+  // properties of the primary axis.
+  var seriesToAxisFiltered = {};
+  var vis = this.visibility();
+  for (var i = 1; i < labels.length; i++) {
+    var s = labels[i];
+    if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
+  }
+  this.seriesToAxisMap_ = seriesToAxisFiltered;
 };
 
 /**
@@ -2066,7 +2077,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       // This is a user-set value range for this axis.
       axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
     } else {
-      // Calcuate the extremes of extremes.
+      // Calculate the extremes of extremes.
       var series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
