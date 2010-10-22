@@ -696,35 +696,35 @@ Dygraph.prototype.positionLabelsDiv_ = function() {
 
 /**
  * Create the text box to adjust the averaging period
- * @return {Object} The newly-created text box
  * @private
  */
 Dygraph.prototype.createRollInterface_ = function() {
-  // Destroy any existing roller.
-  if (this.roller_) this.graphDiv.removeChild(this.roller_);
+  // Create a roller if one doesn't exist already.
+  if (!this.roller_) {
+    this.roller_ = document.createElement("input");
+    this.roller_.type = "text";
+    this.roller_.style.display = "none";
+    this.graphDiv.appendChild(this.roller_);
+  }
 
-  var display = this.attr_('showRoller') ? "block" : "none";
+  var display = this.attr_('showRoller') ? 'block' : 'none';
+
   var textAttr = { "position": "absolute",
                    "zIndex": 10,
                    "top": (this.plotter_.area.h - 25) + "px",
                    "left": (this.plotter_.area.x + 1) + "px",
                    "display": display
                   };
-  var roller = document.createElement("input");
-  roller.type = "text";
-  roller.size = "2";
-  roller.value = this.rollPeriod_;
+  this.roller_.size = "2";
+  this.roller_.value = this.rollPeriod_;
   for (var name in textAttr) {
     if (textAttr.hasOwnProperty(name)) {
-      roller.style[name] = textAttr[name];
+      this.roller_.style[name] = textAttr[name];
     }
   }
 
-  var pa = this.graphDiv;
-  pa.appendChild(roller);
   var dygraph = this;
-  roller.onchange = function() { dygraph.adjustRoll(roller.value); };
-  return roller;
+  this.roller_.onchange = function() { dygraph.adjustRoll(dygraph.roller_.value); };
 };
 
 // These functions are taken from MochiKit.Signal
@@ -1799,7 +1799,7 @@ Dygraph.prototype.predraw_ = function() {
 
   // The roller sits in the bottom left corner of the chart. We don't know where
   // this will be until the options are available, so it's positioned here.
-  this.roller_ = this.createRollInterface_();
+  this.createRollInterface_();
 
   // Same thing applies for the labelsDiv. It's right edge should be flush with
   // the right edge of the charting area (which may not be the same as the right
