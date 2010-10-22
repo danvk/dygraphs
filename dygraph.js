@@ -803,7 +803,6 @@ Dygraph.prototype.createDragInterface_ = function() {
 
 
       // MERGE
-=======
       // y-axis scaling is automatic unless a valueRange is defined or
       // if the user zooms in on the y-axis. If neither is true, valueWindow_
       // will be null.
@@ -812,7 +811,6 @@ Dygraph.prototype.createDragInterface_ = function() {
         var minValue = maxValue - valueRange;
         self.valueWindow_ = [ minValue, maxValue ];
       }
->>>>>>> master
 
       self.drawGraph_();
     }
