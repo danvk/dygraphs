@@ -2820,7 +2820,7 @@ Dygraph.prototype.visibility = function() {
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
-  if (num < 0 && num >= x.length) {
+  if (num < 0 || num >= x.length) {
     this.warn("invalid series number in setVisibility: " + num);
   } else {
     x[num] = value;
