@@ -843,7 +843,14 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // Track the beginning of drag events
   Dygraph.addEvent(this.mouseEventElement_, 'mousedown', function(event) {
-    event.preventDefault();  // prevents mouse drags from selecting page text.
+    // prevents mouse drags from selecting page text.
+    if (event.preventDefault) {
+      event.preventDefault();  // Firefox, Chrome, etc.
+    } else {
+      event.returnValue = false;  // IE
+      event.cancelBubble = true;  
+    }
+
     px = Dygraph.findPosX(self.canvas_);
     py = Dygraph.findPosY(self.canvas_);
     dragStartX = getX(event);
