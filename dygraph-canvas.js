@@ -347,15 +347,15 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   for (var i = 0; i < this.xlabels.length; i++) {
     var el = this.xlabels[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   for (var i = 0; i < this.ylabels.length; i++) {
     var el = this.ylabels[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   for (var i = 0; i < this.annotations.length; i++) {
     var el = this.annotations[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   this.xlabels = new Array();
   this.ylabels = new Array();
