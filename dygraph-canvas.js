@@ -386,8 +386,11 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
  * Draw an X/Y grid on top of the existing plot
  */
 DygraphCanvasRenderer.prototype.render = function() {
-  // Draw the new X/Y grid
+  // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
+  // half-integers. This prevents them from drawing in two rows/cols.
   var ctx = this.element.getContext("2d");
+  function halfUp(x){return Math.round(x)+0.5};
+  function halfDown(y){return Math.round(y)-0.5};
 
   if (this.options.underlayCallback) {
     this.options.underlayCallback(ctx, this.area, this.layout, this.dygraph_);
@@ -401,8 +404,8 @@ DygraphCanvasRenderer.prototype.render = function() {
     for (var i = 0; i < ticks.length; i++) {
       // TODO(danvk): allow secondary axes to draw a grid, too.
       if (ticks[i][0] != 0) continue;
-      var x = this.area.x;
-      var y = this.area.y + ticks[i][1] * this.area.h;
+      var x = halfUp(this.area.x);
+      var y = halfDown(this.area.y + ticks[i][1] * this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.area.w, y);
@@ -417,8 +420,8 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i=0; i<ticks.length; i++) {
-      var x = this.area.x + ticks[i][0] * this.area.w;
-      var y = this.area.y + this.area.h;
+      var x = halfUp(this.area.x + ticks[i][0] * this.area.w);
+      var y = halfDown(this.area.y + this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, this.area.y);
@@ -437,6 +440,10 @@ DygraphCanvasRenderer.prototype.render = function() {
 DygraphCanvasRenderer.prototype._renderAxis = function() {
   if (!this.options.drawXAxis && !this.options.drawYAxis)
     return;
+
+  // Round pixels to half-integer boundaries for crisper drawing.
+  function halfUp(x){return Math.round(x)+0.5};
+  function halfDown(y){return Math.round(y)-0.5};
 
   var context = this.element.getContext("2d");
 
@@ -477,8 +484,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         }
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x - sgn * this.options.axisTickSize, y);
+        context.moveTo(halfUp(x), halfDown(y));
+        context.lineTo(halfUp(x - sgn * this.options.axisTickSize), halfDown(y));
         context.closePath();
         context.stroke();
 
@@ -516,16 +523,18 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       }
     }
 
+    // draw a vertical line on the left to separate the chart from the labels.
     context.beginPath();
-    context.moveTo(this.area.x, this.area.y);
-    context.lineTo(this.area.x, this.area.y + this.area.h);
+    context.moveTo(halfUp(this.area.x), halfDown(this.area.y));
+    context.lineTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
 
+    // if there's a secondary y-axis, draw a vertical line for that, too.
     if (this.dygraph_.numAxes() == 2) {
       context.beginPath();
-      context.moveTo(this.area.x + this.area.w, this.area.y);
-      context.lineTo(this.area.x + this.area.w, this.area.y + this.area.h);
+      context.moveTo(halfDown(this.area.x + this.area.w), halfDown(this.area.y));
+      context.lineTo(halfDown(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
       context.closePath();
       context.stroke();
     }
@@ -540,8 +549,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var x = this.area.x + tick[0] * this.area.w;
         var y = this.area.y + this.area.h;
         context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x, y + this.options.axisTickSize);
+        context.moveTo(halfUp(x), halfDown(y));
+        context.lineTo(halfUp(x), halfDown(y + this.options.axisTickSize));
         context.closePath();
         context.stroke();
 
@@ -567,8 +576,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     context.beginPath();
-    context.moveTo(this.area.x, this.area.y + this.area.h);
-    context.lineTo(this.area.x + this.area.w, this.area.y + this.area.h);
+    context.moveTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
+    context.lineTo(halfUp(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
   }
