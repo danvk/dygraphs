@@ -2922,7 +2922,14 @@ Dygraph.GVizChart = function(container) {
 }
 
 Dygraph.GVizChart.prototype.draw = function(data, options) {
+  // Clear out any existing dygraph.
+  // TODO(danvk): would it make more sense to simply redraw using the current
+  // date_graph object?
   this.container.innerHTML = '';
+  if (typeof(this.date_graph) != 'undefined') {
+    this.date_graph.destroy();
+  }
+
   this.date_graph = new Dygraph(this.container, data, options);
 }
 
