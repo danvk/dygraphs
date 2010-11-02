@@ -182,6 +182,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.is_initial_draw_ = true;
   this.annotations_ = [];
 
+  // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
+  this.zoomed = false;
+  this.zoomedX = false;
+  this.zoomedY = false;
+
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
   div.innerHTML = "";
@@ -1074,6 +1079,8 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
+  this.zoomed = true;
+  this.zoomedX = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var yRange = this.yAxisRange();
@@ -1102,10 +1109,13 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
     valueRanges.push([low[1], hi[1]]);
   }
 
+  this.zoomed = true;
+  this.zoomedY = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange();
-    this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
+    var yRange = this.yAxisRange();
+    this.attr_("zoomCallback")(xRange[0], xRange[1], yRange[0], yRange[1]);
   }
 };
 
@@ -1132,6 +1142,9 @@ Dygraph.prototype.doUnzoom_ = function() {
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
+    this.zoomed = false;
+    this.zoomedX = false;
+    this.zoomedY = false;
     this.drawGraph_();
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
@@ -1970,6 +1983,15 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+  var valueWindow;
+  if (this.axes_ != undefined) {
+    // Preserve valueWindow settings.
+    valueWindow = [];
+    for (var index = 0; index < this.axes_.length; index++) {
+      valueWindow.push(this.axes_[index].valueWindow);
+    }
+  }
+
   this.axes_ = [{}];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
@@ -2042,6 +2064,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
+
+  if (valueWindow != undefined) {
+    // Restore valueWindow settings.
+    for (var index = 0; index < valueWindow.length; index++) {
+      this.axes_[index].valueWindow = valueWindow[index];
+    }
+  }
 };
 
 /**
