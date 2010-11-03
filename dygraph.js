@@ -2871,30 +2871,36 @@ Dygraph.prototype.indexFromSetName = function(name) {
 Dygraph.addAnnotationRule = function() {
   if (Dygraph.addedAnnotationCSS) return;
 
-  var mysheet;
-  if (document.styleSheets.length > 0) {
-    mysheet = document.styleSheets[0];
-  } else {
-    var styleSheetElement = document.createElement("style");
-    styleSheetElement.type = "text/css";
-    document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
-    for(i = 0; i < document.styleSheets.length; i++) {
-      if (document.styleSheets[i].disabled) continue;
-      mysheet = document.styleSheets[i];
-    }
-  }
-
   var rule = "border: 1px solid black; " +
              "background-color: white; " +
              "text-align: center;";
-  if (mysheet.insertRule) {  // Firefox
-    var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
-    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
-  } else if (mysheet.addRule) {  // IE
-    mysheet.addRule(".dygraphDefaultAnnotation", rule);
+
+  var styleSheetElement = document.createElement("style");
+  styleSheetElement.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
+
+  // Find the first style sheet that we can access.
+  // We may not add a rule to a style sheet from another domain for security
+  // reasons. This sometimes comes up when using gviz, since the Google gviz JS
+  // adds its own style sheets from google.com.
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].disabled) continue;
+    var mysheet = document.styleSheets[i];
+    try {
+      if (mysheet.insertRule) {  // Firefox
+        var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
+        mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
+      } else if (mysheet.addRule) {  // IE
+        mysheet.addRule(".dygraphDefaultAnnotation", rule);
+      }
+      Dygraph.addedAnnotationCSS = true;
+      return;
+    } catch(err) {
+      // Was likely a security exception.
+    }
   }
 
-  Dygraph.addedAnnotationCSS = true;
+  this.warn("Unable to add default annotation CSS rule; display may be off.");
 }
 
 /**
