@@ -4,7 +4,7 @@
 /**
  * @fileoverview Based on PlotKit, but modified to meet the needs of dygraphs.
  * In particular, support for:
- * - grid overlays 
+ * - grid overlays
  * - error bars
  * - dygraphs attribute system
  */
@@ -82,10 +82,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
 
-  this.minyval = this.options.yAxis[0];
-  this.maxyval = this.options.yAxis[1];
-  this.yrange = this.maxyval - this.minyval;
-  this.yscale = (this.yrange != 0 ? 1/this.yrange : 1.0);
+  for (var i = 0; i < this.options.yAxes.length; i++) {
+    var axis = this.options.yAxes[i];
+    axis.minyval = axis.computedValueRange[0];
+    axis.maxyval = axis.computedValueRange[1];
+    axis.yrange = axis.maxyval - axis.minyval;
+    axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
+  }
 };
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
@@ -95,12 +98,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     if (!this.datasets.hasOwnProperty(setName)) continue;
 
     var dataset = this.datasets[setName];
+    var axis = this.options.yAxes[this.options.seriesToAxisMap[setName]];
+
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var point = {
         // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: 1.0 - ((parseFloat(item[1]) - this.minyval) * this.yscale),
+        y: 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale),
         xval: parseFloat(item[0]),
         yval: parseFloat(item[1]),
         name: setName
@@ -123,12 +128,15 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   }
 
   this.yticks = new Array();
-  for (var i = 0; i < this.options.yTicks.length; i++) {
-    var tick = this.options.yTicks[i];
-    var label = tick.label;
-    var pos = 1.0 - (this.yscale * (tick.v - this.minyval));
-    if ((pos >= 0.0) && (pos <= 1.0)) {
-      this.yticks.push([pos, label]);
+  for (var i = 0; i < this.options.yAxes.length; i++ ) {
+    var axis = this.options.yAxes[i];
+    for (var j = 0; j < axis.ticks.length; j++) {
+      var tick = axis.ticks[j];
+      var label = tick.label;
+      var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
+      if ((pos >= 0.0) && (pos <= 1.0)) {
+        this.yticks.push([i, pos, label]);
+      }
     }
   }
 };
@@ -277,7 +285,9 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.ylabels = new Array();
   this.annotations = new Array();
 
+  // TODO(danvk): consider all axes in this computation.
   this.area = {
+    // TODO(danvk): per-axis setting.
     x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
     y: 0
   };
@@ -285,8 +295,33 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.area.h = this.height - this.options.axisLabelFontSize -
                 2 * this.options.axisTickSize;
 
+  // Shrink the drawing area to accomodate additional y-axes.
+  if (this.dygraph_.numAxes() == 2) {
+    // TODO(danvk): per-axis setting.
+    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
+  } else if (this.dygraph_.numAxes() > 2) {
+    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                        "to use " + this.dygraph_.numAxes() + ")");
+  }
+
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
+
+  // Set up a clipping area for the canvas (and the interaction canvas).
+  // This ensures that we don't overdraw.
+  var ctx = this.dygraph_.canvas_.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
+
+  ctx = this.dygraph_.hidden_.getContext("2d");
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
+};
+
+DygraphCanvasRenderer.prototype.attr_ = function(x) {
+  return this.dygraph_.attr_(x);
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -312,15 +347,15 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   for (var i = 0; i < this.xlabels.length; i++) {
     var el = this.xlabels[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   for (var i = 0; i < this.ylabels.length; i++) {
     var el = this.ylabels[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   for (var i = 0; i < this.annotations.length; i++) {
     var el = this.annotations[i];
-    el.parentNode.removeChild(el);
+    if (el.parentNode) el.parentNode.removeChild(el);
   }
   this.xlabels = new Array();
   this.ylabels = new Array();
@@ -351,8 +386,11 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
  * Draw an X/Y grid on top of the existing plot
  */
 DygraphCanvasRenderer.prototype.render = function() {
-  // Draw the new X/Y grid
+  // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
+  // half-integers. This prevents them from drawing in two rows/cols.
   var ctx = this.element.getContext("2d");
+  function halfUp(x){return Math.round(x)+0.5};
+  function halfDown(y){return Math.round(y)-0.5};
 
   if (this.options.underlayCallback) {
     this.options.underlayCallback(ctx, this.area, this.layout, this.dygraph_);
@@ -364,8 +402,10 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i = 0; i < ticks.length; i++) {
-      var x = this.area.x;
-      var y = this.area.y + ticks[i][0] * this.area.h;
+      // TODO(danvk): allow secondary axes to draw a grid, too.
+      if (ticks[i][0] != 0) continue;
+      var x = halfUp(this.area.x);
+      var y = halfDown(this.area.y + ticks[i][1] * this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.area.w, y);
@@ -380,8 +420,8 @@ DygraphCanvasRenderer.prototype.render = function() {
     ctx.strokeStyle = this.options.gridLineColor;
     ctx.lineWidth = this.options.axisLineWidth;
     for (var i=0; i<ticks.length; i++) {
-      var x = this.area.x + ticks[i][0] * this.area.w;
-      var y = this.area.y + this.area.h;
+      var x = halfUp(this.area.x + ticks[i][0] * this.area.w);
+      var y = halfDown(this.area.y + this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, this.area.y);
@@ -400,6 +440,10 @@ DygraphCanvasRenderer.prototype.render = function() {
 DygraphCanvasRenderer.prototype._renderAxis = function() {
   if (!this.options.drawXAxis && !this.options.drawYAxis)
     return;
+
+  // Round pixels to half-integer boundaries for crisper drawing.
+  function halfUp(x){return Math.round(x)+0.5};
+  function halfDown(y){return Math.round(y)-0.5};
 
   var context = this.element.getContext("2d");
 
@@ -433,14 +477,19 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
-        var y = this.area.y + tick[0] * this.area.h;
+        var sgn = 1;
+        if (tick[0] == 1) {  // right-side y-axis
+          x = this.area.x + this.area.w;
+          sgn = -1;
+        }
+        var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x - this.options.axisTickSize, y);
+        context.moveTo(halfUp(x), halfDown(y));
+        context.lineTo(halfUp(x - sgn * this.options.axisTickSize), halfDown(y));
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[1]);
+        var label = makeDiv(tick[2]);
         var top = (y - this.options.axisLabelFontSize / 2);
         if (top < 0) top = 0;
 
@@ -449,8 +498,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         } else {
           label.style.top = top + "px";
         }
-        label.style.left = "0px";
-        label.style.textAlign = "right";
+        if (tick[0] == 0) {
+          label.style.left = "0px";
+          label.style.textAlign = "right";
+        } else if (tick[0] == 1) {
+          label.style.left = (this.area.x + this.area.w +
+                              this.options.axisTickSize) + "px";
+          label.style.textAlign = "left";
+        }
         label.style.width = this.options.yAxisLabelWidth + "px";
         this.container.appendChild(label);
         this.ylabels.push(label);
@@ -468,11 +523,21 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       }
     }
 
+    // draw a vertical line on the left to separate the chart from the labels.
     context.beginPath();
-    context.moveTo(this.area.x, this.area.y);
-    context.lineTo(this.area.x, this.area.y + this.area.h);
+    context.moveTo(halfUp(this.area.x), halfDown(this.area.y));
+    context.lineTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
+
+    // if there's a secondary y-axis, draw a vertical line for that, too.
+    if (this.dygraph_.numAxes() == 2) {
+      context.beginPath();
+      context.moveTo(halfDown(this.area.x + this.area.w), halfDown(this.area.y));
+      context.lineTo(halfDown(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
+      context.closePath();
+      context.stroke();
+    }
   }
 
   if (this.options.drawXAxis) {
@@ -484,8 +549,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var x = this.area.x + tick[0] * this.area.w;
         var y = this.area.y + this.area.h;
         context.beginPath();
-        context.moveTo(x, y);
-        context.lineTo(x, y + this.options.axisTickSize);
+        context.moveTo(halfUp(x), halfDown(y));
+        context.lineTo(halfUp(x), halfDown(y + this.options.axisTickSize));
         context.closePath();
         context.stroke();
 
@@ -511,8 +576,8 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     context.beginPath();
-    context.moveTo(this.area.x, this.area.y + this.area.h);
-    context.lineTo(this.area.x + this.area.w, this.area.y + this.area.h);
+    context.moveTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
+    context.lineTo(halfUp(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
   }
@@ -623,12 +688,13 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * Overrides the CanvasRenderer method to draw error bars
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
+  // TODO(danvk): use this.attr_ for many of these.
   var context = this.element.getContext("2d");
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var fillAlpha = this.options.fillAlpha;
   var errorBars = this.layout.options.errorBars;
-  var fillGraph = this.layout.options.fillGraph;
+  var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.layout.options.stackedGraph;
   var stepPlot = this.layout.options.stepPlot;
 
@@ -664,6 +730,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
+      var axis = this.layout.options.yAxes[
+        this.layout.options.seriesToAxisMap[setName]];
       var color = this.colors[setName];
 
       // setup graphics context
@@ -671,7 +739,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var prevX = NaN;
       var prevY = NaN;
       var prevYs = [-1, -1];
-      var yscale = this.layout.yscale;
+      var yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
       var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
@@ -719,23 +787,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.fill();
     }
   } else if (fillGraph) {
-    var axisY = 1.0 + this.layout.minyval * this.layout.yscale;
-    if (axisY < 0.0) axisY = 0.0;
-    else if (axisY > 1.0) axisY = 1.0;
-    axisY = this.area.h * axisY + this.area.y;
-
     var baseline = []  // for stacked graphs: baseline for filling
 
     // process sets in reverse order (needed for stacked graphs)
     for (var i = setCount - 1; i >= 0; i--) {
       var setName = setNames[i];
       var color = this.colors[setName];
+      var axis = this.layout.options.yAxes[
+        this.layout.options.seriesToAxisMap[setName]];
+      var axisY = 1.0 + axis.minyval * axis.yscale;
+      if (axisY < 0.0) axisY = 0.0;
+      else if (axisY > 1.0) axisY = 1.0;
+      axisY = this.area.h * axisY + this.area.y;
 
       // setup graphics context
       ctx.save();
       var prevX = NaN;
       var prevYs = [-1, -1];
-      var yscale = this.layout.yscale;
+      var yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
       var rgb = new RGBColor(color);
       var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
