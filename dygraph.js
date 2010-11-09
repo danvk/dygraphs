@@ -1133,6 +1133,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var minDist = 1e+100;
   var idx = -1;
   for (var i = 0; i < points.length; i++) {
+    var point = points[i];
+    if (point == null) continue;
     var dist = Math.abs(points[i].canvasx - canvasx);
     if (dist > minDist) continue;
     minDist = dist;
@@ -1140,7 +1142,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
   }
   if (idx >= 0) lastx = points[idx].xval;
   // Check that you can really highlight the last day's data
-  if (canvasx > points[points.length-1].canvasx)
+  var last = points[points.length-1];
+  if (last != null && canvasx > last.canvasx)
     lastx = points[points.length-1].xval;
 
   // Extract the points we've selected
