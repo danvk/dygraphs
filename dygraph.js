@@ -1214,23 +1214,22 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
- * Transforms layout_.points index into data row number
+ * Transforms layout_.points index into data row number.
  * @param int layout_.points index
- * @return int row number
+ * @return int row number, or -1 if none could be found.
  * @private
  */
 Dygraph.prototype.idxToRow_ = function(idx) {
-	if(idx<0)return -1;
+  if (idx < 0) return -1;
 
-	for (var i in this.layout_.datasets) {
-		if (idx < this.layout_.datasets[i].length) {
-			return this.boundaryIds_[0][0]+idx;
-		}
-		idx-=this.layout_.datasets[i].length;
-	}
-	return -1;
-}
-
+  for (var i in this.layout_.datasets) {
+    if (idx < this.layout_.datasets[i].length) {
+      return this.boundaryIds_[0][0]+idx;
+    }
+    idx -= this.layout_.datasets[i].length;
+  }
+  return -1;
+};
 
 /**
  * Draw dots over the selectied points in the data series. This function

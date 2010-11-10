@@ -853,7 +853,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
         <tr>
           <td><strong>highlightCallback</strong></td>
-          <td><code>function(event, x, points)</code></td>
+          <td><code>function(event, x, points,row)</code></td>
           <td><code>null</code></td>
           <td>When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>
           <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> </div>
