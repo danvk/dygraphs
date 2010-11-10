@@ -870,6 +870,20 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
 
         <tr>
+          <td><strong>underlayCallback</strong></td>
+          <td><code>function(canvas, area, dygraph)</code></td>
+          <td><code>null</code></td>
+          <td>When set, this callback gets called before the chart is drawn. It
+            allows you to draw underneath the chart. See the tests for more
+            details on how to use this.
+            <div class="tests">Tests:
+              <a href="tests/underlay-callback.html">underlay-callback</a>
+              <a href="tests/highlighted-region.html">highlighted-region</a>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
           <td><strong>strokeWidth</strong></td>
           <td><code>0.5, 2.0</code></td>
           <td><code>1.0</code></td>

@@ -26,8 +26,9 @@
               showRoller: true,
               errorBars: true,
 
-              underlayCallback: function(canvas, area, layout) {
-                var splitHeight = area.h * (layout.yscale * (2.25 - layout.minyval));
+              underlayCallback: function(canvas, area, g) {
+                var splitHeight = g.toDomCoords(null, 2.25)[1];
+
                 canvas.fillStyle = 'pink';
                 canvas.fillRect(area.x, area.y + area.h, area.w, -splitHeight);
                 canvas.fillStyle = 'lightblue';
