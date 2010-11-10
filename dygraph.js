@@ -1200,7 +1200,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var px = this.lastx_;
     if (px !== null && lastx != px) {
       // only fire if the selected point has changed.
-      this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+      this.attr_("highlightCallback")(event, lastx, this.selPoints_, this.idxToRow_(idx));
     }
   }
 
@@ -1209,6 +1209,25 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   this.updateSelection_();
 };
+
+/**
+ * Transforms layout_.points index into data row number
+ * @param int layout_.points index
+ * @return int row number
+ * @private
+ */
+Dygraph.prototype.idxToRow_ = function(idx) {
+	if(idx<0)return -1;
+
+	for (var i in this.layout_.datasets) {
+		if (idx < this.layout_.datasets[i].length) {
+			return this.boundaryIds_[0][0]+idx;
+		}
+		idx-=this.layout_.datasets[i].length;
+	}
+	return -1;
+}
+
 
 /**
  * Draw dots over the selectied points in the data series. This function
