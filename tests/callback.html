@@ -36,7 +36,7 @@
     <script type="text/javascript">
       s = document.getElementById("status");
       g = null;
-      pts_info = function(e, x, pts) {
+      pts_info = function(e, x, pts, row) {
         var str = "(" + x + ") ";
         for (var i = 0; i < pts.length; i++) {
           var p = pts[i];
@@ -49,6 +49,7 @@
         var dataXY = g.toDataCoords(x, y);
         str += ", (" + x + ", " + y + ")";
         str += " -> (" + dataXY[0] + ", " + dataXY[1] + ")";
+        str += ", row #"+row;
 
         return str;
       };
@@ -60,9 +61,9 @@
               showRoller: true,
               errorBars: true,
 
-              highlightCallback: function(e, x, pts) {
+              highlightCallback: function(e, x, pts, row) {
                 if (document.getElementById('highlight').checked) {
-                  s.innerHTML += "<b>Highlight</b> " + pts_info(e,x,pts) + "<br/>";
+                  s.innerHTML += "<b>Highlight</b> " + pts_info(e,x,pts,row) + "<br/>";
                 }
               },
 
