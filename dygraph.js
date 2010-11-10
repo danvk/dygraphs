@@ -189,10 +189,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // If the div isn't already sized then inherit from our attrs or
   // give it a default size.
   if (div.style.width == '') {
-    div.style.width = attrs.width || Dygraph.DEFAULT_WIDTH + "px";
+    div.style.width = (attrs.width || Dygraph.DEFAULT_WIDTH) + "px";
   }
   if (div.style.height == '') {
-    div.style.height = attrs.height || Dygraph.DEFAULT_HEIGHT + "px";
+    div.style.height = (attrs.height || Dygraph.DEFAULT_HEIGHT) + "px";
   }
   this.width_ = parseInt(div.style.width, 10);
   this.height_ = parseInt(div.style.height, 10);
