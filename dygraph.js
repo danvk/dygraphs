@@ -166,6 +166,16 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
+  // Hack for IE: if we're using excanvas and the document hasn't finished
+  // loading yet (and hence may not have initialized whatever it needs to
+  // initialize), then keep calling this routine periodically until it has.
+  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
+      typeof(G_vmlCanvasManager) != 'undefined' &&
+      document.readyState != 'complete') {
+    var self = this;
+    setTimeout(function() { self.__init__(div, file, attrs) }, 100);
+  }
+
   // Support two-argument constructor
   if (attrs == null) { attrs = {}; }
 
