@@ -138,6 +138,11 @@ if (!document.createElement('canvas').getContext) {
 
         el.getContext = getContext;
 
+        // Remove fallback content. There is no way to hide text nodes so we
+        // just remove all childNodes. We could hide all elements and remove
+        // text nodes but who really cares about the fallback content.
+        el.innerHTML = '';
+
         // do not use inline function because that will leak memory
         el.attachEvent('onpropertychange', onPropertyChange);
         el.attachEvent('onresize', onResize);
@@ -314,7 +319,6 @@ if (!document.createElement('canvas').getContext) {
   var contextPrototype = CanvasRenderingContext2D_.prototype;
   contextPrototype.clearRect = function() {
     this.element_.innerHTML = '';
-    this.currentPath_ = [];
   };
 
   contextPrototype.beginPath = function() {
@@ -422,27 +426,31 @@ if (!document.createElement('canvas').getContext) {
   };
 
   contextPrototype.strokeRect = function(aX, aY, aWidth, aHeight) {
-    // Will destroy any existing path (same as FF behaviour)
+    var oldPath = this.currentPath_;
     this.beginPath();
+
     this.moveTo(aX, aY);
     this.lineTo(aX + aWidth, aY);
     this.lineTo(aX + aWidth, aY + aHeight);
     this.lineTo(aX, aY + aHeight);
     this.closePath();
     this.stroke();
-    this.currentPath_ = [];
+
+    this.currentPath_ = oldPath;
   };
 
   contextPrototype.fillRect = function(aX, aY, aWidth, aHeight) {
-    // Will destroy any existing path (same as FF behaviour)
+    var oldPath = this.currentPath_;
     this.beginPath();
+
     this.moveTo(aX, aY);
     this.lineTo(aX + aWidth, aY);
     this.lineTo(aX + aWidth, aY + aHeight);
     this.lineTo(aX, aY + aHeight);
     this.closePath();
     this.fill();
-    this.currentPath_ = [];
+
+    this.currentPath_ = oldPath;
   };
 
   contextPrototype.createLinearGradient = function(aX0, aY0, aX1, aY1) {
@@ -789,6 +797,33 @@ if (!document.createElement('canvas').getContext) {
     this.m_ = this.mStack_.pop();
   };
 
+  function matrixIsFinite(m) {
+    for (var j = 0; j < 3; j++) {
+      for (var k = 0; k < 2; k++) {
+        if (!isFinite(m[j][k]) || isNaN(m[j][k])) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function setM(ctx, m, updateLineScale) {
+    if (!matrixIsFinite(m)) {
+      return;
+    }
+    ctx.m_ = m;
+
+    if (updateLineScale) {
+      // Get the line scale.
+      // Determinant of this.m_ means how much the area is enlarged by the
+      // transformation. So its square root can be used as a scale factor
+      // for width.
+      var det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+      ctx.lineScale_ = sqrt(abs(det));
+    }
+  }
+
   contextPrototype.translate = function(aX, aY) {
     var m1 = [
       [1,  0,  0],
@@ -796,7 +831,7 @@ if (!document.createElement('canvas').getContext) {
       [aX, aY, 1]
     ];
 
-    this.m_ = matrixMultiply(m1, this.m_);
+    setM(this, matrixMultiply(m1, this.m_), false);
   };
 
   contextPrototype.rotate = function(aRot) {
@@ -809,7 +844,7 @@ if (!document.createElement('canvas').getContext) {
       [0,  0, 1]
     ];
 
-    this.m_ = matrixMultiply(m1, this.m_);
+    setM(this, matrixMultiply(m1, this.m_), false);
   };
 
   contextPrototype.scale = function(aX, aY) {
@@ -821,14 +856,27 @@ if (!document.createElement('canvas').getContext) {
       [0,  0,  1]
     ];
 
-    var m = this.m_ = matrixMultiply(m1, this.m_);
+    setM(this, matrixMultiply(m1, this.m_), true);
+  };
 
-    // Get the line scale.
-    // Determinant of this.m_ means how much the area is enlarged by the
-    // transformation. So its square root can be used as a scale factor
-    // for width.
-    var det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
-    this.lineScale_ = sqrt(abs(det));
+  contextPrototype.transform = function(m11, m12, m21, m22, dx, dy) {
+    var m1 = [
+      [m11, m12, 0],
+      [m21, m22, 0],
+      [dx,  dy,  1]
+    ];
+
+    setM(this, matrixMultiply(m1, this.m_), true);
+  };
+
+  contextPrototype.setTransform = function(m11, m12, m21, m22, dx, dy) {
+    var m = [
+      [m11, m12, 0],
+      [m21, m22, 0],
+      [dx,  dy,  1]
+    ];
+
+    setM(this, m, true);
   };
 
   /******** STUBS ********/
