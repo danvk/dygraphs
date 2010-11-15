@@ -29,10 +29,14 @@
               underlayCallback: function(canvas, area, g) {
                 var splitHeight = g.toDomCoords(null, 2.25)[1];
 
+                // fillRect(x, y, width, height)
+                // Bottom section: y = (-Infinity, 2.25)
                 canvas.fillStyle = 'pink';
-                canvas.fillRect(area.x, area.y + area.h, area.w, -splitHeight);
+                canvas.fillRect(area.x, splitHeight, area.w, area.h - splitHeight);
+
+                // Top section: y = (2.25, +Infinity)
                 canvas.fillStyle = 'lightblue';
-                canvas.fillRect(area.x, 0, area.w, area.y + area.h - splitHeight);
+                canvas.fillRect(area.x, area.y, area.w, splitHeight - area.y);
               }
             }
           );
