@@ -393,7 +393,9 @@ DygraphCanvasRenderer.prototype.render = function() {
   function halfDown(y){return Math.round(y)-0.5};
 
   if (this.options.underlayCallback) {
-    this.options.underlayCallback(ctx, this.area, this.layout, this.dygraph_);
+    // NOTE: we pass the dygraph object to this callback twice to avoid breaking
+    // users who expect a deprecated form of this callback.
+    this.options.underlayCallback(ctx, this.area, this.dygraph_, this.dygraph_);
   }
 
   if (this.options.drawYGrid) {

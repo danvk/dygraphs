@@ -166,6 +166,16 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
+  // Hack for IE: if we're using excanvas and the document hasn't finished
+  // loading yet (and hence may not have initialized whatever it needs to
+  // initialize), then keep calling this routine periodically until it has.
+  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
+      typeof(G_vmlCanvasManager) != 'undefined' &&
+      document.readyState != 'complete') {
+    var self = this;
+    setTimeout(function() { self.__init__(div, file, attrs) }, 100);
+  }
+
   // Support two-argument constructor
   if (attrs == null) { attrs = {}; }
 
@@ -194,10 +204,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // If the div isn't already sized then inherit from our attrs or
   // give it a default size.
   if (div.style.width == '') {
-    div.style.width = attrs.width || Dygraph.DEFAULT_WIDTH + "px";
+    div.style.width = (attrs.width || Dygraph.DEFAULT_WIDTH) + "px";
   }
   if (div.style.height == '') {
-    div.style.height = attrs.height || Dygraph.DEFAULT_HEIGHT + "px";
+    div.style.height = (attrs.height || Dygraph.DEFAULT_HEIGHT) + "px";
   }
   this.width_ = parseInt(div.style.width, 10);
   this.height_ = parseInt(div.style.height, 10);
@@ -1173,6 +1183,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var minDist = 1e+100;
   var idx = -1;
   for (var i = 0; i < points.length; i++) {
+    var point = points[i];
+    if (point == null) continue;
     var dist = Math.abs(points[i].canvasx - canvasx);
     if (dist > minDist) continue;
     minDist = dist;
@@ -1180,7 +1192,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
   }
   if (idx >= 0) lastx = points[idx].xval;
   // Check that you can really highlight the last day's data
-  if (canvasx > points[points.length-1].canvasx)
+  var last = points[points.length-1];
+  if (last != null && canvasx > last.canvasx)
     lastx = points[points.length-1].xval;
 
   // Extract the points we've selected
@@ -1213,7 +1226,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var px = this.lastx_;
     if (px !== null && lastx != px) {
       // only fire if the selected point has changed.
-      this.attr_("highlightCallback")(event, lastx, this.selPoints_);
+      this.attr_("highlightCallback")(event, lastx, this.selPoints_, this.idxToRow_(idx));
     }
   }
 
@@ -1221,6 +1234,24 @@ Dygraph.prototype.mouseMove_ = function(event) {
   this.lastx_ = lastx;
 
   this.updateSelection_();
+};
+
+/**
+ * Transforms layout_.points index into data row number.
+ * @param int layout_.points index
+ * @return int row number, or -1 if none could be found.
+ * @private
+ */
+Dygraph.prototype.idxToRow_ = function(idx) {
+  if (idx < 0) return -1;
+
+  for (var i in this.layout_.datasets) {
+    if (idx < this.layout_.datasets[i].length) {
+      return this.boundaryIds_[0][0]+idx;
+    }
+    idx -= this.layout_.datasets[i].length;
+  }
+  return -1;
 };
 
 /**
@@ -2900,30 +2931,36 @@ Dygraph.prototype.indexFromSetName = function(name) {
 Dygraph.addAnnotationRule = function() {
   if (Dygraph.addedAnnotationCSS) return;
 
-  var mysheet;
-  if (document.styleSheets.length > 0) {
-    mysheet = document.styleSheets[0];
-  } else {
-    var styleSheetElement = document.createElement("style");
-    styleSheetElement.type = "text/css";
-    document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
-    for(i = 0; i < document.styleSheets.length; i++) {
-      if (document.styleSheets[i].disabled) continue;
-      mysheet = document.styleSheets[i];
-    }
-  }
-
   var rule = "border: 1px solid black; " +
              "background-color: white; " +
              "text-align: center;";
-  if (mysheet.insertRule) {  // Firefox
-    var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
-    mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
-  } else if (mysheet.addRule) {  // IE
-    mysheet.addRule(".dygraphDefaultAnnotation", rule);
+
+  var styleSheetElement = document.createElement("style");
+  styleSheetElement.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
+
+  // Find the first style sheet that we can access.
+  // We may not add a rule to a style sheet from another domain for security
+  // reasons. This sometimes comes up when using gviz, since the Google gviz JS
+  // adds its own style sheets from google.com.
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].disabled) continue;
+    var mysheet = document.styleSheets[i];
+    try {
+      if (mysheet.insertRule) {  // Firefox
+        var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
+        mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
+      } else if (mysheet.addRule) {  // IE
+        mysheet.addRule(".dygraphDefaultAnnotation", rule);
+      }
+      Dygraph.addedAnnotationCSS = true;
+      return;
+    } catch(err) {
+      // Was likely a security exception.
+    }
   }
 
-  Dygraph.addedAnnotationCSS = true;
+  this.warn("Unable to add default annotation CSS rule; display may be off.");
 }
 
 /**

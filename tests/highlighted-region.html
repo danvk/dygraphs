@@ -37,7 +37,7 @@
           data,
           {
             labels: ['X', 'Est.', 'Actual'],
-            underlayCallback: function(canvas, area, layout, g) {
+            underlayCallback: function(canvas, area, g) {
               var bottom_left = g.toDomCoords(highlight_start, -20);
               var top_right = g.toDomCoords(highlight_end, +20);
 
