@@ -193,9 +193,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.annotations_ = [];
 
   // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
-  this.zoomed = false;
-  this.zoomedX = false;
-  this.zoomedY = false;
+  this.zoomed_x_ = false;
+  this.zoomed_y_ = false;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -257,6 +256,14 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.createInterface_();
 
   this.start_();
+};
+
+// axis is an optional parameter. Can be set to 'x' or 'y'.
+Dygraph.prototype.isZoomed = function(axis) {
+  if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
+  if (axis == 'x') return this.zoomed_x_;
+  if (axis == 'y') return this.zoomed_y_;
+  throw "axis parameter to Dygraph.isZoomed must be missing, 'x' or 'y'.";
 };
 
 Dygraph.prototype.attr_ = function(name, seriesName) {
@@ -1089,8 +1096,7 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
-  this.zoomed = true;
-  this.zoomedX = true;
+  this.zoomed_x_ = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var yRange = this.yAxisRange();
@@ -1119,8 +1125,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
     valueRanges.push([low[1], hi[1]]);
   }
 
-  this.zoomed = true;
-  this.zoomedY = true;
+  this.zoomed_y_ = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange();
@@ -1152,9 +1157,8 @@ Dygraph.prototype.doUnzoom_ = function() {
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
-    this.zoomed = false;
-    this.zoomedX = false;
-    this.zoomedY = false;
+    this.zoomed_x_ = false;
+    this.zoomed_y_ = false;
     this.drawGraph_();
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
