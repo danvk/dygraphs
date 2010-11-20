@@ -55,8 +55,8 @@
       showDimensions(minDate, maxDate, minValue, maxValue);
 
       function showDimensions(minDate, maxDate, minValue, maxValue) {
-      	showXDimensions(minDate, maxDate);
-      	showYDimensions(minValue, maxValue);
+        showXDimensions(minDate, maxDate);
+        showYDimensions(minValue, maxValue);
       }
 
       function showXDimensions(first, second) {
@@ -73,14 +73,14 @@
         g.updateOptions({
           dateWindow: [minDate, maxDate]
         });
-  	    showXDimensions(minDate, maxDate);
+        showXDimensions(minDate, maxDate);
       }
 
       function zoomGraphY(minValue, maxValue) {
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
-  	    showYDimensions(minValue, maxValue);
+        showYDimensions(minValue, maxValue);
       }
 
       function unzoomGraph() {
