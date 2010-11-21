@@ -40,7 +40,9 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(a,b,c,d) { showDimensions(a,b,c,d); }
+              zoomCallback : function(minDate, maxDate, minValue, maxValue) {
+                showDimensions(minDate, maxDate, minValue, maxValue);
+              }
             }
           );
 
