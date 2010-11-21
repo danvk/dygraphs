@@ -81,8 +81,8 @@
                 s.innerHTML += "<b>Point Click</b> " + p.name + ": " + p.x + "<br/>";
               },
 
-              zoomCallback: function(minX, maxX) {
-                s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + "]<br/>";
+              zoomCallback: function(minX, maxX, yRanges) {
+                s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + ", [" + yRanges + "]]<br/>";
               },
 
               drawCallback: function(g) {
