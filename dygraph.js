@@ -2413,7 +2413,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
   // Parse the x as a float or return null if it's not a number.
   var parseFloatOrNull = function(x) {
     var val = parseFloat(x);
-    return isNaN(val) ? null : val;
+    // isFinite() returns false for NaN and +/-Infinity.
+    return isFinite(val) ? val : null;
   };
 
   var xParser;
@@ -2644,6 +2645,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     }
     if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
+    }
+
+    // Strip out infinities, which give dygraphs problems later on.
+    for (var j = 0; j < row.length; j++) {
+      if (!isFinite(row[j])) row[j] = null;
     }
     ret.push(row);
   }
