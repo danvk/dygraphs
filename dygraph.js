@@ -37,7 +37,7 @@
 
  And error bars will be calculated automatically using a binomial distribution.
 
- For further documentation and examples, see http://www.danvk.org/dygraphs
+ For further documentation and examples, see http://dygraphs.com/
 
  */
 
