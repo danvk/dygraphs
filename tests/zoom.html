@@ -43,7 +43,6 @@
 	      zoomCallback : function(minDate, maxDate, yRanges) {
 	          showDimensions(minDate, maxDate, yRanges); }
               }
-            }
           );
 
       // TODO(konigsberg): Implement a visualization that verifies that initial
@@ -82,7 +81,7 @@
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
-        showYDimensions(this.getYRanges());
+        showYDimensions(g.yAxisRanges());
       }
 
       function unzoomGraph() {
