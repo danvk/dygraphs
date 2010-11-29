@@ -40,7 +40,8 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(a,b,c,d) { showDimensions(a,b,c,d); }
+	      zoomCallback : function(minDate, maxDate, yRanges) {
+	          showDimensions(minDate, maxDate, yRanges); }
             }
           );
 
@@ -52,11 +53,11 @@
       var maxDate = g.xAxisRange()[1];
       var minValue = g.yAxisRange()[0];
       var maxValue = g.yAxisRange()[1];
-      showDimensions(minDate, maxDate, minValue, maxValue);
+      showDimensions(minDate, maxDate, [minValue, maxValue]);
 
-      function showDimensions(minDate, maxDate, minValue, maxValue) {
+      function showDimensions(minDate, maxDate, yRanges) {
       	showXDimensions(minDate, maxDate);
-      	showYDimensions(minValue, maxValue);
+      	showYDimensions(yRanges);
       }
 
       function showXDimensions(first, second) {
@@ -64,9 +65,9 @@
         elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
       }
 
-      function showYDimensions(first, second) {
+      function showYDimensions(values) {
         var elem = document.getElementById("ydimensions");
-        elem.innerHTML = "valueRange : [" + first + ", "+ second + "]";
+        elem.innerHTML = "valueRange : [" + values + "]";
       }
 
       function zoomGraphX(minDate, maxDate) {
@@ -80,7 +81,7 @@
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
-  	    showYDimensions(minValue, maxValue);
+        showYDimensions(this.getYRanges());
       }
 
       function unzoomGraph() {

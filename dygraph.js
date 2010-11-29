@@ -1087,7 +1087,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var yRange = this.yAxisRange();
-    this.attr_("zoomCallback")(minDate, maxDate, yRange[0], yRange[1]);
+    this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
   }
 };
 
