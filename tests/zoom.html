@@ -42,6 +42,7 @@
               errorBars: true,
 	      zoomCallback : function(minDate, maxDate, yRanges) {
 	          showDimensions(minDate, maxDate, yRanges); }
+              }
             }
           );
 
@@ -65,16 +66,16 @@
         elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
       }
 
-      function showYDimensions(values) {
+      function showYDimensions(ranges) {
         var elem = document.getElementById("ydimensions");
-        elem.innerHTML = "valueRange : [" + values + "]";
+        elem.innerHTML = "valueRange : [" + ranges + "]";
       }
 
       function zoomGraphX(minDate, maxDate) {
         g.updateOptions({
           dateWindow: [minDate, maxDate]
         });
-  	    showXDimensions(minDate, maxDate);
+        showXDimensions(minDate, maxDate);
       }
 
       function zoomGraphY(minValue, maxValue) {
