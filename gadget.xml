@@ -6,7 +6,7 @@
       description="Interactive, zoomable chart"
       author="Dan Vanderkam"
       author_email="danvdk@gmail.com"
-      thumbnail="http://danvk.org/dygraphs/thumbnail.png"
+      thumbnail="http://dygraphs.com/thumbnail.png"
       >
       <!-- TODO(danvk): change these -->
       <!--
@@ -39,7 +39,7 @@
 
   <!-- Load the Google common loader, that is later used to load the Visualization API. -->
   <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-  <script src="http://danvk.org/dygraphs/dygraph-combined.js" type="text/javascript"></script>
+  <script src="http://dygraphs.com/dygraph-combined.js" type="text/javascript"></script>
 
   <div id="chartdiv" style="overflow: auto;"><img src="http://www.google.com/ig/images/spinner.gif" /></div>
 

@@ -46,8 +46,8 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(a,b,c,d) {
-                showDimensions(a,b,c,d);
+              zoomCallback : function(minDate, maxDate, yRange) {
+                showDimensions(minDate, maxDate, yRange);
               },
               drawCallback: function(me, initial) {
                 document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
@@ -63,13 +63,12 @@
       // Pull an initial value for logging.
       var minDate = g.xAxisRange()[0];
       var maxDate = g.xAxisRange()[1];
-      var minValue = g.yAxisRange()[0];
-      var maxValue = g.yAxisRange()[1];
-      showDimensions(minDate, maxDate, minValue, maxValue);
+      var minValue = g.yAxisRange();
+      showDimensions(minDate, maxDate, yAxisRange);
 
-      function showDimensions(minDate, maxDate, minValue, maxValue) {
-      	showXDimensions(minDate, maxDate);
-      	showYDimensions(minValue, maxValue);
+      function showDimensions(minDate, maxDate, yAxisRange) {
+        showXDimensions(minDate, maxDate);
+        showYDimensions(yAxisRange);
       }
 
       function showXDimensions(first, second) {
@@ -77,23 +76,23 @@
         elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
       }
 
-      function showYDimensions(first, second) {
+      function showYDimensions(range) {
         var elem = document.getElementById("ydimensions");
-        elem.innerHTML = "valueRange : [" + first + ", "+ second + "]";
+        elem.innerHTML = "valueRange : [" + range + "]";
       }
 
       function zoomGraphX(minDate, maxDate) {
         g.updateOptions({
           dateWindow: [minDate, maxDate]
         });
-  	    showXDimensions(minDate, maxDate);
+        showXDimensions(minDate, maxDate);
       }
 
       function zoomGraphY(minValue, maxValue) {
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
-  	    showYDimensions(minValue, maxValue);
+        showYDimensions(minValue, maxValue);
       }
 
       function unzoomGraph() {

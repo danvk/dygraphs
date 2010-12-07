@@ -37,7 +37,7 @@
 
  And error bars will be calculated automatically using a binomial distribution.
 
- For further documentation and examples, see http://www.danvk.org/dygraphs
+ For further documentation and examples, see http://dygraphs.com/
 
  */
 
@@ -1099,8 +1099,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.zoomed_x_ = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
-    var yRange = this.yAxisRange();
-    this.attr_("zoomCallback")(minDate, maxDate, yRange[0], yRange[1]);
+    this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
   }
 };
 
@@ -2446,7 +2445,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
   // Parse the x as a float or return null if it's not a number.
   var parseFloatOrNull = function(x) {
     var val = parseFloat(x);
-    return isNaN(val) ? null : val;
+    // isFinite() returns false for NaN and +/-Infinity.
+    return isFinite(val) ? val : null;
   };
 
   var xParser;
@@ -2677,6 +2677,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     }
     if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
+    }
+
+    // Strip out infinities, which give dygraphs problems later on.
+    for (var j = 0; j < row.length; j++) {
+      if (!isFinite(row[j])) row[j] = null;
     }
     ret.push(row);
   }
