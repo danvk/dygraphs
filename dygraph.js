@@ -941,49 +941,50 @@ Dygraph.endZoom = function(event, g, context) {
   context.dragStartY = null;
 }
 
-// Track the beginning of drag events
-Dygraph.prototype.defaultMouseDownFunction = function(event, g, context) {
-  context.initializeMouseDown(event, g, context);
+Dygraph.prototype.defaultInteractionModel = {
+  // Track the beginning of drag events
+  'mousedown' : function(event, g, context) {
+      context.initializeMouseDown(event, g, context);
 
-  if (event.altKey || event.shiftKey) {
-    Dygraph.startPan(event, g, context);
-  } else {
-    Dygraph.startZoom(event, g, context);
-  }
-};
+      if (event.altKey || event.shiftKey) {
+        Dygraph.startPan(event, g, context);
+      } else {
+        Dygraph.startZoom(event, g, context);
+      }
+    },
 
-// Draw zoom rectangles when the mouse is down and the user moves around
-Dygraph.prototype.defaultMouseMoveFunction = function(event, g, context) {
-  if (context.isZooming) {
-    Dygraph.moveZoom(event, g, context);
-  } else if (context.isPanning) {
-    Dygraph.movePan(event, g, context);
-  }
-};
+  // Draw zoom rectangles when the mouse is down and the user moves around
+  'mousemove' : function(event, g, context) {
+      if (context.isZooming) {
+        Dygraph.moveZoom(event, g, context);
+      } else if (context.isPanning) {
+        Dygraph.movePan(event, g, context);
+      }
+    },
 
-Dygraph.prototype.defaultMouseUpFunction = function(event, g, context) {
-  if (context.isZooming) {
-    Dygraph.endZoom(event, g, context);
-  } else if (context.isPanning) {
-    Dygraph.endPan(event, g, context);
-  }
-};
+  'mouseup' : function(event, g, context) {
+      if (context.isZooming) {
+        Dygraph.endZoom(event, g, context);
+      } else if (context.isPanning) {
+        Dygraph.endPan(event, g, context);
+      }
+    },
 
-Dygraph.prototype.defaultMouseOutFunction = function(event, g, context) {
   // Temporarily cancel the dragging event when the mouse leaves the graph
-  if (context.isZooming) {
-    context.dragEndX = null;
-    context.dragEndY = null;
-  }
-};
+  'mouseout' : function(event, g, context) {
+      if (context.isZooming) {
+        context.dragEndX = null;
+        context.dragEndY = null;
+      }
+    },
 
-// Double-clicking zooms back out
-Dygraph.prototype.defaultMouseDoubleClickFunction = function(event, g, context) {
   // Disable zooming out if panning.
-  if (event.altKey || event.shiftKey) {
-    return;
-  }
-  g.doUnzoom_();
+  'dblclick' : function(event, g, context) {
+      if (event.altKey || event.shiftKey) {
+        return;
+      }
+      g.doUnzoom_();
+    }
 };
 
 /**
@@ -1039,13 +1040,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   };
 
   // Defines default behavior if there are no event handlers.
-  var handlers = this.user_attrs_.interactionModel || {
-    'mousedown' : this.defaultMouseDownFunction,
-    'mousemove' : this.defaultMouseMoveFunction,
-    'mouseup' : this.defaultMouseUpFunction,
-    'mouseout' : this.defaultMouseOutFunction,
-    'dblclick' : this.defaultMouseDoubleClickFunction
-  };
+  var handlers = this.user_attrs_.interactionModel || this.defaultInteractionModel;
 
   // Function that binds g and context to the handler.
   var bindHandler = function(handler, g) {
