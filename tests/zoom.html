@@ -40,9 +40,10 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-	      zoomCallback : function(minDate, maxDate, yRanges) {
-	          showDimensions(minDate, maxDate, yRanges); }
-              }
+              zoomCallback : function(minDate, maxDate, yRanges) {
+	        showDimensions(minDate, maxDate, yRanges);
+	      }
+            }
           );
 
       // TODO(konigsberg): Implement a visualization that verifies that initial
@@ -56,8 +57,8 @@
       showDimensions(minDate, maxDate, [minValue, maxValue]);
 
       function showDimensions(minDate, maxDate, yRanges) {
-      	showXDimensions(minDate, maxDate);
-      	showYDimensions(yRanges);
+        showXDimensions(minDate, maxDate);
+        showYDimensions(yRanges);
       }
 
       function showXDimensions(first, second) {

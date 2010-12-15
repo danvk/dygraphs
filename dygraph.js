@@ -79,6 +79,53 @@ Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.AXIS_LINE_WIDTH = 0.3;
 
+
+Dygraph.DEFAULT_INTERACTION_MODEL = {
+  // Track the beginning of drag events
+  'mousedown' : function(event, g, context) {
+      context.initializeMouseDown(event, g, context);
+
+      if (event.altKey || event.shiftKey) {
+        Dygraph.startPan(event, g, context);
+      } else {
+        Dygraph.startZoom(event, g, context);
+      }
+    },
+
+  // Draw zoom rectangles when the mouse is down and the user moves around
+  'mousemove' : function(event, g, context) {
+      if (context.isZooming) {
+        Dygraph.moveZoom(event, g, context);
+      } else if (context.isPanning) {
+        Dygraph.movePan(event, g, context);
+      }
+    },
+
+  'mouseup' : function(event, g, context) {
+      if (context.isZooming) {
+        Dygraph.endZoom(event, g, context);
+      } else if (context.isPanning) {
+        Dygraph.endPan(event, g, context);
+      }
+    },
+
+  // Temporarily cancel the dragging event when the mouse leaves the graph
+  'mouseout' : function(event, g, context) {
+      if (context.isZooming) {
+        context.dragEndX = null;
+        context.dragEndY = null;
+      }
+    },
+
+  // Disable zooming out if panning.
+  'dblclick' : function(event, g, context) {
+      if (event.altKey || event.shiftKey) {
+        return;
+      }
+      g.doUnzoom_();
+    }
+};
+
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
@@ -128,6 +175,8 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+ 
+  interactionModel: Dygraph.DEFAULT_INTERACTION_MODEL
 };
 
 // Various logging levels.
@@ -158,7 +207,7 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
 
 /**
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
- * and context &lt;canvas&gt; inside of it. See the constructor for details
+ * and context &lt;canvas&gt; inside of it. See the constructor for details.
  * on the parameters.
  * @param {Element} div the Element to render the graph into.
  * @param {String | Function} file Source data
@@ -431,12 +480,8 @@ Dygraph.addEvent = function(el, evt, fn) {
 };
 
 
-//
-// An attempt at scroll wheel management.
-//
 // Based on the article at
 // http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
-
 Dygraph.cancelEvent = function(e) {
   e = e ? e : window.event;
   if (e.stopPropagation) {
@@ -450,7 +495,6 @@ Dygraph.cancelEvent = function(e) {
   e.returnValue = false;
   return false;
 }
-
 
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
@@ -792,6 +836,13 @@ Dygraph.prototype.dragGetY_ = function(e, context) {
   return Dygraph.pageY(e) - context.py
 };
 
+// Called in response to an interaction model operation that
+// should start the default panning behavior.
+//
+// It's used in the default callback for "mousedown" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
 Dygraph.startPan = function(event, g, context) {
   // have to be zoomed in to pan.
   var zoomedY = false;
@@ -824,6 +875,13 @@ Dygraph.startPan = function(event, g, context) {
   context.draggingDate = (context.dragStartX / g.width_) * context.dateRange + xRange[0];
 };
 
+// Called in response to an interaction model operation that
+// responds to an event that pans the view.
+//
+// It's used in the default callback for "mousemove" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
 Dygraph.movePan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
@@ -854,6 +912,13 @@ Dygraph.movePan = function(event, g, context) {
   g.drawGraph_();
 }
 
+// Called in response to an interaction model operation that
+// responds to an event that ends panning.
+//
+// It's used in the default callback for "mouseup" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
 Dygraph.endPan = function(event, g, context) {
   context.isPanning = false;
   context.is2DPan = false;
@@ -862,10 +927,24 @@ Dygraph.endPan = function(event, g, context) {
   context.valueRange = null;
 }
 
+// Called in response to an interaction model operation that
+// responds to an event that starts zooming.
+//
+// It's used in the default callback for "mousedown" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
 Dygraph.startZoom = function(event, g, context) {
   context.isZooming = true;
 }
 
+// Called in response to an interaction model operation that
+// responds to an event that defines zoom boundaries.
+//
+// It's used in the default callback for "mousemove" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
 Dygraph.moveZoom = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
@@ -891,6 +970,14 @@ Dygraph.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 }
 
+// Called in response to an interaction model operation that
+// responds to an event that performs a zoom based on previously defined
+// bounds..
+//
+// It's used in the default callback for "mouseup" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
 Dygraph.endZoom = function(event, g, context) {
   context.isZooming = false;
   context.dragEndX = g.dragGetX_(event, context);
@@ -941,51 +1028,6 @@ Dygraph.endZoom = function(event, g, context) {
   context.dragStartY = null;
 }
 
-Dygraph.prototype.defaultInteractionModel = {
-  // Track the beginning of drag events
-  'mousedown' : function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
-
-      if (event.altKey || event.shiftKey) {
-        Dygraph.startPan(event, g, context);
-      } else {
-        Dygraph.startZoom(event, g, context);
-      }
-    },
-
-  // Draw zoom rectangles when the mouse is down and the user moves around
-  'mousemove' : function(event, g, context) {
-      if (context.isZooming) {
-        Dygraph.moveZoom(event, g, context);
-      } else if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
-
-  'mouseup' : function(event, g, context) {
-      if (context.isZooming) {
-        Dygraph.endZoom(event, g, context);
-      } else if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
-    },
-
-  // Temporarily cancel the dragging event when the mouse leaves the graph
-  'mouseout' : function(event, g, context) {
-      if (context.isZooming) {
-        context.dragEndX = null;
-        context.dragEndY = null;
-      }
-    },
-
-  // Disable zooming out if panning.
-  'dblclick' : function(event, g, context) {
-      if (event.altKey || event.shiftKey) {
-        return;
-      }
-      g.doUnzoom_();
-    }
-};
 
 /**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
@@ -1024,7 +1066,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     py : 0,
 
     initializeMouseDown : function(event, g, context) {
-    // prevents mouse drags from selecting page text.
+      // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
         event.preventDefault();  // Firefox, Chrome, etc.
       } else {
@@ -1039,8 +1081,8 @@ Dygraph.prototype.createDragInterface_ = function() {
     }
   };
 
-  // Defines default behavior if there are no event handlers.
-  var handlers = this.user_attrs_.interactionModel || this.defaultInteractionModel;
+  var interactionModel = this.attr_("interactionModel");
+
 
   // Function that binds g and context to the handler.
   var bindHandler = function(handler, g) {
@@ -1049,9 +1091,10 @@ Dygraph.prototype.createDragInterface_ = function() {
     };
   };
 
-  for (var eventName in handlers) {
+  for (var eventName in interactionModel) {
+    if (!interactionModel.hasOwnProperty(eventName)) continue;
     Dygraph.addEvent(this.mouseEventElement_, eventName,
-        bindHandler(handlers[eventName], this));
+        bindHandler(interactionModel[eventName], this));
   }
 
   // Self is the graph.
@@ -1081,7 +1124,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 /**
  * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
  * up any previous zoom rectangles that were drawn. This could be optimized to
- * avoid extra redrawing, but it's tricky to avoid contexts with the status
+ * avoid extra redrawing, but it's tricky to avoid interactions with the status
  * dots.
  * 
  * @param {Number} direction the direction of the zoom rectangle. Acceptable
