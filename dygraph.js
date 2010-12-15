@@ -1090,21 +1090,21 @@ Dygraph.prototype.createDragInterface_ = function() {
   var interactionModel = this.attr_("interactionModel");
 
 
-  // Function that binds g and context to the handler.
-  var bindHandler = function(handler, g) {
+  // Self is the graph.
+  var self = this;
+
+  // Function that binds the graph and context to the handler.
+  var bindHandler = function(handler) {
     return function(event) {
-      handler(event, g, context);
+      handler(event, self, context);
     };
   };
 
   for (var eventName in interactionModel) {
     if (!interactionModel.hasOwnProperty(eventName)) continue;
     Dygraph.addEvent(this.mouseEventElement_, eventName,
-        bindHandler(interactionModel[eventName], this));
+        bindHandler(interactionModel[eventName]));
   }
-
-  // Self is the graph.
-  var self = this;
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
