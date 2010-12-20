@@ -95,7 +95,9 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
+  yValueFormatter: function(x, opt_numDigits) {
+    return x.toPrecision(opt_numDigits || 2);
+  },
 
   strokeWidth: 1.0,
 
@@ -191,6 +193,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
+  this.numDigits_ = 2;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -300,7 +303,7 @@ Dygraph.prototype.error = function(message) {
 
 /**
  * Returns the current rolling period, as set by the user or an option.
- * @return {Number} The number of days in the rolling window
+ * @return {Number} The number of points in the rolling window
  */
 Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
@@ -1281,7 +1284,7 @@ Dygraph.prototype.updateSelection_ = function() {
         }
         var point = this.selPoints_[i];
         var c = new RGBColor(this.plotter_.colors[point.name]);
-        var yval = fmtFunc(point.yval);
+        var yval = fmtFunc(point.yval, this.numDigits_ + 1);  // In tenths.
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
                 + yval;
@@ -1462,18 +1465,6 @@ Dygraph.dateString_ = function(date, self) {
 };
 
 /**
- * Round a number to the specified number of digits past the decimal point.
- * @param {Number} num The number to round
- * @param {Number} places The number of decimals to which to round
- * @return {Number} The rounded number
- * @private
- */
-Dygraph.round_ = function(num, places) {
-  var shift = Math.pow(10, places);
-  return Math.round(num * shift)/shift;
-};
-
-/**
  * Fires when there's data available to be graphed.
  * @param {String} data Raw CSV data to be plotted
  * @private
@@ -1502,8 +1493,12 @@ Dygraph.prototype.addXTicks_ = function() {
     endDate   = this.rawData_[this.rawData_.length - 1][0];
   }
 
-  var xTicks = this.attr_('xTicker')(startDate, endDate, this);
-  this.layout_.updateOptions({xTicks: xTicks});
+  var ret = this.attr_('xTicker')(startDate, endDate, this);
+  if (ret.ticks !== undefined) {  // Used numericTicks()?
+    this.layout_.updateOptions({xTicks: ret.ticks});
+  } else {  // Used dateTicker() instead.
+    this.layout_.updateOptions({xTicks: ret});
+  }
 };
 
 // Time granularity enumeration
@@ -1680,6 +1675,43 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
 };
 
 /**
+ * Determine the number of significant figures in a Number up to the specified
+ * precision.  Note that there is no way to determine if a trailing '0' is
+ * significant or not, so by convention we return 1 for all of the following
+ * inputs: 1, 1.0, 1.00, 1.000 etc.
+ * @param {Number} x The input value.
+ * @param {Number} opt_maxPrecision Optional maximum precision to consider.
+ *                                  Default and maximum allowed value is 13.
+ * @return {Number} The number of significant figures which is >= 1.
+ */
+Dygraph.significantFigures = function(x, opt_maxPrecision) {
+  var precision = Math.max(opt_maxPrecision || 13, 13);
+
+  // Convert the number to it's exponential notation form and work backwards,
+  // ignoring the 'e+xx' bit.  This may seem like a hack, but doing a loop and
+  // dividing by 10 leads to roundoff errors.  By using toExponential(), we let
+  // the JavaScript interpreter handle the low level bits of the Number for us.
+  var s = x.toExponential(precision);
+  var ePos = s.lastIndexOf('e');  // -1 case handled by return below.
+
+  for (var i = ePos - 1; i >= 0; i--) {
+    if (s[i] == '.') {
+      // Got to the decimal place.  We'll call this 1 digit of precision because
+      // we can't know for sure how many trailing 0s are significant.
+      return 1;
+    } else if (s[i] != '0') {
+      // Found the first non-zero digit.  Return the number of characters
+      // except for the '.'.
+      return i;  // This is i - 1 + 1 (-1 is for '.', +1 is for 0 based index).
+    }
+  }
+
+  // Occurs if toExponential() doesn't return a string containing 'e', which
+  // should never happen.
+  return 1;
+};
+
+/**
  * Add ticks when the x axis has numbers on it (instead of dates)
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
@@ -1697,7 +1729,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   var ticks = [];
   if (vals) {
     for (var i = 0; i < vals.length; i++) {
-      ticks.push({v: vals[i]});
+      ticks[i] = {v: vals[i]};
     }
   } else {
     // Basic idea:
@@ -1736,7 +1768,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     if (low_val > high_val) scale *= -1;
     for (var i = 0; i < nTicks; i++) {
       var tickV = low_val + i * scale;
-      ticks.push( {v: tickV} );
+      ticks[i] = {v: tickV};
     }
   }
 
@@ -1752,30 +1784,36 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
-  var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
+  var formatter = attr('yAxisLabelFormatter') ?
+      attr('yAxisLabelFormatter') : attr('yValueFormatter');
+
+  // Determine the number of decimal places needed for the labels below by
+  // taking the maximum number of significant figures for any label.  We must
+  // take the max because we can't tell if trailing 0s are significant.
+  var numDigits = 0;
+  for (var i = 0; i < ticks.length; i++) {
+    var tickV = ticks[i].v;
+    numDigits = Math.max(Dygraph.significantFigures(tickV), numDigits);
+  }
 
   for (var i = 0; i < ticks.length; i++) {
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
-    var label;
-    if (formatter != undefined) {
-      label = formatter(tickV);
-    } else {
-      label = Dygraph.round_(tickV, 2);
-    }
-    if (k_labels.length) {
+    var label = (formatter !== undefined) ?
+        formatter(tickV, numDigits) : tickV.toPrecision(numDigits);
+    if (k_labels.length > 0) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
+          label = (tickV / n).toPrecision(numDigits) + k_labels[j];
           break;
         }
       }
     }
     ticks[i].label = label;
   }
-  return ticks;
+  return {ticks: ticks, numDigits: numDigits};
 };
 
 // Computes the range of the data series (including confidence intervals).
@@ -1966,12 +2004,9 @@ Dygraph.prototype.drawGraph_ = function() {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  // TODO(danvk): this method doesn't need to return anything.
-  var out = this.computeYAxisRanges_(extremes);
-  var axes = out[0];
-  var seriesToAxisMap = out[1];
-  this.layout_.updateOptions( { yAxes: axes,
-                                seriesToAxisMap: seriesToAxisMap
+  this.computeYAxisRanges_(extremes);
+  this.layout_.updateOptions( { yAxes: this.axes_,
+                                seriesToAxisMap: this.seriesToAxisMap_
                               } );
 
   this.addXTicks_();
@@ -2150,11 +2185,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     // primary axis. However, if an axis is specifically marked as having
     // independent ticks, then that is permissible as well.
     if (i == 0 || axis.independentTicks) {
-      axis.ticks =
+      var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this,
                              axis);
+      axis.ticks = ret.ticks;
+      this.numDigits_ = ret.numDigits;
     } else {
       var p_axis = this.axes_[0];
       var p_ticks = p_axis.ticks;
@@ -2167,14 +2204,14 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         tick_values.push(y_val);
       }
 
-      axis.ticks =
+      var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this, axis, tick_values);
+      axis.ticks = ret.ticks;
+      this.numDigits_ = ret.numDigits;
     }
   }
-
-  return [this.axes_, this.seriesToAxisMap_];
 };
  
 /**
@@ -2186,7 +2223,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * Note that this is where fractional input (i.e. '5/10') is converted into
  *   decimal values.
  * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of days over which to average the data
+ * @param {Number} rollPeriod The number of points over which to average the
+ *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
@@ -2263,7 +2301,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
-    // there is not enough data to roll over the full number of days
+    // there is not enough data to roll over the full number of points
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
     if (!this.attr_("errorBars")){
       if (rollPeriod == 1) {
@@ -2835,9 +2873,9 @@ Dygraph.prototype.resize = function(width, height) {
 };
 
 /**
- * Adjusts the number of days in the rolling average. Updates the graph to
+ * Adjusts the number of points in the rolling average. Updates the graph to
  * reflect the new averaging period.
- * @param {Number} length Number of days over which to average the data.
+ * @param {Number} length Number of points over which to average the data.
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
