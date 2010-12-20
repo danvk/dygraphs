@@ -1,6 +1,7 @@
 dygraphs JavaScript charting library
 Copyright (c) 2006-, Dan Vanderkam.
 
+Documentation: http://dygraphs.com/
 Support: http://groups.google.com/group/dygraphs-users
 Source: http://github.com/danvk/dygraphs
 Issues: http://code.google.com/p/dygraphs/
@@ -19,7 +20,7 @@ Features
 - Compatible with the Google Visualization API
 
 Demo
-For a gallery and documentation, see http://danvk.org/dygraphs/
+For a gallery and documentation, see http://dygraphs.com/
 
 Minimal Example
 <html>
@@ -39,6 +40,10 @@ Minimal Example
 </script>
 </body>
 </html>
+
+Making Changes
+If you've made a change to dygraphs and would like to contribute it back to the
+community, please follow the guide at http://dygraphs.com/changes.html.
 
 License(s)
 dygraphs uses:

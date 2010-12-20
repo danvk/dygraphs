@@ -129,8 +129,8 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
- 
-  interactionModel: null // will be set to Dygraph.defaultInteractionModel.
+
+  interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
 
 // Various logging levels.
@@ -987,50 +987,50 @@ Dygraph.endZoom = function(event, g, context) {
 
 Dygraph.defaultInteractionModel = {
   // Track the beginning of drag events
-  mousedown : function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
+  mousedown: function(event, g, context) {
+    context.initializeMouseDown(event, g, context);
 
-      if (event.altKey || event.shiftKey) {
-        Dygraph.startPan(event, g, context);
-      } else {
-        Dygraph.startZoom(event, g, context);
-      }
-    },
+    if (event.altKey || event.shiftKey) {
+      Dygraph.startPan(event, g, context);
+    } else {
+      Dygraph.startZoom(event, g, context);
+    }
+  },
 
   // Draw zoom rectangles when the mouse is down and the user moves around
-  mousemove : function(event, g, context) {
-      if (context.isZooming) {
-        Dygraph.moveZoom(event, g, context);
-      } else if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
+  mousemove: function(event, g, context) {
+    if (context.isZooming) {
+      Dygraph.moveZoom(event, g, context);
+    } else if (context.isPanning) {
+      Dygraph.movePan(event, g, context);
+    }
+  },
 
-  mouseup : function(event, g, context) {
-      if (context.isZooming) {
-        Dygraph.endZoom(event, g, context);
-      } else if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
-    },
+  mouseup: function(event, g, context) {
+    if (context.isZooming) {
+      Dygraph.endZoom(event, g, context);
+    } else if (context.isPanning) {
+      Dygraph.endPan(event, g, context);
+    }
+  },
 
   // Temporarily cancel the dragging event when the mouse leaves the graph
-  mouseout : function(event, g, context) {
-      if (context.isZooming) {
-        context.dragEndX = null;
-        context.dragEndY = null;
-      }
-    },
+  mouseout: function(event, g, context) {
+    if (context.isZooming) {
+      context.dragEndX = null;
+      context.dragEndY = null;
+    }
+  },
 
   // Disable zooming out if panning.
-  dblclick : function(event, g, context) {
-      if (event.altKey || event.shiftKey) {
-        return;
-      }
-      // TODO(konigsberg): replace g.doUnzoom()_ with something that is
-      // friendlier to public use.
-      g.doUnzoom_();
+  dblclick: function(event, g, context) {
+    if (event.altKey || event.shiftKey) {
+      return;
     }
+    // TODO(konigsberg): replace g.doUnzoom()_ with something that is
+    // friendlier to public use.
+    g.doUnzoom_();
+  }
 };
 
 Dygraph.DEFAULT_ATTRS.interactionModel = Dygraph.defaultInteractionModel;
@@ -1043,43 +1043,43 @@ Dygraph.DEFAULT_ATTRS.interactionModel = Dygraph.defaultInteractionModel;
 Dygraph.prototype.createDragInterface_ = function() {
   var context = {
     // Tracks whether the mouse is down right now
-    isZooming : false,
-    isPanning : false,  // is this drag part of a pan?
-    is2DPan : false,    // if so, is that pan 1- or 2-dimensional?
-    dragStartX : null,
-    dragStartY : null,
-    dragEndX : null,
-    dragEndY : null,
-    dragDirection : null,
-    prevEndX : null,
-    prevEndY : null,
-    prevDragDirection : null,
+    isZooming: false,
+    isPanning: false,  // is this drag part of a pan?
+    is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
+    dragStartX: null,
+    dragStartY: null,
+    dragEndX: null,
+    dragEndY: null,
+    dragDirection: null,
+    prevEndX: null,
+    prevEndY: null,
+    prevDragDirection: null,
 
     // TODO(danvk): update this comment
     // draggingDate and draggingValue represent the [date,value] point on the
     // graph at which the mouse was pressed. As the mouse moves while panning,
     // the viewport must pan so that the mouse position points to
     // [draggingDate, draggingValue]
-    draggingDate : null,
+    draggingDate: null,
 
     // TODO(danvk): update this comment
     // The range in second/value units that the viewport encompasses during a
     // panning operation.
-    dateRange : null,
+    dateRange: null,
 
     // Utility function to convert page-wide coordinates to canvas coords
-    px : 0,
-    py : 0,
+    px: 0,
+    py: 0,
 
-    initializeMouseDown : function(event, g, context) {
+    initializeMouseDown: function(event, g, context) {
       // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
         event.preventDefault();  // Firefox, Chrome, etc.
       } else {
         event.returnValue = false;  // IE
-        event.cancelBubble = true;  
+        event.cancelBubble = true;
       }
-  
+
       context.px = Dygraph.findPosX(g.canvas_);
       context.py = Dygraph.findPosY(g.canvas_);
       context.dragStartX = g.dragGetX_(event, context);
@@ -1088,7 +1088,6 @@ Dygraph.prototype.createDragInterface_ = function() {
   };
 
   var interactionModel = this.attr_("interactionModel");
-
 
   // Self is the graph.
   var self = this;
