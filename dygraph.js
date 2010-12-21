@@ -1649,7 +1649,7 @@ Dygraph.QUARTERLY = 16;
 Dygraph.BIANNUAL = 17;
 Dygraph.ANNUAL = 18;
 Dygraph.DECADAL = 19;
-Dygraph.CENTENIAL = 20;
+Dygraph.CENTENNIAL = 20;
 Dygraph.NUM_GRANULARITIES = 21;
 
 Dygraph.SHORT_SPACINGS = [];
@@ -1686,7 +1686,7 @@ Dygraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
     if (granularity == Dygraph.BIANNUAL) num_months = 2;
     if (granularity == Dygraph.ANNUAL) num_months = 1;
     if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
-    if (granularity == Dygraph.CENTENIAL) { num_months = 1; year_mod = 100; }
+    if (granularity == Dygraph.CENTENNIAL) { num_months = 1; year_mod = 100; }
 
     var msInYear = 365.2524 * 24 * 3600 * 1000;
     var num_years = 1.0 * (end_time - start_time) / msInYear;
@@ -1759,7 +1759,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     } else if (granularity == Dygraph.DECADAL) {
       months = [ 0 ];
       year_mod = 10;
-    } else if (granularity == Dygraph.CENTENIAL) {
+    } else if (granularity == Dygraph.CENTENNIAL) {
       months = [ 0 ];
       year_mod = 100;
     } else {
