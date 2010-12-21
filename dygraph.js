@@ -96,7 +96,7 @@ Dygraph.DEFAULT_ATTRS = {
   showLabelsOnHighlight: true,
 
   yValueFormatter: function(x, opt_numDigits) {
-    return x.toPrecision(opt_numDigits === undefined ? 2 : opt_numDigits);
+    return x.toPrecision(Math.min(21, Math.max(1, opt_numDigits || 2)));
   },
 
   strokeWidth: 1.0,
@@ -193,7 +193,20 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
-  this.numDigits_ = 2;
+  
+  // Number of digits to use when labeling the x (if numeric) and y axis
+  // ticks.
+  this.numXDigits_ = 2;
+  this.numYDigits_ = 2;
+
+  // When labeling x (if numeric) or y values in the legend, there are
+  // numDigits + numExtraDigits of precision used.  For axes labels with N
+  // digits of precision, the data should be displayed with at least N+1 digits
+  // of precision. The reason for this is to divide each interval between
+  // successive ticks into tenths (for 1) or hundredths (for 2), etc.  For
+  // example, if the labels are [0, 1, 2], we want data to be displayed as
+  // 0.1, 1.3, etc.
+  this.numExtraDigits_ = 1;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -1270,7 +1283,8 @@ Dygraph.prototype.updateSelection_ = function() {
     var canvasx = this.selPoints_[0].canvasx;
 
     // Set the status message to indicate the selected point(s)
-    var replace = this.attr_('xValueFormatter')(this.lastx_, this) + ":";
+    var replace = this.attr_('xValueFormatter')(
+          this.lastx_, this.numXDigits_ + this.numExtraDigits_) + ":";
     var fmtFunc = this.attr_('yValueFormatter');
     var clen = this.colors_.length;
 
@@ -1284,11 +1298,7 @@ Dygraph.prototype.updateSelection_ = function() {
         }
         var point = this.selPoints_[i];
         var c = new RGBColor(this.plotter_.colors[point.name]);
-        
-        // For axes labels with N digits of precision, the data should be
-        // displayed with at least N+1 digits of precision.  For example, if the
-        // labels are [0, 1, 2], we want data to be displayed as 0.1, 1.3, etc.
-        var yval = fmtFunc(point.yval, this.numDigits_ + 1);
+        var yval = fmtFunc(point.yval, this.numYDigits_ + this.numExtraDigits_);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
                 + yval;
@@ -1450,7 +1460,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
  * @return {String} A date of the form "YYYY/MM/DD"
  * @private
  */
-Dygraph.dateString_ = function(date, self) {
+Dygraph.dateString_ = function(date) {
   var zeropad = Dygraph.zeropad;
   var d = new Date(date);
 
@@ -1488,21 +1498,18 @@ Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
  */
 Dygraph.prototype.addXTicks_ = function() {
   // Determine the correct ticks scale on the x-axis: quarterly, monthly, ...
-  var startDate, endDate;
+  var opts = {xTicks: []};
+  var formatter = this.attr_('xTicker');
   if (this.dateWindow_) {
-    startDate = this.dateWindow_[0];
-    endDate = this.dateWindow_[1];
+    opts.xTicks = formatter(this.dateWindow_[0], this.dateWindow_[1], this);
   } else {
-    startDate = this.rawData_[0][0];
-    endDate   = this.rawData_[this.rawData_.length - 1][0];
+    // numericTicks() returns multiple values.
+    var ret = formatter(this.rawData_[0][0],
+                        this.rawData_[this.rawData_.length - 1][0], this);
+    opts.xTicks = ret.ticks;
+    this.numXDigits_ = ret.numDigits;
   }
-
-  var ret = this.attr_('xTicker')(startDate, endDate, this);
-  if (ret.ticks !== undefined) {  // Used numericTicks()?
-    this.layout_.updateOptions({xTicks: ret.ticks});
-  } else {  // Used dateTicker() instead.
-    this.layout_.updateOptions({xTicks: ret});
-  }
+  this.layout_.updateOptions(opts);
 };
 
 // Time granularity enumeration
@@ -2194,7 +2201,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
                              this,
                              axis);
       axis.ticks = ret.ticks;
-      this.numDigits_ = ret.numDigits;
+      this.numYDigits_ = ret.numDigits;
     } else {
       var p_axis = this.axes_[0];
       var p_ticks = p_axis.ticks;
@@ -2212,7 +2219,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
                              axis.computedValueRange[1],
                              this, axis, tick_values);
       axis.ticks = ret.ticks;
-      this.numDigits_ = ret.numDigits;
+      this.numYDigits_ = ret.numDigits;
     }
   }
 };
@@ -2410,7 +2417,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
@@ -2573,7 +2580,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     return parsedData;
   } else {
     // Some intelligent defaults for a numeric x-axis.
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xTicker = Dygraph.numericTicks;
     return data;
   }
@@ -2599,7 +2606,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else if (indepType == 'number') {
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;

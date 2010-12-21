@@ -74,7 +74,7 @@
     <br>
     <br>
 
-    <p>Check for correct number of significant figures with very large and small
+    <p>Check for correct number of significant figures with very small
        y values.  Both plots have the same input x,y values.</p>
 
     <div id="smallvals1" style="width:600px; height:300px;"></div>
@@ -84,15 +84,16 @@
 
     <script type="text/javascript">
       var data = [
-          [new Date("2009/12/01"), 1.02e-7],
-          [new Date("2009/12/02"), 1.1e-7],
-          [new Date("2009/12/03"), 1.2e-7],
-          [new Date("2009/12/04"), 1.522e-7]
+          [2.036e-7, 1.02e-7],
+          [2.125e-7, 1.1e-7],
+          [2.212e-7, 1.2e-7],
+          [2.333e-7, 1.522e-7]
       ];
 
       new Dygraph(document.getElementById("smallvals1"), data,
           {
             labels: ["Date","CustomFormatting"],
+            xValueFormatter: function(x) { return x.toPrecision(4); },
             yValueFormatter: function(x) { return x.toPrecision(3); }
           });
 
