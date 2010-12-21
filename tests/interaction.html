@@ -30,7 +30,8 @@
     </td><td>
     Zoom in: double-click, scroll wheel<br/>
     Zoom out: ctrl-double-click, scroll wheel<br/>
-    Pan: click-drag<br/>
+    Standard Zoom: shift-click-drag
+    Standard Pan: click-drag<br/>
     Restore zoom level: press button<br/>
     </td></tr>
     <tr><td>
@@ -42,22 +43,30 @@
     </td></tr>
 
     </table>
-
+        
     <script type="text/javascript">
       function downV3(event, g, context) {
         context.initializeMouseDown(event, g, context);
-        Dygraph.startPan(event, g, context);
+        if (event.altKey || event.shiftKey) {
+          Dygraph.startZoom(event, g, context);
+        } else {
+          Dygraph.startPan(event, g, context);
+        }
       }
 
       function moveV3(event, g, context) {
         if (context.isPanning) {
           Dygraph.movePan(event, g, context);
+        } else if (context.isZooming) {
+          Dygraph.moveZoom(event, g, context);
         }
       }
 
       function upV3(event, g, context) {
         if (context.isPanning) {
           Dygraph.endPan(event, g, context);
+        } else if (context.isZooming) {
+          Dygraph.endZoom(event, g, context);
         }
       }
 
