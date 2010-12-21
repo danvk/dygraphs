@@ -96,7 +96,7 @@ Dygraph.DEFAULT_ATTRS = {
   showLabelsOnHighlight: true,
 
   yValueFormatter: function(x, opt_numDigits) {
-    return x.toPrecision(opt_numDigits || 2);
+    return x.toPrecision(opt_numDigits === undefined ? 2 : opt_numDigits);
   },
 
   strokeWidth: 1.0,
@@ -1284,7 +1284,11 @@ Dygraph.prototype.updateSelection_ = function() {
         }
         var point = this.selPoints_[i];
         var c = new RGBColor(this.plotter_.colors[point.name]);
-        var yval = fmtFunc(point.yval, this.numDigits_ + 1);  // In tenths.
+        
+        // For axes labels with N digits of precision, the data should be
+        // displayed with at least N+1 digits of precision.  For example, if the
+        // labels are [0, 1, 2], we want data to be displayed as 0.1, 1.3, etc.
+        var yval = fmtFunc(point.yval, this.numDigits_ + 1);
         replace += " <b><font color='" + c.toHex() + "'>"
                 + point.name + "</font></b>:"
                 + yval;
@@ -1687,7 +1691,7 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
 Dygraph.significantFigures = function(x, opt_maxPrecision) {
   var precision = Math.max(opt_maxPrecision || 13, 13);
 
-  // Convert the number to it's exponential notation form and work backwards,
+  // Convert the number to its exponential notation form and work backwards,
   // ignoring the 'e+xx' bit.  This may seem like a hack, but doing a loop and
   // dividing by 10 leads to roundoff errors.  By using toExponential(), we let
   // the JavaScript interpreter handle the low level bits of the Number for us.
@@ -1729,7 +1733,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   var ticks = [];
   if (vals) {
     for (var i = 0; i < vals.length; i++) {
-      ticks[i] = {v: vals[i]};
+      ticks[i].push({v: vals[i]});
     }
   } else {
     // Basic idea:
@@ -1768,7 +1772,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     if (low_val > high_val) scale *= -1;
     for (var i = 0; i < nTicks; i++) {
       var tickV = low_val + i * scale;
-      ticks[i] = {v: tickV};
+      ticks.push( {v: tickV} );
     }
   }
 
@@ -1792,8 +1796,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   // take the max because we can't tell if trailing 0s are significant.
   var numDigits = 0;
   for (var i = 0; i < ticks.length; i++) {
-    var tickV = ticks[i].v;
-    numDigits = Math.max(Dygraph.significantFigures(tickV), numDigits);
+    numDigits = Math.max(Dygraph.significantFigures(ticks[i].v), numDigits);
   }
 
   for (var i = 0; i < ticks.length; i++) {
