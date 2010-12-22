@@ -72,7 +72,7 @@
 
       function dblClickV3(event, g, context) {
         if (event.ctrlKey) {
-          zoom(g, -(1/9));
+          zoom(g, -(1/8));
         } else {
           zoom(g, +.1);
         }
@@ -90,23 +90,22 @@
       }
 
       function zoom(g, percentage) {
-         // Adjusts [x, y] toward each other by percentage%
-         function adjustAxis(axis, percentage) {
-           var delta = axis[1] - axis[0];
-           var increment = delta * percentage;
-           return [ axis[0] + increment, axis[1] - increment ];
-         }
+        // Adjusts [x, y] toward each other by percentage%
+        function adjustAxis(axis, percentage) {
+          var delta = axis[1] - axis[0];
+          var increment = delta * percentage;
+          return [ axis[0] + increment, axis[1] - increment ];
+        }
+        var yAxes = g.yAxisRanges();
+        var newYAxes = [];
+        for (var i = 0; i < yAxes.length; i++) {
+          newYAxes[i] = adjustAxis(yAxes[i], percentage);
+        }
 
-         var yAxes = g.yAxisRanges();
-         var newYAxes = [];
-         for (var i = 0; i < yAxes.length; i++) {
-           newYAxes[i] = adjustAxis(yAxes[i], percentage);
-         }
-
-         g.updateOptions({
-           dateWindow: adjustAxis(g.xAxisRange(), percentage),
-           valueRange: newYAxes[0]
-           });
+        g.updateOptions({
+          dateWindow: adjustAxis(g.xAxisRange(), percentage),
+          valueRange: newYAxes[0]
+          });
       }
 
       var v4Active = false;
