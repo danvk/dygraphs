@@ -798,19 +798,6 @@ Dygraph.prototype.dragGetY_ = function(e, context) {
 // panning behavior.
 //
 Dygraph.startPan = function(event, g, context) {
-  // have to be zoomed in to pan.
-  // TODO(konigsberg): Let's loosen this zoom-to-pan restriction, also
-  // perhaps create panning boundaries? A more flexible pan would make it,
-  // ahem, 'pan-useful'.
-  var zoomedY = false;
-  for (var i = 0; i < g.axes_.length; i++) {
-    if (g.axes_[i].valueWindow || g.axes_[i].valueRange) {
-      zoomedY = true;
-      break;
-    }
-  }
-  if (!g.dateWindow_ && !zoomedY) return;
-
   context.isPanning = true;
   var xRange = g.xAxisRange();
   context.dateRange = xRange[1] - xRange[0];
