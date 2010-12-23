@@ -110,10 +110,8 @@
                   return;
                 }
               }
-              // drawV4(false, canvasx, canvasy);
             }
           }
-          // drawV4(false, canvasx, canvasy);
         }
       }
 
@@ -124,7 +122,7 @@
       }
 
       function dblClickV4(event, g, context) {
-        unzoomGraph(g4);
+        restorePositioning(g4);
       }
 
       function drawV4(x, y) {
@@ -143,7 +141,7 @@
         v4Canvas = canvas;
       }
 
-      function unzoomGraph(g) {
+      function restorePositioning(g) {
         g.updateOptions({
           dateWindow: null,
           valueRange: null
