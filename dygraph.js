@@ -1537,7 +1537,9 @@ Dygraph.hmsString_ = function(date) {
  * @private
  */
 Dygraph.dateAxisFormatter = function(date, granularity) {
-  if (granularity >= Dygraph.MONTHLY) {
+  if (granularity >= Dygraph.DECADAL) {
+    return date.strftime('%Y');
+  } else if (granularity >= Dygraph.MONTHLY) {
     return date.strftime('%b %y');
   } else {
     var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
@@ -1639,7 +1641,8 @@ Dygraph.QUARTERLY = 16;
 Dygraph.BIANNUAL = 17;
 Dygraph.ANNUAL = 18;
 Dygraph.DECADAL = 19;
-Dygraph.NUM_GRANULARITIES = 20;
+Dygraph.CENTENNIAL = 20;
+Dygraph.NUM_GRANULARITIES = 21;
 
 Dygraph.SHORT_SPACINGS = [];
 Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
@@ -1675,6 +1678,7 @@ Dygraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
     if (granularity == Dygraph.BIANNUAL) num_months = 2;
     if (granularity == Dygraph.ANNUAL) num_months = 1;
     if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
+    if (granularity == Dygraph.CENTENNIAL) { num_months = 1; year_mod = 100; }
 
     var msInYear = 365.2524 * 24 * 3600 * 1000;
     var num_years = 1.0 * (end_time - start_time) / msInYear;
@@ -1747,6 +1751,11 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     } else if (granularity == Dygraph.DECADAL) {
       months = [ 0 ];
       year_mod = 10;
+    } else if (granularity == Dygraph.CENTENNIAL) {
+      months = [ 0 ];
+      year_mod = 100;
+    } else {
+      this.warn("Span of dates is too long");
     }
 
     var start_year = new Date(start_time).getFullYear();
