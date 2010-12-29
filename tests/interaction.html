@@ -46,6 +46,9 @@
     </table>
         
     <script type="text/javascript">
+      Dygraph.addEvent(document, "mousewheel", function() { suspendGraphScroll(); });
+      Dygraph.addEvent(document, "mousedown", function() { clearGraphScroll(); });
+      Dygraph.addEvent(document, "mousemove", function() { clearGraphScroll(); });
       var g = new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
       var g2 = new Dygraph(document.getElementById("div_g2"),

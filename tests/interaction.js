@@ -1,4 +1,6 @@
+
 function downV3(event, g, context) {
+  resetGraphScroll();
   context.initializeMouseDown(event, g, context);
   if (event.altKey || event.shiftKey) {
     Dygraph.startZoom(event, g, context);
@@ -8,6 +10,7 @@ function downV3(event, g, context) {
 }
 
 function moveV3(event, g, context) {
+  resetGraphScroll();
   if (context.isPanning) {
     Dygraph.movePan(event, g, context);
   } else if (context.isZooming) {
@@ -70,7 +73,22 @@ function dblClickV3(event, g, context) {
   }
 }
 
+var scrollTimeMillis = 0;
+
+function suspendGraphScroll() {
+  scrollTimeMillis = new Date().getTime();
+}
+
+function resetGraphscroll() {
+  scrollTimeMillis = 0;
+}
+
 function scrollV3(event, g, context) {
+  var millis = new Date().getTime();
+  if (millis - scrollTimeMillis < 250) {
+    suspendGraphScroll();
+    return;
+  }
   var normal = event.detail ? event.detail * -1 : event.wheelDelta / 40;
   // For me the normalized value shows 0.075 for one click. If I took
   // that verbatim, it would be a 7.5%.
