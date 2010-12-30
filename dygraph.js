@@ -356,44 +356,149 @@ Dygraph.prototype.yAxisRanges = function() {
  * If specified, do this conversion for the coordinate system of a particular
  * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
+ *
+ * Note: use toDomXCoord instead of toDomCoords(x. null) and use toDomYCoord
+ * instead of toDomCoords(null, y, axis).
  */
 Dygraph.prototype.toDomCoords = function(x, y, axis) {
-  var ret = [null, null];
-  var area = this.plotter_.area;
-  if (x !== null) {
-    var xRange = this.xAxisRange();
-    ret[0] = area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
-  }
-
-  if (y !== null) {
-    var yRange = this.yAxisRange(axis);
-    ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
-  }
-
-  return ret;
+  return [ this.toDomXCoord(x), this.toDomYCoord(y, axis) ];
 };
+
+/**
+ * Convert from data x coordinates to canvas/div X coordinate.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis. Uses the first axis by default.
+ * returns a single value or null if x is null.
+ */
+Dygraph.prototype.toDomXCoord = function(x) {
+  if (x == null) {
+    return null;
+  };
+
+  var area = this.plotter_.area;
+  var xRange = this.xAxisRange();
+  return area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
+}
+
+/**
+ * Convert from data x coordinates to canvas/div Y coordinate and optional
+ * axis. Uses the first axis by default.
+ *
+ * returns a single value or null if y is null.
+ */
+Dygraph.prototype.toDomYCoord = function(y, axis) {
+  var pct = toPercentYCoord(y, axis);
+
+  if (pct == null) {
+    return null;
+  }
+  return area.y + pct * area.h;
+}
 
 /**
  * Convert from canvas/div coords to data coordinates.
  * If specified, do this conversion for the coordinate system of a particular
  * axis. Uses the first axis by default.
- * Returns a two-element array: [X, Y]
+ * Returns a two-element array: [X, Y].
+ *
+ * Note: use toDataXCoord instead of toDataCoords(x. null) and use toDataYCoord
+ * instead of toDataCoords(null, y, axis).
  */
 Dygraph.prototype.toDataCoords = function(x, y, axis) {
-  var ret = [null, null];
-  var area = this.plotter_.area;
-  if (x !== null) {
-    var xRange = this.xAxisRange();
-    ret[0] = xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
-  }
-
-  if (y !== null) {
-    var yRange = this.yAxisRange(axis);
-    ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
-  }
-
-  return ret;
+  return [ this.toDataXCoord(x), this.toDataYCoord(y, axis) ];
 };
+
+/**
+ * Convert from canvas/div x coordinate to data coordinate.
+ *
+ * If x is null, this returns null.
+ */
+Dygraph.prototype.toDataXCoord = function(x) {
+  if (x == null) {
+    return null;
+  }
+
+  var area = this.plotter_.area;
+  var xRange = this.xAxisRange();
+  return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+};
+
+/**
+ * Convert from canvas/div y coord to value.
+ *
+ * If y is null, this returns null.
+ * if axis is null, this uses the first axis.
+ */
+Dygraph.prototype.toDataYCoord = function(y, axis) {
+  if (y == null) {
+    return null;
+  }
+
+  var area = this.plotter_.area;
+  var yRange = this.yAxisRange(axis);
+
+  if (!this.attr_("logscale")) {
+    return yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
+  } else {
+    // Computing the inverse of toDomCoord.
+    var pct = (y - area.y) / area.h
+
+    // Computing the inverse of toPercentYCoord. The function was arrived at with
+    // the following steps:
+    //
+    // Original calcuation:
+    // pct = (logr1 - Math.log(y)) / (logr1 - Math.log(yRange[0]));
+    //
+    // Move denominator to both sides:
+    // pct * (logr1 - Math.log(yRange[0])) = logr1 - Math.log(y);
+    //
+    // subtract logr1, and take the negative value.
+    // logr1 - (pct * (logr1 - Math.log(yRange[0]))) = Math.log(y);
+    //
+    // Swap both sides of the equation, and we can compute the log of the
+    // return value. Which means we just need to use that as the exponent in
+    // e^exponent.
+    // Math.log(y) = logr1 - (pct * (logr1 - Math.log(yRange[0])));
+
+    var logr1 = Math.log(yRange[1]);
+    var exponent = logr1 - (pct * (logr1 - Math.log(yRange[0])));
+    var value = Math.pow(Math.E, exponent);
+    return value;
+  }
+};
+
+/**
+ * Converts a y for an axis to a percentage from the top to the
+ * bottom of the div.
+ *
+ * If the coordinate represents a value visible on the canvas, then
+ * the value will be between 0 and 1, where 0 is the top of the canvas.
+ * However, this method will return values outside the range, as
+ * values can fall outside the canvas.
+ *
+ * If y is null, this returns null.
+ * if axis is null, this uses the first axis.
+ */
+Dygraph.prototype.toPercentYCoord = function(y, axis) {
+  if (y == null) {
+    return null;
+  }
+
+  var area = this.plotter_.area;
+  var yRange = this.yAxisRange(axis);
+
+  var pct;
+  if (!this.attr_("logscale")) {
+    // yrange[1] - y is unit distance from the bottom.
+    // yrange[1] - yrange[0] is the scale of the range.
+    // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
+    pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
+  } else {
+    var logr1 = Math.log(yRange[1]);
+    pct = (logr1 - Math.log(y)) / (logr1 - Math.log(yRange[0]));
+  }
+  return pct;
+}
 
 /**
  * Returns the number of columns (including the independent variable).
@@ -809,8 +914,7 @@ Dygraph.startPan = function(event, g, context) {
     var axis = g.axes_[i];
     var yRange = g.yAxisRange(i);
     axis.dragValueRange = yRange[1] - yRange[0];
-    var r = g.toDataCoords(null, context.dragStartY, i);
-    axis.draggingValue = r[1];
+    axis.draggingValue = g.toDataYCoord(context.dragStartY, i);
     if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
   }
 
@@ -1178,10 +1282,8 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY
 Dygraph.prototype.doZoomX_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
   // Convert the call to date ranges of the raw data.
-  var r = this.toDataCoords(lowX, null);
-  var minDate = r[0];
-  r = this.toDataCoords(highX, null);
-  var maxDate = r[0];
+  var minDate = this.toDataXCoord(lowX);
+  var maxDate = this.toDataXCoord(highX);
   this.doZoomXDates_(minDate, maxDate);
 };
 
@@ -1217,10 +1319,10 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   // coordinates increase as you go up the screen.
   var valueRanges = [];
   for (var i = 0; i < this.axes_.length; i++) {
-    var hi = this.toDataCoords(null, lowY, i);
-    var low = this.toDataCoords(null, highY, i);
-    this.axes_[i].valueWindow = [low[1], hi[1]];
-    valueRanges.push([low[1], hi[1]]);
+    var hi = this.toDataYCoord(lowY, i);
+    var low = this.toDataYCoord(highY, i);
+    this.axes_[i].valueWindow = [low, hi];
+    valueRanges.push([low, hi]);
   }
 
   this.drawGraph_();
@@ -1802,6 +1904,8 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
 
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
+ * TODO(konigsberg): Update comment.
+ *
  * @param {Number} startDate Start of the date window (millis since epoch)
  * @param {Number} endDate End of the date window (millis since epoch)
  * @param self
@@ -1821,43 +1925,61 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       ticks.push({v: vals[i]});
     }
   } else {
-    // Basic idea:
-    // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
-    // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-    // The first spacing greater than pixelsPerYLabel is what we use.
-    // TODO(danvk): version that works on a log scale.
-    if (attr("labelsKMG2")) {
-      var mults = [1, 2, 4, 8];
-    } else {
-      var mults = [1, 2, 5];
-    }
-    var scale, low_val, high_val, nTicks;
-    // TODO(danvk): make it possible to set this for x- and y-axes independently.
-    var pixelsPerTick = attr('pixelsPerYLabel');
-    for (var i = -10; i < 50; i++) {
-      if (attr("labelsKMG2")) {
-        var base_scale = Math.pow(16, i);
-      } else {
-        var base_scale = Math.pow(10, i);
+    if (self.attr_("logscale")) {
+      // As opposed to the other ways for computing ticks, we're just going
+      // for nearby values. There's no reasonable way to scale the values
+      // (unless we want to show strings like "log(" + x + ")") in which case
+      // x can be integer values.
+
+      // so compute height / pixelsPerTick and move on.
+      var pixelsPerTick = attr('pixelsPerYLabel');
+      var nTicks  = Math.floor(self.height_ / pixelsPerTick);
+      var vv = minV;
+
+      // Construct the set of ticks.
+      for (var i = 0; i < nTicks; i++) {
+        ticks.push( {v: vv} );
+        vv = vv * Math.E;
       }
-      for (var j = 0; j < mults.length; j++) {
-        scale = base_scale * mults[j];
-        low_val = Math.floor(minV / scale) * scale;
-        high_val = Math.ceil(maxV / scale) * scale;
-        nTicks = Math.abs(high_val - low_val) / scale;
-        var spacing = self.height_ / nTicks;
-        // wish I could break out of both loops at once...
+    } else {
+      // Basic idea:
+      // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+      // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+      // The first spacing greater than pixelsPerYLabel is what we use.
+      // TODO(danvk): version that works on a log scale.
+      if (attr("labelsKMG2")) {
+        var mults = [1, 2, 4, 8];
+      } else {
+        var mults = [1, 2, 5];
+      }
+      var scale, low_val, high_val, nTicks;
+      // TODO(danvk): make it possible to set this for x- and y-axes independently.
+      var pixelsPerTick = attr('pixelsPerYLabel');
+      for (var i = -10; i < 50; i++) {
+        if (attr("labelsKMG2")) {
+          var base_scale = Math.pow(16, i);
+        } else {
+          var base_scale = Math.pow(10, i);
+        }
+        for (var j = 0; j < mults.length; j++) {
+          scale = base_scale * mults[j];
+          low_val = Math.floor(minV / scale) * scale;
+          high_val = Math.ceil(maxV / scale) * scale;
+          nTicks = Math.abs(high_val - low_val) / scale;
+          var spacing = self.height_ / nTicks;
+          // wish I could break out of both loops at once...
+          if (spacing > pixelsPerTick) break;
+        }
         if (spacing > pixelsPerTick) break;
       }
-      if (spacing > pixelsPerTick) break;
-    }
 
-    // Construct the set of ticks.
-    // Allow reverse y-axis if it's explicitly requested.
-    if (low_val > high_val) scale *= -1;
-    for (var i = 0; i < nTicks; i++) {
-      var tickV = low_val + i * scale;
-      ticks.push( {v: tickV} );
+      // Construct the set of ticks.
+      // Allow reverse y-axis if it's explicitly requested.
+      if (low_val > high_val) scale *= -1;
+      for (var i = 0; i < nTicks; i++) {
+        var tickV = low_val + i * scale;
+        ticks.push( {v: tickV} );
+      }
     }
   }
 
@@ -1970,7 +2092,6 @@ Dygraph.prototype.predraw_ = function() {
 };
 
 /**
-=======
  * Update the graph with new data. This method is called when the viewing area
  * has changed. If the underlying data or options have changed, predraw_ will
  * be called before drawGraph_ is called.
@@ -2226,6 +2347,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
+    var isLogScale = this.attr_("logscale");
     var axis = this.axes_[i];
     if (axis.valueWindow) {
       // This is only set if the user has zoomed on the y-axis. It is never set
@@ -2250,18 +2372,26 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var span = maxY - minY;
       // special case: if we have no sense of scale, use +/-10% of the sole value.
       if (span == 0) { span = maxY; }
-      var maxAxisY = maxY + 0.1 * span;
-      var minAxisY = minY - 0.1 * span;
 
-      // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-      if (!this.attr_("avoidMinZero")) {
-        if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-        if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-      }
+      var maxAxisY;
+      var minAxisY;
+      if (isLogScale) {
+        var maxAxisY = maxY + 0.1 * span;
+        var minAxisY = minY;
+      } else {
+        var maxAxisY = maxY + 0.1 * span;
+        var minAxisY = minY - 0.1 * span;
 
-      if (this.attr_("includeZero")) {
-        if (maxY < 0) maxAxisY = 0;
-        if (minY > 0) minAxisY = 0;
+        // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
+        if (!this.attr_("avoidMinZero")) {
+          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+        }
+
+        if (this.attr_("includeZero")) {
+          if (maxY < 0) maxAxisY = 0;
+          if (minY > 0) minAxisY = 0;
+        }
       }
 
       axis.computedValueRange = [minAxisY, maxAxisY];

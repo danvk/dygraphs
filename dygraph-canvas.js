@@ -88,6 +88,9 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.maxyval = axis.computedValueRange[1];
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
+
+    axis.ylogrange = Math.log(axis.maxyval) - Math.log(axis.minyval);
+    axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
   }
 };
 
@@ -102,10 +105,17 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
+      
+      var foo;
+      if (this.dygraph_.attr_("logscale")) {
+        foo = 1.0 - ((Math.log(parseFloat(item[1])) - Math.log(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+      } else {
+        foo = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
+      }
       var point = {
         // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale),
+        y: foo,
         xval: parseFloat(item[0]),
         yval: parseFloat(item[1]),
         name: setName
@@ -133,7 +143,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     for (var j = 0; j < axis.ticks.length; j++) {
       var tick = axis.ticks[j];
       var label = tick.label;
-      var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
+      var pos = this.dygraph_.toPercentYCoord(tick.v, i);
       if ((pos >= 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
       }
@@ -756,7 +766,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             continue;
           }
 
-          // TODO(danvk): here
+          // TODO(danvk): here is a comment.
           if (stepPlot) {
             var newYs = [ prevY - point.errorPlus * yscale,
                           prevY + point.errorMinus * yscale ];
