@@ -19,21 +19,20 @@
     <script type="text/javascript">
       function Data() {
         return "Date,A\n" +
-        "20101201,1\n"+
-        "20101202,5\n"+
-        "20101203,10\n"+
-        "20101204,100\n"+
-        "20101205,250\n"+
-        "20101206,1000\n"+
-        "20101207,30\n"+
-        "20101208,80\n"+
-        "20101209,100\n"+
-        "20101210,250\n"+
+        "20101201,5\n"+
+        "20101202,10\n"+
+        "20101203,100\n"+
+        "20101204,250\n"+
+        "20101205,1000\n"+
+        "20101206,30\n"+
+        "20101207,80\n"+
+        "20101208,100\n"+
+        "20101209,250\n"+
         "";
       }
       var g = new Dygraph(document.getElementById("div_g"),
                       Data, { logscale : true });
-      Dygraph.addEvent(g.canvas_, 'mousemove', function(e) {
+      Dygraph.addEvent(g.canvas_, '_mousemove', function(e) {
         var y = Dygraph.pageY(e) - Dygraph.findPosY(g.canvas_);
         console.log(y, g.toDataYCoord(y));
       });

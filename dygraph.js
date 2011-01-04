@@ -79,6 +79,11 @@ Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.AXIS_LINE_WIDTH = 0.3;
 
+Dygraph.LOG_SCALE = 10;
+Dygraph.LOG_BASE_E_OF_TEN = Math.log(Dygraph.LOG_SCALE);
+Dygraph.log10 = function(x) {
+  return Math.log(x) / Dygraph.LOG_BASE_E_OF_TEN;
+}
 
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
@@ -447,22 +452,22 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
     // the following steps:
     //
     // Original calcuation:
-    // pct = (logr1 - Math.log(y)) / (logr1 - Math.log(yRange[0]));
+    // pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
     //
     // Move denominator to both sides:
-    // pct * (logr1 - Math.log(yRange[0])) = logr1 - Math.log(y);
+    // pct * (logr1 - Dygraph.log10(yRange[0])) = logr1 - Dygraph.log10(y);
     //
     // subtract logr1, and take the negative value.
-    // logr1 - (pct * (logr1 - Math.log(yRange[0]))) = Math.log(y);
+    // logr1 - (pct * (logr1 - Dygraph.log10(yRange[0]))) = Dygraph.log10(y);
     //
     // Swap both sides of the equation, and we can compute the log of the
     // return value. Which means we just need to use that as the exponent in
     // e^exponent.
-    // Math.log(y) = logr1 - (pct * (logr1 - Math.log(yRange[0])));
+    // Dygraph.log10(y) = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
 
-    var logr1 = Math.log(yRange[1]);
-    var exponent = logr1 - (pct * (logr1 - Math.log(yRange[0])));
-    var value = Math.pow(Math.E, exponent);
+    var logr1 = Dygraph.log10(yRange[1]);
+    var exponent = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
     return value;
   }
 };
@@ -494,8 +499,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
     pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
   } else {
-    var logr1 = Math.log(yRange[1]);
-    pct = (logr1 - Math.log(y)) / (logr1 - Math.log(yRange[0]));
+    var logr1 = Dygraph.log10(yRange[1]);
+    pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
   }
   return pct;
 }
@@ -948,11 +953,18 @@ Dygraph.movePan = function(event, g, context) {
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
     // Adjust each axis appropriately.
+    // NOTE(konigsberg): I don't think this computation for y_frac is correct.
+    // I think it doesn't take into account the display of the x axis.
+    // See, when I tested this with console.log(y_frac), and move the mouse
+    // cursor to the botom, the largest y_frac was 0.94, and not 1.0. That
+    // could also explain why panning tends to start with a small jumpy shift.
     var y_frac = context.dragEndY / g.height_;
+
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
       var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
       var minValue = maxValue - axis.dragValueRange;
+      console.log(axis.draggingValue, axis.dragValueRange, minValue, maxValue, y_frac);
       axis.valueWindow = [ minValue, maxValue ];
     }
   }
@@ -1939,7 +1951,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       // Construct the set of ticks.
       for (var i = 0; i < nTicks; i++) {
         ticks.push( {v: vv} );
-        vv = vv * Math.E;
+        vv = vv * Dygraph.LOG_SCALE;
       }
     } else {
       // Basic idea:
