@@ -73,6 +73,46 @@ Dygraph.toString = function() {
   return this.__repr__();
 };
 
+/**
+ * Number formatting function which mimicks the behavior of %g in printf, i.e.
+ * either exponential or fixed format (without trailing 0s) is used depending on
+ * the length of the generated string.  The advantage of this format is that
+ * there is a predictable upper bound on the resulting string length and
+ * significant figures are not dropped.
+ *
+ * NOTE: JavaScript's native toPrecision() is NOT a drop-in replacement for %g.
+ * It creates strings which are too long for absolute values between 10^-4 and
+ * 10^-6.  See tests/number-format.html for examples.
+ *
+ * @param {Number} x The number to format
+ * @param {Number} opt_precision The precision to use, default 2.
+ * @return {String} A string formatted like %g in printf.  The max generated
+ *                  string length should be precision +
+ */
+Dygraph.defaultFormat = function(x, opt_precision) {
+  // Avoid invalid precision values; [1, 21] is the valid range.
+  var p = Math.min(Math.max(1, opt_precision || 2), 21);
+
+  // This is deceptively simple.  The actual algorithm comes from:
+  //
+  // Max allowed length = p + 4
+  // where 4 comes from 'e+n' and '.'.
+  //
+  // Length of fixed format = 2 + y + p
+  // where 2 comes from '0.' and y = # of leading zeroes.
+  //
+  // Equating the two and solving for y yields y = 2, or 0.00xxxx which is
+  // 1.0e-3.
+  //
+  // Since the behavior of toPrecision() is identical for larger numbers, we
+  // don't have to worry about the other bound.
+  //
+  // Finally, the argument for toExponential() is the number of trailing digits,
+  // so we take off 1 for the value before the '.'.
+  return (Math.abs(x) < 1.0e-3 && x != 0.0) ?
+      x.toExponential(p - 1) : x.toPrecision(p);
+};
+
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
@@ -96,9 +136,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x, opt_numDigits) {
-    return x.toPrecision(Math.min(21, Math.max(1, opt_numDigits || 2)));
-  },
+  yValueFormatter: Dygraph.defaultFormat,
 
   strokeWidth: 1.0,
 
@@ -319,7 +357,7 @@ Dygraph.prototype.error = function(message) {
 
 /**
  * Returns the current rolling period, as set by the user or an option.
- * @return {Number} The number of points in the rolling window
+ * @return {Number} The number of days in the rolling window
  */
 Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
@@ -1606,6 +1644,18 @@ Dygraph.dateString_ = function(date) {
 };
 
 /**
+ * Round a number to the specified number of digits past the decimal point.
+ * @param {Number} num The number to round
+ * @param {Number} places The number of decimals to which to round
+ * @return {Number} The rounded number
+ * @private
+ */
+Dygraph.round_ = function(num, places) {
+  var shift = Math.pow(10, places);
+  return Math.round(num * shift)/shift;
+};
+
+/**
  * Fires when there's data available to be graphed.
  * @param {String} data Raw CSV data to be plotted
  * @private
@@ -2148,9 +2198,12 @@ Dygraph.prototype.drawGraph_ = function() {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  this.computeYAxisRanges_(extremes);
-  this.layout_.updateOptions( { yAxes: this.axes_,
-                                seriesToAxisMap: this.seriesToAxisMap_
+  // TODO(danvk): this method doesn't need to return anything.
+  var out = this.computeYAxisRanges_(extremes);
+  var axes = out[0];
+  var seriesToAxisMap = out[1];
+  this.layout_.updateOptions( { yAxes: axes,
+                                seriesToAxisMap: seriesToAxisMap
                               } );
 
   this.addXTicks_();
@@ -2356,6 +2409,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       this.numYDigits_ = ret.numDigits;
     }
   }
+
+  return [this.axes_, this.seriesToAxisMap_];
 };
  
 /**
@@ -2367,8 +2422,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * Note that this is where fractional input (i.e. '5/10') is converted into
  *   decimal values.
  * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of points over which to average the
- *                            data
+ * @param {Number} rollPeriod The number of days over which to average the data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
@@ -2445,7 +2499,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
-    // there is not enough data to roll over the full number of points
+    // there is not enough data to roll over the full number of days
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
     if (!this.attr_("errorBars")){
       if (rollPeriod == 1) {
@@ -3017,9 +3071,9 @@ Dygraph.prototype.resize = function(width, height) {
 };
 
 /**
- * Adjusts the number of points in the rolling average. Updates the graph to
+ * Adjusts the number of days in the rolling average. Updates the graph to
  * reflect the new averaging period.
- * @param {Number} length Number of points over which to average the data.
+ * @param {Number} length Number of days over which to average the data.
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
