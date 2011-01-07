@@ -77,17 +77,18 @@ Dygraph.toString = function() {
  * Number formatting function which mimicks the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
- * there is a predictable upper bound on the resulting string length and
- * significant figures are not dropped.
+ * there is a predictable upper bound on the resulting string length,
+ * significant figures are not dropped, and normal numbers are not displayed in
+ * exponential notation.
  *
  * NOTE: JavaScript's native toPrecision() is NOT a drop-in replacement for %g.
  * It creates strings which are too long for absolute values between 10^-4 and
- * 10^-6.  See tests/number-format.html for examples.
+ * 10^-6.  See tests/number-format.html for output examples.
  *
  * @param {Number} x The number to format
  * @param {Number} opt_precision The precision to use, default 2.
  * @return {String} A string formatted like %g in printf.  The max generated
- *                  string length should be precision +
+ *                  string length should be precision + 6 (e.g 1.123e+300).
  */
 Dygraph.defaultFormat = function(x, opt_precision) {
   // Avoid invalid precision values; [1, 21] is the valid range.
@@ -118,6 +119,7 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.AXIS_LINE_WIDTH = 0.3;
+
 
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
@@ -167,7 +169,9 @@ Dygraph.DEFAULT_ATTRS = {
   hideOverlayOnMouseOut: true,
 
   stepPlot: false,
-  avoidMinZero: false
+  avoidMinZero: false,
+
+  interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
 
 // Various logging levels.
@@ -198,7 +202,7 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
 
 /**
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
- * and interaction &lt;canvas&gt; inside of it. See the constructor for details
+ * and context &lt;canvas&gt; inside of it. See the constructor for details
  * on the parameters.
  * @param {Element} div the Element to render the graph into.
  * @param {String | Function} file Source data
@@ -483,6 +487,24 @@ Dygraph.addEvent = function(el, evt, fn) {
     el.attachEvent('on' + evt, normed_fn);
   }
 };
+
+
+// Based on the article at
+// http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
+Dygraph.cancelEvent = function(e) {
+  e = e ? e : window.event;
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.cancelBubble = true;
+  e.cancel = true;
+  e.returnValue = false;
+  return false;
+}
+
 
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
@@ -816,244 +838,350 @@ Dygraph.pageY = function(e) {
   }
 };
 
+Dygraph.prototype.dragGetX_ = function(e, context) {
+  return Dygraph.pageX(e) - context.px
+};
+
+Dygraph.prototype.dragGetY_ = function(e, context) {
+  return Dygraph.pageY(e) - context.py
+};
+
+// Called in response to an interaction model operation that
+// should start the default panning behavior.
+//
+// It's used in the default callback for "mousedown" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
+Dygraph.startPan = function(event, g, context) {
+  // have to be zoomed in to pan.
+  // TODO(konigsberg): Let's loosen this zoom-to-pan restriction, also
+  // perhaps create panning boundaries? A more flexible pan would make it,
+  // ahem, 'pan-useful'.
+  var zoomedY = false;
+  for (var i = 0; i < g.axes_.length; i++) {
+    if (g.axes_[i].valueWindow || g.axes_[i].valueRange) {
+      zoomedY = true;
+      break;
+    }
+  }
+  if (!g.dateWindow_ && !zoomedY) return;
+
+  context.isPanning = true;
+  var xRange = g.xAxisRange();
+  context.dateRange = xRange[1] - xRange[0];
+
+  // Record the range of each y-axis at the start of the drag.
+  // If any axis has a valueRange or valueWindow, then we want a 2D pan.
+  context.is2DPan = false;
+  for (var i = 0; i < g.axes_.length; i++) {
+    var axis = g.axes_[i];
+    var yRange = g.yAxisRange(i);
+    axis.dragValueRange = yRange[1] - yRange[0];
+    var r = g.toDataCoords(null, context.dragStartY, i);
+    axis.draggingValue = r[1];
+    if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
+  }
+
+  // TODO(konigsberg): Switch from all this math to toDataCoords?
+  // Seems to work for the dragging value.
+  context.draggingDate = (context.dragStartX / g.width_) * context.dateRange + xRange[0];
+};
+
+// Called in response to an interaction model operation that
+// responds to an event that pans the view.
+//
+// It's used in the default callback for "mousemove" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
+Dygraph.movePan = function(event, g, context) {
+  context.dragEndX = g.dragGetX_(event, context);
+  context.dragEndY = g.dragGetY_(event, context);
+
+  // TODO(danvk): update this comment
+  // Want to have it so that:
+  // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
+  // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
+  // 3. draggingValue appears at dragEndY.
+  // 4. valueRange is unaltered.
+
+  var minDate = context.draggingDate - (context.dragEndX / g.width_) * context.dateRange;
+  var maxDate = minDate + context.dateRange;
+  g.dateWindow_ = [minDate, maxDate];
+
+  // y-axis scaling is automatic unless this is a full 2D pan.
+  if (context.is2DPan) {
+    // Adjust each axis appropriately.
+    var y_frac = context.dragEndY / g.height_;
+    for (var i = 0; i < g.axes_.length; i++) {
+      var axis = g.axes_[i];
+      var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
+      var minValue = maxValue - axis.dragValueRange;
+      axis.valueWindow = [ minValue, maxValue ];
+    }
+  }
+
+  g.drawGraph_();
+}
+
+// Called in response to an interaction model operation that
+// responds to an event that ends panning.
+//
+// It's used in the default callback for "mouseup" operations.
+// Custom interaction model builders can use it to provide the default
+// panning behavior.
+//
+Dygraph.endPan = function(event, g, context) {
+  context.isPanning = false;
+  context.is2DPan = false;
+  context.draggingDate = null;
+  context.dateRange = null;
+  context.valueRange = null;
+}
+
+// Called in response to an interaction model operation that
+// responds to an event that starts zooming.
+//
+// It's used in the default callback for "mousedown" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
+Dygraph.startZoom = function(event, g, context) {
+  context.isZooming = true;
+}
+
+// Called in response to an interaction model operation that
+// responds to an event that defines zoom boundaries.
+//
+// It's used in the default callback for "mousemove" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
+Dygraph.moveZoom = function(event, g, context) {
+  context.dragEndX = g.dragGetX_(event, context);
+  context.dragEndY = g.dragGetY_(event, context);
+
+  var xDelta = Math.abs(context.dragStartX - context.dragEndX);
+  var yDelta = Math.abs(context.dragStartY - context.dragEndY);
+
+  // drag direction threshold for y axis is twice as large as x axis
+  context.dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
+
+  g.drawZoomRect_(
+      context.dragDirection,
+      context.dragStartX,
+      context.dragEndX,
+      context.dragStartY,
+      context.dragEndY,
+      context.prevDragDirection,
+      context.prevEndX,
+      context.prevEndY);
+
+  context.prevEndX = context.dragEndX;
+  context.prevEndY = context.dragEndY;
+  context.prevDragDirection = context.dragDirection;
+}
+
+// Called in response to an interaction model operation that
+// responds to an event that performs a zoom based on previously defined
+// bounds..
+//
+// It's used in the default callback for "mouseup" operations.
+// Custom interaction model builders can use it to provide the default
+// zooming behavior.
+//
+Dygraph.endZoom = function(event, g, context) {
+  context.isZooming = false;
+  context.dragEndX = g.dragGetX_(event, context);
+  context.dragEndY = g.dragGetY_(event, context);
+  var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
+  var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
+
+  if (regionWidth < 2 && regionHeight < 2 &&
+      g.lastx_ != undefined && g.lastx_ != -1) {
+    // TODO(danvk): pass along more info about the points, e.g. 'x'
+    if (g.attr_('clickCallback') != null) {
+      g.attr_('clickCallback')(event, g.lastx_, g.selPoints_);
+    }
+    if (g.attr_('pointClickCallback')) {
+      // check if the click was on a particular point.
+      var closestIdx = -1;
+      var closestDistance = 0;
+      for (var i = 0; i < g.selPoints_.length; i++) {
+        var p = g.selPoints_[i];
+        var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
+                       Math.pow(p.canvasy - context.dragEndY, 2);
+        if (closestIdx == -1 || distance < closestDistance) {
+          closestDistance = distance;
+          closestIdx = i;
+        }
+      }
+
+      // Allow any click within two pixels of the dot.
+      var radius = g.attr_('highlightCircleSize') + 2;
+      if (closestDistance <= 5 * 5) {
+        g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
+      }
+    }
+  }
+
+  if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
+    g.doZoomX_(Math.min(context.dragStartX, context.dragEndX),
+               Math.max(context.dragStartX, context.dragEndX));
+  } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
+    g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
+               Math.max(context.dragStartY, context.dragEndY));
+  } else {
+    g.canvas_.getContext("2d").clearRect(0, 0,
+                                       g.canvas_.width,
+                                       g.canvas_.height);
+  }
+  context.dragStartX = null;
+  context.dragStartY = null;
+}
+
+Dygraph.defaultInteractionModel = {
+  // Track the beginning of drag events
+  mousedown: function(event, g, context) {
+    context.initializeMouseDown(event, g, context);
+
+    if (event.altKey || event.shiftKey) {
+      Dygraph.startPan(event, g, context);
+    } else {
+      Dygraph.startZoom(event, g, context);
+    }
+  },
+
+  // Draw zoom rectangles when the mouse is down and the user moves around
+  mousemove: function(event, g, context) {
+    if (context.isZooming) {
+      Dygraph.moveZoom(event, g, context);
+    } else if (context.isPanning) {
+      Dygraph.movePan(event, g, context);
+    }
+  },
+
+  mouseup: function(event, g, context) {
+    if (context.isZooming) {
+      Dygraph.endZoom(event, g, context);
+    } else if (context.isPanning) {
+      Dygraph.endPan(event, g, context);
+    }
+  },
+
+  // Temporarily cancel the dragging event when the mouse leaves the graph
+  mouseout: function(event, g, context) {
+    if (context.isZooming) {
+      context.dragEndX = null;
+      context.dragEndY = null;
+    }
+  },
+
+  // Disable zooming out if panning.
+  dblclick: function(event, g, context) {
+    if (event.altKey || event.shiftKey) {
+      return;
+    }
+    // TODO(konigsberg): replace g.doUnzoom()_ with something that is
+    // friendlier to public use.
+    g.doUnzoom_();
+  }
+};
+
+Dygraph.DEFAULT_ATTRS.interactionModel = Dygraph.defaultInteractionModel;
+
 /**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
  * events.
  * @private
  */
 Dygraph.prototype.createDragInterface_ = function() {
+  var context = {
+    // Tracks whether the mouse is down right now
+    isZooming: false,
+    isPanning: false,  // is this drag part of a pan?
+    is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
+    dragStartX: null,
+    dragStartY: null,
+    dragEndX: null,
+    dragEndY: null,
+    dragDirection: null,
+    prevEndX: null,
+    prevEndY: null,
+    prevDragDirection: null,
+
+    // TODO(danvk): update this comment
+    // draggingDate and draggingValue represent the [date,value] point on the
+    // graph at which the mouse was pressed. As the mouse moves while panning,
+    // the viewport must pan so that the mouse position points to
+    // [draggingDate, draggingValue]
+    draggingDate: null,
+
+    // TODO(danvk): update this comment
+    // The range in second/value units that the viewport encompasses during a
+    // panning operation.
+    dateRange: null,
+
+    // Utility function to convert page-wide coordinates to canvas coords
+    px: 0,
+    py: 0,
+
+    initializeMouseDown: function(event, g, context) {
+      // prevents mouse drags from selecting page text.
+      if (event.preventDefault) {
+        event.preventDefault();  // Firefox, Chrome, etc.
+      } else {
+        event.returnValue = false;  // IE
+        event.cancelBubble = true;
+      }
+
+      context.px = Dygraph.findPosX(g.canvas_);
+      context.py = Dygraph.findPosY(g.canvas_);
+      context.dragStartX = g.dragGetX_(event, context);
+      context.dragStartY = g.dragGetY_(event, context);
+    }
+  };
+
+  var interactionModel = this.attr_("interactionModel");
+
+  // Self is the graph.
   var self = this;
 
-  // Tracks whether the mouse is down right now
-  var isZooming = false;
-  var isPanning = false;  // is this drag part of a pan?
-  var is2DPan = false;    // if so, is that pan 1- or 2-dimensional?
-  var dragStartX = null;
-  var dragStartY = null;
-  var dragEndX = null;
-  var dragEndY = null;
-  var dragDirection = null;
-  var prevEndX = null;
-  var prevEndY = null;
-  var prevDragDirection = null;
+  // Function that binds the graph and context to the handler.
+  var bindHandler = function(handler) {
+    return function(event) {
+      handler(event, self, context);
+    };
+  };
 
-  // TODO(danvk): update this comment
-  // draggingDate and draggingValue represent the [date,value] point on the
-  // graph at which the mouse was pressed. As the mouse moves while panning,
-  // the viewport must pan so that the mouse position points to
-  // [draggingDate, draggingValue]
-  var draggingDate = null;
-
-  // TODO(danvk): update this comment
-  // The range in second/value units that the viewport encompasses during a
-  // panning operation.
-  var dateRange = null;
-
-  // Utility function to convert page-wide coordinates to canvas coords
-  var px = 0;
-  var py = 0;
-  var getX = function(e) { return Dygraph.pageX(e) - px };
-  var getY = function(e) { return Dygraph.pageY(e) - py };
-
-  // Draw zoom rectangles when the mouse is down and the user moves around
-  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(event) {
-    if (isZooming) {
-      dragEndX = getX(event);
-      dragEndY = getY(event);
-
-      var xDelta = Math.abs(dragStartX - dragEndX);
-      var yDelta = Math.abs(dragStartY - dragEndY);
-
-      // drag direction threshold for y axis is twice as large as x axis
-      dragDirection = (xDelta < yDelta / 2) ? Dygraph.VERTICAL : Dygraph.HORIZONTAL;
-
-      self.drawZoomRect_(dragDirection, dragStartX, dragEndX, dragStartY, dragEndY,
-                         prevDragDirection, prevEndX, prevEndY);
-
-      prevEndX = dragEndX;
-      prevEndY = dragEndY;
-      prevDragDirection = dragDirection;
-    } else if (isPanning) {
-      dragEndX = getX(event);
-      dragEndY = getY(event);
-
-      // TODO(danvk): update this comment
-      // Want to have it so that:
-      // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
-      // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
-      // 3. draggingValue appears at dragEndY.
-      // 4. valueRange is unaltered.
-
-      var minDate = draggingDate - (dragEndX / self.width_) * dateRange;
-      var maxDate = minDate + dateRange;
-      self.dateWindow_ = [minDate, maxDate];
-
-
-      // y-axis scaling is automatic unless this is a full 2D pan.
-      if (is2DPan) {
-        // Adjust each axis appropriately.
-        var y_frac = dragEndY / self.height_;
-        for (var i = 0; i < self.axes_.length; i++) {
-          var axis = self.axes_[i];
-          var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
-          var minValue = maxValue - axis.dragValueRange;
-          axis.valueWindow = [ minValue, maxValue ];
-        }
-      }
-
-      self.drawGraph_();
-    }
-  });
-
-  // Track the beginning of drag events
-  Dygraph.addEvent(this.mouseEventElement_, 'mousedown', function(event) {
-    // prevents mouse drags from selecting page text.
-    if (event.preventDefault) {
-      event.preventDefault();  // Firefox, Chrome, etc.
-    } else {
-      event.returnValue = false;  // IE
-      event.cancelBubble = true;  
-    }
-
-    px = Dygraph.findPosX(self.canvas_);
-    py = Dygraph.findPosY(self.canvas_);
-    dragStartX = getX(event);
-    dragStartY = getY(event);
-
-    if (event.altKey || event.shiftKey) {
-      // have to be zoomed in to pan.
-      var zoomedY = false;
-      for (var i = 0; i < self.axes_.length; i++) {
-        if (self.axes_[i].valueWindow || self.axes_[i].valueRange) {
-          zoomedY = true;
-          break;
-        }
-      }
-      if (!self.dateWindow_ && !zoomedY) return;
-
-      isPanning = true;
-      var xRange = self.xAxisRange();
-      dateRange = xRange[1] - xRange[0];
-
-      // Record the range of each y-axis at the start of the drag.
-      // If any axis has a valueRange or valueWindow, then we want a 2D pan.
-      is2DPan = false;
-      for (var i = 0; i < self.axes_.length; i++) {
-        var axis = self.axes_[i];
-        var yRange = self.yAxisRange(i);
-        axis.dragValueRange = yRange[1] - yRange[0];
-        var r = self.toDataCoords(null, dragStartY, i);
-        axis.draggingValue = r[1];
-        if (axis.valueWindow || axis.valueRange) is2DPan = true;
-      }
-
-      // TODO(konigsberg): Switch from all this math to toDataCoords?
-      // Seems to work for the dragging value.
-      draggingDate = (dragStartX / self.width_) * dateRange + xRange[0];
-    } else {
-      isZooming = true;
-    }
-  });
+  for (var eventName in interactionModel) {
+    if (!interactionModel.hasOwnProperty(eventName)) continue;
+    Dygraph.addEvent(this.mouseEventElement_, eventName,
+        bindHandler(interactionModel[eventName]));
+  }
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
   Dygraph.addEvent(document, 'mouseup', function(event) {
-    if (isZooming || isPanning) {
-      isZooming = false;
-      dragStartX = null;
-      dragStartY = null;
+    if (context.isZooming || context.isPanning) {
+      context.isZooming = false;
+      context.dragStartX = null;
+      context.dragStartY = null;
     }
 
-    if (isPanning) {
-      isPanning = false;
-      draggingDate = null;
-      dateRange = null;
+    if (context.isPanning) {
+      context.isPanning = false;
+      context.draggingDate = null;
+      context.dateRange = null;
       for (var i = 0; i < self.axes_.length; i++) {
         delete self.axes_[i].draggingValue;
         delete self.axes_[i].dragValueRange;
       }
     }
   });
-
-  // Temporarily cancel the dragging event when the mouse leaves the graph
-  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(event) {
-    if (isZooming) {
-      dragEndX = null;
-      dragEndY = null;
-    }
-  });
-
-  // If the mouse is released on the canvas during a drag event, then it's a
-  // zoom. Only do the zoom if it's over a large enough area (>= 10 pixels)
-  Dygraph.addEvent(this.mouseEventElement_, 'mouseup', function(event) {
-    if (isZooming) {
-      isZooming = false;
-      dragEndX = getX(event);
-      dragEndY = getY(event);
-      var regionWidth = Math.abs(dragEndX - dragStartX);
-      var regionHeight = Math.abs(dragEndY - dragStartY);
-
-      if (regionWidth < 2 && regionHeight < 2 &&
-          self.lastx_ != undefined && self.lastx_ != -1) {
-        // TODO(danvk): pass along more info about the points, e.g. 'x'
-        if (self.attr_('clickCallback') != null) {
-          self.attr_('clickCallback')(event, self.lastx_, self.selPoints_);
-        }
-        if (self.attr_('pointClickCallback')) {
-          // check if the click was on a particular point.
-          var closestIdx = -1;
-          var closestDistance = 0;
-          for (var i = 0; i < self.selPoints_.length; i++) {
-            var p = self.selPoints_[i];
-            var distance = Math.pow(p.canvasx - dragEndX, 2) +
-                           Math.pow(p.canvasy - dragEndY, 2);
-            if (closestIdx == -1 || distance < closestDistance) {
-              closestDistance = distance;
-              closestIdx = i;
-            }
-          }
-
-          // Allow any click within two pixels of the dot.
-          var radius = self.attr_('highlightCircleSize') + 2;
-          if (closestDistance <= 5 * 5) {
-            self.attr_('pointClickCallback')(event, self.selPoints_[closestIdx]);
-          }
-        }
-      }
-
-      if (regionWidth >= 10 && dragDirection == Dygraph.HORIZONTAL) {
-        self.doZoomX_(Math.min(dragStartX, dragEndX),
-                     Math.max(dragStartX, dragEndX));
-      } else if (regionHeight >= 10 && dragDirection == Dygraph.VERTICAL){
-        self.doZoomY_(Math.min(dragStartY, dragEndY),
-                      Math.max(dragStartY, dragEndY));
-      } else {
-        self.canvas_.getContext("2d").clearRect(0, 0,
-                                           self.canvas_.width,
-                                           self.canvas_.height);
-      }
-
-      dragStartX = null;
-      dragStartY = null;
-    }
-
-    if (isPanning) {
-      isPanning = false;
-      is2DPan = false;
-      draggingDate = null;
-      dateRange = null;
-      valueRange = null;
-    }
-  });
-
-  // Double-clicking zooms back out
-  Dygraph.addEvent(this.mouseEventElement_, 'dblclick', function(event) {
-    // Disable zooming out if panning.
-    if (event.altKey || event.shiftKey) return;
-
-    self.doUnzoom_();
-  });
 };
+
 
 /**
  * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
@@ -1225,7 +1353,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
   for (var i = 0; i < points.length; i++) {
     var point = points[i];
     if (point == null) continue;
-    var dist = Math.abs(points[i].canvasx - canvasx);
+    var dist = Math.abs(point.canvasx - canvasx);
     if (dist > minDist) continue;
     minDist = dist;
     idx = i;
@@ -1480,7 +1608,9 @@ Dygraph.hmsString_ = function(date) {
  * @private
  */
 Dygraph.dateAxisFormatter = function(date, granularity) {
-  if (granularity >= Dygraph.MONTHLY) {
+  if (granularity >= Dygraph.DECADAL) {
+    return date.strftime('%Y');
+  } else if (granularity >= Dygraph.MONTHLY) {
     return date.strftime('%b %y');
   } else {
     var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
@@ -1571,7 +1701,8 @@ Dygraph.QUARTERLY = 16;
 Dygraph.BIANNUAL = 17;
 Dygraph.ANNUAL = 18;
 Dygraph.DECADAL = 19;
-Dygraph.NUM_GRANULARITIES = 20;
+Dygraph.CENTENNIAL = 20;
+Dygraph.NUM_GRANULARITIES = 21;
 
 Dygraph.SHORT_SPACINGS = [];
 Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
@@ -1607,6 +1738,7 @@ Dygraph.prototype.NumXTicks = function(start_time, end_time, granularity) {
     if (granularity == Dygraph.BIANNUAL) num_months = 2;
     if (granularity == Dygraph.ANNUAL) num_months = 1;
     if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
+    if (granularity == Dygraph.CENTENNIAL) { num_months = 1; year_mod = 100; }
 
     var msInYear = 365.2524 * 24 * 3600 * 1000;
     var num_years = 1.0 * (end_time - start_time) / msInYear;
@@ -1679,6 +1811,11 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
     } else if (granularity == Dygraph.DECADAL) {
       months = [ 0 ];
       year_mod = 10;
+    } else if (granularity == Dygraph.CENTENNIAL) {
+      months = [ 0 ];
+      year_mod = 100;
+    } else {
+      this.warn("Span of dates is too long");
     }
 
     var start_year = new Date(start_time).getFullYear();
