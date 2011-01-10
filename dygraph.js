@@ -74,6 +74,18 @@ Dygraph.toString = function() {
 };
 
 /**
+ * Formatting to use for an integer number.
+ *
+ * @param {Number} x The number to format
+ * @param {Number} unused_precision The precision to use, ignored.
+ * @return {String} A string formatted like %g in printf.  The max generated
+ *                  string length should be precision + 6 (e.g 1.123e+300).
+ */
+Dygraph.intFormat = function(x, unused_precision) {
+  return x.toString();
+}
+
+/**
  * Number formatting function which mimicks the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
@@ -90,7 +102,7 @@ Dygraph.toString = function() {
  * @return {String} A string formatted like %g in printf.  The max generated
  *                  string length should be precision + 6 (e.g 1.123e+300).
  */
-Dygraph.defaultFormat = function(x, opt_precision) {
+Dygraph.floatFormat = function(x, opt_precision) {
   // Avoid invalid precision values; [1, 21] is the valid range.
   var p = Math.min(Math.max(1, opt_precision || 2), 21);
 
@@ -137,7 +149,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: Dygraph.defaultFormat,
+  yValueFormatter: Dygraph.floatFormat,
 
   strokeWidth: 1.0,
 
@@ -1205,8 +1217,9 @@ Dygraph.prototype.createDragInterface_ = function() {
  * function. Used to avoid excess redrawing
  * @private
  */
-Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY,
-                                           prevDirection, prevEndX, prevEndY) {
+Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
+                                           endY, prevDirection, prevEndX,
+                                           prevEndY) {
   var ctx = this.canvas_.getContext("2d");
 
   // Clean up from the previous rect if necessary
@@ -1666,18 +1679,26 @@ Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
  */
 Dygraph.prototype.addXTicks_ = function() {
   // Determine the correct ticks scale on the x-axis: quarterly, monthly, ...
-  var opts = {xTicks: []};
-  var formatter = this.attr_('xTicker');
+  var range;
   if (this.dateWindow_) {
-    opts.xTicks = formatter(this.dateWindow_[0], this.dateWindow_[1], this);
+    range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    // numericTicks() returns multiple values.
-    var ret = formatter(this.rawData_[0][0],
-                        this.rawData_[this.rawData_.length - 1][0], this);
-    opts.xTicks = ret.ticks;
-    this.numXDigits_ = ret.numDigits;
+    range = [this.rawData_[0][0], this.rawData_[this.rawData_.length - 1][0]];
   }
-  this.layout_.updateOptions(opts);
+
+  var formatter = this.attr_('xTicker');
+  var ret = formatter(range[0], range[1], this);
+  var xTicks = [];
+
+  if (ret.ticks !== undefined) {
+    // numericTicks() returns multiple values.
+    xTicks = ret.ticks;
+    this.numXDigits_ = ret.numDigits;
+  } else {
+    xTicks = ret;
+  }
+
+  this.layout_.updateOptions({xTicks: xTicks});
 };
 
 // Time granularity enumeration
@@ -2592,7 +2613,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
+    this.attrs_.xValueFormatter = this.attrs_.xValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;

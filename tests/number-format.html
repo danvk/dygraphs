@@ -58,21 +58,21 @@
       };
 
       updateTable = function() {
-        var headers = ['Dygraph.defaultFormat()', 'toPrecision()',
-                       'Dygraph.defaultFormat()', 'toPrecision()'];
+        var headers = ['Dygraph.floatFormat()', 'toPrecision()',
+                       'Dygraph.floatFormat()', 'toPrecision()'];
         var numbers = [];
         var p = parseInt(document.getElementById('p_input').value);
 
         for (var i = -10; i <= 10; i++) {
           var n = Math.pow(10, i);
-          numbers.push([Dygraph.defaultFormat(n, p),
+          numbers.push([Dygraph.floatFormat(n, p),
                         n.toPrecision(p),
-                        Dygraph.defaultFormat(Math.PI * n, p),
+                        Dygraph.floatFormat(Math.PI * n, p),
                         (Math.PI * n).toPrecision(p)]);
         }
 
         // Check exact values of 0.
-        numbers.push([Dygraph.defaultFormat(0.0, p),
+        numbers.push([Dygraph.floatFormat(0.0, p),
                       0.0.toPrecision(p)]);
 
         var elem = document.getElementById('content');
