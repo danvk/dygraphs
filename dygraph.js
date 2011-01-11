@@ -2934,6 +2934,10 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
+    this.zoomed_x_ = attrs.dateWindow != null;
+  }
+  if ('valueRange' in attrs) {
+    this.zoomed_y_ = attrs.valueRange != null;
   }
 
   // TODO(danvk): validate per-series options.
