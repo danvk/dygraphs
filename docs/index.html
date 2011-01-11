@@ -447,6 +447,85 @@ new Dygraph(el, data, {
       <li>Where the error bars do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.</li>
     </ul>
 
+    <h2 id="zoom">Determining Zoom</h2>
+    
+    <p>
+      It is possible to detect whether a chart has been zoomed in either axis by the use of the <code>isZoomed</code> function.
+      If called with no argument, it will report whether <em>either</em> axis has been zoomed.
+      Alternatively it can be called with an argument of either <code>'x'</code> or <code>'y'</code> and it will report the status of just that axis.
+    </p>
+
+    <p>Here's a simple example using <code>drawCallback</code> to display the various zoom states whenever the chart is zoomed:</p>
+
+    <div style="width:600px; text-align:center; font-weight: bold; font-size: 125%;">OUTPUT</div>
+    <div style="width: 750px">
+      <div style="float: right">
+          <p>Zoomed: <span id="zoomed">False</span><p/>
+          <p>Zoomed X: <span id="zoomedX">False</span><p/>
+          <p>Zoomed Y: <span id="zoomedY">False</span><p/>
+      </div>
+      <div class="codeoutput" style="float:left;">
+        <div id="zoomdiv"></div>
+        <script type="text/javascript">
+          new Dygraph(
+
+            // containing div
+            document.getElementById("zoomdiv"),
+
+            // CSV or path to a CSV file.
+            "Date,Value\n" +
+            "2011-01-07,75\n" +
+            "2011-01-08,70\n" +
+            "2011-01-09,90\n" +
+            "2011-01-10,30\n" +
+            "2011-01-11,40\n" +
+            "2011-01-12,60\n" +
+            "2011-01-13,70\n" +
+            "2011-01-14,40\n",
+            {
+              drawCallback: function(me, initial) {
+                document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
+                document.getElementById("zoomedX").innerHTML = "" + me.isZoomed("x");
+                document.getElementById("zoomedY").innerHTML = "" + me.isZoomed("y");
+              }
+            }
+          );
+        </script>
+      </div>
+    </div>
+
+    <p>
+      <div style="clear:both; width:600px; text-align:center; font-weight: bold; font-size: 125%;">HTML</div>
+
+<pre>
+  new Dygraph(
+
+    // containing div
+    document.getElementById(&quot;zoomdiv&quot;),
+
+    // CSV or path to a CSV file.
+    &quot;Date,Temperature\n&quot; +
+    &quot;2011-01-07,75\n&quot; +
+    &quot;2011-01-08,70\n&quot; +
+    &quot;2011-01-09,90\n&quot; +
+    &quot;2011-01-10,30\n&quot; +
+    &quot;2011-01-11,40\n&quot; +
+    &quot;2011-01-12,60\n&quot; +
+    &quot;2011-01-13,70\n&quot; +
+    &quot;2011-01-14,40\n&quot;,
+    {
+      drawCallback: function(me, initial) {
+        document.getElementById(&quot;zoomed&quot;).innerHTML = &quot;&quot; + me.isZoomed();
+        document.getElementById(&quot;zoomedX&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;x&quot;);
+        document.getElementById(&quot;zoomedY&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;y&quot;);
+      }
+    }
+  );
+</pre>
+    </p>
+
+    <p>The <a href="tests/zoom.html">Tests for zoom operations</a> show a full example of this in action.</p>
+
     <h2 id="stock">One last demo</h2>
 
     <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
@@ -730,7 +809,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>pointSize</strong></td>
-          <td><code>interger</code></td>
+          <td><code>integer</code></td>
           <td><code>1</code></td>
           <td>The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.
           <div class="tests">Tests: <font color=red>none</font></div>
@@ -821,7 +900,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><strong>wilsonInterval</strong></td>
           <td><code>boolean</code></td>
           <td><code>true</code></td>
-          <td>Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1.
+          <td>Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behaviour for ratios close to 0 or 1.
           <div class="tests">Tests: <font color=red>none</font></div>
           </td>
         </tr>
