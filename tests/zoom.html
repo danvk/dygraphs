@@ -63,12 +63,13 @@
       // Pull an initial value for logging.
       var minDate = g.xAxisRange()[0];
       var maxDate = g.xAxisRange()[1];
-      var minValue = g.yAxisRange();
-      showDimensions(minDate, maxDate, yAxisRange);
+      var minValue = g.yAxisRange()[0];
+      var maxValue = g.yAxisRange()[1];
+      showDimensions(minDate, maxDate, [minValue, maxValue]);
 
-      function showDimensions(minDate, maxDate, yAxisRange) {
+      function showDimensions(minDate, maxDate, yRanges) {
         showXDimensions(minDate, maxDate);
-        showYDimensions(yAxisRange);
+        showYDimensions(yRanges);
       }
 
       function showXDimensions(first, second) {
@@ -76,9 +77,9 @@
         elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
       }
 
-      function showYDimensions(range) {
+      function showYDimensions(ranges) {
         var elem = document.getElementById("ydimensions");
-        elem.innerHTML = "valueRange : [" + range + "]";
+        elem.innerHTML = "valueRange : [" + ranges + "]";
       }
 
       function zoomGraphX(minDate, maxDate) {
@@ -92,7 +93,7 @@
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
-        showYDimensions(minValue, maxValue);
+        showYDimensions(g.yAxisRanges());
       }
 
       function unzoomGraph() {

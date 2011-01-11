@@ -41,6 +41,10 @@ Minimal Example
 </body>
 </html>
 
+Making Changes
+If you've made a change to dygraphs and would like to contribute it back to the
+community, please follow the guide at http://dygraphs.com/changes.html.
+
 License(s)
 dygraphs uses:
  - rgbcolor.js (Public Domain)
