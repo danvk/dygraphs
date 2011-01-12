@@ -1,4 +1,3 @@
-
 <html>
   <head>
     <title>interaction model</title>
@@ -46,9 +45,8 @@
     </table>
         
     <script type="text/javascript">
-      Dygraph.addEvent(document, "mousewheel", function() { suspendGraphScroll(); });
-      Dygraph.addEvent(document, "mousedown", function() { clearGraphScroll(); });
-      Dygraph.addEvent(document, "mousemove", function() { clearGraphScroll(); });
+      Dygraph.addEvent(document, "mousewheel", function() { lastClickedGraph = null; });
+      Dygraph.addEvent(document, "click", function() { lastClickedGraph = null; });
       var g = new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
       var g2 = new Dygraph(document.getElementById("div_g2"),
@@ -58,6 +56,7 @@
         'mousedown' : downV3,
         'mousemove' : moveV3,
         'mouseup' : upV3,
+        'click' : clickV3,
         'dblclick' : dblClickV3,
         'mousewheel' : scrollV3
       }});

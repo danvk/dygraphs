@@ -1,6 +1,7 @@
-
+// Code for a variety of interaction models. Used in interaction.html, but split out from
+// that file so they can be tested in isolation.
+//
 function downV3(event, g, context) {
-  resetGraphScroll();
   context.initializeMouseDown(event, g, context);
   if (event.altKey || event.shiftKey) {
     Dygraph.startZoom(event, g, context);
@@ -10,7 +11,6 @@ function downV3(event, g, context) {
 }
 
 function moveV3(event, g, context) {
-  resetGraphScroll();
   if (context.isPanning) {
     Dygraph.movePan(event, g, context);
   } else if (context.isZooming) {
@@ -73,20 +73,15 @@ function dblClickV3(event, g, context) {
   }
 }
 
-var scrollTimeMillis = 0;
+var lastClickedGraph = null;
 
-function suspendGraphScroll() {
-  scrollTimeMillis = new Date().getTime();
-}
-
-function resetGraphscroll() {
-  scrollTimeMillis = 0;
+function clickV3(event, g, context) {
+  lastClickedGraph = g;
+  Dygraph.cancelEvent(event);
 }
 
 function scrollV3(event, g, context) {
-  var millis = new Date().getTime();
-  if (millis - scrollTimeMillis < 250) {
-    suspendGraphScroll();
+  if (lastClickedGraph != g) {
     return;
   }
   var normal = event.detail ? event.detail * -1 : event.wheelDelta / 40;
