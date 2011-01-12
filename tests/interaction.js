@@ -1,4 +1,6 @@
-
+// Code for a variety of interaction models. Used in interaction.html, but split out from
+// that file so they can be tested in isolation.
+//
 function downV3(event, g, context) {
   context.initializeMouseDown(event, g, context);
   if (event.altKey || event.shiftKey) {
