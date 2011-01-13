@@ -106,16 +106,16 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       
-      var foo;
+      var yval;
       if (this.dygraph_.attr_("logscale")) {
-        foo = 1.0 - ((Math.log(parseFloat(item[1])) - Math.log(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+        yval = 1.0 - ((Math.log(parseFloat(item[1])) - Math.log(axis.minyval)) * axis.ylogscale); // really should just be yscale.
       } else {
-        foo = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
+        yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
       }
       var point = {
         // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: foo,
+        y: yval,
         xval: parseFloat(item[0]),
         yval: parseFloat(item[1]),
         name: setName
@@ -766,7 +766,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             continue;
           }
 
-          // TODO(danvk): here is a comment.
+          // TODO(danvk): here
           if (stepPlot) {
             var newYs = [ prevY - point.errorPlus * yscale,
                           prevY + point.errorMinus * yscale ];
