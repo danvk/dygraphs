@@ -397,6 +397,7 @@ Dygraph.prototype.toDomYCoord = function(y, axis) {
   if (pct == null) {
     return null;
   }
+  var area = this.plotter_.area;
   return area.y + pct * area.h;
 }
 
