@@ -362,7 +362,7 @@ Dygraph.prototype.yAxisRanges = function() {
  * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
  *
- * Note: use toDomXCoord instead of toDomCoords(x. null) and use toDomYCoord
+ * Note: use toDomXCoord instead of toDomCoords(x, null) and use toDomYCoord
  * instead of toDomCoords(null, y, axis).
  */
 Dygraph.prototype.toDomCoords = function(x, y, axis) {
@@ -392,7 +392,7 @@ Dygraph.prototype.toDomXCoord = function(x) {
  * returns a single value or null if y is null.
  */
 Dygraph.prototype.toDomYCoord = function(y, axis) {
-  var pct = toPercentYCoord(y, axis);
+  var pct = this.toPercentYCoord(y, axis);
 
   if (pct == null) {
     return null;
@@ -406,7 +406,7 @@ Dygraph.prototype.toDomYCoord = function(y, axis) {
  * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y].
  *
- * Note: use toDataXCoord instead of toDataCoords(x. null) and use toDataYCoord
+ * Note: use toDataXCoord instead of toDataCoords(x, null) and use toDataYCoord
  * instead of toDataCoords(null, y, axis).
  */
 Dygraph.prototype.toDataCoords = function(x, y, axis) {
