@@ -965,7 +965,6 @@ Dygraph.movePan = function(event, g, context) {
       var axis = g.axes_[i];
       var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
       var minValue = maxValue - axis.dragValueRange;
-      console.log(axis.draggingValue, axis.dragValueRange, minValue, maxValue, y_frac);
       axis.valueWindow = [ minValue, maxValue ];
     }
   }
