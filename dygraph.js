@@ -80,9 +80,9 @@ Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.AXIS_LINE_WIDTH = 0.3;
 
 Dygraph.LOG_SCALE = 10;
-Dygraph.LOG_BASE_E_OF_TEN = Math.log(Dygraph.LOG_SCALE);
+Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
 Dygraph.log10 = function(x) {
-  return Math.log(x) / Dygraph.LOG_BASE_E_OF_TEN;
+  return Math.log(x) / Dygraph.LN_TEN;
 }
 
 // Default attribute values.
@@ -372,8 +372,8 @@ Dygraph.prototype.toDomCoords = function(x, y, axis) {
 /**
  * Convert from data x coordinates to canvas/div X coordinate.
  * If specified, do this conversion for the coordinate system of a particular
- * axis. Uses the first axis by default.
- * returns a single value or null if x is null.
+ * axis.
+ * Returns a single value or null if x is null.
  */
 Dygraph.prototype.toDomXCoord = function(x) {
   if (x == null) {

@@ -89,7 +89,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
 
-    axis.ylogrange = Math.log(axis.maxyval) - Math.log(axis.minyval);
+    axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
     axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
   }
 };
@@ -108,7 +108,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       
       var yval;
       if (this.dygraph_.attr_("logscale")) {
-        yval = 1.0 - ((Math.log(parseFloat(item[1])) - Math.log(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+        yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
       } else {
         yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
       }
