@@ -837,7 +837,6 @@ Dygraph.movePan = function(event, g, context) {
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
     // Adjust each axis appropriately.
-    var y_frac = context.dragEndY / g.height_;
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
       var maxValue = axis.initialTopValue +
