@@ -2136,12 +2136,24 @@ Dygraph.prototype.drawGraph_ = function() {
 
     var seriesName = this.attr_("labels")[i];
     var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
+    var logScale = this.attr_('logscale', i);
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
-      if (data[j][i] != null || !connectSeparatedPoints) {
-        var date = data[j][0];
-        series.push([date, data[j][i]]);
+      var date = data[j][0];
+      var point = data[j][i];
+      if (logScale) {
+        // On the log scale, points less than zero do not exist.
+        // This will create a gap in the chart. Note that this ignores
+        // connectSeparatedPoints.
+        if (point < 0) {
+          point = null;
+        }
+        series.push([date, point]);
+      } else {
+        if (point != null || !connectSeparatedPoints) {
+          series.push([date, point]);
+        }
       }
     }
 
