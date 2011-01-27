@@ -12,7 +12,10 @@
 
   <body>
     <h1>Log scale demo - work in progress</h1>
+    <h2>x-axis of dates</h2>
     <div id="div_g" style="width:600px; height:300px;"></div>
+    <h2>x-axis of numbers</h2>
+    <div id="div_g2" style="width:600px; height:300px;"></div>
       
     <input type="button" value="log scale" onclick="logScale()">
     <input type="button" value="linear scale" onclick="linearScale()">
@@ -27,21 +30,34 @@
         "20101206,30\n"+
         "20101207,80\n"+
         "20101208,100\n"+
-        "20101209,250\n"+
+        "20101209,500\n"+
         "";
       }
       var g = new Dygraph(document.getElementById("div_g"),
                       Data, { logscale : true });
-      Dygraph.addEvent(g.canvas_, '_mousemove', function(e) {
-        var y = Dygraph.pageY(e) - Dygraph.findPosY(g.canvas_);
-        console.log(y, g.toDataYCoord(y));
-      });
+      function Data2() {
+        return "X,A\n" +
+        "1,5\n"+
+        "2,10\n"+
+        "3,100\n"+
+        "4,250\n"+
+        "5,1000\n"+
+        "6,30\n"+
+        "7,80\n"+
+        "8,100\n"+
+        "9,500\n"+
+        "";
+      }
+      var g2 = new Dygraph(document.getElementById("div_g2"),
+                      Data2, { logscale : true });
 
       function logScale() {
         g.updateOptions({ logscale : true });
+        g2.updateOptions({ logscale : true });
       }
       function linearScale() {
         g.updateOptions({ logscale : false });
+        g2.updateOptions({ logscale : false });
       }
     </script>
 

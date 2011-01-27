@@ -107,7 +107,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       var item = dataset[j];
       
       var yval;
-      if (this.dygraph_.attr_("logscale")) {
+      if (axis.logscale) {
         yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
       } else {
         yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);

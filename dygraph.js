@@ -119,7 +119,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   delimiter: ',',
 
-  logScale: false,
   sigma: 2.0,
   errorBars: false,
   fractions: false,
@@ -443,7 +442,7 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
 
-  if (!this.attr_("logscale")) {
+  if (!axis.logscale) {
     return yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
     // Computing the inverse of toDomCoord.
@@ -489,12 +488,13 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
   if (y == null) {
     return null;
   }
+  if (typeof(axis) == "undefined") axis = 0;
 
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
 
   var pct;
-  if (!this.attr_("logscale")) {
+  if (!this.axes_[axis].logscale) {
     // yrange[1] - y is unit distance from the bottom.
     // yrange[1] - yrange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
@@ -1918,8 +1918,8 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
  * Add ticks when the x axis has numbers on it (instead of dates)
  * TODO(konigsberg): Update comment.
  *
- * @param {Number} startDate Start of the date window (millis since epoch)
- * @param {Number} endDate End of the date window (millis since epoch)
+ * @param {Number} minV minimum value
+ * @param {Number} maxV maximum value
  * @param self
  * @param {function} attribute accessor function.
  * @return {Array.<Object>} Array of {label, value} tuples.
@@ -1937,7 +1937,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       ticks.push({v: vals[i]});
     }
   } else {
-    if (self.attr_("logscale")) {
+    if (axis_props && attr("logscale")) {
       // As opposed to the other ways for computing ticks, we're just going
       // for nearby values. There's no reasonable way to scale the values
       // (unless we want to show strings like "log(" + x + ")") in which case
@@ -1945,6 +1945,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
 
       // so compute height / pixelsPerTick and move on.
       var pixelsPerTick = attr('pixelsPerYLabel');
+      // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(self.height_ / pixelsPerTick);
       var vv = minV;
 
@@ -2081,7 +2082,7 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * number of axes, rolling averages, etc.
  */
 Dygraph.prototype.predraw_ = function() {
-  // TODO(danvk): move more computations out of drawGraph_ and into here.
+  // TODO(danvk): movabilitye more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
   // Create a new plotter.
@@ -2271,7 +2272,8 @@ Dygraph.prototype.computeYAxes_ = function() {
     'pixelsPerYLabel',
     'yAxisLabelWidth',
     'axisLabelFontSize',
-    'axisTickSize'
+    'axisTickSize',
+    'logscale'
   ];
 
   // Copy global axis options over to the first axis.
@@ -2359,7 +2361,6 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
-    var isLogScale = this.attr_("logscale");
     var axis = this.axes_[i];
     if (axis.valueWindow) {
       // This is only set if the user has zoomed on the y-axis. It is never set
@@ -2387,7 +2388,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       var maxAxisY;
       var minAxisY;
-      if (isLogScale) {
+      if (axis.logscale) {
         var maxAxisY = maxY + 0.1 * span;
         var minAxisY = minY;
       } else {
