@@ -2104,18 +2104,22 @@ Dygraph.prototype.drawGraph_ = function() {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  // TODO(danvk): this method doesn't need to return anything.
-  var out = this.computeYAxisRanges_(extremes);
-  var axes = out[0];
-  var seriesToAxisMap = out[1];
-  this.layout_.updateOptions( { yAxes: axes,
-                                seriesToAxisMap: seriesToAxisMap
-                              } );
-
+  if (datasets.length > 0) {
+    // TODO(danvk): this method doesn't need to return anything.
+    var out = this.computeYAxisRanges_(extremes);
+    var axes = out[0];
+    var seriesToAxisMap = out[1];
+    this.layout_.updateOptions( { yAxes: axes,
+                                  seriesToAxisMap: seriesToAxisMap
+                                } );
+  }
   this.addXTicks_();
 
+  // Save the X axis zoomed status as the updateOptions call will tend to set it errorneously
+  var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
   this.layout_.updateOptions({dateWindow: this.dateWindow_});
+  this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
   this.plotter_.clear();
   this.plotter_.render();
@@ -2138,12 +2142,12 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  var valueWindow;
+  var valueWindows;
   if (this.axes_ != undefined) {
     // Preserve valueWindow settings.
-    valueWindow = [];
+    valueWindows = [];
     for (var index = 0; index < this.axes_.length; index++) {
-      valueWindow.push(this.axes_[index].valueWindow);
+      valueWindows.push(this.axes_[index].valueWindow);
     }
   }
 
@@ -2220,10 +2224,10 @@ Dygraph.prototype.computeYAxes_ = function() {
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
 
-  if (valueWindow != undefined) {
+  if (valueWindows != undefined) {
     // Restore valueWindow settings.
-    for (var index = 0; index < valueWindow.length; index++) {
-      this.axes_[index].valueWindow = valueWindow[index];
+    for (var index = 0; index < valueWindows.length; index++) {
+      this.axes_[index].valueWindow = valueWindows[index];
     }
   }
 };
@@ -2921,9 +2925,11 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
-    this.zoomed_x_ = attrs.dateWindow != null;
+    if (!('noZoomFlagChange' in attrs)) {
+      this.zoomed_x_ = attrs.dateWindow != null;
+    }
   }
-  if ('valueRange' in attrs) {
+  if ('valueRange' in attrs && !('noZoomFlagChange' in attrs)) {
     this.zoomed_y_ = attrs.valueRange != null;
   }
 
