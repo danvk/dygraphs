@@ -1917,9 +1917,8 @@ Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
-    var mults = [1, 1.5, 2.5, 5, 7]; // [1,2,3,4,5,6,7,8,9];
-    for (var multIdx = 0; multIdx < mults.length; multIdx++) {
-      var val = range * mults[multIdx];
+    for (var mult = 1; mult <= 9; mult++) {
+      var val = range * mult;
       vals.push(val);
     }
   }
