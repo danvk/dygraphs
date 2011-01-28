@@ -1241,7 +1241,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange();
     var yRange = this.yAxisRange();
-    this.attr_("zoomCallback")(xRange[0], xRange[1], yRange[0], yRange[1]);
+    this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
   }
 };
 
