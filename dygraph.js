@@ -24,7 +24,6 @@
 
  If the 'errorBars' option is set in the constructor, the input should be of
  the form
-
    Date,SeriesA,SeriesB,...
    YYYYMMDD,A1,sigmaA1,B1,sigmaB1,...
    YYYYMMDD,A2,sigmaA2,B2,sigmaB2,...
@@ -1914,6 +1913,19 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   }
 };
 
+Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES = function() {
+  var vals = [];
+  for (var power = -39; power <= 39; power++) {
+    var range = Math.pow(10, power);
+    var mults = [1, 1.5, 2.5, 5, 7]; // [1,2,3,4,5,6,7,8,9];
+    for (var multIdx = 0; multIdx < mults.length; multIdx++) {
+      var val = range * mults[multIdx];
+      vals.push(val);
+    }
+  }
+  return vals;
+}();
+
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
  * TODO(konigsberg): Update comment.
@@ -1938,26 +1950,40 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     }
   } else {
     if (axis_props && attr("logscale")) {
-      // As opposed to the other ways for computing ticks, we're just going
-      // for nearby values. There's no reasonable way to scale the values
-      // (unless we want to show strings like "log(" + x + ")") in which case
-      // x can be integer values.
-
-      // so compute height / pixelsPerTick and move on.
       var pixelsPerTick = attr('pixelsPerYLabel');
       // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(self.height_ / pixelsPerTick);
-      var vv = minV;
-      var lmv = Dygraph.log10(minV);
-      var lxv = Dygraph.log10(maxV);
-      var logMultiplier = (lxv - lmv) / nTicks;
-      var multiplier = Math.pow(Dygraph.LOG_SCALE, logMultiplier);
-      // Construct the set of ticks.
-      for (var i = 0; i < nTicks; i++) {
-        ticks.push( {v: vv} );
-        vv = vv * multiplier;
+      var minIdx = null;
+      var maxIdx = null;
+      // Count the number of tick values would appear, if we can get at least
+      // nTicks / 3 accept them.
+      for (var idx = 0; idx < Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES.length; idx++) {
+        var v = Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES[idx];
+        if (v == minV && minIdx == null) {
+          minIdx = idx;
+        }
+        if (v > minV && minIdx == null && idx > 0) {
+          minIdx = idx - 1;
+        }
+        if (maxIdx == null && v >= maxV) {
+          maxIdx = idx;
+          break; // At this point we're done.
+        }
       }
-    } else {
+      if (minIdx == null) {
+        minIdx = 0;
+      }
+      if (maxIdx == null) {
+        maxIdx = Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES.length - 1;
+      }
+      if ((maxIdx - minIdx) * 4 >= nTicks) {
+        for (var idx = minIdx; idx <= maxIdx; idx++) {
+          ticks.push({ v: Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES[idx] });
+        }
+      }
+    }
+    // ticks.length won't be 0 if the log scale function finds values to insert.
+    if (ticks.length == 0) {
       // Basic idea:
       // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
       // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
