@@ -1998,13 +1998,31 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       if (maxIdx == -1) {
         maxIdx = Dygraph.PREFERRED_LOG_TICK_VALUES.length - 1;
       }
-      console.log(minIdx, maxIdx);
       // Count the number of tick values would appear, if we can get at least
       // nTicks / 4 accept them.
+      var lastDisplayed = null;
       if (maxIdx - minIdx >= nTicks / 4) {
+        var axisId = axis_props.yAxisId;
         for (var idx = maxIdx; idx >= minIdx; idx--) {
           var tickValue = Dygraph.PREFERRED_LOG_TICK_VALUES[idx];
-          ticks.push({ v: tickValue });
+          var domCoord = axis_props.g.toDomYCoord(tickValue, axisId);
+          var tick = { v: tickValue };
+          if (lastDisplayed == null) {
+            lastDisplayed = {
+              tickValue : tickValue,
+              domCoord : domCoord
+            };
+          } else {
+            if (domCoord - lastDisplayed.domCoord >= pixelsPerTick) {
+              lastDisplayed = {
+                tickValue : tickValue,
+                domCoord : domCoord
+              };
+            } else {
+              tick.label = "";              
+            }
+          }
+          ticks.push(tick);
         }
         // Since we went in backwards order.
         ticks.reverse();
@@ -2327,7 +2345,7 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  this.axes_ = [{}];  // always have at least one y-axis.
+  this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
@@ -2368,9 +2386,12 @@ Dygraph.prototype.computeYAxes_ = function() {
       var opts = {};
       Dygraph.update(opts, this.axes_[0]);
       Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      var yAxisId = this.axes_.length;
+      opts.yAxisId = yAxisId;
+      opts.g = this;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = this.axes_.length - 1;
+      this.seriesToAxisMap_[seriesName] = yAxisId;
     }
   }
 
