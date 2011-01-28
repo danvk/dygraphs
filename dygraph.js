@@ -1913,7 +1913,7 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   }
 };
 
-Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES = function() {
+Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -1924,6 +1924,53 @@ Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES = function() {
   }
   return vals;
 }();
+
+// val is the value to search for
+// arry is the value over which to search
+// if abs > 0, find the lowest entry greater than val
+// if abs < 0, find the highest entry less than val
+// if abs == 0, find the entry that equals val.
+// Currently does not work when val is outside the range of arry's values.
+Dygraph.binarySearch = function(val, arry, abs, low, high) {
+  if (low == null || high == null) {
+    low = 0;
+    high = arry.length - 1;
+  }
+  if (low > high) {
+    return -1;
+  }
+  if (abs == null) {
+    abs = 0;
+  }
+  var validIndex = function(idx) {
+    return idx >= 0 && idx < arry.length;
+  }
+  var mid = parseInt((low + high) / 2);
+  var element = arry[mid];
+  if (element == val) {
+    return mid;
+  }
+  if (element > val) {
+    if (abs > 0) {
+      // Accept if element > val, but also if prior element < val.
+      var idx = mid - 1;
+      if (validIndex(idx) && arry[idx] < val) {
+        return mid;
+      }
+    }
+    return Dygraph.binarySearch(val, arry, abs, low, mid - 1);    
+  }
+  if (element < val) {
+    if (abs < 0) {
+      // Accept if element < val, but also if prior element > val.
+      var idx = mid + 1;
+      if (validIndex(idx) && arry[idx] > val) {
+        return mid;
+      }
+    }
+    return Dygraph.binarySearch(val, arry, abs, mid + 1, high);
+  }
+}
 
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
@@ -1952,33 +1999,24 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       var pixelsPerTick = attr('pixelsPerYLabel');
       // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(self.height_ / pixelsPerTick);
-      var minIdx = null;
-      var maxIdx = null;
-      // Count the number of tick values would appear, if we can get at least
-      // nTicks / 3 accept them.
-      for (var idx = 0; idx < Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES.length; idx++) {
-        var v = Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES[idx];
-        if (v == minV && minIdx == null) {
-          minIdx = idx;
-        }
-        if (v > minV && minIdx == null && idx > 0) {
-          minIdx = idx - 1;
-        }
-        if (maxIdx == null && v >= maxV) {
-          maxIdx = idx;
-          break; // At this point we're done.
-        }
-      }
-      if (minIdx == null) {
+      var minIdx = Dygraph.binarySearch(minV, Dygraph.PREFERRED_LOG_TICK_VALUES, 1);
+      var maxIdx = Dygraph.binarySearch(maxV, Dygraph.PREFERRED_LOG_TICK_VALUES, -1);
+      if (minIdx == -1) {
         minIdx = 0;
       }
-      if (maxIdx == null) {
-        maxIdx = Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES.length - 1;
+      if (maxIdx == -1) {
+        maxIdx = Dygraph.PREFERRED_LOG_TICK_VALUES.length - 1;
       }
-      if ((maxIdx - minIdx) * 4 >= nTicks) {
-        for (var idx = minIdx; idx <= maxIdx; idx++) {
-          ticks.push({ v: Dygraph.DEFAULT_PREFERRED_LOG_TICK_VALUES[idx] });
+      console.log(minIdx, maxIdx);
+      // Count the number of tick values would appear, if we can get at least
+      // nTicks / 4 accept them.
+      if (maxIdx - minIdx >= nTicks / 4) {
+        for (var idx = maxIdx; idx >= minIdx; idx--) {
+          var tickValue = Dygraph.PREFERRED_LOG_TICK_VALUES[idx];
+          ticks.push({ v: tickValue });
         }
+        // Since we went in backwards order.
+        ticks.reverse();
       }
     }
     // ticks.length won't be 0 if the log scale function finds values to insert.
@@ -2038,26 +2076,29 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   }
   var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
 
+  // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
-    var tickV = ticks[i].v;
-    var absTickV = Math.abs(tickV);
-    var label;
-    if (formatter != undefined) {
-      label = formatter(tickV);
-    } else {
-      label = Dygraph.round_(tickV, 2);
-    }
-    if (k_labels.length) {
-      // Round up to an appropriate unit.
-      var n = k*k*k*k;
-      for (var j = 3; j >= 0; j--, n /= k) {
-        if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
-          break;
+    if (ticks[i].label == null) {
+      var tickV = ticks[i].v;
+      var absTickV = Math.abs(tickV);
+      var label;
+      if (formatter != undefined) {
+        label = formatter(tickV);
+      } else {
+        label = Dygraph.round_(tickV, 2);
+      }
+      if (k_labels.length) {
+        // Round up to an appropriate unit.
+        var n = k*k*k*k;
+        for (var j = 3; j >= 0; j--, n /= k) {
+          if (absTickV >= n) {
+            label = Dygraph.round_(tickV / n, 1) + k_labels[j];
+            break;
+          }
         }
       }
+      ticks[i].label = label;
     }
-    ticks[i].label = label;
   }
   return ticks;
 };
