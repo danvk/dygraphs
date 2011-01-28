@@ -1948,11 +1948,14 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(self.height_ / pixelsPerTick);
       var vv = minV;
-
+      var lmv = Dygraph.log10(minV);
+      var lxv = Dygraph.log10(maxV);
+      var logMultiplier = (lxv - lmv) / nTicks;
+      var multiplier = Math.pow(Dygraph.LOG_SCALE, logMultiplier);
       // Construct the set of ticks.
       for (var i = 0; i < nTicks; i++) {
         ticks.push( {v: vv} );
-        vv = vv * Dygraph.LOG_SCALE;
+        vv = vv * multiplier;
       }
     } else {
       // Basic idea:
