@@ -2117,7 +2117,7 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  this.axes_ = [{}];  // always have at least one y-axis.
+  this.axes_ = [{ yAxisId: 0 }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
@@ -2157,9 +2157,11 @@ Dygraph.prototype.computeYAxes_ = function() {
       var opts = {};
       Dygraph.update(opts, this.axes_[0]);
       Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      var yAxisId = this.axes_.length;
+      opts.yAxisId = yAxisId;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = this.axes_.length - 1;
+      this.seriesToAxisMap_[seriesName] = yAxisId;
     }
   }
 
