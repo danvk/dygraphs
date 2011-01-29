@@ -441,7 +441,8 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
 
-  if (!axis.logscale) {
+  if (typeof(axis) == "undefined") axis = 0;
+  if (!this.axes_[axis].logscale) {
     return yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
     // Computing the inverse of toDomCoord.
