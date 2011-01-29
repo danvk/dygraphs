@@ -922,9 +922,17 @@ Dygraph.startPan = function(event, g, context) {
     var axis = g.axes_[i];
     var yRange = g.yAxisRange(i);
     // TODO(konigsberg): These values should be in |context|.
-    axis.dragValueRange = yRange[1] - yRange[0];
-    axis.initialTopValue = yRange[1];
+    // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.
+    if (axis.logscale) {
+      axis.initialTopValue = Dygraph.log10(yRange[1]);
+      axis.dragValueRange = Dygraph.log10(yRange[1]) - Dygraph.log10(yRange[0]);
+    } else {
+      axis.initialTopValue = yRange[1];
+      axis.dragValueRange = yRange[1] - yRange[0];
+    }
     axis.unitsPerPixel = axis.dragValueRange / (g.plotter_.area.h - 1);
+
+    // While calculating axes, set 2dpan.
     if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
   }
 };
@@ -950,10 +958,18 @@ Dygraph.movePan = function(event, g, context) {
     // Adjust each axis appropriately.
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
-      var maxValue = axis.initialTopValue +
-        (context.dragEndY - context.dragStartY) * axis.unitsPerPixel;
+
+      var pixelsDragged = context.dragEndY - context.dragStartY;
+      var unitsDragged = pixelsDragged * axis.unitsPerPixel;
+
+      // In log scale, maxValue and minValue are the logs of those values.
+      var maxValue = axis.initialTopValue + unitsDragged;
       var minValue = maxValue - axis.dragValueRange;
-      axis.valueWindow = [ minValue, maxValue ];
+      if (axis.logscale) {
+        axis.valueWindow = [ Math.pow(10, minValue), Math.pow(10, maxValue) ];
+      } else {
+        axis.valueWindow = [ minValue, maxValue ];
+      }
     }
   }
 
