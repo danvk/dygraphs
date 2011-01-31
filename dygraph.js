@@ -966,7 +966,8 @@ Dygraph.movePan = function(event, g, context) {
       var maxValue = axis.initialTopValue + unitsDragged;
       var minValue = maxValue - axis.dragValueRange;
       if (axis.logscale) {
-        axis.valueWindow = [ Math.pow(10, minValue), Math.pow(10, maxValue) ];
+        axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
+                             Math.pow(Dygraph.LOG_SCALE, maxValue) ];
       } else {
         axis.valueWindow = [ minValue, maxValue ];
       }
@@ -1924,6 +1925,7 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
 // This is a list of human-friendly values at which to show tick marks on a log
 // scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
 // ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
+// NOTE: this assumes that Dygraph.LOG_SCALE = 10.
 Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
