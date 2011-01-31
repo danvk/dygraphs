@@ -813,6 +813,8 @@ Dygraph.startPan = function(event, g, context) {
   context.isPanning = true;
   var xRange = g.xAxisRange();
   context.dateRange = xRange[1] - xRange[0];
+  context.initialLeftmostDate = xRange[0];
+  context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
@@ -820,15 +822,12 @@ Dygraph.startPan = function(event, g, context) {
   for (var i = 0; i < g.axes_.length; i++) {
     var axis = g.axes_[i];
     var yRange = g.yAxisRange(i);
+    // TODO(konigsberg): These values should be in |context|.
     axis.dragValueRange = yRange[1] - yRange[0];
-    var r = g.toDataCoords(null, context.dragStartY, i);
-    axis.draggingValue = r[1];
+    axis.initialTopValue = yRange[1];
+    axis.unitsPerPixel = axis.dragValueRange / (g.plotter_.area.h - 1);
     if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
   }
-
-  // TODO(konigsberg): Switch from all this math to toDataCoords?
-  // Seems to work for the dragging value.
-  context.draggingDate = (context.dragStartX / g.width_) * context.dateRange + xRange[0];
 };
 
 // Called in response to an interaction model operation that
@@ -842,24 +841,18 @@ Dygraph.movePan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
 
-  // TODO(danvk): update this comment
-  // Want to have it so that:
-  // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
-  // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
-  // 3. draggingValue appears at dragEndY.
-  // 4. valueRange is unaltered.
-
-  var minDate = context.draggingDate - (context.dragEndX / g.width_) * context.dateRange;
+  var minDate = context.initialLeftmostDate -
+    (context.dragEndX - context.dragStartX) * context.xUnitsPerPixel;
   var maxDate = minDate + context.dateRange;
   g.dateWindow_ = [minDate, maxDate];
 
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
     // Adjust each axis appropriately.
-    var y_frac = context.dragEndY / g.height_;
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
-      var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
+      var maxValue = axis.initialTopValue +
+        (context.dragEndY - context.dragStartY) * axis.unitsPerPixel;
       var minValue = maxValue - axis.dragValueRange;
       axis.valueWindow = [ minValue, maxValue ];
     }
@@ -876,9 +869,12 @@ Dygraph.movePan = function(event, g, context) {
 // panning behavior.
 //
 Dygraph.endPan = function(event, g, context) {
+  // TODO(konigsberg): Clear the context data from the axis.
+  // TODO(konigsberg): mouseup should just delete the
+  // context object, and mousedown should create a new one.
   context.isPanning = false;
   context.is2DPan = false;
-  context.draggingDate = null;
+  context.initialLeftmostDate = null;
   context.dateRange = null;
   context.valueRange = null;
 }
@@ -1054,12 +1050,12 @@ Dygraph.prototype.createDragInterface_ = function() {
     prevEndY: null,
     prevDragDirection: null,
 
-    // TODO(danvk): update this comment
-    // draggingDate and draggingValue represent the [date,value] point on the
-    // graph at which the mouse was pressed. As the mouse moves while panning,
-    // the viewport must pan so that the mouse position points to
-    // [draggingDate, draggingValue]
-    draggingDate: null,
+    // The value on the left side of the graph when a pan operation starts.
+    initialLeftmostDate: null,
+
+    // The number of units each pixel spans. (This won't be valid for log
+    // scales)
+    xUnitsPerPixel: null,
 
     // TODO(danvk): update this comment
     // The range in second/value units that the viewport encompasses during a
@@ -2151,7 +2147,7 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  this.axes_ = [{}];  // always have at least one y-axis.
+  this.axes_ = [{ yAxisId: 0 }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
@@ -2191,9 +2187,11 @@ Dygraph.prototype.computeYAxes_ = function() {
       var opts = {};
       Dygraph.update(opts, this.axes_[0]);
       Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      var yAxisId = this.axes_.length;
+      opts.yAxisId = yAxisId;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = this.axes_.length - 1;
+      this.seriesToAxisMap_[seriesName] = yAxisId;
     }
   }
 
