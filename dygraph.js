@@ -1921,6 +1921,9 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   }
 };
 
+// This is a list of human-friendly values at which to show tick marks on a log
+// scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
+// ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
 Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
@@ -1966,7 +1969,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
         return mid;
       }
     }
-    return Dygraph.binarySearch(val, arry, abs, low, mid - 1);    
+    return Dygraph.binarySearch(val, arry, abs, low, mid - 1);
   }
   if (element < val) {
     if (abs < 0) {
@@ -2036,7 +2039,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
                 domCoord : domCoord
               };
             } else {
-              tick.label = "";              
+              tick.label = "";
             }
           }
           ticks.push(tick);
@@ -2045,6 +2048,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
         ticks.reverse();
       }
     }
+
     // ticks.length won't be 0 if the log scale function finds values to insert.
     if (ticks.length == 0) {
       // Basic idea:
