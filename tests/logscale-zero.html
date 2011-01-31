@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>log scale</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+
+  <body>
+    <h1>Log scale demo - verify that only positive values are shown.</h1>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+      
+    <input type="button" value="log scale" onclick="logScale()">
+    <input type="button" value="linear scale" onclick="linearScale()">
+    <script type="text/javascript">
+      function Data() {
+        return "Date,A\n" +
+        "20101201,5\n"+
+        "20101202,10\n"+
+        "20101203,-1\n"+
+        "20101204,250\n"+
+        "20101205,1000\n"+
+        "20101206,30\n"+
+        "20101207,80\n"+
+        "20101208,100\n"+
+        "20101209,500\n"+
+        "";
+      }
+      var g = new Dygraph(document.getElementById("div_g"),
+		      Data, { logscale : true});
+
+      function logScale() {
+        g.updateOptions({ logscale : true });
+      }
+      function linearScale() {
+        g.updateOptions({ logscale : false });
+      }
+    </script>
+
+  </body>
+</html>
