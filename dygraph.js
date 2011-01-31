@@ -1983,7 +1983,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
     }
     return Dygraph.binarySearch(val, arry, abs, mid + 1, high);
   }
-}
+};
 
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
@@ -2183,7 +2183,7 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * number of axes, rolling averages, etc.
  */
 Dygraph.prototype.predraw_ = function() {
-  // TODO(danvk): movabilitye more computations out of drawGraph_ and into here.
+  // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
   // Create a new plotter.
