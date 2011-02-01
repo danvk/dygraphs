@@ -1411,10 +1411,6 @@ Dygraph.prototype.mouseMove_ = function(event) {
     idx = i;
   }
   if (idx >= 0) lastx = points[idx].xval;
-  // Check that you can really highlight the last day's data
-  var last = points[points.length-1];
-  if (last != null && canvasx > last.canvasx)
-    lastx = points[points.length-1].xval;
 
   // Extract the points we've selected
   this.selPoints_ = [];
