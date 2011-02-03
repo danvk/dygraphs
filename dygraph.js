@@ -2730,7 +2730,7 @@ Dygraph.dateParser = function(dateStr, self) {
  */
 Dygraph.prototype.detectTypeFromString_ = function(str) {
   var isDate = false;
-  if (str.indexOf('-') >= 0 ||
+  if (str.indexOf('-') > 0 ||
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
