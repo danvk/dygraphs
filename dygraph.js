@@ -149,7 +149,11 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: Dygraph.floatFormat,
+  yValueFormatter: function(x, opt_precision) {
+    var s = Dygraph.floatFormat(x, opt_precision);
+    var s2 = Dygraph.intFormat(x);
+    return s.length <= s2.length ? s : s2;
+  },
 
   strokeWidth: 1.0,
 
