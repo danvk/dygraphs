@@ -2249,7 +2249,7 @@ Dygraph.prototype.drawGraph_ = function() {
         // On the log scale, points less than zero do not exist.
         // This will create a gap in the chart. Note that this ignores
         // connectSeparatedPoints.
-        if (point < 0) {
+        if (point <= 0) {
           point = null;
         }
         series.push([date, point]);
