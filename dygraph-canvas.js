@@ -91,6 +91,10 @@ DygraphLayout.prototype._evaluateLimits = function() {
 
     axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
     axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
+    if (axis.g.attr_("logscale") && isNaN(axis.ylogrange)) {
+      axis.g.error('axis ' + i + ' can\'t be displayed in log scale for range [' +
+          axis.minyval + ' - ' + axis.maxyval + ']');
+    }
   }
 };
 
@@ -105,7 +109,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
-      
+
       var yval;
       if (axis.logscale) {
         yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
