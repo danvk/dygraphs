@@ -89,11 +89,14 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
 
-    axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
-    axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
-    if (axis.g.attr_("logscale") && isNaN(axis.ylogrange)) {
-      axis.g.error('axis ' + i + ' can\'t be displayed in log scale for range [' +
-          axis.minyval + ' - ' + axis.maxyval + ']');
+    if (axis.g.attr_("logscale")) {
+      axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
+      axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
+      if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
+        axis.g.error('axis ' + i + ' of graph at ' + axis.g +
+            ' can\'t be displayed in log scale for range [' +
+            axis.minyval + ' - ' + axis.maxyval + ']');
+      }
     }
   }
 };
