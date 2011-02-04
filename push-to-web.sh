@@ -10,7 +10,7 @@ site=$1
 # Copy everything to the site.
 scp tests/*.html tests/*.js tests/*.png $site/tests/ \
 && \
-scp dygraph*.js gadget.xml excanvas.js thumbnail.png docs/* $site/
+scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
 
 # Revert changes to dygraph-combined.js
-git co dygraph-combined.js
+git checkout dygraph-combined.js

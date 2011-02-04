@@ -5,12 +5,11 @@
       title="dygraphs Gadget"
       description="Interactive, zoomable chart"
       author="Dan Vanderkam"
-      author_email="danvdk@gmail.com"
+      author_email="dan@dygraphs.com"
       thumbnail="http://dygraphs.com/thumbnail.png"
+      screenshot="http://dygraphs.com/screenshot.png"
+      author_location="US"
       >
-      <!-- TODO(danvk): change these -->
-      <!--
-      screenshot="http://www.google.com/ig/modules/simple-table.png"
       -->
     <Require feature="idi" />
     <Require feature="locked-domain" />

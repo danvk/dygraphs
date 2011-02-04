@@ -24,7 +24,6 @@
 
  If the 'errorBars' option is set in the constructor, the input should be of
  the form
-
    Date,SeriesA,SeriesB,...
    YYYYMMDD,A1,sigmaA1,B1,sigmaB1,...
    YYYYMMDD,A2,sigmaA2,B2,sigmaB2,...
@@ -132,6 +131,11 @@ Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.AXIS_LINE_WIDTH = 0.3;
 
+Dygraph.LOG_SCALE = 10;
+Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
+Dygraph.log10 = function(x) {
+  return Math.log(x) / Dygraph.LN_TEN;
+}
 
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
@@ -171,7 +175,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   delimiter: ',',
 
-  logScale: false,
   sigma: 2.0,
   errorBars: false,
   fractions: false,
@@ -427,44 +430,152 @@ Dygraph.prototype.yAxisRanges = function() {
  * If specified, do this conversion for the coordinate system of a particular
  * axis. Uses the first axis by default.
  * Returns a two-element array: [X, Y]
+ *
+ * Note: use toDomXCoord instead of toDomCoords(x, null) and use toDomYCoord
+ * instead of toDomCoords(null, y, axis).
  */
 Dygraph.prototype.toDomCoords = function(x, y, axis) {
-  var ret = [null, null];
-  var area = this.plotter_.area;
-  if (x !== null) {
-    var xRange = this.xAxisRange();
-    ret[0] = area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
-  }
-
-  if (y !== null) {
-    var yRange = this.yAxisRange(axis);
-    ret[1] = area.y + (yRange[1] - y) / (yRange[1] - yRange[0]) * area.h;
-  }
-
-  return ret;
+  return [ this.toDomXCoord(x), this.toDomYCoord(y, axis) ];
 };
+
+/**
+ * Convert from data x coordinates to canvas/div X coordinate.
+ * If specified, do this conversion for the coordinate system of a particular
+ * axis.
+ * Returns a single value or null if x is null.
+ */
+Dygraph.prototype.toDomXCoord = function(x) {
+  if (x == null) {
+    return null;
+  };
+
+  var area = this.plotter_.area;
+  var xRange = this.xAxisRange();
+  return area.x + (x - xRange[0]) / (xRange[1] - xRange[0]) * area.w;
+}
+
+/**
+ * Convert from data x coordinates to canvas/div Y coordinate and optional
+ * axis. Uses the first axis by default.
+ *
+ * returns a single value or null if y is null.
+ */
+Dygraph.prototype.toDomYCoord = function(y, axis) {
+  var pct = this.toPercentYCoord(y, axis);
+
+  if (pct == null) {
+    return null;
+  }
+  var area = this.plotter_.area;
+  return area.y + pct * area.h;
+}
 
 /**
  * Convert from canvas/div coords to data coordinates.
  * If specified, do this conversion for the coordinate system of a particular
  * axis. Uses the first axis by default.
- * Returns a two-element array: [X, Y]
+ * Returns a two-element array: [X, Y].
+ *
+ * Note: use toDataXCoord instead of toDataCoords(x, null) and use toDataYCoord
+ * instead of toDataCoords(null, y, axis).
  */
 Dygraph.prototype.toDataCoords = function(x, y, axis) {
-  var ret = [null, null];
-  var area = this.plotter_.area;
-  if (x !== null) {
-    var xRange = this.xAxisRange();
-    ret[0] = xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
-  }
-
-  if (y !== null) {
-    var yRange = this.yAxisRange(axis);
-    ret[1] = yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
-  }
-
-  return ret;
+  return [ this.toDataXCoord(x), this.toDataYCoord(y, axis) ];
 };
+
+/**
+ * Convert from canvas/div x coordinate to data coordinate.
+ *
+ * If x is null, this returns null.
+ */
+Dygraph.prototype.toDataXCoord = function(x) {
+  if (x == null) {
+    return null;
+  }
+
+  var area = this.plotter_.area;
+  var xRange = this.xAxisRange();
+  return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+};
+
+/**
+ * Convert from canvas/div y coord to value.
+ *
+ * If y is null, this returns null.
+ * if axis is null, this uses the first axis.
+ */
+Dygraph.prototype.toDataYCoord = function(y, axis) {
+  if (y == null) {
+    return null;
+  }
+
+  var area = this.plotter_.area;
+  var yRange = this.yAxisRange(axis);
+
+  if (typeof(axis) == "undefined") axis = 0;
+  if (!this.axes_[axis].logscale) {
+    return yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
+  } else {
+    // Computing the inverse of toDomCoord.
+    var pct = (y - area.y) / area.h
+
+    // Computing the inverse of toPercentYCoord. The function was arrived at with
+    // the following steps:
+    //
+    // Original calcuation:
+    // pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
+    //
+    // Move denominator to both sides:
+    // pct * (logr1 - Dygraph.log10(yRange[0])) = logr1 - Dygraph.log10(y);
+    //
+    // subtract logr1, and take the negative value.
+    // logr1 - (pct * (logr1 - Dygraph.log10(yRange[0]))) = Dygraph.log10(y);
+    //
+    // Swap both sides of the equation, and we can compute the log of the
+    // return value. Which means we just need to use that as the exponent in
+    // e^exponent.
+    // Dygraph.log10(y) = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+
+    var logr1 = Dygraph.log10(yRange[1]);
+    var exponent = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
+    return value;
+  }
+};
+
+/**
+ * Converts a y for an axis to a percentage from the top to the
+ * bottom of the div.
+ *
+ * If the coordinate represents a value visible on the canvas, then
+ * the value will be between 0 and 1, where 0 is the top of the canvas.
+ * However, this method will return values outside the range, as
+ * values can fall outside the canvas.
+ *
+ * If y is null, this returns null.
+ * if axis is null, this uses the first axis.
+ */
+Dygraph.prototype.toPercentYCoord = function(y, axis) {
+  if (y == null) {
+    return null;
+  }
+  if (typeof(axis) == "undefined") axis = 0;
+
+  var area = this.plotter_.area;
+  var yRange = this.yAxisRange(axis);
+
+  var pct;
+  if (!this.axes_[axis].logscale) {
+    // yrange[1] - y is unit distance from the bottom.
+    // yrange[1] - yrange[0] is the scale of the range.
+    // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
+    pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
+  } else {
+    var logr1 = Dygraph.log10(yRange[1]);
+    pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
+  }
+  return pct;
+}
 
 /**
  * Returns the number of columns (including the independent variable).
@@ -870,22 +981,11 @@ Dygraph.prototype.dragGetY_ = function(e, context) {
 // panning behavior.
 //
 Dygraph.startPan = function(event, g, context) {
-  // have to be zoomed in to pan.
-  // TODO(konigsberg): Let's loosen this zoom-to-pan restriction, also
-  // perhaps create panning boundaries? A more flexible pan would make it,
-  // ahem, 'pan-useful'.
-  var zoomedY = false;
-  for (var i = 0; i < g.axes_.length; i++) {
-    if (g.axes_[i].valueWindow || g.axes_[i].valueRange) {
-      zoomedY = true;
-      break;
-    }
-  }
-  if (!g.dateWindow_ && !zoomedY) return;
-
   context.isPanning = true;
   var xRange = g.xAxisRange();
   context.dateRange = xRange[1] - xRange[0];
+  context.initialLeftmostDate = xRange[0];
+  context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
@@ -893,15 +993,20 @@ Dygraph.startPan = function(event, g, context) {
   for (var i = 0; i < g.axes_.length; i++) {
     var axis = g.axes_[i];
     var yRange = g.yAxisRange(i);
-    axis.dragValueRange = yRange[1] - yRange[0];
-    var r = g.toDataCoords(null, context.dragStartY, i);
-    axis.draggingValue = r[1];
+    // TODO(konigsberg): These values should be in |context|.
+    // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.
+    if (axis.logscale) {
+      axis.initialTopValue = Dygraph.log10(yRange[1]);
+      axis.dragValueRange = Dygraph.log10(yRange[1]) - Dygraph.log10(yRange[0]);
+    } else {
+      axis.initialTopValue = yRange[1];
+      axis.dragValueRange = yRange[1] - yRange[0];
+    }
+    axis.unitsPerPixel = axis.dragValueRange / (g.plotter_.area.h - 1);
+
+    // While calculating axes, set 2dpan.
     if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
   }
-
-  // TODO(konigsberg): Switch from all this math to toDataCoords?
-  // Seems to work for the dragging value.
-  context.draggingDate = (context.dragStartX / g.width_) * context.dateRange + xRange[0];
 };
 
 // Called in response to an interaction model operation that
@@ -915,26 +1020,29 @@ Dygraph.movePan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
 
-  // TODO(danvk): update this comment
-  // Want to have it so that:
-  // 1. draggingDate appears at dragEndX, draggingValue appears at dragEndY.
-  // 2. daterange = (dateWindow_[1] - dateWindow_[0]) is unaltered.
-  // 3. draggingValue appears at dragEndY.
-  // 4. valueRange is unaltered.
-
-  var minDate = context.draggingDate - (context.dragEndX / g.width_) * context.dateRange;
+  var minDate = context.initialLeftmostDate -
+    (context.dragEndX - context.dragStartX) * context.xUnitsPerPixel;
   var maxDate = minDate + context.dateRange;
   g.dateWindow_ = [minDate, maxDate];
 
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
     // Adjust each axis appropriately.
-    var y_frac = context.dragEndY / g.height_;
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
-      var maxValue = axis.draggingValue + y_frac * axis.dragValueRange;
+
+      var pixelsDragged = context.dragEndY - context.dragStartY;
+      var unitsDragged = pixelsDragged * axis.unitsPerPixel;
+
+      // In log scale, maxValue and minValue are the logs of those values.
+      var maxValue = axis.initialTopValue + unitsDragged;
       var minValue = maxValue - axis.dragValueRange;
-      axis.valueWindow = [ minValue, maxValue ];
+      if (axis.logscale) {
+        axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
+                             Math.pow(Dygraph.LOG_SCALE, maxValue) ];
+      } else {
+        axis.valueWindow = [ minValue, maxValue ];
+      }
     }
   }
 
@@ -949,9 +1057,12 @@ Dygraph.movePan = function(event, g, context) {
 // panning behavior.
 //
 Dygraph.endPan = function(event, g, context) {
+  // TODO(konigsberg): Clear the context data from the axis.
+  // TODO(konigsberg): mouseup should just delete the
+  // context object, and mousedown should create a new one.
   context.isPanning = false;
   context.is2DPan = false;
-  context.draggingDate = null;
+  context.initialLeftmostDate = null;
   context.dateRange = null;
   context.valueRange = null;
 }
@@ -1127,12 +1238,12 @@ Dygraph.prototype.createDragInterface_ = function() {
     prevEndY: null,
     prevDragDirection: null,
 
-    // TODO(danvk): update this comment
-    // draggingDate and draggingValue represent the [date,value] point on the
-    // graph at which the mouse was pressed. As the mouse moves while panning,
-    // the viewport must pan so that the mouse position points to
-    // [draggingDate, draggingValue]
-    draggingDate: null,
+    // The value on the left side of the graph when a pan operation starts.
+    initialLeftmostDate: null,
+
+    // The number of units each pixel spans. (This won't be valid for log
+    // scales)
+    xUnitsPerPixel: null,
 
     // TODO(danvk): update this comment
     // The range in second/value units that the viewport encompasses during a
@@ -1265,10 +1376,8 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
 Dygraph.prototype.doZoomX_ = function(lowX, highX) {
   // Find the earliest and latest dates contained in this canvasx range.
   // Convert the call to date ranges of the raw data.
-  var r = this.toDataCoords(lowX, null);
-  var minDate = r[0];
-  r = this.toDataCoords(highX, null);
-  var maxDate = r[0];
+  var minDate = this.toDataXCoord(lowX);
+  var maxDate = this.toDataXCoord(highX);
   this.doZoomXDates_(minDate, maxDate);
 };
 
@@ -1304,10 +1413,10 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   // coordinates increase as you go up the screen.
   var valueRanges = [];
   for (var i = 0; i < this.axes_.length; i++) {
-    var hi = this.toDataCoords(null, lowY, i);
-    var low = this.toDataCoords(null, highY, i);
-    this.axes_[i].valueWindow = [low[1], hi[1]];
-    valueRanges.push([low[1], hi[1]]);
+    var hi = this.toDataYCoord(lowY, i);
+    var low = this.toDataYCoord(highY, i);
+    this.axes_[i].valueWindow = [low, hi];
+    valueRanges.push([low, hi]);
   }
 
   this.drawGraph_();
@@ -1376,10 +1485,6 @@ Dygraph.prototype.mouseMove_ = function(event) {
     idx = i;
   }
   if (idx >= 0) lastx = points[idx].xval;
-  // Check that you can really highlight the last day's data
-  var last = points[points.length-1];
-  if (last != null && canvasx > last.canvasx)
-    lastx = points[points.length-1].xval;
 
   // Extract the points we've selected
   this.selPoints_ = [];
@@ -1885,6 +1990,69 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   }
 };
 
+// This is a list of human-friendly values at which to show tick marks on a log
+// scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
+// ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
+// NOTE: this assumes that Dygraph.LOG_SCALE = 10.
+Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
+  var vals = [];
+  for (var power = -39; power <= 39; power++) {
+    var range = Math.pow(10, power);
+    for (var mult = 1; mult <= 9; mult++) {
+      var val = range * mult;
+      vals.push(val);
+    }
+  }
+  return vals;
+}();
+
+// val is the value to search for
+// arry is the value over which to search
+// if abs > 0, find the lowest entry greater than val
+// if abs < 0, find the highest entry less than val
+// if abs == 0, find the entry that equals val.
+// Currently does not work when val is outside the range of arry's values.
+Dygraph.binarySearch = function(val, arry, abs, low, high) {
+  if (low == null || high == null) {
+    low = 0;
+    high = arry.length - 1;
+  }
+  if (low > high) {
+    return -1;
+  }
+  if (abs == null) {
+    abs = 0;
+  }
+  var validIndex = function(idx) {
+    return idx >= 0 && idx < arry.length;
+  }
+  var mid = parseInt((low + high) / 2);
+  var element = arry[mid];
+  if (element == val) {
+    return mid;
+  }
+  if (element > val) {
+    if (abs > 0) {
+      // Accept if element > val, but also if prior element < val.
+      var idx = mid - 1;
+      if (validIndex(idx) && arry[idx] < val) {
+        return mid;
+      }
+    }
+    return Dygraph.binarySearch(val, arry, abs, low, mid - 1);
+  }
+  if (element < val) {
+    if (abs < 0) {
+      // Accept if element < val, but also if prior element > val.
+      var idx = mid + 1;
+      if (validIndex(idx) && arry[idx] > val) {
+        return mid;
+      }
+    }
+    return Dygraph.binarySearch(val, arry, abs, mid + 1, high);
+  }
+};
+
 /**
  * Determine the number of significant figures in a Number up to the specified
  * precision.  Note that there is no way to determine if a trailing '0' is
@@ -1924,8 +2092,10 @@ Dygraph.significantFigures = function(x, opt_maxPrecision) {
 
 /**
  * Add ticks when the x axis has numbers on it (instead of dates)
- * @param {Number} startDate Start of the date window (millis since epoch)
- * @param {Number} endDate End of the date window (millis since epoch)
+ * TODO(konigsberg): Update comment.
+ *
+ * @param {Number} minV minimum value
+ * @param {Number} maxV maximum value
  * @param self
  * @param {function} attribute accessor function.
  * @return {Array.<Object>} Array of {label, value} tuples.
@@ -1943,43 +2113,89 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       ticks[i].push({v: vals[i]});
     }
   } else {
-    // Basic idea:
-    // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
-    // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-    // The first spacing greater than pixelsPerYLabel is what we use.
-    // TODO(danvk): version that works on a log scale.
-    if (attr("labelsKMG2")) {
-      var mults = [1, 2, 4, 8];
-    } else {
-      var mults = [1, 2, 5];
-    }
-    var scale, low_val, high_val, nTicks;
-    // TODO(danvk): make it possible to set this for x- and y-axes independently.
-    var pixelsPerTick = attr('pixelsPerYLabel');
-    for (var i = -10; i < 50; i++) {
-      if (attr("labelsKMG2")) {
-        var base_scale = Math.pow(16, i);
-      } else {
-        var base_scale = Math.pow(10, i);
+    if (axis_props && attr("logscale")) {
+      var pixelsPerTick = attr('pixelsPerYLabel');
+      // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
+      var nTicks  = Math.floor(self.height_ / pixelsPerTick);
+      var minIdx = Dygraph.binarySearch(minV, Dygraph.PREFERRED_LOG_TICK_VALUES, 1);
+      var maxIdx = Dygraph.binarySearch(maxV, Dygraph.PREFERRED_LOG_TICK_VALUES, -1);
+      if (minIdx == -1) {
+        minIdx = 0;
       }
-      for (var j = 0; j < mults.length; j++) {
-        scale = base_scale * mults[j];
-        low_val = Math.floor(minV / scale) * scale;
-        high_val = Math.ceil(maxV / scale) * scale;
-        nTicks = Math.abs(high_val - low_val) / scale;
-        var spacing = self.height_ / nTicks;
-        // wish I could break out of both loops at once...
-        if (spacing > pixelsPerTick) break;
+      if (maxIdx == -1) {
+        maxIdx = Dygraph.PREFERRED_LOG_TICK_VALUES.length - 1;
       }
-      if (spacing > pixelsPerTick) break;
+      // Count the number of tick values would appear, if we can get at least
+      // nTicks / 4 accept them.
+      var lastDisplayed = null;
+      if (maxIdx - minIdx >= nTicks / 4) {
+        var axisId = axis_props.yAxisId;
+        for (var idx = maxIdx; idx >= minIdx; idx--) {
+          var tickValue = Dygraph.PREFERRED_LOG_TICK_VALUES[idx];
+          var domCoord = axis_props.g.toDomYCoord(tickValue, axisId);
+          var tick = { v: tickValue };
+          if (lastDisplayed == null) {
+            lastDisplayed = {
+              tickValue : tickValue,
+              domCoord : domCoord
+            };
+          } else {
+            if (domCoord - lastDisplayed.domCoord >= pixelsPerTick) {
+              lastDisplayed = {
+                tickValue : tickValue,
+                domCoord : domCoord
+              };
+            } else {
+              tick.label = "";
+            }
+          }
+          ticks.push(tick);
+        }
+        // Since we went in backwards order.
+        ticks.reverse();
+      }
     }
 
-    // Construct the set of ticks.
-    // Allow reverse y-axis if it's explicitly requested.
-    if (low_val > high_val) scale *= -1;
-    for (var i = 0; i < nTicks; i++) {
-      var tickV = low_val + i * scale;
-      ticks.push( {v: tickV} );
+    // ticks.length won't be 0 if the log scale function finds values to insert.
+    if (ticks.length == 0) {
+      // Basic idea:
+      // Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+      // Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+      // The first spacing greater than pixelsPerYLabel is what we use.
+      // TODO(danvk): version that works on a log scale.
+      if (attr("labelsKMG2")) {
+        var mults = [1, 2, 4, 8];
+      } else {
+        var mults = [1, 2, 5];
+      }
+      var scale, low_val, high_val, nTicks;
+      // TODO(danvk): make it possible to set this for x- and y-axes independently.
+      var pixelsPerTick = attr('pixelsPerYLabel');
+      for (var i = -10; i < 50; i++) {
+        if (attr("labelsKMG2")) {
+          var base_scale = Math.pow(16, i);
+        } else {
+          var base_scale = Math.pow(10, i);
+        }
+        for (var j = 0; j < mults.length; j++) {
+          scale = base_scale * mults[j];
+          low_val = Math.floor(minV / scale) * scale;
+          high_val = Math.ceil(maxV / scale) * scale;
+          nTicks = Math.abs(high_val - low_val) / scale;
+          var spacing = self.height_ / nTicks;
+          // wish I could break out of both loops at once...
+          if (spacing > pixelsPerTick) break;
+        }
+        if (spacing > pixelsPerTick) break;
+      }
+
+      // Construct the set of ticks.
+      // Allow reverse y-axis if it's explicitly requested.
+      if (low_val > high_val) scale *= -1;
+      for (var i = 0; i < nTicks; i++) {
+        var tickV = low_val + i * scale;
+        ticks.push( {v: tickV} );
+      }
     }
   }
 
@@ -2006,6 +2222,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     numDigits = Math.max(Dygraph.significantFigures(ticks[i].v), numDigits);
   }
 
+  // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
@@ -2020,8 +2237,8 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
           break;
         }
       }
+      ticks[i].label = label;
     }
-    ticks[i].label = label;
   }
   return {ticks: ticks, numDigits: numDigits};
 };
@@ -2097,7 +2314,6 @@ Dygraph.prototype.predraw_ = function() {
 };
 
 /**
-=======
  * Update the graph with new data. This method is called when the viewing area
  * has changed. If the underlying data or options have changed, predraw_ will
  * be called before drawGraph_ is called.
@@ -2129,12 +2345,24 @@ Dygraph.prototype.drawGraph_ = function() {
 
     var seriesName = this.attr_("labels")[i];
     var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
+    var logScale = this.attr_('logscale', i);
 
     var series = [];
     for (var j = 0; j < data.length; j++) {
-      if (data[j][i] != null || !connectSeparatedPoints) {
-        var date = data[j][0];
-        series.push([date, data[j][i]]);
+      var date = data[j][0];
+      var point = data[j][i];
+      if (logScale) {
+        // On the log scale, points less than zero do not exist.
+        // This will create a gap in the chart. Note that this ignores
+        // connectSeparatedPoints.
+        if (point < 0) {
+          point = null;
+        }
+        series.push([date, point]);
+      } else {
+        if (point != null || !connectSeparatedPoints) {
+          series.push([date, point]);
+        }
       }
     }
 
@@ -2245,7 +2473,7 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  this.axes_ = [{}];  // always have at least one y-axis.
+  this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
@@ -2262,7 +2490,8 @@ Dygraph.prototype.computeYAxes_ = function() {
     'pixelsPerYLabel',
     'yAxisLabelWidth',
     'axisLabelFontSize',
-    'axisTickSize'
+    'axisTickSize',
+    'logscale'
   ];
 
   // Copy global axis options over to the first axis.
@@ -2285,9 +2514,12 @@ Dygraph.prototype.computeYAxes_ = function() {
       var opts = {};
       Dygraph.update(opts, this.axes_[0]);
       Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+      var yAxisId = this.axes_.length;
+      opts.yAxisId = yAxisId;
+      opts.g = this;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = this.axes_.length - 1;
+      this.seriesToAxisMap_[seriesName] = yAxisId;
     }
   }
 
@@ -2374,18 +2606,26 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var span = maxY - minY;
       // special case: if we have no sense of scale, use +/-10% of the sole value.
       if (span == 0) { span = maxY; }
-      var maxAxisY = maxY + 0.1 * span;
-      var minAxisY = minY - 0.1 * span;
 
-      // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-      if (!this.attr_("avoidMinZero")) {
-        if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-        if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-      }
+      var maxAxisY;
+      var minAxisY;
+      if (axis.logscale) {
+        var maxAxisY = maxY + 0.1 * span;
+        var minAxisY = minY;
+      } else {
+        var maxAxisY = maxY + 0.1 * span;
+        var minAxisY = minY - 0.1 * span;
 
-      if (this.attr_("includeZero")) {
-        if (maxY < 0) maxAxisY = 0;
-        if (minY > 0) minAxisY = 0;
+        // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
+        if (!this.attr_("avoidMinZero")) {
+          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+        }
+
+        if (this.attr_("includeZero")) {
+          if (maxY < 0) maxAxisY = 0;
+          if (minY > 0) minAxisY = 0;
+        }
       }
 
       axis.computedValueRange = [minAxisY, maxAxisY];
@@ -2602,7 +2842,7 @@ Dygraph.dateParser = function(dateStr, self) {
  */
 Dygraph.prototype.detectTypeFromString_ = function(str) {
   var isDate = false;
-  if (str.indexOf('-') >= 0 ||
+  if (str.indexOf('-') > 0 ||
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;

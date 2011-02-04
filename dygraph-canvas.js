@@ -88,6 +88,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.maxyval = axis.computedValueRange[1];
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
+
+    axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
+    axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
+    if (axis.g.attr_("logscale") && isNaN(axis.ylogrange)) {
+      axis.g.error('axis ' + i + ' can\'t be displayed in log scale for range [' +
+          axis.minyval + ' - ' + axis.maxyval + ']');
+    }
   }
 };
 
@@ -102,10 +109,17 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
+
+      var yval;
+      if (axis.logscale) {
+        yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+      } else {
+        yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
+      }
       var point = {
         // TODO(danvk): here
         x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale),
+        y: yval,
         xval: parseFloat(item[0]),
         yval: parseFloat(item[1]),
         name: setName
@@ -133,7 +147,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     for (var j = 0; j < axis.ticks.length; j++) {
       var tick = axis.ticks[j];
       var label = tick.label;
-      var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
+      var pos = this.dygraph_.toPercentYCoord(tick.v, i);
       if ((pos >= 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
       }
