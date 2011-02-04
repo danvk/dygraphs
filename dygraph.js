@@ -260,6 +260,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
+Dygraph.prototype.toString = function() {
+  var maindiv = this.maindiv_;
+  var id = (maindiv && maindiv.id) ? maindiv.id : maindiv
+  return "[Dygraph " + id + "]";
+}
+
 Dygraph.prototype.attr_ = function(name, seriesName) {
   if (seriesName &&
       typeof(this.user_attrs_[seriesName]) != 'undefined' &&
