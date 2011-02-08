@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>zoom</title>
+        <title>noZoomFlagChange Flag</title>
         <!--[if IE]>
         <script type="text/javascript" src="../excanvas.js"></script>
         <![endif]-->
@@ -11,40 +11,74 @@
         <script type="text/javascript" src="data.js"></script>
     </head>
     <body>
-        <h3>Click the buttons to change the date and value windows of the chart.</h3>
-        <h4>Window coordinates (in dates and values):</h4>
-        <div id="xdimensions"></div> <div id="ydimensions"></div>
-        <br />
+        <h1>noZoomFlagChange Operation</h1>
+        <p>
+            By default, when the <code>dateWindow</code> or <code>updateOptions</code>
+            of a chart is changed programmatically by a call to <code>updateOptions</code>
+            the zoomed flags (<code>isZoomed</code>) are changed. This is the same
+            as manually zooming in using the mouse.
+        </p>
+        <p>
+            Sometimes it may be desirable to change the display of the chart by
+            manipulating the <code>dateWindow</code> and <code>valueRange</code>
+            options but without changing the zoomed flags, for example where manual
+            zooming is still required but where it is also desired that the zoomed
+            flags drive display elements, but only for manual zooming.
+        </p>
+        <p>
+            In this case <code>noZoomFlagChange</code> may be specified along with
+            either the <code>dateWindow</code> or <code>valueRange</code> values to
+            <code>updateOptions</code> and the zoomed flags will remain unaffected.
+        </p>
+        <p>
+            The chart below may be manipulated to change the <code>updateOptions</code>
+            using the Max and Min Y axis buttons and the <code>dateWindow</code>
+            by using the Max and Min X axis buttons.
+        </p>
+        <p>
+            Toggle the check box below to determine the difference in operation of the zoom flags
+            when the date and value windows of the chart are changed using the arrows underneath.
+        </p>
+        <p><input id="noZoomFlagChange" type="checkbox" checked=true />Do not change zoom flags (<code>noZoomFlagChange</code>)</p>
+
         <div>
-            <p>
-                Toggle the check box below to determine the difference in operation of the zoom flags
-                when the date and value windows of the chart are changed using the arrows underneath.
-            </p>
-            <input id="noZoomFlagChange" type="checkbox" checked=true>Do not change zoom
+            <div style="float: left">
+                <p>
+                    Max Y Axis:
+                    <input type="button" value="&uarr;" onclick="adjustTop(+1)" />
+                    <input type="button" value="&darr;" onclick="adjustTop(-1)" />
+                </p>
+                <p>
+                    Min Y Axis:
+                    <input type="button" value="&uarr;" onclick="adjustBottom(+1)" />
+                    <input type="button" value="&darr;" onclick="adjustBottom(-1)" />
+                </p>
+                <p>
+                    Min X Axis:
+                    <input type="button" value="&larr;" onclick="adjustFirst(-100000000)" />
+                    <input type="button" value="&rarr;" onclick="adjustFirst(+100000000)" />
+                </p>
+                <p>
+                    Max X Axis:
+                    <input type="button" value="&larr;" onclick="adjustLast(-100000000)" />
+                    <input type="button" value="&rarr;" onclick="adjustLast(+100000000)" />
+                </p>
+            </div>
+            <div id="div_g" style="width: 600px; height: 300px; float: left"></div>
+            <div style="float: left">
+
+            </div>
+        </div>
+        <div style="display: inline-block">
+            <h4> Zoomed Flags</h4>
+            <p>Zoomed: <span id="zoomed">False</span></p>
+            <p>Zoomed X: <span id="zoomedX">False</span></p>
+            <p>Zoomed Y: <span id="zoomedY">False</span></p>
+            <h4>Window coordinates (in dates and values):</h4>
+            <div id="xdimensions"></div>
+            <div id="ydimensions"></div>
         </div>
 
-        <div style="float: right">
-            <p>Zoomed: <span id="zoomed">False</span><p/>
-            <p>Zoomed X: <span id="zoomedX">False</span><p/>
-            <p>Zoomed Y: <span id="zoomedY">False</span><p/>
-        </div>
-        <div style="float: left">
-            <p><input type="button" value="&uarr;" onclick="adjustTop(+1)"></p>
-            <p><input type="button" value="&darr;" onclick="adjustTop(-1)"></p>
-            <p>
-                <input type="button" value="&larr;" onclick="adjustFirst(-100000000)">
-                    <input type="button" value="&rarr;" onclick="adjustFirst(+100000000)">
-            </p>
-            <p><input type="button" value="&uarr;" onclick="adjustBottom(+1)"></p>
-            <p><input type="button" value="&darr;" onclick="adjustBottom(-1)"></p>
-        </div>
-        <div id="div_g" style="width: 600px; height: 300px; float: left"></div>
-        <div style="float: left">
-            <p>
-                <input type="button" value="&larr;" onclick="adjustLast(-100000000)">
-                <input type="button" value="&rarr;" onclick="adjustLast(+100000000)">
-            </p>
-        </div>
         <script type="text/javascript">
             g = new Dygraph(
                 document.getElementById("div_g"),
@@ -119,12 +153,12 @@
 
             function showXDimensions(first, second) {
               var elem = document.getElementById("xdimensions");
-              elem.innerHTML = "dateWindow : [" + first + ", "+ second + "]";
+              elem.innerHTML = "dateWindow: [" + first + ", "+ second + "]";
             }
 
             function showYDimensions(ranges) {
               var elem = document.getElementById("ydimensions");
-              elem.innerHTML = "valueRange : [" + ranges + "]";
+              elem.innerHTML = "valueRange: [" + ranges + "]";
             }
 
         </script>
