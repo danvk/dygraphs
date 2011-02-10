@@ -527,6 +527,17 @@ new Dygraph(el, data, {
 
     <p>The <a href="tests/zoom.html">Tests for zoom operations</a> show a full example of this in action.</p>
 
+    <h3>Programmatic Zoom</h3>
+    <p>
+      When a chart is programmatically zoomed by updating either the <code>dateWindow</code>
+      or <code>valueRange</code> option, by default the zoomed flags are also updated correspondingly.
+      It is possible to prevent this by specifying the <code>noZoomFlagChange</code> in the same
+      call to the <code>updateOptions</code> method.
+    </p>
+    <p>
+      The <a href="tests/no-zoom-change.html">no-zoom-change</a> test shows this in operation.
+    </p>
+
     <h2 id="stock">One last demo</h2>
 
     <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
@@ -733,6 +744,13 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
           <td><code>[10, 110]</code></td>
           <td>Explicitly set the vertical range of the graph to [low, high].
           <div class="tests">Tests: <font color=red>none</font></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4">
+            Changing either of two the above options will cause the corresponding zoom
+            flag (<code>isZoomed()</code>) to be set, unless the <code>noZoomFlagChange</code>
+            option is also specified.
           </td>
         </tr>
         <tr>

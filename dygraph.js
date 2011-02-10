@@ -264,7 +264,15 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
-// Axis is an optional parameter. Can be set to 'x' or 'y'.
+/**
+ * Returns the zoomed status of the chart for one or both axes.
+ *
+ * Axis is an optional parameter. Can be set to 'x' or 'y'.
+ *
+ * The zoomed status for an axis is set whenever a user zooms using the mouse
+ * or when the dateWindow or valueRange are updated (unless the noZoomFlagChange
+ * option is also specified).
+ */
 Dygraph.prototype.isZoomed = function(axis) {
   if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
   if (axis == 'x') return this.zoomed_x_;
@@ -3177,6 +3185,12 @@ Dygraph.prototype.start_ = function() {
  * <li>file: changes the source data for the graph</li>
  * <li>errorBars: changes whether the data contains stddev</li>
  * </ul>
+ *
+ * If the dateWindow or valueRange options are specified, the relevant zoomed_x_
+ * or zoomed_y_ flags are set, unless the noZoomFlagChange option is also
+ * secified. This allows for the chart to be programmatically zoomed without
+ * altering the zoomed flags.
+ *
  * @param {Object} attrs The new properties and values
  */
 Dygraph.prototype.updateOptions = function(attrs) {
