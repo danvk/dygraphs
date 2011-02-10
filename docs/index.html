@@ -1027,15 +1027,6 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
 
         <tr>
-<<<<<<< HEAD
-          <td><strong>noZoomFlagChange</strong></td>
-          <td><code></code></td>
-          <td><code></code></td>
-          <td>
-            When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state.
-            This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this.
-            <div class="tests">Tests: <a href="tests/no-zoom-change.html">no-zoom-change</a></div>
-=======
           <td><strong>logscale</strong></td>
           <td><code>boolean</code></td>
           <td><code>false</code></td>
@@ -1048,10 +1039,18 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
             <div class="tests">Tests: <a href="tests/logscale.html">logscale</a>,
             <a href="tests/stock.html"> stock</div>
->>>>>>> a6a505d1759f087a1e29ad84fc8510aa4cbc4f6e
           </td>
         </tr>
 
+        <tr>
+          <td><strong>noZoomFlagChange</strong></td>
+          <td><code></code></td>
+          <td><code></code></td>
+          <td>
+            When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state.
+            This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this.
+            <div class="tests">Tests: <a href="tests/no-zoom-change.html">no-zoom-change</a></div>
+        </tr>
       </tbody>
     </table>
 
