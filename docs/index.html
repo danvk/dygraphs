@@ -70,6 +70,7 @@
         <li><a href="tests/two-series.html">Multiple Series</a></li>
         <li><a href="tests/highlighted-region.html">Custom Underlay / background</a></li>
         <li><a href="tests/zoom.html">Tests for zoom operations</a></li>
+        <li><a href="tests/logscale.html">Log scale tests</a></li>
       </ul>
     </div>
 
@@ -730,7 +731,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
         </tr>
         <tr>
           <td><strong>pointSize</strong></td>
-          <td><code>interger</code></td>
+          <td><code>integer</code></td>
           <td><code>1</code></td>
           <td>The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.
           <div class="tests">Tests: <font color=red>none</font></div>
@@ -943,6 +944,22 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
             When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled.
             This is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis.
             <div class="tests">Tests: <a href="tests/avoidMinZero.html">avoidMinZero</a></div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>logscale</strong></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>
+            When set for a y-axis, the graph shows that axis in y-scale. Any values less than or equal
+            to zero are not displayed.</p>
+
+	    Not compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale
+	    with valueRanges that are less than zero will result in an unviewable graph.<br/>
+
+            <div class="tests">Tests: <a href="tests/logscale.html">logscale</a>,
+            <a href="tests/stock.html"> stock</div>
           </td>
         </tr>
 
