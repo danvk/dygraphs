@@ -10,7 +10,6 @@
       screenshot="http://dygraphs.com/screenshot.png"
       author_location="US"
       >
-      -->
     <Require feature="idi" />
     <Require feature="locked-domain" />
   </ModulePrefs>
@@ -29,10 +28,6 @@
   <UserPref name="_dg_kmb" display_name="KMB labels" required="false" default_value="false" datatype="bool" />
   <UserPref name="_dg_errorbars" display_name="Error Bars" required="false" default_value="false" datatype="bool" />
   <UserPref name="_dg_fillGraph" display_name="Fill Chart" required="false" default_value="false" datatype="bool" />
-  <!--
-  This is a sample gadget, that uses the Google Visualization API to read data
-  from a data source, and displays it as an html table.
-  -->
 
   <Content type="html"><![CDATA[
 
@@ -45,6 +40,7 @@
   <script>
     var gadgetHelper = null;
     var table = null;
+    var kPadding = 5;  // pixels of padding on any side of the chart.
 
     _IG_RegisterOnloadHandler(loadVisualizationAPI);
 
@@ -65,8 +61,11 @@
     function sendQuery() {
       var prefs = new _IG_Prefs(); // User preferences
       var chartDiv = _gel('chartdiv');
-      chartDiv.style.width = document.body.clientWidth + 'px';
-      chartDiv.style.height = document.body.clientHeight + 'px';
+      chartDiv.style.width = (document.body.clientWidth - 2 * kPadding) + 'px';
+      chartDiv.style.height = (document.body.clientHeight - 2 * kPadding) + 'px';
+      chartDiv.style.left = kPadding + 'px';
+      chartDiv.style.top = kPadding + 'px';
+      chartDiv.style.position = 'absolute';
       chart = new DateGraph.GVizChart(chartDiv);
 
       gadgetHelper = new google.visualization.GadgetHelper();
