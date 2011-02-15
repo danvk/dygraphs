@@ -32,9 +32,9 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
-  // save a copy.
+  // save a copy. If there is no parser, then the user must be using raw format.
   this.annotations = [];
-  var parse = this.attr_('xValueParser');
+  var parse = this.attr_('xValueParser') || function(x) { return x; };
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && !ann[i].x) {
