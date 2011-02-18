@@ -156,7 +156,7 @@ Dygraph.DEFAULT_ATTRS = {
   yValueFormatter: function(x, opt_precision) {
     var s = Dygraph.floatFormat(x, opt_precision);
     var s2 = Dygraph.intFormat(x);
-    return s.length <= s2.length ? s : s2;
+    return s.length < s2.length ? s : s2;
   },
 
   strokeWidth: 1.0,
@@ -2233,13 +2233,14 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = (tickV / n).toPrecision(numDigits) + k_labels[j];
+          label = formatter(tickV / n, numDigits) + k_labels[j];
           break;
         }
       }
-      ticks[i].label = label;
     }
+    ticks[i].label = label;
   }
+
   return {ticks: ticks, numDigits: numDigits};
 };
 
