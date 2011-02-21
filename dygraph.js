@@ -1401,6 +1401,9 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
   var points = this.layout_.points;
 
+  // This prevents JS errors when mousing over the canvas before data loads.
+  if (typeof(points) == 'undefined') return;
+
   var lastx = -1;
   var lasty = -1;
 
