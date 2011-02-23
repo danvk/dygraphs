@@ -221,7 +221,7 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
 
 /**
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
- * and context &lt;canvas&gt; inside of it. See the constructor for details
+ * and context &lt;canvas&gt; inside of it. See the constructor for details.
  * on the parameters.
  * @param {Element} div the Element to render the graph into.
  * @param {String | Function} file Source data
@@ -254,7 +254,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
-  
+
   // Number of digits to use when labeling the x (if numeric) and y axis
   // ticks.
   this.numXDigits_ = 2;
@@ -1808,8 +1808,10 @@ Dygraph.prototype.addXTicks_ = function() {
   var ret = formatter(range[0], range[1], this);
   var xTicks = [];
 
+  // Note: numericTicks() returns a {ticks: [...], numDigits: yy} dictionary,
+  // whereas dateTicker and user-defined tickers typically just return a ticks
+  // array.
   if (ret.ticks !== undefined) {
-    // numericTicks() returns multiple values.
     xTicks = ret.ticks;
     this.numXDigits_ = ret.numDigits;
   } else {
