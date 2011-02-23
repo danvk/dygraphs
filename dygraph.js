@@ -331,6 +331,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.start_();
 };
 
+Dygraph.prototype.toString = function() {
+  var maindiv = this.maindiv_;
+  var id = (maindiv && maindiv.id) ? maindiv.id : maindiv
+  return "[Dygraph " + id + "]";
+}
+
 Dygraph.prototype.attr_ = function(name, seriesName) {
   if (seriesName &&
       typeof(this.user_attrs_[seriesName]) != 'undefined' &&
@@ -1470,7 +1476,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var points = this.layout_.points;
 
   // This prevents JS errors when mousing over the canvas before data loads.
-  if (points === 'undefined') return;
+  if (points === undefined) return;
 
   var lastx = -1;
   var lasty = -1;
