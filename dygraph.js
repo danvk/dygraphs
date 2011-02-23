@@ -1469,6 +1469,9 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
   var points = this.layout_.points;
 
+  // This prevents JS errors when mousing over the canvas before data loads.
+  if (points === 'undefined') return;
+
   var lastx = -1;
   var lasty = -1;
 
@@ -2110,7 +2113,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   var ticks = [];
   if (vals) {
     for (var i = 0; i < vals.length; i++) {
-      ticks[i].push({v: vals[i]});
+      ticks.push({v: vals[i]});
     }
   } else {
     if (axis_props && attr("logscale")) {
@@ -2224,6 +2227,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
 
   // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
+    if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
     var label = (formatter !== undefined) ?
@@ -2356,7 +2360,7 @@ Dygraph.prototype.drawGraph_ = function() {
         // On the log scale, points less than zero do not exist.
         // This will create a gap in the chart. Note that this ignores
         // connectSeparatedPoints.
-        if (point < 0) {
+        if (point <= 0) {
           point = null;
         }
         series.push([date, point]);
