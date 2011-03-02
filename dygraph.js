@@ -2538,11 +2538,28 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
+      var extremeMinY, extremeMaxY;
       for (var j = 0; j < series.length; j++) {
-        minY = Math.min(extremes[series[j]][0], minY);
-        maxY = Math.max(extremes[series[j]][1], maxY);
+        // Only use valid extremes to stop null data series' from corrupting the scale.
+        extremeMinY = extremes[series[j]][0];
+        if (extremeMinY != null) {
+            minY = Math.min(extremeMinY, minY);
+        }
+        extremeMaxY = extremes[series[j]][1];
+        if (extremeMaxY != null) {
+            maxY = Math.max(extremeMaxY, maxY);
+        }
       }
       if (axis.includeZero && minY > 0) minY = 0;
+
+      // Ensure we have a valid scale, otherwise defualt to zero for safety.
+      if (minY == Infinity) {
+        minY = 0;
+      }
+
+      if (maxY == -Infinity) {
+        maxY = 0;
+      }
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
