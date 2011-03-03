@@ -2965,13 +2965,30 @@ Dygraph.prototype.parseCSV_ = function(data) {
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
     }
-    ret.push(fields);
 
     if (fields.length != expectedCols) {
       this.error("Number of columns in line " + i + " (" + fields.length +
                  ") does not agree with number of labels (" + expectedCols +
                  ") " + line);
     }
+
+    // If the user specified the 'labels' option and none of the cells of the
+    // first row parsed correctly, then they probably double-specified the
+    // labels. We go with the values set in the option, discard this row and
+    // log a warning to the JS console.
+    if (i == 0 && this.attr_('labels')) {
+      var all_null = true;
+      for (var j = 0; all_null && j < fields.length; j++) {
+        if (fields[j]) all_null = false;
+      }
+      if (all_null) {
+        this.warn("The dygraphs 'labels' option is set, but the first row of " +
+                  "CSV data ('" + line + "') appears to also contain labels. " +
+                  "Will drop the CSV labels and use the option labels.");
+        continue;
+      }
+    }
+    ret.push(fields);
   }
 
   if (outOfOrder) {
