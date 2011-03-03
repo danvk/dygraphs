@@ -2970,14 +2970,27 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j++) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         var vals = inFields[j].split("/");
-        fields[j] = [this.parseFloat_(vals[0], i, line),
-                     this.parseFloat_(vals[1], i, line)];
+        if (vals.length != 2) {
+          this.error('Expected fractional "num/den" values in CSV data ' +
+                     "but found a value '" + inFields[j] + "' on line " +
+                     (1 + i) + " ('" + line + "') which is not of this form.");
+          fields[j] = [0, 0];
+        } else {
+          fields[j] = [this.parseFloat_(vals[0], i, line),
+                       this.parseFloat_(vals[1], i, line)];
+        }
       }
     } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
-      for (var j = 1; j < inFields.length; j += 2)
+      if (inFields.length % 2 != 1) {
+        this.error('Expected alternating (value, stdev.) pairs in CSV data ' +
+                   'but line ' + (1 + i) + ' has an odd number of values (' +
+                   (inFields.length - 1) + "): '" + line + "'");
+      }
+      for (var j = 1; j < inFields.length; j += 2) {
         fields[(j + 1) / 2] = [this.parseFloat_(inFields[j], i, line),
                                this.parseFloat_(inFields[j + 1], i, line)];
+      }
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
