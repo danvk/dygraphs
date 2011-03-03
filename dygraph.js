@@ -2878,6 +2878,40 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 };
 
 /**
+ * Parses the value as a floating point number. This is like the parseFloat()
+ * built-in, but with a few differences:
+ * - the empty string is parsed as null, rather than NaN.
+ * - if the string cannot be parsed at all, an error is logged.
+ * If the string can't be parsed, this method returns null.
+ * @param {String} x The string to be parsed
+ * @param {Number} opt_line_no The line number from which the string comes.
+ * @param {String} opt_line The text of the line from which the string comes.
+ * @private
+ */
+
+// Parse the x as a float or return null if it's not a number.
+Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
+  var val = parseFloat(x);
+  if (!isNaN(val)) return val;
+
+  // Try to figure out what happeend.
+  // If the value is the empty string, parse it as null.
+  if (/^ *$/.test(x)) return null;
+
+  // If it was actually "NaN", return it as NaN.
+  if (/^ *nan *$/i.test(x)) return NaN;
+
+  // Looks like a parsing error.
+  var msg = "Unable to parse '" + x + "' as a number";
+  if (opt_line !== null && opt_line_no !== null) {
+    msg += " on line " + (1+opt_line_no) + " ('" + opt_line + "') of CSV.";
+  }
+  this.error(msg);
+
+  return null;
+};
+
+/**
  * Parses a string in a special csv format.  We expect a csv file where each
  * line is a date point, and the first field in each line is the date string.
  * We also expect that all remaining fields represent series.
@@ -2909,13 +2943,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     start = 1;
     this.attrs_.labels = lines[0].split(delim);
   }
-
-  // Parse the x as a float or return null if it's not a number.
-  var parseFloatOrNull = function(x) {
-    var val = parseFloat(x);
-    // isFinite() returns false for NaN and +/-Infinity.
-    return isFinite(val) ? val : null;
-  };
+  var line_no = 0;
 
   var xParser;
   var defaultParserSet = false;  // attempt to auto-detect x value type
@@ -2923,6 +2951,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   var outOfOrder = false;
   for (var i = start; i < lines.length; i++) {
     var line = lines[i];
+    line_no = i;
     if (line.length == 0) continue;  // skip blank lines
     if (line[0] == '#') continue;    // skip comment lines
     var inFields = line.split(delim);
@@ -2941,25 +2970,26 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j++) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         var vals = inFields[j].split("/");
-        fields[j] = [parseFloatOrNull(vals[0]), parseFloatOrNull(vals[1])];
+        fields[j] = [this.parseFloat_(vals[0], i, line),
+                     this.parseFloat_(vals[1], i, line)];
       }
     } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       for (var j = 1; j < inFields.length; j += 2)
-        fields[(j + 1) / 2] = [parseFloatOrNull(inFields[j]),
-                               parseFloatOrNull(inFields[j + 1])];
+        fields[(j + 1) / 2] = [this.parseFloat_(inFields[j], i, line),
+                               this.parseFloat_(inFields[j + 1], i, line)];
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
         var vals = inFields[j].split(";");
-        fields[j] = [ parseFloatOrNull(vals[0]),
-                      parseFloatOrNull(vals[1]),
-                      parseFloatOrNull(vals[2]) ];
+        fields[j] = [ this.parseFloat_(vals[0], i, line),
+                      this.parseFloat_(vals[1], i, line),
+                      this.parseFloat_(vals[2], i, line) ];
       }
     } else {
       // Values are just numbers
       for (var j = 1; j < inFields.length; j++) {
-        fields[j] = parseFloatOrNull(inFields[j]);
+        fields[j] = this.parseFloat_(inFields[j], i, line);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
