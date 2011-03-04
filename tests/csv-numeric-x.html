@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>CSV with numeric X series</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>CSV data with a numeric (non-date) X series.</p>
+    <div id="graph"></div>
+    <script type="text/javascript">
+    new Dygraph(
+      document.getElementById("graph"),
+      "X,Y\n" +
+      "1,0\n" +
+      "2,10\n" +
+      "3,0\n" +
+      "4,-10\n" +
+      "5,0\n"
+    );
+    </script>
+  </body>
+</html>

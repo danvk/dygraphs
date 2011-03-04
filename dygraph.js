@@ -2870,7 +2870,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    this.attrs_.xValueFormatter = this.attrs_.xValueFormatter;
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
