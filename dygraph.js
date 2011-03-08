@@ -1553,6 +1553,32 @@ Dygraph.prototype.idxToRow_ = function(idx) {
   return -1;
 };
 
+Dygraph.isOK = function(x) {
+  return x && !isNaN(x);
+};
+
+Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
+  var displayDigits = this.numXDigits_ + this.numExtraDigits_;
+  var html = this.attr_('xValueFormatter')(x, displayDigits) + ":";
+
+  var fmtFunc = this.attr_('yValueFormatter');
+  var showZeros = this.attr_("labelsShowZeroValues");
+  var sepLines = this.attr_("labelsSeparateLines");
+  for (var i = 0; i < this.selPoints_.length; i++) {
+    var pt = this.selPoints_[i];
+    if (pt.yval == 0 && !showZeros) continue;
+    if (!Dygraph.isOK(pt.canvasy)) continue;
+    if (sepLines) html += "<br/>";
+
+    var c = new RGBColor(this.plotter_.colors[pt.name]);
+    var yval = fmtFunc(pt.yval, displayDigits);
+    html += " <b><font color='" + c.toHex() + "'>"
+      + pt.name + "</font></b>:"
+      + yval;
+  }
+  return html;
+};
+
 /**
  * Draw dots over the selectied points in the data series. This function
  * takes care of cleanup of previously-drawn dots.
@@ -1574,46 +1600,24 @@ Dygraph.prototype.updateSelection_ = function() {
                   2 * maxCircleSize + 2, this.height_);
   }
 
-  var isOK = function(x) { return x && !isNaN(x); };
-
   if (this.selPoints_.length > 0) {
-    var canvasx = this.selPoints_[0].canvasx;
-
     // Set the status message to indicate the selected point(s)
-    var replace = this.attr_('xValueFormatter')(
-          this.lastx_, this.numXDigits_ + this.numExtraDigits_) + ":";
-    var fmtFunc = this.attr_('yValueFormatter');
-    var clen = this.colors_.length;
-
     if (this.attr_('showLabelsOnHighlight')) {
-      // Set the status message to indicate the selected point(s)
-      for (var i = 0; i < this.selPoints_.length; i++) {
-        if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;
-        if (!isOK(this.selPoints_[i].canvasy)) continue;
-        if (this.attr_("labelsSeparateLines")) {
-          replace += "<br/>";
-        }
-        var point = this.selPoints_[i];
-        var c = new RGBColor(this.plotter_.colors[point.name]);
-        var yval = fmtFunc(point.yval, this.numYDigits_ + this.numExtraDigits_);
-        replace += " <b><font color='" + c.toHex() + "'>"
-                + point.name + "</font></b>:"
-                + yval;
-      }
-
-      this.attr_("labelsDiv").innerHTML = replace;
+      var html = this.generateLegendHTML_(this.lastx_, this.selPoints_);
+      this.attr_("labelsDiv").innerHTML = html;
     }
 
     // Draw colored circles over the center of each selected point
+    var canvasx = this.selPoints_[0].canvasx;
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
-      if (!isOK(this.selPoints_[i].canvasy)) continue;
-      var circleSize =
-        this.attr_('highlightCircleSize', this.selPoints_[i].name);
+      var pt = this.selPoints_[i];
+      if (!Dygraph.isOK(pt.canvasy)) continue;
+
+      var circleSize = this.attr_('highlightCircleSize', pt.name);
       ctx.beginPath();
-      ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
-      ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
-              0, 2 * Math.PI, false);
+      ctx.fillStyle = this.plotter_.colors[pt.name];
+      ctx.arc(canvasx, pt.canvasy, circleSize, 0, 2 * Math.PI, false);
       ctx.fill();
     }
     ctx.restore();

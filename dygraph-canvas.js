@@ -739,8 +739,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
 
   // create paths
-  var isOK = function(x) { return x && !isNaN(x); };
-
   var ctx = context;
   if (errorBars) {
     if (fillGraph) {
@@ -768,7 +766,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       for (var j = 0; j < this.layout.points.length; j++) {
         var point = this.layout.points[j];
         if (point.name == setName) {
-          if (!isOK(point.y)) {
+          if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
           }
@@ -833,7 +831,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       for (var j = 0; j < this.layout.points.length; j++) {
         var point = this.layout.points[j];
         if (point.name == setName) {
-          if (!isOK(point.y)) {
+          if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
           }
@@ -880,7 +878,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
       if (point.name == setName) {
-        if (!isOK(point.canvasy)) {
+        if (!Dygraph.isOK(point.canvasy)) {
           if (stepPlot && prevX != null) {
             // Draw a horizontal line to the start of the missing data
             ctx.beginPath();
@@ -896,7 +894,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           // A point is "isolated" if it is non-null but both the previous
           // and next points are null.
           var isIsolated = (!prevX && (j == points.length - 1 ||
-                                       !isOK(points[j+1].canvasy)));
+                                       !Dygraph.isOK(points[j+1].canvasy)));
 
           if (!prevX) {
             prevX = point.canvasx;
