@@ -958,8 +958,24 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 	    Not compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale
 	    with valueRanges that are less than zero will result in an unviewable graph.<br/>
 
-            <div class="tests">Tests: <a href="tests/logscale.html">logscale</a>,
-            <a href="tests/stock.html"> stock</div>
+            <div class="tests">Tests: <a href="tests/logscale.html">logscale</a>
+            <a href="tests/stock.html">stock</a></div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>legend</strong></td>
+          <td><code>string</code></td>
+          <td><code>'onmouseover'</code></td>
+          <td>
+            Set this to 'always' to always display a legend on the chart.
+
+            This option has some overlapping functionality with
+            'hideOverlayOnMouseOut' and 'showLabelsOnHighlight'. It's likely
+            that these options will be consolidated in the future.<br/>
+
+            <div class="tests">Tests: <a href="tests/noise.html">noise</a>
+            </div>
           </td>
         </tr>
 
