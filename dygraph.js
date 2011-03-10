@@ -187,6 +187,9 @@ Dygraph.DEFAULT_ATTRS = {
   stackedGraph: false,
   hideOverlayOnMouseOut: true,
 
+  // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
+  legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
+
   stepPlot: false,
   avoidMinZero: false,
 
@@ -1553,11 +1556,30 @@ Dygraph.prototype.idxToRow_ = function(idx) {
   return -1;
 };
 
+// TODO(danvk): rename this function to something like 'isNonZeroNan'.
 Dygraph.isOK = function(x) {
   return x && !isNaN(x);
 };
 
 Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
+  // If no points are selected, we display a default legend. Traditionally,
+  // this has been blank. But a better default would be a conventional legend,
+  // which provides essential information for a non-interactive chart.
+  if (typeof(x) === 'undefined') {
+    if (this.attr_('legend') != 'always') return '';
+
+    var sepLines = this.attr_('labelsSeparateLines');
+    var labels = this.attr_('labels');
+    var html = '';
+    for (var i = 1; i < labels.length; i++) {
+      var c = new RGBColor(this.plotter_.colors[labels[i]]);
+      if (i > 1) html += (sepLines ? '<br/>' : ' ');
+      html += "<b><font color='" + c.toHex() + "'>&mdash;" + labels[i] +
+        "</font></b>";
+    }
+    return html;
+  }
+
   var displayDigits = this.numXDigits_ + this.numExtraDigits_;
   var html = this.attr_('xValueFormatter')(x, displayDigits) + ":";
 
@@ -1572,6 +1594,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
 
     var c = new RGBColor(this.plotter_.colors[pt.name]);
     var yval = fmtFunc(pt.yval, displayDigits);
+    // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><font color='" + c.toHex() + "'>"
       + pt.name + "</font></b>:"
       + yval;
@@ -1689,7 +1712,7 @@ Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
   var ctx = this.canvas_.getContext("2d");
   ctx.clearRect(0, 0, this.width_, this.height_);
-  this.attr_("labelsDiv").innerHTML = "";
+  this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
 }
@@ -2473,6 +2496,11 @@ Dygraph.prototype.drawGraph_ = function() {
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
+
+  if (is_initial_draw) {
+    // Generate a static legend before any particular point is selected.
+    this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+  }
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
