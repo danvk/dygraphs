@@ -3,6 +3,7 @@ import json
 import glob
 import re
 
+# Pull options reference JSON out of dygraph.js
 js = ''
 in_json = False
 for line in file('dygraph.js'):
@@ -21,6 +22,8 @@ docs = json.loads(js)
 for opt in docs:
   docs[opt]['tests'] = []
 
+# This is helpful for differentiating uses of options like 'width' and 'height'
+# from appearances of identically-named options in CSS.
 def find_braces(txt):
   """Really primitive method to find text inside of {..} braces.
   Doesn't work if there's an unmatched brace in a string, e.g. '{'. """
@@ -35,7 +38,9 @@ def find_braces(txt):
       level -= 1
   return out
 
-prop_re = re.compile(r'\b([a-zA-Z]+):')
+# Find text followed by a colon. These won't all be options, but those that
+# have the same name as a Dygraph option probably will be.
+prop_re = re.compile(r'\b([a-zA-Z0-9]+):')
 for test_file in glob.glob('tests/*.html'):
   braced_html = find_braces(file(test_file).read())
   ms = re.findall(prop_re, braced_html)
@@ -44,6 +49,7 @@ for test_file in glob.glob('tests/*.html'):
       docs[opt]['tests'].append(test_file)
 
 def name(f):
+  """Takes 'tests/demo.html' -> 'demo'"""
   return f.replace('tests/', '').replace('.html', '')
 
 for opt_name in sorted(docs.keys()):
