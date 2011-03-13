@@ -48,29 +48,63 @@ for test_file in glob.glob('tests/*.html'):
     if opt in docs and test_file not in docs[opt]['tests']:
       docs[opt]['tests'].append(test_file)
 
+# Extract a labels list.
+labels = []
+for nu, opt in docs.iteritems():
+  for label in opt['labels']:
+    if label not in labels:
+      labels.append(label)
+
+print """
+<html>
+<head>
+  <title>Dygraphs Options Reference</title>
+  <style type="text/css">
+    p.option {
+      padding-left: 25px;
+      max-width: 800px;
+    }
+  </style>
+</head>
+<body>
+"""
+
+print 'Options categories:\n'
+print '<ul>\n'
+for label in sorted(labels):
+  print '  <li><a href="#%s">%s</a>\n' % (label, label)
+print '</ul>\n\n'
+
 def name(f):
   """Takes 'tests/demo.html' -> 'demo'"""
   return f.replace('tests/', '').replace('.html', '')
 
-for opt_name in sorted(docs.keys()):
-  opt = docs[opt_name]
-  tests = opt['tests']
-  if not tests:
-    examples_html = '<font color=red>NONE</font>'
-  else:
-    examples_html = ' '.join(
-      '<a href="%s">%s</a>' % (f, name(f)) for f in tests)
+for label in sorted(labels):
+  print '<a name="%s"><h2>%s</h2>\n' % (label, label)
 
-  print """
-<p><b>%(name)s</b><br/>
-%(desc)s<br/>
-<i>Type: %(type)s<br/>
-Default: %(default)s</i><br/>
-Examples: %(examples_html)s<br/>
-<br/>
-""" % { 'name': opt_name,
-        'type': opt['type'],
-        'default': opt['default'],
-        'desc': opt['description'],
-        'examples_html': examples_html}
+  for opt_name in sorted(docs.keys()):
+    opt = docs[opt_name]
+    if label not in opt['labels']: continue
+    tests = opt['tests']
+    if not tests:
+      examples_html = '<font color=red>NONE</font>'
+    else:
+      examples_html = ' '.join(
+        '<a href="%s">%s</a>' % (f, name(f)) for f in tests)
 
+    print """
+  <p class='option'><b>%(name)s</b><br/>
+  %(desc)s<br/>
+  <i>Type: %(type)s<br/>
+  Default: %(default)s</i><br/>
+  Examples: %(examples_html)s<br/>
+  <br/>
+  """ % { 'name': opt_name,
+          'type': opt['type'],
+          'default': opt['default'],
+          'desc': opt['description'],
+          'examples_html': examples_html}
+
+
+# This page was super-helpful:
+# http://jsbeautifier.org/
