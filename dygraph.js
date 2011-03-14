@@ -3841,7 +3841,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Axis display"],
     "type": "boolean",
-    "description": "When set for a y-axis, the graph shows that axis in y-scale. Any values less than or equal to zero are not displayed.\n\nNot compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale with valueRanges that are less than zero will result in an unviewable graph."
+    "description": "When set for a y-axis, the graph shows that axis in log scale. Any values less than or equal to zero are not displayed.\n\nNot compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale with valueRanges that are less than zero will result in an unviewable graph."
   },
   "strokeWidth": {
     "default": "1.0",
