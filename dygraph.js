@@ -3740,6 +3740,18 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "",
     "description": ""
   },
+  "annotationClickHandler": {
+    "default": "",
+    "labels": ["Annotations"],
+    "type": "",
+    "description": ""
+  },
+  "annotationDblClickHandler": {
+    "default": "",
+    "labels": ["Annotations"],
+    "type": "",
+    "description": ""
+  },
   "drawCallback": {
     "default": "null",
     "labels": ["Callbacks"],
