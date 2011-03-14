@@ -8,7 +8,7 @@ site=$1
 ./generate-combined.sh
 
 # Generate documentation.
-./generate-documentation.sh > docs/options.html
+./generate-documentation.py > docs/options.html
 
 # Copy everything to the site.
 scp tests/*.html tests/*.js tests/*.png $site/tests/ \
