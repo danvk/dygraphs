@@ -3637,12 +3637,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is \"isolated\", i.e. there is a missing point on either side of it. This also controls the size of those dots."
   },
-  "annotationMouseOutHandler": {
-    "default": "",
-    "labels": ["Annotations"],
-    "type": "",
-    "description": ""
-  },
   "labelsDivStyles": {
     "default": "null",
     "labels": ["Legend"],
@@ -3735,22 +3729,28 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks."
   },
   "annotationMouseOverHandler": {
-    "default": "",
+    "default": "null",
     "labels": ["Annotations"],
-    "type": "",
-    "description": ""
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user mouses over an annotation."
+  },
+  "annotationMouseOutHandler": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user mouses out of an annotation."
   },
   "annotationClickHandler": {
-    "default": "",
+    "default": "null",
     "labels": ["Annotations"],
-    "type": "",
-    "description": ""
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user clicks on an annotation."
   },
   "annotationDblClickHandler": {
-    "default": "",
+    "default": "null",
     "labels": ["Annotations"],
-    "type": "",
-    "description": ""
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user double-clicks on an annotation."
   },
   "drawCallback": {
     "default": "null",
