@@ -59,9 +59,15 @@ print """
 <html>
 <head>
   <title>Dygraphs Options Reference</title>
+  <link rel="stylesheet" href="style.css">
   <style type="text/css">
     p.option {
       padding-left: 25px;
+    }
+    #nav {
+      position: fixed;
+    }
+    #content {
       max-width: 800px;
     }
   </style>
@@ -69,18 +75,53 @@ print """
 <body>
 """
 
-print 'Options categories:\n'
-print '<ul>\n'
+print """
+<div id=nav>
+<h2>Dygraphs</h2>
+<ul>
+  <li><a href="index.html">Home</a>
+  <li><a href="data.html">Data Formats</a></li>
+  <li><a href="annotations.html">Annotations</a></li>
+</ul>
+<h2>Options Reference</h2>
+<ul>
+  <li><a href="#usage">Usage</a>
+"""
 for label in sorted(labels):
   print '  <li><a href="#%s">%s</a>\n' % (label, label)
-print '</ul>\n\n'
+print '</ul>\n</div>\n\n'
 
 def name(f):
   """Takes 'tests/demo.html' -> 'demo'"""
   return f.replace('tests/', '').replace('.html', '')
 
+print """
+<div id=content>
+<h2>Options Reference</h2>
+<p>Dygraphs tries to do a good job of displaying your data without any further configuration. But inevitably, you're going to want to tinker. Dygraphs provides a rich set of options for configuring its display and behavior.</p>
+
+<a name="usage"><h3>Usage</h3>
+<p>You specify options in the third parameter to the dygraphs constructor:
+<pre>g = new Dygraph(div,
+                data,
+                {
+                  option1: value1,
+                  option2: value2,
+                  ...
+                });
+</pre>
+
+After you've created a Dygraph, you can change an option by calling the <code>updateOptions</code> method:
+<pre>g.updateOptions({
+                  new_option1: value1,
+                  new_option2: value2
+                });
+</pre>
+
+<p>And, without further ado, here's the complete list of options:</p>
+"""
 for label in sorted(labels):
-  print '<a name="%s"><h2>%s</h2>\n' % (label, label)
+  print '<a name="%s"><h3>%s</h3>\n' % (label, label)
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -91,6 +132,10 @@ for label in sorted(labels):
     else:
       examples_html = ' '.join(
         '<a href="%s">%s</a>' % (f, name(f)) for f in tests)
+
+    if not opt['type']: opt['type'] = '(missing)'
+    if not opt['default']: opt['default'] = '(missing)'
+    if not opt['description']: opt['description'] = '(missing)'
 
     print """
   <p class='option'><b>%(name)s</b><br/>
@@ -105,6 +150,12 @@ for label in sorted(labels):
           'desc': opt['description'],
           'examples_html': examples_html}
 
+
+print """
+</div>
+</body>
+</html>
+"""
 
 # This page was super-helpful:
 # http://jsbeautifier.org/
