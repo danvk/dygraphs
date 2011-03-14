@@ -138,7 +138,7 @@ for label in sorted(labels):
     if not opt['description']: opt['description'] = '(missing)'
 
     print """
-  <p class='option'><b>%(name)s</b><br/>
+  <p class='option'><a name="%(name)s"/><b>%(name)s</b><br/>
   %(desc)s<br/>
   <i>Type: %(type)s<br/>
   Default: %(default)s</i><br/>
