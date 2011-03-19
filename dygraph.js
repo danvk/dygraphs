@@ -3254,6 +3254,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           annotations.push(ann);
         }
       }
+
+      // Strip out infinities, which give dygraphs problems later on.
+      for (var j = 0; j < row.length; j++) {
+        if (!isFinite(row[j])) row[j] = null;
+      }
     } else {
       for (var j = 0; j < cols - 1; j++) {
         row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
@@ -3261,11 +3266,6 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     }
     if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
-    }
-
-    // Strip out infinities, which give dygraphs problems later on.
-    for (var j = 0; j < row.length; j++) {
-      if (!isFinite(row[j])) row[j] = null;
     }
     ret.push(row);
   }
