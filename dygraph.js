@@ -2635,6 +2635,20 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     seriesForAxis[idx].push(series);
   }
 
+  // If no series are defined or visible then fill in some reasonable defaults.
+  if (seriesForAxis.length == 0) {
+    var axis = this.axes_[0];
+    axis.computedValueRange = [0, 1];
+    var ret =
+      Dygraph.numericTicks(axis.computedValueRange[0],
+                           axis.computedValueRange[1],
+                           this,
+                           axis);
+    axis.ticks = ret.ticks;
+    this.numYDigits_ = ret.numDigits;
+    return;
+  }
+
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];

@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>no-visibility</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <h3>No visible series</h3>
+    <p>This test verifies that a chart will still draw without any JS errors
+    when no series are visible.</p>
+    <div id="div_g" style="width:400px; height:200px;"></div>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+              visibility: [false, false]
+            }
+          );
+    </script>
+
+  </body>
+</html>
