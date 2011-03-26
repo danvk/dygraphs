@@ -13,9 +13,8 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <p>7-day rollup:</p>
     <div id="div_g" style="width:600px; height:300px;"></div>
-    <p>14-Day Rollup:</p>
+    <br/>
     <div id="div_g30" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
@@ -24,7 +23,10 @@
             NoisyData, {
               rollPeriod: 7,
               errorBars: true,
-              legend: 'always'
+              legend: 'always',
+              ylabel: 'Percent Error',
+              yAxisLabelWidth: 25,
+              title: 'Error Rates over Time (7-day rollup)'
             }
           );
       g30 = new Dygraph(
@@ -34,9 +36,12 @@
               errorBars: true,
               legend: 'always',
               labelsDivStyles: {
-                'text-align': 'right',
+                'textAlign': 'right',
               },
-              labelsDivWidth: 170
+              labelsDivWidth: 170,
+              ylabel: 'Percent Error',
+              yAxisLabelWidth: 25,
+              title: 'Error Rates over Time (14-day rollup)'
             }
           );
     </script>

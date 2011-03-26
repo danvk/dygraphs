@@ -7,6 +7,24 @@
  * - grid overlays
  * - error bars
  * - dygraphs attribute system
+ *
+ * High level overview of classes:
+ *
+ * - DygraphLayout
+ *     This contains all the data to be charted.
+ *     It uses data coordinates, but also records the chart range (in data
+ *     coordinates) and hence is able to calculate percentage positions ('In
+ *     this view, Point A lies 25% down the x-axis.')
+ *     Two things that it does not do are:
+ *     1. Record pixel coordinates for anything.
+ *     2. (oddly) determine anything about the layout of chart elements.
+ *     The naming is a vestige of Dygraph's original PlotKit roots.
+ *
+ * - DygraphCanvasRenderer
+ *     This class determines the charting area (in pixel coordinates), maps the
+ *     percentage coordinates in the DygraphLayout to pixels and draws them.
+ *     It's also responsible for creating chart DOM elements, i.e. annotations,
+ *     tick mark labels, the title and the x/y-axis labels.
  */
 
 /**
@@ -301,6 +319,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.xlabels = new Array();
   this.ylabels = new Array();
   this.annotations = new Array();
+  this.chartLabels = {};
 
   // TODO(danvk): consider all axes in this computation.
   this.area = {
@@ -319,6 +338,22 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   } else if (this.dygraph_.numAxes() > 2) {
     this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
                         "to use " + this.dygraph_.numAxes() + ")");
+  }
+
+  // Add space for chart labels: title, xlabel and ylabel.
+  if (this.attr_('title')) {
+    // TODO(danvk): make this a parameter
+    this.area.h -= this.attr_('titleHeight');
+    this.area.y += this.attr_('titleHeight');
+  }
+  if (this.attr_('xlabel')) {
+    // TODO(danvk): make this a parameter
+    this.area.h -= this.attr_('xLabelHeight');
+  }
+  if (this.attr_('ylabel')) {
+    var yLabelWidth = 16;
+    this.area.x += this.attr_('yLabelWidth');
+    this.area.w -= this.attr_('yLabelWidth');
   }
 
   this.container.style.position = "relative";
@@ -374,9 +409,15 @@ DygraphCanvasRenderer.prototype.clear = function() {
     var el = this.annotations[i];
     if (el.parentNode) el.parentNode.removeChild(el);
   }
+  for (var k in this.chartLabels) {
+    if (!this.chartLabels.hasOwnProperty(k)) continue;
+    var el = this.chartLabels[k];
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }
   this.xlabels = new Array();
   this.ylabels = new Array();
   this.annotations = new Array();
+  this.chartLabels = {};
 };
 
 
@@ -452,6 +493,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
+  this._renderChartLabels(); 
   this._renderAnnotations();
 };
 
@@ -518,7 +560,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
           label.style.top = top + "px";
         }
         if (tick[0] == 0) {
-          label.style.left = "0px";
+          label.style.left = (this.area.x - this.options.yAxisLabelWidth - this.options.axisTickSize) + "px";
           label.style.textAlign = "right";
         } else if (tick[0] == 1) {
           label.style.left = (this.area.x + this.area.w +
@@ -575,7 +617,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
         var label = makeDiv(tick[1]);
         label.style.textAlign = "center";
-        label.style.bottom = "0px";
+        label.style.top = (y + this.options.axisTickSize) + 'px';
 
         var left = (x - this.options.axisLabelWidth/2);
         if (left + this.options.axisLabelWidth > this.width) {
@@ -602,6 +644,80 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   }
 
   context.restore();
+};
+
+
+DygraphCanvasRenderer.prototype._renderChartLabels = function() {
+  // Generate divs for the chart title, xlabel and ylabel.
+  // Space for these divs has already been taken away from the charting area in
+  // the DygraphCanvasRenderer constructor.
+  if (this.attr_('title')) {
+    var div = document.createElement("div");
+    div.style.position = 'absolute';
+    div.style.top = '0px';
+    div.style.left = this.area.x + 'px';
+    div.style.width = this.area.w + 'px';
+    div.style.height = this.attr_('titleHeight') + 'px';
+    div.style.textAlign = 'center';
+    div.style.fontSize = this.attr_('titleHeight') + 'px';
+    div.style.fontWeight = 'bold';
+    // div.style.border = '1px solid black';
+    div.innerHTML = this.attr_('title');
+    this.container.appendChild(div);
+    this.chartLabels.title = div;
+  }
+
+  if (this.attr_('xlabel')) {
+    var div = document.createElement("div");
+    div.style.position = 'absolute';
+    div.style.bottom = 0;  // TODO(danvk): this is lazy. Calculate style.top.
+    div.style.left = this.area.x + 'px';
+    div.style.width = this.area.w + 'px';
+    div.style.height = this.attr_('xLabelHeight') + 'px';
+    div.style.textAlign = 'center';
+    div.style.fontSize = this.attr_('xLabelHeight') + 'px';
+    // div.style.border = '1px solid black';
+    div.innerHTML = this.attr_('xlabel');
+    this.container.appendChild(div);
+    this.chartLabels.xlabel = div;
+  }
+
+  if (this.attr_('ylabel')) {
+    var box = {
+      left: 0,
+      top: this.area.y,
+      width: this.attr_('yLabelWidth'),
+      height: this.area.h
+    };
+    var div = document.createElement("div");
+    div.style.position = 'absolute';
+    div.style.left = box.left;
+    div.style.top = box.top + 'px';
+    div.style.width = box.width + 'px';
+    div.style.height = box.height + 'px';
+    div.style.fontSize = this.attr_('xLabelHeight') + 'px';
+    // div.style.border = '1px solid black';
+
+    var inner_div = document.createElement("div");
+    inner_div.style.position = 'absolute';
+    // inner_div.style.border = '1px solid red';
+    inner_div.style.width = box.height + 'px';
+    inner_div.style.height = box.width + 'px';
+    inner_div.style.top = (box.height / 2 - box.width / 2) + 'px';
+    inner_div.style.left = (box.width / 2 - box.height / 2) + 'px';
+    inner_div.style.textAlign = 'center';
+    inner_div.style.transform = 'rotate(-90deg)';        // HTML5
+    inner_div.style.WebkitTransform = 'rotate(-90deg)';  // Safari/Chrome
+    inner_div.style.MozTransform = 'rotate(-90deg)';     // Firefox
+    inner_div.style.OTransform = 'rotate(-90deg)';       // Opera
+    inner_div.style.filter =
+     'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+    inner_div.innerHTML = this.attr_('ylabel');
+
+    div.appendChild(inner_div);
+    this.container.appendChild(div);
+    this.chartLabels.ylabel = div;
+  }
 };
 
 

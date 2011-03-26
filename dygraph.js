@@ -193,6 +193,11 @@ Dygraph.DEFAULT_ATTRS = {
   stepPlot: false,
   avoidMinZero: false,
 
+  // Sizes of the various chart labels.
+  titleHeight: 16,
+  xLabelHeight: 16,
+  yLabelWidth: 16,
+
   interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
 
@@ -914,8 +919,9 @@ Dygraph.prototype.createStatusMessage_ = function() {
 };
 
 /**
- * Position the labels div so that its right edge is flush with the right edge
- * of the charting area.
+ * Position the labels div so that:
+ * - its right edge is flush with the right edge of the charting area
+ * - its top edge is flush with the top edge of the charting area
  */
 Dygraph.prototype.positionLabelsDiv_ = function() {
   // Don't touch a user-specified labelsDiv.
@@ -924,6 +930,7 @@ Dygraph.prototype.positionLabelsDiv_ = function() {
   var area = this.plotter_.area;
   var div = this.attr_("labelsDiv");
   div.style.left = area.x + area.w - this.attr_("labelsDivWidth") - 1 + "px";
+  div.style.top = area.y + "px";
 };
 
 /**
