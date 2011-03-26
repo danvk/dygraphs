@@ -659,7 +659,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.width = this.area.w + 'px';
     div.style.height = this.attr_('titleHeight') + 'px';
     div.style.textAlign = 'center';
-    div.style.fontSize = this.attr_('titleHeight') + 'px';
+    div.style.fontSize = (this.attr_('titleHeight') - 2) + 'px';
     div.style.fontWeight = 'bold';
     // div.style.border = '1px solid black';
     div.innerHTML = this.attr_('title');
@@ -675,7 +675,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.width = this.area.w + 'px';
     div.style.height = this.attr_('xLabelHeight') + 'px';
     div.style.textAlign = 'center';
-    div.style.fontSize = this.attr_('xLabelHeight') + 'px';
+    div.style.fontSize = (this.attr_('xLabelHeight') - 2) + 'px';
     // div.style.border = '1px solid black';
     div.innerHTML = this.attr_('xlabel');
     this.container.appendChild(div);
@@ -695,7 +695,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.top = box.top + 'px';
     div.style.width = box.width + 'px';
     div.style.height = box.height + 'px';
-    div.style.fontSize = this.attr_('xLabelHeight') + 'px';
+    div.style.fontSize = (this.attr_('yLabelWidth') - 2) + 'px';
     // div.style.border = '1px solid black';
 
     var inner_div = document.createElement("div");

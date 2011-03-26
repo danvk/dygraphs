@@ -194,9 +194,9 @@ Dygraph.DEFAULT_ATTRS = {
   avoidMinZero: false,
 
   // Sizes of the various chart labels.
-  titleHeight: 16,
-  xLabelHeight: 16,
-  yLabelWidth: 16,
+  titleHeight: 18,
+  xLabelHeight: 18,
+  yLabelWidth: 18,
 
   interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
