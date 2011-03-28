@@ -948,10 +948,11 @@ Dygraph.prototype.createRollInterface_ = function() {
 
   var display = this.attr_('showRoller') ? 'block' : 'none';
 
+  var area = this.plotter_.area;
   var textAttr = { "position": "absolute",
                    "zIndex": 10,
-                   "top": (this.plotter_.area.h - 25) + "px",
-                   "left": (this.plotter_.area.x + 1) + "px",
+                   "top": (area.y + area.h - 25) + "px",
+                   "left": (area.x + 1) + "px",
                    "display": display
                   };
   this.roller_.size = "2";
