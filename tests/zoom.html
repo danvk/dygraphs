@@ -33,9 +33,9 @@
       <br> <br>
       <input type="button" value="Unzoom" onclick="unzoomGraph()">&nbsp;
       <br> <br>
-      <input type="button" value="pan frame 0" onclick="panFrame(0)">&nbsp;
-      <input type="button" value="pan frame 0.1" onclick="panFrame(0.1)">&nbsp;
-      <input type="button" value="pan frame 0.5" onclick="panFrame(0.5)">&nbsp;
+      <input type="button" value="pan frame 0" onclick="panEdgeFraction(0)">&nbsp;
+      <input type="button" value="pan frame 0.1" onclick="panEdgeFraction(0.1)">&nbsp;
+      <input type="button" value="pan frame 0.5" onclick="panEdgeFraction(0.5)">&nbsp;
       </p>
 
 
@@ -96,8 +96,8 @@
         });
       }
 
-      function panFrame(value) {
-        g.updateOptions({ panFrame : value });
+      function panEdgeFraction(value) {
+        g.updateOptions({ panEdgeFraction : value });
       }
     </script>
 

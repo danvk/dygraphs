@@ -420,7 +420,7 @@ Dygraph.prototype.xAxisExtremes = function() {
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
   return [left, right];
-}
+};
 
 /**
  * Returns the currently-visible y-range for an axis. This can be affected by
@@ -617,18 +617,8 @@ Dygraph.prototype.toPercentXCoord = function(x) {
     return null;
   }
 
-  var area = this.plotter_.area;
   var xRange = this.xAxisRange();
-
-  var pct;
-  // xRange[1] - x is unit distance from the right.
-  // xRange[1] - xRange[0] is the scale of the range.
-  // (xRange[1] - x / (xRange[1] - xRange[0]) is the % from the right.
-  // 1 - (that) is the % distance from the left.
-  pct = (xRange[1] - x) / (xRange[1] - xRange[0]);
-  // There's a way to optimize that, but I'm copying the y-coord function
-  // and am lazy.
-  return 1 - pct;
+  return (x - xRange[0]) / (xRange[1] - xRange[0]);
 }
 
 /**
@@ -1041,9 +1031,8 @@ Dygraph.startPan = function(event, g, context) {
   context.initialLeftmostDate = xRange[0];
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
-  // TODO(konigsberg): do that clever "undefined" thing. 
-  if (g.attr_("panFrame")) {
-    var maxXPixelsToDraw = g.width_ * g.attr_("panFrame");
+  if (g.attr_("panEdgeFraction")) {
+    var maxXPixelsToDraw = g.width_ * g.attr_("panEdgeFraction");
     var xExtremes = g.xAxisExtremes(); // I REALLY WANT TO CALL THIS xTremes!
 
     var boundedLeftX = g.toDomXCoord(xExtremes[0]) - maxXPixelsToDraw;
@@ -1054,7 +1043,7 @@ Dygraph.startPan = function(event, g, context) {
     context.boundedDates = [boundedLeftDate, boundedRightDate];
 
     var boundedValues = [];
-    var maxYPixelsToDraw = g.height_ * g.attr_("panFrame");
+    var maxYPixelsToDraw = g.height_ * g.attr_("panEdgeFraction");
 
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
@@ -1066,8 +1055,6 @@ Dygraph.startPan = function(event, g, context) {
       var boundedTopValue = g.toDataYCoord(boundedTopY);
       var boundedBottomValue = g.toDataYCoord(boundedBottomY);
 
-      console.log(yExtremes[0], yExtremes[1], boundedTopValue, boundedBottomValue);
-      // could reverse these, who knows?
       boundedValues[i] = [boundedTopValue, boundedBottomValue];
     }
     context.boundedValues = boundedValues;
@@ -1116,7 +1103,7 @@ Dygraph.movePan = function(event, g, context) {
     if (maxDate > context.boundedDates[1]) {
       // Adjust minDate, and recompute maxDate.
       minDate = minDate - (maxDate - context.boundedDates[1]);
-      var maxDate = minDate + context.dateRange;
+      maxDate = minDate + context.dateRange;
     }
   }
 
@@ -1363,7 +1350,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     px: 0,
     py: 0,
 
-    // Values for use with panFrame, which limit how far outside the
+    // Values for use with panEdgeFraction, which limit how far outside the
     // graph's data boundaries it can be panned.
     boundedDates: null, // [minDate, maxDate]
     boundedValues: null, // [[minValue, maxValue] ...]
@@ -4119,9 +4106,9 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google's AnnotatedTimeLine chart."
   },
-  "panFrame": {
+  "panEdgeFraction": {
     "default": "null",
-    "labels": ["Axis Display?"],
+    "labels": ["Axis Display", "Interactive Elements"],
     "type": "float",
     "default": "null",
     "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
