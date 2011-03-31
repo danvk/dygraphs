@@ -2,6 +2,12 @@
 import json
 import glob
 import re
+import sys
+
+# Set this to the path to a test file to get debug output for just that test
+# file. Can be helpful to figure out why a test is not being shown for a
+# particular option.
+debug_tests = []  # [ 'tests/zoom.html' ]
 
 # Pull options reference JSON out of dygraph.js
 js = ''
@@ -40,13 +46,20 @@ def find_braces(txt):
 
 # Find text followed by a colon. These won't all be options, but those that
 # have the same name as a Dygraph option probably will be.
-prop_re = re.compile(r'\b([a-zA-Z0-9]+):')
-for test_file in glob.glob('tests/*.html'):
+prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
+tests = debug_tests or glob.glob('tests/*.html')
+for test_file in tests:
   braced_html = find_braces(file(test_file).read())
+  if debug_tests:
+    print braced_html
+
   ms = re.findall(prop_re, braced_html)
   for opt in ms:
+    if debug_tests: print '\n'.join(ms)
     if opt in docs and test_file not in docs[opt]['tests']:
       docs[opt]['tests'].append(test_file)
+
+if debug_tests: sys.exit(0)
 
 # Extract a labels list.
 labels = []
