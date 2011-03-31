@@ -409,9 +409,14 @@ Dygraph.prototype.rollPeriod = function() {
  * If the Dygraph has dates on the x-axis, these will be millis since epoch.
  */
 Dygraph.prototype.xAxisRange = function() {
-  if (this.dateWindow_) return this.dateWindow_;
+  return this.dateWindow_ ? this.dateWindow_ : this.xAxisExtremes();
+};
 
-  // The entire chart is visible.
+/**
+ * Returns the lower- and upper-bound x-axis values of the
+ * data set.
+ */
+Dygraph.prototype.xAxisExtremes = function() {
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
   return [left, right];
@@ -564,7 +569,7 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
 
 /**
  * Converts a y for an axis to a percentage from the top to the
- * bottom of the div.
+ * bottom of the drawing area.
  *
  * If the coordinate represents a value visible on the canvas, then
  * the value will be between 0 and 1, where 0 is the top of the canvas.
@@ -585,8 +590,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
 
   var pct;
   if (!this.axes_[axis].logscale) {
-    // yrange[1] - y is unit distance from the bottom.
-    // yrange[1] - yrange[0] is the scale of the range.
+    // yRange[1] - y is unit distance from the bottom.
+    // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
     pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
   } else {
@@ -594,6 +599,26 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
     pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
   }
   return pct;
+}
+
+/**
+ * Converts an x value to a percentage from the left to the right of
+ * the drawing area.
+ *
+ * If the coordinate represents a value visible on the canvas, then
+ * the value will be between 0 and 1, where 0 is the left of the canvas.
+ * However, this method will return values outside the range, as
+ * values can fall outside the canvas.
+ *
+ * If x is null, this returns null.
+ */
+Dygraph.prototype.toPercentXCoord = function(x) {
+  if (x == null) {
+    return null;
+  }
+
+  var xRange = this.xAxisRange();
+  return (x - xRange[0]) / (xRange[1] - xRange[0]);
 }
 
 /**
@@ -1006,6 +1031,35 @@ Dygraph.startPan = function(event, g, context) {
   context.initialLeftmostDate = xRange[0];
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
+  if (g.attr_("panEdgeFraction")) {
+    var maxXPixelsToDraw = g.width_ * g.attr_("panEdgeFraction");
+    var xExtremes = g.xAxisExtremes(); // I REALLY WANT TO CALL THIS xTremes!
+
+    var boundedLeftX = g.toDomXCoord(xExtremes[0]) - maxXPixelsToDraw;
+    var boundedRightX = g.toDomXCoord(xExtremes[1]) + maxXPixelsToDraw;
+
+    var boundedLeftDate = g.toDataXCoord(boundedLeftX);
+    var boundedRightDate = g.toDataXCoord(boundedRightX);
+    context.boundedDates = [boundedLeftDate, boundedRightDate];
+
+    var boundedValues = [];
+    var maxYPixelsToDraw = g.height_ * g.attr_("panEdgeFraction");
+
+    for (var i = 0; i < g.axes_.length; i++) {
+      var axis = g.axes_[i];
+      var yExtremes = axis.extremeRange;
+
+      var boundedTopY = g.toDomYCoord(yExtremes[0], i) + maxYPixelsToDraw;
+      var boundedBottomY = g.toDomYCoord(yExtremes[1], i) - maxYPixelsToDraw;
+
+      var boundedTopValue = g.toDataYCoord(boundedTopY);
+      var boundedBottomValue = g.toDataYCoord(boundedBottomY);
+
+      boundedValues[i] = [boundedTopValue, boundedBottomValue];
+    }
+    context.boundedValues = boundedValues;
+  }
+
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
   context.is2DPan = false;
@@ -1041,7 +1095,18 @@ Dygraph.movePan = function(event, g, context) {
 
   var minDate = context.initialLeftmostDate -
     (context.dragEndX - context.dragStartX) * context.xUnitsPerPixel;
+  if (context.boundedDates) {
+    minDate = Math.max(minDate, context.boundedDates[0]);
+  }
   var maxDate = minDate + context.dateRange;
+  if (context.boundedDates) {
+    if (maxDate > context.boundedDates[1]) {
+      // Adjust minDate, and recompute maxDate.
+      minDate = minDate - (maxDate - context.boundedDates[1]);
+      maxDate = minDate + context.dateRange;
+    }
+  }
+
   g.dateWindow_ = [minDate, maxDate];
 
   // y-axis scaling is automatic unless this is a full 2D pan.
@@ -1052,10 +1117,22 @@ Dygraph.movePan = function(event, g, context) {
 
       var pixelsDragged = context.dragEndY - context.dragStartY;
       var unitsDragged = pixelsDragged * axis.unitsPerPixel;
+ 
+      var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
 
       // In log scale, maxValue and minValue are the logs of those values.
       var maxValue = axis.initialTopValue + unitsDragged;
+      if (boundedValue) {
+        maxValue = Math.min(maxValue, boundedValue[1]);
+      }
       var minValue = maxValue - axis.dragValueRange;
+      if (boundedValue) {
+        if (minValue < boundedValue[0]) {
+          // Adjust maxValue, and recompute minValue.
+          maxValue = maxValue - (minValue - boundedValue[0]);
+          minValue = maxValue - axis.dragValueRange;
+        }
+      }
       if (axis.logscale) {
         axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
                              Math.pow(Dygraph.LOG_SCALE, maxValue) ];
@@ -1273,6 +1350,11 @@ Dygraph.prototype.createDragInterface_ = function() {
     px: 0,
     py: 0,
 
+    // Values for use with panEdgeFraction, which limit how far outside the
+    // graph's data boundaries it can be panned.
+    boundedDates: null, // [minDate, maxDate]
+    boundedValues: null, // [[minValue, maxValue] ...]
+
     initializeMouseDown: function(event, g, context) {
       // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
@@ -1485,11 +1567,11 @@ Dygraph.prototype.doUnzoom_ = function() {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
-  var points = this.layout_.points;
-
   // This prevents JS errors when mousing over the canvas before data loads.
+  var points = this.layout_.points;
   if (points === undefined) return;
+
+  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
 
   var lastx = -1;
   var lasty = -1;
@@ -2652,15 +2734,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];
-    if (axis.valueWindow) {
-      // This is only set if the user has zoomed on the y-axis. It is never set
-      // by a user. It takes precedence over axis.valueRange because, if you set
-      // valueRange, you'd still expect to be able to pan.
-      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
-    } else if (axis.valueRange) {
-      // This is a user-set value range for this axis.
-      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
-    } else {
+ 
+    {
       // Calculate the extremes of extremes.
       var series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
@@ -2696,8 +2771,18 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           if (minY > 0) minAxisY = 0;
         }
       }
-
-      axis.computedValueRange = [minAxisY, maxAxisY];
+      axis.extremeRange = [minAxisY, maxAxisY];
+    }
+    if (axis.valueWindow) {
+      // This is only set if the user has zoomed on the y-axis. It is never set
+      // by a user. It takes precedence over axis.valueRange because, if you set
+      // valueRange, you'd still expect to be able to pan.
+      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+    } else if (axis.valueRange) {
+      // This is a user-set value range for this axis.
+      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+    } else {
+      axis.computedValueRange = axis.extremeRange;
     }
 
     // Add ticks. By default, all axes inherit the tick positions of the
@@ -4034,6 +4119,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Annotations"],
     "type": "boolean",
     "description": "Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google's AnnotatedTimeLine chart."
+  },
+  "panEdgeFraction": {
+    "default": "null",
+    "labels": ["Axis Display", "Interactive Elements"],
+    "type": "float",
+    "default": "null",
+    "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
   }
 }
 ;  // </JSON>
