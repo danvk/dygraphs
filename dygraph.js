@@ -1161,6 +1161,8 @@ Dygraph.endPan = function(event, g, context) {
   context.initialLeftmostDate = null;
   context.dateRange = null;
   context.valueRange = null;
+  context.boundedDates = null;
+  context.boundedValues = null;
 }
 
 // Called in response to an interaction model operation that
