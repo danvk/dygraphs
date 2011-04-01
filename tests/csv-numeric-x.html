@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
-    <title>isolated points</title>
+    <title>CSV with numeric X series</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
@@ -12,23 +12,17 @@
     <script type="text/javascript" src="../dygraph.js"></script>
   </head>
   <body>
+    <p>CSV data with a numeric (non-date) X series.</p>
     <div id="graph"></div>
     <script type="text/javascript">
     new Dygraph(
       document.getElementById("graph"),
-      [
-        [ 1, 10, 11],
-        [ 2, 15, null],
-        [ 3, null, null],
-        [ 4, 20, 13],
-        [ 5, null, 10],
-        [ 6, 18, null],
-        [ 7, 12, 16]
-      ],
-      {
-        labels: ["X", "S1", "S2" ],
-        showRoller: true
-      }
+      "X,Y\n" +
+      "1,0\n" +
+      "2,10\n" +
+      "3,0\n" +
+      "4,-10\n" +
+      "5,0\n"
     );
     </script>
   </body>

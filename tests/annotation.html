@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>demo</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
@@ -57,8 +59,8 @@
                   for (var i = 0; i < ann.length; i++) {
                     var name = nameAnnotation(ann[i]);
                     html += "<span id='" + name + "'>"
-                    html += name + ": " + ann[i].shortText + " -> ";
-                    html += ann[i].text + "</span><br/>";
+                    html += name + ": " + (ann[i].shortText || '(icon)')
+                    html += " -> " + ann[i].text + "</span><br/>";
                   }
                   document.getElementById("list").innerHTML = html;
                 }

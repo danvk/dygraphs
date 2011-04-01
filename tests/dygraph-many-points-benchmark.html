@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Benchmarking for Plots with Many Points</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>Plot which can be easily generated with different numbers of points for
+       benchmarking/profiling and improving performance of dygraphs.</p>    
+    <p>Number of points:
+       <input type="text" id="num_points_input" size="20"
+              onchange="updatePlot();"></p>
+    <p>Number of series:
+       <input type="text" id="num_series_input" size="20"
+              onchange="updatePlot();"></p>
+    <p>Roll period (in points):
+      <input type="text" id="roll_period_input" size="20"
+              onchange="updatePlot();"></p>
+    <br>
+    <br>
+    <div id="plot"></div>
+    <div id="message"></div>
+
+    <script type="text/javascript">
+      var plot;
+
+      updatePlot = function() {
+        document.getElementById('message').innerHTML = "";
+        var plotDiv = document.getElementById('plot');
+        plotDiv.innerHTML = 'Redrawing...';
+        var numPoints =
+            parseInt(document.getElementById('num_points_input').value);
+        var numSeries =
+            parseInt(document.getElementById('num_series_input').value);
+
+        var data = [];
+        var xmin = 0.0;
+        var xmax = 2.0 * Math.PI;
+        var adj = .5;
+        var delta = (xmax - xmin) / (numPoints - 1);
+
+        for (var i = 0; i < numPoints; ++i) {
+          var x = xmin + delta * i;
+          var elem = [ x ];
+          for (var j = 0; j < numSeries; j++) {
+            var y = Math.sin(x + (j * adj));
+            elem.push(y);
+          }
+          data[i] = elem;
+        }
+        var labels = [ "x" ];
+        for (var j = 0; j < numSeries; j++) {
+          labels.push("sin(x + " + (j*adj) + ")");
+        }
+        var rollPeriod = parseInt(
+            document.getElementById('roll_period_input').value);
+        var opts = {labels: labels, rollPeriod: rollPeriod};
+        var start = new Date();
+        plot = new Dygraph(plotDiv, data, opts);
+        var end = new Date();
+        document.getElementById('message').innerHTML =
+            "completed in " + (end - start) + " milliseconds.";
+      };
+
+      document.getElementById('num_points_input').value = '100';
+      document.getElementById('num_series_input').value = '1';
+      document.getElementById('roll_period_input').value = '1';
+      updatePlot();
+    </script>
+  </body>
+</html>

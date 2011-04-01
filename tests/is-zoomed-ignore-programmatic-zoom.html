@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>noZoomFlagChange Flag</title>
+        <title>isZoomedIgnoreProgrammaticZoom Flag</title>
         <!--[if IE]>
         <script type="text/javascript" src="../excanvas.js"></script>
         <![endif]-->
@@ -11,7 +11,8 @@
         <script type="text/javascript" src="data.js"></script>
     </head>
     <body>
-        <h1>noZoomFlagChange Operation</h1>
+        <!-- Ensure that the documentation generator picks us up: {isZoomedIgnoreProgrammaticZoom:} -->
+        <h1>isZoomedIgnoreProgrammaticZoom Option</h1>
         <p>
             By default, when the <code>dateWindow</code> or <code>updateOptions</code>
             of a chart is changed programmatically by a call to <code>updateOptions</code>
@@ -26,7 +27,7 @@
             flags drive display elements, but only for manual zooming.
         </p>
         <p>
-            In this case <code>noZoomFlagChange</code> may be specified along with
+            In this case <code>isZoomedIgnoreProgrammaticZoom</code> may be specified along with
             either the <code>dateWindow</code> or <code>valueRange</code> values to
             <code>updateOptions</code> and the zoomed flags will remain unaffected.
         </p>
@@ -39,7 +40,7 @@
             Toggle the check box below to determine the difference in operation of the zoom flags
             when the date and value windows of the chart are changed using the arrows underneath.
         </p>
-        <p><input id="noZoomFlagChange" type="checkbox" checked=true />Do not change zoom flags (<code>noZoomFlagChange</code>)</p>
+        <p><input id="isZoomedIgnoreProgrammaticZoom" type="checkbox" checked=true />Do not change zoom flags (<code>isZoomedIgnoreProgrammaticZoom</code>)</p>
 
         <div>
             <div style="float: left">
@@ -113,9 +114,9 @@
 
             function getNoChange() {
                 var options = {}
-                var elem = document.getElementById("noZoomFlagChange")
+                var elem = document.getElementById("isZoomedIgnoreProgrammaticZoom")
                 if (elem.checked) {
-                    options.noZoomFlagChange = true
+                    options.isZoomedIgnoreProgrammaticZoom = true
                 }
                 return options
             }

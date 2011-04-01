@@ -50,11 +50,13 @@ dygraphs uses:
  - rgbcolor.js (Public Domain)
  - strftime.js (BSD License)
  - excanvas.js (Apache License)
+ - FlashCanvas (MIT License)
  - YUI compressor (BSD License)
 
 rgbcolor: http://www.phpied.com/rgb-color-parser-in-javascript/
 strftime: http://tech.bluesmoon.info/2008/04/strftime-in-javascript.html
 excanvas: http://code.google.com/p/explorercanvas/
 yui compressor: http://developer.yahoo.com/yui/compressor/
+flashcanvas: http://flashcanvas.net/
 
 dygraphs is available under the MIT license, included in LICENSE.txt.

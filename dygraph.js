@@ -72,6 +72,59 @@ Dygraph.toString = function() {
   return this.__repr__();
 };
 
+/**
+ * Formatting to use for an integer number.
+ *
+ * @param {Number} x The number to format
+ * @param {Number} unused_precision The precision to use, ignored.
+ * @return {String} A string formatted like %g in printf.  The max generated
+ *                  string length should be precision + 6 (e.g 1.123e+300).
+ */
+Dygraph.intFormat = function(x, unused_precision) {
+  return x.toString();
+}
+
+/**
+ * Number formatting function which mimicks the behavior of %g in printf, i.e.
+ * either exponential or fixed format (without trailing 0s) is used depending on
+ * the length of the generated string.  The advantage of this format is that
+ * there is a predictable upper bound on the resulting string length,
+ * significant figures are not dropped, and normal numbers are not displayed in
+ * exponential notation.
+ *
+ * NOTE: JavaScript's native toPrecision() is NOT a drop-in replacement for %g.
+ * It creates strings which are too long for absolute values between 10^-4 and
+ * 10^-6.  See tests/number-format.html for output examples.
+ *
+ * @param {Number} x The number to format
+ * @param {Number} opt_precision The precision to use, default 2.
+ * @return {String} A string formatted like %g in printf.  The max generated
+ *                  string length should be precision + 6 (e.g 1.123e+300).
+ */
+Dygraph.floatFormat = function(x, opt_precision) {
+  // Avoid invalid precision values; [1, 21] is the valid range.
+  var p = Math.min(Math.max(1, opt_precision || 2), 21);
+
+  // This is deceptively simple.  The actual algorithm comes from:
+  //
+  // Max allowed length = p + 4
+  // where 4 comes from 'e+n' and '.'.
+  //
+  // Length of fixed format = 2 + y + p
+  // where 2 comes from '0.' and y = # of leading zeroes.
+  //
+  // Equating the two and solving for y yields y = 2, or 0.00xxxx which is
+  // 1.0e-3.
+  //
+  // Since the behavior of toPrecision() is identical for larger numbers, we
+  // don't have to worry about the other bound.
+  //
+  // Finally, the argument for toExponential() is the number of trailing digits,
+  // so we take off 1 for the value before the '.'.
+  return (Math.abs(x) < 1.0e-3 && x != 0.0) ?
+      x.toExponential(p - 1) : x.toPrecision(p);
+};
+
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
@@ -100,7 +153,11 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
+  yValueFormatter: function(x, opt_precision) {
+    var s = Dygraph.floatFormat(x, opt_precision);
+    var s2 = Dygraph.intFormat(x);
+    return s.length < s2.length ? s : s2;
+  },
 
   strokeWidth: 1.0,
 
@@ -129,6 +186,9 @@ Dygraph.DEFAULT_ATTRS = {
 
   stackedGraph: false,
   hideOverlayOnMouseOut: true,
+
+  // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
+  legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
 
   stepPlot: false,
   avoidMinZero: false,
@@ -202,6 +262,20 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.zoomed_x_ = false;
   this.zoomed_y_ = false;
 
+  // Number of digits to use when labeling the x (if numeric) and y axis
+  // ticks.
+  this.numXDigits_ = 2;
+  this.numYDigits_ = 2;
+
+  // When labeling x (if numeric) or y values in the legend, there are
+  // numDigits + numExtraDigits of precision used.  For axes labels with N
+  // digits of precision, the data should be displayed with at least N+1 digits
+  // of precision. The reason for this is to divide each interval between
+  // successive ticks into tenths (for 1) or hundredths (for 2), etc.  For
+  // example, if the labels are [0, 1, 2], we want data to be displayed as
+  // 0.1, 1.3, etc.
+  this.numExtraDigits_ = 1;
+
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
   div.innerHTML = "";
@@ -270,7 +344,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * Axis is an optional parameter. Can be set to 'x' or 'y'.
  *
  * The zoomed status for an axis is set whenever a user zooms using the mouse
- * or when the dateWindow or valueRange are updated (unless the noZoomFlagChange
+ * or when the dateWindow or valueRange are updated (unless the isZoomedIgnoreProgrammaticZoom
  * option is also specified).
  */
 Dygraph.prototype.isZoomed = function(axis) {
@@ -287,6 +361,16 @@ Dygraph.prototype.toString = function() {
 }
 
 Dygraph.prototype.attr_ = function(name, seriesName) {
+// <REMOVE_FOR_COMBINED>
+  if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
+    this.error('Must include options reference JS for testing');
+  } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
+    this.error('Dygraphs is using property ' + name + ', which has no entry ' +
+               'in the Dygraphs.OPTIONS_REFERENCE listing.');
+    // Only log this error once.
+    Dygraph.OPTIONS_REFERENCE[name] = true;
+  }
+// </REMOVE_FOR_COMBINED>
   if (seriesName &&
       typeof(this.user_attrs_[seriesName]) != 'undefined' &&
       this.user_attrs_[seriesName] != null &&
@@ -332,7 +416,7 @@ Dygraph.prototype.error = function(message) {
 
 /**
  * Returns the current rolling period, as set by the user or an option.
- * @return {Number} The number of days in the rolling window
+ * @return {Number} The number of points in the rolling window
  */
 Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
@@ -345,9 +429,14 @@ Dygraph.prototype.rollPeriod = function() {
  * If the Dygraph has dates on the x-axis, these will be millis since epoch.
  */
 Dygraph.prototype.xAxisRange = function() {
-  if (this.dateWindow_) return this.dateWindow_;
+  return this.dateWindow_ ? this.dateWindow_ : this.xAxisExtremes();
+};
 
-  // The entire chart is visible.
+/**
+ * Returns the lower- and upper-bound x-axis values of the
+ * data set.
+ */
+Dygraph.prototype.xAxisExtremes = function() {
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
   return [left, right];
@@ -500,7 +589,7 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
 
 /**
  * Converts a y for an axis to a percentage from the top to the
- * bottom of the div.
+ * bottom of the drawing area.
  *
  * If the coordinate represents a value visible on the canvas, then
  * the value will be between 0 and 1, where 0 is the top of the canvas.
@@ -521,8 +610,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
 
   var pct;
   if (!this.axes_[axis].logscale) {
-    // yrange[1] - y is unit distance from the bottom.
-    // yrange[1] - yrange[0] is the scale of the range.
+    // yRange[1] - y is unit distance from the bottom.
+    // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
     pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
   } else {
@@ -530,6 +619,26 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
     pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
   }
   return pct;
+}
+
+/**
+ * Converts an x value to a percentage from the left to the right of
+ * the drawing area.
+ *
+ * If the coordinate represents a value visible on the canvas, then
+ * the value will be between 0 and 1, where 0 is the left of the canvas.
+ * However, this method will return values outside the range, as
+ * values can fall outside the canvas.
+ *
+ * If x is null, this returns null.
+ */
+Dygraph.prototype.toPercentXCoord = function(x) {
+  if (x == null) {
+    return null;
+  }
+
+  var xRange = this.xAxisRange();
+  return (x - xRange[0]) / (xRange[1] - xRange[0]);
 }
 
 /**
@@ -586,6 +695,7 @@ Dygraph.cancelEvent = function(e) {
   e.returnValue = false;
   return false;
 }
+
 
 /**
  * Generates interface elements for the Dygraph: a containing div, a div to
@@ -941,6 +1051,35 @@ Dygraph.startPan = function(event, g, context) {
   context.initialLeftmostDate = xRange[0];
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
+  if (g.attr_("panEdgeFraction")) {
+    var maxXPixelsToDraw = g.width_ * g.attr_("panEdgeFraction");
+    var xExtremes = g.xAxisExtremes(); // I REALLY WANT TO CALL THIS xTremes!
+
+    var boundedLeftX = g.toDomXCoord(xExtremes[0]) - maxXPixelsToDraw;
+    var boundedRightX = g.toDomXCoord(xExtremes[1]) + maxXPixelsToDraw;
+
+    var boundedLeftDate = g.toDataXCoord(boundedLeftX);
+    var boundedRightDate = g.toDataXCoord(boundedRightX);
+    context.boundedDates = [boundedLeftDate, boundedRightDate];
+
+    var boundedValues = [];
+    var maxYPixelsToDraw = g.height_ * g.attr_("panEdgeFraction");
+
+    for (var i = 0; i < g.axes_.length; i++) {
+      var axis = g.axes_[i];
+      var yExtremes = axis.extremeRange;
+
+      var boundedTopY = g.toDomYCoord(yExtremes[0], i) + maxYPixelsToDraw;
+      var boundedBottomY = g.toDomYCoord(yExtremes[1], i) - maxYPixelsToDraw;
+
+      var boundedTopValue = g.toDataYCoord(boundedTopY);
+      var boundedBottomValue = g.toDataYCoord(boundedBottomY);
+
+      boundedValues[i] = [boundedTopValue, boundedBottomValue];
+    }
+    context.boundedValues = boundedValues;
+  }
+
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
   context.is2DPan = false;
@@ -976,7 +1115,18 @@ Dygraph.movePan = function(event, g, context) {
 
   var minDate = context.initialLeftmostDate -
     (context.dragEndX - context.dragStartX) * context.xUnitsPerPixel;
+  if (context.boundedDates) {
+    minDate = Math.max(minDate, context.boundedDates[0]);
+  }
   var maxDate = minDate + context.dateRange;
+  if (context.boundedDates) {
+    if (maxDate > context.boundedDates[1]) {
+      // Adjust minDate, and recompute maxDate.
+      minDate = minDate - (maxDate - context.boundedDates[1]);
+      maxDate = minDate + context.dateRange;
+    }
+  }
+
   g.dateWindow_ = [minDate, maxDate];
 
   // y-axis scaling is automatic unless this is a full 2D pan.
@@ -987,10 +1137,22 @@ Dygraph.movePan = function(event, g, context) {
 
       var pixelsDragged = context.dragEndY - context.dragStartY;
       var unitsDragged = pixelsDragged * axis.unitsPerPixel;
+ 
+      var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
 
       // In log scale, maxValue and minValue are the logs of those values.
       var maxValue = axis.initialTopValue + unitsDragged;
+      if (boundedValue) {
+        maxValue = Math.min(maxValue, boundedValue[1]);
+      }
       var minValue = maxValue - axis.dragValueRange;
+      if (boundedValue) {
+        if (minValue < boundedValue[0]) {
+          // Adjust maxValue, and recompute minValue.
+          maxValue = maxValue - (minValue - boundedValue[0]);
+          minValue = maxValue - axis.dragValueRange;
+        }
+      }
       if (axis.logscale) {
         axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
                              Math.pow(Dygraph.LOG_SCALE, maxValue) ];
@@ -1019,6 +1181,8 @@ Dygraph.endPan = function(event, g, context) {
   context.initialLeftmostDate = null;
   context.dateRange = null;
   context.valueRange = null;
+  context.boundedDates = null;
+  context.boundedValues = null;
 }
 
 // Called in response to an interaction model operation that
@@ -1208,6 +1372,11 @@ Dygraph.prototype.createDragInterface_ = function() {
     px: 0,
     py: 0,
 
+    // Values for use with panEdgeFraction, which limit how far outside the
+    // graph's data boundaries it can be panned.
+    boundedDates: null, // [minDate, maxDate]
+    boundedValues: null, // [[minValue, maxValue] ...]
+
     initializeMouseDown: function(event, g, context) {
       // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
@@ -1263,6 +1432,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 };
 
+
 /**
  * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
  * up any previous zoom rectangles that were drawn. This could be optimized to
@@ -1285,8 +1455,9 @@ Dygraph.prototype.createDragInterface_ = function() {
  * function. Used to avoid excess redrawing
  * @private
  */
-Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY, endY,
-                                           prevDirection, prevEndX, prevEndY) {
+Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
+                                           endY, prevDirection, prevEndX,
+                                           prevEndY) {
   var ctx = this.canvas_.getContext("2d");
 
   // Clean up from the previous rect if necessary
@@ -1423,8 +1594,11 @@ Dygraph.prototype.doUnzoom_ = function() {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
+  // This prevents JS errors when mousing over the canvas before data loads.
   var points = this.layout_.points;
+  if (points === undefined) return;
+
+  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
 
   var lastx = -1;
   var lasty = -1;
@@ -1501,6 +1675,52 @@ Dygraph.prototype.idxToRow_ = function(idx) {
   return -1;
 };
 
+// TODO(danvk): rename this function to something like 'isNonZeroNan'.
+Dygraph.isOK = function(x) {
+  return x && !isNaN(x);
+};
+
+Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
+  // If no points are selected, we display a default legend. Traditionally,
+  // this has been blank. But a better default would be a conventional legend,
+  // which provides essential information for a non-interactive chart.
+  if (typeof(x) === 'undefined') {
+    if (this.attr_('legend') != 'always') return '';
+
+    var sepLines = this.attr_('labelsSeparateLines');
+    var labels = this.attr_('labels');
+    var html = '';
+    for (var i = 1; i < labels.length; i++) {
+      var c = new RGBColor(this.plotter_.colors[labels[i]]);
+      if (i > 1) html += (sepLines ? '<br/>' : ' ');
+      html += "<b><font color='" + c.toHex() + "'>&mdash;" + labels[i] +
+        "</font></b>";
+    }
+    return html;
+  }
+
+  var displayDigits = this.numXDigits_ + this.numExtraDigits_;
+  var html = this.attr_('xValueFormatter')(x, displayDigits) + ":";
+
+  var fmtFunc = this.attr_('yValueFormatter');
+  var showZeros = this.attr_("labelsShowZeroValues");
+  var sepLines = this.attr_("labelsSeparateLines");
+  for (var i = 0; i < this.selPoints_.length; i++) {
+    var pt = this.selPoints_[i];
+    if (pt.yval == 0 && !showZeros) continue;
+    if (!Dygraph.isOK(pt.canvasy)) continue;
+    if (sepLines) html += "<br/>";
+
+    var c = new RGBColor(this.plotter_.colors[pt.name]);
+    var yval = fmtFunc(pt.yval, displayDigits);
+    // TODO(danvk): use a template string here and make it an attribute.
+    html += " <b><font color='" + c.toHex() + "'>"
+      + pt.name + "</font></b>:"
+      + yval;
+  }
+  return html;
+};
+
 /**
  * Draw dots over the selectied points in the data series. This function
  * takes care of cleanup of previously-drawn dots.
@@ -1522,45 +1742,24 @@ Dygraph.prototype.updateSelection_ = function() {
                   2 * maxCircleSize + 2, this.height_);
   }
 
-  var isOK = function(x) { return x && !isNaN(x); };
-
   if (this.selPoints_.length > 0) {
-    var canvasx = this.selPoints_[0].canvasx;
-
     // Set the status message to indicate the selected point(s)
-    var replace = this.attr_('xValueFormatter')(this.lastx_, this) + ":";
-    var fmtFunc = this.attr_('yValueFormatter');
-    var clen = this.colors_.length;
-
     if (this.attr_('showLabelsOnHighlight')) {
-      // Set the status message to indicate the selected point(s)
-      for (var i = 0; i < this.selPoints_.length; i++) {
-        if (!this.attr_("labelsShowZeroValues") && this.selPoints_[i].yval == 0) continue;
-        if (!isOK(this.selPoints_[i].canvasy)) continue;
-        if (this.attr_("labelsSeparateLines")) {
-          replace += "<br/>";
-        }
-        var point = this.selPoints_[i];
-        var c = new RGBColor(this.plotter_.colors[point.name]);
-        var yval = fmtFunc(point.yval);
-        replace += " <b><font color='" + c.toHex() + "'>"
-                + point.name + "</font></b>:"
-                + yval;
-      }
-
-      this.attr_("labelsDiv").innerHTML = replace;
+      var html = this.generateLegendHTML_(this.lastx_, this.selPoints_);
+      this.attr_("labelsDiv").innerHTML = html;
     }
 
     // Draw colored circles over the center of each selected point
+    var canvasx = this.selPoints_[0].canvasx;
     ctx.save();
     for (var i = 0; i < this.selPoints_.length; i++) {
-      if (!isOK(this.selPoints_[i].canvasy)) continue;
-      var circleSize =
-        this.attr_('highlightCircleSize', this.selPoints_[i].name);
+      var pt = this.selPoints_[i];
+      if (!Dygraph.isOK(pt.canvasy)) continue;
+
+      var circleSize = this.attr_('highlightCircleSize', pt.name);
       ctx.beginPath();
-      ctx.fillStyle = this.plotter_.colors[this.selPoints_[i].name];
-      ctx.arc(canvasx, this.selPoints_[i].canvasy, circleSize,
-              0, 2 * Math.PI, false);
+      ctx.fillStyle = this.plotter_.colors[pt.name];
+      ctx.arc(canvasx, pt.canvasy, circleSize, 0, 2 * Math.PI, false);
       ctx.fill();
     }
     ctx.restore();
@@ -1632,7 +1831,7 @@ Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
   var ctx = this.canvas_.getContext("2d");
   ctx.clearRect(0, 0, this.width_, this.height_);
-  this.attr_("labelsDiv").innerHTML = "";
+  this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
 }
@@ -1706,7 +1905,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
  * @return {String} A date of the form "YYYY/MM/DD"
  * @private
  */
-Dygraph.dateString_ = function(date, self) {
+Dygraph.dateString_ = function(date) {
   var zeropad = Dygraph.zeropad;
   var d = new Date(date);
 
@@ -1722,18 +1921,6 @@ Dygraph.dateString_ = function(date, self) {
   if (frac) ret = " " + Dygraph.hmsString_(date);
 
   return year + "/" + month + "/" + day + ret;
-};
-
-/**
- * Round a number to the specified number of digits past the decimal point.
- * @param {Number} num The number to round
- * @param {Number} places The number of decimals to which to round
- * @return {Number} The rounded number
- * @private
- */
-Dygraph.round_ = function(num, places) {
-  var shift = Math.pow(10, places);
-  return Math.round(num * shift)/shift;
 };
 
 /**
@@ -1756,16 +1943,27 @@ Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
  */
 Dygraph.prototype.addXTicks_ = function() {
   // Determine the correct ticks scale on the x-axis: quarterly, monthly, ...
-  var startDate, endDate;
+  var range;
   if (this.dateWindow_) {
-    startDate = this.dateWindow_[0];
-    endDate = this.dateWindow_[1];
+    range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    startDate = this.rawData_[0][0];
-    endDate   = this.rawData_[this.rawData_.length - 1][0];
+    range = [this.rawData_[0][0], this.rawData_[this.rawData_.length - 1][0]];
   }
 
-  var xTicks = this.attr_('xTicker')(startDate, endDate, this);
+  var formatter = this.attr_('xTicker');
+  var ret = formatter(range[0], range[1], this);
+  var xTicks = [];
+
+  // Note: numericTicks() returns a {ticks: [...], numDigits: yy} dictionary,
+  // whereas dateTicker and user-defined tickers typically just return a ticks
+  // array.
+  if (ret.ticks !== undefined) {
+    xTicks = ret.ticks;
+    this.numXDigits_ = ret.numDigits;
+  } else {
+    xTicks = ret;
+  }
+
   this.layout_.updateOptions({xTicks: xTicks});
 };
 
@@ -2013,6 +2211,43 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
 };
 
 /**
+ * Determine the number of significant figures in a Number up to the specified
+ * precision.  Note that there is no way to determine if a trailing '0' is
+ * significant or not, so by convention we return 1 for all of the following
+ * inputs: 1, 1.0, 1.00, 1.000 etc.
+ * @param {Number} x The input value.
+ * @param {Number} opt_maxPrecision Optional maximum precision to consider.
+ *                                  Default and maximum allowed value is 13.
+ * @return {Number} The number of significant figures which is >= 1.
+ */
+Dygraph.significantFigures = function(x, opt_maxPrecision) {
+  var precision = Math.max(opt_maxPrecision || 13, 13);
+
+  // Convert the number to its exponential notation form and work backwards,
+  // ignoring the 'e+xx' bit.  This may seem like a hack, but doing a loop and
+  // dividing by 10 leads to roundoff errors.  By using toExponential(), we let
+  // the JavaScript interpreter handle the low level bits of the Number for us.
+  var s = x.toExponential(precision);
+  var ePos = s.lastIndexOf('e');  // -1 case handled by return below.
+
+  for (var i = ePos - 1; i >= 0; i--) {
+    if (s[i] == '.') {
+      // Got to the decimal place.  We'll call this 1 digit of precision because
+      // we can't know for sure how many trailing 0s are significant.
+      return 1;
+    } else if (s[i] != '0') {
+      // Found the first non-zero digit.  Return the number of characters
+      // except for the '.'.
+      return i;  // This is i - 1 + 1 (-1 is for '.', +1 is for 0 based index).
+    }
+  }
+
+  // Occurs if toExponential() doesn't return a string containing 'e', which
+  // should never happen.
+  return 1;
+};
+
+/**
  * Add ticks when the x axis has numbers on it (instead of dates)
  * TODO(konigsberg): Update comment.
  *
@@ -2133,33 +2368,38 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     k = 1024;
     k_labels = [ "k", "M", "G", "T" ];
   }
-  var formatter = attr('yAxisLabelFormatter') ? attr('yAxisLabelFormatter') : attr('yValueFormatter'); 
+  var formatter = attr('yAxisLabelFormatter') ?
+      attr('yAxisLabelFormatter') : attr('yValueFormatter');
+
+  // Determine the number of decimal places needed for the labels below by
+  // taking the maximum number of significant figures for any label.  We must
+  // take the max because we can't tell if trailing 0s are significant.
+  var numDigits = 0;
+  for (var i = 0; i < ticks.length; i++) {
+    numDigits = Math.max(Dygraph.significantFigures(ticks[i].v), numDigits);
+  }
 
   // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
-    if (ticks[i].label == null) {
-      var tickV = ticks[i].v;
-      var absTickV = Math.abs(tickV);
-      var label;
-      if (formatter != undefined) {
-        label = formatter(tickV);
-      } else {
-        label = Dygraph.round_(tickV, 2);
-      }
-      if (k_labels.length) {
-        // Round up to an appropriate unit.
-        var n = k*k*k*k;
-        for (var j = 3; j >= 0; j--, n /= k) {
-          if (absTickV >= n) {
-            label = Dygraph.round_(tickV / n, 1) + k_labels[j];
-            break;
-          }
+    if (ticks[i].label !== undefined) continue;  // Use current label.
+    var tickV = ticks[i].v;
+    var absTickV = Math.abs(tickV);
+    var label = (formatter !== undefined) ?
+        formatter(tickV, numDigits) : tickV.toPrecision(numDigits);
+    if (k_labels.length > 0) {
+      // Round up to an appropriate unit.
+      var n = k*k*k*k;
+      for (var j = 3; j >= 0; j--, n /= k) {
+        if (absTickV >= n) {
+          label = formatter(tickV / n, numDigits) + k_labels[j];
+          break;
         }
       }
-      ticks[i].label = label;
     }
+    ticks[i].label = label;
   }
-  return ticks;
+
+  return {ticks: ticks, numDigits: numDigits};
 };
 
 // Computes the range of the data series (including confidence intervals).
@@ -2363,11 +2603,9 @@ Dygraph.prototype.drawGraph_ = function() {
 
   if (datasets.length > 0) {
     // TODO(danvk): this method doesn't need to return anything.
-    var out = this.computeYAxisRanges_(extremes);
-    var axes = out[0];
-    var seriesToAxisMap = out[1];
-    this.layout_.updateOptions( { yAxes: axes,
-                                  seriesToAxisMap: seriesToAxisMap
+    this.computeYAxisRanges_(extremes);
+    this.layout_.updateOptions( { yAxes: this.axes_,
+                                  seriesToAxisMap: this.seriesToAxisMap_
                                 } );
   }
   this.addXTicks_();
@@ -2382,6 +2620,11 @@ Dygraph.prototype.drawGraph_ = function() {
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
+
+  if (is_initial_draw) {
+    // Generate a static legend before any particular point is selected.
+    this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+  }
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
@@ -2522,18 +2765,25 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     seriesForAxis[idx].push(series);
   }
 
+  // If no series are defined or visible then fill in some reasonable defaults.
+  if (seriesForAxis.length == 0) {
+    var axis = this.axes_[0];
+    axis.computedValueRange = [0, 1];
+    var ret =
+      Dygraph.numericTicks(axis.computedValueRange[0],
+                           axis.computedValueRange[1],
+                           this,
+                           axis);
+    axis.ticks = ret.ticks;
+    this.numYDigits_ = ret.numDigits;
+    return;
+  }
+
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];
-    if (axis.valueWindow) {
-      // This is only set if the user has zoomed on the y-axis. It is never set
-      // by a user. It takes precedence over axis.valueRange because, if you set
-      // valueRange, you'd still expect to be able to pan.
-      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
-    } else if (axis.valueRange) {
-      // This is a user-set value range for this axis.
-      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
-    } else {
+ 
+    {
       // Calculate the extremes of extremes.
       var series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
@@ -2586,19 +2836,31 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           if (minY > 0) minAxisY = 0;
         }
       }
-
-      axis.computedValueRange = [minAxisY, maxAxisY];
+      axis.extremeRange = [minAxisY, maxAxisY];
+    }
+    if (axis.valueWindow) {
+      // This is only set if the user has zoomed on the y-axis. It is never set
+      // by a user. It takes precedence over axis.valueRange because, if you set
+      // valueRange, you'd still expect to be able to pan.
+      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+    } else if (axis.valueRange) {
+      // This is a user-set value range for this axis.
+      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+    } else {
+      axis.computedValueRange = axis.extremeRange;
     }
 
     // Add ticks. By default, all axes inherit the tick positions of the
     // primary axis. However, if an axis is specifically marked as having
     // independent ticks, then that is permissible as well.
     if (i == 0 || axis.independentTicks) {
-      axis.ticks =
+      var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this,
                              axis);
+      axis.ticks = ret.ticks;
+      this.numYDigits_ = ret.numDigits;
     } else {
       var p_axis = this.axes_[0];
       var p_ticks = p_axis.ticks;
@@ -2611,14 +2873,14 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         tick_values.push(y_val);
       }
 
-      axis.ticks =
+      var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this, axis, tick_values);
+      axis.ticks = ret.ticks;
+      this.numYDigits_ = ret.numDigits;
     }
   }
-
-  return [this.axes_, this.seriesToAxisMap_];
 };
  
 /**
@@ -2630,7 +2892,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * Note that this is where fractional input (i.e. '5/10') is converted into
  *   decimal values.
  * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of days over which to average the data
+ * @param {Number} rollPeriod The number of points over which to average the
+ *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
@@ -2707,7 +2970,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
-    // there is not enough data to roll over the full number of days
+    // there is not enough data to roll over the full number of points
     var num_init_points = Math.min(rollPeriod - 1, originalData.length - 2);
     if (!this.attr_("errorBars")){
       if (rollPeriod == 1) {
@@ -2813,11 +3076,45 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
   }
+};
+
+/**
+ * Parses the value as a floating point number. This is like the parseFloat()
+ * built-in, but with a few differences:
+ * - the empty string is parsed as null, rather than NaN.
+ * - if the string cannot be parsed at all, an error is logged.
+ * If the string can't be parsed, this method returns null.
+ * @param {String} x The string to be parsed
+ * @param {Number} opt_line_no The line number from which the string comes.
+ * @param {String} opt_line The text of the line from which the string comes.
+ * @private
+ */
+
+// Parse the x as a float or return null if it's not a number.
+Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
+  var val = parseFloat(x);
+  if (!isNaN(val)) return val;
+
+  // Try to figure out what happeend.
+  // If the value is the empty string, parse it as null.
+  if (/^ *$/.test(x)) return null;
+
+  // If it was actually "NaN", return it as NaN.
+  if (/^ *nan *$/i.test(x)) return NaN;
+
+  // Looks like a parsing error.
+  var msg = "Unable to parse '" + x + "' as a number";
+  if (opt_line !== null && opt_line_no !== null) {
+    msg += " on line " + (1+opt_line_no) + " ('" + opt_line + "') of CSV.";
+  }
+  this.error(msg);
+
+  return null;
 };
 
 /**
@@ -2852,13 +3149,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     start = 1;
     this.attrs_.labels = lines[0].split(delim);
   }
-
-  // Parse the x as a float or return null if it's not a number.
-  var parseFloatOrNull = function(x) {
-    var val = parseFloat(x);
-    // isFinite() returns false for NaN and +/-Infinity.
-    return isFinite(val) ? val : null;
-  };
+  var line_no = 0;
 
   var xParser;
   var defaultParserSet = false;  // attempt to auto-detect x value type
@@ -2866,6 +3157,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   var outOfOrder = false;
   for (var i = start; i < lines.length; i++) {
     var line = lines[i];
+    line_no = i;
     if (line.length == 0) continue;  // skip blank lines
     if (line[0] == '#') continue;    // skip comment lines
     var inFields = line.split(delim);
@@ -2884,37 +3176,68 @@ Dygraph.prototype.parseCSV_ = function(data) {
       for (var j = 1; j < inFields.length; j++) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         var vals = inFields[j].split("/");
-        fields[j] = [parseFloatOrNull(vals[0]), parseFloatOrNull(vals[1])];
+        if (vals.length != 2) {
+          this.error('Expected fractional "num/den" values in CSV data ' +
+                     "but found a value '" + inFields[j] + "' on line " +
+                     (1 + i) + " ('" + line + "') which is not of this form.");
+          fields[j] = [0, 0];
+        } else {
+          fields[j] = [this.parseFloat_(vals[0], i, line),
+                       this.parseFloat_(vals[1], i, line)];
+        }
       }
     } else if (this.attr_("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
-      for (var j = 1; j < inFields.length; j += 2)
-        fields[(j + 1) / 2] = [parseFloatOrNull(inFields[j]),
-                               parseFloatOrNull(inFields[j + 1])];
+      if (inFields.length % 2 != 1) {
+        this.error('Expected alternating (value, stdev.) pairs in CSV data ' +
+                   'but line ' + (1 + i) + ' has an odd number of values (' +
+                   (inFields.length - 1) + "): '" + line + "'");
+      }
+      for (var j = 1; j < inFields.length; j += 2) {
+        fields[(j + 1) / 2] = [this.parseFloat_(inFields[j], i, line),
+                               this.parseFloat_(inFields[j + 1], i, line)];
+      }
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
         var vals = inFields[j].split(";");
-        fields[j] = [ parseFloatOrNull(vals[0]),
-                      parseFloatOrNull(vals[1]),
-                      parseFloatOrNull(vals[2]) ];
+        fields[j] = [ this.parseFloat_(vals[0], i, line),
+                      this.parseFloat_(vals[1], i, line),
+                      this.parseFloat_(vals[2], i, line) ];
       }
     } else {
       // Values are just numbers
       for (var j = 1; j < inFields.length; j++) {
-        fields[j] = parseFloatOrNull(inFields[j]);
+        fields[j] = this.parseFloat_(inFields[j], i, line);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
     }
-    ret.push(fields);
 
     if (fields.length != expectedCols) {
       this.error("Number of columns in line " + i + " (" + fields.length +
                  ") does not agree with number of labels (" + expectedCols +
                  ") " + line);
     }
+
+    // If the user specified the 'labels' option and none of the cells of the
+    // first row parsed correctly, then they probably double-specified the
+    // labels. We go with the values set in the option, discard this row and
+    // log a warning to the JS console.
+    if (i == 0 && this.attr_('labels')) {
+      var all_null = true;
+      for (var j = 0; all_null && j < fields.length; j++) {
+        if (fields[j]) all_null = false;
+      }
+      if (all_null) {
+        this.warn("The dygraphs 'labels' option is set, but the first row of " +
+                  "CSV data ('" + line + "') appears to also contain labels. " +
+                  "Will drop the CSV labels and use the option labels.");
+        continue;
+      }
+    }
+    ret.push(fields);
   }
 
   if (outOfOrder) {
@@ -2976,7 +3299,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     return parsedData;
   } else {
     // Some intelligent defaults for a numeric x-axis.
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xTicker = Dygraph.numericTicks;
     return data;
   }
@@ -3002,7 +3325,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else if (indepType == 'number') {
-    this.attrs_.xValueFormatter = function(x) { return x; };
+    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
@@ -3081,6 +3404,11 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           annotations.push(ann);
         }
       }
+
+      // Strip out infinities, which give dygraphs problems later on.
+      for (var j = 0; j < row.length; j++) {
+        if (!isFinite(row[j])) row[j] = null;
+      }
     } else {
       for (var j = 0; j < cols - 1; j++) {
         row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
@@ -3088,11 +3416,6 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     }
     if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
       outOfOrder = true;
-    }
-
-    // Strip out infinities, which give dygraphs problems later on.
-    for (var j = 0; j < row.length; j++) {
-      if (!isFinite(row[j])) row[j] = null;
     }
     ret.push(row);
   }
@@ -3204,7 +3527,7 @@ Dygraph.prototype.start_ = function() {
  * </ul>
  *
  * If the dateWindow or valueRange options are specified, the relevant zoomed_x_
- * or zoomed_y_ flags are set, unless the noZoomFlagChange option is also
+ * or zoomed_y_ flags are set, unless the isZoomedIgnoreProgrammaticZoom option is also
  * secified. This allows for the chart to be programmatically zoomed without
  * altering the zoomed flags.
  *
@@ -3217,11 +3540,11 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
-    if (!('noZoomFlagChange' in attrs)) {
+    if (!('isZoomedIgnoreProgrammaticZoom' in attrs)) {
       this.zoomed_x_ = attrs.dateWindow != null;
     }
   }
-  if ('valueRange' in attrs && !('noZoomFlagChange' in attrs)) {
+  if ('valueRange' in attrs && !('isZoomedIgnoreProgrammaticZoom' in attrs)) {
     this.zoomed_y_ = attrs.valueRange != null;
   }
 
@@ -3291,9 +3614,9 @@ Dygraph.prototype.resize = function(width, height) {
 };
 
 /**
- * Adjusts the number of days in the rolling average. Updates the graph to
+ * Adjusts the number of points in the rolling average. Updates the graph to
  * reflect the new averaging period.
- * @param {Number} length Number of days over which to average the data.
+ * @param {Number} length Number of points over which to average the data.
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
@@ -3468,3 +3791,473 @@ Dygraph.GVizChart.prototype.getSelection = function() {
 
 // Older pages may still use this name.
 DateGraph = Dygraph;
+
+// <REMOVE_FOR_COMBINED>
+Dygraph.OPTIONS_REFERENCE =  // <JSON>
+{
+  "xValueParser": {
+    "default": "parseFloat() or Date.parse()*",
+    "labels": ["CSV parsing"],
+    "type": "function(str) -> number",
+    "description": "A function which parses x-values (i.e. the dependent series). Must return a number, even when the values are dates. In this case, millis since epoch are used. This is used primarily for parsing CSV data. *=Dygraphs is slightly more accepting in the dates which it will parse. See code for details."
+  },
+  "stackedGraph": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "If set, stack series on top of one another rather than drawing them independently."
+  },
+  "pointSize": {
+    "default": "1",
+    "labels": ["Data Line display"],
+    "type": "integer",
+    "description": "The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is \"isolated\", i.e. there is a missing point on either side of it. This also controls the size of those dots."
+  },
+  "labelsDivStyles": {
+    "default": "null",
+    "labels": ["Legend"],
+    "type": "{}",
+    "description": "Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold."
+  },
+  "drawPoints": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart."
+  },
+  "height": {
+    "default": "320",
+    "labels": ["Overall display"],
+    "type": "integer",
+    "description": "Height, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored."
+  },
+  "zoomCallback": {
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(minDate, maxDate, yRanges)",
+    "description": "A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis."
+  },
+  "pointClickCallback": {
+    "default": "",
+    "labels": ["Callbacks", "Interactive Elements"],
+    "type": "",
+    "description": ""
+  },
+  "colors": {
+    "default": "(see description)",
+    "labels": ["Data Series Colors"],
+    "type": "array<string>",
+    "example": "['red', '#00FF00']",
+    "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used."
+  },
+  "connectSeparatedPoints": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Usually, when Dygraphs encounters a missing value in a data series, it interprets this as a gap and draws it as such. If, instead, the missing values represents an x-value for which only a different series has data, then you'll want to connect the dots by setting this to true. To explicitly include a gap with this option set, use a value of NaN."
+  },
+  "highlightCallback": {
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(event, x, points,row)",
+    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"
+  },
+  "includeZero": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data"
+  },
+  "rollPeriod": {
+    "default": "1",
+    "labels": ["Error Bars", "Rolling Averages"],
+    "type": "integer &gt;= 1",
+    "description": "Number of days over which to average data. Discussed extensively above."
+  },
+  "unhighlightCallback": {
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(event)",
+    "description": "When set, this callback gets called every time the user stops highlighting any point by mousing out of the graph.  The parameter is the mouseout event."
+  },
+  "axisTickSize": {
+    "default": "3.0",
+    "labels": ["Axis display"],
+    "type": "number",
+    "description": "The size of the line to display next to each tick mark on x- or y-axes."
+  },
+  "labelsSeparateLines": {
+    "default": "false",
+    "labels": ["Legend"],
+    "type": "boolean",
+    "description": "Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>."
+  },
+  "xValueFormatter": {
+    "default": "(Round to 2 decimal places)",
+    "labels": ["Axis display"],
+    "type": "function(x)",
+    "description": "Function to provide a custom display format for the X value for mouseover."
+  },
+  "pixelsPerYLabel": {
+    "default": "30",
+    "labels": ["Axis display", "Grid"],
+    "type": "integer",
+    "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks."
+  },
+  "annotationMouseOverHandler": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user mouses over an annotation."
+  },
+  "annotationMouseOutHandler": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user mouses out of an annotation."
+  },
+  "annotationClickHandler": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user clicks on an annotation."
+  },
+  "annotationDblClickHandler": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(annotation, point, dygraph, event)",
+    "description": "If provided, this function is called whenever the user double-clicks on an annotation."
+  },
+  "drawCallback": {
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(dygraph, is_initial)",
+    "description": "When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning. The first parameter is the dygraph being drawn. The second is a boolean value indicating whether this is the initial draw."
+  },
+  "labelsKMG2": {
+    "default": "false",
+    "labels": ["Value display/formatting"],
+    "type": "boolean",
+    "description": "Show k/M/G for kilo/Mega/Giga on y-axis. This is different than <code>labelsKMB</code> in that it uses base 2, not 10."
+  },
+  "delimiter": {
+    "default": ",",
+    "labels": ["CSV parsing"],
+    "type": "string",
+    "description": "The delimiter to look for when separating fields of a CSV file. Setting this to a tab is not usually necessary, since tab-delimited data is auto-detected."
+  },
+  "axisLabelFontSize": {
+    "default": "14",
+    "labels": ["Axis display"],
+    "type": "integer",
+    "description": "Size of the font (in pixels) to use in the axis labels, both x- and y-axis."
+  },
+  "underlayCallback": {
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(canvas, area, dygraph)",
+    "description": "When set, this callback gets called before the chart is drawn. It details on how to use this."
+  },
+  "width": {
+    "default": "480",
+    "labels": ["Overall display"],
+    "type": "integer",
+    "description": "Width, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored."
+  },
+  "interactionModel": {
+    "default": "...",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "TODO(konigsberg): document this"
+  },
+  "xTicker": {
+    "default": "Dygraph.dateTicker or Dygraph.numericTicks",
+    "labels": ["Axis display"],
+    "type": "function(min, max, dygraph) -> [{v: ..., label: ...}, ...]",
+    "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result."
+  },
+  "xAxisLabelWidth": {
+    "default": "50",
+    "labels": ["Axis display"],
+    "type": "integer",
+    "description": "Width, in pixels, of the x-axis labels."
+  },
+  "showLabelsOnHighlight": {
+    "default": "true",
+    "labels": ["Interactive Elements", "Legend"],
+    "type": "boolean",
+    "description": "Whether to show the legend upon mouseover."
+  },
+  "axis": {
+    "default": "(none)",
+    "labels": ["Axis display"],
+    "type": "string or object",
+    "description": "Set to either an object ({}) filled with options for this axis or to the name of an existing data series with its own axis to re-use that axis. See tests for usage."
+  },
+  "pixelsPerXLabel": {
+    "default": "60",
+    "labels": ["Axis display", "Grid"],
+    "type": "integer",
+    "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks."
+  },
+  "labelsDiv": {
+    "default": "null",
+    "labels": ["Legend"],
+    "type": "DOM element or string",
+    "example": "<code style='font-size: small'>document.getElementById('foo')</code>or<code>'foo'",
+    "description": "Show data labels in an external div, rather than on the graph.  This value can either be a div element or a div id."
+  },
+  "fractions": {
+    "default": "false",
+    "labels": ["CSV parsing", "Error Bars"],
+    "type": "boolean",
+    "description": "When set, attempt to parse each cell in the CSV file as \"a/b\", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below)."
+  },
+  "logscale": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "When set for a y-axis, the graph shows that axis in log scale. Any values less than or equal to zero are not displayed.\n\nNot compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale with valueRanges that are less than zero will result in an unviewable graph."
+  },
+  "strokeWidth": {
+    "default": "1.0",
+    "labels": ["Data Line display"],
+    "type": "integer",
+    "example": "0.5, 2.0",
+    "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
+  },
+  "wilsonInterval": {
+    "default": "true",
+    "labels": ["Error Bars"],
+    "type": "boolean",
+    "description": "Use in conjunction with the \"fractions\" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1."
+  },
+  "fillGraph": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Should the area underneath the graph be filled? This option is not compatible with error bars."
+  },
+  "highlightCircleSize": {
+    "default": "3",
+    "labels": ["Interactive Elements"],
+    "type": "integer",
+    "description": "The size in pixels of the dot drawn over highlighted points."
+  },
+  "gridLineColor": {
+    "default": "rgb(128,128,128)",
+    "labels": ["Grid"],
+    "type": "red, blue",
+    "description": "The color of the gridlines."
+  },
+  "visibility": {
+    "default": "[true, true, ...]",
+    "labels": ["Data Line display"],
+    "type": "Array of booleans",
+    "description": "Which series should initially be visible? Once the Dygraph has been constructed, you can access and modify the visibility of each series using the <code>visibility</code> and <code>setVisibility</code> methods."
+  },
+  "valueRange": {
+    "default": "Full range of the input is shown",
+    "labels": ["Axis display"],
+    "type": "Array of two numbers",
+    "example": "[10, 110]",
+    "description": "Explicitly set the vertical range of the graph to [low, high]."
+  },
+  "labelsDivWidth": {
+    "default": "250",
+    "labels": ["Legend"],
+    "type": "integer",
+    "description": "Width (in pixels) of the div which shows information on the currently-highlighted points."
+  },
+  "colorSaturation": {
+    "default": "1.0",
+    "labels": ["Data Series Colors"],
+    "type": "0.0 - 1.0",
+    "description": "If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors."
+  },
+  "yAxisLabelWidth": {
+    "default": "50",
+    "labels": ["Axis display"],
+    "type": "integer",
+    "description": "Width, in pixels, of the y-axis labels."
+  },
+  "hideOverlayOnMouseOut": {
+    "default": "true",
+    "labels": ["Interactive Elements", "Legend"],
+    "type": "boolean",
+    "description": "Whether to hide the legend when the mouse leaves the chart area."
+  },
+  "yValueFormatter": {
+    "default": "(Round to 2 decimal places)",
+    "labels": ["Axis display"],
+    "type": "function(x)",
+    "description": "Function to provide a custom display format for the Y value for mouseover."
+  },
+  "legend": {
+    "default": "onmouseover",
+    "labels": ["Legend"],
+    "type": "string",
+    "description": "When to display the legend. By default, it only appears when a user mouses over the chart. Set it to \"always\" to always display a legend of some sort."
+  },
+  "labelsShowZeroValues": {
+    "default": "true",
+    "labels": ["Legend"],
+    "type": "boolean",
+    "description": "Show zero value labels in the labelsDiv."
+  },
+  "stepPlot": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "When set, display the graph as a step plot instead of a line plot."
+  },
+  "labelsKMB": {
+    "default": "false",
+    "labels": ["Value display/formatting"],
+    "type": "boolean",
+    "description": "Show K/M/B for thousands/millions/billions on y-axis."
+  },
+  "rightGap": {
+    "default": "5",
+    "labels": ["Overall display"],
+    "type": "integer",
+    "description": "Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point."
+  },
+  "avoidMinZero": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
+  },
+  "xAxisLabelFormatter": {
+    "default": "Dygraph.dateAxisFormatter",
+    "labels": ["Axis display", "Value display/formatting"],
+    "type": "function(date, granularity)",
+    "description": "Function to call to format values along the x axis."
+  },
+  "clickCallback": {
+    "snippet": "function(e, date){<br>&nbsp;&nbsp;alert(date);<br>}",
+    "default": "null",
+    "labels": ["Callbacks"],
+    "type": "function(e, date)",
+    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked."
+  },
+  "yAxisLabelFormatter": {
+    "default": "yValueFormatter",
+    "labels": ["Axis display", "Value display/formatting"],
+    "type": "function(x)",
+    "description": "Function used to format values along the Y axis. By default it uses the same as the <code>yValueFormatter</code> unless specified."
+  },
+  "labels": {
+    "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
+    "labels": ["Legend"],
+    "type": "array<string>",
+    "description": "A name for each data series, including the independent (X) series. For CSV files and DataTable objections, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged."
+  },
+  "dateWindow": {
+    "default": "Full range of the input is shown",
+    "labels": ["Axis display"],
+    "type": "Array of two Dates or numbers",
+    "example": "[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]",
+    "description": "Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch. If the data for the x-axis is numeric, the values in dateWindow must also be numbers."
+  },
+  "showRoller": {
+    "default": "false",
+    "labels": ["Interactive Elements", "Rolling Averages"],
+    "type": "boolean",
+    "description": "If the rolling average period text box should be shown."
+  },
+  "sigma": {
+    "default": "2.0",
+    "labels": ["Error Bars"],
+    "type": "integer",
+    "description": "When errorBars is set, shade this many standard deviations above/below each point."
+  },
+  "customBars": {
+    "default": "false",
+    "labels": ["CSV parsing", "Error Bars"],
+    "type": "boolean",
+    "description": "When set, parse each CSV cell as \"low;middle;high\". Error bars will be drawn for each point between low and high, with the series itself going through middle."
+  },
+  "colorValue": {
+    "default": "1.0",
+    "labels": ["Data Series Colors"],
+    "type": "float (0.0 - 1.0)",
+    "description": "If colors is not specified, value of the data series colors, as in hue/saturation/value. (0.0-1.0, default 0.5)"
+  },
+  "errorBars": {
+    "default": "false",
+    "labels": ["CSV parsing", "Error Bars"],
+    "type": "boolean",
+    "description": "Does the data contain standard deviations? Setting this to true alters the input format (see above)."
+  },
+  "displayAnnotations": {
+    "default": "false",
+    "labels": ["Annotations"],
+    "type": "boolean",
+    "description": "Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google's AnnotatedTimeLine chart."
+  },
+  "panEdgeFraction": {
+    "default": "null",
+    "labels": ["Axis Display", "Interactive Elements"],
+    "type": "float",
+    "default": "null",
+    "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
+  },
+  "isZoomedIgnoreProgrammaticZoom" : {
+    "default": "false",
+    "labels": ["Zooming"],
+    "type": "boolean",
+    "description" : "When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
+  }
+}
+;  // </JSON>
+// NOTE: in addition to parsing as JS, this snippet is expected to be valid
+// JSON. This assumption cannot be checked in JS, but it will be checked when
+// documentation is generated by the generate-documentation.py script.
+
+// Do a quick sanity check on the options reference.
+(function() {
+  var warn = function(msg) { if (console) console.warn(msg); };
+  var flds = ['type', 'default', 'description'];
+  var valid_cats = [ 
+   'Annotations',
+   'Axis display',
+   'CSV parsing',
+   'Callbacks',
+   'Data Line display',
+   'Data Series Colors',
+   'Error Bars',
+   'Grid',
+   'Interactive Elements',
+   'Legend',
+   'Overall display',
+   'Rolling Averages',
+   'Value display/formatting'
+  ];
+  var cats = {};
+  for (var i = 0; i < valid_cats.length; i++) cats[valid_cats[i]] = true;
+
+  for (var k in Dygraph.OPTIONS_REFERENCE) {
+    if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(k)) continue;
+    var op = Dygraph.OPTIONS_REFERENCE[k];
+    for (var i = 0; i < flds.length; i++) {
+      if (!op.hasOwnProperty(flds[i])) {
+        warn('Option ' + k + ' missing "' + flds[i] + '" property');
+      } else if (typeof(op[flds[i]]) != 'string') {
+        warn(k + '.' + flds[i] + ' must be of type string');
+      }
+    }
+    var labels = op['labels'];
+    if (typeof(labels) !== 'object') {
+      warn('Option "' + k + '" is missing a "labels": [...] option');
+      for (var i = 0; i < labels.length; i++) {
+        if (!cats.hasOwnProperty(labels[i])) {
+          warn('Option "' + k + '" has label "' + labels[i] +
+               '", which is invalid.');
+        }
+      }
+    }
+  }
+})();
+// </REMOVE_FOR_COMBINED>

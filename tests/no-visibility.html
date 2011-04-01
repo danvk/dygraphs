@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
-    <title>isolated points</title>
+    <title>no-visibility</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
@@ -10,26 +10,24 @@
     <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
     <script type="text/javascript" src="../dygraph-canvas.js"></script>
     <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <div id="graph"></div>
+    <h3>No visible series</h3>
+    <p>This test verifies that a chart will still draw without any JS errors
+    when no series are visible.</p>
+    <div id="div_g" style="width:400px; height:200px;"></div>
+
     <script type="text/javascript">
-    new Dygraph(
-      document.getElementById("graph"),
-      [
-        [ 1, 10, 11],
-        [ 2, 15, null],
-        [ 3, null, null],
-        [ 4, 20, 13],
-        [ 5, null, 10],
-        [ 6, 18, null],
-        [ 7, 12, 16]
-      ],
-      {
-        labels: ["X", "S1", "S2" ],
-        showRoller: true
-      }
-    );
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+              visibility: [false, false]
+            }
+          );
     </script>
+
   </body>
 </html>

@@ -7,6 +7,7 @@ dygraph-canvas.js \
 dygraph.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
+| perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \
 > /tmp/dygraph.js
 
 java -jar yuicompressor-2.4.2.jar /tmp/dygraph.js \

@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>zoom</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
@@ -31,13 +33,17 @@
       <input type="button" value="Y (2,4)" onclick="zoomGraphY(2,4)">&nbsp;
       <input type="button" value="Y (0,2)" onclick="zoomGraphY(0,2)">&nbsp;
       <input type="button" value="Y (0,1)" onclick="zoomGraphY(0,1)">&nbsp;
-      <br>
+      <br> <br>
       <input type="button" value="Oct 8-13" onclick="zoomGraphX(1160261979962, 1163905694248)">&nbsp;
       <input type="button" value="Oct 22-28" onclick="zoomGraphX(1161489164461 , 1162008465957)">&nbsp;
       <input type="button" value="Oct 23-24" onclick="zoomGraphX(1161575878860, 1161660991675)">&nbsp;
       <input type="button" value="Oct 26 6AM-noon" onclick="zoomGraphX(1161770537840, 1161792063332)">&nbsp;
-      <br>
+      <br> <br>
       <input type="button" value="Unzoom" onclick="unzoomGraph()">&nbsp;
+      <br> <br>
+      <input type="button" value="pan frame null" onclick="panEdgeFraction(null)">&nbsp;
+      <input type="button" value="pan frame 0.1" onclick="panEdgeFraction(0.1)">&nbsp;
+      <input type="button" value="pan frame 0.5" onclick="panEdgeFraction(0.5)">&nbsp;
       </p>
 
 
@@ -101,6 +107,10 @@
           dateWindow: null,
           valueRange: null
         });
+      }
+
+      function panEdgeFraction(value) {
+        g.updateOptions({ panEdgeFraction : value });
       }
     </script>
 

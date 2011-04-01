@@ -7,10 +7,14 @@ site=$1
 # Produce dygraph-combined.js.
 ./generate-combined.sh
 
+# Generate documentation.
+./generate-documentation.py > docs/options.html
+
 # Copy everything to the site.
 scp tests/*.html tests/*.js tests/*.png $site/tests/ \
 && \
-scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
+scp dygraph*.js gadget.xml excanvas.js flashcanvas.* thumbnail.png screenshot.png docs/* $site/
 
-# Revert changes to dygraph-combined.js
+# Revert changes to dygraph-combined.js and docs/options.html
 git checkout dygraph-combined.js
+rm docs/options.html

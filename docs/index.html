@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>dygraphs JavaScript Visualization Library</title>
     <!--[if IE]>
       <script type="text/javascript" src="excanvas.js"></script>
@@ -122,7 +123,7 @@
       <ul>
         <li>Plots time series without using an external server or Flash</li>
         <li>Works in Internet Explorer (using excanvas)</li>
-        <li>Lightweight (57kb) and responsive</li>
+        <li>Lightweight (69kb) and responsive</li>
         <li>Displays values on mouseover (this makes it easily discoverable)</li>
         <li>Supports error bands around data series</li>
         <li>Interactive zoom</li>
@@ -358,17 +359,28 @@
 
       <h2 id="ie">Internet Explorer Compatibility</h2>
 
-      <p>The dygraphs library relies heavily on HTML's <code>&lt;canvas&gt;</code> tag, which Microsoft Internet Explorer does not support. Fortunately, some clever engineers created the <a href="http://code.google.com/p/explorercanvas/">excanvas</a> library, which implements the <code>&lt;canvas&gt;</code> tag in IE using VML.</p>
-
-      <p>You can add IE support to any page using dygraphs by including the following in your page:</p>
+      <p>The dygraphs library relies heavily on the HTML5 <code>&lt;canvas&gt;</code> tag, which Microsoft Internet Explorer did not traditionally support. To use Microsoft's native canvas implementation in IE9, you need to set an HTML5 doctype on your page:</p>
 
 <pre>
-&lt;head&gt;
-  &lt;!--[if IE]&gt;&lt;script src="excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;
-&lt;/head&gt;
+&lt;!DOCTYPE html&gt;
 </pre>
 
-    <p>This works quite well in practice. Charts are responsive, even under VML emulation.</p>
+      <p>When IE9 is in HTML5 mode, dygraphs works just like in other modern browsers.</p>
+
+      <p>If you want to support previous versions of Internet Explorer (IE6&ndash;IE8), you'll need to include the <a href="http://code.google.com/p/explorercanvas/">excanvas</a> library, which emulates the <code>&lt;canvas&gt;</code> tag using VML. You can add excanvas by including the following snippet:</p>
+
+<pre>
+&lt;!DOCTYPE html&gt; 
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9"&gt; 
+    &lt;!--[if IE]&gt;&lt;script src="path/to/excanvas.js"&gt;&lt;/script&gt;&lt;![endif]--&gt;
+  &lt;/head&gt;
+</pre>
+
+<p>(This is surprisingly tricky because the HTML5 doctype breaks excanvas in IE8. See <a href="https://groups.google.com/group/dygraphs-users/browse_thread/thread/c60709e04bc7fe5f#">this discussion</a> for details.)</p>
+
+    <p>While VML emulation sounds like it would be slow, it works well in practice for most charts.</p>
 
     <p>One common gotcha to look out for: make sure you don't have any trailing commas in parameter lists, e.g.</p>
 
@@ -447,96 +459,6 @@ new Dygraph(el, data, {
       <li>If you set the averaging period to something large, like 200, you'll see the team's and player's batting average through that game. The final number is the overall batting average for the season.</li>
       <li>Where the error bars do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.</li>
     </ul>
-
-    <h2 id="zoom">Determining Zoom</h2>
-    
-    <p>
-      It is possible to detect whether a chart has been zoomed in either axis by the use of the <code>isZoomed</code> function.
-      If called with no argument, it will report whether <em>either</em> axis has been zoomed.
-      Alternatively it can be called with an argument of either <code>'x'</code> or <code>'y'</code> and it will report the status of just that axis.
-    </p>
-
-    <p>Here's a simple example using <code>drawCallback</code> to display the various zoom states whenever the chart is zoomed:</p>
-
-    <div style="width:600px; text-align:center; font-weight: bold; font-size: 125%;">OUTPUT</div>
-    <div style="width: 750px">
-      <div style="float: right">
-          <p>Zoomed: <span id="zoomed">False</span><p/>
-          <p>Zoomed X: <span id="zoomedX">False</span><p/>
-          <p>Zoomed Y: <span id="zoomedY">False</span><p/>
-      </div>
-      <div class="codeoutput" style="float:left;">
-        <div id="zoomdiv"></div>
-        <script type="text/javascript">
-          new Dygraph(
-
-            // containing div
-            document.getElementById("zoomdiv"),
-
-            // CSV or path to a CSV file.
-            "Date,Value\n" +
-            "2011-01-07,75\n" +
-            "2011-01-08,70\n" +
-            "2011-01-09,90\n" +
-            "2011-01-10,30\n" +
-            "2011-01-11,40\n" +
-            "2011-01-12,60\n" +
-            "2011-01-13,70\n" +
-            "2011-01-14,40\n",
-            {
-              drawCallback: function(me, initial) {
-                document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
-                document.getElementById("zoomedX").innerHTML = "" + me.isZoomed("x");
-                document.getElementById("zoomedY").innerHTML = "" + me.isZoomed("y");
-              }
-            }
-          );
-        </script>
-      </div>
-    </div>
-
-    <p>
-      <div style="clear:both; width:600px; text-align:center; font-weight: bold; font-size: 125%;">HTML</div>
-
-<pre>
-  new Dygraph(
-
-    // containing div
-    document.getElementById(&quot;zoomdiv&quot;),
-
-    // CSV or path to a CSV file.
-    &quot;Date,Temperature\n&quot; +
-    &quot;2011-01-07,75\n&quot; +
-    &quot;2011-01-08,70\n&quot; +
-    &quot;2011-01-09,90\n&quot; +
-    &quot;2011-01-10,30\n&quot; +
-    &quot;2011-01-11,40\n&quot; +
-    &quot;2011-01-12,60\n&quot; +
-    &quot;2011-01-13,70\n&quot; +
-    &quot;2011-01-14,40\n&quot;,
-    {
-      drawCallback: function(me, initial) {
-        document.getElementById(&quot;zoomed&quot;).innerHTML = &quot;&quot; + me.isZoomed();
-        document.getElementById(&quot;zoomedX&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;x&quot;);
-        document.getElementById(&quot;zoomedY&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;y&quot;);
-      }
-    }
-  );
-</pre>
-    </p>
-
-    <p>The <a href="tests/zoom.html">Tests for zoom operations</a> show a full example of this in action.</p>
-
-    <h3>Programmatic Zoom</h3>
-    <p>
-      When a chart is programmatically zoomed by updating either the <code>dateWindow</code>
-      or <code>valueRange</code> option, by default the zoomed flags are also updated correspondingly.
-      It is possible to prevent this by specifying the <code>noZoomFlagChange</code> in the same
-      call to the <code>updateOptions</code> method.
-    </p>
-    <p>
-      The <a href="tests/no-zoom-change.html">no-zoom-change</a> test shows this in operation.
-    </p>
 
     <h2 id="stock">One last demo</h2>
 
@@ -627,450 +549,9 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
     <h2 id="options">Other Options</h2>
 
-    <p>These are the options that can be passed in through the optional third parameter of the Dygraph constructor. Under each option is a set of links to tests which demonstrate its use. While we attempt to keep this list up-to-date, a more complete list can be found in the <code>Dygraph.DEFAULT_ATTRS</code> map in <code>dygraph.js</code> and the <code>this.options</code> map in <code>dygraph-canvas.js</code>.</p>
+    <p>In addition to the options mentioned above (<code>showRoller</code>, <code>rollPeriod</code>, <code>errorBars</code>, <code>valueRange</code>), there are <i>many</i> others.</p>
 
-    <table class="thinborder" width="900">
-      <thead>
-        <tr>
-          <th width="150">Name</th>
-          <th width="200">Values</th>
-          <th width="150">Default</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>includeZero</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-        <td>Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data.
-        <div class="tests">Tests: <a href="tests/no-range.html">no-range</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/small-range-zero.html">small-range-zero</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>rollPeriod</strong></td>
-          <td><code>integer &gt;= 1</code></td>
-          <td><code>1</code></td>
-          <td>Number of days over which to average data. Discussed extensively above.
-        <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/two-series.html">two-series</a> <a href="tests/noise.html">noise</a> </div>
-        </td>
-        </tr>
-        <tr>
-          <td><strong>showRoller</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>If the rolling average period text box should be shown.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> <a href="tests/fractions.html">fractions</a> <a href="tests/isolated-points.html">isolated-points</a> <a href="tests/numeric-gviz.html">numeric-gviz</a> <a href="tests/underlay-callback.html">underlay-callback</a> <a href="tests/highlighted-region.html">highlighted-region</a></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>colors</strong></td>
-          <td><code>['red', '#00FF00']</code></td>
-          <td><code></code></td>
-          <td>List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used.
-          <div class="tests">Tests: <a href="tests/color-visibility.html">color-visibility</a> <a href="tests/demo.html">demo</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>fillGraph</strong></td>
-          <td><code>boolean<br/></code></td>
-          <td><code>false</code></td>
-          <td>Should the area underneath the graph be filled? This option is not
-          compatible with error bars.
-          <div class="tests">Tests: <a href="tests/fillGraph.html">fillGraph</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>visibility</strong></td>
-          <td><code>Array of booleans<br/></code></td>
-          <td><code>[true, true, ...]</code></td>
-          <td>Which series should initially be visible? Once the Dygraph has
-          been constructed, you can access and modify the visibility of each
-          series using the <code>visibility</code> and
-          <code>setVisibility</code> methods.
-          <div class="tests">Tests: <a href="tests/visibility.html">visibility</a> <a href="tests/color-visibility.html">color-visibility</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>colorSaturation</strong></td>
-          <td><code>0.0 - 1.0</code></td>
-          <td><code>1.0</code></td>
-          <td>If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>colorValue</strong></td>
-          <td><code>float (0.0 &mdash; 1.0)</code></td>
-          <td><code>1.0</code></td>
-          <td>If colors is not specified, value of the data series colors, as in hue/saturation/value. (0.0-1.0, default 0.5)
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>clickCallback</strong></td>
-          <td><code>function(e, date){<br>&nbsp;&nbsp;&nbsp;&nbsp;alert(date);<br>}</code></td>
-          <td><code>null</code></td>
-          <td>A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked. (default null)
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>zoomCallback</strong></td>
-          <td><code>function(minDate,<br/>maxDate,<br/>yRanges){}</code></td>
-          <td><code>null</code></td>
-          <td>A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/zoom.html">zoom</a></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>strokeWidth</strong></td>
-          <td><code>integer</code></td>
-          <td><code>1</code></td>
-          <td>Width of the data lines. This can be used to increase the contrast or some graphs.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>dateWindow</strong></td>
-          <td><code>[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]</code></td>
-          <td rowspan="2"><code>Full range of the<br/> input is shown</code></td>
-          <td>Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch.
-          <div class="tests">Tests: <a href="tests/dateWindow.html">dateWindow</a> <a href="tests/link-interaction.html">link-interaction</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>valueRange</strong></td>
-          <td><code>[10, 110]</code></td>
-          <td>Explicitly set the vertical range of the graph to [low, high].
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="4">
-            Changing either of two the above options will cause the corresponding zoom
-            flag (<code>isZoomed()</code>) to be set, unless the <code>noZoomFlagChange</code>
-            option is also specified.
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsSeparateLines</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>.
-          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> <a href="tests/demo.html">demo</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsDiv</strong></td>
-          <td><code style="font-size: small">document.getElementById('foo')</code><br/>or<br/><code>'foo'</code></td>
-          <td><code>null</code></td>
-          <td style="vertical-align:top">Show data labels in an external div, rather than on the graph.  This value can either be a div element or a div id.
-          <div class="tests">Tests: <a href="tests/label-div.html">label-div</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsShowZeroValues</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>true</code></td>
-          <td>Show zero value labels in the labelsDiv.
-          <div class="tests">Tests: <a href="tests/label-div.html">label-div</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsKMB</strong></td>
-          <td><code>true</code></td>
-          <td><code>false</code></td>
-          <td>Show K/M/B for thousands/millions/billions on y-axis.
-          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/labelsKMB.html">labelsKMB</a> <a href="tests/no-range.html">no-range</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsKMG2</strong></td>
-          <td><code>true</code></td>
-          <td><code>false</code></td>
-          <td>Show k/M/G for kilo/Mega/Giga on y-axis. This is different than
-          <code>labelsKMB</code> in that it uses base 2, not 10.
-          <div class="tests">Tests: <a href="tests/labelsKMB.html">labelsKMB</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsDivWidth</strong></td>
-          <td><code>250</code></td>
-          <td><code></code></td>
-          <td>Width (in pixels) of the div which shows information on the currently-highlighted points.
-          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>labelsDivStyles</strong></td>
-          <td><code>{}</code></td>
-          <td><code>null</code></td>
-          <td>Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold.
-          <div class="tests">Tests: <a href="tests/border.html">border</a> <a href="tests/customLabel.html">customLabel</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>highlightCircleSize</strong></td>
-          <td><code>integer</code></td>
-          <td><code>3</code></td>
-          <td>The size in pixels of the dot drawn over highlighted points.
-          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>drawPoints</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart.
-          <div class="tests">Tests: <a href="tests/draw-points.html">draw-points</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>pointSize</strong></td>
-          <td><code>integer</code></td>
-          <td><code>1</code></td>
-          <td>The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>pixelsPerXLabel</strong></td>
-          <td rowspan="2"><code>integer</code></td>
-          <td><code>60</code></td>
-          <td rowspan="2">Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks.
-          <div class="tests">Tests: <a href="tests/spacing.html">spacing</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>pixelsPerYLabel</strong></td>
-          <td><code>30</code></td>
-        </tr>
-        <tr>
-          <td><strong>xAxisLabelWidth</strong></td>
-          <td rowspan="2"><code>integer</code></td>
-          <td><code></code></td>
-          <td rowspan="2">Width (in pixels) of the x- and y-axis labels.
-          <div class="tests">Tests: <a href="tests/customLabel.html">customLabel</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>yAxisLabelWidth</strong></td>
-          <td><code></code></td>
-        </tr>
-        <tr>
-          <td><strong>axisLabelFontSize</strong></td>
-          <td><code>integer</code></td>
-          <td><code>14</code></td>
-          <td>Size of the font (in pixels) to use in the axis labels, both x- and y-axis.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>xAxisLabelFormatter</strong></td>
-          <td><code>function(date, granularity)</code></td>
-          <td><code>Dygraph.dateAxisFormatter</code></td>
-          <td>Function to call to format values along the x axis.
-            <div class="tests">Tests: <a href="tests/x-axis-formatter.html">xAxisLabelFormatter</a></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>yAxisLabelFormatter</strong></td>
-          <td><code>function(x)</code></td>
-          <td><code>yValueFormatter</code></td>
-          <td>
-            Function used to format values along the Y axis. By default it uses the same as the <code>yValueFormatter</code> unless specified.
-            <div class="tests">Tests: <a href="tests/y-axis-formatter.html">yAxisLabelFormatter</a></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>rightGap</strong></td>
-          <td><code>integer</code></td>
-          <td><code></code></td>
-          <td>Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>errorBars</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>Does the data contain standard deviations? Setting this to true alters the input format (see above).
-          <div class="tests">Tests: <a href="tests/noise.html">noise</a> <a href="tests/customLabel.html">customLabel</a> <a href="tests/draw-points.html">draw-points</a> <a href="tests/fillGraph.html">fillGraph</a> <a href="tests/fractions.html">fractions</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>sigma</strong></td>
-          <td><code>integer</code></td>
-          <td><code></code></td>
-          <td>When errorBars is set, shade this many standard deviations above/below each point.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>fractions</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).
-          <div class="tests">Tests: <a href="tests/fractions.html">fractions</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>wilsonInterval</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>true</code></td>
-          <td>Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1.
-          <div class="tests">Tests: <font color=red>none</font></div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>customBars</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>When set, parse each CSV cell as "low;middle;high". Error bars will be drawn for each point between low and high, with the series itself going through middle.
-          <div class="tests">Tests: <a href="tests/custom-bars.html">custom-bars</a> <a href="tests/zero-series.html">zero-series</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>drawCallback</strong></td>
-          <td><code>function(dygraph, is_initial)</code></td>
-          <td><code>null</code></td>
-          <td>When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning. The first parameter is the dygraph being drawn. The second is a boolean value indicating whether this is the initial draw.
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/synchronize.html">synchronize</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>gridLineColor</strong></td>
-          <td><code>red, blue</code></td>
-          <td><code>rgb(128,128,128)</code></td>
-          <td>The color of the gridlines.
-          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>highlightCallback</strong></td>
-          <td><code>function(event, x, points,row)</code></td>
-          <td><code>null</code></td>
-          <td>When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>
-          <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>unhighlightCallback</strong></td>
-          <td><code>function(event)</code></td>
-          <td><code>null</code></td>
-          <td>When set, this callback gets called every time the user stops highlighting any point by mousing out of the graph.  The parameter is the mouseout event.
-            <div class="tests">Tests: <a href="tests/callback.html">callback</a> <a href="tests/crosshair.html">crosshair</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>underlayCallback</strong></td>
-          <td><code>function(canvas, area, dygraph)</code></td>
-          <td><code>null</code></td>
-          <td>When set, this callback gets called before the chart is drawn. It
-            allows you to draw underneath the chart. See the tests for more
-            details on how to use this.
-            <div class="tests">Tests:
-              <a href="tests/underlay-callback.html">underlay-callback</a>
-              <a href="tests/highlighted-region.html">highlighted-region</a>
-            </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>strokeWidth</strong></td>
-          <td><code>0.5, 2.0</code></td>
-          <td><code>1.0</code></td>
-          <td>The width of the lines connecting data points.
-          <div class="tests">Tests: <a href="tests/grid_dot.html">grid_dot</a> </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>width</strong></td>
-          <td rowspan="2"><code>integer</code></td>
-          <td><code>480</code></td>
-          <td rowspan="2">Width/Height (in pixels) of the chart. If the container div has been explicitly sized, these attributes will be ignored.
-          <div class="tests">Tests: <a href="tests/demo.html">demo</a> <a href="tests/link-interaction.html">link-interaction</a> <a href="tests/no-range.html">no-range</a> </div>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>height</strong></td>
-          <td><code>320</code></td>
-        </tr>
-
-        <tr>
-          <td><strong>stepPlot</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>
-            When set, display the graph as a step plot instead of a line plot.
-            <div class="tests">Tests: <a href="tests/steps.html">steps</a></div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>xValueFormatter</strong></td>
-          <td><code>function(x)</code></td>
-          <td></td>
-          <td>
-            Function to provide a custom display format the X value for mouseover.
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>yValueFormatter</strong></td>
-          <td><code>function(x)</code></td>
-          <td>(Round to 2 decimal places)</td>
-          <td>
-            Function to provide a custom display format for the Y value for mouseover.
-            <div class="tests">Tests: <a href="tests/y-axis-formatter.html">yAxisLabelFormatter</a></div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>avoidMinZero</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>
-            When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled.
-            This is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis.
-            <div class="tests">Tests: <a href="tests/avoidMinZero.html">avoidMinZero</a></div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>logscale</strong></td>
-          <td><code>boolean</code></td>
-          <td><code>false</code></td>
-          <td>
-            When set for a y-axis, the graph shows that axis in y-scale. Any values less than or equal
-            to zero are not displayed.</p>
-
-	    Not compatible with showZero, and ignores connectSeparatedPoints. Also, showing log scale
-	    with valueRanges that are less than zero will result in an unviewable graph.<br/>
-
-            <div class="tests">Tests: <a href="tests/logscale.html">logscale</a>,
-            <a href="tests/stock.html"> stock</div>
-          </td>
-        </tr>
-
-        <tr>
-          <td><strong>noZoomFlagChange</strong></td>
-          <td><code></code></td>
-          <td><code></code></td>
-          <td>
-            When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state.
-            This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this.
-            <div class="tests">Tests: <a href="tests/no-zoom-change.html">no-zoom-change</a></div>
-        </tr>
-      </tbody>
-    </table>
+    <p>For a full list, see the <a href="options.html">Dygraphs Options Reference</a> page.</p>
 
     <h2>Common Gotchas</h2>
 
@@ -1113,7 +594,18 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
 
   <!-- Google Analytics -->
-  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
-  <script type="text/javascript">_uacct = "UA-769809-1";urchinTracker();</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-769809-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 </body>
 </html>
