@@ -709,14 +709,25 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     inner_div.style.top = (box.height / 2 - box.width / 2) + 'px';
     inner_div.style.left = (box.width / 2 - box.height / 2) + 'px';
     inner_div.style.textAlign = 'center';
+
+    // CSS rotation is an HTML5 feature which is not standardized. Hence every
+    // browser has its own name for the CSS style.
     inner_div.style.transform = 'rotate(-90deg)';        // HTML5
     inner_div.style.WebkitTransform = 'rotate(-90deg)';  // Safari/Chrome
     inner_div.style.MozTransform = 'rotate(-90deg)';     // Firefox
     inner_div.style.OTransform = 'rotate(-90deg)';       // Opera
     inner_div.style.msTransform = 'rotate(-90deg)';      // IE9
-    inner_div.id = 'foo';  // XXX
-    // inner_div.style.filter =
-    //  'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+
+    if (typeof(document.documentMode) !== 'undefined' &&
+        document.documentMode < 9) {
+      // We're dealing w/ an old version of IE, so we have to rotate the text
+      // using a BasicImage transform. This uses a different origin of rotation
+      // than HTML5 rotation (top left of div vs. its center).
+      inner_div.style.filter =
+       'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+      inner_div.style.left = '0px';
+      inner_div.style.top = '0px';
+    }
 
     var class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-ylabel';
