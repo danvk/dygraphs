@@ -342,18 +342,17 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   // Add space for chart labels: title, xlabel and ylabel.
   if (this.attr_('title')) {
-    // TODO(danvk): make this a parameter
     this.area.h -= this.attr_('titleHeight');
     this.area.y += this.attr_('titleHeight');
   }
   if (this.attr_('xlabel')) {
-    // TODO(danvk): make this a parameter
     this.area.h -= this.attr_('xLabelHeight');
   }
   if (this.attr_('ylabel')) {
-    var yLabelWidth = 16;
-    this.area.x += this.attr_('yLabelWidth');
-    this.area.w -= this.attr_('yLabelWidth');
+    // It would make sense to shift the chart here to make room for the y-axis
+    // label, but the default yAxisLabelWidth is large enough that this results
+    // in overly-padded charts. The y-axis label should fit fine. If it
+    // doesn't, the yAxisLabelWidth option can be increased.
   }
 
   this.container.style.position = "relative";
@@ -661,8 +660,10 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.textAlign = 'center';
     div.style.fontSize = (this.attr_('titleHeight') - 2) + 'px';
     div.style.fontWeight = 'bold';
-    // div.style.border = '1px solid black';
-    div.innerHTML = this.attr_('title');
+    var class_div = document.createElement("div");
+    class_div.className = 'dygraph-label dygraph-title';
+    class_div.innerHTML = this.attr_('title');
+    div.appendChild(class_div);
     this.container.appendChild(div);
     this.chartLabels.title = div;
   }
@@ -676,8 +677,11 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.height = this.attr_('xLabelHeight') + 'px';
     div.style.textAlign = 'center';
     div.style.fontSize = (this.attr_('xLabelHeight') - 2) + 'px';
-    // div.style.border = '1px solid black';
-    div.innerHTML = this.attr_('xlabel');
+
+    var class_div = document.createElement("div");
+    class_div.className = 'dygraph-label dygraph-xlabel';
+    class_div.innerHTML = this.attr_('xlabel');
+    div.appendChild(class_div);
     this.container.appendChild(div);
     this.chartLabels.xlabel = div;
   }
@@ -689,6 +693,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
       width: this.attr_('yLabelWidth'),
       height: this.area.h
     };
+    // TODO(danvk): is this outer div actually necessary?
     var div = document.createElement("div");
     div.style.position = 'absolute';
     div.style.left = box.left;
@@ -696,11 +701,9 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.width = box.width + 'px';
     div.style.height = box.height + 'px';
     div.style.fontSize = (this.attr_('yLabelWidth') - 2) + 'px';
-    // div.style.border = '1px solid black';
 
     var inner_div = document.createElement("div");
     inner_div.style.position = 'absolute';
-    // inner_div.style.border = '1px solid red';
     inner_div.style.width = box.height + 'px';
     inner_div.style.height = box.width + 'px';
     inner_div.style.top = (box.height / 2 - box.width / 2) + 'px';
@@ -712,8 +715,12 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     inner_div.style.OTransform = 'rotate(-90deg)';       // Opera
     inner_div.style.filter =
      'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
-    inner_div.innerHTML = this.attr_('ylabel');
 
+    var class_div = document.createElement("div");
+    class_div.className = 'dygraph-label dygraph-ylabel';
+    class_div.innerHTML = this.attr_('ylabel');
+
+    inner_div.appendChild(class_div);
     div.appendChild(inner_div);
     this.container.appendChild(div);
     this.chartLabels.ylabel = div;

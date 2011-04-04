@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>two series</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    .dygraph-label {
+      /* This applies to the title, x-axis label and y-axis label */
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .dygraph-title {
+      /* This rule only applies to the chart title */
+      font-size: 24px;
+      text-shadow: gray 2px 2px 2px;  /* color, delta-x, delta-y, blur radius */
+    }
+    .dygraph-ylabel {
+      /* This rule only applies to the y-axis label */
+      font-size: 18px;
+      text-shadow: gray -2px 2px 2px;  /* (offsets are in a rotated frame) */
+    }
+    </style>
+  </head>
+  <body>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+
+    <p>Each chart label is styled independently. View source to see how it
+    works.</p>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            data, {
+              rollPeriod: 7,
+              legend: 'always',
+              title: 'High and Low Temperatures',
+              titleHeight: 32,
+              ylabel: 'Temperature (F)',
+              xlabel: 'Date (Pacific Time Zone)',
+              labelsDivStyles: {
+                'text-align': 'right',
+                'background': 'none'
+              },
+              strokeWidth: 1.5
+            }
+          );
+    </script>
+  </body>
+</html>
