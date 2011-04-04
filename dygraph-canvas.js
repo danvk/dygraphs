@@ -713,8 +713,10 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     inner_div.style.WebkitTransform = 'rotate(-90deg)';  // Safari/Chrome
     inner_div.style.MozTransform = 'rotate(-90deg)';     // Firefox
     inner_div.style.OTransform = 'rotate(-90deg)';       // Opera
-    inner_div.style.filter =
-     'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+    inner_div.style.msTransform = 'rotate(-90deg)';      // IE9
+    inner_div.id = 'foo';  // XXX
+    // inner_div.style.filter =
+    //  'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
 
     var class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-ylabel';
