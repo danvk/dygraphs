@@ -2087,7 +2087,7 @@ Dygraph.prototype.GetXAxis = function(start_time, end_time, granularity) {
       if (i % year_mod != 0) continue;
       for (var j = 0; j < months.length; j++) {
         var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
-        var t = Date.parse(date_str);
+        var t = Dygraph.dateStrToMillis(date_str);
         if (t < start_time || t > end_time) continue;
         ticks.push({ v:t, label: formatter(new Date(t), granularity) });
       }
@@ -2972,16 +2972,16 @@ Dygraph.dateParser = function(dateStr, self) {
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
-    d = Date.parse(dateStrSlashed);
+    d = Dygraph.dateStrToMillis(dateStrSlashed);
   } else if (dateStr.length == 8) {  // e.g. '20090712'
     // TODO(danvk): remove support for this format. It's confusing.
     dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2)
                        + "/" + dateStr.substr(6,2);
-    d = Date.parse(dateStrSlashed);
+    d = Dygraph.dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
     // "2009/07/12 12:34:56"
-    d = Date.parse(dateStr);
+    d = Dygraph.dateStrToMillis(dateStr);
   }
 
   if (!d || isNaN(d)) {
@@ -3367,6 +3367,13 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.setAnnotations(annotations, true);
   }
 }
+
+// This is identical to JavaScript's built-in Date.parse() method, except that
+// it doesn't get replaced with an incompatible method by aggressive JS
+// libraries like MooTools or Joomla.
+Dygraph.dateStrToMillis = function(str) {
+  return new Date(str).getTime();
+};
 
 // These functions are all based on MochiKit.
 Dygraph.update = function (self, o) {
