@@ -26,16 +26,21 @@
       font-size: 18px;
       text-shadow: gray -2px 2px 2px;  /* (offsets are in a rotated frame) */
     }
+    .chart {
+      border: 1px dashed black;
+      margin: 5px;
+      padding: 2px;
+    }
     </style>
   </head>
   <body>
     <p>In this chart, each chart label is styled independently. View source to
     see how it works.</p>
 
-    <div id="div_g" style="width:600px; height:300px;"></div>
+    <div class="chart" id="div_g" style="width:600px; height:300px;"></div>
 
     <p>This version of the chart uses the default styles:</p>
-    <div id="div_g2" style="width:600px; height:300px;"></div>
+    <div class="chart" id="div_g2" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
@@ -46,7 +51,7 @@
               title: 'High and Low Temperatures',
               titleHeight: 32,
               ylabel: 'Temperature (F)',
-              xlabel: 'Date (Pacific Time Zone)',
+              xlabel: 'Date (Ticks indicate the start of the indicated time period)',
               labelsDivStyles: {
                 'text-align': 'right',
                 'background': 'none'
@@ -62,7 +67,7 @@
               legend: 'always',
               title: 'High and Low Temperatures (30-day average)',
               ylabel: 'Temperature (F)',
-              xlabel: 'Date (Pacific Time Zone)',
+              xlabel: 'Date (Ticks indicate the start of the indicated time period)',
               labelsDivStyles: {
                 'text-align': 'right',
                 'background': 'none'

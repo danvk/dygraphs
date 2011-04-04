@@ -194,7 +194,7 @@ Dygraph.DEFAULT_ATTRS = {
   avoidMinZero: false,
 
   // Sizes of the various chart labels.
-  titleHeight: 18,
+  titleHeight: 28,
   xLabelHeight: 18,
   yLabelWidth: 18,
 
