@@ -258,6 +258,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.is_initial_draw_ = true;
   this.annotations_ = [];
 
+  // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
+  this.zoomed_x_ = false;
+  this.zoomed_y_ = false;
+
   // Number of digits to use when labeling the x (if numeric) and y axis
   // ticks.
   this.numXDigits_ = 2;
@@ -332,6 +336,22 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.createInterface_();
 
   this.start_();
+};
+
+/**
+ * Returns the zoomed status of the chart for one or both axes.
+ *
+ * Axis is an optional parameter. Can be set to 'x' or 'y'.
+ *
+ * The zoomed status for an axis is set whenever a user zooms using the mouse
+ * or when the dateWindow or valueRange are updated (unless the isZoomedIgnoreProgrammaticZoom
+ * option is also specified).
+ */
+Dygraph.prototype.isZoomed = function(axis) {
+  if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
+  if (axis == 'x') return this.zoomed_x_;
+  if (axis == 'y') return this.zoomed_y_;
+  throw "axis parameter to Dygraph.isZoomed must be missing, 'x' or 'y'.";
 };
 
 Dygraph.prototype.toString = function() {
@@ -1495,6 +1515,7 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   this.dateWindow_ = [minDate, maxDate];
+  this.zoomed_x_ = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
@@ -1522,9 +1543,11 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
     valueRanges.push([low, hi]);
   }
 
+  this.zoomed_y_ = true;
   this.drawGraph_();
   if (this.attr_("zoomCallback")) {
     var xRange = this.xAxisRange();
+    var yRange = this.yAxisRange();
     this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
   }
 };
@@ -1552,6 +1575,8 @@ Dygraph.prototype.doUnzoom_ = function() {
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
+    this.zoomed_x_ = false;
+    this.zoomed_y_ = false;
     this.drawGraph_();
     if (this.attr_("zoomCallback")) {
       var minDate = this.rawData_[0][0];
@@ -2576,15 +2601,20 @@ Dygraph.prototype.drawGraph_ = function() {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  this.computeYAxisRanges_(extremes);
-  this.layout_.updateOptions( { yAxes: this.axes_,
-                                seriesToAxisMap: this.seriesToAxisMap_
-                              } );
-
+  if (datasets.length > 0) {
+    // TODO(danvk): this method doesn't need to return anything.
+    this.computeYAxisRanges_(extremes);
+    this.layout_.updateOptions( { yAxes: this.axes_,
+                                  seriesToAxisMap: this.seriesToAxisMap_
+                                } );
+  }
   this.addXTicks_();
 
+  // Save the X axis zoomed status as the updateOptions call will tend to set it errorneously
+  var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
   this.layout_.updateOptions({dateWindow: this.dateWindow_});
+  this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
   this.plotter_.clear();
   this.plotter_.render();
@@ -2612,6 +2642,15 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+  var valueWindows;
+  if (this.axes_ != undefined) {
+    // Preserve valueWindow settings.
+    valueWindows = [];
+    for (var index = 0; index < this.axes_.length; index++) {
+      valueWindows.push(this.axes_[index].valueWindow);
+    }
+  }
+
   this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
@@ -2688,6 +2727,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
+
+  if (valueWindows != undefined) {
+    // Restore valueWindow settings.
+    for (var index = 0; index < valueWindows.length; index++) {
+      this.axes_[index].valueWindow = valueWindows[index];
+    }
+  }
 };
 
 /**
@@ -2742,11 +2788,28 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
+      var extremeMinY, extremeMaxY;
       for (var j = 0; j < series.length; j++) {
-        minY = Math.min(extremes[series[j]][0], minY);
-        maxY = Math.max(extremes[series[j]][1], maxY);
+        // Only use valid extremes to stop null data series' from corrupting the scale.
+        extremeMinY = extremes[series[j]][0];
+        if (extremeMinY != null) {
+            minY = Math.min(extremeMinY, minY);
+        }
+        extremeMaxY = extremes[series[j]][1];
+        if (extremeMaxY != null) {
+            maxY = Math.max(extremeMaxY, maxY);
+        }
       }
       if (axis.includeZero && minY > 0) minY = 0;
+
+      // Ensure we have a valid scale, otherwise defualt to zero for safety.
+      if (minY == Infinity) {
+        minY = 0;
+      }
+
+      if (maxY == -Infinity) {
+        maxY = 0;
+      }
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
@@ -3469,6 +3532,12 @@ Dygraph.prototype.start_ = function() {
  * <li>file: changes the source data for the graph</li>
  * <li>errorBars: changes whether the data contains stddev</li>
  * </ul>
+ *
+ * If the dateWindow or valueRange options are specified, the relevant zoomed_x_
+ * or zoomed_y_ flags are set, unless the isZoomedIgnoreProgrammaticZoom option is also
+ * secified. This allows for the chart to be programmatically zoomed without
+ * altering the zoomed flags.
+ *
  * @param {Object} attrs The new properties and values
  */
 Dygraph.prototype.updateOptions = function(attrs) {
@@ -3478,6 +3547,12 @@ Dygraph.prototype.updateOptions = function(attrs) {
   }
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
+    if (!('isZoomedIgnoreProgrammaticZoom' in attrs)) {
+      this.zoomed_x_ = attrs.dateWindow != null;
+    }
+  }
+  if ('valueRange' in attrs && !('isZoomedIgnoreProgrammaticZoom' in attrs)) {
+    this.zoomed_y_ = attrs.valueRange != null;
   }
 
   // TODO(danvk): validate per-series options.
@@ -4135,6 +4210,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float",
     "default": "null",
     "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
+  },
+  "isZoomedIgnoreProgrammaticZoom" : {
+    "default": "false",
+    "labels": ["Zooming"],
+    "type": "boolean",
+    "description" : "When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
   }
 }
 ;  // </JSON>

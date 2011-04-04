@@ -18,7 +18,13 @@
     buttons are useful for testing.</h3>
     <h4>Window coordinates (in dates and values):</h4>
     <div id="xdimensions"></div> <div id="ydimensions"></div>
+    <div style="float: right">
+        <p>Zoomed: <span id="zoomed">False</span><p/>
+        <p>Zoomed X: <span id="zoomedX">False</span><p/>
+        <p>Zoomed Y: <span id="zoomedY">False</span><p/>
+    </div>
     <div id="div_g" style="width:600px; height:300px;"></div>
+
 
     <p><b>Zoom operations:</b></p>
     <p>
@@ -46,8 +52,13 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(minDate, maxDate, yRanges) {
-                showDimensions(minDate, maxDate, yRanges);
+              zoomCallback : function(minDate, maxDate, yRange) {
+                showDimensions(minDate, maxDate, yRange);
+              },
+              drawCallback: function(me, initial) {
+                document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
+                document.getElementById("zoomedX").innerHTML = "" + me.isZoomed("x");
+                document.getElementById("zoomedY").innerHTML = "" + me.isZoomed("y");
               }
             }
           );
