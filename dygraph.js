@@ -2601,13 +2601,10 @@ Dygraph.prototype.drawGraph_ = function() {
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
   }
 
-  if (datasets.length > 0) {
-    // TODO(danvk): this method doesn't need to return anything.
-    this.computeYAxisRanges_(extremes);
-    this.layout_.updateOptions( { yAxes: this.axes_,
-                                  seriesToAxisMap: this.seriesToAxisMap_
-                                } );
-  }
+  this.computeYAxisRanges_(extremes);
+  this.layout_.updateOptions( { yAxes: this.axes_,
+                                seriesToAxisMap: this.seriesToAxisMap_
+                              } );
   this.addXTicks_();
 
   // Save the X axis zoomed status as the updateOptions call will tend to set it errorneously
@@ -2793,23 +2790,18 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         // Only use valid extremes to stop null data series' from corrupting the scale.
         extremeMinY = extremes[series[j]][0];
         if (extremeMinY != null) {
-            minY = Math.min(extremeMinY, minY);
+          minY = Math.min(extremeMinY, minY);
         }
         extremeMaxY = extremes[series[j]][1];
         if (extremeMaxY != null) {
-            maxY = Math.max(extremeMaxY, maxY);
+          maxY = Math.max(extremeMaxY, maxY);
         }
       }
       if (axis.includeZero && minY > 0) minY = 0;
 
       // Ensure we have a valid scale, otherwise defualt to zero for safety.
-      if (minY == Infinity) {
-        minY = 0;
-      }
-
-      if (maxY == -Infinity) {
-        maxY = 0;
-      }
+      if (minY == Infinity) minY = 0;
+      if (maxY == -Infinity) maxY = 0;
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
@@ -3533,11 +3525,6 @@ Dygraph.prototype.start_ = function() {
  * <li>errorBars: changes whether the data contains stddev</li>
  * </ul>
  *
- * If the dateWindow or valueRange options are specified, the relevant zoomed_x_
- * or zoomed_y_ flags are set, unless the isZoomedIgnoreProgrammaticZoom option is also
- * secified. This allows for the chart to be programmatically zoomed without
- * altering the zoomed flags.
- *
  * @param {Object} attrs The new properties and values
  */
 Dygraph.prototype.updateOptions = function(attrs) {
@@ -4215,7 +4202,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Zooming"],
     "type": "boolean",
-    "description" : "When this flag is passed along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
+    "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
   }
 }
 ;  // </JSON>
@@ -4240,7 +4227,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Legend',
    'Overall display',
    'Rolling Averages',
-   'Value display/formatting'
+   'Value display/formatting',
+   'Zooming'
   ];
   var cats = {};
   for (var i = 0; i < valid_cats.length; i++) cats[valid_cats[i]] = true;
