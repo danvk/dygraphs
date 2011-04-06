@@ -192,13 +192,16 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+  integerYAxis: false,
 
   // Sizes of the various chart labels.
   titleHeight: 28,
   xLabelHeight: 18,
   yLabelWidth: 18,
 
-  interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
+  interactionModel: null,  // will be set to Dygraph.defaultInteractionModel.
+
+  colourShownAxis: true
 };
 
 // Various logging levels.
@@ -612,8 +615,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
 
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
-
   var pct;
+
   if (!this.axes_[axis].logscale) {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
@@ -1685,7 +1688,7 @@ Dygraph.prototype.idxToRow_ = function(idx) {
 
 // TODO(danvk): rename this function to something like 'isNonZeroNan'.
 Dygraph.isOK = function(x) {
-  return x && !isNaN(x);
+  return x && !isNaN(x) && isFinite(x);
 };
 
 Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
@@ -2262,11 +2265,12 @@ Dygraph.significantFigures = function(x, opt_maxPrecision) {
  * @param {Number} minV minimum value
  * @param {Number} maxV maximum value
  * @param self
+ * @param {integerOnly} Only display integer labels.
  * @param {function} attribute accessor function.
  * @return {Array.<Object>} Array of {label, value} tuples.
  * @public
  */
-Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
+Dygraph.numericTicks = function(minV, maxV, self, integerOnly, axis_props, vals) {
   var attr = function(k) {
     if (axis_props && axis_props.hasOwnProperty(k)) return axis_props[k];
     return self.attr_(k);
@@ -2344,6 +2348,9 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
         }
         for (var j = 0; j < mults.length; j++) {
           scale = base_scale * mults[j];
+          if (integerOnly) {
+            scale = Math.max(1, scale)
+          }
           low_val = Math.floor(minV / scale) * scale;
           high_val = Math.ceil(maxV / scale) * scale;
           nTicks = Math.abs(high_val - low_val) / scale;
@@ -2604,15 +2611,30 @@ Dygraph.prototype.drawGraph_ = function() {
     datasets[i] = series;
   }
 
+  var invisible = 0;
+
   for (var i = 1; i < datasets.length; i++) {
-    if (!this.visibility()[i - 1]) continue;
+    if (!this.visibility()[i - 1]) {
+        invisible++;
+        continue;
+    }
     this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
+
+    if (this.attr_("showAxis") != null && this.attr_("colourShownAxis")) {
+      // Set the colour of the Y displayed axis so that it's clear what it's the axis for.
+      if (this.attr_("labels")[i] == this.attr_("showAxis")) {
+        Dygraph.update(this.plotter_.options, {yAxisColor: this.colors_[i-1-invisible]});
+      }
+    }
   }
 
-  this.computeYAxisRanges_(extremes);
-  this.layout_.updateOptions( { yAxes: this.axes_,
-                                seriesToAxisMap: this.seriesToAxisMap_
-                              } );
+  if (datasets.length > 0) {
+    this.computeYAxisRanges_(extremes);
+    this.layout_.updateOptions( { yAxes: this.axes_,
+                                  seriesToAxisMap: this.seriesToAxisMap_,
+                                  showAxis: this.attr_("showAxis")
+                                } );
+  }
   this.addXTicks_();
 
   // Save the X axis zoomed status as the updateOptions call will tend to set it errorneously
@@ -2656,7 +2678,15 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
+  var showAxis = this.attr_("showAxis");
+  var defaultAxis = {yAxisId: 0, g : this};
+  this.axes_ = [];
+
+  if (showAxis == null) {
+    // Always have at least one y-axis, unless we're showing a specific axis only.
+    this.axes_.push(defaultAxis);
+  }
+
   this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
@@ -2677,29 +2707,34 @@ Dygraph.prototype.computeYAxes_ = function() {
     'logscale'
   ];
 
-  // Copy global axis options over to the first axis.
+  // Copy global axis options over to the default axis.
   for (var i = 0; i < axisOptions.length; i++) {
     var k = axisOptions[i];
     var v = this.attr_(k);
-    if (v) this.axes_[0][k] = v;
+    if (v) defaultAxis[k] = v;
   }
 
   // Go through once and add all the axes.
   for (var seriesName in series) {
     if (!series.hasOwnProperty(seriesName)) continue;
     var axis = this.attr_("axis", seriesName);
-    if (axis == null) {
+    if (axis == null && showAxis == null) {
       this.seriesToAxisMap_[seriesName] = 0;
       continue;
     }
-    if (typeof(axis) == 'object') {
+    if (typeof(axis) == 'object' || showAxis != null) {
       // Add a new axis, making a copy of its per-axis options.
       var opts = {};
-      Dygraph.update(opts, this.axes_[0]);
-      Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
       var yAxisId = this.axes_.length;
+      Dygraph.update(opts, defaultAxis);
+      if (seriesName != showAxis) {
+        Dygraph.update(opts, {valueRange: null});  // shouldn't inherit this.
+      } else {
+        Dygraph.update(opts, {valueRange: this.attr_("valueRange", seriesName)});
+      }
       opts.yAxisId = yAxisId;
       opts.g = this;
+      opts.independentTicks = showAxis != null;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
       this.seriesToAxisMap_[seriesName] = yAxisId;
@@ -2780,25 +2815,30 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else {
       // Calculate the extremes of extremes.
       var series = seriesForAxis[i];
+      if (series == undefined || series.length == 0) {
+        // An axis with a single invisible series.
+        axis.computedValueRange = [0, 0]
+        continue;
+      }
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
       var extremeMinY, extremeMaxY;
       for (var j = 0; j < series.length; j++) {
         // Only use valid extremes to stop null data series' from corrupting the scale.
         extremeMinY = extremes[series[j]][0];
-        if (extremeMinY != null) {
-          minY = Math.min(extremeMinY, minY);
+        if (extremeMinY != null && Math.abs(extremeMinY) != Infinity) {
+            minY = Math.min(extremeMinY, minY);
         }
         extremeMaxY = extremes[series[j]][1];
-        if (extremeMaxY != null) {
-          maxY = Math.max(extremeMaxY, maxY);
+        if (extremeMaxY != null && Math.abs(extremeMaxY) != Infinity) {
+            maxY = Math.max(extremeMaxY, maxY);
         }
       }
       if (axis.includeZero && minY > 0) minY = 0;
 
       // Ensure we have a valid scale, otherwise defualt to zero for safety.
-      if (minY == Infinity) minY = 0;
-      if (maxY == -Infinity) maxY = 0;
+      if (Math.abs(minY) == Infinity) minY = 0;
+      if (Math.abs(maxY) == Infinity) maxY = 0;
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
@@ -2842,11 +2882,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     // Add ticks. By default, all axes inherit the tick positions of the
     // primary axis. However, if an axis is specifically marked as having
     // independent ticks, then that is permissible as well.
-    if (i == 0 || axis.independentTicks) {
+
+    if (i == 0 || axis.independentTicks || axis.integerYAxis) {
       var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this,
+                             this.attr_("integerYAxis") || axis.integerYAxis,
                              axis);
       axis.ticks = ret.ticks;
       this.numYDigits_ = ret.numDigits;
@@ -2856,8 +2898,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
       var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
       var tick_values = [];
-      for (var i = 0; i < p_ticks.length; i++) {
-        var y_frac = (p_ticks[i].v - p_axis.computedValueRange[0]) / p_scale;
+      for (var tickIndex = 0; tickIndex < p_ticks.length; tickIndex++) {
+        var y_frac = (p_ticks[tickIndex].v - p_axis.computedValueRange[0]) / p_scale;
         var y_val = axis.computedValueRange[0] + y_frac * scale;
         tick_values.push(y_val);
       }
@@ -2865,7 +2907,10 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var ret =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
-                             this, axis, tick_values);
+                             this,
+                             this.attr_("integerYAxis") || axis.integerYAxis,
+                             axis, tick_values);
+
       axis.ticks = ret.ticks;
       this.numYDigits_ = ret.numDigits;
     }
@@ -4236,6 +4281,24 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Zooming"],
     "type": "boolean",
     "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
+  },
+  "showAxis": {
+    "labels": ["Axis display"],
+    "type": "string",
+    "default": "null",
+    "description": "When set, the Y-axis for the specified data series is displayed. A side effect of this is that each data series has it's own axis, even when not displayed (By default there is one axis for all data series', unless specifically created). This means that by default each data series will be scaled to fit the chart independently from each other. When the shown axis is changed, this therefore does not result in the scaling of any data series being changed."
+  },
+  "colourShownAxis": {
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "default": "true",
+    "description": "When showing a particular axis using the <code>showAxis</code> option, display that axis in the same colour as the associated data series."
+  },
+  "integerYAxis": {
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "default": "false",
+    "description": "Display only integer Y axis labels. This may be applied to a particular axis."
   }
 }
 ;  // </JSON>

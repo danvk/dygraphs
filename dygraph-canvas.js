@@ -163,14 +163,33 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   }
 
   this.yticks = new Array();
-  for (var i = 0; i < this.options.yAxes.length; i++ ) {
-    var axis = this.options.yAxes[i];
-    for (var j = 0; j < axis.ticks.length; j++) {
-      var tick = axis.ticks[j];
+  var showAxis = this.options.showAxis;
+
+  if (showAxis != null) {
+    // Only add the requested axis.
+    var axisNum = this.options.seriesToAxisMap[showAxis]
+    var axis = this.options.yAxes[axisNum];
+
+    for (var index = 0; index < axis.ticks.length; index++) {
+      var tick = axis.ticks[index];
       var label = tick.label;
-      var pos = this.dygraph_.toPercentYCoord(tick.v, i);
+      var pos = this.dygraph_.toPercentYCoord(tick.v, axisNum);
       if ((pos >= 0.0) && (pos <= 1.0)) {
-        this.yticks.push([i, pos, label]);
+        this.yticks.push([0, pos, label]);
+      }
+    }
+  } else {
+    // Add all axes.
+    for (var i = 0; i < this.options.yAxes.length; i++ ) {
+      var axis = this.options.yAxes[i];
+      for (var j = 0; j < axis.ticks.length; j++) {
+        var tick = axis.ticks[j];
+        var label = tick.label;
+        //var pos = 1.0 - (axis.yscale * (tick.v - axis.minyval));
+        var pos = this.dygraph_.toPercentYCoord(tick.v, i);
+        if ((pos >= 0.0) && (pos <= 1.0)) {
+          this.yticks.push([i, pos, label]);
+        }
       }
     }
   }
@@ -331,13 +350,17 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
   this.area.h = this.height - this.options.axisLabelFontSize -
                 2 * this.options.axisTickSize;
 
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
+  // If we're being told to show a particular axis, we will only display
+  // the requested axis anyway, so we don't need any of the following checks.
+  if (!("showAxis" in this.options)) {
+    // Shrink the drawing area to accomodate additional y-axes.
+    if (this.dygraph_.numAxes() == 2) {
+      // TODO(danvk): per-axis setting.
+      this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
+    } else if (this.dygraph_.numAxes() > 2) {
+      this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                          "to use " + this.dygraph_.numAxes() + ")");
+    }
   }
 
   // Add space for chart labels: title, xlabel and ylabel.
@@ -533,6 +556,11 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.options.drawYAxis) {
     if (this.layout.yticks && this.layout.yticks.length > 0) {
+      if ("yAxisColor") {
+        context.strokeStyle = this.options.yAxisColor;
+        labelStyle.color = this.options.yAxisColor;
+      }
+      
       for (var i = 0; i < this.layout.yticks.length; i++) {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
@@ -599,6 +627,10 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       context.stroke();
     }
   }
+
+  // Reset everything for the X-axis
+  context.strokeStyle = this.options.axisLineColor;
+  labelStyle.color = this.options.axisLabelColor;
 
   if (this.options.drawXAxis) {
     if (this.layout.xticks) {

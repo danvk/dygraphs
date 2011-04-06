@@ -1,0 +1,137 @@
+<html>
+  <head>
+    <title>dygraph</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <!-- Ensure that the documentation generator picks us up: {colourShownAxis:} -->
+    <div>
+        <div style="float: right">
+            <h2>3 plots, 2 Y axis:</h2>
+            <div id="graphdiv2"></div>
+            <script type="text/javascript">
+                new Dygraph(
+                    document.getElementById("graphdiv2"),
+                    "Date,Y1,Y2,Y3\n" +
+                    "2011-01-01,75,700,6500\n" +
+                    "2011-01-02,70,650,7000\n" +
+                    "2011-01-03,60,750,5500\n" +
+                    "2011-01-04,85,600,7500\n" +
+                    "2011-01-05,65,550,6000\n" +
+                    "2011-01-06,50,650,7500\n" +
+                    "2011-01-07,55,650,6500\n" +
+                    "2011-01-08,80,700,5500\n",
+                    {
+                        "Y1": {
+                            axis: {
+                                valueRange: [50, 100]
+                            }
+                        }
+                    }
+                )
+            </script>
+        </div>
+        <div>
+            <h2>3 plots, one common Y axis:</h2>
+            <div id="graphdiv1"></div>
+            <script type="text/javascript">
+                new Dygraph(
+                    document.getElementById("graphdiv1"),
+                    "Date,Y1,Y2,Y3\n" +
+                    "2011-01-01,75,700,6500\n" +
+                    "2011-01-02,70,650,7000\n" +
+                    "2011-01-03,60,750,5500\n" +
+                    "2011-01-04,85,600,7500\n" +
+                    "2011-01-05,65,550,6000\n" +
+                    "2011-01-06,50,650,7500\n" +
+                    "2011-01-07,55,650,6500\n" +
+                    "2011-01-08,80,700,5500\n"
+                )
+            </script>
+        </div>
+    </div>
+
+    <div>
+        <div style="float: right">
+            <div>
+                <h2>3 plots, one Y axis shown (fixed scales):</h2>
+                <div id="graphdiv4"></div>
+                <script type="text/javascript">
+                    g2 = new Dygraph(
+                        document.getElementById("graphdiv4"),
+                        "Date,Y1,Y2,Y3\n" +
+                        "2011-01-01,75,700,6500\n" +
+                        "2011-01-02,70,650,7000\n" +
+                        "2011-01-03,60,750,5500\n" +
+                        "2011-01-04,85,600,7500\n" +
+                        "2011-01-05,65,550,6000\n" +
+                        "2011-01-06,50,650,7500\n" +
+                        "2011-01-07,55,650,6500\n" +
+                        "2011-01-08,80,700,5500\n",
+                        {
+                            "showAxis": "Y1",
+                            "Y1": {
+                                axis: {
+                                    valueRange: [50, 100]
+                                }
+                            },
+                            "Y2": {
+                                axis: {
+                                    valueRange: [500, 1000]
+                                }
+                            },
+                            "Y3": {
+                                axis: {
+                                    valueRange: [5000, 8000]
+                                }
+                            }
+                        }
+                    )
+                </script>
+            </div>
+            <div>
+                <input type="radio" name="g2_axis" value="Y1" onclick="g2.updateOptions({'showAxis': 'Y1'})" checked=true />Y1
+                <input type="radio" name="g2_axis" value="Y2" onclick="g2.updateOptions({'showAxis': 'Y2'})" />Y2
+                <input type="radio" name="g2_axis" value="Y3" onclick="g2.updateOptions({'showAxis': 'Y3'})" />Y3
+                <input type="checkbox" id="g2showColour" onchange="g2.updateOptions({'colourShownAxis': document.getElementById('g2showColour').checked})" checked=true />Colour Shown Axis
+            </div>
+        </div>
+        <div>
+            <div>
+                <h2>3 plots, one Y axis shown (autoscale):</h2>
+                <div id="graphdiv3"></div>
+                <script type="text/javascript">
+                    g1 = new Dygraph(
+                        document.getElementById("graphdiv3"),
+                        "Date,Y1,Y2,Y3\n" +
+                        "2011-01-01,75,700,6500\n" +
+                        "2011-01-02,70,650,7000\n" +
+                        "2011-01-03,60,750,5500\n" +
+                        "2011-01-04,85,600,7500\n" +
+                        "2011-01-05,65,550,6000\n" +
+                        "2011-01-06,50,650,7500\n" +
+                        "2011-01-07,55,650,6500\n" +
+                        "2011-01-08,80,700,5500\n",
+                        {
+                            "showAxis": "Y1"
+                        }
+                    )
+                </script>
+            </div>
+            <div>
+                <input type="radio" name="g1_axis" value="Y1" onclick="g1.updateOptions({'showAxis': 'Y1'})" checked=true />Y1
+                <input type="radio" name="g1_axis" value="Y2" onclick="g1.updateOptions({'showAxis': 'Y2'})" />Y2
+                <input type="radio" name="g1_axis" value="Y3" onclick="g1.updateOptions({'showAxis': 'Y3'})" />Y3
+                <input type="checkbox" id="g1showColour" onchange="g1.updateOptions({'colourShownAxis': document.getElementById('g1showColour').checked})" checked=true />Colour Shown Axis
+            </div>
+        </div>
+    </div>
+
+  </body>
+</html>

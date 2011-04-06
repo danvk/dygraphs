@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <title>dygraph</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>1: Step chart with integer values:</p>
+    <div id="graphd1"></div>
+    <script type="text/javascript">
+        new Dygraph(document.getElementById("graphd1"),
+            "Date,Y1\n" +
+            "2008-05-07,0\n" +
+            "2008-05-08,1\n" +
+            "2008-05-09,0\n" +
+            "2008-05-10,0\n" +
+            "2008-05-11,3\n" +
+            "2008-05-12,4\n",
+            {
+               stepPlot: true,
+               avoidMinZero: true
+            }
+        )
+    </script>
+
+    <p>2: Step chart with integer values and <code>integerYAxis</code> flag:</p>
+    <div id="graphd2"></div>
+    <script type="text/javascript">
+        new Dygraph(document.getElementById("graphd2"),
+            "Date,Y1\n" +
+            "2008-05-07,0\n" +
+            "2008-05-08,1\n" +
+            "2008-05-09,0\n" +
+            "2008-05-10,0\n" +
+            "2008-05-11,3\n" +
+            "2008-05-12,4\n",
+            {
+               stepPlot: true,
+               avoidMinZero: true,
+               integerYAxis: true
+            }
+        )
+    </script>
+
+    <p>3: Step chart with integer values and <code>integerYAxis</code> flag on one axis:</p>
+    <div id="graphd3"></div>
+    <script type="text/javascript">
+        new Dygraph(document.getElementById("graphd3"),
+            "Date,Y1,Y2\n" +
+            "2008-05-07,0,1\n" +
+            "2008-05-08,1,0\n" +
+            "2008-05-09,0,2\n" +
+            "2008-05-10,0,1\n" +
+            "2008-05-11,3,0\n" +
+            "2008-05-12,4,2\n",
+            {
+               stepPlot: true,
+               avoidMinZero: true,
+               Y2: {
+                    axis: {
+                        integerYAxis: true
+                    }
+               }
+            }
+        )
+    </script>
+
+  </body>
+</html>
