@@ -2978,6 +2978,9 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
     var mid = 0;
     var high = 0;
     var count = 0;
+    var mid_val;
+    var low_val;
+    var high_val;
     for (var i = 0; i < originalData.length; i++) {
       var data = originalData[i][1];
       var y = data[1];
@@ -2998,9 +3001,14 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           count -= 1;
         }
       }
-      rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
-                                              1.0 * (mid - low) / count,
-                                              1.0 * (high - mid) / count ]];
+      if (count > 0) {
+        mid_val = 1.0 * mid / count;
+        low_val = 1.0 * (mid - low) / count;
+        high_val = 1.0 * (high - mid) / count;
+      } else {
+        mid_val = low_val = high_val = NaN;
+      }
+      rollingData[i] = [originalData[i][0], [mid_val, low_val, high_val]];
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
