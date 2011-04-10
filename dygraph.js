@@ -1699,10 +1699,10 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     var labels = this.attr_('labels');
     var html = '';
     for (var i = 1; i < labels.length; i++) {
-      var c = new RGBColor(this.plotter_.colors[labels[i]]);
+      var c = this.plotter_.colors[labels[i]];
       if (i > 1) html += (sepLines ? '<br/>' : ' ');
-      html += "<b><font color='" + c.toHex() + "'>&mdash;" + labels[i] +
-        "</font></b>";
+      html += "<b><span style='color: " + c + ";'>&mdash;" + labels[i] +
+        "</span></b>";
     }
     return html;
   }
@@ -1719,11 +1719,11 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (!Dygraph.isOK(pt.canvasy)) continue;
     if (sepLines) html += "<br/>";
 
-    var c = new RGBColor(this.plotter_.colors[pt.name]);
+    var c = this.plotter_.colors[pt.name];
     var yval = fmtFunc(pt.yval, displayDigits);
     // TODO(danvk): use a template string here and make it an attribute.
-    html += " <b><font color='" + c.toHex() + "'>"
-      + pt.name + "</font></b>:"
+    html += " <b><span style='color: " + c + ";'>"
+      + pt.name + "</span></b>:"
       + yval;
   }
   return html;
