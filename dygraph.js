@@ -1811,7 +1811,6 @@ Dygraph.prototype.setSelection = function(row) {
     this.lastx_ = this.selPoints_[0].xval;
     this.updateSelection_();
   } else {
-    this.lastx_ = -1;
     this.clearSelection();
   }
 
@@ -2630,6 +2629,13 @@ Dygraph.prototype.drawGraph_ = function() {
   if (is_initial_draw) {
     // Generate a static legend before any particular point is selected.
     this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+  } else {
+    if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
+      this.lastx_ = this.selPoints_[0].xval;
+      this.updateSelection_();
+    } else {
+      this.clearSelection();
+    }
   }
 
   if (this.attr_("drawCallback") !== null) {
