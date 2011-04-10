@@ -3196,10 +3196,21 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
-        var vals = inFields[j].split(";");
-        fields[j] = [ this.parseFloat_(vals[0], i, line),
-                      this.parseFloat_(vals[1], i, line),
-                      this.parseFloat_(vals[2], i, line) ];
+        var val = inFields[j];
+        if (/^ *$/.test(val)) {
+          fields[j] = [null, null, null];
+        } else {
+          var vals = val.split(";");
+          if (vals.length == 3) {
+            fields[j] = [ this.parseFloat_(vals[0], i, line),
+                          this.parseFloat_(vals[1], i, line),
+                          this.parseFloat_(vals[2], i, line) ];
+          } else {
+            this.warning('When using customBars, values must be either blank ' +
+                         'or "low;center;high" tuples (got "' + val +
+                         '" on line ' + (1+i));
+          }
+        }
       }
     } else {
       // Values are just numbers
