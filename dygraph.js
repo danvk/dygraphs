@@ -1699,8 +1699,9 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     var labels = this.attr_('labels');
     var html = '';
     for (var i = 1; i < labels.length; i++) {
+      if (!this.visibility()[i - 1]) continue;
       var c = this.plotter_.colors[labels[i]];
-      if (i > 1) html += (sepLines ? '<br/>' : ' ');
+      if (html != '') html += (sepLines ? '<br/>' : ' ');
       html += "<b><span style='color: " + c + ";'>&mdash;" + labels[i] +
         "</span></b>";
     }
