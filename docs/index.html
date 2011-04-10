@@ -325,7 +325,7 @@
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;graphdiv4&quot;
-  style=&quot;width:600px; height:300px;&quot;&gt;&lt;/div&gt;
+  style=&quot;width:480px; height:320px;&quot;&gt;&lt;/div&gt;
 &lt;script type=&quot;text/javascript&quot;&gt;
   g4 = new Dygraph(
     document.getElementById(&quot;graphdiv4&quot;),
@@ -345,7 +345,7 @@
         </div>
         <div class="codeoutput" style="float:left;">
           <h3 style="text-align:center">OUTPUT</h3>
-          <div id="graphdiv4" style="width:600px; height:300px;"></div>
+          <div id="graphdiv4" style="width:480px; height:320px;"></div>
           <script type="text/javascript">
             g4 = new Dygraph(
               document.getElementById("graphdiv4"),
@@ -477,7 +477,7 @@ new Dygraph(el, data, {
 
     <p>This chart shows monthly closes of the Dow Jones Industrial Average, both in nominal and real (i.e. adjusted for inflation) dollars. The shaded areas show its monthly high and low. CPI values with a base from 1982-84 are used to adjust for inflation.</p>
 
-    <div id="dow_chart" style="width:900px; height:350px;"></div>
+    <div id="dow_chart" style="width:750px; height:350px;"></div>
     <p><b>Display: </b>
     <input type=checkbox id=0 onClick="stockchange(this)" checked>
     <label for="0"> Nominal</label>
@@ -589,14 +589,15 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
     <p>Call org.danvk.Dygraphs.install() when your application starts to install the JavaScript code into the browser.  You can use <a href="http://code.google.com/webtoolkit/doc/latest/DevGuideCodingBasicsJSNI.html">JSNI</a> to call Dygraphs from your GWT code, as in the example below.  The example uses the <a href="http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted">Visualization API for GWT</a> and the <a href="#gviz">Dygraphs GViz API.</a></p>
 
 <pre>
-  public static native JavaScriptObject drawDygraph(Element element, DataTable dataTable, double minY, double maxY) /*-{
-    var chart = new $wnd.Dygraph.GVizChart(element);
-    chart.draw(dataTable,
-      {
-        valueRange: [minY, maxY]
-      });
-    return chart;
-  }-*/;
+public static native JavaScriptObject drawDygraph(
+    Element element, DataTable dataTable, double minY, double maxY) /*-{
+  var chart = new $wnd.Dygraph.GVizChart(element);
+  chart.draw(dataTable,
+    {
+      valueRange: [minY, maxY]
+    });
+  return chart;
+}-*/;
 </pre>
 
     <h2 id="policy">Data Policy</h2>
