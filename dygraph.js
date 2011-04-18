@@ -2676,15 +2676,6 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  var valueWindows;
-  if (this.axes_ != undefined) {
-    // Preserve valueWindow settings.
-    valueWindows = [];
-    for (var index = 0; index < this.axes_.length; index++) {
-      valueWindows.push(this.axes_[index].valueWindow);
-    }
-  }
-
   var showAxis = this.attr_("showAxis");
   var defaultAxis = {yAxisId: 0, g : this};
   this.axes_ = [];
@@ -2774,13 +2765,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
-
-  if (valueWindows != undefined) {
-    // Restore valueWindow settings.
-    for (var index = 0; index < valueWindows.length; index++) {
-      this.axes_[index].valueWindow = valueWindows[index];
-    }
-  }
 };
 
 /**
