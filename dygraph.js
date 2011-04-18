@@ -72,59 +72,6 @@ Dygraph.toString = function() {
   return this.__repr__();
 };
 
-/**
- * Formatting to use for an integer number.
- *
- * @param {Number} x The number to format
- * @param {Number} unused_precision The precision to use, ignored.
- * @return {String} A string formatted like %g in printf.  The max generated
- *                  string length should be precision + 6 (e.g 1.123e+300).
- */
-Dygraph.intFormat = function(x, unused_precision) {
-  return x.toString();
-}
-
-/**
- * Number formatting function which mimicks the behavior of %g in printf, i.e.
- * either exponential or fixed format (without trailing 0s) is used depending on
- * the length of the generated string.  The advantage of this format is that
- * there is a predictable upper bound on the resulting string length,
- * significant figures are not dropped, and normal numbers are not displayed in
- * exponential notation.
- *
- * NOTE: JavaScript's native toPrecision() is NOT a drop-in replacement for %g.
- * It creates strings which are too long for absolute values between 10^-4 and
- * 10^-6.  See tests/number-format.html for output examples.
- *
- * @param {Number} x The number to format
- * @param {Number} opt_precision The precision to use, default 2.
- * @return {String} A string formatted like %g in printf.  The max generated
- *                  string length should be precision + 6 (e.g 1.123e+300).
- */
-Dygraph.floatFormat = function(x, opt_precision) {
-  // Avoid invalid precision values; [1, 21] is the valid range.
-  var p = Math.min(Math.max(1, opt_precision || 2), 21);
-
-  // This is deceptively simple.  The actual algorithm comes from:
-  //
-  // Max allowed length = p + 4
-  // where 4 comes from 'e+n' and '.'.
-  //
-  // Length of fixed format = 2 + y + p
-  // where 2 comes from '0.' and y = # of leading zeroes.
-  //
-  // Equating the two and solving for y yields y = 2, or 0.00xxxx which is
-  // 1.0e-3.
-  //
-  // Since the behavior of toPrecision() is identical for larger numbers, we
-  // don't have to worry about the other bound.
-  //
-  // Finally, the argument for toExponential() is the number of trailing digits,
-  // so we take off 1 for the value before the '.'.
-  return (Math.abs(x) < 1.0e-3 && x != 0.0) ?
-      x.toExponential(p - 1) : x.toPrecision(p);
-};
-
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
@@ -153,11 +100,7 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x, opt_precision) {
-    var s = Dygraph.floatFormat(x, opt_precision);
-    var s2 = Dygraph.intFormat(x);
-    return s.length < s2.length ? s : s2;
-  },
+  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
 
   strokeWidth: 1.0,
 
@@ -266,20 +209,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
   this.zoomed_x_ = false;
   this.zoomed_y_ = false;
-
-  // Number of digits to use when labeling the x (if numeric) and y axis
-  // ticks.
-  this.numXDigits_ = 2;
-  this.numYDigits_ = 2;
-
-  // When labeling x (if numeric) or y values in the legend, there are
-  // numDigits + numExtraDigits of precision used.  For axes labels with N
-  // digits of precision, the data should be displayed with at least N+1 digits
-  // of precision. The reason for this is to divide each interval between
-  // successive ticks into tenths (for 1) or hundredths (for 2), etc.  For
-  // example, if the labels are [0, 1, 2], we want data to be displayed as
-  // 0.1, 1.3, etc.
-  this.numExtraDigits_ = 1;
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -1707,8 +1636,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     return html;
   }
 
-  var displayDigits = this.numXDigits_ + this.numExtraDigits_;
-  var html = this.attr_('xValueFormatter')(x, displayDigits) + ":";
+  var html = this.attr_('xValueFormatter')(x) + ":";
 
   var fmtFunc = this.attr_('yValueFormatter');
   var showZeros = this.attr_("labelsShowZeroValues");
@@ -1720,7 +1648,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (sepLines) html += "<br/>";
 
     var c = new RGBColor(this.plotter_.colors[pt.name]);
-    var yval = fmtFunc(pt.yval, displayDigits);
+    var yval = fmtFunc(pt.yval);
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><font color='" + c.toHex() + "'>"
       + pt.name + "</font></b>:"
@@ -1932,6 +1860,18 @@ Dygraph.dateString_ = function(date) {
 };
 
 /**
+ * Round a number to the specified number of digits past the decimal point.
+ * @param {Number} num The number to round
+ * @param {Number} places The number of decimals to which to round
+ * @return {Number} The rounded number
+ * @private
+ */
+Dygraph.round_ = function(num, places) {
+  var shift = Math.pow(10, places);
+  return Math.round(num * shift)/shift;
+};
+
+/**
  * Fires when there's data available to be graphed.
  * @param {String} data Raw CSV data to be plotted
  * @private
@@ -1958,20 +1898,7 @@ Dygraph.prototype.addXTicks_ = function() {
     range = [this.rawData_[0][0], this.rawData_[this.rawData_.length - 1][0]];
   }
 
-  var formatter = this.attr_('xTicker');
-  var ret = formatter(range[0], range[1], this);
-  var xTicks = [];
-
-  // Note: numericTicks() returns a {ticks: [...], numDigits: yy} dictionary,
-  // whereas dateTicker and user-defined tickers typically just return a ticks
-  // array.
-  if (ret.ticks !== undefined) {
-    xTicks = ret.ticks;
-    this.numXDigits_ = ret.numDigits;
-  } else {
-    xTicks = ret;
-  }
-
+  var xTicks = this.attr_('xTicker')(range[0], range[1], this);
   this.layout_.updateOptions({xTicks: xTicks});
 };
 
@@ -2219,43 +2146,6 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
 };
 
 /**
- * Determine the number of significant figures in a Number up to the specified
- * precision.  Note that there is no way to determine if a trailing '0' is
- * significant or not, so by convention we return 1 for all of the following
- * inputs: 1, 1.0, 1.00, 1.000 etc.
- * @param {Number} x The input value.
- * @param {Number} opt_maxPrecision Optional maximum precision to consider.
- *                                  Default and maximum allowed value is 13.
- * @return {Number} The number of significant figures which is >= 1.
- */
-Dygraph.significantFigures = function(x, opt_maxPrecision) {
-  var precision = Math.max(opt_maxPrecision || 13, 13);
-
-  // Convert the number to its exponential notation form and work backwards,
-  // ignoring the 'e+xx' bit.  This may seem like a hack, but doing a loop and
-  // dividing by 10 leads to roundoff errors.  By using toExponential(), we let
-  // the JavaScript interpreter handle the low level bits of the Number for us.
-  var s = x.toExponential(precision);
-  var ePos = s.lastIndexOf('e');  // -1 case handled by return below.
-
-  for (var i = ePos - 1; i >= 0; i--) {
-    if (s[i] == '.') {
-      // Got to the decimal place.  We'll call this 1 digit of precision because
-      // we can't know for sure how many trailing 0s are significant.
-      return 1;
-    } else if (s[i] != '0') {
-      // Found the first non-zero digit.  Return the number of characters
-      // except for the '.'.
-      return i;  // This is i - 1 + 1 (-1 is for '.', +1 is for 0 based index).
-    }
-  }
-
-  // Occurs if toExponential() doesn't return a string containing 'e', which
-  // should never happen.
-  return 1;
-};
-
-/**
  * Add ticks when the x axis has numbers on it (instead of dates)
  * TODO(konigsberg): Update comment.
  *
@@ -2379,27 +2269,19 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
   var formatter = attr('yAxisLabelFormatter') ?
       attr('yAxisLabelFormatter') : attr('yValueFormatter');
 
-  // Determine the number of decimal places needed for the labels below by
-  // taking the maximum number of significant figures for any label.  We must
-  // take the max because we can't tell if trailing 0s are significant.
-  var numDigits = 0;
-  for (var i = 0; i < ticks.length; i++) {
-    numDigits = Math.max(Dygraph.significantFigures(ticks[i].v), numDigits);
-  }
-
   // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
     var label = (formatter !== undefined) ?
-        formatter(tickV, numDigits) : tickV.toPrecision(numDigits);
+        formatter(tickV) : Dygraph.round_(tickV, 2);
     if (k_labels.length > 0) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = formatter(tickV / n, numDigits) + k_labels[j];
+          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
           break;
         }
       }
@@ -2407,7 +2289,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     ticks[i].label = label;
   }
 
-  return {ticks: ticks, numDigits: numDigits};
+  return ticks;
 };
 
 // Computes the range of the data series (including confidence intervals).
@@ -2843,13 +2725,11 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     // primary axis. However, if an axis is specifically marked as having
     // independent ticks, then that is permissible as well.
     if (i == 0 || axis.independentTicks) {
-      var ret =
+      axis.ticks =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this,
                              axis);
-      axis.ticks = ret.ticks;
-      this.numYDigits_ = ret.numDigits;
     } else {
       var p_axis = this.axes_[0];
       var p_ticks = p_axis.ticks;
@@ -2862,12 +2742,10 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         tick_values.push(y_val);
       }
 
-      var ret =
+      axis.ticks =
         Dygraph.numericTicks(axis.computedValueRange[0],
                              axis.computedValueRange[1],
                              this, axis, tick_values);
-      axis.ticks = ret.ticks;
-      this.numYDigits_ = ret.numDigits;
     }
   }
 };
@@ -3065,7 +2943,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
+    this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
@@ -3288,7 +3166,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     return parsedData;
   } else {
     // Some intelligent defaults for a numeric x-axis.
-    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
+    this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xTicker = Dygraph.numericTicks;
     return data;
   }
@@ -3314,7 +3192,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else if (indepType == 'number') {
-    this.attrs_.xValueFormatter = this.attrs_.yValueFormatter;
+    this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
