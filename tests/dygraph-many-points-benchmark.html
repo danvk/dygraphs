@@ -15,22 +15,26 @@
     <p>Plot which can be easily generated with different numbers of points for
        benchmarking/profiling and improving performance of dygraphs.</p>    
     <p>Number of points:
-       <input type="text" id="num_points_input" size="20"
-              onchange="updatePlot();"></p>
+       <input type="text" id="num_points_input" size="20"></p>
     <p>Number of series:
-       <input type="text" id="num_series_input" size="20"
-              onchange="updatePlot();"></p>
+       <input type="text" id="num_series_input" size="20"></p>
     <p>Roll period (in points):
-      <input type="text" id="roll_period_input" size="20"
-              onchange="updatePlot();"></p>
+      <input type="text" id="roll_period_input" size="20"></p>
+    <p>Repetitions:
+      <input type="text" id="repetitions" size="20"></p>
+
+    <input type="button" value="Go!" onclick="updatePlot();">
     <br>
     <br>
     <div id="plot"></div>
     <div id="message"></div>
+    <div id="metrics"></div>
+    <div id="metaperformance"></div>
 
     <script type="text/javascript">
       var plot;
 
+      var durations = [];
       updatePlot = function() {
         document.getElementById('message').innerHTML = "";
         var plotDiv = document.getElementById('plot');
@@ -39,6 +43,8 @@
             parseInt(document.getElementById('num_points_input').value);
         var numSeries =
             parseInt(document.getElementById('num_series_input').value);
+        var repetitions =
+            parseInt(document.getElementById('repetitions').value);
 
         var data = [];
         var xmin = 0.0;
@@ -62,17 +68,41 @@
         var rollPeriod = parseInt(
             document.getElementById('roll_period_input').value);
         var opts = {labels: labels, rollPeriod: rollPeriod};
-        var start = new Date();
-        plot = new Dygraph(plotDiv, data, opts);
-        var end = new Date();
-        document.getElementById('message').innerHTML =
-            "completed in " + (end - start) + " milliseconds.";
+        var millisecondss = [];
+        for (var i = 0; i < repetitions; i++) {
+          var start = new Date();
+          plot = new Dygraph(plotDiv, data, opts);
+          var end = new Date();
+          durations.push([start, end - start]);
+          millisecondss.push(end - start);
+        }
+        if (repetitions == 1) {
+          document.getElementById('message').innerHTML =
+              "completed in " + (end - start) + " milliseconds.";
+        } else {
+          document.getElementById('message').innerHTML =
+              "Durations: " + millisecondss;
+        }
+
+        if (durations.length > 0) {
+          var start2 = new Date();
+          new Dygraph(
+              document.getElementById('metrics'),
+              durations,
+              {
+                highlightCircleSize: 4,
+                labels: [ "Date", "ms" ]
+                });
+          var end2 = new Date();
+          document.getElementById("metaperformance").innerHTML =
+              "completed in " + (end2 - start2) + " milliseconds.";
+        }
       };
 
       document.getElementById('num_points_input').value = '100';
       document.getElementById('num_series_input').value = '1';
       document.getElementById('roll_period_input').value = '1';
-      updatePlot();
+      document.getElementById('repetitions').value = '1';
     </script>
   </body>
 </html>
