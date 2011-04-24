@@ -1631,10 +1631,11 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     var labels = this.attr_('labels');
     var html = '';
     for (var i = 1; i < labels.length; i++) {
-      var c = new RGBColor(this.plotter_.colors[labels[i]]);
-      if (i > 1) html += (sepLines ? '<br/>' : ' ');
-      html += "<b><font color='" + c.toHex() + "'>&mdash;" + labels[i] +
-        "</font></b>";
+      if (!this.visibility()[i - 1]) continue;
+      var c = this.plotter_.colors[labels[i]];
+      if (html != '') html += (sepLines ? '<br/>' : ' ');
+      html += "<b><span style='color: " + c + ";'>&mdash;" + labels[i] +
+        "</span></b>";
     }
     return html;
   }
@@ -1650,11 +1651,11 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (!Dygraph.isOK(pt.canvasy)) continue;
     if (sepLines) html += "<br/>";
 
-    var c = new RGBColor(this.plotter_.colors[pt.name]);
-    var yval = fmtFunc(pt.yval, this);
+    var c = this.plotter_.colors[pt.name];
+    var yval = fmtFunc(pt.yval, displayDigits);
     // TODO(danvk): use a template string here and make it an attribute.
-    html += " <b><font color='" + c.toHex() + "'>"
-      + pt.name + "</font></b>:"
+    html += " <b><span style='color: " + c + ";'>"
+      + pt.name + "</span></b>:"
       + yval;
   }
   return html;
@@ -1741,7 +1742,6 @@ Dygraph.prototype.setSelection = function(row) {
     this.lastx_ = this.selPoints_[0].xval;
     this.updateSelection_();
   } else {
-    this.lastx_ = -1;
     this.clearSelection();
   }
 
@@ -2582,6 +2582,13 @@ Dygraph.prototype.drawGraph_ = function() {
   if (is_initial_draw) {
     // Generate a static legend before any particular point is selected.
     this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+  } else {
+    if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
+      this.lastx_ = this.selPoints_[0].xval;
+      this.updateSelection_();
+    } else {
+      this.clearSelection();
+    }
   }
 
   if (this.attr_("drawCallback") !== null) {
@@ -3138,10 +3145,21 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
       for (var j = 1; j < inFields.length; j++) {
-        var vals = inFields[j].split(";");
-        fields[j] = [ this.parseFloat_(vals[0], i, line),
-                      this.parseFloat_(vals[1], i, line),
-                      this.parseFloat_(vals[2], i, line) ];
+        var val = inFields[j];
+        if (/^ *$/.test(val)) {
+          fields[j] = [null, null, null];
+        } else {
+          var vals = val.split(";");
+          if (vals.length == 3) {
+            fields[j] = [ this.parseFloat_(vals[0], i, line),
+                          this.parseFloat_(vals[1], i, line),
+                          this.parseFloat_(vals[2], i, line) ];
+          } else {
+            this.warning('When using customBars, values must be either blank ' +
+                         'or "low;center;high" tuples (got "' + val +
+                         '" on line ' + (1+i));
+          }
+        }
       }
     } else {
       // Values are just numbers
