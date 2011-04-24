@@ -2364,7 +2364,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
       var n = k*k*k*k;
       for (var j = 3; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, 1) + k_labels[j];
+          label = Dygraph.round_(tickV / n, attr('digitsAfterDecimal')) + k_labels[j];
           break;
         }
       }
@@ -3033,6 +3033,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xTicker = Dygraph.dateTicker;
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
+    // TODO(danvk): use Dygraph.numberFormatter here?
     this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
@@ -4215,6 +4216,24 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Zooming"],
     "type": "boolean",
     "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
+  },
+  "sigFigs" : {
+    "default": "null",
+    "labels": ["Value display/formatting"],
+    "type": "integer",
+    "description": "By default, dygraphs displays numbers with a fixed number of digits after the decimal point. If you'd prefer to have a fixed number of significant figures, set this option to that number of sig figs. A value of 2, for instance, would cause 1 to be display as 1.0 and 1234 to be displayed as 1.23e+3."
+  },
+  "digitsAfterDecimal" : {
+    "default": "2",
+    "labels": ["Value display/formatting"],
+    "type": "integer",
+    "description": "Unless it's run in scientific mode (see the <code>sigFigs</code> option), dygraphs displays numbers with <code>digitsAfterDecimal</code> digits after the decimal point. Trailing zeros are not displayed, so with a value of 2 you'll get '0', '0.1', '0.12', '123.45' but not '123.456' (it will be rounded to '123.46'). Numbers with absolute value less than 0.1^digitsAfterDecimal (i.e. those which would show up as '0.00') will be displayed in scientific notation."
+  },
+  "maxNumberWidth" : {
+    "default": "6",
+    "labels": ["Value display/formatting"],
+    "type": "integer",
+    "description": "When displaying numbers in normal (not scientific) mode, large numbers will be displayed with many trailing zeros (e.g. 100000000 instead of 1e9). This can lead to unwieldy y-axis labels. If there are more than <code>maxNumberWidth</code> digits to the left of the decimal in a number, dygraphs will switch to scientific notation, even when not operating in scientific mode. If you'd like to see all those digits, set this to something large, like 20 or 30."
   }
 }
 ;  // </JSON>
