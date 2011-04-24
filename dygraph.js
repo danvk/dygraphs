@@ -103,6 +103,7 @@ Dygraph.DEFAULT_ATTRS = {
   yValueFormatter: function(a,b) { return Dygraph.numberFormatter(a,b); },
   digitsAfterDecimal: 2,
   maxNumberWidth: 6,
+  sigFigs: null,
 
   strokeWidth: 1.0,
 
@@ -1792,8 +1793,46 @@ Dygraph.prototype.getSelection = function() {
   return -1;
 };
 
-Dygraph.zeropad = function(x) {
-  if (x < 10) return "0" + x; else return "" + x;
+/**
+ * Number formatting function which mimicks the behavior of %g in printf, i.e.
+ * either exponential or fixed format (without trailing 0s) is used depending on
+ * the length of the generated string.  The advantage of this format is that
+ * there is a predictable upper bound on the resulting string length,
+ * significant figures are not dropped, and normal numbers are not displayed in
+ * exponential notation.
+ *
+ * NOTE: JavaScript's native toPrecision() is NOT a drop-in replacement for %g.
+ * It creates strings which are too long for absolute values between 10^-4 and
+ * 10^-6, e.g. '0.00001' instead of '1e-5'. See tests/number-format.html for
+ * output examples.
+ *
+ * @param {Number} x The number to format
+ * @param {Number} opt_precision The precision to use, default 2.
+ * @return {String} A string formatted like %g in printf.  The max generated
+ *                  string length should be precision + 6 (e.g 1.123e+300).
+ */
+Dygraph.floatFormat = function(x, opt_precision) {
+  // Avoid invalid precision values; [1, 21] is the valid range.
+  var p = Math.min(Math.max(1, opt_precision || 2), 21);
+
+  // This is deceptively simple.  The actual algorithm comes from:
+  //
+  // Max allowed length = p + 4
+  // where 4 comes from 'e+n' and '.'.
+  //
+  // Length of fixed format = 2 + y + p
+  // where 2 comes from '0.' and y = # of leading zeroes.
+  //
+  // Equating the two and solving for y yields y = 2, or 0.00xxxx which is
+  // 1.0e-3.
+  //
+  // Since the behavior of toPrecision() is identical for larger numbers, we
+  // don't have to worry about the other bound.
+  //
+  // Finally, the argument for toExponential() is the number of trailing digits,
+  // so we take off 1 for the value before the '.'.
+  return (Math.abs(x) < 1.0e-3 && x != 0.0) ?
+      x.toExponential(p - 1) : x.toPrecision(p);
 };
 
 /**
@@ -1803,15 +1842,28 @@ Dygraph.zeropad = function(x) {
  * @param {Dygraph} g The dygraph object
  */
 Dygraph.numberFormatter = function(x, g) {
+  var sigFigs = g.attr_('sigFigs');
+
+  if (sigFigs !== null) {
+    // User has opted for a fixed number of significant figures.
+    return Dygraph.floatFormat(x, sigFigs);
+  }
+
   var digits = g.attr_('digitsAfterDecimal');
   var maxNumberWidth = g.attr_('maxNumberWidth');
 
-  if (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-      Math.abs(x) < Math.pow(10, -digits)) {
-    // switch to scientific notation.
+  // switch to scientific notation if we underflow or overflow fixed display.
+  if (x !== 0.0 &&
+      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
+       Math.abs(x) < Math.pow(10, -digits))) {
+    return x.toExponential(digits);
   } else {
     return '' + Dygraph.round_(x, digits);
   }
+};
+
+Dygraph.zeropad = function(x) {
+  if (x < 10) return "0" + x; else return "" + x;
 };
 
 /**
