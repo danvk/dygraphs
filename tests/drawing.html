@@ -23,7 +23,7 @@
     <style type="text/css">
     #tool_zoom {
       background: url('drawing/tool-palette.png');
-      background-position-x: 0px;
+      background-position: 0px 0px;
       width: 32px;
       height: 33px;
       margin-left: 50px;
@@ -31,14 +31,14 @@
     }
     #tool_pencil {
       background: url('drawing/tool-palette.png');
-      background-position-x: -32px;
+      background-position: -32px 0px;
       width: 32px;
       height: 33px;
       display: inline-block;
     }
     #tool_eraser {
       background: url('drawing/tool-palette.png');
-      background-position-x: -64px;
+      background-position: -64px 0px;
       width: 33px;
       height: 33px;
       display: inline-block;
@@ -112,11 +112,15 @@
     }
 
     function change_tool(tool_div) {
-      var ids = ['tool_pencil', 'tool_zoom', 'tool_eraser'];
+      var ids = ['tool_zoom', 'tool_pencil', 'tool_eraser'];
       for (var i = 0; i < ids.length; i++) {
-        document.getElementById(ids[i]).style.backgroundPositionY = 0;
+        var div = document.getElementById(ids[i]);
+        if (div == tool_div) {
+          div.style.backgroundPosition = -(i * 32) + 'px -32px';
+        } else {
+          div.style.backgroundPosition = -(i * 32) + 'px 0px';
+        }
       }
-      tool_div.style.backgroundPositionY = '-32px';
       tool = tool_div.id.replace('tool_', '');
 
       var dg_div = document.getElementById("draw_div");
