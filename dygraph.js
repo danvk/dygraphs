@@ -100,7 +100,9 @@ Dygraph.DEFAULT_ATTRS = {
   labelsKMG2: false,
   showLabelsOnHighlight: true,
 
-  yValueFormatter: function(x) { return Dygraph.round_(x, 2); },
+  yValueFormatter: function(a,b) { return Dygraph.numberFormatter(a,b); },
+  digitsAfterDecimal: 2,
+  maxNumberWidth: 6,
 
   strokeWidth: 1.0,
 
@@ -1648,7 +1650,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (sepLines) html += "<br/>";
 
     var c = new RGBColor(this.plotter_.colors[pt.name]);
-    var yval = fmtFunc(pt.yval);
+    var yval = fmtFunc(pt.yval, this);
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><font color='" + c.toHex() + "'>"
       + pt.name + "</font></b>:"
@@ -1788,11 +1790,29 @@ Dygraph.prototype.getSelection = function() {
     }
   }
   return -1;
-}
+};
 
 Dygraph.zeropad = function(x) {
   if (x < 10) return "0" + x; else return "" + x;
-}
+};
+
+/**
+ * Return a string version of a number. This respects the digitsAfterDecimal
+ * and maxNumberWidth options.
+ * @param {Number} x The number to be formatted
+ * @param {Dygraph} g The dygraph object
+ */
+Dygraph.numberFormatter = function(x, g) {
+  var digits = g.attr_('digitsAfterDecimal');
+  var maxNumberWidth = g.attr_('maxNumberWidth');
+
+  if (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
+      Math.abs(x) < Math.pow(10, -digits)) {
+    // switch to scientific notation.
+  } else {
+    return '' + Dygraph.round_(x, digits);
+  }
+};
 
 /**
  * Return a string version of the hours, minutes and seconds portion of a date.
@@ -1810,7 +1830,7 @@ Dygraph.hmsString_ = function(date) {
   } else {
     return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   }
-}
+};
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
@@ -1833,7 +1853,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
       return Dygraph.hmsString_(date.getTime());
     }
   }
-}
+};
 
 /**
  * Convert a JS date (millis since epoch) to YYYY/MM/DD
@@ -2274,8 +2294,7 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
-    var label = (formatter !== undefined) ?
-        formatter(tickV) : Dygraph.round_(tickV, 2);
+    var label = formatter(tickV, self);
     if (k_labels.length > 0) {
       // Round up to an appropriate unit.
       var n = k*k*k*k;
