@@ -1652,13 +1652,26 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (sepLines) html += "<br/>";
 
     var c = this.plotter_.colors[pt.name];
-    var yval = fmtFunc(pt.yval, displayDigits);
+    var yval = fmtFunc(pt.yval, this);
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><span style='color: " + c + ";'>"
       + pt.name + "</span></b>:"
       + yval;
   }
   return html;
+};
+
+Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
+  var html = this.generateLegendHTML_(x, sel_points);
+  var labelsDiv = this.attr_("labelsDiv");
+  if (labelsDiv !== null) {
+    labelsDiv.innerHTML = html;
+  } else {
+    if (typeof(this.shown_legend_error_) == 'undefined') {
+      this.error('labelsDiv is set to something nonexistent; legend will not be shown.');
+      this.shown_legend_error_ = true;
+    }
+  }
 };
 
 /**
@@ -1685,8 +1698,7 @@ Dygraph.prototype.updateSelection_ = function() {
   if (this.selPoints_.length > 0) {
     // Set the status message to indicate the selected point(s)
     if (this.attr_('showLabelsOnHighlight')) {
-      var html = this.generateLegendHTML_(this.lastx_, this.selPoints_);
-      this.attr_("labelsDiv").innerHTML = html;
+      this.setLegendHTML_(this.lastx_, this.selPoints_);
     }
 
     // Draw colored circles over the center of each selected point
@@ -1770,7 +1782,7 @@ Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
   var ctx = this.canvas_.getContext("2d");
   ctx.clearRect(0, 0, this.width_, this.height_);
-  this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+  this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
 }
@@ -2581,7 +2593,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   if (is_initial_draw) {
     // Generate a static legend before any particular point is selected.
-    this.attr_('labelsDiv').innerHTML = this.generateLegendHTML_();
+    this.setLegendHTML_();
   } else {
     if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
       this.lastx_ = this.selPoints_[0].xval;
