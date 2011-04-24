@@ -11,7 +11,7 @@ site=$1
 ./generate-documentation.py > docs/options.html
 
 # Copy everything to the site.
-scp tests/*.html tests/*.js tests/*.png $site/tests/ \
+scp -r tests $site \
 && \
 scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
 
