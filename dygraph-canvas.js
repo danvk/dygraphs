@@ -277,10 +277,13 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
 /**
  * Sets some PlotKit.CanvasRenderer options
  * @param {Object} element The canvas to attach to
+ * @param {Object} elementContext The 2d context of the canvas (injected so it
+ * can be mocked for testing.)
  * @param {Layout} layout The DygraphLayout object for this graph.
  * @param {Object} options Options to pass on to CanvasRenderer
  */
-DygraphCanvasRenderer = function(dygraph, element, layout, options) {
+DygraphCanvasRenderer = function(dygraph, element, elementContext, layout,
+    options) {
   // TODO(danvk): remove options, just use dygraph.attr_.
   this.dygraph_ = dygraph;
 
@@ -306,6 +309,7 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   this.layout = layout;
   this.element = element;
+  this.elementContext = elementContext;
   this.container = this.element.parentNode;
 
   this.height = this.element.height;
@@ -360,12 +364,12 @@ DygraphCanvasRenderer = function(dygraph, element, layout, options) {
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  var ctx = this.dygraph_.canvas_.getContext("2d");
+  var ctx = this.dygraph_.canvas_ctx_;
   ctx.beginPath();
   ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
   ctx.clip();
 
-  ctx = this.dygraph_.hidden_.getContext("2d");
+  ctx = this.dygraph_.hidden_ctx_;
   ctx.beginPath();
   ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
   ctx.clip();
@@ -383,7 +387,7 @@ DygraphCanvasRenderer.prototype.clear = function() {
         this.clearDelay.cancel();
         this.clearDelay = null;
       }
-      var context = this.element.getContext("2d");
+      var context = this.elementContext;
     }
     catch (e) {
       // TODO(danvk): this is broken, since MochiKit.Async is gone.
@@ -393,7 +397,7 @@ DygraphCanvasRenderer.prototype.clear = function() {
     }
   }
 
-  var context = this.element.getContext("2d");
+  var context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
 
   for (var i = 0; i < this.xlabels.length; i++) {
@@ -445,7 +449,7 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
 DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
   // half-integers. This prevents them from drawing in two rows/cols.
-  var ctx = this.element.getContext("2d");
+  var ctx = this.elementContext;
   function halfUp(x){return Math.round(x)+0.5};
   function halfDown(y){return Math.round(y)-0.5};
 
@@ -505,7 +509,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   function halfUp(x){return Math.round(x)+0.5};
   function halfDown(y){return Math.round(y)-0.5};
 
-  var context = this.element.getContext("2d");
+  var context = this.elementContext;
 
   var labelStyle = {
     "position": "absolute",
@@ -823,7 +827,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     this.container.appendChild(div);
     this.annotations.push(div);
 
-    var ctx = this.element.getContext("2d");
+    var ctx = this.elementContext;
     ctx.strokeStyle = this.colors[p.name];
     ctx.beginPath();
     if (!a.attachAtBottom) {
@@ -844,7 +848,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(danvk): use this.attr_ for many of these.
-  var context = this.element.getContext("2d");
+  var context = this.elementContext;
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var fillAlpha = this.options.fillAlpha;

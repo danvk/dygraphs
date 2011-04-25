@@ -161,6 +161,22 @@ Dygraph.VERTICAL = 2;
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
+/**
+ * Return the 2d context for a dygraph canvas.
+ *
+ * This method is only exposed for the sake of replacing the function in
+ * automated tests, e.g.
+ *
+ * var oldFunc = Dygraph.getContext();
+ * Dygraph.getContext = function(canvas) {
+ *   var realContext = oldFunc(canvas);
+ *   return new Proxy(realContext);
+ * };
+ */
+Dygraph.getContext = function(canvas) {
+  return canvas.getContext("2d");
+};
+
 Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
   // Labels is no longer a constructor parameter, since it's typically set
   // directly from the data source. It also conains a name for the x-axis,
@@ -657,8 +673,11 @@ Dygraph.prototype.createInterface_ = function() {
   this.canvas_.style.width = this.width_ + "px";    // for IE
   this.canvas_.style.height = this.height_ + "px";  // for IE
 
+  this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
+
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+  this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
 
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
@@ -1218,9 +1237,7 @@ Dygraph.endZoom = function(event, g, context) {
     g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
                Math.max(context.dragStartY, context.dragEndY));
   } else {
-    g.canvas_.getContext("2d").clearRect(0, 0,
-                                       g.canvas_.width,
-                                       g.canvas_.height);
+    g.canvas_ctx_.clearRect(0, 0, g.canvas_.width, g.canvas_.height);
   }
   context.dragStartX = null;
   context.dragStartY = null;
@@ -1398,7 +1415,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
                                            endY, prevDirection, prevEndX,
                                            prevEndY) {
-  var ctx = this.canvas_.getContext("2d");
+  var ctx = this.canvas_ctx_;
 
   // Clean up from the previous rect if necessary
   if (prevDirection == Dygraph.HORIZONTAL) {
@@ -1681,7 +1698,7 @@ Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
  */
 Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
-  var ctx = this.canvas_.getContext("2d");
+  var ctx = this.canvas_ctx_;
   if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
@@ -1780,8 +1797,7 @@ Dygraph.prototype.mouseOut_ = function(event) {
  */
 Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
-  var ctx = this.canvas_.getContext("2d");
-  ctx.clearRect(0, 0, this.width_, this.height_);
+  this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
   this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
@@ -2429,7 +2445,9 @@ Dygraph.prototype.predraw_ = function() {
   // Create a new plotter.
   if (this.plotter_) this.plotter_.clear();
   this.plotter_ = new DygraphCanvasRenderer(this,
-                                            this.hidden_, this.layout_,
+                                            this.hidden_,
+                                            this.hidden_ctx_,
+                                            this.layout_,
                                             this.renderOptions_);
 
   // The roller sits in the bottom left corner of the chart. We don't know where
