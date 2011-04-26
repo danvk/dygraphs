@@ -1,0 +1,23 @@
+<!-- A local source file that allows me to test locally. -->
+<html>
+<head>
+<script type="text/javascript" src="../../dygraph-combined.js"></script>
+<script type="text/javascript" src="../../dygraph.js"></script>
+<script type="text/javascript" src="../../dygraph-canvas.js"></script>
+<script type="text/javascript" src="../lib/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="../lib/Asserts.js"></script>
+<script type="text/javascript" src="fake-jstestdriver.js"></script>
+<script type="text/javascript" src="../tests/Proxy.js"></script>
+<script type="text/javascript" src="../tests/CanvasAssertions.js"></script>
+<script type="text/javascript" src="../tests/sanity.js"></script>
+<script type="text/javascript" src="../tests/simple_drawing.js"></script>
+</head>
+<body>
+  <div id='graph'></div>
+  This file is really nothing more than all the tests coalesced into a single
+  HTML file. To run a test, open a Javascript console and execute, for
+  instance,<br>
+  <code>tc = new SimpleDrawingTestCase() ;<br>
+    tc.runTest("testDrawSimpleRangePlusOne")</code>
+</body>
+</html>
