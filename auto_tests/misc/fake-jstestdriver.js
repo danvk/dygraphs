@@ -24,7 +24,7 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 var jstestdriver = {
-  jquery : jQuery
+  jQuery : jQuery
 };
 
 var jstd = {
