@@ -97,6 +97,6 @@ SanityTestCase.prototype.testToDomYCoord = function() {
   assertEquals(0, g.toDomYCoord(50));
   
   for (var x = 0; x <= 50; x++) {
-    MoreAsserts.assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
   }
 };
