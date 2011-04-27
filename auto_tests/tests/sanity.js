@@ -83,24 +83,6 @@ SanityTestCase.prototype.testYAxisRange_custom = function() {
 };
 
 /**
- * Test when the expected and actual values are within a certain
- * range (delta). If they're exactly apart by delta, that is considered
- * acceptable.
- */
-function assertEqualsDelta(msg, expected, actual, delta) {
-  var args = this.argsWithOptionalMsg_(arguments, 4);
-
-  var message = args[0];
-  var exp = args[1];
-  var act = args[2];
-  var d = args[3];
-  if (Math.abs(exp - act) > d) {
-    fail(message +
-        " Expected to be within " + d + " of " + exp + ", got " + act);
-  }
-}
-
-/**
  * Test that valueRange matches the y-axis range specifically.
  *
  * This is based on the assumption that 20 pixels are dedicated to the
@@ -115,6 +97,6 @@ SanityTestCase.prototype.testToDomYCoord = function() {
   assertEquals(0, g.toDomYCoord(50));
   
   for (var x = 0; x <= 50; x++) {
-    assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    MoreAsserts.assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
   }
 };
