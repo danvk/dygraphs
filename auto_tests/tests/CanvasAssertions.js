@@ -42,8 +42,8 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
   // found = 1 when prior loop found p1.
   // found = 2 when prior loop found p2.
   var priorFound = 0;
-  for (var callNum in proxy.calls__) {
-    var call = proxy.calls__[callNum];
+  for (var i = 0; i < proxy.calls__.length; i++) {
+    var call = proxy.calls__[i];
 
     // This disables lineTo -> moveTo pairs.
     if (call.name == "moveTo" && priorFound > 0) {

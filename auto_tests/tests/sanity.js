@@ -24,8 +24,8 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var DEAD_SIMPLE_DATA = [[ 20061010, 2100 ]];
-var ZERO_TO_FIFTY = [[ 20061010, 0 ] , [ 20061011, 50 ]];
+var DEAD_SIMPLE_DATA = [[ 10, 2100 ]];
+var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 var SanityTestCase = TestCase("dygraphs-sanity");
 
@@ -47,6 +47,9 @@ SanityTestCase.prototype.testGraphExists = function() {
   var graph = document.getElementById("graph");
   assertNotNull(graph);
 };
+
+// TODO(konigsberg): Move the following tests to a new package that
+// tests all kinds of toDomCoords, toDataCoords, toPercent, et cetera.
 
 /**
  * A sanity test of sorts, by ensuring the dygraph is created, and
@@ -79,6 +82,11 @@ SanityTestCase.prototype.testYAxisRange_custom = function() {
   assertEquals([0, 50], g.yAxisRange(0));
 };
 
+/**
+ * Test when the expected and actual values are within a certain
+ * range (delta). If they're exactly apart by delta, that is considered
+ * acceptable.
+ */
 function assertEqualsDelta(msg, expected, actual, delta) {
   var args = this.argsWithOptionalMsg_(arguments, 4);
 

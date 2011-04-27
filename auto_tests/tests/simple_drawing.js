@@ -23,7 +23,7 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var ZERO_TO_FIFTY = [[ 20061010, 0 ] , [ 20061011, 50 ]];
+var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 var SimpleDrawingTestCase = TestCase("simple-drawing");
 
@@ -38,16 +38,6 @@ SimpleDrawingTestCase.prototype.setUp = function() {
 SimpleDrawingTestCase.prototype.tearDown = function() {
   Dygraph.getContext = _origFunc;
 };
-
-SimpleDrawingTestCase.prototype.testDrawSimple = function() {
-  var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, ZERO_TO_FIFTY, {});
-}
-
-SimpleDrawingTestCase.prototype.testDrawSimpleRangeEquals = function() {
-  var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, ZERO_TO_FIFTY, {valueRange: [0,50]});
-}
 
 SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
   var opts = {
