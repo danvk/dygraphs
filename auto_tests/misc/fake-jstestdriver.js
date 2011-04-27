@@ -47,10 +47,14 @@ function TestCase(name) {
   emptyFunction.prototype.setUp = function() { };
   emptyFunction.prototype.tearDown = function() { };
   emptyFunction.prototype.runTest = function(name) {
-    this.setUp();
-    var fn = this[name];
-    fn.apply(this, []);
-    this.tearDown();
+    try {
+      this.setUp();
+      var fn = this[name];
+      fn.apply(this, []);
+      this.tearDown();
+    } catch (e) {
+      console.log(e.stack);
+    }
   };
   return emptyFunction;
 };
