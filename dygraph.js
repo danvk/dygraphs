@@ -2835,6 +2835,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var span = maxY - minY;
       // special case: if we have no sense of scale, use +/-10% of the sole value.
       if (span == 0) { span = maxY; }
+      // Another special case if MaxY is zero.
+      if (span == 0) { span = 1; }
 
       var maxAxisY;
       var minAxisY;
