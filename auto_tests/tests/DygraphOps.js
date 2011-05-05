@@ -26,72 +26,124 @@
  */
 var DygraphOps = {};
 
-DygraphOps.dispatchDoubleClick = function(g, func) {
-  var evt = document.createEvent('MouseEvents');
-  evt.initMouseEvent( 
-      'dblclick', 
-      true, true, document.defaultView,
-      2, 0, 0, 0, 0,
-      false, false, false, false, 0, null);
-  if (func) {
-    func(evt);
-  }
-  g.canvas_.dispatchEvent(evt);
+DygraphOps.defaultEvent_ = {
+  type : '',
+  canBubble : true,
+  cancelable : true,
+  view : document.defaultView,
+  detail : 0,
+  screenX : 0,
+  screenY : 0,
+  clientX : 0,
+  clientY : 0,
+  ctrlKey : false,
+  altKey : false,
+  shiftKey : false,
+  metaKey : false,
+  button : 0,
+  relatedTarget : null
 };
 
-DygraphOps.dispatchMouseDown = function(g, x, y, func) {
+DygraphOps.createEvent_ = function(command, custom) {
+
+  var copy = function(from, to) {
+    if (from != null) {
+      for (var prop in from) {
+        if(from.hasOwnProperty(prop)) {
+          to[prop] = from[prop];
+        }
+      }
+    }
+  }
+
+  var e = {};
+  copy(DygraphOps.defaultEvent_, e);
+  copy(command, e);
+  copy(custom, e);
+
+  var event = document.createEvent('MouseEvents');
+  event.initMouseEvent(
+    e.type,
+    e.canBubble,
+    e.cancelable,
+    e.view, 
+    e.detail,
+    e.screenX,
+    e.screenY,
+    e.clientX,
+    e.clientY,
+    e.ctrlKey,
+    e.altKey,
+    e.shiftKey,
+    e.metaKey,
+    e.button,
+    e.relatedTarget);
+  return event;
+}
+
+DygraphOps.dispatchDoubleClick = function(g, custom) {
+  var opts = {
+    type : 'dblclick',
+    detail : 2
+  };
+  var event = DygraphOps.createEvent_(opts, custom);
+  g.canvas_.dispatchEvent(event);
+};
+
+DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
   var px = Dygraph.findPosX(g.canvas_);
   var py = Dygraph.findPosY(g.canvas_);
 
   var pageX = px + g.toDomXCoord(x);
   var pageY = py + g.toDomYCoord(y);
 
-  var evt = document.createEvent('MouseEvents');
-  evt.initMouseEvent( 
-      'mousedown', 
-      true, true, document.defaultView,
-      1, pageX, pageY, pageX, pageY,
-      false, false, false, false, 0, null);
-  if (func) {
-    func(evt);
-  }
-  g.canvas_.dispatchEvent(evt);
+  var opts = {
+    type : 'mousedown',
+    detail : 1,
+    screenX : pageX,
+    screenY : pageY,
+    clientX : pageX,
+    clientY : pageY,
+  };
+
+  var event = DygraphOps.createEvent_(opts, custom);
+  g.canvas_.dispatchEvent(event);
 };
 
-DygraphOps.dispatchMouseMove = function(g, x, y, func) {
+DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
   var px = Dygraph.findPosX(g.canvas_);
   var py = Dygraph.findPosY(g.canvas_);
 
   var pageX = px + g.toDomXCoord(x);
   var pageY = py + g.toDomYCoord(y);
 
-  var evt = document.createEvent('MouseEvents');
-  evt.initMouseEvent( 
-      'mousemove', 
-      true, true, document.defaultView,
-      0, pageX, pageY, pageX, pageY,
-      false, false, false, false, 0, null);
-  if (func) {
-    func(evt);
-  }
-  g.canvas_.dispatchEvent(evt);
+  var opts = {
+    type : 'mousemove',
+    screenX : pageX,
+    screenY : pageY,
+    clientX : pageX,
+    clientY : pageY,
+  };
+
+  var event = DygraphOps.createEvent_(opts, custom);
+  g.canvas_.dispatchEvent(event);
 };
 
-DygraphOps.dispatchMouseUp = function(g, x, y, func) {
+DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
   var px = Dygraph.findPosX(g.canvas_);
   var py = Dygraph.findPosY(g.canvas_);
 
   var pageX = px + g.toDomXCoord(x);
   var pageY = py + g.toDomYCoord(y);
 
-  var evt = document.createEvent('MouseEvents');
-  evt.initMouseEvent( 
-      'mouseup', 
-      true, true, document.defaultView,
-      0, pageX, pageY, pageX, pageY,
-      false, false, false, false, 0, null);
-  if (func) {
-    func(evt);
-  }
-  g.canvas_.dispatchEvent(evt);
+  var opts = {
+    type : 'mouseup',
+    screenX : pageX,
+    screenY : pageY,
+    clientX : pageX,
+    clientY : pageY,
+  };
+
+  var event = DygraphOps.createEvent_(opts, custom);
+  g.canvas_.dispatchEvent(event);
 };
