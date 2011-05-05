@@ -32,12 +32,10 @@ Minimal Example
 <script type="text/javascript">
   g = new Dygraph(
         document.getElementById("graphdiv"),  // containing div
-        [
-          [ 'Date', 'Temperature' ],          // the data series
-          [ '2008-05-07', 75 ],
-          [ '2008-05-08', 70 ],
-          [ '2008-05-09', 80 ]
-        ],
+        "Date,Temperature\n" +                // the data series
+        "2008-05-07,75\n" +
+        "2008-05-08,70\n" +
+        "2008-05-09,80\n",
         { }                                   // the options
       );
 </script>
