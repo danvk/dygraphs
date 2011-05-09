@@ -433,6 +433,14 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
 };
 
 /**
+ * @param { [String] } colors Array of color strings. Should have one entry for
+ * each series to be rendered.
+ */
+DygraphCanvasRenderer.prototype.setColors = function(colors) {
+  this.colorScheme_ = colors;
+};
+
+/**
  * Draw an X/Y grid on top of the existing plot
  */
 DygraphCanvasRenderer.prototype.render = function() {
@@ -837,7 +845,6 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
-  var colorScheme = this.attr_('colors');
   var fillAlpha = this.attr_('fillAlpha');
   var errorBars = this.attr_("errorBars");
   var fillGraph = this.attr_("fillGraph");
@@ -855,7 +862,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
   this.colors = {}
   for (var i = 0; i < setCount; i++) {
-    this.colors[setNames[i]] = colorScheme[i % colorScheme.length];
+    this.colors[setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
   }
 
   // Update Points

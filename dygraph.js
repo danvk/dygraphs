@@ -896,6 +896,8 @@ Dygraph.prototype.setColors_ = function() {
       this.colors_.push(colorStr);
     }
   }
+
+  this.plotter_.setColors(this.colors_);
 };
 
 /**
