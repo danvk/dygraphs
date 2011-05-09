@@ -330,6 +330,7 @@ DygraphCanvasRenderer.prototype.attr_ = function(x) {
 
 // Compute the box which the chart should be drawn in. This is the canvas's
 // box, less space needed for axis and chart labels.
+// TODO(danvk): this belongs in DygraphLayout.
 DygraphCanvasRenderer.prototype.computeArea_ = function() {
   var area = {
     // TODO(danvk): per-axis setting.
@@ -536,7 +537,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
-        context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize'), halfDown(y));
+        context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize')), halfDown(y));
         context.closePath();
         context.stroke();
 
@@ -836,8 +837,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
-  var colorCount = this.options.colorScheme.length;
-  var colorScheme = this.options.colorScheme;
+  var colorScheme = this.attr_('colors');
   var fillAlpha = this.attr_('fillAlpha');
   var errorBars = this.attr_("errorBars");
   var fillGraph = this.attr_("fillGraph");
@@ -852,9 +852,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
   var setCount = setNames.length;
 
+  // TODO(danvk): Move this mapping into Dygraph and get it out of here.
   this.colors = {}
   for (var i = 0; i < setCount; i++) {
-    this.colors[setNames[i]] = colorScheme[i % colorCount];
+    this.colors[setNames[i]] = colorScheme[i % colorScheme.length];
   }
 
   // Update Points

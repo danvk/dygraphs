@@ -85,7 +85,6 @@ Dygraph.toString = function() {
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
-Dygraph.AXIS_LINE_WIDTH = 0.3;
 
 Dygraph.LOG_SCALE = 10;
 Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
@@ -158,7 +157,7 @@ Dygraph.DEFAULT_ATTRS = {
   drawXAxis: true,
   drawYAxis: true,
   axisLineColor: "black",
-    "axisLineWidth": 0.5,
+    "axisLineWidth": 0.3,
     "axisLabelColor": "black",
     "axisLabelFont": "Arial",  // TODO(danvk): is this implemented?
     "axisLabelWidth": 50,
@@ -772,13 +771,6 @@ Dygraph.prototype.createInterface_ = function() {
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
 
-  // TODO(danvk): why does the Renderer need its own set of options?
-  this.renderOptions_ = { colorScheme: this.colors_,
-                          strokeColor: null,
-                          axisLineWidth: Dygraph.AXIS_LINE_WIDTH };
-  Dygraph.update(this.renderOptions_, this.attrs_);
-  Dygraph.update(this.renderOptions_, this.user_attrs_);
-
   this.createStatusMessage_();
   this.createDragInterface_();
 };
@@ -883,8 +875,6 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
  * @private
  */
 Dygraph.prototype.setColors_ = function() {
-  // TODO(danvk): compute this directly into this.attrs_['colorScheme'] and do
-  // away with this.renderOptions_.
   var num = this.attr_("labels").length - 1;
   this.colors_ = [];
   var colors = this.attr_('colors');
@@ -906,10 +896,6 @@ Dygraph.prototype.setColors_ = function() {
       this.colors_.push(colorStr);
     }
   }
-
-  // TODO(danvk): update this w/r/t/ the new options system.
-  this.renderOptions_.colorScheme = this.colors_;
-  Dygraph.update(this.plotter_.options, this.renderOptions_);
 };
 
 /**
@@ -2654,8 +2640,7 @@ Dygraph.prototype.predraw_ = function() {
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
-                                            this.layout_,
-                                            this.renderOptions_);
+                                            this.layout_);
 
   // The roller sits in the bottom left corner of the chart. We don't know where
   // this will be until the options are available, so it's positioned here.
@@ -3771,7 +3756,6 @@ Dygraph.prototype.updateOptions = function(attrs) {
   // highlightCircleSize
 
   Dygraph.update(this.user_attrs_, attrs);
-  Dygraph.update(this.renderOptions_, attrs);
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
