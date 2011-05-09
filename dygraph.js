@@ -3738,10 +3738,20 @@ Dygraph.prototype.start_ = function() {
  * <li>errorBars: changes whether the data contains stddev</li>
  * </ul>
  *
+ * There's a huge variety of options that can be passed to this method. For a
+ * full list, see http://dygraphs.com/options.html.
+ *
  * @param {Object} attrs The new properties and values
+ * @param {Boolean} [block_redraw] Usually the chart is redrawn after every
+ * call to updateOptions(). If you know better, you can pass true to explicitly
+ * block the redraw. This can be useful for chaining updateOptions() calls,
+ * avoiding the occasional infinite loop and preventing redraws when it's not
+ * necessary (e.g. when updating a callback).
  */
-Dygraph.prototype.updateOptions = function(attrs) {
-  // TODO(danvk): this is a mess. Rethink this function.
+Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
+  if (typeof(block_redraw) == 'undefined') block_redraw = false;
+
+  // TODO(danvk): this is a mess. Move these options into attr_.
   if ('rollPeriod' in attrs) {
     this.rollPeriod_ = attrs.rollPeriod;
   }
@@ -3768,9 +3778,9 @@ Dygraph.prototype.updateOptions = function(attrs) {
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
-    this.start_();
+    if (!block_redraw) this.start_();
   } else {
-    this.predraw_();
+    if (!block_redraw) this.predraw_();
   }
 };
 
