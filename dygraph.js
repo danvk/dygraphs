@@ -1097,6 +1097,12 @@ Dygraph.prototype.dragGetY_ = function(e, context) {
 };
 
 /**
+ * A collection of functions to facilitate build custom interaction models.
+ * @class
+ */
+Dygraph.Interaction = {};
+
+/**
  * Called in response to an interaction model operation that
  * should start the default panning behavior.
  *
@@ -1109,7 +1115,7 @@ Dygraph.prototype.dragGetY_ = function(e, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.startPan = function(event, g, context) {
+Dygraph.Interaction.startPan = function(event, g, context) {
   context.isPanning = true;
   var xRange = g.xAxisRange();
   context.dateRange = xRange[1] - xRange[0];
@@ -1180,7 +1186,7 @@ Dygraph.startPan = function(event, g, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.movePan = function(event, g, context) {
+Dygraph.Interaction.movePan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
 
@@ -1249,7 +1255,7 @@ Dygraph.movePan = function(event, g, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.endPan = function(event, g, context) {
+Dygraph.Interaction.endPan = function(event, g, context) {
   // TODO(konigsberg): Clear the context data from the axis.
   // TODO(konigsberg): mouseup should just delete the
   // context object, and mousedown should create a new one.
@@ -1275,7 +1281,7 @@ Dygraph.endPan = function(event, g, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.startZoom = function(event, g, context) {
+Dygraph.Interaction.startZoom = function(event, g, context) {
   context.isZooming = true;
 };
 
@@ -1292,7 +1298,7 @@ Dygraph.startZoom = function(event, g, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.moveZoom = function(event, g, context) {
+Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
 
@@ -1331,7 +1337,7 @@ Dygraph.moveZoom = function(event, g, context) {
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
-Dygraph.endZoom = function(event, g, context) {
+Dygraph.Interaction.endZoom = function(event, g, context) {
   // TODO(konigsberg): Refactor or rename this fn -- it deals with clicks, too.
   context.isZooming = false;
   context.dragEndX = g.dragGetX_(event, context);
@@ -1389,7 +1395,7 @@ Dygraph.endZoom = function(event, g, context) {
  *   }
  * } );
  */
-Dygraph.defaultInteractionModel = {
+Dygraph.Interaction.defaultModel = {
   // Track the beginning of drag events
   mousedown: function(event, g, context) {
     context.initializeMouseDown(event, g, context);
@@ -1437,7 +1443,16 @@ Dygraph.defaultInteractionModel = {
   }
 };
 
-Dygraph.DEFAULT_ATTRS.interactionModel = Dygraph.defaultInteractionModel;
+Dygraph.DEFAULT_ATTRS.interactionModel = Dygraph.Interaction.defaultModel;
+
+// old ways of accessing these methods/properties
+Dygraph.defaultInteractionModel = Dygraph.Interaction.defaultModel;
+Dygraph.endZoom = Dygraph.Interaction.endZoom;
+Dygraph.moveZoom = Dygraph.Interaction.moveZoom;
+Dygraph.startZoom = Dygraph.Interaction.startZoom;
+Dygraph.endPan = Dygraph.Interaction.endPan;
+Dygraph.movePan = Dygraph.Interaction.movePan;
+Dygraph.startPan = Dygraph.Interaction.startPan;
 
 /**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
