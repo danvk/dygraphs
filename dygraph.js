@@ -4496,7 +4496,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "fillAlpha": {
     "default": "0.15",
-    "labels": ["Error bars"],
+    "labels": ["Error bars", "Data Series Colors"],
     "type": "float (0.0 - 1.0)",
     "description" : "Error bars (or custom bars) for each series are drawn in the same color as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the error bars will not be drawn, whereas a value of 1.0 means that the error bars will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point."
   },
@@ -4529,6 +4529,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Value display/formatting"],
     "type": "integer",
     "description": "When displaying numbers in normal (not scientific) mode, large numbers will be displayed with many trailing zeros (e.g. 100000000 instead of 1e9). This can lead to unwieldy y-axis labels. If there are more than <code>maxNumberWidth</code> digits to the left of the decimal in a number, dygraphs will switch to scientific notation, even when not operating in scientific mode. If you'd like to see all those digits, set this to something large, like 20 or 30."
+  },
+  "file": {
+    "default": "(set when constructed)",
+    "labels": ["Data"],
+    "type": "string (URL of CSV or CSV), GViz DataTable or 2D Array",
+    "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='http://dygraphs.com/data.html'>Data Formats</a> page."
   }
 }
 ;  // </JSON>
@@ -4547,6 +4553,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Chart labels',
    'CSV parsing',
    'Callbacks',
+   'Data',
    'Data Line display',
    'Data Series Colors',
    'Error Bars',
