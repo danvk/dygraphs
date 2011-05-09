@@ -89,9 +89,7 @@ Dygraph.AXIS_LINE_WIDTH = 0.3;
 
 Dygraph.LOG_SCALE = 10;
 Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
-/**
- * @private
- */
+/** @private (shut up, jsdoc!) */
 Dygraph.log10 = function(x) {
   return Math.log(x) / Dygraph.LN_TEN;
 }
@@ -391,23 +389,17 @@ Dygraph.prototype.log = function(severity, message) {
   }
 };
 
-/**
- * @private
- */
+/** @private (shut up, jsdoc!) */
 Dygraph.prototype.info = function(message) {
   this.log(Dygraph.INFO, message);
 };
 
-/**
- * @private
- */
+/** @private (shut up, jsdoc!) */
 Dygraph.prototype.warn = function(message) {
   this.log(Dygraph.WARNING, message);
 };
 
-/**
- * @private
- */
+/** @private (shut up, jsdoc!) */
 Dygraph.prototype.error = function(message) {
   this.log(Dygraph.ERROR, message);
 };
@@ -930,9 +922,7 @@ Dygraph.prototype.getColors = function() {
 // http://blog.firetree.net/2005/07/04/javascript-find-position/
 // http://www.quirksmode.org/js/findpos.html
 
-/**
- * @private
- */
+/** @private */
 Dygraph.findPosX = function(obj) {
   var curleft = 0;
   if(obj.offsetParent)
@@ -949,9 +939,7 @@ Dygraph.findPosX = function(obj) {
 };
 
 
-/**
- * @private
- */
+/** @private */
 Dygraph.findPosY = function(obj) {
   var curtop = 0;
   if(obj.offsetParent)
@@ -3240,7 +3228,9 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xAxisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
     // TODO(danvk): use Dygraph.numberFormatter here?
+    /** @private (shut up, jsdoc!) */
     this.attrs_.xValueFormatter = function(x) { return x; };
+    /** @private (shut up, jsdoc!) */
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.xTicker = Dygraph.numericTicks;
     this.attrs_.xAxisLabelFormatter = this.attrs_.xValueFormatter;
@@ -3475,6 +3465,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     return parsedData;
   } else {
     // Some intelligent defaults for a numeric x-axis.
+    /** @private (shut up, jsdoc!) */
     this.attrs_.xValueFormatter = function(x) { return x; };
     this.attrs_.xTicker = Dygraph.numericTicks;
     return data;
