@@ -852,7 +852,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
   var fillAlpha = this.attr_('fillAlpha');
-  var errorBars = this.attr_("errorBars");
+  var errorBars = this.attr_("errorBars") || this.attr_("customBars");
   var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.attr_("stackedGraph");
   var stepPlot = this.attr_("stepPlot");
