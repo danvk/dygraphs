@@ -278,42 +278,16 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   return unstackedPoint;
 }  
 
-// Subclass PlotKit.CanvasRenderer to add:
-// 1. X/Y grid overlay
-// 2. Ability to draw error bars (if required)
-
 /**
- * Sets some PlotKit.CanvasRenderer options
+ * The DygraphCanvasRenderer class does the actual rendering of the chart onto
+ * a canvas. It's based on PlotKit.CanvasRenderer.
  * @param {Object} element The canvas to attach to
  * @param {Object} elementContext The 2d context of the canvas (injected so it
  * can be mocked for testing.)
  * @param {Layout} layout The DygraphLayout object for this graph.
- * @param {Object} options Options to pass on to CanvasRenderer
  */
-DygraphCanvasRenderer = function(dygraph, element, elementContext, layout,
-    options) {
-  // TODO(danvk): remove options, just use dygraph.attr_.
+DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
-
-  // default options
-  this.options = {
-    "strokeWidth": 0.5,
-    "drawXAxis": true,
-    "drawYAxis": true,
-    "axisLineColor": "black",
-    "axisLineWidth": 0.5,
-    "axisTickSize": 3,
-    "axisLabelColor": "black",
-    "axisLabelFont": "Arial",
-    "axisLabelFontSize": 9,
-    "axisLabelWidth": 50,
-    "drawYGrid": true,
-    "drawXGrid": true,
-    "gridLineColor": "rgb(128,128,128)",
-    "fillAlpha": 0.15,
-    "underlayCallback": null
-  };
-  Dygraph.update(this.options, options);
 
   this.layout = layout;
   this.element = element;
@@ -333,40 +307,7 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout,
   this.annotations = new Array();
   this.chartLabels = {};
 
-  // TODO(danvk): consider all axes in this computation.
-  this.area = {
-    // TODO(danvk): per-axis setting.
-    x: this.options.yAxisLabelWidth + 2 * this.options.axisTickSize,
-    y: 0
-  };
-  this.area.w = this.width - this.area.x - this.options.rightGap;
-  this.area.h = this.height - this.options.axisLabelFontSize -
-                2 * this.options.axisTickSize;
-
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    this.area.w -= (this.options.yAxisLabelWidth + 2 * this.options.axisTickSize);
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
-  }
-
-  // Add space for chart labels: title, xlabel and ylabel.
-  if (this.attr_('title')) {
-    this.area.h -= this.attr_('titleHeight');
-    this.area.y += this.attr_('titleHeight');
-  }
-  if (this.attr_('xlabel')) {
-    this.area.h -= this.attr_('xLabelHeight');
-  }
-  if (this.attr_('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-  }
-
+  this.area = this.computeArea_();
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
 
@@ -385,6 +326,45 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout,
 
 DygraphCanvasRenderer.prototype.attr_ = function(x) {
   return this.dygraph_.attr_(x);
+};
+
+// Compute the box which the chart should be drawn in. This is the canvas's
+// box, less space needed for axis and chart labels.
+DygraphCanvasRenderer.prototype.computeArea_ = function() {
+  var area = {
+    // TODO(danvk): per-axis setting.
+    x: this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'),
+    y: 0
+  };
+  area.w = this.width - area.x - this.attr_('rightGap');
+  area.h = this.height - this.attr_('axisLabelFontSize') -
+                2 * this.attr_('axisTickSize');
+
+  // Shrink the drawing area to accomodate additional y-axes.
+  if (this.dygraph_.numAxes() == 2) {
+    // TODO(danvk): per-axis setting.
+    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
+  } else if (this.dygraph_.numAxes() > 2) {
+    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                        "to use " + this.dygraph_.numAxes() + ")");
+  }
+
+  // Add space for chart labels: title, xlabel and ylabel.
+  if (this.attr_('title')) {
+    area.h -= this.attr_('titleHeight');
+    area.y += this.attr_('titleHeight');
+  }
+  if (this.attr_('xlabel')) {
+    area.h -= this.attr_('xLabelHeight');
+  }
+  if (this.attr_('ylabel')) {
+    // It would make sense to shift the chart here to make room for the y-axis
+    // label, but the default yAxisLabelWidth is large enough that this results
+    // in overly-padded charts. The y-axis label should fit fine. If it
+    // doesn't, the yAxisLabelWidth option can be increased.
+  }
+
+  return area;
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -461,17 +441,17 @@ DygraphCanvasRenderer.prototype.render = function() {
   function halfUp(x){return Math.round(x)+0.5};
   function halfDown(y){return Math.round(y)-0.5};
 
-  if (this.options.underlayCallback) {
+  if (this.attr_('underlayCallback')) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.options.underlayCallback(ctx, this.area, this.dygraph_, this.dygraph_);
+    this.attr_('underlayCallback')(ctx, this.area, this.dygraph_, this.dygraph_);
   }
 
-  if (this.options.drawYGrid) {
+  if (this.attr_('drawYGrid')) {
     var ticks = this.layout.yticks;
     ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor;
-    ctx.lineWidth = this.options.axisLineWidth;
+    ctx.strokeStyle = this.attr_('gridLineColor');
+    ctx.lineWidth = this.attr_('axisLineWidth');
     for (var i = 0; i < ticks.length; i++) {
       // TODO(danvk): allow secondary axes to draw a grid, too.
       if (ticks[i][0] != 0) continue;
@@ -485,11 +465,11 @@ DygraphCanvasRenderer.prototype.render = function() {
     }
   }
 
-  if (this.options.drawXGrid) {
+  if (this.attr_('drawXGrid')) {
     var ticks = this.layout.xticks;
     ctx.save();
-    ctx.strokeStyle = this.options.gridLineColor;
-    ctx.lineWidth = this.options.axisLineWidth;
+    ctx.strokeStyle = this.attr_('gridLineColor');
+    ctx.lineWidth = this.attr_('axisLineWidth');
     for (var i=0; i<ticks.length; i++) {
       var x = halfUp(this.area.x + ticks[i][0] * this.area.w);
       var y = halfDown(this.area.y + this.area.h);
@@ -510,8 +490,7 @@ DygraphCanvasRenderer.prototype.render = function() {
 
 
 DygraphCanvasRenderer.prototype._renderAxis = function() {
-  if (!this.options.drawXAxis && !this.options.drawYAxis)
-    return;
+  if (!this.attr_('drawXAxis') && !this.attr_('drawYAxis')) return;
 
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x){return Math.round(x)+0.5};
@@ -520,12 +499,12 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   var context = this.elementContext;
 
   var labelStyle = {
-    "position": "absolute",
-    "fontSize": this.options.axisLabelFontSize + "px",
-    "zIndex": 10,
-    "color": this.options.axisLabelColor,
-    "width": this.options.axisLabelWidth + "px",
-    "overflow": "hidden"
+    position: "absolute",
+    fontSize: this.attr_('axisLabelFontSize') + "px",
+    zIndex: 10,
+    color: this.attr_('axisLabelColor'),
+    width: this.attr_('axisLabelWidth') + "px",
+    overflow: "hidden"
   };
   var makeDiv = function(txt) {
     var div = document.createElement("div");
@@ -540,10 +519,10 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   // axis lines
   context.save();
-  context.strokeStyle = this.options.axisLineColor;
-  context.lineWidth = this.options.axisLineWidth;
+  context.strokeStyle = this.attr_('axisLineColor');
+  context.lineWidth = this.attr_('axisLineWidth');
 
-  if (this.options.drawYAxis) {
+  if (this.attr_('drawYAxis')) {
     if (this.layout.yticks && this.layout.yticks.length > 0) {
       for (var i = 0; i < this.layout.yticks.length; i++) {
         var tick = this.layout.yticks[i];
@@ -557,28 +536,28 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
-        context.lineTo(halfUp(x - sgn * this.options.axisTickSize), halfDown(y));
+        context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize'), halfDown(y));
         context.closePath();
         context.stroke();
 
         var label = makeDiv(tick[2]);
-        var top = (y - this.options.axisLabelFontSize / 2);
+        var top = (y - this.attr_('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 
-        if (top + this.options.axisLabelFontSize + 3 > this.height) {
+        if (top + this.attr_('axisLabelFontSize') + 3 > this.height) {
           label.style.bottom = "0px";
         } else {
           label.style.top = top + "px";
         }
         if (tick[0] == 0) {
-          label.style.left = (this.area.x - this.options.yAxisLabelWidth - this.options.axisTickSize) + "px";
+          label.style.left = (this.area.x - this.attr_('yAxisLabelWidth') - this.attr_('axisTickSize')) + "px";
           label.style.textAlign = "right";
         } else if (tick[0] == 1) {
           label.style.left = (this.area.x + this.area.w +
-                              this.options.axisTickSize) + "px";
+                              this.attr_('axisTickSize')) + "px";
           label.style.textAlign = "left";
         }
-        label.style.width = this.options.yAxisLabelWidth + "px";
+        label.style.width = this.attr_('yAxisLabelWidth') + "px";
         this.container.appendChild(label);
         this.ylabels.push(label);
       }
@@ -587,7 +566,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       // tick on the x-axis. Shift the bottom tick up a little bit to
       // compensate if necessary.
       var bottomTick = this.ylabels[0];
-      var fontSize = this.options.axisLabelFontSize;
+      var fontSize = this.attr_('axisLabelFontSize');
       var bottom = parseInt(bottomTick.style.top) + fontSize;
       if (bottom > this.height - fontSize) {
         bottomTick.style.top = (parseInt(bottomTick.style.top) -
@@ -612,7 +591,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
   }
 
-  if (this.options.drawXAxis) {
+  if (this.attr_('drawXAxis')) {
     if (this.layout.xticks) {
       for (var i = 0; i < this.layout.xticks.length; i++) {
         var tick = this.layout.xticks[i];
@@ -622,17 +601,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         var y = this.area.y + this.area.h;
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
-        context.lineTo(halfUp(x), halfDown(y + this.options.axisTickSize));
+        context.lineTo(halfUp(x), halfDown(y + this.attr_('axisTickSize')));
         context.closePath();
         context.stroke();
 
         var label = makeDiv(tick[1]);
         label.style.textAlign = "center";
-        label.style.top = (y + this.options.axisTickSize) + 'px';
+        label.style.top = (y + this.attr_('axisTickSize')) + 'px';
 
-        var left = (x - this.options.axisLabelWidth/2);
-        if (left + this.options.axisLabelWidth > this.width) {
-          left = this.width - this.options.xAxisLabelWidth;
+        var left = (x - this.attr_('axisLabelWidth')/2);
+        if (left + this.attr_('axisLabelWidth') > this.width) {
+          left = this.width - this.attr_('xAxisLabelWidth');
           label.style.textAlign = "right";
         }
         if (left < 0) {
@@ -641,7 +620,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         }
 
         label.style.left = left + "px";
-        label.style.width = this.options.xAxisLabelWidth + "px";
+        label.style.width = this.attr_('xAxisLabelWidth') + "px";
         this.container.appendChild(label);
         this.xlabels.push(label);
       }
@@ -756,7 +735,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
 DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   var annotationStyle = {
     "position": "absolute",
-    "fontSize": this.options.axisLabelFontSize + "px",
+    "fontSize": this.attr_('axisLabelFontSize') + "px",
     "zIndex": 10,
     "overflow": "hidden"
   };
@@ -859,7 +838,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var context = this.elementContext;
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
-  var fillAlpha = this.options.fillAlpha;
+  var fillAlpha = this.attr_('fillAlpha');
   var errorBars = this.attr_("errorBars");
   var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.attr_("stackedGraph");
@@ -1029,7 +1008,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             // Draw a horizontal line to the start of the missing data
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.lineWidth = this.options.strokeWidth;
+            ctx.lineWidth = this.attr_('strokeWidth');
             ctx.moveTo(prevX, prevY);
             ctx.lineTo(point.canvasx, prevY);
             ctx.stroke();

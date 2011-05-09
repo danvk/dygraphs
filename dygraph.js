@@ -154,6 +154,18 @@ Dygraph.DEFAULT_ATTRS = {
   xLabelHeight: 18,
   yLabelWidth: 18,
 
+  // From renderer
+  drawXAxis: true,
+  drawYAxis: true,
+  axisLineColor: "black",
+    "axisLineWidth": 0.5,
+    "axisLabelColor": "black",
+    "axisLabelFont": "Arial",  // TODO(danvk): is this implemented?
+    "axisLabelWidth": 50,
+    "drawYGrid": true,
+    "drawXGrid": true,
+    "gridLineColor": "rgb(128,128,128)",
+
   interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
 
