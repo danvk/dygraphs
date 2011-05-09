@@ -758,14 +758,7 @@ Dygraph.prototype.createInterface_ = function() {
   });
 
   // Create the grapher
-  // TODO(danvk): why does the Layout need its own set of options?
-  this.layoutOptions_ = { 'xOriginIsZero': false };
-  Dygraph.update(this.layoutOptions_, this.attrs_);
-  Dygraph.update(this.layoutOptions_, this.user_attrs_);
-  Dygraph.update(this.layoutOptions_, {
-    'errorBars': (this.attr_("errorBars") || this.attr_("customBars")) });
-
-  this.layout_ = new DygraphLayout(this, this.layoutOptions_);
+  this.layout_ = new DygraphLayout(this);
 
   // TODO(danvk): why does the Renderer need its own set of options?
   this.renderOptions_ = { colorScheme: this.colors_,
@@ -905,8 +898,6 @@ Dygraph.prototype.setColors_ = function() {
   // TODO(danvk): update this w/r/t/ the new options system.
   this.renderOptions_.colorScheme = this.colors_;
   Dygraph.update(this.plotter_.options, this.renderOptions_);
-  Dygraph.update(this.layoutOptions_, this.user_attrs_);
-  Dygraph.update(this.layoutOptions_, this.attrs_);
 };
 
 /**
@@ -2188,7 +2179,7 @@ Dygraph.prototype.addXTicks_ = function() {
   }
 
   var xTicks = this.attr_('xTicker')(range[0], range[1], this);
-  this.layout_.updateOptions({xTicks: xTicks});
+  this.layout_.setXTicks(xTicks);
 };
 
 // Time granularity enumeration
@@ -2797,15 +2788,14 @@ Dygraph.prototype.drawGraph_ = function() {
   }
 
   this.computeYAxisRanges_(extremes);
-  this.layout_.updateOptions( { yAxes: this.axes_,
-                                seriesToAxisMap: this.seriesToAxisMap_
-                              } );
+  this.layout_.setYAxes(this.axes_);
+
   this.addXTicks_();
 
-  // Save the X axis zoomed status as the updateOptions call will tend to set it errorneously
+  // Save the X axis zoomed status as the updateOptions call will tend to set it erroneously
   var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
-  this.layout_.updateOptions({dateWindow: this.dateWindow_});
+  this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
   this.plotter_.clear();
@@ -2932,6 +2922,18 @@ Dygraph.prototype.numAxes = function() {
     if (idx > last_axis) last_axis = idx;
   }
   return 1 + last_axis;
+};
+
+/**
+ * @private
+ * Returns axis properties for the given series.
+ * @param { String } setName The name of the series for which to get axis
+ * properties, e.g. 'Y1'.
+ * @return { Object } The axis properties.
+ */
+Dygraph.prototype.axisPropertiesForSeries = function(series) {
+  // TODO(danvk): handle errors.
+  return this.axes_[this.seriesToAxisMap_[series]];
 };
 
 /**
@@ -3761,8 +3763,6 @@ Dygraph.prototype.updateOptions = function(attrs) {
 
   this.labelsFromCSV_ = (this.attr_("labels") == null);
 
-  // TODO(danvk): this doesn't match the constructor logic
-  this.layout_.updateOptions({ 'errorBars': this.attr_("errorBars") });
   if (attrs['file']) {
     this.file_ = attrs['file'];
     this.start_();

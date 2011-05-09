@@ -29,15 +29,18 @@
 
 /**
  * Creates a new DygraphLayout object.
- * @param {Object} options Options for PlotKit.Layout
  * @return {Object} The DygraphLayout object
  */
-DygraphLayout = function(dygraph, options) {
+DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.options = {};  // TODO(danvk): remove, use attr_ instead.
-  Dygraph.update(this.options, options ? options : {});
   this.datasets = new Array();
   this.annotations = new Array();
+  this.yAxes_ = null;
+
+  // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
+  // yticks are outputs. Clean this up.
+  this.xTicks_ = null;
+  this.yTicks_ = null;
 };
 
 DygraphLayout.prototype.attr_ = function(name) {
@@ -72,6 +75,19 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   }
 };
 
+DygraphLayout.prototype.setXTicks = function(xTicks) {
+  this.xTicks_ = xTicks;
+};
+
+// TODO(danvk): add this to the Dygraph object's API or move it into Layout.
+DygraphLayout.prototype.setYAxes = function (yAxes) {
+  this.yAxes_ = yAxes;
+};
+
+DygraphLayout.prototype.setDateWindow = function(dateWindow) {
+  this.dateWindow_ = dateWindow;
+};
+
 DygraphLayout.prototype.evaluate = function() {
   this._evaluateLimits();
   this._evaluateLineCharts();
@@ -81,9 +97,9 @@ DygraphLayout.prototype.evaluate = function() {
 
 DygraphLayout.prototype._evaluateLimits = function() {
   this.minxval = this.maxxval = null;
-  if (this.options.dateWindow) {
-    this.minxval = this.options.dateWindow[0];
-    this.maxxval = this.options.dateWindow[1];
+  if (this.dateWindow_) {
+    this.minxval = this.dateWindow_[0];
+    this.maxxval = this.dateWindow_[1];
   } else {
     for (var name in this.datasets) {
       if (!this.datasets.hasOwnProperty(name)) continue;
@@ -100,8 +116,8 @@ DygraphLayout.prototype._evaluateLimits = function() {
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
 
-  for (var i = 0; i < this.options.yAxes.length; i++) {
-    var axis = this.options.yAxes[i];
+  for (var i = 0; i < this.yAxes_.length; i++) {
+    var axis = this.yAxes_[i];
     axis.minyval = axis.computedValueRange[0];
     axis.maxyval = axis.computedValueRange[1];
     axis.yrange = axis.maxyval - axis.minyval;
@@ -126,7 +142,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     if (!this.datasets.hasOwnProperty(setName)) continue;
 
     var dataset = this.datasets[setName];
-    var axis = this.options.yAxes[this.options.seriesToAxisMap[setName]];
+    var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
@@ -153,8 +169,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
   this.xticks = new Array();
-  for (var i = 0; i < this.options.xTicks.length; i++) {
-    var tick = this.options.xTicks[i];
+  for (var i = 0; i < this.xTicks_.length; i++) {
+    var tick = this.xTicks_[i];
     var label = tick.label;
     var pos = this.xscale * (tick.v - this.minxval);
     if ((pos >= 0.0) && (pos <= 1.0)) {
@@ -163,8 +179,8 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   }
 
   this.yticks = new Array();
-  for (var i = 0; i < this.options.yAxes.length; i++ ) {
-    var axis = this.options.yAxes[i];
+  for (var i = 0; i < this.yAxes_.length; i++ ) {
+    var axis = this.yAxes_[i];
     for (var j = 0; j < axis.ticks.length; j++) {
       var tick = axis.ticks[j];
       var label = tick.label;
@@ -183,7 +199,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
  */
 DygraphLayout.prototype.evaluateWithError = function() {
   this.evaluate();
-  if (!this.options.errorBars) return;
+  if (!(this.attr_('errorBars') || this.attr_('customBars'))) return;
 
   // Copy over the error terms
   var i = 0; // index in this.points
@@ -231,14 +247,6 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
 DygraphLayout.prototype.removeAllDatasets = function() {
   delete this.datasets;
   this.datasets = new Array();
-};
-
-/**
- * Change the values of various layout options
- * @param {Object} new_options an associative array of new properties
- */
-DygraphLayout.prototype.updateOptions = function(new_options) {
-  Dygraph.update(this.options, new_options ? new_options : {});
 };
 
 /**
@@ -852,10 +860,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var colorCount = this.options.colorScheme.length;
   var colorScheme = this.options.colorScheme;
   var fillAlpha = this.options.fillAlpha;
-  var errorBars = this.layout.options.errorBars;
+  var errorBars = this.attr_("errorBars");
   var fillGraph = this.attr_("fillGraph");
-  var stackedGraph = this.layout.options.stackedGraph;
-  var stepPlot = this.layout.options.stepPlot;
+  var stackedGraph = this.attr_("stackedGraph");
+  var stepPlot = this.attr_("stepPlot");
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -887,8 +895,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     for (var i = 0; i < setCount; i++) {
       var setName = setNames[i];
-      var axis = this.layout.options.yAxes[
-        this.layout.options.seriesToAxisMap[setName]];
+      var axis = this.dygraph_.axisPropertiesForSeries(setName);
       var color = this.colors[setName];
 
       // setup graphics context
@@ -950,8 +957,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     for (var i = setCount - 1; i >= 0; i--) {
       var setName = setNames[i];
       var color = this.colors[setName];
-      var axis = this.layout.options.yAxes[
-        this.layout.options.seriesToAxisMap[setName]];
+      var axis = this.dygraph_.axisPropertiesForSeries(setName);
       var axisY = 1.0 + axis.minyval * axis.yscale;
       if (axisY < 0.0) axisY = 0.0;
       else if (axisY > 1.0) axisY = 1.0;
