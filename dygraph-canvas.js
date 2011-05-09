@@ -334,12 +334,18 @@ DygraphCanvasRenderer.prototype.attr_ = function(x) {
 DygraphCanvasRenderer.prototype.computeArea_ = function() {
   var area = {
     // TODO(danvk): per-axis setting.
-    x: this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'),
+    x: 0,
     y: 0
   };
+  if (this.attr_('drawYAxis')) {
+   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
+  }
+
   area.w = this.width - area.x - this.attr_('rightGap');
-  area.h = this.height - this.attr_('axisLabelFontSize') -
-                2 * this.attr_('axisTickSize');
+  area.h = this.height;
+  if (this.attr_('drawXAxis')) {
+    area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+  }
 
   // Shrink the drawing area to accomodate additional y-axes.
   if (this.dygraph_.numAxes() == 2) {
