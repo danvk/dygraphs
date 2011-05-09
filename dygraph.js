@@ -89,7 +89,7 @@ Dygraph.AXIS_LINE_WIDTH = 0.3;
 
 Dygraph.LOG_SCALE = 10;
 Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
-/** @private (shut up, jsdoc!) */
+/** @private */
 Dygraph.log10 = function(x) {
   return Math.log(x) / Dygraph.LN_TEN;
 }
@@ -389,17 +389,17 @@ Dygraph.prototype.log = function(severity, message) {
   }
 };
 
-/** @private (shut up, jsdoc!) */
+/** @private */
 Dygraph.prototype.info = function(message) {
   this.log(Dygraph.INFO, message);
 };
 
-/** @private (shut up, jsdoc!) */
+/** @private */
 Dygraph.prototype.warn = function(message) {
   this.log(Dygraph.WARNING, message);
 };
 
-/** @private (shut up, jsdoc!) */
+/** @private */
 Dygraph.prototype.error = function(message) {
   this.log(Dygraph.ERROR, message);
 };

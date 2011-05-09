@@ -7,9 +7,10 @@ echo Generating JSDoc...
 java -jar jsdoc-toolkit/jsrun.jar \
   jsdoc-toolkit/app/run.js \
   -d=jsdoc -t=jsdoc-toolkit/templates/jsdoc \
-  dygraph.js > /tmp/dygraphs-jsdocerrors.txt
+  dygraph.js \
+| tee /tmp/dygraphs-jsdocerrors.txt
 
-if [ -n /tmp/dygraphs-jsdocerrors.txt ]; then
+if [ -s /tmp/dygraphs-jsdocerrors.txt ]; then
   echo Please fix any jsdoc errors/warnings before sending patches.
 fi
 
