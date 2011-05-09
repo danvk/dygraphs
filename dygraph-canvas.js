@@ -460,7 +460,7 @@ DygraphCanvasRenderer.prototype.render = function() {
     var ticks = this.layout.yticks;
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
-    ctx.lineWidth = this.attr_('axisLineWidth');
+    ctx.lineWidth = this.attr_('gridLineWidth');
     for (var i = 0; i < ticks.length; i++) {
       // TODO(danvk): allow secondary axes to draw a grid, too.
       if (ticks[i][0] != 0) continue;
@@ -478,7 +478,7 @@ DygraphCanvasRenderer.prototype.render = function() {
     var ticks = this.layout.xticks;
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
-    ctx.lineWidth = this.attr_('axisLineWidth');
+    ctx.lineWidth = this.attr_('gridLineWidth');
     for (var i=0; i<ticks.length; i++) {
       var x = halfUp(this.area.x + ticks[i][0] * this.area.w);
       var y = halfDown(this.area.y + this.area.h);

@@ -153,17 +153,17 @@ Dygraph.DEFAULT_ATTRS = {
   xLabelHeight: 18,
   yLabelWidth: 18,
 
-  // From renderer
   drawXAxis: true,
   drawYAxis: true,
   axisLineColor: "black",
-    "axisLineWidth": 0.3,
-    "axisLabelColor": "black",
-    "axisLabelFont": "Arial",  // TODO(danvk): is this implemented?
-    "axisLabelWidth": 50,
-    "drawYGrid": true,
-    "drawXGrid": true,
-    "gridLineColor": "rgb(128,128,128)",
+  axisLineWidth: 0.3,
+  gridLineWidth: 0.3,
+  axisLabelColor: "black",
+  axisLabelFont: "Arial",  // TODO(danvk): is this implemented?
+  axisLabelWidth: 50,
+  drawYGrid: true,
+  drawXGrid: true,
+  gridLineColor: "rgb(128,128,128)",
 
   interactionModel: null  // will be set to Dygraph.defaultInteractionModel.
 };
@@ -4278,14 +4278,14 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "colorSaturation": {
     "default": "1.0",
     "labels": ["Data Series Colors"],
-    "type": "0.0 - 1.0",
+    "type": "float (0.0 - 1.0)",
     "description": "If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors."
   },
   "yAxisLabelWidth": {
     "default": "50",
     "labels": ["Axis display"],
     "type": "integer",
-    "description": "Width, in pixels, of the y-axis labels."
+    "description": "Width, in pixels, of the y-axis labels. This also affects the amount of space available for a y-axis chart label."
   },
   "hideOverlayOnMouseOut": {
     "default": "true",
@@ -4451,6 +4451,66 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Zooming"],
     "type": "boolean",
     "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
+  },
+  "drawXGrid": {
+    "default": "true",
+    "labels": ["Grid"],
+    "type": "boolean",
+    "description" : "Whether to display vertical gridlines under the chart."
+  },
+  "drawYGrid": {
+    "default": "true",
+    "labels": ["Grid"],
+    "type": "boolean",
+    "description" : "Whether to display horizontal gridlines under the chart."
+  },
+  "drawXAxis": {
+    "default": "true",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description" : "Whether to draw the x-axis. Setting this to false also prevents x-axis ticks from being drawn and reclaims the space for the chart grid/lines."
+  },
+  "drawYAxis": {
+    "default": "true",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description" : "Whether to draw the y-axis. Setting this to false also prevents y-axis ticks from being drawn and reclaims the space for the chart grid/lines."
+  },
+  "gridLineWidth": {
+    "default": "0.3",
+    "labels": ["Grid"],
+    "type": "float",
+    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawXGrid and drawYGrid options."
+  },
+  "axisLineWidth": {
+    "default": "0.3",
+    "labels": ["Axis display"],
+    "type": "float",
+    "description" : "Thickness (in pixels) of the x- and y-axis lines."
+  },
+  "axisLineColor": {
+    "default": "black",
+    "labels": ["Axis display"],
+    "type": "string",
+    "description" : "Color of the x- and y-axis lines. Accepts any value which the HTML canvas strokeStyle attribute understands, e.g. 'black' or 'rgb(0, 100, 255)'."
+  },
+  "fillAlpha": {
+    "default": "0.15",
+    "labels": ["Error bars"],
+    "type": "float (0.0 - 1.0)",
+    "description" : "Error bars (or custom bars) for each series are drawn in the same color as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the error bars will not be drawn, whereas a value of 1.0 means that the error bars will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point."
+  },
+  "axisLabelColor": {
+    "default": "black",
+    "labels": ["Axis display"],
+    "type": "string",
+    "description" : "Color for x- and y-axis labels. This is a CSS color string."
+  },
+  "axisLabelWidth": {
+    "default": "50",
+    "labels": ["Axis display"],
+    "type": "integer",
+    "description" : "Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls "
   },
   "sigFigs" : {
     "default": "null",
