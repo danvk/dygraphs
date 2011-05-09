@@ -4508,7 +4508,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "axisLabelWidth": {
     "default": "50",
-    "labels": ["Axis display"],
+    "labels": ["Axis display", "Chart labels"],
     "type": "integer",
     "description" : "Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls "
   },
