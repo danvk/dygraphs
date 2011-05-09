@@ -1681,6 +1681,9 @@ Dygraph.prototype.doUnzoom_ = function() {
     }
   }
 
+  // Clear any selection, since it's likely to be drawn in the wrong place.
+  this.clearSelection();
+
   if (dirty) {
     // Putting the drawing operation before the callback because it resets
     // yAxisRange.
@@ -2807,8 +2810,10 @@ Dygraph.prototype.drawGraph_ = function() {
     this.setLegendHTML_();
   } else {
     if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
-      this.lastx_ = this.selPoints_[0].xval;
-      this.updateSelection_();
+      // We should select the point nearest the page x/y here, but it's easier
+      // to just clear the selection. This prevents erroneous hover dots from
+      // being displayed.
+      this.clearSelection();
     } else {
       this.clearSelection();
     }
