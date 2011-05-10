@@ -43,18 +43,32 @@ function TestCase(name) {
     return "Fake test case " + name;
   };
 
-  var emptyFunction = function() { return this; };
-  emptyFunction.prototype.setUp = function() { };
-  emptyFunction.prototype.tearDown = function() { };
-  emptyFunction.prototype.runTest = function(name) {
+  var testCase = function() { return this; };
+  testCase.prototype.setUp = function() { };
+  testCase.prototype.tearDown = function() { };
+  testCase.prototype.runTest = function(name) {
     try {
       this.setUp();
       var fn = this[name];
       fn.apply(this, []);
       this.tearDown();
+      return true;
     } catch (e) {
       console.log(e.stack);
+      return false;
     }
   };
-  return emptyFunction;
+  testCase.prototype.runAllTests = function() {
+    // what's better than for ... in for non-array objects?
+    var tests = {};
+    for (var name in this) {
+      if (name.indexOf('test') == 0 && typeof(this[name]) == 'function') {
+        console.log("Running " + name);
+        var result = this.runTest(name);
+        tests[name] = result;
+      }
+    }
+    console.log(prettyPrintEntity_(tests));
+  };
+  return testCase;
 };
