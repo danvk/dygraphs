@@ -9,9 +9,10 @@ site=$1
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
+./generate-jsdoc.sh
 
 # Copy everything to the site.
-scp -r tests $site \
+scp -r tests jsdoc $site \
 && \
 scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
 
