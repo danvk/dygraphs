@@ -35,7 +35,8 @@ Minimal Example
         "Date,Temperature\n" +                // the data series
         "2008-05-07,75\n" +
         "2008-05-08,70\n" +
-        "2008-05-09,80\n"
+        "2008-05-09,80\n",
+        { }                                   // the options
       );
 </script>
 </body>
@@ -54,10 +55,19 @@ dygraphs uses:
  - JsDoc Toolkit (MIT license)
 
 
+automated tests use:
+ - auto_tests/lib/jquery-1.4.2.js (MIT & GPL2)
+ - auto_tests/lib/Asserts.js (Apache 2.0 License)
+ - auto-tests/lib/JsTestDriver-1.3.2.jar (Apache 2.0 License
+
 rgbcolor: http://www.phpied.com/rgb-color-parser-in-javascript/
 strftime: http://tech.bluesmoon.info/2008/04/strftime-in-javascript.html
 excanvas: http://code.google.com/p/explorercanvas/
 yui compressor: http://developer.yahoo.com/yui/compressor/
 jsdoc toolkit: http://code.google.com/p/jsdoc-toolkit/
+
+jquery: http://code.jquery.com/jquery-1.4.2.js
+Asserts.js: http://www.google.com/codesearch/p?#3tsINRJRCro/trunk/JsTestDriver/src/com/google/jstestdriver/javascript/Asserts.js
+JSTestDriver: http://code.google.com/p/js-test-driver/
 
 dygraphs is available under the MIT license, included in LICENSE.txt.
