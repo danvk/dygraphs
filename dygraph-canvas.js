@@ -1039,7 +1039,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           var isIsolated = (!prevX && (j == points.length - 1 ||
                                        !Dygraph.isOK(points[j+1].canvasy)));
 
-          if (!prevX) {
+          if (prevX === null) {
             prevX = point.canvasx;
             prevY = point.canvasy;
           } else {
