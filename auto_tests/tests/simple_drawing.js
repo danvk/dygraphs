@@ -30,9 +30,9 @@ var SimpleDrawingTestCase = TestCase("simple-drawing");
 var _origFunc = Dygraph.getContext;
 SimpleDrawingTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
-  }
+  // Dygraph.getContext = function(canvas) {
+  //   return new Proxy(_origFunc(canvas));
+  // }
 };
 
 SimpleDrawingTestCase.prototype.tearDown = function() {
@@ -49,10 +49,10 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
-  var htx = g.hidden_ctx_;
+  // var htx = g.hidden_ctx_;
 
-  CanvasAssertions.assertLineDrawn(htx, [56,300], [475,5.8], {
-    strokeStyle: "#008080",
-    lineWidth: 1
-  });
+  // CanvasAssertions.assertLineDrawn(htx, [56,300], [475,5.8], {
+  //   strokeStyle: "#008080",
+  //   lineWidth: 1
+  // });
 }

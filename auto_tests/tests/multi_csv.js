@@ -3,7 +3,7 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var MultiCsvTestCase = TestCase("axis-labels");
+var MultiCsvTestCase = TestCase("multi-csv");
 
 MultiCsvTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
