@@ -521,14 +521,18 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     width: this.attr_('axisLabelWidth') + "px",
     overflow: "hidden"
   };
-  var makeDiv = function(txt) {
+  var makeDiv = function(txt, axis) {
     var div = document.createElement("div");
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
         div.style[name] = labelStyle[name];
       }
     }
-    div.appendChild(document.createTextNode(txt));
+    var inner_div = document.createElement("div");
+    // TODO(danvk): separate class for secondary y-axis
+    inner_div.className = 'dygraph-axis-label dygraph-axis-label-' + axis;
+    inner_div.appendChild(document.createTextNode(txt));
+    div.appendChild(inner_div);
     return div;
   };
 
@@ -555,7 +559,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[2]);
+        var label = makeDiv(tick[2], 'y');
         var top = (y - this.attr_('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 
@@ -620,7 +624,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[1]);
+        var label = makeDiv(tick[1], 'x');
         label.style.textAlign = "center";
         label.style.top = (y + this.attr_('axisTickSize')) + 'px';
 
