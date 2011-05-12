@@ -304,9 +304,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.boundaryIds_ = [];
 
-  // Make a note of whether labels will be pulled from the CSV file.
-  this.labelsFromCSV_ = (this.attr_("labels") == null);
-
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
@@ -3320,9 +3317,10 @@ Dygraph.prototype.parseCSV_ = function(data) {
   }
 
   var start = 0;
-  if (this.labelsFromCSV_) {
+  if (!('labels' in this.user_attrs_)) {
+    // User hasn't explicitly set labels, so they're (presumably) in the CSV.
     start = 1;
-    this.attrs_.labels = lines[0].split(delim);
+    this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
   }
   var line_no = 0;
 
@@ -3773,8 +3771,6 @@ Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
   // highlightCircleSize
 
   Dygraph.update(this.user_attrs_, attrs);
-
-  this.labelsFromCSV_ = (this.attr_("labels") == null);
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
