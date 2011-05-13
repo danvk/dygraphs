@@ -556,7 +556,7 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
 
   if (typeof(axis) == "undefined") axis = 0;
   if (!this.axes_[axis].logscale) {
-    return yRange[0] + (area.h - y) / area.h * (yRange[1] - yRange[0]);
+    return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
     // Computing the inverse of toDomCoord.
     var pct = (y - area.y) / area.h
