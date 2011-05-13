@@ -90,12 +90,9 @@ DygraphOps.dispatchDoubleClick = function(g, custom) {
   g.canvas_.dispatchEvent(event);
 };
 
-DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
-  var px = Dygraph.findPosX(g.canvas_);
-  var py = Dygraph.findPosY(g.canvas_);
-
-  var pageX = px + g.toDomXCoord(x);
-  var pageY = py + g.toDomYCoord(y);
+DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
+  var pageX = Dygraph.findPosX(g.canvas_) + x;
+  var pageY = Dygraph.findPosY(g.canvas_) + y;
 
   var opts = {
     type : 'mousedown',
@@ -108,14 +105,11 @@ DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
 
   var event = DygraphOps.createEvent_(opts, custom);
   g.canvas_.dispatchEvent(event);
-};
+}
 
-DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
-  var px = Dygraph.findPosX(g.canvas_);
-  var py = Dygraph.findPosY(g.canvas_);
-
-  var pageX = px + g.toDomXCoord(x);
-  var pageY = py + g.toDomYCoord(y);
+DygraphOps.dispatchMouseMove_Point = function(g, x, y, custom) {
+  var pageX = Dygraph.findPosX(g.canvas_) + x;
+  var pageY = Dygraph.findPosY(g.canvas_) + y;
 
   var opts = {
     type : 'mousemove',
@@ -129,12 +123,9 @@ DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
   g.canvas_.dispatchEvent(event);
 };
 
-DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
-  var px = Dygraph.findPosX(g.canvas_);
-  var py = Dygraph.findPosY(g.canvas_);
-
-  var pageX = px + g.toDomXCoord(x);
-  var pageY = py + g.toDomYCoord(y);
+DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
+  var pageX = Dygraph.findPosX(g.canvas_) + x;
+  var pageY = Dygraph.findPosY(g.canvas_) + y;
 
   var opts = {
     type : 'mouseup',
@@ -147,3 +138,28 @@ DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
   var event = DygraphOps.createEvent_(opts, custom);
   g.canvas_.dispatchEvent(event);
 };
+
+DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
+  DygraphOps.dispatchMouseDown_Point(
+      g,
+      g.toDomXCoord(x),
+      g.toDomYCoord(y),
+      custom);
+};
+
+DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
+  DygraphOps.dispatchMouseMove_Point(
+      g,
+      g.toDomXCoord(x),
+      g.toDomYCoord(y),
+      custom);
+};
+
+DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
+  DygraphOps.dispatchMouseUp_Point(
+      g,
+      g.toDomXCoord(x),
+      g.toDomYCoord(y),
+      custom);
+};
+

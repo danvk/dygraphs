@@ -1254,6 +1254,16 @@ Dygraph.Interaction.endPan = function(event, g, context) {
   context.valueRange = null;
   context.boundedDates = null;
   context.boundedValues = null;
+
+  var dragEndX = g.dragGetX_(event, context);
+  var dragEndY = g.dragGetY_(event, context);
+  var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
+  var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
+
+  if (regionWidth < 2 && regionHeight < 2 &&
+      g.lastx_ != undefined && g.lastx_ != -1) {
+    Dygraph.Interaction.treatMouseOpAsClick(g);
+  }
 };
 
 /**
@@ -1311,6 +1321,33 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 };
 
+Dygraph.Interaction.treatMouseOpAsClick = function(g) {
+  // TODO(danvk): pass along more info about the points, e.g. 'x'
+  if (g.attr_('clickCallback') != null) {
+    g.attr_('clickCallback')(event, g.lastx_, g.selPoints_);
+  }
+  if (g.attr_('pointClickCallback')) {
+    // check if the click was on a particular point.
+    var closestIdx = -1;
+    var closestDistance = 0;
+    for (var i = 0; i < g.selPoints_.length; i++) {
+      var p = g.selPoints_[i];
+      var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
+                     Math.pow(p.canvasy - context.dragEndY, 2);
+      if (closestIdx == -1 || distance < closestDistance) {
+        closestDistance = distance;
+        closestIdx = i;
+      }
+    }
+
+    // Allow any click within two pixels of the dot.
+    var radius = g.attr_('highlightCircleSize') + 2;
+    if (closestDistance <= 5 * 5) {
+      g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
+    }
+  }
+}
+
 /**
  * Called in response to an interaction model operation that
  * responds to an event that performs a zoom based on previously defined
@@ -1326,7 +1363,6 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.endZoom = function(event, g, context) {
-  // TODO(konigsberg): Refactor or rename this fn -- it deals with clicks, too.
   context.isZooming = false;
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
@@ -1335,30 +1371,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    // TODO(danvk): pass along more info about the points, e.g. 'x'
-    if (g.attr_('clickCallback') != null) {
-      g.attr_('clickCallback')(event, g.lastx_, g.selPoints_);
-    }
-    if (g.attr_('pointClickCallback')) {
-      // check if the click was on a particular point.
-      var closestIdx = -1;
-      var closestDistance = 0;
-      for (var i = 0; i < g.selPoints_.length; i++) {
-        var p = g.selPoints_[i];
-        var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
-                       Math.pow(p.canvasy - context.dragEndY, 2);
-        if (closestIdx == -1 || distance < closestDistance) {
-          closestDistance = distance;
-          closestIdx = i;
-        }
-      }
-
-      // Allow any click within two pixels of the dot.
-      var radius = g.attr_('highlightCircleSize') + 2;
-      if (closestDistance <= 5 * 5) {
-        g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
-      }
-    }
+    Dygraph.Interaction.treatMouseOpAsClick(g);
   }
 
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {

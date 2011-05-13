@@ -84,7 +84,6 @@ RangeTestCase.prototype.zoom = function(g, xRange, yRange) {
   var originalXRange = g.xAxisRange();
   var originalYRange = g.yAxisRange(0);
 
-  // Editing e.shiftKey post construction doesn't work for Firefox. Damn.
   DygraphOps.dispatchMouseDown(g, xRange[0], yRange[0]);
   DygraphOps.dispatchMouseMove(g, xRange[1], yRange[0]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, xRange[1], yRange[0]);
