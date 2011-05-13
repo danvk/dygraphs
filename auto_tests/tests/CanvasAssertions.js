@@ -85,6 +85,21 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
       " and " + p2 + " with attributes " + toString(attrs));
 }
 
+/**
+ * Checks how many lines of the given color have been drawn.
+ * @return {Integer} The number of lines of the given color.
+ */
+CanvasAssertions.numLinesDrawn = function(proxy, color) {
+  var num_lines = 0;
+  for (var i = 0; i < proxy.calls__.length; i++) {
+    var call = proxy.calls__[i];
+    if (call.name == "lineTo" && call.properties.strokeStyle == color) {
+      num_lines++;
+    }
+  }
+  return num_lines;
+}
+
 CanvasAssertions.matchPixels = function(expected, actual) {
   // Expect array of two integers. Assuming the values are within one
   // integer unit of each other. This should be tightened down by someone

@@ -4199,6 +4199,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "Width, in pixels, of the x-axis labels."
   },
+  "xAxisHeight": {
+    "default": "(null)",
+    "labels": ["Axis display"],
+    "type": "integer",
+    "description": "Height, in pixels, of the x-axis. If not set explicitly, this is computed based on axisLabelFontSize and axisTickSize."
+  },
   "showLabelsOnHighlight": {
     "default": "true",
     "labels": ["Interactive Elements", "Legend"],
@@ -4416,7 +4422,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "panEdgeFraction": {
     "default": "null",
-    "labels": ["Axis Display", "Interactive Elements"],
+    "labels": ["Axis display", "Interactive Elements"],
     "type": "float",
     "default": "null",
     "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
@@ -4507,7 +4513,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "fillAlpha": {
     "default": "0.15",
-    "labels": ["Error bars", "Data Series Colors"],
+    "labels": ["Error Bars", "Data Series Colors"],
     "type": "float (0.0 - 1.0)",
     "description" : "Error bars (or custom bars) for each series are drawn in the same color as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the error bars will not be drawn, whereas a value of 1.0 means that the error bars will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point."
   },
@@ -4592,6 +4598,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     var labels = op['labels'];
     if (typeof(labels) !== 'object') {
       warn('Option "' + k + '" is missing a "labels": [...] option');
+    } else {
       for (var i = 0; i < labels.length; i++) {
         if (!cats.hasOwnProperty(labels[i])) {
           warn('Option "' + k + '" has label "' + labels[i] +

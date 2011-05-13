@@ -344,7 +344,11 @@ DygraphCanvasRenderer.prototype.computeArea_ = function() {
   area.w = this.width - area.x - this.attr_('rightGap');
   area.h = this.height;
   if (this.attr_('drawXAxis')) {
-    area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+    if (this.attr_('xAxisHeight')) {
+      area.h -= this.attr_('xAxisHeight');
+    } else {
+      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+    }
   }
 
   // Shrink the drawing area to accomodate additional y-axes.
@@ -1006,6 +1010,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     }
   }
 
+  var isNullOrNaN = function(x) {
+    return (x === null || isNaN(x));
+  };
+
   for (var i = 0; i < setCount; i++) {
     var setName = setNames[i];
     var color = this.colors[setName];
@@ -1021,7 +1029,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
       if (point.name == setName) {
-        if (!Dygraph.isOK(point.canvasy)) {
+        if (isNullOrNaN(point.canvasy)) {
           if (stepPlot && prevX != null) {
             // Draw a horizontal line to the start of the missing data
             ctx.beginPath();
@@ -1037,7 +1045,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           // A point is "isolated" if it is non-null but both the previous
           // and next points are null.
           var isIsolated = (!prevX && (j == points.length - 1 ||
-                                       !Dygraph.isOK(points[j+1].canvasy)));
+                                       isNullOrNaN(points[j+1].canvasy)));
 
           if (prevX === null) {
             prevX = point.canvasx;
