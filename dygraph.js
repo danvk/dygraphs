@@ -1227,7 +1227,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
     }
   }
 
-  g.drawGraph_();
+  g.drawGraph_(false);
 };
 
 /**
@@ -2674,9 +2674,19 @@ Dygraph.prototype.predraw_ = function() {
  * Update the graph with new data. This method is called when the viewing area
  * has changed. If the underlying data or options have changed, predraw_ will
  * be called before drawGraph_ is called.
+ *
+ * clearSelection, when undefined or true, causes this.clearSelection to be
+ * called at the end of the draw operation. This should rarely be defined,
+ * and never true (that is it should be undefined most of the time, and
+ * rarely false.)
+ *
  * @private
  */
-Dygraph.prototype.drawGraph_ = function() {
+Dygraph.prototype.drawGraph_ = function(clearSelection) {
+  if (typeof clearSelection === 'undefined') {
+    clearSelection = true;
+  }
+
   var data = this.rawData_;
 
   // This is used to set the second parameter to drawCallback, below.
@@ -2819,13 +2829,15 @@ Dygraph.prototype.drawGraph_ = function() {
     // Generate a static legend before any particular point is selected.
     this.setLegendHTML_();
   } else {
-    if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
-      // We should select the point nearest the page x/y here, but it's easier
-      // to just clear the selection. This prevents erroneous hover dots from
-      // being displayed.
-      this.clearSelection();
-    } else {
-      this.clearSelection();
+    if (clearSelection) {
+      if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
+        // We should select the point nearest the page x/y here, but it's easier
+        // to just clear the selection. This prevents erroneous hover dots from
+        // being displayed.
+        this.clearSelection();
+      } else {
+        this.clearSelection();
+      }
     }
   }
 

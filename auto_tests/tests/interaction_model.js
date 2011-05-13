@@ -123,7 +123,6 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalledOnCustomPan = functi
   DygraphOps.dispatchMouseMove_Point(g, 10, 10);
   DygraphOps.dispatchMouseUp_Point(g, 10, 10);
 
-  // THIS STILL FAILS. It's clicked, but x is undefined.
-  // assertEquals(20, clicked);
+  assertEquals(20, clicked);
 };
 
