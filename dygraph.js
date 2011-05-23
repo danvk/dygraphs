@@ -1244,7 +1244,19 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.endPan = function(event, g, context) {
+  context.dragEndX = g.dragGetX_(event, context);
+  context.dragEndY = g.dragGetY_(event, context);
+
+  var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
+  var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
+
+  if (regionWidth < 2 && regionHeight < 2 &&
+      g.lastx_ != undefined && g.lastx_ != -1) {
+    Dygraph.Interaction.treatMouseOpAsClick(g, context);
+  }
+
   // TODO(konigsberg): Clear the context data from the axis.
+  // (replace with "context = {}" ?)
   // TODO(konigsberg): mouseup should just delete the
   // context object, and mousedown should create a new one.
   context.isPanning = false;
@@ -1321,10 +1333,10 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 };
 
-Dygraph.Interaction.treatMouseOpAsClick = function(g) {
+Dygraph.Interaction.treatMouseOpAsClick = function(g, context) {
   // TODO(danvk): pass along more info about the points, e.g. 'x'
   if (g.attr_('clickCallback') != null) {
-    g.attr_('clickCallback')(event, g.lastx_, g.selPoints_);
+    g.attr_('clickCallback')(event, g.lastx_, g.selPoints_, context);
   }
   if (g.attr_('pointClickCallback')) {
     // check if the click was on a particular point.
@@ -2683,7 +2695,7 @@ Dygraph.prototype.predraw_ = function() {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(clearSelection) {
-  if (typeof clearSelection === 'undefined') {
+  if (typeof(clearSelection) === 'undefined') {
     clearSelection = true;
   }
 
