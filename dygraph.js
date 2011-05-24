@@ -1276,7 +1276,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    Dygraph.Interaction.treatMouseOpAsClick(g);
+    Dygraph.Interaction.treatMouseOpAsClick(g, context);
   }
 };
 
@@ -1385,7 +1385,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    Dygraph.Interaction.treatMouseOpAsClick(g);
+    Dygraph.Interaction.treatMouseOpAsClick(g, context);
   }
 
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
