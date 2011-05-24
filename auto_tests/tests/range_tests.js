@@ -114,10 +114,8 @@ RangeTestCase.prototype.testEmptyUpdateOptions_doesntUnzoom = function() {
 
   g.updateOptions({});
 
-  // This currently fails.
-  // See http://code.google.com/p/dygraphs/issues/detail?id=192
   assertEqualsDelta([11, 18], g.xAxisRange(), 0.1);
-  // assertEqualsDelta([35, 40], g.yAxisRange(0), 0.2);
+  assertEqualsDelta([35, 40], g.yAxisRange(0), 0.2);
 }
 
 /**

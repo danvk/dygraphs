@@ -448,9 +448,11 @@ Dygraph.prototype.xAxisExtremes = function() {
  */
 Dygraph.prototype.yAxisRange = function(idx) {
   if (typeof(idx) == "undefined") idx = 0;
-  if (idx < 0 || idx >= this.axes_.length) return null;
-  return [ this.axes_[idx].computedValueRange[0],
-           this.axes_[idx].computedValueRange[1] ];
+  if (idx < 0 || idx >= this.axes_.length) {
+    return null;
+  }
+  var axis = this.axes_[idx];
+  return [ axis.computedValueRange[0], axis.computedValueRange[1] ];
 };
 
 /**
@@ -2870,6 +2872,17 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+  // Preserve valueWindow settings if they exist, and if the user hasn't
+  // specified a new valueRange.
+  var valueWindows;
+  if (this.axes_ != undefined && this.user_attrs_.hasOwnProperty("valueRange") == false) {
+    valueWindows = [];
+    for (var index = 0; index < this.axes_.length; index++) {
+      valueWindows.push(this.axes_[index].valueWindow);
+    }
+  }
+
+
   this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
@@ -2946,6 +2959,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
+
+  if (valueWindows != undefined) {
+    // Restore valueWindow settings.
+    for (var index = 0; index < valueWindows.length; index++) {
+      this.axes_[index].valueWindow = valueWindows[index];
+    }
+  }
 };
 
 /**
@@ -3668,6 +3688,8 @@ Dygraph.dateStrToMillis = function(str) {
 
 // These functions are all based on MochiKit.
 /**
+ * Copies all the properties from o to self.
+ *
  * @private
  */
 Dygraph.update = function (self, o) {
