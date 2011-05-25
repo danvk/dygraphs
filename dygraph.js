@@ -1254,7 +1254,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    Dygraph.Interaction.treatMouseOpAsClick(g, context);
+    Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
   // TODO(konigsberg): Clear the context data from the axis.
@@ -1268,16 +1268,6 @@ Dygraph.Interaction.endPan = function(event, g, context) {
   context.valueRange = null;
   context.boundedDates = null;
   context.boundedValues = null;
-
-  var dragEndX = g.dragGetX_(event, context);
-  var dragEndY = g.dragGetY_(event, context);
-  var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
-  var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
-
-  if (regionWidth < 2 && regionHeight < 2 &&
-      g.lastx_ != undefined && g.lastx_ != -1) {
-    Dygraph.Interaction.treatMouseOpAsClick(g, context);
-  }
 };
 
 /**
@@ -1335,7 +1325,7 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 };
 
-Dygraph.Interaction.treatMouseOpAsClick = function(g, context) {
+Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   // TODO(danvk): pass along more info about the points, e.g. 'x'
   if (g.attr_('clickCallback') != null) {
     g.attr_('clickCallback')(event, g.lastx_, g.selPoints_, context);
@@ -1385,7 +1375,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    Dygraph.Interaction.treatMouseOpAsClick(g, context);
+    Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
