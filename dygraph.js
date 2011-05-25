@@ -1333,7 +1333,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   if (g.attr_('pointClickCallback')) {
     // check if the click was on a particular point.
     var closestIdx = -1;
-    var closestDistance = 0;
+    var closestDistance = Number.MAX_VALUE;
     for (var i = 0; i < g.selPoints_.length; i++) {
       var p = g.selPoints_[i];
       var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
