@@ -6,10 +6,7 @@
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
-    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
-    <script type="text/javascript" src="../dygraph-canvas.js"></script>
-    <script type="text/javascript" src="../dygraph.js"></script>
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
   </head>
   <body>
     <h2>Demo</h2>
@@ -40,6 +37,7 @@
                 labelsDiv: document.getElementById('status'),
                 labelsSeparateLines: true,
                 labelsKMB: true,
+                legend: 'always',
                 colors: ["rgb(51,204,204)",
                          "rgb(255,100,100)",
                          "#00DD55",
@@ -48,7 +46,9 @@
                 height: 480,
                 title: 'Interesting Shapes',
                 xlabel: 'Date',
-                ylabel: 'Count'
+                ylabel: 'Count',
+                axisLineColor: 'white',
+                drawXGrid: false
               }
           );
     </script>
