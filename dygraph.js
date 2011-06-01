@@ -1346,7 +1346,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
 
     // Allow any click within two pixels of the dot.
     var radius = g.attr_('highlightCircleSize') + 2;
-    if (closestDistance <= 5 * 5) {
+    if (closestDistance <= radius * radius) {
       g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
     }
   }
@@ -4064,7 +4064,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "xValueParser": {
     "default": "parseFloat() or Date.parse()*",
     "labels": ["CSV parsing"],
-    "type": "function(str) -> number",
+    "type": "function(str[, dygraph]) -> number",
     "description": "A function which parses x-values (i.e. the dependent series). Must return a number, even when the values are dates. In this case, millis since epoch are used. This is used primarily for parsing CSV data. *=Dygraphs is slightly more accepting in the dates which it will parse. See code for details."
   },
   "stackedGraph": {
