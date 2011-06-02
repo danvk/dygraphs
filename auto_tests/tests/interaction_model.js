@@ -12,6 +12,23 @@ InteractionModelTestCase.prototype.setUp = function() {
 InteractionModelTestCase.prototype.tearDown = function() {
 };
 
+var data1 = "X,Y\n" +
+    "20,-1\n" +
+    "21,0\n" +
+    "22,1\n" +
+    "23,0\n";
+
+var data2 =
+    [[1, 10],
+    [2, 20],
+    [3, 30],
+    [4, 40],
+    [5, 120],
+    [6, 50],
+    [7, 70],
+    [8, 90],
+    [9, 50]];
+
 function getXLabels() {
   var x_labels = document.getElementsByClassName("dygraph-axis-label-x");
   var ary = [];
@@ -52,15 +69,8 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalled = function() {
     clicked = x;
   };
 
-  var data = "X,Y\n" +
-      "20,-1\n" +
-      "21,0\n" +
-      "22,1\n" +
-      "23,0\n"
-  ;
-
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, data,
+  var g = new Dygraph(graph, data1,
       {
         width: 100,
         height : 100,
@@ -84,13 +94,6 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalledOnCustomPan = functi
   var clickCallback = function(event, x) {
     clicked = x;
   };
-
-  var data = "X,Y\n" +
-      "20,-1\n" +
-      "21,0\n" +
-      "22,1\n" +
-      "23,0\n"
-  ;
 
   function customDown(event, g, context) {
     context.initializeMouseDown(event, g, context);
@@ -117,12 +120,97 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalledOnCustomPan = functi
   };
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data1, opts);
 
   DygraphOps.dispatchMouseDown_Point(g, 10, 10);
   DygraphOps.dispatchMouseMove_Point(g, 10, 10);
   DygraphOps.dispatchMouseUp_Point(g, 10, 10);
 
   assertEquals(20, clicked);
+};
+
+InteractionModelTestCase.clickAt = function(g, x, y) {
+  DygraphOps.dispatchMouseDown(g, x, y);
+  DygraphOps.dispatchMouseMove(g, x, y);
+  DygraphOps.dispatchMouseUp(g, x, y);
+}
+
+/**
+ * A sanity test to ensure pointClickCallback is called.
+ */
+InteractionModelTestCase.prototype.testPointClickCallback = function() {
+  var clicked;
+  var g = new Dygraph(document.getElementById("graph"), data2, {
+    pointClickCallback : function(event, point) {
+      clicked = point;
+    }
+  });
+
+  InteractionModelTestCase.clickAt(g, 4, 40);
+
+  assertEquals(4, clicked.xval);
+  assertEquals(40, clicked.yval);
+};
+
+/**
+ * A sanity test to ensure pointClickCallback is not called when out of range.
+ */
+InteractionModelTestCase.prototype.testNoPointClickCallbackWhenOffPoint = function() {
+  var clicked;
+  var g = new Dygraph(document.getElementById("graph"), data2, {
+    pointClickCallback : function(event, point) {
+      clicked = point;
+    }
+  });
+
+  InteractionModelTestCase.clickAt(g, 5, 40);
+
+  assertUndefined(clicked);
+};
+
+/**
+ * Ensures pointClickCallback circle size is taken into account.
+ */
+InteractionModelTestCase.prototype.testPointClickCallback_circleSize = function() {
+  // TODO(konigsberg): Implement.
+};
+
+/**
+ * Ensures that pointClickCallback is called prior to clickCallback
+ */
+InteractionModelTestCase.prototype.testPointClickCallbackCalledPriorToClickCallback = function() {
+  var counter = 0;
+  var pointClicked;
+  var clicked;
+  var g = new Dygraph(document.getElementById("graph"), data2, {
+    pointClickCallback : function(event, point) {
+      counter++;
+      pointClicked = counter;
+    },
+    clickCallback : function(event, point) {
+      counter++;
+      clicked = counter;
+    }
+  });
+
+  InteractionModelTestCase.clickAt(g, 4, 40);
+  assertEquals(1, pointClicked);
+  assertEquals(2, clicked);
+};
+
+/**
+ * Ensures that when there's no pointClickCallback, clicking on a point still calls
+ * clickCallback
+ */
+InteractionModelTestCase.prototype.testClickCallback_clickOnPoint = function() {
+  var clicked;
+  var g = new Dygraph(document.getElementById("graph"), data2, {
+    clickCallback : function(event, point) {
+      clicked = 1;
+    }
+  });
+
+  InteractionModelTestCase.clickAt(g, 4, 40);
+  assertEquals(1, clicked);
 };
 
