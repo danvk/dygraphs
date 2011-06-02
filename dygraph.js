@@ -1360,7 +1360,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
 
   // TODO(danvk): pass along more info about the points, e.g. 'x'
   if (clickCallback) {
-    clickCallback(event, g.lastx_, g.selPoints_, context);
+    clickCallback(event, g.lastx_, g.selPoints_);
   }
 };
 
