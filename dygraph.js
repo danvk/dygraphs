@@ -1326,14 +1326,17 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
 };
 
 Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
-  // TODO(danvk): pass along more info about the points, e.g. 'x'
-  if (g.attr_('clickCallback') != null) {
-    g.attr_('clickCallback')(event, g.lastx_, g.selPoints_, context);
-  }
-  if (g.attr_('pointClickCallback')) {
-    // check if the click was on a particular point.
+  var clickCallback = g.attr_('clickCallback');
+  var pointClickCallback = g.attr_('pointClickCallback');
+
+  var selectedPoint = null;
+
+  // Find out if the click occurs on a point. This only matters if there's a pointClickCallback.
+  if (pointClickCallback) {
     var closestIdx = -1;
     var closestDistance = Number.MAX_VALUE;
+
+    // check if the click was on a particular point.
     for (var i = 0; i < g.selPoints_.length; i++) {
       var p = g.selPoints_[i];
       var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
@@ -1347,10 +1350,19 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
     // Allow any click within two pixels of the dot.
     var radius = g.attr_('highlightCircleSize') + 2;
     if (closestDistance <= radius * radius) {
-      g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
+      selectedPoint = g.selPoints_[closestIdx];
     }
   }
-}
+
+  if (selectedPoint) {
+    pointClickCallback(event, selectedPoint);
+  }
+
+  // TODO(danvk): pass along more info about the points, e.g. 'x'
+  if (clickCallback) {
+    clickCallback(event, g.lastx_, g.selPoints_, context);
+  }
+};
 
 /**
  * Called in response to an interaction model operation that
