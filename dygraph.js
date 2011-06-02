@@ -3715,7 +3715,8 @@ Dygraph.prototype.start_ = function() {
       var caller = this;
       req.onreadystatechange = function () {
         if (req.readyState == 4) {
-          if (req.status == 200) {
+          if (req.status == 200 ||  // Normal http
+              req.status == 0) {    // Chrome w/ --allow-file-access-from-files
             caller.loadedEvent_(req.responseText);
           }
         }
