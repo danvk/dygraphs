@@ -139,6 +139,10 @@ DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
   g.canvas_.dispatchEvent(event);
 };
 
+/**
+ * Dispatches a mouse down using the graph's data coordinate system.
+ * (The y value mapped to the first axis.)
+ */
 DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
   DygraphOps.dispatchMouseDown_Point(
       g,
@@ -147,6 +151,10 @@ DygraphOps.dispatchMouseDown = function(g, x, y, custom) {
       custom);
 };
 
+/**
+ * Dispatches a mouse move using the graph's data coordinate system.
+ * (The y value mapped to the first axis.)
+ */
 DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
   DygraphOps.dispatchMouseMove_Point(
       g,
@@ -155,6 +163,10 @@ DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
       custom);
 };
 
+/**
+ * Dispatches a mouse up using the graph's data coordinate system.
+ * (The y value mapped to the first axis.)
+ */
 DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
   DygraphOps.dispatchMouseUp_Point(
       g,
