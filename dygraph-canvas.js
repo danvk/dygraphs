@@ -70,7 +70,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
       return;
     }
     Dygraph.update(a, ann[i]);
-    if (!a.xval) a.xval = parse(a.x);
+    if (!a.xval) a.xval = parse(a.x, this.dygraph_);
     this.annotations.push(a);
   }
 };

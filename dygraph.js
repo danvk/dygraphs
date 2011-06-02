@@ -448,9 +448,11 @@ Dygraph.prototype.xAxisExtremes = function() {
  */
 Dygraph.prototype.yAxisRange = function(idx) {
   if (typeof(idx) == "undefined") idx = 0;
-  if (idx < 0 || idx >= this.axes_.length) return null;
-  return [ this.axes_[idx].computedValueRange[0],
-           this.axes_[idx].computedValueRange[1] ];
+  if (idx < 0 || idx >= this.axes_.length) {
+    return null;
+  }
+  var axis = this.axes_[idx];
+  return [ axis.computedValueRange[0], axis.computedValueRange[1] ];
 };
 
 /**
@@ -1227,7 +1229,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
     }
   }
 
-  g.drawGraph_();
+  g.drawGraph_(false);
 };
 
 /**
@@ -1244,7 +1246,19 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.endPan = function(event, g, context) {
+  context.dragEndX = g.dragGetX_(event, context);
+  context.dragEndY = g.dragGetY_(event, context);
+
+  var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
+  var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
+
+  if (regionWidth < 2 && regionHeight < 2 &&
+      g.lastx_ != undefined && g.lastx_ != -1) {
+    Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
+  }
+
   // TODO(konigsberg): Clear the context data from the axis.
+  // (replace with "context = {}" ?)
   // TODO(konigsberg): mouseup should just delete the
   // context object, and mousedown should create a new one.
   context.isPanning = false;
@@ -1311,6 +1325,45 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 };
 
+Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
+  var clickCallback = g.attr_('clickCallback');
+  var pointClickCallback = g.attr_('pointClickCallback');
+
+  var selectedPoint = null;
+
+  // Find out if the click occurs on a point. This only matters if there's a pointClickCallback.
+  if (pointClickCallback) {
+    var closestIdx = -1;
+    var closestDistance = Number.MAX_VALUE;
+
+    // check if the click was on a particular point.
+    for (var i = 0; i < g.selPoints_.length; i++) {
+      var p = g.selPoints_[i];
+      var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
+                     Math.pow(p.canvasy - context.dragEndY, 2);
+      if (closestIdx == -1 || distance < closestDistance) {
+        closestDistance = distance;
+        closestIdx = i;
+      }
+    }
+
+    // Allow any click within two pixels of the dot.
+    var radius = g.attr_('highlightCircleSize') + 2;
+    if (closestDistance <= radius * radius) {
+      selectedPoint = g.selPoints_[closestIdx];
+    }
+  }
+
+  if (selectedPoint) {
+    pointClickCallback(event, selectedPoint);
+  }
+
+  // TODO(danvk): pass along more info about the points, e.g. 'x'
+  if (clickCallback) {
+    clickCallback(event, g.lastx_, g.selPoints_);
+  }
+};
+
 /**
  * Called in response to an interaction model operation that
  * responds to an event that performs a zoom based on previously defined
@@ -1326,7 +1379,6 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.endZoom = function(event, g, context) {
-  // TODO(konigsberg): Refactor or rename this fn -- it deals with clicks, too.
   context.isZooming = false;
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
@@ -1335,30 +1387,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
 
   if (regionWidth < 2 && regionHeight < 2 &&
       g.lastx_ != undefined && g.lastx_ != -1) {
-    // TODO(danvk): pass along more info about the points, e.g. 'x'
-    if (g.attr_('clickCallback') != null) {
-      g.attr_('clickCallback')(event, g.lastx_, g.selPoints_);
-    }
-    if (g.attr_('pointClickCallback')) {
-      // check if the click was on a particular point.
-      var closestIdx = -1;
-      var closestDistance = 0;
-      for (var i = 0; i < g.selPoints_.length; i++) {
-        var p = g.selPoints_[i];
-        var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
-                       Math.pow(p.canvasy - context.dragEndY, 2);
-        if (closestIdx == -1 || distance < closestDistance) {
-          closestDistance = distance;
-          closestIdx = i;
-        }
-      }
-
-      // Allow any click within two pixels of the dot.
-      var radius = g.attr_('highlightCircleSize') + 2;
-      if (closestDistance <= 5 * 5) {
-        g.attr_('pointClickCallback')(event, g.selPoints_[closestIdx]);
-      }
-    }
+    Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
@@ -2661,9 +2690,19 @@ Dygraph.prototype.predraw_ = function() {
  * Update the graph with new data. This method is called when the viewing area
  * has changed. If the underlying data or options have changed, predraw_ will
  * be called before drawGraph_ is called.
+ *
+ * clearSelection, when undefined or true, causes this.clearSelection to be
+ * called at the end of the draw operation. This should rarely be defined,
+ * and never true (that is it should be undefined most of the time, and
+ * rarely false.)
+ *
  * @private
  */
-Dygraph.prototype.drawGraph_ = function() {
+Dygraph.prototype.drawGraph_ = function(clearSelection) {
+  if (typeof(clearSelection) === 'undefined') {
+    clearSelection = true;
+  }
+
   var data = this.rawData_;
 
   // This is used to set the second parameter to drawCallback, below.
@@ -2806,13 +2845,15 @@ Dygraph.prototype.drawGraph_ = function() {
     // Generate a static legend before any particular point is selected.
     this.setLegendHTML_();
   } else {
-    if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
-      // We should select the point nearest the page x/y here, but it's easier
-      // to just clear the selection. This prevents erroneous hover dots from
-      // being displayed.
-      this.clearSelection();
-    } else {
-      this.clearSelection();
+    if (clearSelection) {
+      if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
+        // We should select the point nearest the page x/y here, but it's easier
+        // to just clear the selection. This prevents erroneous hover dots from
+        // being displayed.
+        this.clearSelection();
+      } else {
+        this.clearSelection();
+      }
     }
   }
 
@@ -2833,6 +2874,17 @@ Dygraph.prototype.drawGraph_ = function() {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+  // Preserve valueWindow settings if they exist, and if the user hasn't
+  // specified a new valueRange.
+  var valueWindows;
+  if (this.axes_ != undefined && this.user_attrs_.hasOwnProperty("valueRange") == false) {
+    valueWindows = [];
+    for (var index = 0; index < this.axes_.length; index++) {
+      valueWindows.push(this.axes_[index].valueWindow);
+    }
+  }
+
+
   this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
 
@@ -2909,6 +2961,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
   }
   this.seriesToAxisMap_ = seriesToAxisFiltered;
+
+  if (valueWindows != undefined) {
+    // Restore valueWindow settings.
+    for (var index = 0; index < valueWindows.length; index++) {
+      this.axes_[index].valueWindow = valueWindows[index];
+    }
+  }
 };
 
 /**
@@ -3631,6 +3690,8 @@ Dygraph.dateStrToMillis = function(str) {
 
 // These functions are all based on MochiKit.
 /**
+ * Copies all the properties from o to self.
+ *
  * @private
  */
 Dygraph.update = function (self, o) {
@@ -4016,7 +4077,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "xValueParser": {
     "default": "parseFloat() or Date.parse()*",
     "labels": ["CSV parsing"],
-    "type": "function(str) -> number",
+    "type": "function(str[, dygraph]) -> number",
     "description": "A function which parses x-values (i.e. the dependent series). Must return a number, even when the values are dates. In this case, millis since epoch are used. This is used primarily for parsing CSV data. *=Dygraphs is slightly more accepting in the dates which it will parse. See code for details."
   },
   "stackedGraph": {
