@@ -84,7 +84,6 @@ RangeTestCase.prototype.zoom = function(g, xRange, yRange) {
   var originalXRange = g.xAxisRange();
   var originalYRange = g.yAxisRange(0);
 
-  // Editing e.shiftKey post construction doesn't work for Firefox. Damn.
   DygraphOps.dispatchMouseDown(g, xRange[0], yRange[0]);
   DygraphOps.dispatchMouseMove(g, xRange[1], yRange[0]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, xRange[1], yRange[0]);
@@ -115,10 +114,8 @@ RangeTestCase.prototype.testEmptyUpdateOptions_doesntUnzoom = function() {
 
   g.updateOptions({});
 
-  // This currently fails.
-  // See http://code.google.com/p/dygraphs/issues/detail?id=192
   assertEqualsDelta([11, 18], g.xAxisRange(), 0.1);
-  // assertEqualsDelta([35, 40], g.yAxisRange(0), 0.2);
+  assertEqualsDelta([35, 40], g.yAxisRange(0), 0.2);
 }
 
 /**
