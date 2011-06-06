@@ -8,6 +8,7 @@ cat \
 dygraph-layout.js \
 dygraph-canvas.js \
 dygraph.js \
+dygraph-utils.js \
 dygraph-gviz.js \
 dygraph-interaction-model.js \
 rgbcolor/rgbcolor.js \
