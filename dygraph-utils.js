@@ -1,4 +1,12 @@
+// Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+// All Rights Reserved.
 
+/**
+ * @fileoverview This file contains utility functions used by dygraphs. These
+ * are typically static (i.e. not related to any particular dygraph). Examples
+ * include date/time formatting functions, basic algorithms (e.g. binary
+ * search) and generic DOM-manipulation functions.
+ */
 
 Dygraph.LOG_SCALE = 10;
 Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
