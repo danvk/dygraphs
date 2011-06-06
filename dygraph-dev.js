@@ -20,6 +20,7 @@
       "dygraph-canvas.js",
       "dygraph.js",
       "dygraph-gviz.js",
+      "dygraph-interaction-model.js",
       "dygraph-options-reference.js"  // Shouldn't be included in generate-combined.sh
     ];
 
