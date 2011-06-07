@@ -13,6 +13,7 @@
     var path = m[1];  // captured group, not the full match.
 
     // This list needs to be kept in sync w/ the one in generate-combined.sh
+    // and the one in jsTestDriver.conf.
     var source_files = [
       "strftime/strftime-min.js",
       "rgbcolor/rgbcolor.js",

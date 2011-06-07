@@ -4,6 +4,7 @@
 # Pack all the JS together.
 
 # This list needs to be kept in sync w/ the one in dygraph-dev.js
+# and the one in jsTestDriver.conf.
 cat \
 dygraph-layout.js \
 dygraph-canvas.js \
