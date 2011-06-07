@@ -2232,7 +2232,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];
- 
+
     if (!seriesForAxis[i]) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
@@ -2313,8 +2313,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
       var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
       var tick_values = [];
-      for (var i = 0; i < p_ticks.length; i++) {
-        var y_frac = (p_ticks[i].v - p_axis.computedValueRange[0]) / p_scale;
+      for (var k = 0; k < p_ticks.length; k++) {
+        var y_frac = (p_ticks[k].v - p_axis.computedValueRange[0]) / p_scale;
         var y_val = axis.computedValueRange[0] + y_frac * scale;
         tick_values.push(y_val);
       }
@@ -2326,7 +2326,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     }
   }
 };
- 
+
 /**
  * @private
  * Calculates the rolling average of a data set.
