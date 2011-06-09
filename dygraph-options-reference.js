@@ -51,7 +51,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
     "type": "function(e, point)",
-    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click, and the point that was clicked."
+    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click, and the point that was clicked. The 'point' argument has these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "colors": {
     "default": "(see description)",
@@ -357,7 +357,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Callbacks"],
     "type": "function(e, date, points)",
     // NOTE(konigsberg): Is this description correct?
-    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the date that was clicked, and the closest points along that date."
+    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the date that was clicked, and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "yAxisLabelFormatter": {
     "default": "yValueFormatter",
