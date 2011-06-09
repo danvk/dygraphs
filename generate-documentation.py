@@ -1,4 +1,7 @@
 #!/usr/bin/python
+
+# Generate docs/options.html
+
 import json
 import glob
 import re
