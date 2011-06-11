@@ -24,6 +24,7 @@
       "dygraph-gviz.js",
       "dygraph-interaction-model.js",
       "dygraph-options-reference.js"  // Shouldn't be included in generate-combined.sh
+      , "dygraph-tickers.js"
     ];
 
     for (var i = 0; i < source_files.length; i++) {
