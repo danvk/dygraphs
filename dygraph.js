@@ -1478,6 +1478,8 @@ Dygraph.prototype.addXTicks_ = function() {
   }
 
   var xTicks = this.attr_('xTicker')(range[0], range[1], this);
+  var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
+  console.log(msg);
   this.layout_.setXTicks(xTicks);
 };
 
@@ -1824,6 +1826,9 @@ Dygraph.numericTicks = function(minV, maxV, self, axis_props, vals) {
     }
     ticks[i].label = label;
   }
+
+  var msg = 'numericTicks(' + minV + ', ' + maxV + ', ' + self.height_ + ', ' + attr('pixelsPerYLabel') + ', ' + JSON.stringify({logscale: attr("logscale"), labelsKMG2: attr("labelsKMG2"), labelsKMB: attr("labelsKMB")}) + ') -> ' + JSON.stringify(ticks);
+  console.log(msg);
 
   return ticks;
 };

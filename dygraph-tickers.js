@@ -66,8 +66,8 @@ Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
     if (opts("logscale")) {
       // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(pixels / pixels_per_tick);
-      var minIdx = Dygraph.binarySearch(minV, Dygraph.PREFERRED_LOG_TICK_VALUES, 1);
-      var maxIdx = Dygraph.binarySearch(maxV, Dygraph.PREFERRED_LOG_TICK_VALUES, -1);
+      var minIdx = Dygraph.binarySearch(a, Dygraph.PREFERRED_LOG_TICK_VALUES, 1);
+      var maxIdx = Dygraph.binarySearch(b, Dygraph.PREFERRED_LOG_TICK_VALUES, -1);
       if (minIdx == -1) {
         minIdx = 0;
       }
@@ -78,7 +78,6 @@ Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
       // nTicks / 4 accept them.
       var lastDisplayed = null;
       if (maxIdx - minIdx >= nTicks / 4) {
-        var axisId = axis_props.yAxisId;
         for (var idx = maxIdx; idx >= minIdx; idx--) {
           var tickValue = Dygraph.PREFERRED_LOG_TICK_VALUES[idx];
           var pixel_coord = Math.log(tickValue / a) / Math.log(b / a) * pixels;
@@ -167,7 +166,7 @@ Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
     if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
-    var label = formatter(tickV, g);
+    var label = formatter(tickV, dygraph);
     if (k_labels.length > 0) {
       // TODO(danvk): should this be integrated into the axisLabelFormatter?
       // Round up to an appropriate unit.
