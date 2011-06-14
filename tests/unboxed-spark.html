@@ -21,7 +21,7 @@
   </head>
   <body>
     <p>This shows dygraphs without any boxlike elements (i.e. axes or grids):</p>
-    <div id="div_g" style="width:600px; height:300px;"></div>
+    <div id="div_g" style="width:600px; height:300px; border:1px solid white;"></div>
 
     <script type="text/javascript">
       var show_box = false;
@@ -37,7 +37,7 @@
 
       function toggleBox(btn) {
         show_box = !show_box;
-        document.getElementById("div_g").style.border = show_box ? '1px solid black' : '';
+        document.getElementById("div_g").style.border = show_box ? '1px solid black' : '1px solid white';
         if (show_box) {
           btn.innerHTML = 'Hide box';
         } else {
