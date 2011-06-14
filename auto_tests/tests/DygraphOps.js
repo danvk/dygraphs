@@ -51,7 +51,7 @@ DygraphOps.defaultEvent_ = {
  * @param command the command to create.
  * @param custom an associative array of event attributes and their new values.
  */
-DygraphOps.createEvent_ = function(command, custom) {
+DygraphOps.createEvent = function(command, custom) {
 
   var copy = function(from, to) {
     if (from != null) {
@@ -91,7 +91,7 @@ DygraphOps.createEvent_ = function(command, custom) {
 /**
  * Dispatch an event onto the graph's canvas.
  */
-DygraphOps.dispatchCanvasEvent(g, event) {
+DygraphOps.dispatchCanvasEvent = function(g, event) {
   g.canvas_.dispatchEvent(event);
 }
 
