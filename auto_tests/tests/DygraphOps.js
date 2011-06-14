@@ -44,6 +44,13 @@ DygraphOps.defaultEvent_ = {
   relatedTarget : null
 };
 
+/**
+ * Create an event. Sets default event values except for special ones
+ * overridden by the 'custom' parameter.
+ *
+ * @param command the command to create.
+ * @param custom an associative array of event attributes and their new values.
+ */
 DygraphOps.createEvent_ = function(command, custom) {
 
   var copy = function(from, to) {
@@ -81,13 +88,20 @@ DygraphOps.createEvent_ = function(command, custom) {
   return event;
 }
 
+/**
+ * Dispatch an event onto the graph's canvas.
+ */
+DygraphOps.dispatchCanvasEvent(g, event) {
+  g.canvas_.dispatchEvent(event);
+}
+
 DygraphOps.dispatchDoubleClick = function(g, custom) {
   var opts = {
     type : 'dblclick',
     detail : 2
   };
   var event = DygraphOps.createEvent_(opts, custom);
-  g.canvas_.dispatchEvent(event);
+  DygraphOps.dispatchCanvasEvent(g, event);
 };
 
 DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
@@ -104,7 +118,7 @@ DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
   };
 
   var event = DygraphOps.createEvent_(opts, custom);
-  g.canvas_.dispatchEvent(event);
+  DygraphOps.dispatchCanvasEvent(g, event);
 }
 
 DygraphOps.dispatchMouseMove_Point = function(g, x, y, custom) {
@@ -120,7 +134,7 @@ DygraphOps.dispatchMouseMove_Point = function(g, x, y, custom) {
   };
 
   var event = DygraphOps.createEvent_(opts, custom);
-  g.canvas_.dispatchEvent(event);
+  DygraphOps.dispatchCanvasEvent(g, event);
 };
 
 DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
@@ -136,7 +150,7 @@ DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
   };
 
   var event = DygraphOps.createEvent_(opts, custom);
-  g.canvas_.dispatchEvent(event);
+  DygraphOps.dispatchCanvasEvent(g, event);
 };
 
 /**
