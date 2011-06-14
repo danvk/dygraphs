@@ -100,7 +100,7 @@ DygraphOps.dispatchDoubleClick = function(g, custom) {
     type : 'dblclick',
     detail : 2
   };
-  var event = DygraphOps.createEvent_(opts, custom);
+  var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 };
 
@@ -117,7 +117,7 @@ DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
     clientY : pageY,
   };
 
-  var event = DygraphOps.createEvent_(opts, custom);
+  var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 }
 
@@ -133,7 +133,7 @@ DygraphOps.dispatchMouseMove_Point = function(g, x, y, custom) {
     clientY : pageY,
   };
 
-  var event = DygraphOps.createEvent_(opts, custom);
+  var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 };
 
@@ -149,7 +149,7 @@ DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
     clientY : pageY,
   };
 
-  var event = DygraphOps.createEvent_(opts, custom);
+  var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 };
 
