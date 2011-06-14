@@ -352,12 +352,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Function to call to format values along the x axis."
   },
   "clickCallback": {
-    "snippet": "function(e, date){<br>&nbsp;&nbsp;alert(date);<br>}",
+    "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(e, date, points)",
-    // NOTE(konigsberg): Is this description correct?
-    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the date that was clicked, and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
+    "type": "function(e, x, points)",
+    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the x-value that was clicked (for dates this is millis since epoch), and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "yAxisLabelFormatter": {
     "default": "yValueFormatter",
