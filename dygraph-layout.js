@@ -222,6 +222,13 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   }
 
   this.annotated_points = [];
+
+  // Exit the function early if there are no annotations.
+  if (!this.annotations || !this.annotations.length) {
+    return;
+  }
+  
+  // TODO(antrob): loop through annotations not points.
   for (var i = 0; i < this.points.length; i++) {
     var p = this.points[i];
     var k = p.xval + "," + p.name;
