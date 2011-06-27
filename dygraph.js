@@ -866,13 +866,13 @@ Dygraph.prototype.createDragInterface_ = function() {
     isZooming: false,
     isPanning: false,  // is this drag part of a pan?
     is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
-    dragStartX: null,
-    dragStartY: null,
-    dragEndX: null,
-    dragEndY: null,
+    dragStartX: null, // pixel coordinates
+    dragStartY: null, // pixel coordinates
+    dragEndX: null, // pixel coordinates
+    dragEndY: null, // pixel coordinates
     dragDirection: null,
-    prevEndX: null,
-    prevEndY: null,
+    prevEndX: null, // pixel coordinates
+    prevEndY: null, // pixel coordinates
     prevDragDirection: null,
 
     // The value on the left side of the graph when a pan operation starts.
@@ -887,7 +887,8 @@ Dygraph.prototype.createDragInterface_ = function() {
     // panning operation.
     dateRange: null,
 
-    // Utility function to convert page-wide coordinates to canvas coords
+    // Top-left corner of the canvas, in DOM coords
+    // TODO(konigsberg): Rename topLeftCanvasX, topLeftCanvasY.
     px: 0,
     py: 0,
 
