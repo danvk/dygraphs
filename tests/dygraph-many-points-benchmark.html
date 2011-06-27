@@ -82,8 +82,13 @@
           document.getElementById('message').innerHTML =
               "completed in " + (end - start) + " milliseconds.";
         } else {
+          var avg = 0;
+          for (var i = 0; i < millisecondss.length; i++) {
+            avg+=millisecondss[i];
+          }
+          avg/=millisecondss.length; 
           document.getElementById('message').innerHTML =
-              "Durations: " + millisecondss;
+              "Durations: " + millisecondss + " Average: " + avg;
         }
 
         if (durations.length > 0) {
