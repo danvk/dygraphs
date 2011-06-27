@@ -172,6 +172,7 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
 // The following functions are from quirksmode.org with a modification for Safari from
 // http://blog.firetree.net/2005/07/04/javascript-find-position/
 // http://www.quirksmode.org/js/findpos.html
+// ... and modifications to support scrolling divs.
 
 /**
  * Find the x-coordinate of the supplied object relative to the left side
