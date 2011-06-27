@@ -172,36 +172,59 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
 // The following functions are from quirksmode.org with a modification for Safari from
 // http://blog.firetree.net/2005/07/04/javascript-find-position/
 // http://www.quirksmode.org/js/findpos.html
+// ... and modifications to support scrolling divs.
 
-/** @private */
+/**
+ * Find the x-coordinate of the supplied object relative to the left side
+ * of the page.
+ * @private
+ */
 Dygraph.findPosX = function(obj) {
   var curleft = 0;
-  if(obj.offsetParent)
-    while(1)
-    {
-      curleft += obj.offsetLeft;
-      if(!obj.offsetParent)
+  if(obj.offsetParent) {
+    var copyObj = obj;
+    while(1) {
+      curleft += copyObj.offsetLeft;
+      if(!copyObj.offsetParent) {
         break;
-      obj = obj.offsetParent;
+      }
+      copyObj = copyObj.offsetParent;
     }
-  else if(obj.x)
+  } else if(obj.x) {
     curleft += obj.x;
+  }
+  // This handles the case where the object is inside a scrolled div.
+  while(obj && obj != document.body) {
+    curleft -= obj.scrollLeft;
+    obj = obj.parentNode;
+  }
   return curleft;
 };
 
-/** @private */
+/**
+ * Find the y-coordinate of the supplied object relative to the top of the
+ * page.
+ * @private
+ */
 Dygraph.findPosY = function(obj) {
   var curtop = 0;
-  if(obj.offsetParent)
-    while(1)
-    {
-      curtop += obj.offsetTop;
-      if(!obj.offsetParent)
+  if(obj.offsetParent) {
+    var copyObj = obj;
+    while(1) {
+      curtop += copyObj.offsetTop;
+      if(!copyObj.offsetParent) {
         break;
-      obj = obj.offsetParent;
+      }
+      copyObj = copyObj.offsetParent;
     }
-  else if(obj.y)
+  } else if(obj.y) {
     curtop += obj.y;
+  }
+  // This handles the case where the object is inside a scrolled div.
+  while(obj && obj != document.body) {
+    curtop -= obj.scrollTop;
+    obj = obj.parentNode;
+  }
   return curtop;
 };
 
