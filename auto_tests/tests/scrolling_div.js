@@ -17,11 +17,10 @@ var LOREM_IPSUM =
     "laborum.</p>";
 
   document.body.innerHTML = 
-      "<div style='overflow: scroll; height: 450px; width: 800px;'>" +
-      "<a name='TOP'></a><div id='graph'></div>" +
+      "<div id='scroller' style='overflow: scroll; height: 450px; width: 800px;'>" +
+      "<div id='graph'></div>" +
       "<div style='height:100px; background-color:green;'>" + LOREM_IPSUM + " </div>" +
       "<div style='height:100px; background-color:red;'>" + LOREM_IPSUM + "</div>" +
-      "<a name='BOTTOM'></a>" +
       "</div>";
 
   var data = [
@@ -59,7 +58,7 @@ ScrollingDivTestCase.prototype.tearDown = function() {
  */
 ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
 
-  window.location.href="#TOP";
+  document.getElementById('scroller').scrollTop = 0;
 
   var clickOn4_40 = {
     clientX: 244,
@@ -80,7 +79,7 @@ ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
  * This tests that when the nested div is scrolled, things work normally.
  */
 ScrollingDivTestCase.prototype.testScrolledDiv = function() {
-  window.location.href="#BOTTOM";
+  document.getElementById('scroller').scrollTop = 117;
 
   var clickOn4_40 = {
     clientX: 244,
