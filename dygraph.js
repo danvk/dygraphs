@@ -653,6 +653,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
+  this.layout_._parent = this;
 
   this.createStatusMessage_();
   this.createDragInterface_();
