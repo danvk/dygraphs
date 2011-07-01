@@ -64,7 +64,7 @@
           for (var j = 0; j < numSeries; j++) {
             var y;
             if (dataType == "rand") {
-              y = Math.random() * 2 - 1;
+              y = Math.pow(Math.random() - Math.random(), 7);
             } else {
               y = Math.sin(x + (j * adj));
             }
@@ -74,7 +74,7 @@
         }
         var labels = [ "x" ];
         for (var j = 0; j < numSeries; j++) {
-          labels.push("sin(x + " + (j*adj) + ")");
+          labels.push("data-set-" + j);
         }
         var rollPeriod = parseInt(
             document.getElementById('roll_period_input').value);
