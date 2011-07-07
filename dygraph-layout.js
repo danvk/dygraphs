@@ -135,25 +135,48 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var dataset = this.datasets[setName];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
+    var graphWidth = this._parent.width_;
+    var graphHeight = this._parent.height_;
+    var prevXPx = NaN;
+    var prevYPx = NaN;
+    var currXPx = NaN;
+    var currYPx = NaN;
+    
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
-
-      var yval;
+      var xValue = parseFloat(dataset[j][0]);
+      var yValue = parseFloat(dataset[j][1]);
+      
+      // Range from 0-1 where 0 represents top and 1 represents bottom
+      var xNormal = (xValue - this.minxval) * this.xscale;
+      // Range from 0-1 where 0 represents left and 1 represents right.
+      var yNormal;
       if (axis.logscale) {
-        yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+        yNormal = 1.0 - ((Dygraph.log10(yValue) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
       } else {
-        yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
+        yNormal = 1.0 - ((yValue - axis.minyval) * axis.yscale);
       }
-      var point = {
-        // TODO(danvk): here
-        x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: yval,
-        xval: parseFloat(item[0]),
-        yval: parseFloat(item[1]),
-        name: setName
-      };
+      
+      // Current pixel coordinates that the data point would fill.
+      currXPx = Math.round(xNormal * graphWidth);
+      currYPx = Math.round(yNormal * graphHeight);
 
-      this.points.push(point);
+      // Skip over pushing points that lie on the same pixel.
+      if (prevXPx != currXPx || prevYPx != currYPx) {
+        // TODO(antrob): skip over points that lie on a line that is already going to be drawn.
+        // There is no need to have more than 2 consecutive points that are collinear.
+        var point = {
+          // TODO(danvk): here
+          x: xNormal,
+          y: yNormal,
+          xval: xValue,
+          yval: yValue,
+          name: setName
+        };
+        this.points.push(point);
+      }
+      prevXPx = currXPx;
+      prevYPx = currYPx;
     }
   }
 };
