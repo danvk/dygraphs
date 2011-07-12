@@ -393,7 +393,7 @@ Dygraph.endPan = Dygraph.Interaction.endPan;
 Dygraph.movePan = Dygraph.Interaction.movePan;
 Dygraph.startPan = Dygraph.Interaction.startPan;
 
-Dygraph.Interaction.nonInteractiveModel = {
+Dygraph.Interaction.nonInteractiveModel_ = {
   mousedown: function(event, g, context) {
     context.initializeMouseDown(event, g, context);
   },

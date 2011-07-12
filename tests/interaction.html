@@ -60,13 +60,7 @@
            NoisyData,
            {
              errorBars : true,
-             interactionModel: Dygraph.Interaction.nonInteractiveModel,
-             clickCallback: function(e, x, pts) {
-               s.innerHTML += "<b>Click</b> " + pts[0].name + ": " + pts[0].x + "<br/>";
-             },
-             pointClickCallback: function(e, p) {
-               s.innerHTML += "<b>Point Click</b> " + p.name + ": " + p.x + "<br/>";
-             },
+             interactionModel: {}
            });
       var g3 = new Dygraph(document.getElementById("div_g3"),
            NoisyData, { errorBars : true, interactionModel : {

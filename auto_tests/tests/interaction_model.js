@@ -150,7 +150,7 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalledWithNonInteractiveMo
     width: 100,
     height : 100,
     clickCallback : clickCallback,
-    interactionModel : {}
+    interactionModel : Dygraph.Interaction.nonInteractiveModel_
   };
 
   var graph = document.getElementById("graph");
