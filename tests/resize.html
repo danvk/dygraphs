@@ -17,10 +17,17 @@
     html, body {
       height: 100%;
     }
+    #div_g {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 10px;
+      height: 250px;
+    }
     </style>
   </head>
   <body>
-    <div id="div_g" style="width:95%; height:95%"></div>
+    <div id="div_g"></div>
 
     <script type="text/javascript">
       g = new Dygraph(
@@ -31,9 +38,9 @@
             }
           );
 
-      window.onresize = function() {
-        g.resize();
-      }
+      // window.onresize = function() {
+      //   g.resize();
+      // }
     </script>
   </body>
 </html>
