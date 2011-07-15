@@ -225,24 +225,24 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // div, then only one will be drawn.
   div.innerHTML = "";
 
-  // If the div isn't already sized then inherit from our attrs or
-  // give it a default size.
-  if (div.style.width == '') {
-    div.style.width = (attrs.width || Dygraph.DEFAULT_WIDTH) + "px";
+  // For historical reasons, the 'width' and 'height' options trump all CSS
+  // rules _except_ for an explicit 'width' or 'height' on the div.
+  // As an added convenience, if the div has zero height (like <div></div> does
+  // without any styles), then we use a default height/width.
+  if (div.style.width == '' && attrs.width) {
+    div.style.width = attrs.width + "px";
   }
-  if (div.style.height == '') {
-    div.style.height = (attrs.height || Dygraph.DEFAULT_HEIGHT) + "px";
+  if (div.style.height == '' && attrs.height) {
+    div.style.height = attrs.height + "px";
   }
-  this.width_ = parseInt(div.style.width, 10);
-  this.height_ = parseInt(div.style.height, 10);
-  // The div might have been specified as percent of the current window size,
-  // convert that to an appropriate number of pixels.
-  if (div.style.width.indexOf("%") == div.style.width.length - 1) {
-    this.width_ = div.offsetWidth;
+  if (div.offsetHeight == 0) {
+    div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
+    if (div.style.width == '') {
+      div.style.width = Dygraph.DEFAULT_WIDTH + "px";
+    }
   }
-  if (div.style.height.indexOf("%") == div.style.height.length - 1) {
-    this.height_ = div.offsetHeight;
-  }
+  this.width_ = div.offsetWidth;
+  this.height_ = div.offsetHeight;
 
   if (this.width_ == 0) {
     this.error("dygraph has zero width. Please specify a width in pixels.");
@@ -649,6 +649,9 @@ Dygraph.prototype.createInterface_ = function() {
   });
   Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(e) {
     dygraph.mouseOut_(e);
+  });
+  Dygraph.addEvent(this.maindiv_, 'resize', function(e) {
+    console.log("resize!");
   });
 
   // Create the grapher
@@ -3035,6 +3038,16 @@ Dygraph.prototype.setVisibility = function(num, value) {
     x[num] = value;
     this.predraw_();
   }
+};
+
+/**
+ * How large of an area will the dygraph render itself in?
+ * This is used for testing.
+ * @return A {width: w, height: h} object.
+ * @private
+ */
+Dygraph.prototype.size = function() {
+  return { width: this.width_, height: this.height_ };
 };
 
 /**
