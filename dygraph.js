@@ -2410,9 +2410,13 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           count -= 1;
         }
       }
-      rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
-                                              1.0 * (mid - low) / count,
-                                              1.0 * (high - mid) / count ]];
+      if (count) {
+        rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
+                                                1.0 * (mid - low) / count,
+                                                1.0 * (high - mid) / count ]];
+      } else {
+        rollingData[i] = [originalData[i][0], [null, null, null]];
+      }
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
