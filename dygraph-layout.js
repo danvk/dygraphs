@@ -141,14 +141,17 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var prevYPx = NaN;
     var currXPx = NaN;
     var currYPx = NaN;
-    
-    var errorBars = this.attr_("errorBars") || this.attr_("customBars");
+
+    // Ignore the pixel skipping optimization if there are error bars.
+    var skip_opt = (this.attr_("errorBars") ||
+                    this.attr_("customBars") ||
+                    this.annotations.length > 0);
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var xValue = parseFloat(dataset[j][0]);
       var yValue = parseFloat(dataset[j][1]);
-      
+
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents left and 1 represents right.
@@ -158,17 +161,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       } else {
         yNormal = 1.0 - ((yValue - axis.minyval) * axis.yscale);
       }
-      
+
       // Current pixel coordinates that the data point would fill.
       currXPx = Math.round(xNormal * graphWidth);
       currYPx = Math.round(yNormal * graphHeight);
 
       // Skip over pushing points that lie on the same pixel.
-      // Ignore this optimization if there are error bars.
       // TODO(antrob): optimize this for graphs with error bars.
-      if (prevXPx != currXPx || prevYPx != currYPx || errorBars) {
-        // TODO(antrob): skip over points that lie on a line that is already going to be drawn.
-        // There is no need to have more than 2 consecutive points that are collinear.
+      if (skip_opt || prevXPx != currXPx || prevYPx != currYPx) {
         var point = {
           // TODO(danvk): here
           x: xNormal,
