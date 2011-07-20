@@ -756,7 +756,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     // setup graphics context
     context.save();
-    var point = this.layout.points[0];
     var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
