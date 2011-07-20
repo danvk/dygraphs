@@ -129,6 +129,11 @@ DygraphLayout.prototype._evaluateLimits = function() {
 DygraphLayout.prototype._evaluateLineCharts = function() {
   // add all the rects
   this.points = new Array();
+  // An array to keep track of how many points will be drawn for each set.
+  // This will allow for the canvas renderer to not have to check every point
+  // for every data set since the points are added in order of the sets in datasets
+  this.setPointsLengths = new Array();
+
   for (var setName in this.datasets) {
     if (!this.datasets.hasOwnProperty(setName)) continue;
 
@@ -141,6 +146,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var prevYPx = NaN;
     var currXPx = NaN;
     var currYPx = NaN;
+    var setPointsLength = 0;
 
     // Ignore the pixel skipping optimization if there are error bars.
     var skip_opt = (this.attr_("errorBars") ||
@@ -178,10 +184,12 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           name: setName
         };
         this.points.push(point);
+	setPointsLength += 1;
       }
       prevXPx = currXPx;
       prevYPx = currYPx;
     }
+    this.setPointsLengths.push(setPointsLength);
   }
 };
 
