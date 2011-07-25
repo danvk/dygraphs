@@ -756,7 +756,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
     // setup graphics context
     context.save();
-    var point = this.layout.points[0];
     var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
@@ -786,7 +785,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             prevX = point.canvasx;
             prevY = point.canvasy;
           } else {
-            // TODO(danvk): figure out why this conditional is necessary.
+            // TODO(antrob): skip over points that lie on a line that is already
+            // going to be drawn. There is no need to have more than 2
+            // consecutive points that are collinear.
             if (strokeWidth) {
               ctx.beginPath();
               ctx.strokeStyle = color;

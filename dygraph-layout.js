@@ -135,25 +135,52 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var dataset = this.datasets[setName];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
+    var graphWidth = this.dygraph_.width_;
+    var graphHeight = this.dygraph_.height_;
+    var prevXPx = NaN;
+    var prevYPx = NaN;
+    var currXPx = NaN;
+    var currYPx = NaN;
+
+    // Ignore the pixel skipping optimization if there are error bars.
+    var skip_opt = (this.attr_("errorBars") ||
+                    this.attr_("customBars") ||
+                    this.annotations.length > 0);
+
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
+      var xValue = parseFloat(dataset[j][0]);
+      var yValue = parseFloat(dataset[j][1]);
 
-      var yval;
+      // Range from 0-1 where 0 represents top and 1 represents bottom
+      var xNormal = (xValue - this.minxval) * this.xscale;
+      // Range from 0-1 where 0 represents left and 1 represents right.
+      var yNormal;
       if (axis.logscale) {
-        yval = 1.0 - ((Dygraph.log10(parseFloat(item[1])) - Dygraph.log10(axis.minyval)) * axis.ylogscale); // really should just be yscale.
+        yNormal = 1.0 - ((Dygraph.log10(yValue) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
       } else {
-        yval = 1.0 - ((parseFloat(item[1]) - axis.minyval) * axis.yscale);
+        yNormal = 1.0 - ((yValue - axis.minyval) * axis.yscale);
       }
-      var point = {
-        // TODO(danvk): here
-        x: ((parseFloat(item[0]) - this.minxval) * this.xscale),
-        y: yval,
-        xval: parseFloat(item[0]),
-        yval: parseFloat(item[1]),
-        name: setName
-      };
 
-      this.points.push(point);
+      // Current pixel coordinates that the data point would fill.
+      currXPx = Math.round(xNormal * graphWidth);
+      currYPx = Math.round(yNormal * graphHeight);
+
+      // Skip over pushing points that lie on the same pixel.
+      // TODO(antrob): optimize this for graphs with error bars.
+      if (skip_opt || prevXPx != currXPx || prevYPx != currYPx) {
+        var point = {
+          // TODO(danvk): here
+          x: xNormal,
+          y: yNormal,
+          xval: xValue,
+          yval: yValue,
+          name: setName
+        };
+        this.points.push(point);
+      }
+      prevXPx = currXPx;
+      prevYPx = currYPx;
     }
   }
 };
@@ -222,6 +249,13 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   }
 
   this.annotated_points = [];
+
+  // Exit the function early if there are no annotations.
+  if (!this.annotations || !this.annotations.length) {
+    return;
+  }
+  
+  // TODO(antrob): loop through annotations not points.
   for (var i = 0; i < this.points.length; i++) {
     var p = this.points[i];
     var k = p.xval + "," + p.name;

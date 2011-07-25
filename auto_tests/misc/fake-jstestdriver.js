@@ -54,7 +54,10 @@ function TestCase(name) {
       this.tearDown();
       return true;
     } catch (e) {
-      console.log(e.stack);
+      console.log(e);
+      if (e.stack) {
+        console.log(e.stack);
+      }
       return false;
     }
   };

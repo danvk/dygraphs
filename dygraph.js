@@ -866,13 +866,13 @@ Dygraph.prototype.createDragInterface_ = function() {
     isZooming: false,
     isPanning: false,  // is this drag part of a pan?
     is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
-    dragStartX: null,
-    dragStartY: null,
-    dragEndX: null,
-    dragEndY: null,
+    dragStartX: null, // pixel coordinates
+    dragStartY: null, // pixel coordinates
+    dragEndX: null, // pixel coordinates
+    dragEndY: null, // pixel coordinates
     dragDirection: null,
-    prevEndX: null,
-    prevEndY: null,
+    prevEndX: null, // pixel coordinates
+    prevEndY: null, // pixel coordinates
     prevDragDirection: null,
 
     // The value on the left side of the graph when a pan operation starts.
@@ -887,7 +887,8 @@ Dygraph.prototype.createDragInterface_ = function() {
     // panning operation.
     dateRange: null,
 
-    // Utility function to convert page-wide coordinates to canvas coords
+    // Top-left corner of the canvas, in DOM coords
+    // TODO(konigsberg): Rename topLeftCanvasX, topLeftCanvasY.
     px: 0,
     py: 0,
 
@@ -2237,7 +2238,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < this.axes_.length; i++) {
     var axis = this.axes_[i];
- 
+
     if (!seriesForAxis[i]) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
@@ -2318,8 +2319,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
       var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
       var tick_values = [];
-      for (var i = 0; i < p_ticks.length; i++) {
-        var y_frac = (p_ticks[i].v - p_axis.computedValueRange[0]) / p_scale;
+      for (var k = 0; k < p_ticks.length; k++) {
+        var y_frac = (p_ticks[k].v - p_axis.computedValueRange[0]) / p_scale;
         var y_val = axis.computedValueRange[0] + y_frac * scale;
         tick_values.push(y_val);
       }
@@ -2331,7 +2332,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     }
   }
 };
- 
+
 /**
  * @private
  * Calculates the rolling average of a data set.
@@ -2414,9 +2415,13 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           count -= 1;
         }
       }
-      rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
-                                              1.0 * (mid - low) / count,
-                                              1.0 * (high - mid) / count ]];
+      if (count) {
+        rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
+                                                1.0 * (mid - low) / count,
+                                                1.0 * (high - mid) / count ]];
+      } else {
+        rollingData[i] = [originalData[i][0], [null, null, null]];
+      }
     }
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where

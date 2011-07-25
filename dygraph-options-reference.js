@@ -47,10 +47,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis."
   },
   "pointClickCallback": {
-    "default": "",
+    "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
+    "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
-    "type": "",
-    "description": ""
+    "type": "function(e, point)",
+    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click, and the point that was clicked. The 'point' argument has these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "colors": {
     "default": "(see description)",
@@ -351,11 +352,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Function to call to format values along the x axis."
   },
   "clickCallback": {
-    "snippet": "function(e, date){<br>&nbsp;&nbsp;alert(date);<br>}",
+    "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(e, date)",
-    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click and the date that was clicked."
+    "type": "function(e, x, points)",
+    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the x-value that was clicked (for dates this is millis since epoch), and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "yAxisLabelFormatter": {
     "default": "yValueFormatter",

@@ -393,3 +393,20 @@ Dygraph.endPan = Dygraph.Interaction.endPan;
 Dygraph.movePan = Dygraph.Interaction.movePan;
 Dygraph.startPan = Dygraph.Interaction.startPan;
 
+Dygraph.Interaction.nonInteractiveModel_ = {
+  mousedown: function(event, g, context) {
+    context.initializeMouseDown(event, g, context);
+  },
+  mouseup: function(event, g, context) {
+    // TODO(danvk): this logic is repeated in Dygraph.Interaction.endZoom
+    context.dragEndX = g.dragGetX_(event, context);
+    context.dragEndY = g.dragGetY_(event, context);
+    var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
+    var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
+
+    if (regionWidth < 2 && regionHeight < 2 &&
+        g.lastx_ != undefined && g.lastx_ != -1) {
+      Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
+    }
+  }
+};
