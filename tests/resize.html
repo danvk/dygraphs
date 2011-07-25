@@ -17,23 +17,37 @@
     html, body {
       height: 100%;
     }
+    #div_g {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 10px;
+      height: 250px;
+      border: 1px solid black;
+    }
     </style>
   </head>
   <body>
-    <div id="div_g" style="width:95%; height:95%"></div>
+    <div id="div_g"></div>
 
     <script type="text/javascript">
-      g = new Dygraph(
-            document.getElementById("div_g"),
-            NoisyData, {
-              rollPeriod: 7,
-              errorBars: true
-            }
-          );
+      document.getElementById("div_g").addEventListener('resize', function() {
+        console.log("resize!");
+      }, false);
+      document.getElementById("div_g").onresize = function() {
+        console.log("resize2!");
+      };
+      //g = new Dygraph(
+      //      document.getElementById("div_g"),
+      //      NoisyData, {
+      //        rollPeriod: 7,
+      //        errorBars: true
+      //      }
+      //    );
 
-      window.onresize = function() {
-        g.resize();
-      }
+      // window.onresize = function() {
+      //   g.resize();
+      // }
     </script>
   </body>
 </html>
