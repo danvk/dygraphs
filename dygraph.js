@@ -650,9 +650,6 @@ Dygraph.prototype.createInterface_ = function() {
   Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(e) {
     dygraph.mouseOut_(e);
   });
-  Dygraph.addEvent(this.maindiv_, 'resize', function(e) {
-    console.log("resize!");
-  });
 
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
