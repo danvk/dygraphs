@@ -599,6 +599,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.attr_("stackedGraph");
   var stepPlot = this.attr_("stepPlot");
+  var points = this.layout.points;
+  var pointsLength = points.length;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -616,8 +618,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   // Update Points
   // TODO(danvk): here
-  for (var i = 0; i < this.layout.points.length; i++) {
-    var point = this.layout.points[i];
+  for (var i = pointsLength; i--;) {
+    var point = points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
     point.canvasy = this.area.h * point.y + this.area.y;
   }
@@ -646,8 +648,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < this.layout.points.length; j++) {
-        var point = this.layout.points[j];
+      for (var j = 0; j < pointsLength; j++) {
+        var point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -710,8 +712,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < this.layout.points.length; j++) {
-        var point = this.layout.points[j];
+      for (var j = 0; j < pointsLength; j++) {
+        var point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -749,7 +751,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     return (x === null || isNaN(x));
   };
 
-  for (var i = 0; i < setCount; i++) {
+  // Drawing of a graph without error bars.
+  var firstIndexInSet = 0;
+  var afterLastIndexInSet = 0;
+  var setLength = 0;
+  for (var i = 0; i < setCount; i += 1) {
+    setLength = this.layout.setPointsLengths[i];
+    afterLastIndexInSet += setLength;
     var setName = setNames[i];
     var color = this.colors[setName];
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
@@ -759,60 +767,56 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
-    var points = this.layout.points;
-    for (var j = 0; j < points.length; j++) {
+    for (var j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       var point = points[j];
-      if (point.name == setName) {
-        if (isNullOrNaN(point.canvasy)) {
-          if (stepPlot && prevX != null) {
-            // Draw a horizontal line to the start of the missing data
+      if (isNullOrNaN(point.canvasy)) {
+        if (stepPlot && prevX != null) {
+          // Draw a horizontal line to the start of the missing data
+          ctx.beginPath();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = this.attr_('strokeWidth');
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(point.canvasx, prevY);
+          ctx.stroke();
+        }
+        // this will make us move to the next point, not draw a line to it.
+        prevX = prevY = null;
+      } else {
+        // A point is "isolated" if it is non-null but both the previous
+        // and next points are null.
+        var isIsolated = (!prevX && (j == points.length - 1 ||
+                                     isNullOrNaN(points[j+1].canvasy)));
+         if (prevX === null) {
+          prevX = point.canvasx;
+          prevY = point.canvasy;
+        } else {
+          // TODO(antrob): skip over points that lie on a line that is already
+          // going to be drawn. There is no need to have more than 2
+          // consecutive points that are collinear.
+          if (strokeWidth) {
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.lineWidth = this.attr_('strokeWidth');
+            ctx.lineWidth = strokeWidth;
             ctx.moveTo(prevX, prevY);
-            ctx.lineTo(point.canvasx, prevY);
-            ctx.stroke();
-          }
-          // this will make us move to the next point, not draw a line to it.
-          prevX = prevY = null;
-        } else {
-          // A point is "isolated" if it is non-null but both the previous
-          // and next points are null.
-          var isIsolated = (!prevX && (j == points.length - 1 ||
-                                       isNullOrNaN(points[j+1].canvasy)));
-
-          if (prevX === null) {
+            if (stepPlot) {
+              ctx.lineTo(point.canvasx, prevY);
+            }
             prevX = point.canvasx;
             prevY = point.canvasy;
-          } else {
-            // TODO(antrob): skip over points that lie on a line that is already
-            // going to be drawn. There is no need to have more than 2
-            // consecutive points that are collinear.
-            if (strokeWidth) {
-              ctx.beginPath();
-              ctx.strokeStyle = color;
-              ctx.lineWidth = strokeWidth;
-              ctx.moveTo(prevX, prevY);
-              if (stepPlot) {
-                ctx.lineTo(point.canvasx, prevY);
-              }
-              prevX = point.canvasx;
-              prevY = point.canvasy;
-              ctx.lineTo(prevX, prevY);
-              ctx.stroke();
-            }
+            ctx.lineTo(prevX, prevY);
+            ctx.stroke();
           }
-
-          if (drawPoints || isIsolated) {
-           ctx.beginPath();
-           ctx.fillStyle = color;
-           ctx.arc(point.canvasx, point.canvasy, pointSize,
-                   0, 2 * Math.PI, false);
-           ctx.fill();
-          }
+        }
+         if (drawPoints || isIsolated) {
+         ctx.beginPath();
+         ctx.fillStyle = color;
+         ctx.arc(point.canvasx, point.canvasy, pointSize,
+                 0, 2 * Math.PI, false);
+         ctx.fill();
         }
       }
     }
+    firstIndexInSet = afterLastIndexInSet;
   }
 
   context.restore();
