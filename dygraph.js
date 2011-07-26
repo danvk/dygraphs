@@ -235,21 +235,15 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   if (div.style.height == '' && attrs.height) {
     div.style.height = attrs.height + "px";
   }
-  if (div.offsetHeight == 0) {
+  if (div.style.height == '' && div.offsetHeight == 0) {
     div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
     if (div.style.width == '') {
       div.style.width = Dygraph.DEFAULT_WIDTH + "px";
     }
   }
+  // these will be zero if the dygraph's div is hidden.
   this.width_ = div.offsetWidth;
   this.height_ = div.offsetHeight;
-
-  if (this.width_ == 0) {
-    this.error("dygraph has zero width. Please specify a width in pixels.");
-  }
-  if (this.height_ == 0) {
-    this.error("dygraph has zero height. Please specify a height in pixels.");
-  }
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs['stackedGraph']) {
@@ -1661,7 +1655,8 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   if (chosen >= 0) {
     return self.GetXAxis(startDate, endDate, chosen);
   } else {
-    // TODO(danvk): signal error.
+    // this can happen if self.width_ is zero.
+    return [];
   }
 };
 
