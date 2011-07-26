@@ -143,7 +143,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var currYPx = NaN;
 
     // Ignore the pixel skipping optimization if there are error bars.
-    var skip_opt = (this.attr_("errorBars") ||
+    // XXX 2011-07-25 temporarily disabled (see autotests/tests/selection.js)
+    var skip_opt = (true ||
+                    this.attr_("errorBars") ||
                     this.attr_("customBars") ||
                     this.annotations.length > 0);
 
