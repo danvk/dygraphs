@@ -545,6 +545,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "string (URL of CSV or CSV), GViz DataTable or 2D Array",
     "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='http://dygraphs.com/data.html'>Data Formats</a> page."
+  },
+  "timingName": {
+    "default": "null",
+    "labels": [ "Debugging" ],
+    "type": "string",
+    "description": "Set this option to log timing information. The value of the option will be logged along with the timimg, so that you can distinguish multiple dygraphs on the same page."
   }
 }
 ;  // </JSON>
@@ -573,7 +579,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Overall display',
    'Rolling Averages',
    'Value display/formatting',
-   'Zooming'
+   'Zooming',
+   'Debugging'
   ];
   var cats = {};
   for (var i = 0; i < valid_cats.length; i++) cats[valid_cats[i]] = true;

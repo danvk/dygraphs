@@ -1881,6 +1881,8 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * number of axes, rolling averages, etc.
  */
 Dygraph.prototype.predraw_ = function() {
+  var start = new Date();
+
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
@@ -1917,6 +1919,8 @@ Dygraph.prototype.predraw_ = function() {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(clearSelection) {
+  var start = new Date();
+
   if (typeof(clearSelection) === 'undefined') {
     clearSelection = true;
   }
@@ -2077,6 +2081,13 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
+  }
+
+  if (this.attr_("timingName")) {
+    var end = new Date();
+    if (console) {
+      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
+    }
   }
 };
 
