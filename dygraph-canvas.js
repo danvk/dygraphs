@@ -786,7 +786,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         // and next points are null.
         var isIsolated = (!prevX && (j == points.length - 1 ||
                                      isNullOrNaN(points[j+1].canvasy)));
-         if (prevX === null) {
+        if (prevX === null) {
           prevX = point.canvasx;
           prevY = point.canvasy;
         } else {
@@ -807,12 +807,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.stroke();
           }
         }
-         if (drawPoints || isIsolated) {
-         ctx.beginPath();
-         ctx.fillStyle = color;
-         ctx.arc(point.canvasx, point.canvasy, pointSize,
-                 0, 2 * Math.PI, false);
-         ctx.fill();
+
+        if (drawPoints || isIsolated) {
+          ctx.beginPath();
+          ctx.fillStyle = color;
+          ctx.arc(point.canvasx, point.canvasy, pointSize,
+                  0, 2 * Math.PI, false);
+          ctx.fill();
         }
       }
     }
