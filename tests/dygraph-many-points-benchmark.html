@@ -78,7 +78,7 @@
         }
         var rollPeriod = parseInt(
             document.getElementById('roll_period_input').value);
-        var opts = {labels: labels, rollPeriod: rollPeriod};
+        var opts = {labels: labels, rollPeriod: rollPeriod, timingName: "x"};
         var millisecondss = [];
         for (var i = 0; i < repetitions; i++) {
           var start = new Date();

@@ -131,7 +131,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   this.points = new Array();
   // An array to keep track of how many points will be drawn for each set.
   // This will allow for the canvas renderer to not have to check every point
-  // for every data set since the points are added in order of the sets in datasets
+  // for every data set since the points are added in order of the sets in
+  // datasets.
   this.setPointsLengths = new Array();
 
   for (var setName in this.datasets) {
@@ -149,7 +150,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var setPointsLength = 0;
 
     // Ignore the pixel skipping optimization if there are error bars.
-    var skip_opt = (this.attr_("errorBars") ||
+    // XXX 2011-07-25 temporarily disabled (see autotests/tests/selection.js)
+    var skip_opt = (true ||
+                    this.attr_("errorBars") ||
                     this.attr_("customBars") ||
                     this.annotations.length > 0);
 
@@ -184,7 +187,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           name: setName
         };
         this.points.push(point);
-	setPointsLength += 1;
+        setPointsLength += 1;
       }
       prevXPx = currXPx;
       prevYPx = currYPx;
