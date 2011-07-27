@@ -656,6 +656,12 @@ Dygraph.prototype.createInterface_ = function() {
 
   this.createStatusMessage_();
   this.createDragInterface_();
+
+  // Update when the window is resized.
+  // TODO(danvk): drop frames depending on complexity of the chart.
+  Dygraph.addEvent(window, 'resize', function(e) {
+    dygraph.resize();
+  });
 };
 
 /**
@@ -1904,6 +1910,10 @@ Dygraph.prototype.predraw_ = function() {
 
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
+
+  // This is used to determine whether to do various animations.
+  var end = new Date();
+  this.drawingTimeMs_ = (end - start);
 };
 
 /**
@@ -2990,9 +3000,8 @@ Dygraph.prototype.resize = function(width, height) {
     width = height = null;
   }
 
-  // TODO(danvk): there should be a clear() method.
-  this.maindiv_.innerHTML = "";
-  this.attrs_.labelsDiv = null;
+  var old_width = this.width_;
+  var old_height = this.height_;
 
   if (width) {
     this.maindiv_.style.width = width + "px";
@@ -3004,8 +3013,13 @@ Dygraph.prototype.resize = function(width, height) {
     this.height_ = this.maindiv_.offsetHeight;
   }
 
-  this.createInterface_();
-  this.predraw_();
+  if (old_width != this.width_ || old_height != this.height_) {
+    // TODO(danvk): there should be a clear() method.
+    this.maindiv_.innerHTML = "";
+    this.attrs_.labelsDiv = null;
+    this.createInterface_();
+    this.predraw_();
+  }
 
   this.resize_lock = false;
 };
