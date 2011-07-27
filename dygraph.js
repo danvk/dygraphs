@@ -783,6 +783,7 @@ Dygraph.prototype.createStatusMessage_ = function() {
       "overflow": "hidden"};
     Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
     var div = document.createElement("div");
+    div.className = "dygraph-legend";
     for (var name in messagestyle) {
       if (messagestyle.hasOwnProperty(name)) {
         div.style[name] = messagestyle[name];
