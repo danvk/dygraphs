@@ -2053,9 +2053,17 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
+  this.renderGraph_(false, false);
+
+  if (this.attr_("timingName")) {
+    var end = new Date();
+    if (console) {
+      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
+    }
+  }
 };
 
-Dygraph.prototype.renderGraph_ = function(is_inital_draw, clearSelection) {
+Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
@@ -2079,13 +2087,6 @@ Dygraph.prototype.renderGraph_ = function(is_inital_draw, clearSelection) {
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
-  }
-
-  if (this.attr_("timingName")) {
-    var end = new Date();
-    if (console) {
-      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
-    }
   }
 };
 
@@ -2955,70 +2956,10 @@ Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
   // drawPoints
   // highlightCircleSize
 
+  // Check if this set options will require new points.
+  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.user_attrs_.labels, attrs);
+
   Dygraph.update(this.user_attrs_, attrs);
-
-  // A whitelist of options that do not change pixel positions.
-  var optsNoRequireNewPoints = new Array(
-    'annotationClickHandler': true,
-    'annotationDblClickHandler': true,
-    'annotationMouseOutHandler': true,
-    'annotationMouseOverHandler': true,
-    'axisLabelColor': true,
-    'axisLineColor': true,
-    'axisLineWidth': true,
-    'clickCallback': true,
-    'colorSaturation': true,
-    'colorValue': true,
-    'colors': true,
-    'connectSeparatedPoints': true,
-    'digitsAfterDecimal': true,
-    'drawCallback': true,
-    'drawPoints': true,
-    'drawXGrid': true,
-    'drawYGrid': true,
-    'fillAlpha': true,
-    'gridLineColor': true,
-    'gridLineWidth': true,
-    'hideOverlayOnMouseOut': true,
-    'highlightCallback': true,
-    'highlightCircleSize': true,
-    'interactionModel': true,
-    'isZoomedIgnoreProgrammaticZoom': true,
-    'labelsDiv': true,
-    'labelsDivStyles': true,
-    'labelsDivWidth': true,
-    'labelsKMB': true,
-    'labelsKMG2': true,
-    'labelsSeparateLines': true,
-    'labelsShowZeroValues': true,
-    'legend': true,
-    'maxNumberWidth': true,
-    'panEdgeFraction': true,
-    'pixelsPerYLabel': true,
-    'pointClickCallback': true,
-    'pointSize': true,
-    'showLabelsOnHighlight': true,
-    'showRoller': true,
-    'sigFigs': true,
-    'strokeWidth': true,
-    'underlayCallback': true,
-    'unhighlightCallback': true,
-    'xAxisLabelFormatter': true,
-    'xTicker': true,
-    'xValueFormatter': true,
-    'yAxisLabelFormatter': true,
-    'yValueFormatter': true,
-    'zoomCallback': true,
-  );    
-
-  // Figure out if new points need to be made to draw.
-  var requiresNewPoints = false;
-  for (attribute in attrs) {
-    if (!optsNoRequireNewPoints.attribute) {
-        requiresNewPoints = true;
-	break;
-    }
-  }
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
