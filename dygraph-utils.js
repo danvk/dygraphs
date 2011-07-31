@@ -553,3 +553,110 @@ Dygraph.createCanvas = function() {
 
   return canvas;
 };
+
+/**
+ * @private
+ * This function will scan the option list and determine whether or not
+ * new points are necessary. 
+ * @param { List } a list of options to check.
+ * @return { Boolean } true if the graph needs new points else false.
+ */
+Dygraph.isPixelChangingOptionList = function(labels, attrs) {
+  // A whitelist of options that do not change pixel positions.
+  var pixelSafeOptions = {
+    'annotationClickHandler': true,
+    'annotationDblClickHandler': true,
+    'annotationMouseOutHandler': true,
+    'annotationMouseOverHandler': true,
+    'axisLabelColor': true,
+    'axisLineColor': true,
+    'axisLineWidth': true,
+    'clickCallback': true,
+    'colorSaturation': true,
+    'colorValue': true,
+    'colors': true,
+    'connectSeparatedPoints': true,
+    'digitsAfterDecimal': true,
+    'drawCallback': true,
+    'drawPoints': true,
+    'drawXGrid': true,
+    'drawYGrid': true,
+    'fillAlpha': true,
+    'gridLineColor': true,
+    'gridLineWidth': true,
+    'hideOverlayOnMouseOut': true,
+    'highlightCallback': true,
+    'highlightCircleSize': true,
+    'interactionModel': true,
+    'isZoomedIgnoreProgrammaticZoom': true,
+    'labelsDiv': true,
+    'labelsDivStyles': true,
+    'labelsDivWidth': true,
+    'labelsKMB': true,
+    'labelsKMG2': true,
+    'labelsSeparateLines': true,
+    'labelsShowZeroValues': true,
+    'legend': true,
+    'maxNumberWidth': true,
+    'panEdgeFraction': true,
+    'pixelsPerYLabel': true,
+    'pointClickCallback': true,
+    'pointSize': true,
+    'showLabelsOnHighlight': true,
+    'showRoller': true,
+    'sigFigs': true,
+    'strokeWidth': true,
+    'underlayCallback': true,
+    'unhighlightCallback': true,
+    'xAxisLabelFormatter': true,
+    'xTicker': true,
+    'xValueFormatter': true,
+    'yAxisLabelFormatter': true,
+    'yValueFormatter': true,
+    'zoomCallback': true
+  };    
+
+  // Assume that we do not require new points.
+  // This will change to true of we actually do need new points.
+  var requiresNewPoints = false;
+
+  // Create a dictionary of series names for faster look up.
+  // If there are no labels, then the dictionary stays empty.
+  var seriesNamesDictionary = { };
+  if (labels) {
+    for (var i = 1; i < labels.length; i++) {
+      seriesNamesDictionary[labels[i]] = true;
+    }
+  }
+
+  // Iterate through the list of updated options.
+  for (property in attrs) {
+    // Break early if we already know we need new points from a previous option.
+    if (requiresNewPoints) {
+      break;
+    }
+    if (attrs.hasOwnProperty(property)) {
+      // Find out of this field is actually a series specific options list.
+      if (seriesNamesDictionary[property]) {
+        // This property value is a list of options for this series.
+        // If any of these sub properties are not pixel safe, set the flag.
+        for (subProperty in attrs[property]) {
+          // Break early if we already know we need new points from a previous option.
+          if (requiresNewPoints) {
+            break;
+          }
+          if (attrs[property].hasOwnProperty(subProperty) && !pixelSafeOptions[subProperty]) {
+            requiresNewPoints = true;
+          }
+        }
+      // If this was a series specific option list, check if its a pixel changing property.
+      } else if (!pixelSafeOptions[property]) {
+        requiresNewPoints = true;
+      }   
+    }
+  }
+
+  console.log('requiresNewPoints:' + requiresNewPoints);
+
+  return requiresNewPoints;
+};
