@@ -556,8 +556,8 @@ Dygraph.createCanvas = function() {
 
 /**
  * @private
- * This function will scan the option list and determine whether or not
- * new points are necessary. 
+ * This function will scan the option list and determine if they
+ * require us to recalculate the pixel positions of each point.
  * @param { List } a list of options to check.
  * @return { Boolean } true if the graph needs new points else false.
  */
@@ -617,10 +617,10 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   };    
 
   // Assume that we do not require new points.
-  // This will change to true of we actually do need new points.
+  // This will change to true if we actually do need new points.
   var requiresNewPoints = false;
 
-  // Create a dictionary of series names for faster look up.
+  // Create a dictionary of series names for faster lookup.
   // If there are no labels, then the dictionary stays empty.
   var seriesNamesDictionary = { };
   if (labels) {
@@ -649,14 +649,12 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
             requiresNewPoints = true;
           }
         }
-      // If this was a series specific option list, check if its a pixel changing property.
+      // If this was not a series specific option list, check if its a pixel changing property.
       } else if (!pixelSafeOptions[property]) {
         requiresNewPoints = true;
       }   
     }
   }
-
-  console.log('requiresNewPoints:' + requiresNewPoints);
 
   return requiresNewPoints;
 };

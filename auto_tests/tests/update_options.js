@@ -1,53 +1,63 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
 /**
- * @fileoverview Regression test based on some strange customBars data.
+ * @fileoverview Tests for the updateOptions function.
  * @author antrob@google.com (Anthony Robledo)
  */
 var UpdateOptionsTestCase = TestCase("update-options");
   
-var opts = {
+UpdateOptionsTestCase.prototype.opts = {
   width: 480,
   height: 320,
 };
-var data = "X,Y1,Y2\n" +
-  "1,2,3\n" +
-  "2,5,3\n" +
-  "3,6,1\n" +
-  "4,9,5\n" +
-  "5,3,3\n" +
-  "6,1,7\n" +
-  "7,8,6\n" +
-  "8,4,2\n" +
-  "9,5,6\n" +
-  "10,7,8\n" +
-  "11,9,2\n" +
-  "12,3,7\n" +
-  "13,7,4\n" +
-  "14,6,6\n" +
-  "15,8,3\n";
+
+UpdateOptionsTestCase.prototype.data = "X,Y1,Y2\n" +
+  "2011-01-01,2,3\n" +
+  "2011-02-02,5,3\n" +
+  "2011-03-03,6,1\n" +
+  "2011-04-04,9,5\n" +
+  "2011-05-05,8,3\n";
 
 UpdateOptionsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-UpdateOptionsTestCase.prototype.testEasy = function() {
+UpdateOptionsTestCase.prototype.tearDown = function() {
 };
+
+UpdateOptionsTestCase.prototype.wrap = function(g) {
+  g._testDrawCalled = false;
+  var oldDrawGraph = Dygraph.prototype.drawGraph_;
+  Dygraph.prototype.drawGraph_ = function() {
+    g._testDrawCalled = true;
+    oldDrawGraph.call(g);
+  }
+
+  return oldDrawGraph;
+}
+
+UpdateOptionsTestCase.prototype.unWrap = function(oldDrawGraph) {
+  Dygraph.prototype.drawGraph_ = oldDrawGraph;
+}
 
 UpdateOptionsTestCase.prototype.testStrokeAll = function() {
   var graphDiv = document.getElementById("graph");
-  var graph = new Dygraph(graphDiv, data, opts);
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
   var updatedOptions = { };
 
   updatedOptions['strokeWidth'] = 3;
 
   // These options will allow us to jump to renderGraph_()
+  // drawGraph_() will be skipped.
+  var oldDrawGraph = this.wrap(graph);
   graph.updateOptions(updatedOptions);
+  this.unWrap(oldDrawGraph);
+  assertFalse(graph._testDrawCalled);
 };
 
 UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
   var graphDiv = document.getElementById("graph");
-  var graph = new Dygraph(graphDiv, data, opts);
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
   var updatedOptions = { };
   var optionsForY1 = { };
 
@@ -55,12 +65,16 @@ UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
   updatedOptions['Y1'] = optionsForY1;
 
   // These options will allow us to jump to renderGraph_()
+  // drawGraph_() will be skipped.
+  var oldDrawGraph = this.wrap(graph);
   graph.updateOptions(updatedOptions);
+  this.unWrap(oldDrawGraph);
+  assertFalse(graph._testDrawCalled);
 };
  
 UpdateOptionsTestCase.prototype.testSingleSeriesRequiresNewPoints = function() {
   var graphDiv = document.getElementById("graph");
-  var graph = new Dygraph(graphDiv, data, opts);
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
   var updatedOptions = { };
   var optionsForY1 = { };
   var optionsForY2 = { };
@@ -75,12 +89,15 @@ UpdateOptionsTestCase.prototype.testSingleSeriesRequiresNewPoints = function() {
 
   // These options will not allow us to jump to renderGraph_()
   // drawGraph_() must be called
+  var oldDrawGraph = this.wrap(graph);
   graph.updateOptions(updatedOptions);
+  this.unWrap(oldDrawGraph);
+  assertTrue(graph._testDrawCalled);
 };
 
 UpdateOptionsTestCase.prototype.testWidthChangeNeedsNewPoints = function() {
   var graphDiv = document.getElementById("graph");
-  var graph = new Dygraph(graphDiv, data, opts);
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
   var updatedOptions = { };
 
   // This will require new points.
@@ -88,5 +105,8 @@ UpdateOptionsTestCase.prototype.testWidthChangeNeedsNewPoints = function() {
 
   // These options will not allow us to jump to renderGraph_()
   // drawGraph_() must be called
+  var oldDrawGraph = this.wrap(graph);
   graph.updateOptions(updatedOptions);
+  this.unWrap(oldDrawGraph);
+  assertTrue(graph._testDrawCalled);
 };

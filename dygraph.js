@@ -2053,7 +2053,7 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
-  this.renderGraph_(false, false);
+  this.renderGraph_(is_initial_draw, false);
 
   if (this.attr_("timingName")) {
     var end = new Date();
@@ -2064,6 +2064,7 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
 };
 
 Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
+  var start = new Date();
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
@@ -2088,6 +2089,8 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
+  var end = new Date();
+  console.log(this.attr_("timingName") + " - renderGraph: " + (end - start) + "ms")
 };
 
 /**
@@ -2957,7 +2960,7 @@ Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
   // highlightCircleSize
 
   // Check if this set options will require new points.
-  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.user_attrs_.labels, attrs);
+  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.attr_("labels"), attrs);
 
   Dygraph.update(this.user_attrs_, attrs);
 
