@@ -2064,7 +2064,6 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
 };
 
 Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
-  var start = new Date();
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
@@ -2089,8 +2088,6 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
-  var end = new Date();
-  console.log(this.attr_("timingName") + " - renderGraph: " + (end - start) + "ms")
 };
 
 /**
