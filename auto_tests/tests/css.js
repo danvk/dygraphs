@@ -105,6 +105,64 @@ CssTestCase.prototype.testClassPixelSize = function() {
   assertEquals({width: 456, height: 345}, g.size());
 };
 
+// An invisible chart div shouldn't produce an error.
+CssTestCase.prototype.testInvisibleChart = function() {
+  document.body.innerHTML =
+      '<div style="display:none;">' +
+      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '</div>';
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, CssTestCase.data, {});
+};
+
+// An invisible chart div shouldn't produce an error.
+CssTestCase.prototype.testInvisibleChartDate = function() {
+  document.body.innerHTML =
+      '<div style="display:none;">' +
+      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '</div>';
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph,
+                  "Date,Y\n" +
+                  "2010/01/01,100\n" +
+                  "2010/02/01,200\n" +
+                  "2010/03/01,300\n" +
+                  "2010/04/01,400\n" +
+                  "2010/05/01,300\n" +
+                  "2010/06/01,100\n"
+                  , {});
+};
+
+// An invisible chart div that becomes visible.
+CssTestCase.prototype.testInvisibleThenVisibleChart = function() {
+  document.body.innerHTML =
+      '<div id="x" style="display:none;">' +
+      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '</div>';
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph,
+                  "Date,Y\n" +
+                  "2010/01/01,100\n" +
+                  "2010/02/01,200\n" +
+                  "2010/03/01,300\n" +
+                  "2010/04/01,400\n" +
+                  "2010/05/01,300\n" +
+                  "2010/06/01,100\n"
+                  , {});
+
+  // g.size() is undefined here (probably 0x0)
+  document.getElementById("x").style.display = "";
+
+  // This resize() call is annoying but essential.
+  // There are no DOM events to inform the dygraph that its div has changed size
+  // or visibility so we need to let it know ourselves.
+  g.resize();
+
+  assertEquals(640, graph.offsetWidth);
+  assertEquals(480, graph.offsetHeight);
+  assertEquals({width: 640, height: 480}, g.size());
+};
+
 // Verifies that a div resize gets picked up.
 /*
   this one isn't quite ready yet.
