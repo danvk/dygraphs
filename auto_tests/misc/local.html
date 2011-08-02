@@ -69,7 +69,8 @@
   HTML file. To run a test, open a Javascript console and execute, for
   instance,<br>
   <code>tc = new SimpleDrawingTestCase() ;<br>
-    tc.runTest("testDrawSimpleRangePlusOne")</code>
+    tc.runTest("testDrawSimpleRangePlusOne")</code> (execution method #1, by string) </br>
+  <code>tc.runTest(tc.testDrawSimpleRangePlusOne)</code> (execution method #2, by function reference)
 
   <p>Alternatively you can use query args: <ul>
   <li>testCase - for the name of the test case
