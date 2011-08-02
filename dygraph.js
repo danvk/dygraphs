@@ -2064,6 +2064,17 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
+  this.renderGraph_(is_initial_draw, false);
+
+  if (this.attr_("timingName")) {
+    var end = new Date();
+    if (console) {
+      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
+    }
+  }
+};
+
+Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
@@ -2087,13 +2098,6 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
 
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
-  }
-
-  if (this.attr_("timingName")) {
-    var end = new Date();
-    if (console) {
-      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
-    }
   }
 };
 
@@ -2963,13 +2967,22 @@ Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
   // drawPoints
   // highlightCircleSize
 
+  // Check if this set options will require new points.
+  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.attr_("labels"), attrs);
+
   Dygraph.update(this.user_attrs_, attrs);
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
     if (!block_redraw) this.start_();
   } else {
-    if (!block_redraw) this.predraw_();
+    if (!block_redraw) {
+      if (requiresNewPoints) {
+        this.predraw_(); 
+      } else {
+        this.renderGraph_(false, false);
+      }
+    }
   }
 };
 
