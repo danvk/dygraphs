@@ -46,10 +46,32 @@ function TestCase(name) {
   var testCase = function() { return this; };
   testCase.prototype.setUp = function() { };
   testCase.prototype.tearDown = function() { };
-  testCase.prototype.runTest = function(name) {
+  /**
+   * name can be a string, which is looked up in this object, or it can be a
+   * function, in which case it's run.
+   *
+   * Examples:
+   * var tc = new MyTestCase();
+   * tc.runTest("testThis");
+   * tc.runTest(tc.testThis);
+   *
+   * The duplication tc in runTest is irritating, but it plays well with
+   * Chrome's console completion.
+   */
+  testCase.prototype.runTest = function(func) {
     try {
       this.setUp();
-      var fn = this[name];
+
+      var fn = null;
+      var parameterType = typeof(func);
+      if (typeof(func) == "function") {
+        fn = func;
+      } else if (typeof(func) == "string") {
+        fn = this[func];
+      } else {
+        fail("can't supply " + typeof(func) + " to runTest");
+      }
+
       fn.apply(this, []);
       this.tearDown();
       return true;
