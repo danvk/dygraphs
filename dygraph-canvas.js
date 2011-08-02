@@ -795,7 +795,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
               Math.round(prevY) == Math.round(point.canvasy)) {
             continue;
           }
-          //console.log('x:' + point.canvasx + ' y:' + point.canvasy);
           // TODO(antrob): skip over points that lie on a line that is already
           // going to be drawn. There is no need to have more than 2
           // consecutive points that are collinear.
