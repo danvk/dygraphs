@@ -119,38 +119,32 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
   assertEquals(["10","10","10","10","10","10","10","10","10","10"], getYLabels());
 };
 
-AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {  
-    var opts = {
-        width: 480,
-        height: 320
-    };
-    var data = [[5.0,0],[5.1,1],[5.2,2],[5.3,3],[5.4,4],[5.5,5],[5.6,6],[5.7,7],[5.8,8],[5.9,9]];
-    var graph = document.getElementById("graph");
-    var g = new Dygraph(graph, data, opts);
-    g.updateOptions({
-        xAxisLabelFormatter: function (totalMinutes) {            
-            var hours   = Math.floor( totalMinutes / 60);
-            var minutes = Math.floor((totalMinutes - (hours * 60)));
-            var seconds = Math.round((totalMinutes * 60) - (hours * 3600) - (minutes * 60));
+AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
+  var opts = {
+    width: 480,
+    height: 320
+  };
+  var data = [[5.0,0],[5.1,1],[5.2,2],[5.3,3],[5.4,4],[5.5,5],[5.6,6],[5.7,7],[5.8,8],[5.9,9]];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.updateOptions({
+    xAxisLabelFormatter: function (totalMinutes) {
+      var hours   = Math.floor( totalMinutes / 60);
+      var minutes = Math.floor((totalMinutes - (hours * 60)));
+      var seconds = Math.round((totalMinutes * 60) - (hours * 3600) - (minutes * 60));
 
-            if (hours   < 10) {
-                hours   = "0"+hours;
-            }
-            if (minutes < 10) {
-                minutes = "0"+minutes;
-            }
-            if (seconds < 10) {
-                seconds = "0"+seconds;
-            }
-                
-            var time = hours+':'+minutes+':'+seconds;                
-            return time;
-        }
-    });
+      if (hours   < 10) hours   = "0" + hours;
+      if (minutes < 10) minutes = "0" + minutes;
+      if (seconds < 10) seconds = "0" + seconds;
 
-    assertEquals(["00:05:00", "00:05:06", "00:05:12", "00:05:18", "00:05:24", "00:05:30", "00:05:36", "00:05:42", "00:05:48", "00:05:54"], getXLabels());
-	// assertEquals(['5','5.1','5.2','5.3','5.4','5.5', '5.6', '5.7', '5.8', '5.9'], getXLabels());
-  
+      return hours + ':' + minutes + ':' + seconds;
+    }
+  });
+
+  // This is what the output should be:
+  // assertEquals(["00:05:00", "00:05:06", "00:05:12", "00:05:18", "00:05:24", "00:05:30", "00:05:36", "00:05:42", "00:05:48", "00:05:54"], getXLabels());
+
+  // This is what it is:
+  assertEquals(['5','5.1','5.2','5.3','5.4','5.5', '5.6', '5.7', '5.8', '5.9'], getXLabels());
 };
-
 
