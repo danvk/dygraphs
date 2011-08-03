@@ -592,6 +592,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * Overrides the CanvasRenderer method to draw error bars
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
+  var isNullOrNaN = function(x) {
+    return (x === null || isNaN(x));
+  };
+  
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
   var fillAlpha = this.attr_('fillAlpha');
@@ -747,11 +751,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     }
   }
 
-  var isNullOrNaN = function(x) {
-    return (x === null || isNaN(x));
-  };
-
-  // Drawing of a graph without error bars.
+  // Drawing the lines.
   var firstIndexInSet = 0;
   var afterLastIndexInSet = 0;
   var setLength = 0;
@@ -790,6 +790,11 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           prevX = point.canvasx;
           prevY = point.canvasy;
         } else {
+          // Skip over points that will be drawn in the same pixel.
+          if (Math.round(prevX) == Math.round(point.canvasx) &&
+              Math.round(prevY) == Math.round(point.canvasy)) {
+            continue;
+          }
           // TODO(antrob): skip over points that lie on a line that is already
           // going to be drawn. There is no need to have more than 2
           // consecutive points that are collinear.
