@@ -790,7 +790,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           prevX = point.canvasx;
           prevY = point.canvasy;
         } else {
-          // Skip over points will be drawn in the same pixel.
+          // Skip over points that will be drawn in the same pixel.
           if (Math.round(prevX) == Math.round(point.canvasx) &&
               Math.round(prevY) == Math.round(point.canvasy)) {
             continue;
