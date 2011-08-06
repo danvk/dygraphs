@@ -225,31 +225,25 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // div, then only one will be drawn.
   div.innerHTML = "";
 
-  // If the div isn't already sized then inherit from our attrs or
-  // give it a default size.
-  if (div.style.width == '') {
-    div.style.width = (attrs.width || Dygraph.DEFAULT_WIDTH) + "px";
+  // For historical reasons, the 'width' and 'height' options trump all CSS
+  // rules _except_ for an explicit 'width' or 'height' on the div.
+  // As an added convenience, if the div has zero height (like <div></div> does
+  // without any styles), then we use a default height/width.
+  if (div.style.width == '' && attrs.width) {
+    div.style.width = attrs.width + "px";
   }
-  if (div.style.height == '') {
-    div.style.height = (attrs.height || Dygraph.DEFAULT_HEIGHT) + "px";
+  if (div.style.height == '' && attrs.height) {
+    div.style.height = attrs.height + "px";
   }
-  this.width_ = parseInt(div.style.width, 10);
-  this.height_ = parseInt(div.style.height, 10);
-  // The div might have been specified as percent of the current window size,
-  // convert that to an appropriate number of pixels.
-  if (div.style.width.indexOf("%") == div.style.width.length - 1) {
-    this.width_ = div.offsetWidth;
+  if (div.style.height == '' && div.offsetHeight == 0) {
+    div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
+    if (div.style.width == '') {
+      div.style.width = Dygraph.DEFAULT_WIDTH + "px";
+    }
   }
-  if (div.style.height.indexOf("%") == div.style.height.length - 1) {
-    this.height_ = div.offsetHeight;
-  }
-
-  if (this.width_ == 0) {
-    this.error("dygraph has zero width. Please specify a width in pixels.");
-  }
-  if (this.height_ == 0) {
-    this.error("dygraph has zero height. Please specify a height in pixels.");
-  }
+  // these will be zero if the dygraph's div is hidden.
+  this.width_ = div.offsetWidth;
+  this.height_ = div.offsetHeight;
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs['stackedGraph']) {
@@ -656,6 +650,12 @@ Dygraph.prototype.createInterface_ = function() {
 
   this.createStatusMessage_();
   this.createDragInterface_();
+
+  // Update when the window is resized.
+  // TODO(danvk): drop frames depending on complexity of the chart.
+  Dygraph.addEvent(window, 'resize', function(e) {
+    dygraph.resize();
+  });
 };
 
 /**
@@ -777,6 +777,7 @@ Dygraph.prototype.createStatusMessage_ = function() {
       "overflow": "hidden"};
     Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
     var div = document.createElement("div");
+    div.className = "dygraph-legend";
     for (var name in messagestyle) {
       if (messagestyle.hasOwnProperty(name)) {
         div.style[name] = messagestyle[name];
@@ -1663,7 +1664,8 @@ Dygraph.dateTicker = function(startDate, endDate, self) {
   if (chosen >= 0) {
     return self.GetXAxis(startDate, endDate, chosen);
   } else {
-    // TODO(danvk): signal error.
+    // this can happen if self.width_ is zero.
+    return [];
   }
 };
 
@@ -1886,6 +1888,8 @@ Dygraph.prototype.extremeValues_ = function(series) {
  * number of axes, rolling averages, etc.
  */
 Dygraph.prototype.predraw_ = function() {
+  var start = new Date();
+
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
@@ -1907,6 +1911,10 @@ Dygraph.prototype.predraw_ = function() {
 
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
+
+  // This is used to determine whether to do various animations.
+  var end = new Date();
+  this.drawingTimeMs_ = (end - start);
 };
 
 /**
@@ -1922,6 +1930,8 @@ Dygraph.prototype.predraw_ = function() {
  * @private
  */
 Dygraph.prototype.drawGraph_ = function(clearSelection) {
+  var start = new Date();
+
   if (typeof(clearSelection) === 'undefined') {
     clearSelection = true;
   }
@@ -2059,6 +2069,17 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
+  this.renderGraph_(is_initial_draw, false);
+
+  if (this.attr_("timingName")) {
+    var end = new Date();
+    if (console) {
+      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms")
+    }
+  }
+};
+
+Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
@@ -2951,13 +2972,22 @@ Dygraph.prototype.updateOptions = function(attrs, block_redraw) {
   // drawPoints
   // highlightCircleSize
 
+  // Check if this set options will require new points.
+  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.attr_("labels"), attrs);
+
   Dygraph.update(this.user_attrs_, attrs);
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
     if (!block_redraw) this.start_();
   } else {
-    if (!block_redraw) this.predraw_();
+    if (!block_redraw) {
+      if (requiresNewPoints) {
+        this.predraw_(); 
+      } else {
+        this.renderGraph_(false, false);
+      }
+    }
   }
 };
 
@@ -2984,9 +3014,8 @@ Dygraph.prototype.resize = function(width, height) {
     width = height = null;
   }
 
-  // TODO(danvk): there should be a clear() method.
-  this.maindiv_.innerHTML = "";
-  this.attrs_.labelsDiv = null;
+  var old_width = this.width_;
+  var old_height = this.height_;
 
   if (width) {
     this.maindiv_.style.width = width + "px";
@@ -2998,8 +3027,13 @@ Dygraph.prototype.resize = function(width, height) {
     this.height_ = this.maindiv_.offsetHeight;
   }
 
-  this.createInterface_();
-  this.predraw_();
+  if (old_width != this.width_ || old_height != this.height_) {
+    // TODO(danvk): there should be a clear() method.
+    this.maindiv_.innerHTML = "";
+    this.attrs_.labelsDiv = null;
+    this.createInterface_();
+    this.predraw_();
+  }
 
   this.resize_lock = false;
 };
@@ -3040,6 +3074,16 @@ Dygraph.prototype.setVisibility = function(num, value) {
     x[num] = value;
     this.predraw_();
   }
+};
+
+/**
+ * How large of an area will the dygraph render itself in?
+ * This is used for testing.
+ * @return A {width: w, height: h} object.
+ * @private
+ */
+Dygraph.prototype.size = function() {
+  return { width: this.width_, height: this.height_ };
 };
 
 /**

@@ -129,23 +129,19 @@ DygraphLayout.prototype._evaluateLimits = function() {
 DygraphLayout.prototype._evaluateLineCharts = function() {
   // add all the rects
   this.points = new Array();
+  // An array to keep track of how many points will be drawn for each set.
+  // This will allow for the canvas renderer to not have to check every point
+  // for every data set since the points are added in order of the sets in
+  // datasets.
+  this.setPointsLengths = new Array();
+
   for (var setName in this.datasets) {
     if (!this.datasets.hasOwnProperty(setName)) continue;
 
     var dataset = this.datasets[setName];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
-    var graphWidth = this.dygraph_.width_;
-    var graphHeight = this.dygraph_.height_;
-    var prevXPx = NaN;
-    var prevYPx = NaN;
-    var currXPx = NaN;
-    var currYPx = NaN;
-
-    // Ignore the pixel skipping optimization if there are error bars.
-    var skip_opt = (this.attr_("errorBars") ||
-                    this.attr_("customBars") ||
-                    this.annotations.length > 0);
+    var setPointsLength = 0;
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
@@ -161,27 +157,18 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       } else {
         yNormal = 1.0 - ((yValue - axis.minyval) * axis.yscale);
       }
-
-      // Current pixel coordinates that the data point would fill.
-      currXPx = Math.round(xNormal * graphWidth);
-      currYPx = Math.round(yNormal * graphHeight);
-
-      // Skip over pushing points that lie on the same pixel.
-      // TODO(antrob): optimize this for graphs with error bars.
-      if (skip_opt || prevXPx != currXPx || prevYPx != currYPx) {
-        var point = {
-          // TODO(danvk): here
-          x: xNormal,
-          y: yNormal,
-          xval: xValue,
-          yval: yValue,
-          name: setName
-        };
-        this.points.push(point);
-      }
-      prevXPx = currXPx;
-      prevYPx = currYPx;
+      var point = {
+        // TODO(danvk): here
+        x: xNormal,
+        y: yNormal,
+        xval: xValue,
+        yval: yValue,
+        name: setName
+      };
+      this.points.push(point);
+      setPointsLength += 1;
     }
+    this.setPointsLengths.push(setPointsLength);
   }
 };
 
