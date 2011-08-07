@@ -1522,8 +1522,8 @@ Dygraph.prototype.addXTicks_ = function() {
       this.width_,  // TODO(danvk): should be area.width
       xAxisOptionsView,
       this);
-  var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
-  console.log(msg);
+  // var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
+  // console.log(msg);
   this.layout_.setXTicks(xTicks);
 };
 
@@ -1818,7 +1818,6 @@ Dygraph.prototype.computeYAxes_ = function() {
       valueWindows.push(this.axes_[index].valueWindow);
     }
   }
-
 
   this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
   this.seriesToAxisMap_ = {};
@@ -2702,6 +2701,7 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   var map = function(opt, axis, new_opt) {
     if (typeof(attrs[opt]) != 'undefined') {
       set(axis, new_opt, attrs[opt]);
+      delete my_attrs[opt];
     }
   };
 
