@@ -55,4 +55,4 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
     strokeStyle: "#008080",
     lineWidth: 1
   });
-}
+};

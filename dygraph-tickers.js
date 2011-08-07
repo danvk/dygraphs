@@ -54,8 +54,8 @@
  *   middle of the years.
  */
 
-Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
-                                   opts, dygraph, vals) {
+Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
+  var pixels_per_tick = opts('pixelsPerLabel');
   var ticks = [];
   if (vals) {
     for (var i = 0; i < vals.length; i++) {
@@ -159,7 +159,7 @@ Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
     k_labels = [ "k", "M", "G", "T" ];
   }
 
-  var formatter = opts('yAxisLabelFormatter') || opts('yValueFormatter');
+  var formatter = opts('axisLabelFormatter') || opts('valueFormatter');
 
   // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
@@ -186,8 +186,8 @@ Dygraph.newNumericTicks = function(a, b, pixels, pixels_per_tick,
 };
 
 
-Dygraph.newDateTicker = function(a, b, pixels, pixels_per_tick,
-                                 opts, dygraph, vals) {
+Dygraph.newDateTicker = function(a, b, pixels, opts, dygraph, vals) {
+  var pixels_per_tick = opts('pixelsPerLabel');
   var chosen = -1;
   for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
     var num_ticks = Dygraph.newNumDateTicks(a, b, i);
@@ -203,6 +203,47 @@ Dygraph.newDateTicker = function(a, b, pixels, pixels_per_tick,
     // TODO(danvk): signal error.
   }
 };
+
+// Time granularity enumeration
+Dygraph.SECONDLY = 0;
+Dygraph.TWO_SECONDLY = 1;
+Dygraph.FIVE_SECONDLY = 2;
+Dygraph.TEN_SECONDLY = 3;
+Dygraph.THIRTY_SECONDLY  = 4;
+Dygraph.MINUTELY = 5;
+Dygraph.TWO_MINUTELY = 6;
+Dygraph.FIVE_MINUTELY = 7;
+Dygraph.TEN_MINUTELY = 8;
+Dygraph.THIRTY_MINUTELY = 9;
+Dygraph.HOURLY = 10;
+Dygraph.TWO_HOURLY = 11;
+Dygraph.SIX_HOURLY = 12;
+Dygraph.DAILY = 13;
+Dygraph.WEEKLY = 14;
+Dygraph.MONTHLY = 15;
+Dygraph.QUARTERLY = 16;
+Dygraph.BIANNUAL = 17;
+Dygraph.ANNUAL = 18;
+Dygraph.DECADAL = 19;
+Dygraph.CENTENNIAL = 20;
+Dygraph.NUM_GRANULARITIES = 21;
+
+Dygraph.SHORT_SPACINGS = [];
+Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_SECONDLY]    = 1000 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_SECONDLY]   = 1000 * 5;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]    = 1000 * 10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY] = 1000 * 30;
+Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_MINUTELY]    = 1000 * 60 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.FIVE_MINUTELY]   = 1000 * 60 * 5;
+Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
+Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
+Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
+Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]      = 1000 * 3600 * 2;
+Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
+Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
+Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
 Dygraph.newNumDateTicks = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
@@ -225,7 +266,7 @@ Dygraph.newNumDateTicks = function(start_time, end_time, granularity) {
 };
 
 Dygraph.newGetDateAxis = function(start_time, end_time, granularity, opts) {
-  var formatter = opts("xAxisLabelFormatter");  // TODO(danvk): fix
+  var formatter = opts("axisLabelFormatter");
   var ticks = [];
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
