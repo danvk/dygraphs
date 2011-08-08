@@ -200,7 +200,8 @@ Dygraph.newDateTicker = function(a, b, pixels, opts, dygraph, vals) {
   if (chosen >= 0) {
     return Dygraph.newGetDateAxis(a, b, chosen, opts);
   } else {
-    // TODO(danvk): signal error.
+    // this can happen if self.width_ is zero.
+    return [];
   }
 };
 
