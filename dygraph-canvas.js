@@ -260,7 +260,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     // height: this.attr_('axisLabelFontSize') + 2 + "px",
     overflow: "hidden"
   };
-  var makeDiv = function(txt, axis, precise_axis) {
+  var makeDiv = function(txt, axis, prec_axis) {
     var div = document.createElement("div");
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
@@ -268,10 +268,9 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       }
     }
     var inner_div = document.createElement("div");
-    // TODO(danvk): separate class for secondary y-axis
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
-                          (precise_axis ? ' dygraph-axis-label-' + precise_axis : '');
+                          (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
     inner_div.appendChild(document.createTextNode(txt));
     div.appendChild(inner_div);
     return div;

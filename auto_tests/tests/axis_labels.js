@@ -52,7 +52,6 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
 
   // TODO(danvk): would ['-1.0','-0.5','0.0','0.5','1.0'] be better?
   assertEquals(['-1','-0.5','0','0.5','1'], getYLabels());
-  assertEquals("X,Y\n" + "0,-1\n" + "1,0\n" + "2,1\n" + "3,0\n", g.file_);
 
   // Go up to 2
   data += "4,2\n";

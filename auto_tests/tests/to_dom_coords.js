@@ -119,4 +119,4 @@ ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
   assertEquals([100, 0], g.toDataCoords(500, 425));
 
   this.checkForInverses(g);
-};
+}

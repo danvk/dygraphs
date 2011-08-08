@@ -182,13 +182,12 @@ Dygraph.DEFAULT_ATTRS = {
   maxNumberWidth: 6,
   sigFigs: null,
 
-  xAxisLabelWidth: 50,
-  yAxisLabelWidth: 50,
-
   strokeWidth: 1.0,
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
+  xAxisLabelWidth: 50,
+  yAxisLabelWidth: 50,
   rightGap: 5,
 
   showRoller: false,
@@ -363,6 +362,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.user_attrs_ = {};
   Dygraph.update(this.user_attrs_, attrs);
 
+  // This sequence ensures that Dygraph.DEFAULT_ATTRS is never modified.
   this.attrs_ = {};
   Dygraph.updateDeep(this.attrs_, Dygraph.DEFAULT_ATTRS);
 
@@ -2729,7 +2729,9 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 };
 
 /**
- * Returns a copy of the options with deprecated names converted into current names.
+ * Returns a copy of the options with deprecated names converted into current
+ * names. Also drops the (potentially-large) 'file' attribute. If the caller is
+ * interested in that, they should save a copy before calling this.
  * @private
  */
 Dygraph.mapLegacyOptions_ = function(attrs) {
@@ -2751,6 +2753,7 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
     }
   };
 
+  // This maps, e.g., xValueFormater -> axes: { x: { valueFormatter: ... } }
   map('xValueFormatter', 'x', 'valueFormatter');
   map('pixelsPerXLabel', 'x', 'pixelsPerLabel');
   map('xAxisLabelFormatter', 'x', 'axisLabelFormatter');
