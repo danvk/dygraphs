@@ -36,8 +36,9 @@ var jstd = {
   }
 };
 
+var testCaseList = [];
+
 function TestCase(name) {
-  jstd.sucker("Not really creating TestCase(" + name + ")");
   this.name = name;
   this.toString = function() {
     return "Fake test case " + name;
@@ -95,5 +96,36 @@ function TestCase(name) {
     }
     console.log(prettyPrintEntity_(tests));
   };
+
+  testCaseList.push(testCase);
   return testCase;
 };
+
+// Note: this creates a bunch of global variables intentionally.
+function addGlobalTestSymbols() {
+  globalTestDb = {};  // maps test name -> test function wrapper
+
+  var num_tests = 0;
+  for (var i = 0; i < testCaseList.length; i++) {
+    var tc_class = testCaseList[i];
+    for (var name in tc_class.prototype) {
+      if (name.indexOf('test') == 0 && typeof(tc_class.prototype[name]) == 'function') {
+        if (globalTestDb.hasOwnProperty(name)) {
+          console.log('Duplicated test name: ' + name);
+        } else {
+          globalTestDb[name] = function(name, tc_class) {
+            return function() {
+              var tc = new tc_class;
+              console.log(name);
+              return tc.runTest(name);
+            };
+          }(name, tc_class);
+          eval(name + " = globalTestDb['" + name + "'];");
+          num_tests += 1;
+        }
+      }
+    }
+  }
+  console.log('Loaded ' + num_tests + ' tests in ' +
+              testCaseList.length + ' test cases');
+}

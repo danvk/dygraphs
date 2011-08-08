@@ -67,12 +67,10 @@
 </head>
 <body>
   <div id='graph'></div>
-  This file is really nothing more than all the tests coalesced into a single
+  <p>This file is really nothing more than all the tests coalesced into a single
   HTML file. To run a test, open a Javascript console and execute, for
-  instance,<br>
-  <code>tc = new SimpleDrawingTestCase() ;<br>
-    tc.runTest("testDrawSimpleRangePlusOne")</code> (execution method #1, by string) </br>
-  <code>tc.runTest(tc.testDrawSimpleRangePlusOne)</code> (execution method #2, by function reference)
+  instance,</p>
+  <code>testDrawSimpleRangePlusOne()</code>
 
   <p>Alternatively you can use query args: <ul>
   <li>testCase - for the name of the test case
@@ -83,5 +81,6 @@
 </body>
 <script>
 processVariables();
+addGlobalTestSymbols();
 </script>
 </html>
