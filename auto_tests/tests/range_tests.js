@@ -71,7 +71,9 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
   assertEquals([12, 18], g.xAxisRange());
   assertEquals([10, 40], g.yAxisRange(0));
 
+  console.log(g.user_attrs_);
   g.updateOptions({ dateWindow : null, valueRange : null });
+  console.log(g.user_attrs_);
   assertEquals([10, 20], g.xAxisRange());
   assertEquals([0, 55], g.yAxisRange(0));
 };

@@ -495,6 +495,30 @@ Dygraph.update = function (self, o) {
 };
 
 /**
+ * Copies all the properties from o to self.
+ *
+ * @private
+ */
+Dygraph.updateDeep = function (self, o) {
+  if (typeof(o) != 'undefined' && o !== null) {
+    for (var k in o) {
+      if (o.hasOwnProperty(k)) {
+        if (o[k] == null) {
+          self[k] = null;
+        } else if (typeof(self[k]) == 'object' &&
+                   typeof(o[k]) == 'object' &&
+                   !Dygraph.isArrayLike(o[k])) {
+          Dygraph.updateDeep(self[k], o[k]);
+        } else {
+          self[k] = o[k];
+        }
+      }
+    }
+  }
+  return self;
+};
+
+/**
  * @private
  */
 Dygraph.isArrayLike = function (o) {

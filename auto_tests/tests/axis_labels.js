@@ -352,9 +352,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
     }
   });
 
-  // unclear why this is the existing behavior:
-  //assertEquals(["0","1","2","3","4","5","6","7","8"], getXLabels());
-  assertEquals(["0","2","4","6","8"], getXLabels());
+  assertEquals(["x0","x2","x4","x6","x8"], getXLabels());
   //assertEquals(['0','2','4','6','8','10','12','14','16','18'], getYLabels());
 
   //assertEquals(["y0","y1","y2","y3","y4","y5","y6","y7","y8"], getXLabels());
@@ -362,6 +360,6 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
 
   g.setSelection(9);
-  //assertEquals("xvf9: y:yvf18", getLegend());
-  assertEquals("9: y:18", getLegend());
+  assertEquals("xvf9: y:yvf18", getLegend());
+  // assertEquals("9: y:18", getLegend());
 };

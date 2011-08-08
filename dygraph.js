@@ -2671,7 +2671,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   // Check if this set options will require new points.
   var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.attr_("labels"), attrs);
 
-  Dygraph.update(this.user_attrs_, attrs);
+  Dygraph.updateDeep(this.user_attrs_, attrs);
 
   if (attrs['file']) {
     this.file_ = attrs['file'];
