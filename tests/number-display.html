@@ -98,10 +98,8 @@
     html += '</tr>\n';
 
     var attr = {};
-    var g_mock = {
-      attr_: function(x) {
-        return attr[x];
-      }
+    var opts = function(x) {
+      return attr[x];
     };
     for (var j = 0; j < nums.length; j++) {
       var x = nums[j];
@@ -109,11 +107,11 @@
       html += '<td>' + x + '</td>';
       for (var i = 0; i < scientific.length; i++) {
         attr = { sigFigs: scientific[i] };
-        html += '<td>' + Dygraph.numberFormatter(x, g_mock) + '</td>';
+        html += '<td>' + Dygraph.numberFormatter(x, opts) + '</td>';
       }
       for (var i = 0; i < fixed.length; i++) {
         attr = { sigFigs: null, digitsAfterDecimal: fixed[i][0], maxNumberWidth: fixed[i][1] };
-        html += '<td>' + Dygraph.numberFormatter(x, g_mock) + '</td>';
+        html += '<td>' + Dygraph.numberFormatter(x, opts) + '</td>';
       }
       html += '</tr>\n';
     }

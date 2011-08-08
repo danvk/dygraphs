@@ -55,3 +55,23 @@ UtilsTestCase.prototype.testUpdateDeep = function() {
   assertEquals({x: 2, y: 2}, a['c']);
   assertEquals(null, a['d']);
 };
+
+UtilsTestCase.prototype.testUpdateDeepDecoupled = function() {
+  var a = {
+    a: 1,
+    b: [1, 2, 3],
+    c: { x: "original", y: 2},
+  };
+
+  var b = {};
+  Dygraph.updateDeep(b, a);
+
+  b.a = 2;
+  assertEquals(1, a.a);
+
+  b.b[0] = 2;
+  assertEquals(1, a.b[0]);
+
+  b.c.x = "new value";
+  assertEquals("original", a.c.x);
+};

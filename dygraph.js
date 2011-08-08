@@ -362,7 +362,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   Dygraph.update(this.user_attrs_, attrs);
 
   this.attrs_ = {};
-  Dygraph.update(this.attrs_, Dygraph.DEFAULT_ATTRS);
+  Dygraph.updateDeep(this.attrs_, Dygraph.DEFAULT_ATTRS);
 
   this.boundaryIds_ = [];
 
@@ -2685,6 +2685,8 @@ Dygraph.prototype.start_ = function() {
 Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   if (typeof(block_redraw) == 'undefined') block_redraw = false;
 
+  // mapLegacyOptions_ drops the "file" parameter as a convenience to us.
+  var file = input_attrs['file'];
   var attrs = Dygraph.mapLegacyOptions_(input_attrs);
 
   // TODO(danvk): this is a mess. Move these options into attr_.
@@ -2713,13 +2715,13 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
   Dygraph.updateDeep(this.user_attrs_, attrs);
 
-  if (attrs['file']) {
-    this.file_ = attrs['file'];
+  if (file) {
+    this.file_ = file;
     if (!block_redraw) this.start_();
   } else {
     if (!block_redraw) {
       if (requiresNewPoints) {
-        this.predraw_(); 
+        this.predraw_();
       } else {
         this.renderGraph_(false, false);
       }
@@ -2734,6 +2736,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 Dygraph.mapLegacyOptions_ = function(attrs) {
   var my_attrs = {};
   for (var k in attrs) {
+    if (k == 'file') continue;
     if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
   }
 

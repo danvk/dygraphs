@@ -481,9 +481,12 @@ Dygraph.updateDeep = function (self, o) {
       if (o.hasOwnProperty(k)) {
         if (o[k] == null) {
           self[k] = null;
-        } else if (typeof(self[k]) == 'object' &&
-                   typeof(o[k]) == 'object' &&
-                   !Dygraph.isArrayLike(o[k])) {
+        } else if (Dygraph.isArrayLike(o[k])) {
+          self[k] = o[k].slice();
+        } else if (typeof(o[k]) == 'object') {
+          if (typeof(self[k]) != 'object') {
+            self[k] = {};
+          }
           Dygraph.updateDeep(self[k], o[k]);
         } else {
           self[k] = o[k];
