@@ -239,15 +239,17 @@ Dygraph.DEFAULT_ATTRS = {
       pixelsPerLabel: 60,
       axisLabelFormatter: Dygraph.dateAxisFormatter,
       valueFormatter: Dygraph.dateString_,
-      ticker: Dygraph.newDateTicker,
+      ticker: null;  // will be set in dygraph-tickers.js
     },
     y: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberFormatter
+      valueFormatter: Dygraph.numberFormatter,
+      ticker: null;  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberFormatter
+      valueFormatter: Dygraph.numberFormatter,
+      ticker: null;  // will be set in dygraph-tickers.js
     }
   }
 };
@@ -2054,12 +2056,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     // Add ticks. By default, all axes inherit the tick positions of the
     // primary axis. However, if an axis is specifically marked as having
     // independent ticks, then that is permissible as well.
-    var ticker = Dygraph.newNumericTicks;  // this.attr_('yTicker');
+    var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+    var ticker = opts('ticker');
     if (i == 0 || axis.independentTicks) {
       axis.ticks = ticker(axis.computedValueRange[0],
                           axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.width
-                          this.optionsViewForAxis_('y' + (i ? '2' : '')),
+                          this.height_,  // TODO(danvk): should be area.height
+                          opts,
                           this);
     } else {
       var p_axis = this.axes_[0];
@@ -2075,8 +2078,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       axis.ticks = ticker(axis.computedValueRange[0],
                           axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.width
-                          this.optionsViewForAxis_('y2'),
+                          this.height_,  // TODO(danvk): should be area.height
+                          opts,
                           this,
                           tick_values);
     }

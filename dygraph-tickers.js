@@ -6,7 +6,7 @@
  *
  * A ticker is a function with the following interface:
  *
- * function(a, b, pixels, pixels_per_tick, options_view, forced_values);
+ * function(a, b, pixels, options_view, dygraph, forced_values);
  * -> [ { v: tick1_v, label: tick1_label[, label_v: label_v1] },
  *      { v: tick2_v, label: tick2_label[, label_v: label_v2] },
  *      ...
@@ -22,13 +22,13 @@
  * millis since epoch (convertable to Date objects using "new Date(a)" and "new
  * Date(b)").
  *
- * pixels is the length of the axis in pixels and pixels_per_tick is the
- * minimum amount of space to be allotted to each label. For instance, if
- * pixels=400 and pixels_per_tick=40 then the ticker should return between
- * zero and ten (400/40) ticks.
- *
  * opts provides access to chart- and axis-specific options. It can be used to
  * access number/date formatting code/options, check for a log scale, etc.
+ *
+ * pixels is the length of the axis in pixels. opts('pixelsPerLabel') is the
+ * minimum amount of space to be allotted to each label. For instance, if
+ * pixels=400 and opts('pixelsPerLabel')=40 then the ticker should return
+ * between zero and ten (400/40) ticks.
  *
  * dygraph is the Dygraph object for which an axis is being constructed.
  *
@@ -366,3 +366,6 @@ Dygraph.newGetDateAxis = function(start_time, end_time, granularity, opts) {
   return ticks;
 };
 
+Dygraph.DEFAULT_ATTRS.axes.x.ticker = Dygraph.newDateTicker;
+Dygraph.DEFAULT_ATTRS.axes.y.ticker = Dygraph.newNumericTicks;
+Dygraph.DEFAULT_ATTRS.axes.y2.ticker = Dygraph.newNumericTicks;
