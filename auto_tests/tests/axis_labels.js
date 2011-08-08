@@ -291,11 +291,6 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  // This is the existing behavior:
-  // assertEquals(['y0','y1','y2','y3','y4','y5','y6','y7','y8'], getXLabels());
-
-  // This is the correct behavior:
   assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
-
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
 };
