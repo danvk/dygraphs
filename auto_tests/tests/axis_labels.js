@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for how axis labels are chosen and formatted.
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
@@ -237,12 +237,9 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  // XXX
-  // This is the existing behavior:
   assertEquals(["0","2","4","6","8"], getXLabels());
-  //assertEquals(["y0","y1","y2","y3","y4","y5","y6","y7","y8"], getXLabels());
 
-  // This is the correct behavior:
+  // This would be more consistent with the behavior of yValueFormatter:
   // assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
 
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
@@ -257,7 +254,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
     width: 480,
     height: 320,
     xValueFormatter: function(x) {
-      return 'x' + x.strftime('%Y/%m/%d');
+      return 'x' + new Date(x).strftime('%Y/%m/%d');
     },
     yValueFormatter: function(y) {
       return 'y' + y;
@@ -275,16 +272,13 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   // This is the existing behavior:
   assertEquals(["01Jan","02Jan","03Jan","04Jan","05Jan","06Jan","07Jan","08Jan","09Jan"], getXLabels());
 
-  // XXX
-  // This is the correct behavior:
+  // This would be more consistent with the yValueFormatter behavior:
   // assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08", "x2011/01/09"], getXLabels());
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
 
-  // XXX
   // the valueFormatter options also affect the legend.
-  // TODO(danvk): this should get the same type of input as the axisLabelFormatter.
-  // g.setSelection(2);
-  // assertEquals("x2011/01/03: y:y20", getLegend());
+  g.setSelection(2);
+  assertEquals("x2011/01/03: y:y6", getLegend());
 };
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
