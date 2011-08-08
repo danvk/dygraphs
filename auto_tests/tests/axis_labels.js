@@ -97,7 +97,7 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assertEquals(["-0.01","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"], getYLabels());
+  assertEquals(["-1.00e-2","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"], getYLabels());
 
   g.setSelection(1);
   assertEquals('1: Y:0', getLegend());

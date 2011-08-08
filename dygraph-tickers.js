@@ -246,6 +246,25 @@ Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
+/**
+ * @private
+ * This is a list of human-friendly values at which to show tick marks on a log
+ * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
+ * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
+ * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
+ */
+Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
+  var vals = [];
+  for (var power = -39; power <= 39; power++) {
+    var range = Math.pow(10, power);
+    for (var mult = 1; mult <= 9; mult++) {
+      var val = range * mult;
+      vals.push(val);
+    }
+  }
+  return vals;
+}();
+
 Dygraph.newNumDateTicks = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
