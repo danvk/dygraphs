@@ -64,7 +64,6 @@ Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
   } else {
     // TODO(danvk): factor this log-scale block out into a separate function.
     if (opts("logscale")) {
-      // NOTE(konigsberg): Dan, should self.height_ be self.plotter_.area.h?
       var nTicks  = Math.floor(pixels / pixels_per_tick);
       var minIdx = Dygraph.binarySearch(a, Dygraph.PREFERRED_LOG_TICK_VALUES, 1);
       var maxIdx = Dygraph.binarySearch(b, Dygraph.PREFERRED_LOG_TICK_VALUES, -1);
@@ -88,7 +87,7 @@ Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
               pixel_coord : pixel_coord
             };
           } else {
-            if (pixel_coord - lastDisplayed.pixel_coord >= pixels_per_tick) {
+            if (Math.abs(pixel_coord - lastDisplayed.pixel_coord) >= pixels_per_tick) {
               lastDisplayed = {
                 tickValue : tickValue,
                 pixel_coord : pixel_coord
