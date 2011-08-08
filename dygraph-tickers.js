@@ -166,7 +166,7 @@ Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
-    var label = formatter(tickV, dygraph);
+    var label = formatter(tickV, opts, dygraph);
     if (k_labels.length > 0) {
       // TODO(danvk): should this be integrated into the axisLabelFormatter?
       // Round up to an appropriate unit.

@@ -86,6 +86,84 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
+// These are defined before DEFAULT_ATTRS so that it can refer to them.
+/**
+ * @private
+ * Return a string version of a number. This respects the digitsAfterDecimal
+ * and maxNumberWidth options.
+ * @param {Number} x The number to be formatted
+ * @param {Dygraph} opts An options view
+ * @param {Dygraph} g The dygraph object
+ */
+Dygraph.numberFormatter = function(x, opts, g) {
+  var sigFigs = opts('sigFigs');
+
+  if (sigFigs !== null) {
+    // User has opted for a fixed number of significant figures.
+    return Dygraph.floatFormat(x, sigFigs);
+  }
+
+  var digits = opts('digitsAfterDecimal');
+  var maxNumberWidth = opts('maxNumberWidth');
+
+  // switch to scientific notation if we underflow or overflow fixed display.
+  if (x !== 0.0 &&
+      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
+       Math.abs(x) < Math.pow(10, -digits))) {
+    return x.toExponential(digits);
+  } else {
+    return '' + Dygraph.round_(x, digits);
+  }
+};
+
+/**
+ * Convert a JS date (millis since epoch) to YYYY/MM/DD
+ * @param {Number} date The JavaScript date (ms since epoch)
+ * @return {String} A date of the form "YYYY/MM/DD"
+ * @private
+ */
+Dygraph.dateString_ = function(date) {
+  var zeropad = Dygraph.zeropad;
+  var d = new Date(date);
+
+  // Get the year:
+  var year = "" + d.getFullYear();
+  // Get a 0 padded month string
+  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  // Get a 0 padded day string
+  var day = zeropad(d.getDate());
+
+  var ret = "";
+  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  if (frac) ret = " " + Dygraph.hmsString_(date);
+
+  return year + "/" + month + "/" + day + ret;
+};
+
+/**
+ * Convert a JS date to a string appropriate to display on an axis that
+ * is displaying values at the stated granularity.
+ * @param {Date} date The date to format
+ * @param {Number} granularity One of the Dygraph granularity constants
+ * @return {String} The formatted date
+ * @private
+ */
+Dygraph.dateAxisFormatter = function(date, granularity) {
+  if (granularity >= Dygraph.DECADAL) {
+    return date.strftime('%Y');
+  } else if (granularity >= Dygraph.MONTHLY) {
+    return date.strftime('%b %y');
+  } else {
+    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
+    if (frac == 0 || granularity >= Dygraph.DAILY) {
+      return new Date(date.getTime() + 3600*1000).strftime('%d%b');
+    } else {
+      return Dygraph.hmsString_(date.getTime());
+    }
+  }
+};
+
+
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
@@ -159,17 +237,17 @@ Dygraph.DEFAULT_ATTRS = {
   axes: {
     x: {
       pixelsPerLabel: 60,
-      axisLabelFormatter: function(a, b) { return Dygraph.dateAxisFormatter(a, b) },
-      valueFormatter: function(a, b) { return Dygraph.dateString_(a, b) },
+      axisLabelFormatter: Dygraph.dateAxisFormatter,
+      valueFormatter: Dygraph.dateString_,
       ticker: Dygraph.newDateTicker,
     },
     y: {
       pixelsPerLabel: 30,
-      valueFormatter: function(a,b) { return Dygraph.numberFormatter(a,b); },
+      valueFormatter: Dygraph.numberFormatter
     },
     y2: {
       pixelsPerLabel: 30,
-      valueFormatter: function(a,b) { return Dygraph.numberFormatter(a,b); },
+      valueFormatter: Dygraph.numberFormatter
     }
   }
 };
@@ -1278,7 +1356,8 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
   var xvf = this.optionsViewForAxis_('x')('valueFormatter');
   var html = xvf(x) + ":";
 
-  var fmtFunc = this.optionsViewForAxis_('y')('valueFormatter');
+  var yOptView = this.optionsViewForAxis_('y');
+  var fmtFunc = yOptView('valueFormatter');
   var showZeros = this.attr_("labelsShowZeroValues");
   var sepLines = this.attr_("labelsSeparateLines");
   for (var i = 0; i < this.selPoints_.length; i++) {
@@ -1288,7 +1367,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (sepLines) html += "<br/>";
 
     var c = this.plotter_.colors[pt.name];
-    var yval = fmtFunc(pt.yval, this);
+    var yval = fmtFunc(pt.yval, yOptView, this);
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><span style='color: " + c + ";'>"
       + pt.name + "</span></b>:"
@@ -1447,57 +1526,6 @@ Dygraph.prototype.getSelection = function() {
     }
   }
   return -1;
-};
-
-/**
- * @private
- * Return a string version of a number. This respects the digitsAfterDecimal
- * and maxNumberWidth options.
- * @param {Number} x The number to be formatted
- * @param {Dygraph} g The dygraph object
- */
-Dygraph.numberFormatter = function(x, g) {
-  var sigFigs = g.attr_('sigFigs');
-
-  if (sigFigs !== null) {
-    // User has opted for a fixed number of significant figures.
-    return Dygraph.floatFormat(x, sigFigs);
-  }
-
-  var digits = g.attr_('digitsAfterDecimal');
-  var maxNumberWidth = g.attr_('maxNumberWidth');
-
-  // switch to scientific notation if we underflow or overflow fixed display.
-  if (x !== 0.0 &&
-      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-       Math.abs(x) < Math.pow(10, -digits))) {
-    return x.toExponential(digits);
-  } else {
-    return '' + Dygraph.round_(x, digits);
-  }
-};
-
-/**
- * Convert a JS date to a string appropriate to display on an axis that
- * is displaying values at the stated granularity.
- * @param {Date} date The date to format
- * @param {Number} granularity One of the Dygraph granularity constants
- * @return {String} The formatted date
- * @private
- */
-Dygraph.dateAxisFormatter = function(date, granularity) {
-  if (granularity >= Dygraph.DECADAL) {
-    return date.strftime('%Y');
-  } else if (granularity >= Dygraph.MONTHLY) {
-    return date.strftime('%b %y');
-  } else {
-    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
-    if (frac == 0 || granularity >= Dygraph.DAILY) {
-      return new Date(date.getTime() + 3600*1000).strftime('%d%b');
-    } else {
-      return Dygraph.hmsString_(date.getTime());
-    }
-  }
 };
 
 /**
