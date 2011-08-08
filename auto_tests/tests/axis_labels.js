@@ -30,6 +30,11 @@ function getXLabels() {
   return ary;
 }
 
+function getLegend() {
+  var legend = document.getElementsByClassName("dygraph-legend")[0];
+  return legend.textContent;
+}
+
 AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   var opts = {
     width: 480,
@@ -63,6 +68,9 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   data += "6,100\n";
   g.updateOptions({file: data});
   assertEquals(['0','20','40','60','80','100'], getYLabels());
+
+  g.setSelection(0);
+  assertEquals('0: Y:-1', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
@@ -90,6 +98,9 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
   assertEquals(["-0.01","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"], getYLabels());
+
+  g.setSelection(1);
+  assertEquals('1: Y:0', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
@@ -118,6 +129,9 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
   g.updateOptions(opts);
   // TODO(danvk): this is even worse!
   assertEquals(["10","10","10","10","10","10","10","10","10","10"], getYLabels());
+
+  g.setSelection(1);
+  assertEquals('1: Y:0', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
@@ -142,23 +156,12 @@ AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
     }
   });
 
-  // This is what the output should be:
   assertEquals(["00:05:00","00:05:12","00:05:24","00:05:36","00:05:48"], getXLabels());
 
-  // This is what it is:
-  // assertEquals(['5','5.1','5.2','5.3','5.4','5.5', '5.6', '5.7', '5.8', '5.9'], getXLabels());
+  // The legend does not use the xAxisLabelFormatter:
+  g.setSelection(1);
+  assertEquals('5.1: Y1:1', getLegend());
 };
-
-/*
-  Things to test:
-	+ xAxisLabelFormatter
-        xValueFormatter
-        + yAxisLabelFormatter
-        yValueFormatter
-
-  Test w/ both date and numeric x-axis
-  Test axisLabelFormatter and valueFormatter set simultaneously
-*/
 
 AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   var opts = {
@@ -181,6 +184,9 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
 
   assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(2);
+  assertEquals("2: y:4", getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
@@ -204,6 +210,9 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
 
   assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08", "x2011/01/09"], getXLabels());
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(0);
+  assertEquals("2011/01/01: y:2", getLegend());
 };
 
 // This test verifies that when a valueFormatter is set (but not an
@@ -230,11 +239,16 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
 
   // This is the existing behavior:
   assertEquals(["0","2","4","6","8"], getXLabels());
+  //assertEquals(["y0","y1","y2","y3","y4","y5","y6","y7","y8"], getXLabels());
 
   // This is the correct behavior:
   // assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
 
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  // the valueFormatter options also affect the legend.
+  g.setSelection(2);
+  assertEquals("x2: y:y4", getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
@@ -262,6 +276,11 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   // This is the correct behavior:
   // assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08", "x2011/01/09"], getXLabels());
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  // the valueFormatter options also affect the legend.
+  // TODO(danvk): this should get the same type of input as the axisLabelFormatter.
+  // g.setSelection(2);
+  // assertEquals("x2011/01/03: y:y20", getLegend());
 };
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
@@ -293,4 +312,56 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
 
   assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(9);
+  assertEquals("xvf9: y:yvf18", getLegend());
+};
+
+// This is the same as the previous test, except that options are added
+// one-by-one.
+AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.updateOptions({
+    xValueFormatter: function(x) {
+      return 'xvf' + x;
+    }
+  });
+  g.updateOptions({
+    yValueFormatter: function(y) {
+      return 'yvf' + y;
+    }
+  });
+  g.updateOptions({
+    xAxisLabelFormatter: function(x, granularity) {
+      return 'x' + x;
+    }
+  });
+  g.updateOptions({
+    yAxisLabelFormatter: function(y) {
+      return 'y' + y;
+    }
+  });
+
+  // unclear why this is the existing behavior:
+  //assertEquals(["0","1","2","3","4","5","6","7","8"], getXLabels());
+  assertEquals(["0","2","4","6","8"], getXLabels());
+  //assertEquals(['0','2','4','6','8','10','12','14','16','18'], getYLabels());
+
+  //assertEquals(["y0","y1","y2","y3","y4","y5","y6","y7","y8"], getXLabels());
+  //assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
+  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(9);
+  //assertEquals("xvf9: y:yvf18", getLegend());
+  assertEquals("9: y:18", getLegend());
 };
