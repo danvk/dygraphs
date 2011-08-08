@@ -178,11 +178,6 @@ function compare_(expected, actual) {
     return false;
   }
 
-  if (isNaN(expected) && isNaN(actual)) {
-    // This has to be special-cased because (NaN === NaN) == false.
-    return true;
-  }
-
   var key = null;
   var actualLength   = 0;
   var expectedLength = 0;
