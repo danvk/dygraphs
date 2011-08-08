@@ -54,7 +54,7 @@
  *   middle of the years.
  */
 
-Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
+Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = opts('pixelsPerLabel');
   var ticks = [];
   if (vals) {
@@ -185,11 +185,11 @@ Dygraph.newNumericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 
-Dygraph.newDateTicker = function(a, b, pixels, opts, dygraph, vals) {
+Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = opts('pixelsPerLabel');
   var chosen = -1;
   for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
-    var num_ticks = Dygraph.newNumDateTicks(a, b, i);
+    var num_ticks = Dygraph.numDateTicks(a, b, i);
     if (pixels / num_ticks >= pixels_per_tick) {
       chosen = i;
       break;
@@ -197,7 +197,7 @@ Dygraph.newDateTicker = function(a, b, pixels, opts, dygraph, vals) {
   }
 
   if (chosen >= 0) {
-    return Dygraph.newGetDateAxis(a, b, chosen, opts);
+    return Dygraph.getDateAxis(a, b, chosen, opts);
   } else {
     // this can happen if self.width_ is zero.
     return [];
@@ -264,7 +264,7 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   return vals;
 }();
 
-Dygraph.newNumDateTicks = function(start_time, end_time, granularity) {
+Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
@@ -284,7 +284,7 @@ Dygraph.newNumDateTicks = function(start_time, end_time, granularity) {
   }
 };
 
-Dygraph.newGetDateAxis = function(start_time, end_time, granularity, opts) {
+Dygraph.getDateAxis = function(start_time, end_time, granularity, opts) {
   var formatter = opts("axisLabelFormatter");
   var ticks = [];
   if (granularity < Dygraph.MONTHLY) {
@@ -366,6 +366,7 @@ Dygraph.newGetDateAxis = function(start_time, end_time, granularity, opts) {
   return ticks;
 };
 
-Dygraph.DEFAULT_ATTRS.axes.x.ticker = Dygraph.newDateTicker;
-Dygraph.DEFAULT_ATTRS.axes.y.ticker = Dygraph.newNumericTicks;
-Dygraph.DEFAULT_ATTRS.axes.y2.ticker = Dygraph.newNumericTicks;
+// These are set here so that this file can be included after dygraph.js.
+Dygraph.DEFAULT_ATTRS.axes.x.ticker = Dygraph.dateTicker;
+Dygraph.DEFAULT_ATTRS.axes.y.ticker = Dygraph.numericTicks;
+Dygraph.DEFAULT_ATTRS.axes.y2.ticker = Dygraph.numericTicks;

@@ -233,23 +233,23 @@ Dygraph.DEFAULT_ATTRS = {
 
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
 
-  // the anonymous function wrappers force delayed binding.
+  // per-axis options
   axes: {
     x: {
       pixelsPerLabel: 60,
       axisLabelFormatter: Dygraph.dateAxisFormatter,
       valueFormatter: Dygraph.dateString_,
-      ticker: null;  // will be set in dygraph-tickers.js
+      ticker: null  // will be set in dygraph-tickers.js
     },
     y: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberFormatter,
-      ticker: null;  // will be set in dygraph-tickers.js
+      ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberFormatter,
-      ticker: null;  // will be set in dygraph-tickers.js
+      ticker: null  // will be set in dygraph-tickers.js
     }
   }
 };
@@ -2247,7 +2247,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
   if (isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.ticker = Dygraph.newDateTicker;
+    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
     // TODO(danvk): use Dygraph.numberFormatter here?
@@ -2255,7 +2255,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.newNumericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
 };
@@ -2469,7 +2469,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
-    this.attrs_.axes.x.ticker = Dygraph.newDateTicker;
+    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -2492,7 +2492,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberFormatter;
-    this.attrs_.axes.x.ticker = Dygraph.newNumericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     return data;
   }
 };
@@ -2514,12 +2514,12 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   if (indepType == 'date' || indepType == 'datetime') {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.ticker = Dygraph.newDateTicker;
+    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.newNumericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
     this.error("only 'date', 'datetime' and 'number' types are supported for " +
