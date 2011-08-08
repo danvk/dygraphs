@@ -523,6 +523,7 @@ Dygraph.isDateLike = function (o) {
 };
 
 /**
+ * Note: this only seems to work for arrays.
  * @private
  */
 Dygraph.clone = function(o) {

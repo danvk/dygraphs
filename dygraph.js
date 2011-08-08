@@ -2692,7 +2692,11 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
  * @private
  */
 Dygraph.mapLegacyOptions_ = function(attrs) {
-  var my_attrs = Dygraph.clone(attrs);
+  var my_attrs = {};
+  for (var k in attrs) {
+    if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
+  }
+
   var set = function(axis, opt, value) {
     if (!my_attrs.axes) my_attrs.axes = {};
     if (!my_attrs.axes[axis]) my_attrs.axes[axis] = {};
