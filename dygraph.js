@@ -1538,10 +1538,6 @@ Dygraph.prototype.loadedEvent_ = function(data) {
   this.predraw_();
 };
 
-Dygraph.prototype.months =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-Dygraph.prototype.quarters = ["Jan", "Apr", "Jul", "Oct"];
-
 /**
  * Add ticks on the x-axis representing years, months, quarters, weeks, or days
  * @private
