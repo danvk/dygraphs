@@ -219,6 +219,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
+  if (!div) {
+    Dygraph.error("Constructing dygraph with a non-existent div!");
+    return;
+  }
+
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
@@ -365,6 +370,13 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     axis_opts = self.attrs_['axes'];
     if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
       return axis_opts[axis][opt];
+    }
+    // check old-style axis options
+    // TODO(danvk): add a deprecation warning if either of these match.
+    if (axis == 'y' && self.axes_[0].hasOwnProperty(opt)) {
+      return self.axes_[0][opt];
+    } else if (axis == 'y2' && self.axes_[1].hasOwnProperty(opt)) {
+      return self.axes_[1][opt];
     }
     return self.attr_(opt);
   };
