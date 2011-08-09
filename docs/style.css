@@ -46,6 +46,7 @@ top: 0px;
 border-left: 2px solid rgb(229, 236, 249);
 padding-left: 20px;
 margin-left: 0px;
+max-width: 900px;
 }
 
 #content h1 {
