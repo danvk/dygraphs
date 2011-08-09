@@ -2365,7 +2365,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
     return originalData;
-  var rollPeriod = Math.min(rollPeriod, originalData.length - 1);
+  var rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = this.attr_("sigma");
 
@@ -3025,6 +3025,7 @@ Dygraph.prototype.resize = function(width, height) {
   if (old_width != this.width_ || old_height != this.height_) {
     // TODO(danvk): there should be a clear() method.
     this.maindiv_.innerHTML = "";
+    this.roller_ = null;
     this.attrs_.labelsDiv = null;
     this.createInterface_();
     this.predraw_();
