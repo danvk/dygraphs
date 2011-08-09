@@ -1,0 +1,19 @@
+- Rectify the various function signatures of valueFormatter and axisLabelFormatter
+
+- Update all options in the options-reference:
+  - xValueFormatter
+  - pixelsPerXLabel
+  - xAxisLabelFormatter
+  - xTicker
+  - yValueFormatter
+  - pixelsPerYLabel
+  - yAxisLabelFormatter
+  - yTicker
+  + valueFormatter
+  + ticker
+  + axisLabelFormatter
+  + pixelsPerLabel
+
+- Write per-axis.html explaining how this works.
+
+- Write some (non-auto) tests
