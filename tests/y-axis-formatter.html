@@ -51,11 +51,15 @@
                 ],
                 {
                     stepPlot: true,
-                    yValueFormatter: function(x) {
-                        var shift = Math.pow(10, 5)
-                        return Math.round(x * shift) / shift
-                    },
-                    labels: ["X", "Data"]
+                    labels: ["X", "Data"],
+                    axes: {
+                      y: {
+                        valueFormatter: function(x) {
+                          var shift = Math.pow(10, 5)
+                          return Math.round(x * shift) / shift
+                        },
+                      }
+                    }
                 }
             );
         </script>
@@ -74,15 +78,19 @@
                 ],
                 {
                     stepPlot: true,
-                    yValueFormatter: function(x) {
-                        var shift = Math.pow(10, 5)
-                        return "*" + Math.round(x * shift) / shift
-                    },
-                    yAxisLabelFormatter: function(x) {
-                        var shift = Math.pow(10, 5)
-                        return "+" + Math.round(x * shift) / shift
-                    },
-                    labels: ["X", "Data"]
+                    labels: ["X", "Data"],
+                    axes: {
+                      y: {
+                        valueFormatter: function(x) {
+                          var shift = Math.pow(10, 5)
+                          return "*" + Math.round(x * shift) / shift
+                        },
+                        axisLabelFormatter: function(x) {
+                          var shift = Math.pow(10, 5)
+                          return "+" + Math.round(x * shift) / shift
+                        }
+                      }
+                    }
                 }
             );
         </script>

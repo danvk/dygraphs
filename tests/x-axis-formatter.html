@@ -45,10 +45,13 @@
             document.getElementById("offby2"),
             HourlyData(),
             { 
-              xAxisLabelFormatter:
-                function(d, gran) {
-                  return Dygraph.dateAxisFormatter(new Date(d.getTime() + 7200*1000), gran);
+              axes: {
+                x: {
+                  axisLabelFormatter: function(d, gran) {
+                      return Dygraph.dateAxisFormatter(new Date(d.getTime() + 7200*1000), gran);
+                  }
                 }
+              }
             });
 
       new Dygraph(
@@ -56,12 +59,15 @@
             HourlyData(),
             { 
               xAxisLabelWidth: 70,
-              xAxisLabelFormatter:
-                function(d, gran) {
-                  return Dygraph.zeropad(d.getHours()) + ":"
-                      + Dygraph.zeropad(d.getMinutes()) + ":"
-                      + Dygraph.zeropad(d.getSeconds());
+              axes: {
+                x: {
+                  axisLabelFormatter: function(d, gran) {
+                    return Dygraph.zeropad(d.getHours()) + ":"
+                        + Dygraph.zeropad(d.getMinutes()) + ":"
+                        + Dygraph.zeropad(d.getSeconds());
+                  }
                 }
+              }
             });
     </script>
   </body>
