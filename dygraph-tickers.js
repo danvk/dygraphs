@@ -165,7 +165,8 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     var tickV = ticks[i].v;
     var absTickV = Math.abs(tickV);
-    var label = formatter(tickV, opts, dygraph);
+    // TODO(danvk): set granularity to something appropriate here.
+    var label = formatter(tickV, 0, opts, dygraph);
     if (k_labels.length > 0) {
       // TODO(danvk): should this be integrated into the axisLabelFormatter?
       // Round up to an appropriate unit.
@@ -197,7 +198,7 @@ Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   }
 
   if (chosen >= 0) {
-    return Dygraph.getDateAxis(a, b, chosen, opts);
+    return Dygraph.getDateAxis(a, b, chosen, opts, dygraph);
   } else {
     // this can happen if self.width_ is zero.
     return [];
@@ -284,7 +285,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   }
 };
 
-Dygraph.getDateAxis = function(start_time, end_time, granularity, opts) {
+Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = opts("axisLabelFormatter");
   var ticks = [];
   if (granularity < Dygraph.MONTHLY) {
@@ -322,7 +323,9 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts) {
     start_time = d.getTime();
 
     for (var t = start_time; t <= end_time; t += spacing) {
-      ticks.push({ v:t, label: formatter(new Date(t), granularity) });
+      ticks.push({ v:t,
+                   label: formatter(new Date(t), granularity, opts, dg)
+                 });
     }
   } else {
     // Display a tick mark on the first of a set of months of each year.
@@ -358,7 +361,9 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts) {
         var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
         var t = Dygraph.dateStrToMillis(date_str);
         if (t < start_time || t > end_time) continue;
-        ticks.push({ v:t, label: formatter(new Date(t), granularity) });
+        ticks.push({ v:t,
+                     label: formatter(new Date(t), granularity, opts, dg)
+                   });
       }
     }
   }

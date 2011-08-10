@@ -95,7 +95,7 @@ Dygraph.DEFAULT_HEIGHT = 320;
  * @param {Dygraph} opts An options view
  * @param {Dygraph} g The dygraph object
  */
-Dygraph.numberFormatter = function(x, opts, g) {
+Dygraph.numberValueFormatter = function(x, opts, g) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -114,6 +114,14 @@ Dygraph.numberFormatter = function(x, opts, g) {
   } else {
     return '' + Dygraph.round_(x, digits);
   }
+};
+
+/**
+ * variant for use as an axisLabelFormatter.
+ * @private
+ */
+Dygraph.numberAxisLabelFormatter = function(x, granularity, opts, g) {
+  return Dygraph.numberValueFormatter(x, opts, g);
 };
 
 /**
@@ -242,14 +250,14 @@ Dygraph.DEFAULT_ATTRS = {
     },
     y: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberFormatter,
-      axisLabelFormatter: Dygraph.numberFormatter,
+      valueFormatter: Dygraph.numberValueFormatter,
+      axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberFormatter,
-      axisLabelFormatter: Dygraph.numberFormatter,
+      valueFormatter: Dygraph.numberValueFormatter,
+      axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
       ticker: null  // will be set in dygraph-tickers.js
     }
   }
@@ -1357,8 +1365,9 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     return html;
   }
 
-  var xvf = this.optionsViewForAxis_('x')('valueFormatter');
-  var html = xvf(x) + ":";
+  var xOptView = this.optionsViewForAxis_('x');
+  var xvf = xOptView('valueFormatter');
+  var html = xvf(x, xOptView, this) + ":";
 
   var yOptView = this.optionsViewForAxis_('y');
   var fmtFunc = yOptView('valueFormatter');
@@ -2252,9 +2261,9 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
   } else {
-    // TODO(danvk): use Dygraph.numberFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+    // TODO(danvk): use Dygraph.numberValueFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.ticker = Dygraph.numericTicks;
@@ -2493,7 +2502,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     return data;
   }
