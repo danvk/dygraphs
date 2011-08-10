@@ -166,10 +166,18 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
-    xAxisLabelFormatter: function(x, granularity) {
+    xAxisLabelFormatter: function(x, granularity, opts, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'x' + x;
     },
-    yAxisLabelFormatter: function(y) {
+    yAxisLabelFormatter: function(y, granularity, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
     labels: ['x', 'y']
@@ -192,10 +200,18 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
-    xAxisLabelFormatter: function(x, granularity, b) {
+    xAxisLabelFormatter: function(x, granularity, opts, dg) {
+      assertTrue(Dygraph.isDateLike(x));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'x' + x.strftime('%Y/%m/%d');
     },
-    yAxisLabelFormatter: function(y, a, b) {
+    yAxisLabelFormatter: function(y, granularity, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
     labels: ['x', 'y']
@@ -221,10 +237,16 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
-    xValueFormatter: function(x) {
+    xValueFormatter: function(x, opts, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'x' + x;
     },
-    yValueFormatter: function(y) {
+    yValueFormatter: function(y, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
     labels: ['x', 'y']
@@ -250,10 +272,16 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
-    xValueFormatter: function(x) {
+    xValueFormatter: function(x, opts, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'x' + new Date(x).strftime('%Y/%m/%d');
     },
-    yValueFormatter: function(y) {
+    yValueFormatter: function(y, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
     labels: ['x', 'y']
