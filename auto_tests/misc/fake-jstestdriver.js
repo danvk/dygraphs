@@ -116,7 +116,6 @@ function addGlobalTestSymbols() {
           globalTestDb[name] = function(name, tc_class) {
             return function() {
               var tc = new tc_class;
-              console.log(name);
               return tc.runTest(name);
             };
           }(name, tc_class);
