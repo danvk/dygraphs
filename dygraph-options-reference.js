@@ -103,16 +103,22 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>."
   },
   "xValueFormatter": {
-    "default": "(Round to 2 decimal places)",
-    "labels": ["Axis display"],
-    "type": "function(x)",
-    "description": "Function to provide a custom display format for the X value for mouseover."
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "",
+    "description": "Prefer axes: { x: { valueFormatter } }"
+  },
+  "valueFormatter": {
+    "default": "Depends on the type of your data.",
+    "labels": ["Legend", "Value display/formatting"],
+    "type": "function(num or millis, opts, dygraph)",
+    "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. For date axes, you can call new Date(millis) to get a Date object. opts is a function you can call to access various options (e.g. opts('labelsKMB'))."
   },
   "pixelsPerYLabel": {
-    "default": "30",
-    "labels": ["Axis display", "Grid"],
+    "default": "",
+    "labels": ["Deprecated"],
     "type": "integer",
-    "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks."
+    "description": "Prefer axes: { y: { pixelsPerLabel } }"
   },
   "annotationMouseOverHandler": {
     "default": "null",
@@ -183,8 +189,14 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "xTicker": {
     "default": "Dygraph.dateTicker or Dygraph.numericTicks",
     "labels": ["Axis display"],
-    "type": "function(min, max, dygraph) -> [{v: ..., label: ...}, ...]",
-    "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result."
+    "type": "function(min, max, pixels, opts, dygraph, vals) -> [{v: ..., label: ...}, ...]",
+    "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion."
+  },
+  "xTicker": {
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "",
+    "description": "Prefer axes: { x: { ticker } }"
   },
   "xAxisLabelWidth": {
     "default": "50",
@@ -211,10 +223,16 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Set to either an object ({}) filled with options for this axis or to the name of an existing data series with its own axis to re-use that axis. See tests for usage."
   },
   "pixelsPerXLabel": {
-    "default": "60",
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "integer",
+    "description": "Prefer axes { x: { pixelsPerLabel } }"
+  },
+  "pixelsPerLabel": {
+    "default": "60 (x-axis) or 30 (y-axes)",
     "labels": ["Axis display", "Grid"],
     "type": "integer",
-    "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks."
+    "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks. This is set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "labelsDiv": {
     "default": "null",
@@ -304,10 +322,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Whether to hide the legend when the mouse leaves the chart area."
   },
   "yValueFormatter": {
-    "default": "(Round to 2 decimal places)",
-    "labels": ["Axis display"],
-    "type": "function(x)",
-    "description": "Function to provide a custom display format for the Y value for mouseover."
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "",
+    "description": "Prefer axes: { y: { valueFormatter } }"
   },
   "legend": {
     "default": "onmouseover",
@@ -346,10 +364,16 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
   },
   "xAxisLabelFormatter": {
-    "default": "Dygraph.dateAxisFormatter",
-    "labels": ["Axis display", "Value display/formatting"],
-    "type": "function(date, granularity)",
-    "description": "Function to call to format values along the x axis."
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "",
+    "description": "Prefer axes { x: { axisLabelFormatter } }"
+  },
+  "axisLabelFormatter": {
+    "default": "Depends on the data type",
+    "labels": ["Axis display"],
+    "type": "function(number or Date, granularity, opts, dygraph)",
+    "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. The first parameter is either a number (for a numeric axis) or a Date object (for a date axis). The second argument specifies how fine-grained the axis is. For date axes, this is a reference to the time granularity enumeration, defined in dygraph-tickers.js, e.g. Dygraph.WEEKLY. opts is a function which provides access to various options on the dygraph, e.g. opts('labelsKMB')."
   },
   "clickCallback": {
     "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
@@ -359,10 +383,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the x-value that was clicked (for dates this is millis since epoch), and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
   },
   "yAxisLabelFormatter": {
-    "default": "yValueFormatter",
-    "labels": ["Axis display", "Value display/formatting"],
-    "type": "function(x)",
-    "description": "Function used to format values along the Y axis. By default it uses the same as the <code>yValueFormatter</code> unless specified."
+    "default": "",
+    "labels": ["Deprecated"],
+    "type": "",
+    "description": "Prefer axes: { y: { axisLabelFormatter } }"
   },
   "labels": {
     "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
@@ -580,7 +604,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Rolling Averages',
    'Value display/formatting',
    'Zooming',
-   'Debugging'
+   'Debugging',
+   'Deprecated'
   ];
   var cats = {};
   for (var i = 0; i < valid_cats.length; i++) cats[valid_cats[i]] = true;

@@ -1,18 +1,17 @@
-- Rectify the various function signatures of valueFormatter and axisLabelFormatter
+x Rectify the various function signatures of valueFormatter and axisLabelFormatter
 
-- Update all options in the options-reference:
-  - xValueFormatter
-  - pixelsPerXLabel
-  - xAxisLabelFormatter
-  - xTicker
-  - yValueFormatter
-  - pixelsPerYLabel
-  - yAxisLabelFormatter
-  - yTicker
-  + valueFormatter
-  + ticker
-  + axisLabelFormatter
-  + pixelsPerLabel
+x Update all options in the options-reference:
+  x xValueFormatter
+  x pixelsPerXLabel
+  x xAxisLabelFormatter
+  x xTicker
+  x yValueFormatter
+  x pixelsPerYLabel
+  x yAxisLabelFormatter
+  x valueFormatter
+  x ticker
+  x axisLabelFormatter
+  x pixelsPerLabel
 
 - Write per-axis.html explaining how this works.
 
