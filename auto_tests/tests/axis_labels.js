@@ -378,3 +378,29 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
   g.setSelection(9);
   assertEquals("xvf9: y:yvf18", getLegend());
 };
+
+AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    labels: ['x', 'y'],
+    valueFormatter: function(x) {
+      return 'vf' + x;
+    },
+    axisLabelFormatter: function(x) {
+      return 'alf' + x;
+    }
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals(['alf0','alf2','alf4','alf6','alf8'], getXLabels());
+  assertEquals(['alf0','alf2','alf4','alf6','alf8','alf10','alf12','alf14','alf16','alf18'], getYLabels());
+
+  g.setSelection(9);
+  assertEquals("vf9: y:vf18", getLegend());
+};

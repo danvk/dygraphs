@@ -457,6 +457,12 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
       return axis_opts[axis][opt];
     }
+    // user-specified attributes always trump defaults, even if they're less
+    // specific.
+    if (typeof(self.user_attrs_[opt]) != 'undefined') {
+      return self.user_attrs_[opt];
+    }
+
     axis_opts = self.attrs_['axes'];
     if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
       return axis_opts[axis][opt];
@@ -1369,8 +1375,11 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
   var xvf = xOptView('valueFormatter');
   var html = xvf(x, xOptView, this) + ":";
 
-  var yOptView = this.optionsViewForAxis_('y');
-  var fmtFunc = yOptView('valueFormatter');
+  var yOptViews = [];
+  var num_axes = this.numAxes();
+  for (var i = 0; i < num_axes; i++) {
+    yOptViews[i] = this.optionsViewForAxis_('y' + (i ? 1 + i : ''));
+  }
   var showZeros = this.attr_("labelsShowZeroValues");
   var sepLines = this.attr_("labelsSeparateLines");
   for (var i = 0; i < this.selPoints_.length; i++) {
@@ -1379,8 +1388,11 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     if (!Dygraph.isOK(pt.canvasy)) continue;
     if (sepLines) html += "<br/>";
 
+    var yOptView = yOptViews[this.seriesToAxisMap_[pt.name]];
+    var fmtFunc = yOptView('valueFormatter');
     var c = this.plotter_.colors[pt.name];
     var yval = fmtFunc(pt.yval, yOptView, this);
+
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><span style='color: " + c + ";'>"
       + pt.name + "</span></b>:"

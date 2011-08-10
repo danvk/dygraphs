@@ -13,6 +13,8 @@ x Update all options in the options-reference:
   x axisLabelFormatter
   x pixelsPerLabel
 
-- Write per-axis.html explaining how this works.
+x Write per-axis.html explaining how this works.
 
-- Write some (non-auto) tests
+x Write some (non-auto) tests
+
+x Test for axisLabelFormatter set at top level.
