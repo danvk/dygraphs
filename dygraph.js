@@ -243,11 +243,13 @@ Dygraph.DEFAULT_ATTRS = {
     y: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberFormatter,
+      axisLabelFormatter: Dygraph.numberFormatter,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberFormatter,
+      axisLabelFormatter: Dygraph.numberFormatter,
       ticker: null  // will be set in dygraph-tickers.js
     }
   }

@@ -158,7 +158,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     k_labels = [ "k", "M", "G", "T" ];
   }
 
-  var formatter = opts('axisLabelFormatter') || opts('valueFormatter');
+  var formatter = opts('axisLabelFormatter');
 
   // Add labels to the ticks.
   for (var i = 0; i < ticks.length; i++) {
