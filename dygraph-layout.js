@@ -126,6 +126,14 @@ DygraphLayout.prototype._evaluateLimits = function() {
   }
 };
 
+DygraphLayout._calcYNormal = function(axis, value) {
+  if (axis.logscale) {
+    return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
+  } else {
+    return 1.0 - ((value - axis.minyval) * axis.yscale);
+  }
+};
+
 DygraphLayout.prototype._evaluateLineCharts = function() {
   // add all the rects
   this.points = new Array();
@@ -148,15 +156,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       var xValue = parseFloat(dataset[j][0]);
       var yValue = parseFloat(dataset[j][1]);
 
-      // Range from 0-1 where 0 represents top and 1 represents bottom
-      var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents left and 1 represents right.
-      var yNormal;
-      if (axis.logscale) {
-        yNormal = 1.0 - ((Dygraph.log10(yValue) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
-      } else {
-        yNormal = 1.0 - ((yValue - axis.minyval) * axis.yscale);
-      }
+      var xNormal = (xValue - this.minxval) * this.xscale;
+      // Range from 0-1 where 0 represents top and 1 represents bottom
+      var yNormal = DygraphLayout._calcYNormal(axis, yValue);
+
       var point = {
         // TODO(danvk): here
         x: xNormal,
@@ -212,6 +216,7 @@ DygraphLayout.prototype.evaluateWithError = function() {
     if (!this.datasets.hasOwnProperty(setName)) continue;
     var j = 0;
     var dataset = this.datasets[setName];
+    var axis = this.dygraph_.axisPropertiesForSeries(setName);
     for (var j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
       var xv = parseFloat(item[0]);
@@ -219,8 +224,13 @@ DygraphLayout.prototype.evaluateWithError = function() {
 
       if (xv == this.points[i].xval &&
           yv == this.points[i].yval) {
-        this.points[i].errorMinus = parseFloat(item[2]);
-        this.points[i].errorPlus = parseFloat(item[3]);
+        var errorMinus = parseFloat(item[2]);
+        var errorPlus = parseFloat(item[3]);
+
+        var yv_minus = yv - errorMinus;
+        var yv_plus = yv + errorPlus;
+        this.points[i].y_top = DygraphLayout._calcYNormal(axis, yv_minus);
+        this.points[i].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus);
       }
     }
   }
