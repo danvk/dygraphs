@@ -93,9 +93,10 @@ Dygraph.DEFAULT_HEIGHT = 320;
  * and maxNumberWidth options.
  * @param {Number} x The number to be formatted
  * @param {Dygraph} opts An options view
+ * @param {String} name The name of the point's data series
  * @param {Dygraph} g The dygraph object
  */
-Dygraph.numberValueFormatter = function(x, opts, g) {
+Dygraph.numberValueFormatter = function(x, opts, pt, g) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -1373,7 +1374,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
 
   var xOptView = this.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
-  var html = xvf(x, xOptView, this) + ":";
+  var html = xvf(x, xOptView, this.attr_('labels')[0], this) + ":";
 
   var yOptViews = [];
   var num_axes = this.numAxes();
@@ -1391,7 +1392,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
     var yOptView = yOptViews[this.seriesToAxisMap_[pt.name]];
     var fmtFunc = yOptView('valueFormatter');
     var c = this.plotter_.colors[pt.name];
-    var yval = fmtFunc(pt.yval, yOptView, this);
+    var yval = fmtFunc(pt.yval, yOptView, pt.name, this);
 
     // TODO(danvk): use a template string here and make it an attribute.
     html += " <b><span style='color: " + c + ";'>"
