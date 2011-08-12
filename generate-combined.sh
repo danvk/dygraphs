@@ -12,6 +12,7 @@ dygraph.js \
 dygraph-utils.js \
 dygraph-gviz.js \
 dygraph-interaction-model.js \
+dygraph-range-selector.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \

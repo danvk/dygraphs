@@ -18,6 +18,7 @@
     "dygraph-utils.js",
     "dygraph-gviz.js",
     "dygraph-interaction-model.js",
+    "dygraph-range-selector.js",
     "dygraph-options-reference.js"  // Shouldn't be included in generate-combined.sh
   ];
 
