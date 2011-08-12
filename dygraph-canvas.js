@@ -41,7 +41,7 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.annotations = new Array();
   this.chartLabels = {};
 
-  this.area = this.computeArea_();
+  this.area = layout.plotArea;
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
 
@@ -60,56 +60,6 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
 DygraphCanvasRenderer.prototype.attr_ = function(x) {
   return this.dygraph_.attr_(x);
-};
-
-// Compute the box which the chart should be drawn in. This is the canvas's
-// box, less space needed for axis and chart labels.
-// TODO(danvk): this belongs in DygraphLayout.
-DygraphCanvasRenderer.prototype.computeArea_ = function() {
-  var area = {
-    // TODO(danvk): per-axis setting.
-    x: 0,
-    y: 0
-  };
-  if (this.attr_('drawYAxis')) {
-   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
-  }
-
-  area.w = this.width - area.x - this.attr_('rightGap');
-  area.h = this.height;
-  if (this.attr_('drawXAxis')) {
-    if (this.attr_('xAxisHeight')) {
-      area.h -= this.attr_('xAxisHeight');
-    } else {
-      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
-    }
-  }
-
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
-  }
-
-  // Add space for chart labels: title, xlabel and ylabel.
-  if (this.attr_('title')) {
-    area.h -= this.attr_('titleHeight');
-    area.y += this.attr_('titleHeight');
-  }
-  if (this.attr_('xlabel')) {
-    area.h -= this.attr_('xLabelHeight');
-  }
-  if (this.attr_('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-  }
-
-  return area;
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -237,7 +187,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  this._renderChartLabels(); 
+  this._renderChartLabels();
   this._renderAnnotations();
 };
 
@@ -595,7 +545,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var isNullOrNaN = function(x) {
     return (x === null || isNaN(x));
   };
-  
+
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
   var fillAlpha = this.attr_('fillAlpha');

@@ -27,6 +27,7 @@ DygraphLayout = function(dygraph) {
   this.datasets = new Array();
   this.annotations = new Array();
   this.yAxes_ = null;
+  this.plotArea = this.computePlotArea_();
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
@@ -40,6 +41,55 @@ DygraphLayout.prototype.attr_ = function(name) {
 
 DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.datasets[setname] = set_xy;
+};
+
+// Compute the box which the chart should be drawn in. This is the canvas's
+// box, less space needed for axis and chart labels.
+DygraphLayout.prototype.computePlotArea_ = function() {
+  var area = {
+    // TODO(danvk): per-axis setting.
+    x: 0,
+    y: 0
+  };
+  if (this.attr_('drawYAxis')) {
+   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
+  }
+
+  area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
+  area.h = this.dygraph_.height_;
+  if (this.attr_('drawXAxis')) {
+    if (this.attr_('xAxisHeight')) {
+      area.h -= this.attr_('xAxisHeight');
+    } else {
+      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+    }
+  }
+
+  // Shrink the drawing area to accomodate additional y-axes.
+  if (this.dygraph_.numAxes() == 2) {
+    // TODO(danvk): per-axis setting.
+    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
+  } else if (this.dygraph_.numAxes() > 2) {
+    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
+                        "to use " + this.dygraph_.numAxes() + ")");
+  }
+
+  // Add space for chart labels: title, xlabel and ylabel.
+  if (this.attr_('title')) {
+    area.h -= this.attr_('titleHeight');
+    area.y += this.attr_('titleHeight');
+  }
+  if (this.attr_('xlabel')) {
+    area.h -= this.attr_('xLabelHeight');
+  }
+  if (this.attr_('ylabel')) {
+    // It would make sense to shift the chart here to make room for the y-axis
+    // label, but the default yAxisLabelWidth is large enough that this results
+    // in overly-padded charts. The y-axis label should fit fine. If it
+    // doesn't, the yAxisLabelWidth option can be increased.
+  }
+
+  return area;
 };
 
 DygraphLayout.prototype.setAnnotations = function(ann) {
@@ -98,7 +148,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
       if (series.length > 1) {
         var x1 = series[0][0];
         if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-  
+
         var x2 = series[series.length - 1][0];
         if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
       }
@@ -251,7 +301,7 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   if (!this.annotations || !this.annotations.length) {
     return;
   }
-  
+
   // TODO(antrob): loop through annotations not points.
   for (var i = 0; i < this.points.length; i++) {
     var p = this.points[i];
@@ -277,25 +327,25 @@ DygraphLayout.prototype.removeAllDatasets = function() {
  */
 DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   var point = this.points[idx];
-  
+
   // Clone the point since we modify it
-  var unstackedPoint = {};  
+  var unstackedPoint = {};
   for (var i in point) {
     unstackedPoint[i] = point[i];
   }
-  
+
   if (!this.attr_("stackedGraph")) {
     return unstackedPoint;
   }
-  
-  // The unstacked yval is equal to the current yval minus the yval of the 
+
+  // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
   for (var i = idx+1; i < this.points.length; i++) {
     if (this.points[i].xval == point.xval) {
-      unstackedPoint.yval -= this.points[i].yval; 
+      unstackedPoint.yval -= this.points[i].yval;
       break;
     }
   }
-  
+
   return unstackedPoint;
-}  
+}
