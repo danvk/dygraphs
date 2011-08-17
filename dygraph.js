@@ -2831,6 +2831,10 @@ Dygraph.prototype.resize = function(width, height) {
     this.roller_ = null;
     this.attrs_.labelsDiv = null;
     this.createInterface_();
+    if (this.annotations_.length) {
+      // createInterface_ reset the layout, so we need to do this.
+      this.layout_.setAnnotations(this.annotations_);
+    }
     this.predraw_();
   }
 
