@@ -494,17 +494,7 @@ Dygraph.prototype.rollPeriod = function() {
  * If the Dygraph has dates on the x-axis, these will be millis since epoch.
  */
 Dygraph.prototype.xAxisRange = function() {
-  return this.dateWindow_ ? this.dateWindow_ : this.xAxisExtremes();
-};
-
-/**
- * Returns the lower- and upper-bound x-axis values of the
- * data set.
- */
-Dygraph.prototype.xAxisExtremes = function() {
-  var left = this.rawData_[0][0];
-  var right = this.rawData_[this.rawData_.length - 1][0];
-  return [left, right];
+  return [this.layout_.minxval, this.layout_.maxxval];
 };
 
 /**
