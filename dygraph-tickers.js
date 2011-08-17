@@ -1,4 +1,5 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
+// MIT-licensed (http://opensource.org/licenses/MIT)
 
 /**
  * @fileoverview Description of this file.

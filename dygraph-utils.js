@@ -1,5 +1,5 @@
 // Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+// MIT-licensed (http://opensource.org/licenses/MIT)
 
 /**
  * @fileoverview This file contains utility functions used by dygraphs. These

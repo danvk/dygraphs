@@ -1,5 +1,5 @@
 // Copyright 2011 Robert Konigsberg (konigsberg@google.com)
-// All Rights Reserved.
+// MIT-licensed (http://opensource.org/licenses/MIT)
 
 /** 
  * @fileoverview The default interaction model for Dygraphs. This is kept out
