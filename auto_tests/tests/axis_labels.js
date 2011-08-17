@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for how axis labels are chosen and formatted.
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
@@ -28,6 +28,11 @@ function getXLabels() {
     ary.push(x_labels[i].innerHTML);
   }
   return ary;
+}
+
+function getLegend() {
+  var legend = document.getElementsByClassName("dygraph-legend")[0];
+  return legend.textContent;
 }
 
 AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
@@ -62,6 +67,9 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   data += "6,100\n";
   g.updateOptions({file: data});
   assertEquals(['0','20','40','60','80','100'], getYLabels());
+
+  g.setSelection(0);
+  assertEquals('0: Y:-1', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
@@ -89,6 +97,9 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
   assertEquals(["-0.01","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"], getYLabels());
+
+  g.setSelection(1);
+  assertEquals('1: Y:0', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
@@ -117,6 +128,9 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
   g.updateOptions(opts);
   // TODO(danvk): this is even worse!
   assertEquals(["10","10","10","10","10","10","10","10","10","10"], getYLabels());
+
+  g.setSelection(1);
+  assertEquals('1: Y:0', getLegend());
 };
 
 AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
@@ -141,10 +155,256 @@ AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
     }
   });
 
-  // This is what the output should be:
-  // assertEquals(["00:05:00", "00:05:06", "00:05:12", "00:05:18", "00:05:24", "00:05:30", "00:05:36", "00:05:42", "00:05:48", "00:05:54"], getXLabels());
+  assertEquals(["00:05:00","00:05:12","00:05:24","00:05:36","00:05:48"], getXLabels());
 
-  // This is what it is:
-  assertEquals(['5','5.1','5.2','5.3','5.4','5.5', '5.6', '5.7', '5.8', '5.9'], getXLabels());
+  // The legend does not use the xAxisLabelFormatter:
+  g.setSelection(1);
+  assertEquals('5.1: Y1:1', getLegend());
 };
 
+AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    xAxisLabelFormatter: function(x, granularity, opts, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'x' + x;
+    },
+    yAxisLabelFormatter: function(y, granularity, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'y' + y;
+    },
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
+  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(2);
+  assertEquals("2: y:4", getLegend());
+};
+
+AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    xAxisLabelFormatter: function(x, granularity, opts, dg) {
+      assertTrue(Dygraph.isDateLike(x));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'x' + x.strftime('%Y/%m/%d');
+    },
+    yAxisLabelFormatter: function(y, granularity, opts, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('number', typeof(granularity));
+      assertEquals('function', typeof(opts));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'y' + y;
+    },
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 1; i < 10; i++) {
+    data.push([new Date("2011/01/0" + i), 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08", "x2011/01/09"], getXLabels());
+  assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(0);
+  assertEquals("2011/01/01: y:2", getLegend());
+};
+
+// This test verifies that when a valueFormatter is set (but not an
+// axisLabelFormatter), then the valueFormatter is used to format the axis
+// labels.
+AxisLabelsTestCase.prototype.testValueFormatter = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    xValueFormatter: function(x, opts, series_name, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('function', typeof(opts));
+      assertEquals('string', typeof(series_name));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'x' + x;
+    },
+    yValueFormatter: function(y, opts, series_name, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('function', typeof(opts));
+      assertEquals('string', typeof(series_name));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'y' + y;
+    },
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  // the valueFormatter options do not affect the ticks.
+  assertEquals(['0','2','4','6','8'], getXLabels());
+  assertEquals(['0','2','4','6','8','10','12','14','16','18'],
+               getYLabels());
+
+  // they do affect the legend, however.
+  g.setSelection(2);
+  assertEquals("x2: y:y4", getLegend());
+};
+
+AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    xValueFormatter: function(x, opts, series_name, dg) {
+      assertEquals('number', typeof(x));
+      assertEquals('function', typeof(opts));
+      assertEquals('string', typeof(series_name));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'x' + new Date(x).strftime('%Y/%m/%d');
+    },
+    yValueFormatter: function(y, opts, series_name, dg) {
+      assertEquals('number', typeof(y));
+      assertEquals('function', typeof(opts));
+      assertEquals('string', typeof(series_name));
+      assertEquals('[Dygraph graph]', dg.toString());
+      return 'y' + y;
+    },
+    labels: ['x', 'y']
+  };
+
+  var data = [];
+  for (var i = 1; i < 10; i++) {
+    data.push([new Date("2011/01/0" + i), 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  // valueFormatters do not affect ticks.
+  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan','09Jan'], getXLabels());
+  assertEquals(['2','4','6','8','10','12','14','16','18'], getYLabels());
+
+  // the valueFormatter options also affect the legend.
+  g.setSelection(2);
+  assertEquals('x2011/01/03: y:y6', getLegend());
+};
+
+// This test verifies that when both a valueFormatter and an axisLabelFormatter
+// are specified, the axisLabelFormatter takes precedence.
+AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    xValueFormatter: function(x) {
+      return 'xvf' + x;
+    },
+    yValueFormatter: function(y) {
+      return 'yvf' + y;
+    },
+    xAxisLabelFormatter: function(x, granularity) {
+      return 'x' + x;
+    },
+    yAxisLabelFormatter: function(y) {
+      return 'y' + y;
+    },
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals(['x0','x2','x4','x6','x8'], getXLabels());
+  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(9);
+  assertEquals("xvf9: y:yvf18", getLegend());
+};
+
+// This is the same as the previous test, except that options are added
+// one-by-one.
+AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
+  var opts = {
+    width: 480,
+    height: 320,
+    labels: ['x', 'y']
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.updateOptions({
+    xValueFormatter: function(x) {
+      return 'xvf' + x;
+    }
+  });
+  g.updateOptions({
+    yValueFormatter: function(y) {
+      return 'yvf' + y;
+    }
+  });
+  g.updateOptions({
+    xAxisLabelFormatter: function(x, granularity) {
+      return 'x' + x;
+    }
+  });
+  g.updateOptions({
+    yAxisLabelFormatter: function(y) {
+      return 'y' + y;
+    }
+  });
+
+  assertEquals(["x0","x2","x4","x6","x8"], getXLabels());
+  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], getYLabels());
+
+  g.setSelection(9);
+  assertEquals("xvf9: y:yvf18", getLegend());
+};
+
+AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    labels: ['x', 'y'],
+    valueFormatter: function(x) {
+      return 'vf' + x;
+    },
+    axisLabelFormatter: function(x) {
+      return 'alf' + x;
+    }
+  };
+  var data = [];
+  for (var i = 0; i < 10; i++) {
+    data.push([i, 2 * i]);
+  }
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals(['alf0','alf2','alf4','alf6','alf8'], getXLabels());
+  assertEquals(['alf0','alf2','alf4','alf6','alf8','alf10','alf12','alf14','alf16','alf18'], getYLabels());
+
+  g.setSelection(9);
+  assertEquals("vf9: y:vf18", getLegend());
+};
