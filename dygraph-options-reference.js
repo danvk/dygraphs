@@ -1,5 +1,8 @@
-// Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
-// MIT-licensed (http://opensource.org/licenses/MIT)
+/**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
 // JSON. This assumption cannot be checked in JS, but it will be checked when

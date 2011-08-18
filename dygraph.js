@@ -1,5 +1,8 @@
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview Creates an interactive, zoomable graph based on a CSV file or

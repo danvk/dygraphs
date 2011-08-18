@@ -1,5 +1,8 @@
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// MIT-licensed (http://opensource.org/licenses/MIT)
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview Based on PlotKit.CanvasRenderer, but modified to meet the

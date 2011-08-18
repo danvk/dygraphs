@@ -1,5 +1,8 @@
-// Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
-// MIT-licensed (http://opensource.org/licenses/MIT)
+/**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview Based on PlotKitLayout, but modified to meet the needs of

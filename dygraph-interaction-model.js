@@ -1,7 +1,10 @@
-// Copyright 2011 Robert Konigsberg (konigsberg@google.com)
-// MIT-licensed (http://opensource.org/licenses/MIT)
+/**
+ * @license
+ * Copyright 2011 Robert Konigsberg (konigsberg@google.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
-/** 
+/**
  * @fileoverview The default interaction model for Dygraphs. This is kept out
  * of dygraph.js for better navigability.
  * @author Robert Konigsberg (konigsberg@google.com)
