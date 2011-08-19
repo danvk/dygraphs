@@ -388,6 +388,7 @@ DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
   }
 };
 
+
 /**
  * @private
  * Draws the mini plot in the background canvas.
@@ -399,10 +400,58 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
     return;
   }
 
+  var combinedSeriesData = this.computeCombinedSeriesAndLimits_();
+  var yRange = combinedSeriesData.yMax - combinedSeriesData.yMin;
+
+  // Draw the mini plot.
+  var ctx = this.bgcanvas_ctx_;
+  var margin = this.bgcanvas_margin_;
+
+  var xExtremes = this.dygraph_.xAxisExtremes();
+  var xRange = Math.max(xExtremes[1] - xExtremes[0], 1.e-30);
+  var xFact = (this.canvasRect_.w - margin)/xRange;
+  var yFact = (this.canvasRect_.h - margin)/yRange;
+  var canvasWidth = this.canvasRect_.w - margin;
+  var canvasHeight = this.canvasRect_.h - margin;
+
+  ctx.beginPath();
+  ctx.moveTo(margin, canvasHeight);
+  for (var i = 0; i < combinedSeriesData.data.length; i++) {
+    var dataPoint = combinedSeriesData.data[i];
+    var x = (dataPoint[0] - xExtremes[0])*xFact;
+    var y = canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact;
+    if (isFinite(x) && isFinite(y)) {
+      ctx.lineTo(x, y);
+    }
+  }
+  ctx.lineTo(canvasWidth, canvasHeight);
+  ctx.closePath();
+
+  if (fillStyle) {
+    var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
+    lingrad.addColorStop(0, 'white');
+    lingrad.addColorStop(1, fillStyle);
+    this.bgcanvas_ctx_.fillStyle = lingrad;
+    ctx.fill();
+  }
+
+  if (strokeStyle) {
+    this.bgcanvas_ctx_.strokeStyle = strokeStyle;
+    this.bgcanvas_ctx_.lineWidth = 1.5;
+    ctx.stroke();
+  }
+};
+
+/**
+ * @private
+ * Computes and returns the combinded series data along with min/max for the mini plot.
+ * @return {Object} An object containing combinded series array, ymin, ymax.
+ */
+DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var bars = this.attr_('errorBars') || this.attr_('customBars');
   var fractions = this.attr_('fractions');
   var data = this.dygraph_.rawData_;
-  var rollPeriod = Math.min(this.dygraph_.rollPeriod_, data.length - 1);
+  var rollPeriod = Math.min(this.dygraph_.rollPeriod_, data.length);
   var logscale = this.attr_('logscale');
 
   // Create a combined series (average of all series values).
@@ -452,12 +501,10 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
   // Convert Y data to log scale if needed.
   // Also, expand the Y range to compress the mini plot a little.
   var extraPercent = .25;
-  var yRange;
   if (logscale) {
     yMax = Dygraph.log10(yMax);
     yMax += yMax*extraPercent;
     yMin = Dygraph.log10(yMin);
-    yRange = yMax - yMin;
     for (var i = 0; i < combinedSeries.length; i++) {
       combinedSeries[i][1] = Dygraph.log10(combinedSeries[i][1]);
     }
@@ -471,46 +518,9 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
     }
     yMax += yExtra;
     yMin -= yExtra;
-    yRange = yMax - yMin;
   }
 
-  // Draw the mini plot.
-  var ctx = this.bgcanvas_ctx_;
-  var margin = this.bgcanvas_margin_;
-
-  var xExtremes = this.dygraph_.xAxisExtremes();
-  var xRange = Math.max(xExtremes[1] - xExtremes[0], 1.e-30);
-  var xFact = (this.canvasRect_.w - margin)/xRange;
-  var yFact = (this.canvasRect_.h - margin)/yRange;
-  var canvasWidth = this.canvasRect_.w - margin;
-  var canvasHeight = this.canvasRect_.h - margin;
-
-  ctx.beginPath();
-  ctx.moveTo(margin, canvasHeight);
-  for (var i = 0; i < combinedSeries.length; i++) {
-    var dataPoint = combinedSeries[i];
-    var x = (dataPoint[0] - xExtremes[0])*xFact;
-    var y = canvasHeight - (dataPoint[1] - yMin)*yFact;
-    if (isFinite(x) && isFinite(y)) {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.lineTo(canvasWidth, canvasHeight);
-  ctx.closePath();
-
-  if (fillStyle) {
-    var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
-    lingrad.addColorStop(0, 'white');
-    lingrad.addColorStop(1, fillStyle);
-    this.bgcanvas_ctx_.fillStyle = lingrad;
-    ctx.fill();
-  }
-
-  if (strokeStyle) {
-    this.bgcanvas_ctx_.strokeStyle = strokeStyle;
-    this.bgcanvas_ctx_.lineWidth = 1.5;
-    ctx.stroke();
-  }
+  return {data: combinedSeries, yMin: yMin, yMax: yMax};
 };
 
 /**
