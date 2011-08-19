@@ -449,22 +449,6 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
     }
   }
 
-  // Apply rolling average if specified.
-  var rollPeriod = Math.min(this.dygraph_.rollPeriod_, combinedSeries.length - 1);
-  if (rollPeriod > 1) {
-    var rollingData = [];
-    for (var i = 0; i < combinedSeries.length; i++) {
-      var sum = 0;
-      var count = 0;
-      for (var j = Math.max(0, i-rollPeriod+1); j <= i; j++) {
-        sum += combinedSeries[j][1];
-        count++;
-      }
-      rollingData[i] = [combinedSeries[i][0], sum/count];
-    }
-    combinedSeries = rollingData;
-  }
-
   // Convert Y data to log scale if needed.
   // Also, expand the Y range to compress the mini plot a little.
   var extraPercent = .25;
