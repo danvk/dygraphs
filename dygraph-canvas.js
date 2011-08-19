@@ -1,5 +1,8 @@
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview Based on PlotKit.CanvasRenderer, but modified to meet the
@@ -210,7 +213,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     // height: this.attr_('axisLabelFontSize') + 2 + "px",
     overflow: "hidden"
   };
-  var makeDiv = function(txt, axis) {
+  var makeDiv = function(txt, axis, prec_axis) {
     var div = document.createElement("div");
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
@@ -218,8 +221,9 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       }
     }
     var inner_div = document.createElement("div");
-    // TODO(danvk): separate class for secondary y-axis
-    inner_div.className = 'dygraph-axis-label dygraph-axis-label-' + axis;
+    inner_div.className = 'dygraph-axis-label' +
+                          ' dygraph-axis-label-' + axis +
+                          (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
     inner_div.appendChild(document.createTextNode(txt));
     div.appendChild(inner_div);
     return div;
@@ -232,14 +236,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.attr_('drawYAxis')) {
     if (this.layout.yticks && this.layout.yticks.length > 0) {
+      var num_axes = this.dygraph_.numAxes();
       for (var i = 0; i < this.layout.yticks.length; i++) {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
         var sgn = 1;
+        var prec_axis = 'y1';
         if (tick[0] == 1) {  // right-side y-axis
           x = this.area.x + this.area.w;
           sgn = -1;
+          prec_axis = 'y2';
         }
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
@@ -248,7 +255,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[2], 'y');
+        var label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - this.attr_('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 

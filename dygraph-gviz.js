@@ -1,5 +1,8 @@
-// Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+/**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview A wrapper around the Dygraph class which implements the
