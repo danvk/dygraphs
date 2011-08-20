@@ -99,7 +99,7 @@ DygraphRangeSelector.prototype.attr_ = function(name) {
  * Reserves space at the bottom of the graph by setting the xAxisHeight attribute.
  */
 DygraphRangeSelector.prototype.reserveSpace_ = function() {
-  var spacing = 2;
+  var spacing = 4;
   this.xAxisLabelHeight_ = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize') + spacing;
   this.dygraph_.attrs_.xAxisHeight = this.xAxisLabelHeight_ + this.attr_('rangeSelectorHeight') + spacing;
 };
