@@ -586,13 +586,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Interactive Elements"],
     "type": "boolean",
-    "description": "Show the range selector widget."
+    "description": "Show the range selector widget. This option can only be specified at Dygraph creation time."
   },
   "rangeSelectorHeight": {
     "default": "40",
     "labels": ["Interactive Elements"],
     "type": "integer",
-    "description": "Height, in pixels, of the range selector widget."
+    "description": "Height, in pixels, of the range selector widget. This option can only be specified at Dygraph creation time."
   },
   "rangeSelectorPlotStrokeColor": {
     "default": "#808FAB",
