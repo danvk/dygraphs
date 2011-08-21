@@ -191,6 +191,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 
 
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
+  console.log(a, b, pixels);
   var pixels_per_tick = opts('pixelsPerLabel');
   var chosen = -1;
   for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
@@ -339,7 +340,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
     if (granularity == Dygraph.MONTHLY) {
-      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
+      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];
     } else if (granularity == Dygraph.QUARTERLY) {
       months = [ 0, 3, 6, 9 ];
     } else if (granularity == Dygraph.BIANNUAL) {
@@ -364,6 +365,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       for (var j = 0; j < months.length; j++) {
         var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
         var t = Dygraph.dateStrToMillis(date_str);
+        console.log(date_str);
         if (t < start_time || t > end_time) continue;
         ticks.push({ v:t,
                      label: formatter(new Date(t), granularity, opts, dg)
@@ -372,6 +374,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
   }
 
+  console.log(ticks);
   return ticks;
 };
 
