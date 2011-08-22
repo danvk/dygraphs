@@ -92,6 +92,11 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     // doesn't, the yAxisLabelWidth option can be increased.
   }
 
+  // Add space for range selector, if needed.
+  if (this.attr_('showRangeSelector')) {
+    area.h -= this.attr_('rangeSelectorHeight') + 4;
+  }
+
   return area;
 };
 

@@ -15,7 +15,6 @@ DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.isUsingExcanvas = typeof(G_vmlCanvasManager) != 'undefined';
   this.dygraph_ = dygraph;
-  this.reserveSpace_();
   this.createCanvases_();
   this.createZoomHandles_();
   this.initInteraction_();
@@ -79,9 +78,10 @@ DygraphRangeSelector.prototype.resize_ = function() {
   };
 
   var plotArea = this.layout_.plotArea;
+  var xAxisLabelHeight = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
   this.canvasRect_ = {
     x: plotArea.x,
-    y: plotArea.y + plotArea.h + this.xAxisLabelHeight_,
+    y: plotArea.y + plotArea.h + xAxisLabelHeight + 4,
     w: plotArea.w,
     h: this.attr_('rangeSelectorHeight')
   };
@@ -96,29 +96,19 @@ DygraphRangeSelector.prototype.attr_ = function(name) {
 
 /**
  * @private
- * Reserves space at the bottom of the graph by setting the xAxisHeight attribute.
- */
-DygraphRangeSelector.prototype.reserveSpace_ = function() {
-  var spacing = 4;
-  this.xAxisLabelHeight_ = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize') + spacing;
-  this.dygraph_.attrs_.xAxisHeight = this.xAxisLabelHeight_ + this.attr_('rangeSelectorHeight') + spacing;
-};
-
-/**
- * @private
  * Creates the background and foreground canvases.
  */
 DygraphRangeSelector.prototype.createCanvases_ = function() {
   this.bgcanvas_ = Dygraph.createCanvas();
+  this.bgcanvas_.className = 'dygraph_rangesel_bgcanvas';
   this.bgcanvas_.style.position = 'absolute';
   this.bgcanvas_ctx_ = Dygraph.getContext(this.bgcanvas_);
-  this.bgcanvas_margin_ = .5;
 
   this.fgcanvas_ = Dygraph.createCanvas();
+  this.fgcanvas_.className = 'dygraph_rangesel_fgcanvas';
   this.fgcanvas_.style.position = 'absolute';
   this.fgcanvas_.style.cursor = 'default';
   this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
-  this.fgcanvas_margin_ = 1;
 };
 
 /**
@@ -127,7 +117,7 @@ DygraphRangeSelector.prototype.createCanvases_ = function() {
  */
 DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   var img = new Image();
-  img.className = 'dygraph_zoomhandle';
+  img.className = 'dygraph_rangesel_zoomhandle';
   img.style.position = 'absolute';
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
@@ -139,10 +129,7 @@ bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
 qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
 
   this.leftZoomHandle_ = img;
-  this.leftZoomHandle_.id = 'dygraph_lzoomhandle';
-
   this.rightZoomHandle_ = img.cloneNode(false);
-  this.rightZoomHandle_.id = 'dygraph_rzoomhandle';
 };
 
 /**
@@ -370,7 +357,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
 DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
   var ctx = this.bgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
-  var margin = this.bgcanvas_margin_;
+  var margin = .5;
   try {
     this.drawMiniPlot_();
   } catch(ex) {
@@ -405,7 +392,7 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
 
   // Draw the mini plot.
   var ctx = this.bgcanvas_ctx_;
-  var margin = this.bgcanvas_margin_;
+  var margin = .5;
 
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xRange = Math.max(xExtremes[1] - xExtremes[0], 1.e-30);
@@ -453,6 +440,8 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var data = this.dygraph_.rawData_;
   var rollPeriod = Math.min(this.dygraph_.rollPeriod_, data.length);
   var logscale = this.attr_('logscale');
+
+  console.log(data);
 
   // Create a combined series (average of all series values).
   var combinedSeries = [];
@@ -553,7 +542,7 @@ DygraphRangeSelector.prototype.placeZoomHandles_ = function() {
 DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
   var ctx = this.fgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
-  var margin = this.fgcanvas_margin_;
+  var margin = 1;
   var width = this.canvasRect_.w - margin;
   var height = this.canvasRect_.h - margin;
   var zoomHandleStatus = this.getZoomHandleStatus_();
