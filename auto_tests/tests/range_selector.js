@@ -43,15 +43,15 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithErrorBars = function() {
     showRangeSelector: true
   };
   var data = [
-               [1, [10,  10, 100]],
-               [2, [15,  20, 110]],
-               [3, [10,  30, 100]],
-               [4, [15,  40, 110]],
-               [5, [10, 120, 100]],
-               [6, [15,  50, 110]],
-               [7, [10,  70, 100]],
-               [8, [15,  90, 110]],
-               [9, [10,  50, 100]]
+               [1, [10, 10]],
+               [2, [15, 10]],
+               [3, [10, 10]],
+               [4, [15, 10]],
+               [5, [10, 10]],
+               [6, [15, 20]],
+               [7, [10, 20]],
+               [8, [15, 20]],
+               [9, [10, 20]]
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
