@@ -419,50 +419,83 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
  * @return {Object} An object containing combinded series array, ymin, ymax.
  */
 DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
-  var bars = this.attr_('errorBars') || this.attr_('customBars');
-  var fractions = this.attr_('fractions');
   var data = this.dygraph_.rawData_;
-  var rollPeriod = Math.min(this.dygraph_.rollPeriod_, data.length);
   var logscale = this.attr_('logscale');
 
   // Create a combined series (average of all series values).
   var combinedSeries = [];
-  var yMin = Number.MAX_VALUE;
-  var yMax = -Number.MAX_VALUE;
+  var sum;
+  var count;
+  var mutipleValues = typeof data[0][1] != 'number';
+
+  if (mutipleValues) {
+    sum = [];
+    count = [];
+    for (var k = 0; k < data[0][1].length; k++) {
+      sum.push(0);
+      count.push(0);
+    }
+    mutipleValues = true;
+  }
+
   for (var i = 0; i < data.length; i++) {
     var dataPoint = data[i];
     var xVal = dataPoint[0];
-    var sum = 0;
-    var count = 0;
+    var yVal;
+
+    if (mutipleValues) {
+      for (var k = 0; k < sum.length; k++) {
+        sum[k] = count[k] = 0;
+      }
+    } else {
+      sum = count = 0;
+    }
+
     for (var j = 1; j < dataPoint.length; j++) {
       if (this.dygraph_.visibility()[j-1]) {
-        var y;
-        if (fractions) {
-          y = dataPoint[j][0]/dataPoint[j][1];
-        } else if (bars) {
-          y = dataPoint[j][1]; // Just use main value.
+        if (mutipleValues) {
+          for (var k = 0; k < sum.length; k++) {
+            var y = dataPoint[j][k];
+            if (y == null || isNaN(y)) continue;
+            sum[k] += y;
+            count[k]++;
+          }
         } else {
-          y = dataPoint[j];
+          var y = dataPoint[j];
+          if (y == null || isNaN(y)) continue;
+          sum += y;
+          count++;
         }
-        if (y == null || isNaN(y)) continue;
-        sum += y;
-        count++;
       }
     }
-    var yVal = sum/count;
 
-    // Rolling average.
-    if (rollPeriod > 1) {
-      var sum = yVal;
-      var count = 1;
-      for (var j = Math.max(0, i-rollPeriod+1); j < i; j++) {
-        sum += combinedSeries[j][1];
-        count++;
+    if (mutipleValues) {
+      for (var k = 0; k < sum.length; k++) {
+        sum[k] /= count[k];
       }
+      yVal = sum.slice(0);
+    } else {
       yVal = sum/count;
     }
 
     combinedSeries.push([xVal, yVal]);
+  }
+
+  // Account for roll period, fractions.
+  combinedSeries = this.dygraph_.rollingAverage(combinedSeries, this.dygraph_.rollPeriod_);
+
+  if (typeof combinedSeries[0][1] != 'number') {
+    for (var i = 0; i < combinedSeries.length; i++) {
+      var yVal = combinedSeries[i][1];
+      combinedSeries[i][1] = yVal[0];
+    }
+  }
+
+  // Compute the y range.
+  var yMin = Number.MAX_VALUE;
+  var yMax = -Number.MAX_VALUE;
+  for (var i = 0; i < combinedSeries.length; i++) {
+    var yVal = combinedSeries[i][1];
     if (!logscale || yVal > 0) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
