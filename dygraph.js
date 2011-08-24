@@ -311,6 +311,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       document.readyState != 'complete') {
     var self = this;
     setTimeout(function() { self.__init__(div, file, attrs) }, 100);
+    return;
   }
 
   // Support two-argument constructor
