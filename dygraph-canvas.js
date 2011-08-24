@@ -211,6 +211,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     color: this.attr_('axisLabelColor'),
     width: this.attr_('axisLabelWidth') + "px",
     // height: this.attr_('axisLabelFontSize') + 2 + "px",
+    lineHeight: "normal", // Something other than "normal" line-height screws up label positioning.
     overflow: "hidden"
   };
   var makeDiv = function(txt, axis, prec_axis) {
