@@ -244,6 +244,12 @@ Dygraph.DEFAULT_ATTRS = {
 
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
 
+  // Range selector options
+  showRangeSelector: false,
+  rangeSelectorHeight: 40,
+  rangeSelectorPlotStrokeColor: "#808FAB",
+  rangeSelectorPlotFillColor: "#A7B1C4",
+
   // per-axis options
   axes: {
     x: {
@@ -305,6 +311,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       document.readyState != 'complete') {
     var self = this;
     setTimeout(function() { self.__init__(div, file, attrs) }, 100);
+    return;
   }
 
   // Support two-argument constructor
@@ -348,15 +355,15 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   if (div.style.height == '' && attrs.height) {
     div.style.height = attrs.height + "px";
   }
-  if (div.style.height == '' && div.offsetHeight == 0) {
+  if (div.style.height == '' && div.clientHeight == 0) {
     div.style.height = Dygraph.DEFAULT_HEIGHT + "px";
     if (div.style.width == '') {
       div.style.width = Dygraph.DEFAULT_WIDTH + "px";
     }
   }
   // these will be zero if the dygraph's div is hidden.
-  this.width_ = div.offsetWidth;
-  this.height_ = div.offsetHeight;
+  this.width_ = div.clientWidth;
+  this.height_ = div.clientHeight;
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs['stackedGraph']) {
@@ -779,10 +786,25 @@ Dygraph.prototype.createInterface_ = function() {
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
 
+  if (this.attr_('showRangeSelector')) {
+    // The range selector must be created here so that its canvases and contexts get created here.
+    // For some reason, if the canvases and contexts don't get created here, things don't work in IE.
+    // The range selector also sets xAxisHeight in order to reserve space.
+    this.rangeSelector_ = new DygraphRangeSelector(this);
+  }
+
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
   this.mouseEventElement_ = this.canvas_;
+
+  // Create the grapher
+  this.layout_ = new DygraphLayout(this);
+
+  if (this.rangeSelector_) {
+    // This needs to happen after the graph canvases are added to the div and the layout object is created.
+    this.rangeSelector_.addToGraph(this.graphDiv, this.layout_);
+  }
 
   var dygraph = this;
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(e) {
@@ -791,9 +813,6 @@ Dygraph.prototype.createInterface_ = function() {
   Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(e) {
     dygraph.mouseOut_(e);
   });
-
-  // Create the grapher
-  this.layout_ = new DygraphLayout(this);
 
   this.createStatusMessage_();
   this.createDragInterface_();
@@ -1106,7 +1125,7 @@ Dygraph.prototype.createDragInterface_ = function() {
  * up any previous zoom rectangles that were drawn. This could be optimized to
  * avoid extra redrawing, but it's tricky to avoid interactions with the status
  * dots.
- * 
+ *
  * @param {Number} direction the direction of the zoom rectangle. Acceptable
  * values are Dygraph.HORIZONTAL and Dygraph.VERTICAL.
  * @param {Number} startX The X position where the drag started, in canvas
@@ -1492,11 +1511,11 @@ Dygraph.prototype.setSelection = function(row) {
     for (var i in this.layout_.datasets) {
       if (row < this.layout_.datasets[i].length) {
         var point = this.layout_.points[pos+row];
-        
+
         if (this.attr_("stackedGraph")) {
           point = this.layout_.unstackPointAtIndex(pos+row);
         }
-        
+
         this.selPoints_.push(point);
       }
       pos += this.layout_.datasets[i].length;
@@ -1664,6 +1683,10 @@ Dygraph.prototype.predraw_ = function() {
   // the right edge of the charting area (which may not be the same as the right
   // edge of the div, if we have two y-axes.
   this.positionLabelsDiv_();
+
+  if (this.rangeSelector_) {
+    this.rangeSelector_.renderStaticLayer();
+  }
 
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
@@ -1855,6 +1878,10 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
         this.clearSelection();
       }
     }
+  }
+
+  if (this.rangeSelector_) {
+    this.rangeSelector_.renderInteractiveLayer();
   }
 
   if (this.attr_("drawCallback") !== null) {
@@ -2824,8 +2851,8 @@ Dygraph.prototype.resize = function(width, height) {
     this.width_ = width;
     this.height_ = height;
   } else {
-    this.width_ = this.maindiv_.offsetWidth;
-    this.height_ = this.maindiv_.offsetHeight;
+    this.width_ = this.maindiv_.clientWidth;
+    this.height_ = this.maindiv_.clientHeight;
   }
 
   if (old_width != this.width_ || old_height != this.height_) {

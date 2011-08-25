@@ -581,6 +581,30 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": [ "Debugging" ],
     "type": "string",
     "description": "Set this option to log timing information. The value of the option will be logged along with the timimg, so that you can distinguish multiple dygraphs on the same page."
+  },
+  "showRangeSelector": {
+    "default": "false",
+    "labels": ["Interactive Elements"],
+    "type": "boolean",
+    "description": "Show the range selector widget. This option can only be specified at Dygraph creation time."
+  },
+  "rangeSelectorHeight": {
+    "default": "40",
+    "labels": ["Interactive Elements"],
+    "type": "integer",
+    "description": "Height, in pixels, of the range selector widget. This option can only be specified at Dygraph creation time."
+  },
+  "rangeSelectorPlotStrokeColor": {
+    "default": "#808FAB",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "The range selector mini plot stroke color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off stroke."
+  },
+  "rangeSelectorPlotFillColor": {
+    "default": "#A7B1C4",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
   }
 }
 ;  // </JSON>
@@ -593,7 +617,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
 (function() {
   var warn = function(msg) { if (console) console.warn(msg); };
   var flds = ['type', 'default', 'description'];
-  var valid_cats = [ 
+  var valid_cats = [
    'Annotations',
    'Axis display',
    'Chart labels',
