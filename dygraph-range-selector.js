@@ -100,12 +100,12 @@ DygraphRangeSelector.prototype.attr_ = function(name) {
  */
 DygraphRangeSelector.prototype.createCanvases_ = function() {
   this.bgcanvas_ = Dygraph.createCanvas();
-  this.bgcanvas_.className = 'dygraph_rangesel_bgcanvas';
+  this.bgcanvas_.className = 'dygraph-rangesel-bgcanvas';
   this.bgcanvas_.style.position = 'absolute';
   this.bgcanvas_ctx_ = Dygraph.getContext(this.bgcanvas_);
 
   this.fgcanvas_ = Dygraph.createCanvas();
-  this.fgcanvas_.className = 'dygraph_rangesel_fgcanvas';
+  this.fgcanvas_.className = 'dygraph-rangesel-fgcanvas';
   this.fgcanvas_.style.position = 'absolute';
   this.fgcanvas_.style.cursor = 'default';
   this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
@@ -117,7 +117,7 @@ DygraphRangeSelector.prototype.createCanvases_ = function() {
  */
 DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   var img = new Image();
-  img.className = 'dygraph_rangesel_zoomhandle';
+  img.className = 'dygraph-rangesel-zoomhandle';
   img.style.position = 'absolute';
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
