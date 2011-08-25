@@ -324,6 +324,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     return;
   }
 
+  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
+
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
@@ -796,7 +798,7 @@ Dygraph.prototype.createInterface_ = function() {
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
-  this.mouseEventElement_ = this.canvas_;
+  this.mouseEventElement_ = this.createMouseEventElement_();
 
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
@@ -873,6 +875,26 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
   h.style.width = this.width_ + "px";    // for IE
   h.style.height = this.height_ + "px";  // for IE
   return h;
+};
+
+/**
+ * Creates an overlay element used to handle mouse events.
+ * @return {Object} The mouse event element.
+ * @private
+ */
+Dygraph.prototype.createMouseEventElement_ = function() {
+  if (this.isUsingExcanvas_) {
+    var elem = document.createElement("div");
+    elem.style.position = 'absolute';
+    elem.style.backgroundColor = 'white';
+    elem.style.filter = 'alpha(opacity=0)';
+    elem.style.width = this.width_ + "px";
+    elem.style.height = this.height_ + "px";
+    this.graphDiv.appendChild(elem);
+    return elem;
+  } else {
+    return this.canvas_;
+  }
 };
 
 /**
@@ -1149,28 +1171,40 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
 
   // Clean up from the previous rect if necessary
   if (prevDirection == Dygraph.HORIZONTAL) {
-    ctx.clearRect(Math.min(startX, prevEndX), 0,
-                  Math.abs(startX - prevEndX), this.height_);
+    ctx.clearRect(Math.min(startX, prevEndX), this.layout_.plotArea.y,
+                  Math.abs(startX - prevEndX), this.layout_.plotArea.h);
   } else if (prevDirection == Dygraph.VERTICAL){
-    ctx.clearRect(0, Math.min(startY, prevEndY),
-                  this.width_, Math.abs(startY - prevEndY));
+    ctx.clearRect(this.layout_.plotArea.x, Math.min(startY, prevEndY),
+                  this.layout_.plotArea.w, Math.abs(startY - prevEndY));
   }
 
   // Draw a light-grey rectangle to show the new viewing area
   if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(Math.min(startX, endX), 0,
-                   Math.abs(endX - startX), this.height_);
+      ctx.fillRect(Math.min(startX, endX), this.layout_.plotArea.y,
+                   Math.abs(endX - startX), this.layout_.plotArea.h);
     }
-  }
-  if (direction == Dygraph.VERTICAL) {
+  } else if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(0, Math.min(startY, endY),
-                   this.width_, Math.abs(endY - startY));
+      ctx.fillRect(this.layout_.plotArea.x, Math.min(startY, endY),
+                   this.layout_.plotArea.w, Math.abs(endY - startY));
     }
   }
+
+  if (this.isUsingExcanvas_) {
+    this.currentZoomRectArgs_ = [direction, startX, endX, startY, endY, 0, 0, 0];
+  }
+};
+
+/**
+ * Clear the zoom rectangle (and perform no zoom).
+ * @private
+ */
+Dygraph.prototype.clearZoomRect_ = function() {
+  this.currentZoomRectArgs_ = null;
+  this.canvas_ctx_.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
 };
 
 /**
@@ -1184,6 +1218,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
  * @private
  */
 Dygraph.prototype.doZoomX_ = function(lowX, highX) {
+  this.currentZoomRectArgs_ = null;
   // Find the earliest and latest dates contained in this canvasx range.
   // Convert the call to date ranges of the raw data.
   var minDate = this.toDataXCoord(lowX);
@@ -1218,6 +1253,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
  * @private
  */
 Dygraph.prototype.doZoomY_ = function(lowY, highY) {
+  this.currentZoomRectArgs_ = null;
   // Find the highest and lowest values in pixel range for each axis.
   // Note that lowY (in pixels) corresponds to the max Value (in data coords).
   // This is because pixels increase as you go down on the screen, whereas data
@@ -1464,6 +1500,10 @@ Dygraph.prototype.updateSelection_ = function() {
     var px = this.previousVerticalX_;
     ctx.clearRect(px - maxCircleSize - 1, 0,
                   2 * maxCircleSize + 2, this.height_);
+  }
+
+  if (this.isUsingExcanvas_ && this.currentZoomRectArgs_) {
+    Dygraph.prototype.drawZoomRect_.apply(this, this.currentZoomRectArgs_);
   }
 
   if (this.selPoints_.length > 0) {
