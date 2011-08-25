@@ -93,20 +93,35 @@ Dygraph.getContext = function(canvas) {
  * @private
  * Add an event handler. This smooths a difference between IE and the rest of
  * the world.
- * @param { DOM element } el The element to add the event to.
- * @param { String } evt The name of the event, e.g. 'click' or 'mousemove'.
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
  * @param { Function } fn The function to call on the event. The function takes
  * one parameter: the event object.
  */
-Dygraph.addEvent = function(el, evt, fn) {
-  var normed_fn = function(e) {
-    if (!e) var e = window.event;
-    fn(e);
-  };
-  if (window.addEventListener) {  // Mozilla, Netscape, Firefox
-    el.addEventListener(evt, normed_fn, false);
-  } else {  // IE
-    el.attachEvent('on' + evt, normed_fn);
+Dygraph.addEvent = function addEvent(elem, type, fn) {
+  if (elem.addEventListener) {
+    elem.addEventListener(type, fn, false);
+  } else {
+    elem[type+fn] = function(){fn(window.event);};
+    elem.attachEvent('on'+type, elem[type+fn]);
+  }
+};
+
+/**
+ * @private
+ * Remove an event handler. This smooths a difference between IE and the rest of
+ * the world.
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param { Function } fn The function to call on the event. The function takes
+ * one parameter: the event object.
+ */
+Dygraph.removeEvent = function addEvent(elem, type, fn) {
+  if (elem.removeEventListener) {
+    elem.removeEventListener(type, fn, false);
+  } else {
+    elem.detachEvent('on'+type, elem[type+fn]);
+    elem[type+fn] = null;
   }
 };
 
@@ -609,6 +624,8 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'pixelsPerYLabel': true,
     'pointClickCallback': true,
     'pointSize': true,
+    'rangeSelectorPlotFillColor': true,
+    'rangeSelectorPlotStrokeColor': true,
     'showLabelsOnHighlight': true,
     'showRoller': true,
     'sigFigs': true,
@@ -621,7 +638,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'yAxisLabelFormatter': true,
     'yValueFormatter': true,
     'zoomCallback': true
-  };    
+  };
 
   // Assume that we do not require new points.
   // This will change to true if we actually do need new points.
@@ -659,7 +676,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
       // If this was not a series specific option list, check if its a pixel changing property.
       } else if (!pixelSafeOptions[property]) {
         requiresNewPoints = true;
-      }   
+      }
     }
   }
 

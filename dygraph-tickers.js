@@ -339,7 +339,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
     if (granularity == Dygraph.MONTHLY) {
-      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
+      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];
     } else if (granularity == Dygraph.QUARTERLY) {
       months = [ 0, 3, 6, 9 ];
     } else if (granularity == Dygraph.BIANNUAL) {
