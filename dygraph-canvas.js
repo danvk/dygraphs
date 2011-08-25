@@ -250,11 +250,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
           prec_axis = 'y2';
         }
         var y = this.area.y + tick[1] * this.area.h;
+
+        /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
         context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize')), halfDown(y));
         context.closePath();
         context.stroke();
+        */
 
         var label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - this.attr_('axisLabelFontSize') / 2);
@@ -315,11 +318,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
         var x = this.area.x + tick[0] * this.area.w;
         var y = this.area.y + this.area.h;
+
+        /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
         context.lineTo(halfUp(x), halfDown(y + this.attr_('axisTickSize')));
         context.closePath();
         context.stroke();
+        */
 
         var label = makeDiv(tick[1], 'x');
         label.style.textAlign = "center";
