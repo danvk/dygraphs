@@ -808,6 +808,14 @@ Dygraph.prototype.createInterface_ = function() {
     this.rangeSelector_.addToGraph(this.graphDiv, this.layout_);
   }
 
+  // Create the grapher
+  this.layout_ = new DygraphLayout(this);
+
+  if (this.rangeSelector_) {
+    // This needs to happen after the graph canvases are added to the div and the layout object is created.
+    this.rangeSelector_.addToGraph(this.graphDiv, this.layout_);
+  }
+
   var dygraph = this;
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(e) {
     dygraph.mouseMove_(e);
