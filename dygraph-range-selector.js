@@ -13,7 +13,7 @@
  */
 DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
-  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
+  this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;
   this.createCanvases_();
   if (this.isUsingExcanvas_) {
@@ -105,11 +105,13 @@ DygraphRangeSelector.prototype.createCanvases_ = function() {
   this.bgcanvas_ = Dygraph.createCanvas();
   this.bgcanvas_.className = 'dygraph_rangesel_bgcanvas';
   this.bgcanvas_.style.position = 'absolute';
+  this.bgcanvas_.style.zIndex = 9;
   this.bgcanvas_ctx_ = Dygraph.getContext(this.bgcanvas_);
 
   this.fgcanvas_ = Dygraph.createCanvas();
   this.fgcanvas_.className = 'dygraph_rangesel_fgcanvas';
   this.fgcanvas_.style.position = 'absolute';
+  this.fgcanvas_.style.zIndex = 9;
   this.fgcanvas_.style.cursor = 'default';
   this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
 };
@@ -136,6 +138,7 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   var img = new Image();
   img.className = 'dygraph_rangesel_zoomhandle';
   img.style.position = 'absolute';
+  img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
   img.src = 'data:image/png;base64,\
