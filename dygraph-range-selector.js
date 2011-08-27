@@ -524,7 +524,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var yMax = -Number.MAX_VALUE;
   for (var i = 0; i < combinedSeries.length; i++) {
     var yVal = combinedSeries[i][1];
-    if (!logscale || yVal > 0) {
+    if (yVal != null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
     }
