@@ -52,16 +52,6 @@ DygraphRangeSelector.prototype.renderInteractiveLayer = function() {
   if (this.isChangingRange_) {
     return;
   }
-
-  // The zoom handle image may not be loaded yet. May need to try again later.
-  if (this.leftZoomHandle_.height == 0 && this.leftZoomHandle_.retryCount != 5) {
-    var self = this;
-    setTimeout(function() { self.renderInteractiveLayer(); }, 300);
-    var retryCount = this.leftZoomHandle_.retryCount;
-    this.leftZoomHandle_.retryCount = retryCount == undefined ? 1 : retryCount+1;
-    return;
-  }
-
   this.placeZoomHandles_();
   this.drawInteractiveLayer_();
 };
@@ -141,12 +131,21 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
-  img.src = 'data:image/png;base64,\
+  if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
+      img.width = 7;
+      img.height = 14;
+      img.style.backgroundColor = 'white';
+      img.style.border = '1px solid #333333'; // Just show box in IE7.
+  } else {
+      img.width = 9;
+      img.height = 16;
+      img.src = 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA\
 zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv\
 bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
 6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s\
 qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  }
 
   this.leftZoomHandle_ = img;
   this.rightZoomHandle_ = img.cloneNode(false);
@@ -353,8 +352,9 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   this.dygraph_.attrs_.interactionModel = interactionModel;
   this.dygraph_.attrs_.panEdgeFraction = .0001;
 
-  Dygraph.addEvent(this.leftZoomHandle_, 'dragstart', onZoomStart);
-  Dygraph.addEvent(this.rightZoomHandle_, 'dragstart', onZoomStart);
+  var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
+  Dygraph.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
+  Dygraph.addEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
 
   if (this.isUsingExcanvas_) {
     Dygraph.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
