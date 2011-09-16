@@ -30,7 +30,6 @@ DygraphLayout = function(dygraph) {
   this.datasets = new Array();
   this.annotations = new Array();
   this.yAxes_ = null;
-  this.plotArea = this.computePlotArea_();
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
@@ -45,6 +44,10 @@ DygraphLayout.prototype.attr_ = function(name) {
 DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.datasets[setname] = set_xy;
 };
+
+DygraphLayout.prototype.getPlotArea = function() {
+  return this.computePlotArea_();
+}
 
 // Compute the box which the chart should be drawn in. This is the canvas's
 // box, less space needed for axis and chart labels.
