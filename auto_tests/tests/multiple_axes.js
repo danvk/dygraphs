@@ -95,3 +95,41 @@ MultipleAxesTestCase.prototype.testNewStylePerAxisOptions = function() {
   assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], getYLabelsForAxis("1"));
   assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], getYLabelsForAxis("2"));
 };
+
+MultipleAxesTestCase.prototype.testMultiAxisLayout = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var el = document.getElementById("graph");
+
+  g = new Dygraph(
+    el,
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      axes: {
+        y2: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  // Test that all elements are inside the bounds of the graph, set above
+  var innerDiv = el.firstChild;
+  for (var child = innerDiv.firstChild; child != null; child = child.nextSibling) {
+    assertTrue(child.offsetLeft >= 0);
+    assertTrue((child.offsetLeft + child.offsetWidth) <= 640);
+    assertTrue(child.offsetTop >= 0);
+    // TODO(flooey@google.com): Text sometimes linebreaks,
+    // causing the labels to appear outside the allocated area.
+    // assertTrue((child.offsetTop + child.offsetHeight) <= 350);
+  }
+};
