@@ -44,7 +44,7 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.annotations = new Array();
   this.chartLabels = {};
 
-  this.area = layout.plotArea;
+  this.area = layout.getPlotArea();
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
 
