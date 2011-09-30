@@ -131,10 +131,10 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
 
 RangeSelectorTestCase.prototype.assertGraphExistence = function(g, graph) {
   assertNotNull(g);
-  var zoomhandles = graph.getElementsByClassName('dygraph_rangesel_zoomhandle');
+  var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
   assertEquals(2, zoomhandles.length);
-  var bgcanvas = graph.getElementsByClassName('dygraph_rangesel_bgcanvas');
+  var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas');
   assertEquals(1, bgcanvas.length);
-  var fgcanvas = graph.getElementsByClassName('dygraph_rangesel_fgcanvas');
+  var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas');
   assertEquals(1, fgcanvas.length);
 }
