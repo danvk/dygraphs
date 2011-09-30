@@ -19,7 +19,7 @@ UpdateOptionsTestCase.prototype.data = "X,Y1,Y2\n" +
   "2011-05-05,8,3\n";
 
 UpdateOptionsTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div>";
+  document.body.innerHTML = "<div id='graph'></div><div id='labels'>";
 };
 
 UpdateOptionsTestCase.prototype.tearDown = function() {
@@ -110,3 +110,12 @@ UpdateOptionsTestCase.prototype.testWidthChangeNeedsNewPoints = function() {
   this.unWrap(oldDrawGraph);
   assertTrue(graph._testDrawCalled);
 };
+
+// Test https://github.com/danvk/dygraphs/issues/87
+UpdateOptionsTestCase.prototype.testUpdateLabelsDivDoesntInfiniteLoop = function() {
+  var graphDiv = document.getElementById("graph");
+  var labelsDiv = document.getElementById("labels");
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
+  graph.updateOptions({labelsDiv : labelsDiv});
+}
+

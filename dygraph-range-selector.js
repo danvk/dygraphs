@@ -70,7 +70,7 @@ DygraphRangeSelector.prototype.resize_ = function() {
     canvas.style.height = canvas.height + 'px';  // for IE
   };
 
-  var plotArea = this.layout_.plotArea;
+  var plotArea = this.layout_.getPlotArea();
   var xAxisLabelHeight = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
   this.canvasRect_ = {
     x: plotArea.x,
