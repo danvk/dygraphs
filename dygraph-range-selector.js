@@ -191,16 +191,16 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
     xLast = e.screenX;
     var zoomHandleStatus = self.getZoomHandleStatus_();
-    var halfHandleWidth = Math.round(handle.width/2);
     if (handle == self.leftZoomHandle_) {
       var newPos = zoomHandleStatus.leftHandlePos + delX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
-      newPos = Math.max(newPos, self.canvasRect_.x+1);
+      newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
       var newPos = zoomHandleStatus.rightHandlePos + delX;
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
+    var halfHandleWidth = handle.width/2;
     handle.style.left = (newPos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
 
@@ -279,7 +279,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     var rightHandlePos = zoomHandleStatus.rightHandlePos;
     var rangeSize = rightHandlePos - leftHandlePos;
     if (leftHandlePos + delX <= self.canvasRect_.x) {
-      leftHandlePos = self.canvasRect_.x+1;
+      leftHandlePos = self.canvasRect_.x;
       rightHandlePos = leftHandlePos + rangeSize;
     } else if (rightHandlePos + delX >= self.canvasRect_.x + self.canvasRect_.w) {
       rightHandlePos = self.canvasRect_.x + self.canvasRect_.w;
@@ -288,7 +288,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
       leftHandlePos += delX;
       rightHandlePos += delX;
     }
-    var halfHandleWidth = Math.round(self.leftZoomHandle_.width/2);
+    var halfHandleWidth = self.leftZoomHandle_.width/2;
     self.leftZoomHandle_.style.left = (leftHandlePos - halfHandleWidth) + 'px';
     self.rightZoomHandle_.style.left = (rightHandlePos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
@@ -565,13 +565,13 @@ DygraphRangeSelector.prototype.placeZoomHandles_ = function() {
   var xRange = xExtremes[1] - xExtremes[0];
   var leftPercent = Math.max(0, (xWindowLimits[0] - xExtremes[0])/xRange);
   var rightPercent = Math.max(0, (xExtremes[1] - xWindowLimits[1])/xRange);
-  var leftCoord = this.canvasRect_.x + 1 + this.canvasRect_.w*leftPercent;
+  var leftCoord = this.canvasRect_.x + this.canvasRect_.w*leftPercent;
   var rightCoord = this.canvasRect_.x + this.canvasRect_.w*(1 - rightPercent);
-  var handleTop = Math.round(Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2));
-  var halfHandleWidth = Math.round(this.leftZoomHandle_.width/2);
-  this.leftZoomHandle_.style.left = Math.round(leftCoord - halfHandleWidth) + 'px';
+  var handleTop = Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2);
+  var halfHandleWidth = this.leftZoomHandle_.width/2;
+  this.leftZoomHandle_.style.left = (leftCoord - halfHandleWidth) + 'px';
   this.leftZoomHandle_.style.top = handleTop + 'px';
-  this.rightZoomHandle_.style.left = Math.round(rightCoord - halfHandleWidth) + 'px';
+  this.rightZoomHandle_.style.left = (rightCoord - halfHandleWidth) + 'px';
   this.rightZoomHandle_.style.top = this.leftZoomHandle_.style.top;
 
   this.leftZoomHandle_.style.visibility = 'visible';
@@ -633,7 +633,7 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
  * @return {Object} The zoom handle status.
  */
 DygraphRangeSelector.prototype.getZoomHandleStatus_ = function() {
-  var halfHandleWidth = Math.round(this.leftZoomHandle_.width/2);
+  var halfHandleWidth = this.leftZoomHandle_.width/2;
   var leftHandlePos = parseInt(this.leftZoomHandle_.style.left) + halfHandleWidth;
   var rightHandlePos = parseInt(this.rightZoomHandle_.style.left) + halfHandleWidth;
   return {
