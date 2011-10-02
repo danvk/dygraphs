@@ -28,7 +28,8 @@ TickerTestCase.prototype.createOptionsViewForAxis = function(axis, dict) {
   };
 };
 
-TickerTestCase.prototype.testBasicDateTicker = function() {
+// Broken, since it assumes EST.
+TickerTestCase.prototype._testBasicDateTicker = function() {
   var ticks = Dygraph.dateTicker(-1797534000000, 1255579200000, 800,
       this.createOptionsViewForAxis('x'));
 
@@ -47,7 +48,8 @@ TickerTestCase.prototype.testBasicNumericTicker = function() {
   assertEquals(expected_ticks, ticks);
 };
 
-TickerTestCase.prototype.testAllDateTickers = function() {
+// Broken, since it assumes EST.
+TickerTestCase.prototype._testAllDateTickers = function() {
   assertEquals([{"v":-1577905200000,"label":"1920"},{"v":-1262286000000,"label":"1930"},{"v":-946753200000,"label":"1940"},{"v":-631134000000,"label":"1950"},{"v":-315601200000,"label":"1960"},{"v":18000000,"label":"1970"},{"v":315550800000,"label":"1980"},{"v":631170000000,"label":"1990"},{"v":946702800000,"label":"2000"}], Dygraph.dateTicker(-1797534000000, 1255579200000, 800, this.createOptionsViewForAxis('x')));
   assertEquals([{"v":-5364644400000,"label":"1800"},{"v":-2208970800000,"label":"1900"}], Dygraph.dateTicker(-6122026800000, 189320400000, 480, this.createOptionsViewForAxis('x')));
   assertEquals([{"v":1041138000000,"label":"29Dec"},{"v":1041742800000,"label":"05Jan"},{"v":1042347600000,"label":"12Jan"},{"v":1042952400000,"label":"19Jan"},{"v":1043557200000,"label":"26Jan"},{"v":1044162000000,"label":"02Feb"},{"v":1044766800000,"label":"09Feb"},{"v":1045371600000,"label":"16Feb"}], Dygraph.dateTicker(1041138000000, 1045371600000, 640, this.createOptionsViewForAxis('x')));

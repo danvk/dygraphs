@@ -501,6 +501,9 @@ Dygraph.updateDeep = function (self, o) {
           self[k] = null;
         } else if (Dygraph.isArrayLike(o[k])) {
           self[k] = o[k].slice();
+        } else if (o[k] instanceof Node) {
+          // DOM objects are shallowly-copied.
+          self[k] = o[k];
         } else if (typeof(o[k]) == 'object') {
           if (typeof(self[k]) != 'object') {
             self[k] = {};
