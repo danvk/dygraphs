@@ -118,12 +118,35 @@
       clickedRadioButton = function(radiobutton) {
         dataType = radiobutton.value;
       };
-        
 
-      document.getElementById('num_points_input').value = '100';
-      document.getElementById('num_series_input').value = '1';
-      document.getElementById('roll_period_input').value = '1';
-      document.getElementById('repetitions').value = '1';
+      var values = {
+        num_points_input: 100,
+        num_series_input: 1,
+        roll_period_input: 1,
+        repetitions: 1
+      };
+
+      // Parse the URL for parameters. Use it to override the values hash.
+      var href = window.location.href;
+      var qmindex = href.indexOf('?');
+      if (qmindex > 0) {
+        var entries = href.substr(qmindex + 1).split('&');
+        for (var idx = 0; idx < entries.length; idx++) {
+          var entry = entries[idx];
+          var eindex = entry.indexOf('=');
+          if (eindex > 0) {
+            values[entry.substr(0, eindex)] = entry.substr(eindex + 1);
+          }
+        }
+      }
+
+      var populate = function(name) {
+        document.getElementById(name).value = values[name];
+      }
+      populate('num_points_input');
+      populate('num_series_input');
+      populate('roll_period_input');
+      populate('repetitions');
     </script>
   </body>
 </html>
