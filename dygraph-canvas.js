@@ -1,5 +1,8 @@
-// Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview Based on PlotKit.CanvasRenderer, but modified to meet the
@@ -41,7 +44,7 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.annotations = new Array();
   this.chartLabels = {};
 
-  this.area = this.computeArea_();
+  this.area = layout.plotArea;
   this.container.style.position = "relative";
   this.container.style.width = this.width + "px";
 
@@ -60,56 +63,6 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
 DygraphCanvasRenderer.prototype.attr_ = function(x) {
   return this.dygraph_.attr_(x);
-};
-
-// Compute the box which the chart should be drawn in. This is the canvas's
-// box, less space needed for axis and chart labels.
-// TODO(danvk): this belongs in DygraphLayout.
-DygraphCanvasRenderer.prototype.computeArea_ = function() {
-  var area = {
-    // TODO(danvk): per-axis setting.
-    x: 0,
-    y: 0
-  };
-  if (this.attr_('drawYAxis')) {
-   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
-  }
-
-  area.w = this.width - area.x - this.attr_('rightGap');
-  area.h = this.height;
-  if (this.attr_('drawXAxis')) {
-    if (this.attr_('xAxisHeight')) {
-      area.h -= this.attr_('xAxisHeight');
-    } else {
-      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
-    }
-  }
-
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
-  }
-
-  // Add space for chart labels: title, xlabel and ylabel.
-  if (this.attr_('title')) {
-    area.h -= this.attr_('titleHeight');
-    area.y += this.attr_('titleHeight');
-  }
-  if (this.attr_('xlabel')) {
-    area.h -= this.attr_('xLabelHeight');
-  }
-  if (this.attr_('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-  }
-
-  return area;
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
@@ -238,7 +191,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  this._renderChartLabels(); 
+  this._renderChartLabels();
   this._renderAnnotations();
 };
 
@@ -259,9 +212,10 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     color: this.attr_('axisLabelColor'),
     width: this.attr_('axisLabelWidth') + "px",
     // height: this.attr_('axisLabelFontSize') + 2 + "px",
+    lineHeight: "normal", // Something other than "normal" line-height screws up label positioning.
     overflow: "hidden"
   };
-  var makeDiv = function(txt, axis) {
+  var makeDiv = function(txt, axis, prec_axis) {
     var div = document.createElement("div");
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
@@ -269,8 +223,9 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       }
     }
     var inner_div = document.createElement("div");
-    // TODO(danvk): separate class for secondary y-axis
-    inner_div.className = 'dygraph-axis-label dygraph-axis-label-' + axis;
+    inner_div.className = 'dygraph-axis-label' +
+                          ' dygraph-axis-label-' + axis +
+                          (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
     inner_div.appendChild(document.createTextNode(txt));
     div.appendChild(inner_div);
     return div;
@@ -283,14 +238,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.attr_('drawYAxis')) {
     if (this.layout.yticks && this.layout.yticks.length > 0) {
+      var num_axes = this.dygraph_.numAxes();
       for (var i = 0; i < this.layout.yticks.length; i++) {
         var tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
         var x = this.area.x;
         var sgn = 1;
+        var prec_axis = 'y1';
         if (tick[0] == 1) {  // right-side y-axis
           x = this.area.x + this.area.w;
           sgn = -1;
+          prec_axis = 'y2';
         }
         var y = this.area.y + tick[1] * this.area.h;
         context.beginPath();
@@ -299,7 +257,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.closePath();
         context.stroke();
 
-        var label = makeDiv(tick[2], 'y');
+        var label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - this.attr_('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 
@@ -593,6 +551,10 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * Overrides the CanvasRenderer method to draw error bars
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
+  var isNullOrNaN = function(x) {
+    return (x === null || isNaN(x));
+  };
+
   // TODO(danvk): use this.attr_ for many of these.
   var context = this.elementContext;
   var fillAlpha = this.attr_('fillAlpha');
@@ -600,6 +562,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var fillGraph = this.attr_("fillGraph");
   var stackedGraph = this.attr_("stackedGraph");
   var stepPlot = this.attr_("stepPlot");
+  var points = this.layout.points;
+  var pointsLength = points.length;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -617,8 +581,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   // Update Points
   // TODO(danvk): here
-  for (var i = 0; i < this.layout.points.length; i++) {
-    var point = this.layout.points[i];
+  for (var i = pointsLength; i--;) {
+    var point = points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
     point.canvasy = this.area.h * point.y + this.area.y;
   }
@@ -647,8 +611,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < this.layout.points.length; j++) {
-        var point = this.layout.points[j];
+      for (var j = 0; j < pointsLength; j++) {
+        var point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -657,12 +621,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
           // TODO(danvk): here
           if (stepPlot) {
-            var newYs = [ prevY - point.errorPlus * yscale,
-                          prevY + point.errorMinus * yscale ];
+            var newYs = [ point.y_bottom, point.y_top ];
             prevY = point.y;
           } else {
-            var newYs = [ point.y - point.errorPlus * yscale,
-                          point.y + point.errorMinus * yscale ];
+            var newYs = [ point.y_bottom, point.y_top ];
           }
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
@@ -711,8 +673,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < this.layout.points.length; j++) {
-        var point = this.layout.points[j];
+      for (var j = 0; j < pointsLength; j++) {
+        var point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -746,73 +708,78 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     }
   }
 
-  var isNullOrNaN = function(x) {
-    return (x === null || isNaN(x));
-  };
-
-  for (var i = 0; i < setCount; i++) {
+  // Drawing the lines.
+  var firstIndexInSet = 0;
+  var afterLastIndexInSet = 0;
+  var setLength = 0;
+  for (var i = 0; i < setCount; i += 1) {
+    setLength = this.layout.setPointsLengths[i];
+    afterLastIndexInSet += setLength;
     var setName = setNames[i];
     var color = this.colors[setName];
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
     context.save();
-    var point = this.layout.points[0];
     var pointSize = this.dygraph_.attr_("pointSize", setName);
     var prevX = null, prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
-    var points = this.layout.points;
-    for (var j = 0; j < points.length; j++) {
+    for (var j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       var point = points[j];
-      if (point.name == setName) {
-        if (isNullOrNaN(point.canvasy)) {
-          if (stepPlot && prevX != null) {
-            // Draw a horizontal line to the start of the missing data
+      if (isNullOrNaN(point.canvasy)) {
+        if (stepPlot && prevX != null) {
+          // Draw a horizontal line to the start of the missing data
+          ctx.beginPath();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = this.attr_('strokeWidth');
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(point.canvasx, prevY);
+          ctx.stroke();
+        }
+        // this will make us move to the next point, not draw a line to it.
+        prevX = prevY = null;
+      } else {
+        // A point is "isolated" if it is non-null but both the previous
+        // and next points are null.
+        var isIsolated = (!prevX && (j == points.length - 1 ||
+                                     isNullOrNaN(points[j+1].canvasy)));
+        if (prevX === null) {
+          prevX = point.canvasx;
+          prevY = point.canvasy;
+        } else {
+          // Skip over points that will be drawn in the same pixel.
+          if (Math.round(prevX) == Math.round(point.canvasx) &&
+              Math.round(prevY) == Math.round(point.canvasy)) {
+            continue;
+          }
+          // TODO(antrob): skip over points that lie on a line that is already
+          // going to be drawn. There is no need to have more than 2
+          // consecutive points that are collinear.
+          if (strokeWidth) {
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.lineWidth = this.attr_('strokeWidth');
+            ctx.lineWidth = strokeWidth;
             ctx.moveTo(prevX, prevY);
-            ctx.lineTo(point.canvasx, prevY);
-            ctx.stroke();
-          }
-          // this will make us move to the next point, not draw a line to it.
-          prevX = prevY = null;
-        } else {
-          // A point is "isolated" if it is non-null but both the previous
-          // and next points are null.
-          var isIsolated = (!prevX && (j == points.length - 1 ||
-                                       isNullOrNaN(points[j+1].canvasy)));
-
-          if (prevX === null) {
+            if (stepPlot) {
+              ctx.lineTo(point.canvasx, prevY);
+            }
             prevX = point.canvasx;
             prevY = point.canvasy;
-          } else {
-            // TODO(danvk): figure out why this conditional is necessary.
-            if (strokeWidth) {
-              ctx.beginPath();
-              ctx.strokeStyle = color;
-              ctx.lineWidth = strokeWidth;
-              ctx.moveTo(prevX, prevY);
-              if (stepPlot) {
-                ctx.lineTo(point.canvasx, prevY);
-              }
-              prevX = point.canvasx;
-              prevY = point.canvasy;
-              ctx.lineTo(prevX, prevY);
-              ctx.stroke();
-            }
+            ctx.lineTo(prevX, prevY);
+            ctx.stroke();
           }
+        }
 
-          if (drawPoints || isIsolated) {
-           ctx.beginPath();
-           ctx.fillStyle = color;
-           ctx.arc(point.canvasx, point.canvasy, pointSize,
-                   0, 2 * Math.PI, false);
-           ctx.fill();
-          }
+        if (drawPoints || isIsolated) {
+          ctx.beginPath();
+          ctx.fillStyle = color;
+          ctx.arc(point.canvasx, point.canvasy, pointSize,
+                  0, 2 * Math.PI, false);
+          ctx.fill();
         }
       }
     }
+    firstIndexInSet = afterLastIndexInSet;
   }
 
   context.restore();

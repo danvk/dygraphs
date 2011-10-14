@@ -136,6 +136,34 @@ InteractionModelTestCase.clickAt = function(g, x, y) {
 }
 
 /**
+ * This tests that clickCallback is still called with the nonInteractiveModel.
+ */
+InteractionModelTestCase.prototype.testClickCallbackIsCalledWithNonInteractiveModel = function() {
+  var clicked;
+
+  // TODO(danvk): also test pointClickCallback here.
+  var clickCallback = function(event, x) {
+    clicked = x;
+  };
+
+  var opts = {
+    width: 100,
+    height : 100,
+    clickCallback : clickCallback,
+    interactionModel : Dygraph.Interaction.nonInteractiveModel_
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data1, opts);
+
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseMove_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+
+  assertEquals(20, clicked);
+};
+
+/**
  * A sanity test to ensure pointClickCallback is called.
  */
 InteractionModelTestCase.prototype.testPointClickCallback = function() {

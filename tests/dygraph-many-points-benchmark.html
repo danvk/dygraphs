@@ -16,6 +16,9 @@
   <body>
     <p>Plot which can be easily generated with different numbers of points for
        benchmarking/profiling and improving performance of dygraphs.</p>    
+    <p>Data to plot:
+      <input type="radio" name="plot_group1" value="sine" onclick="clickedRadioButton(this);" checked> sinusoid function
+      <input type="radio" name="plot_group1" value="rand" onclick="clickedRadioButton(this);"> random points <br></p>
     <p>Number of points:
        <input type="text" id="num_points_input" size="20"></p>
     <p>Number of series:
@@ -35,6 +38,7 @@
 
     <script type="text/javascript">
       var plot;
+      var dataType = "sine";
 
       var durations = [];
       updatePlot = function() {
@@ -58,18 +62,23 @@
           var x = xmin + delta * i;
           var elem = [ x ];
           for (var j = 0; j < numSeries; j++) {
-            var y = Math.sin(x + (j * adj));
+            var y;
+            if (dataType == "rand") {
+              y = Math.pow(Math.random() - Math.random(), 7);
+            } else {
+              y = Math.sin(x + (j * adj));
+            }
             elem.push(y);
           }
           data[i] = elem;
         }
         var labels = [ "x" ];
         for (var j = 0; j < numSeries; j++) {
-          labels.push("sin(x + " + (j*adj) + ")");
+          labels.push("data-set-" + j);
         }
         var rollPeriod = parseInt(
             document.getElementById('roll_period_input').value);
-        var opts = {labels: labels, rollPeriod: rollPeriod};
+        var opts = {labels: labels, rollPeriod: rollPeriod, timingName: "x"};
         var millisecondss = [];
         for (var i = 0; i < repetitions; i++) {
           var start = new Date();
@@ -105,11 +114,39 @@
               "completed in " + (end2 - start2) + " milliseconds.";
         }
       };
+      
+      clickedRadioButton = function(radiobutton) {
+        dataType = radiobutton.value;
+      };
 
-      document.getElementById('num_points_input').value = '100';
-      document.getElementById('num_series_input').value = '1';
-      document.getElementById('roll_period_input').value = '1';
-      document.getElementById('repetitions').value = '1';
+      var values = {
+        num_points_input: 100,
+        num_series_input: 1,
+        roll_period_input: 1,
+        repetitions: 1
+      };
+
+      // Parse the URL for parameters. Use it to override the values hash.
+      var href = window.location.href;
+      var qmindex = href.indexOf('?');
+      if (qmindex > 0) {
+        var entries = href.substr(qmindex + 1).split('&');
+        for (var idx = 0; idx < entries.length; idx++) {
+          var entry = entries[idx];
+          var eindex = entry.indexOf('=');
+          if (eindex > 0) {
+            values[entry.substr(0, eindex)] = entry.substr(eindex + 1);
+          }
+        }
+      }
+
+      var populate = function(name) {
+        document.getElementById(name).value = values[name];
+      }
+      populate('num_points_input');
+      populate('num_series_input');
+      populate('roll_period_input');
+      populate('repetitions');
     </script>
   </body>
 </html>

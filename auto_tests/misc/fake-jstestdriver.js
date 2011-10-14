@@ -36,8 +36,9 @@ var jstd = {
   }
 };
 
+var testCaseList = [];
+
 function TestCase(name) {
-  jstd.sucker("Not really creating TestCase(" + name + ")");
   this.name = name;
   this.toString = function() {
     return "Fake test case " + name;
@@ -46,10 +47,32 @@ function TestCase(name) {
   var testCase = function() { return this; };
   testCase.prototype.setUp = function() { };
   testCase.prototype.tearDown = function() { };
-  testCase.prototype.runTest = function(name) {
+  /**
+   * name can be a string, which is looked up in this object, or it can be a
+   * function, in which case it's run.
+   *
+   * Examples:
+   * var tc = new MyTestCase();
+   * tc.runTest("testThis");
+   * tc.runTest(tc.testThis);
+   *
+   * The duplication tc in runTest is irritating, but it plays well with
+   * Chrome's console completion.
+   */
+  testCase.prototype.runTest = function(func) {
     try {
       this.setUp();
-      var fn = this[name];
+
+      var fn = null;
+      var parameterType = typeof(func);
+      if (typeof(func) == "function") {
+        fn = func;
+      } else if (typeof(func) == "string") {
+        fn = this[func];
+      } else {
+        fail("can't supply " + typeof(func) + " to runTest");
+      }
+
       fn.apply(this, []);
       this.tearDown();
       return true;
@@ -73,5 +96,35 @@ function TestCase(name) {
     }
     console.log(prettyPrintEntity_(tests));
   };
+
+  testCaseList.push(testCase);
   return testCase;
 };
+
+// Note: this creates a bunch of global variables intentionally.
+function addGlobalTestSymbols() {
+  globalTestDb = {};  // maps test name -> test function wrapper
+
+  var num_tests = 0;
+  for (var i = 0; i < testCaseList.length; i++) {
+    var tc_class = testCaseList[i];
+    for (var name in tc_class.prototype) {
+      if (name.indexOf('test') == 0 && typeof(tc_class.prototype[name]) == 'function') {
+        if (globalTestDb.hasOwnProperty(name)) {
+          console.log('Duplicated test name: ' + name);
+        } else {
+          globalTestDb[name] = function(name, tc_class) {
+            return function() {
+              var tc = new tc_class;
+              return tc.runTest(name);
+            };
+          }(name, tc_class);
+          eval(name + " = globalTestDb['" + name + "'];");
+          num_tests += 1;
+        }
+      }
+    }
+  }
+  console.log('Loaded ' + num_tests + ' tests in ' +
+              testCaseList.length + ' test cases');
+}

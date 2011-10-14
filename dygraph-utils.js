@@ -1,5 +1,8 @@
-// Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
-// All Rights Reserved.
+/**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview This file contains utility functions used by dygraphs. These
@@ -90,20 +93,35 @@ Dygraph.getContext = function(canvas) {
  * @private
  * Add an event handler. This smooths a difference between IE and the rest of
  * the world.
- * @param { DOM element } el The element to add the event to.
- * @param { String } evt The name of the event, e.g. 'click' or 'mousemove'.
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
  * @param { Function } fn The function to call on the event. The function takes
  * one parameter: the event object.
  */
-Dygraph.addEvent = function(el, evt, fn) {
-  var normed_fn = function(e) {
-    if (!e) var e = window.event;
-    fn(e);
-  };
-  if (window.addEventListener) {  // Mozilla, Netscape, Firefox
-    el.addEventListener(evt, normed_fn, false);
-  } else {  // IE
-    el.attachEvent('on' + evt, normed_fn);
+Dygraph.addEvent = function addEvent(elem, type, fn) {
+  if (elem.addEventListener) {
+    elem.addEventListener(type, fn, false);
+  } else {
+    elem[type+fn] = function(){fn(window.event);};
+    elem.attachEvent('on'+type, elem[type+fn]);
+  }
+};
+
+/**
+ * @private
+ * Remove an event handler. This smooths a difference between IE and the rest of
+ * the world.
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param { Function } fn The function to call on the event. The function takes
+ * one parameter: the event object.
+ */
+Dygraph.removeEvent = function addEvent(elem, type, fn) {
+  if (elem.removeEventListener) {
+    elem.removeEventListener(type, fn, false);
+  } else {
+    elem.detachEvent('on'+type, elem[type+fn]);
+    elem[type+fn] = null;
   }
 };
 
@@ -343,30 +361,6 @@ Dygraph.hmsString_ = function(date) {
 };
 
 /**
- * Convert a JS date (millis since epoch) to YYYY/MM/DD
- * @param {Number} date The JavaScript date (ms since epoch)
- * @return {String} A date of the form "YYYY/MM/DD"
- * @private
- */
-Dygraph.dateString_ = function(date) {
-  var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
-
-  // Get the year:
-  var year = "" + d.getFullYear();
-  // Get a 0 padded month string
-  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
-  // Get a 0 padded day string
-  var day = zeropad(d.getDate());
-
-  var ret = "";
-  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + Dygraph.hmsString_(date);
-
-  return year + "/" + month + "/" + day + ret;
-};
-
-/**
  * Round a number to the specified number of digits past the decimal point.
  * @param {Number} num The number to round
  * @param {Number} places The number of decimals to which to round
@@ -495,6 +489,36 @@ Dygraph.update = function (self, o) {
 };
 
 /**
+ * Copies all the properties from o to self.
+ *
+ * @private
+ */
+Dygraph.updateDeep = function (self, o) {
+  if (typeof(o) != 'undefined' && o !== null) {
+    for (var k in o) {
+      if (o.hasOwnProperty(k)) {
+        if (o[k] == null) {
+          self[k] = null;
+        } else if (Dygraph.isArrayLike(o[k])) {
+          self[k] = o[k].slice();
+        } else if (o[k] instanceof Node) {
+          // DOM objects are shallowly-copied.
+          self[k] = o[k];
+        } else if (typeof(o[k]) == 'object') {
+          if (typeof(self[k]) != 'object') {
+            self[k] = {};
+          }
+          Dygraph.updateDeep(self[k], o[k]);
+        } else {
+          self[k] = o[k];
+        }
+      }
+    }
+  }
+  return self;
+};
+
+/**
  * @private
  */
 Dygraph.isArrayLike = function (o) {
@@ -523,6 +547,7 @@ Dygraph.isDateLike = function (o) {
 };
 
 /**
+ * Note: this only seems to work for arrays.
  * @private
  */
 Dygraph.clone = function(o) {
@@ -552,4 +577,111 @@ Dygraph.createCanvas = function() {
   }
 
   return canvas;
+};
+
+/**
+ * @private
+ * This function will scan the option list and determine if they
+ * require us to recalculate the pixel positions of each point.
+ * @param { List } a list of options to check.
+ * @return { Boolean } true if the graph needs new points else false.
+ */
+Dygraph.isPixelChangingOptionList = function(labels, attrs) {
+  // A whitelist of options that do not change pixel positions.
+  var pixelSafeOptions = {
+    'annotationClickHandler': true,
+    'annotationDblClickHandler': true,
+    'annotationMouseOutHandler': true,
+    'annotationMouseOverHandler': true,
+    'axisLabelColor': true,
+    'axisLineColor': true,
+    'axisLineWidth': true,
+    'clickCallback': true,
+    'colorSaturation': true,
+    'colorValue': true,
+    'colors': true,
+    'connectSeparatedPoints': true,
+    'digitsAfterDecimal': true,
+    'drawCallback': true,
+    'drawPoints': true,
+    'drawXGrid': true,
+    'drawYGrid': true,
+    'fillAlpha': true,
+    'gridLineColor': true,
+    'gridLineWidth': true,
+    'hideOverlayOnMouseOut': true,
+    'highlightCallback': true,
+    'highlightCircleSize': true,
+    'interactionModel': true,
+    'isZoomedIgnoreProgrammaticZoom': true,
+    'labelsDiv': true,
+    'labelsDivStyles': true,
+    'labelsDivWidth': true,
+    'labelsKMB': true,
+    'labelsKMG2': true,
+    'labelsSeparateLines': true,
+    'labelsShowZeroValues': true,
+    'legend': true,
+    'maxNumberWidth': true,
+    'panEdgeFraction': true,
+    'pixelsPerYLabel': true,
+    'pointClickCallback': true,
+    'pointSize': true,
+    'rangeSelectorPlotFillColor': true,
+    'rangeSelectorPlotStrokeColor': true,
+    'showLabelsOnHighlight': true,
+    'showRoller': true,
+    'sigFigs': true,
+    'strokeWidth': true,
+    'underlayCallback': true,
+    'unhighlightCallback': true,
+    'xAxisLabelFormatter': true,
+    'xTicker': true,
+    'xValueFormatter': true,
+    'yAxisLabelFormatter': true,
+    'yValueFormatter': true,
+    'zoomCallback': true
+  };
+
+  // Assume that we do not require new points.
+  // This will change to true if we actually do need new points.
+  var requiresNewPoints = false;
+
+  // Create a dictionary of series names for faster lookup.
+  // If there are no labels, then the dictionary stays empty.
+  var seriesNamesDictionary = { };
+  if (labels) {
+    for (var i = 1; i < labels.length; i++) {
+      seriesNamesDictionary[labels[i]] = true;
+    }
+  }
+
+  // Iterate through the list of updated options.
+  for (property in attrs) {
+    // Break early if we already know we need new points from a previous option.
+    if (requiresNewPoints) {
+      break;
+    }
+    if (attrs.hasOwnProperty(property)) {
+      // Find out of this field is actually a series specific options list.
+      if (seriesNamesDictionary[property]) {
+        // This property value is a list of options for this series.
+        // If any of these sub properties are not pixel safe, set the flag.
+        for (subProperty in attrs[property]) {
+          // Break early if we already know we need new points from a previous option.
+          if (requiresNewPoints) {
+            break;
+          }
+          if (attrs[property].hasOwnProperty(subProperty) && !pixelSafeOptions[subProperty]) {
+            requiresNewPoints = true;
+          }
+        }
+      // If this was not a series specific option list, check if its a pixel changing property.
+      } else if (!pixelSafeOptions[property]) {
+        requiresNewPoints = true;
+      }
+    }
+  }
+
+  return requiresNewPoints;
 };

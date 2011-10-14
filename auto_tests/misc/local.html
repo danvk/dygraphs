@@ -23,7 +23,19 @@
   <script type="text/javascript" src="../tests/multi_csv.js"></script>
   <script type="text/javascript" src="../tests/to_dom_coords.js"></script>
   <script type="text/javascript" src="../tests/interaction_model.js"></script>
+  <script type="text/javascript" src="../tests/tickers.js"></script>
   <script type="text/javascript" src="../tests/scrolling_div.js"></script>
+  <script type="text/javascript" src="../tests/custom_bars.js"></script>
+  <script type="text/javascript" src="../tests/css.js"></script>
+  <script type="text/javascript" src="../tests/selection.js"></script>
+  <script type="text/javascript" src="../tests/rolling_average.js"></script>
+  <script type="text/javascript" src="../tests/error_bars.js"></script>
+  <script type="text/javascript" src="../tests/annotations.js"></script>
+  <script type="text/javascript" src="../tests/update_options.js"></script>
+  <script type="text/javascript" src="../tests/utils_test.js"></script>
+  <script type="text/javascript" src="../tests/multiple_axes.js"></script>
+
+
   <script type="text/javascript">
   var tc = null;
   function processVariables() {
@@ -60,11 +72,10 @@
 </head>
 <body>
   <div id='graph'></div>
-  This file is really nothing more than all the tests coalesced into a single
+  <p>This file is really nothing more than all the tests coalesced into a single
   HTML file. To run a test, open a Javascript console and execute, for
-  instance,<br>
-  <code>tc = new SimpleDrawingTestCase() ;<br>
-    tc.runTest("testDrawSimpleRangePlusOne")</code>
+  instance,</p>
+  <code>testDrawSimpleRangePlusOne()</code>
 
   <p>Alternatively you can use query args: <ul>
   <li>testCase - for the name of the test case
@@ -75,5 +86,6 @@
 </body>
 <script>
 processVariables();
+addGlobalTestSymbols();
 </script>
 </html>
