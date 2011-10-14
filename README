@@ -58,7 +58,7 @@ dygraphs uses:
 automated tests use:
  - auto_tests/lib/jquery-1.4.2.js (MIT & GPL2)
  - auto_tests/lib/Asserts.js (Apache 2.0 License)
- - auto-tests/lib/JsTestDriver-1.3.2.jar (Apache 2.0 License
+ - auto-tests/lib/JsTestDriver-1.3.3cjar (Apache 2.0 License
 
 rgbcolor: http://www.phpied.com/rgb-color-parser-in-javascript/
 strftime: http://tech.bluesmoon.info/2008/04/strftime-in-javascript.html

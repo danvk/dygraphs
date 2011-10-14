@@ -11,7 +11,7 @@ Running tests
   browser:
 
    Run:
-   $ java -jar ./auto_tests/lib/JsTestDriver-1.3.2.jar --port 9876
+   $ java -jar ./auto_tests/lib/JsTestDriver-1.3.3c.jar --port 9876
   
    Open
    http://localhost:9876/capture
@@ -19,7 +19,7 @@ Running tests
 
 - Run the tests with:
 
-  $ java -jar ./auto_tests/lib/JsTestDriver-1.3.2.jar --tests all
+  $ java -jar ./auto_tests/lib/JsTestDriver-1.3.3c.jar --tests all
 
 
 Debugging tests
