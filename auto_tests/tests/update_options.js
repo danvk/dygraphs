@@ -19,7 +19,7 @@ UpdateOptionsTestCase.prototype.data = "X,Y1,Y2\n" +
   "2011-05-05,8,3\n";
 
 UpdateOptionsTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div><div id='labels'>";
+  document.body.innerHTML = "<div id='graph'></div><div id='labels'></div>";
 };
 
 UpdateOptionsTestCase.prototype.tearDown = function() {
