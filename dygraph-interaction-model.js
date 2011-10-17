@@ -129,7 +129,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
 
       var pixelsDragged = context.dragEndY - context.dragStartY;
       var unitsDragged = pixelsDragged * axis.unitsPerPixel;
- 
+
       var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
 
       // In log scale, maxValue and minValue are the logs of those values.
@@ -322,7 +322,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
     g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
                Math.max(context.dragStartY, context.dragEndY));
   } else {
-    g.canvas_ctx_.clearRect(0, 0, g.canvas_.width, g.canvas_.height);
+    g.clearZoomRect_();
   }
   context.dragStartX = null;
   context.dragStartY = null;

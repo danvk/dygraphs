@@ -13,9 +13,12 @@
  */
 DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
-  this.isUsingExcanvas = typeof(G_vmlCanvasManager) != 'undefined';
+  this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;
   this.createCanvases_();
+  if (this.isUsingExcanvas_) {
+    this.createIEPanOverlay_();
+  }
   this.createZoomHandles_();
   this.initInteraction_();
 };
@@ -49,16 +52,6 @@ DygraphRangeSelector.prototype.renderInteractiveLayer = function() {
   if (this.isChangingRange_) {
     return;
   }
-
-  // The zoom handle image may not be loaded yet. May need to try again later.
-  if (this.leftZoomHandle_.height == 0 && this.leftZoomHandle_.retryCount != 5) {
-    var self = this;
-    setTimeout(function() { self.renderInteractiveLayer(); }, 300);
-    var retryCount = this.leftZoomHandle_.retryCount;
-    this.leftZoomHandle_.retryCount = retryCount == undefined ? 1 : retryCount+1;
-    return;
-  }
-
   this.placeZoomHandles_();
   this.drawInteractiveLayer_();
 };
@@ -68,7 +61,7 @@ DygraphRangeSelector.prototype.renderInteractiveLayer = function() {
  * Resizes the range selector.
  */
 DygraphRangeSelector.prototype.resize_ = function() {
-  function setCanvasRect(canvas, rect) {
+  function setElementRect(canvas, rect) {
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
     canvas.width = rect.w;
@@ -86,8 +79,8 @@ DygraphRangeSelector.prototype.resize_ = function() {
     h: this.attr_('rangeSelectorHeight')
   };
 
-  setCanvasRect(this.bgcanvas_, this.canvasRect_);
-  setCanvasRect(this.fgcanvas_, this.canvasRect_);
+  setElementRect(this.bgcanvas_, this.canvasRect_);
+  setElementRect(this.fgcanvas_, this.canvasRect_);
 };
 
 DygraphRangeSelector.prototype.attr_ = function(name) {
@@ -102,13 +95,29 @@ DygraphRangeSelector.prototype.createCanvases_ = function() {
   this.bgcanvas_ = Dygraph.createCanvas();
   this.bgcanvas_.className = 'dygraph-rangesel-bgcanvas';
   this.bgcanvas_.style.position = 'absolute';
+  this.bgcanvas_.style.zIndex = 9;
   this.bgcanvas_ctx_ = Dygraph.getContext(this.bgcanvas_);
 
   this.fgcanvas_ = Dygraph.createCanvas();
   this.fgcanvas_.className = 'dygraph-rangesel-fgcanvas';
   this.fgcanvas_.style.position = 'absolute';
+  this.fgcanvas_.style.zIndex = 9;
   this.fgcanvas_.style.cursor = 'default';
   this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
+};
+
+/**
+ * @private
+ * Creates overlay divs for IE/Excanvas so that mouse events are handled properly.
+ */
+DygraphRangeSelector.prototype.createIEPanOverlay_ = function() {
+  this.iePanOverlay_ = document.createElement("div");
+  this.iePanOverlay_.style.position = 'absolute';
+  this.iePanOverlay_.style.backgroundColor = 'white';
+  this.iePanOverlay_.style.filter = 'alpha(opacity=0)';
+  this.iePanOverlay_.style.display = 'none';
+  this.iePanOverlay_.style.cursor = 'move';
+  this.fgcanvas_.appendChild(this.iePanOverlay_);
 };
 
 /**
@@ -119,14 +128,24 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   var img = new Image();
   img.className = 'dygraph-rangesel-zoomhandle';
   img.style.position = 'absolute';
+  img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
-  img.src = 'data:image/png;base64,\
+  if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
+      img.width = 7;
+      img.height = 14;
+      img.style.backgroundColor = 'white';
+      img.style.border = '1px solid #333333'; // Just show box in IE7.
+  } else {
+      img.width = 9;
+      img.height = 16;
+      img.src = 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA\
 zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv\
 bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
 6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s\
 qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  }
 
   this.leftZoomHandle_ = img;
   this.rightZoomHandle_ = img.cloneNode(false);
@@ -172,7 +191,6 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
     xLast = e.screenX;
     var zoomHandleStatus = self.getZoomHandleStatus_();
-    var halfHandleWidth = Math.round(handle.width/2);
     if (handle == self.leftZoomHandle_) {
       var newPos = zoomHandleStatus.leftHandlePos + delX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
@@ -182,11 +200,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
+    var halfHandleWidth = handle.width/2;
     handle.style.left = (newPos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
 
     // Zoom on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas) {
+    if (!self.isUsingExcanvas_) {
       doZoom();
     }
   };
@@ -201,7 +220,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.fgcanvas_.style.cursor = 'default';
 
     // If using excanvas, Zoom now.
-    if (self.isUsingExcanvas) {
+    if (self.isUsingExcanvas_) {
       doZoom();
     }
   };
@@ -222,10 +241,14 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   };
 
   function isMouseInPanZone(e) {
-    // Getting clientX directly from the event is not accurate enough :(
-    var clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
-    var zoomHandleStatus = self.getZoomHandleStatus_();
-    return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
+    if (self.isUsingExcanvas_) {
+        return e.srcElement == self.iePanOverlay_;
+    } else {
+      // Getting clientX directly from the event is not accurate enough :(
+      var clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
+      var zoomHandleStatus = self.getZoomHandleStatus_();
+      return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
+    }
   };
 
   function onPanStart(e) {
@@ -242,6 +265,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     if (!isPanning) {
       return;
     }
+    Dygraph.cancelEvent(e);
 
     var delX = e.screenX - xLast;
     if (Math.abs(delX) < 4) {
@@ -264,13 +288,13 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
       leftHandlePos += delX;
       rightHandlePos += delX;
     }
-    var halfHandleWidth = Math.round(self.leftZoomHandle_.width/2);
+    var halfHandleWidth = self.leftZoomHandle_.width/2;
     self.leftZoomHandle_.style.left = (leftHandlePos - halfHandleWidth) + 'px';
     self.rightZoomHandle_.style.left = (rightHandlePos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
 
     // Do pan on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas) {
+    if (!self.isUsingExcanvas_) {
       doPan();
     }
   };
@@ -283,7 +307,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     Dygraph.removeEvent(topElem, 'mousemove', onPan);
     Dygraph.removeEvent(topElem, 'mouseup', onPanEnd);
     // If using excanvas, do pan now.
-    if (self.isUsingExcanvas) {
+    if (self.isUsingExcanvas_) {
       doPan();
     }
   };
@@ -328,10 +352,16 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   this.dygraph_.attrs_.interactionModel = interactionModel;
   this.dygraph_.attrs_.panEdgeFraction = .0001;
 
-  Dygraph.addEvent(this.leftZoomHandle_, 'dragstart', onZoomStart);
-  Dygraph.addEvent(this.rightZoomHandle_, 'dragstart', onZoomStart);
-  Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
-  Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+  var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
+  Dygraph.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
+  Dygraph.addEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
+
+  if (this.isUsingExcanvas_) {
+    Dygraph.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
+  } else {
+    Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
+    Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+  }
 };
 
 /**
@@ -341,22 +371,20 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
 DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
   var ctx = this.bgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
-  var margin = .5;
   try {
     this.drawMiniPlot_();
   } catch(ex) {
   }
-  ctx.strokeStyle = 'lightgray';
-  if (false) {
-    ctx.strokeRect(margin, margin, this.canvasRect_.w-margin, this.canvasRect_.h-margin);
-  } else {
-    ctx.beginPath();
-    ctx.moveTo(margin, margin);
-    ctx.lineTo(margin, this.canvasRect_.h-margin);
-    ctx.lineTo(this.canvasRect_.w-margin, this.canvasRect_.h-margin);
-    ctx.lineTo(this.canvasRect_.w-margin, margin);
-    ctx.stroke();
-  }
+
+  var margin = .5;
+  this.bgcanvas_ctx_.lineWidth = 1;
+  ctx.strokeStyle = 'gray';
+  ctx.beginPath();
+  ctx.moveTo(margin, margin);
+  ctx.lineTo(margin, this.canvasRect_.h-margin);
+  ctx.lineTo(this.canvasRect_.w-margin, this.canvasRect_.h-margin);
+  ctx.lineTo(this.canvasRect_.w-margin, margin);
+  ctx.stroke();
 };
 
 
@@ -496,7 +524,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var yMax = -Number.MAX_VALUE;
   for (var i = 0; i < combinedSeries.length; i++) {
     var yVal = combinedSeries[i][1];
-    if (!logscale || yVal > 0) {
+    if (yVal != null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
     }
@@ -539,11 +567,11 @@ DygraphRangeSelector.prototype.placeZoomHandles_ = function() {
   var rightPercent = Math.max(0, (xExtremes[1] - xWindowLimits[1])/xRange);
   var leftCoord = this.canvasRect_.x + this.canvasRect_.w*leftPercent;
   var rightCoord = this.canvasRect_.x + this.canvasRect_.w*(1 - rightPercent);
-  var handleTop = Math.round(Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2));
-  var halfHandleWidth = Math.round(this.leftZoomHandle_.width/2);
-  this.leftZoomHandle_.style.left = Math.round(leftCoord - halfHandleWidth) + 'px';
+  var handleTop = Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2);
+  var halfHandleWidth = this.leftZoomHandle_.width/2;
+  this.leftZoomHandle_.style.left = (leftCoord - halfHandleWidth) + 'px';
   this.leftZoomHandle_.style.top = handleTop + 'px';
-  this.rightZoomHandle_.style.left = Math.round(rightCoord - halfHandleWidth) + 'px';
+  this.rightZoomHandle_.style.left = (rightCoord - halfHandleWidth) + 'px';
   this.rightZoomHandle_.style.top = this.leftZoomHandle_.style.top;
 
   this.leftZoomHandle_.style.visibility = 'visible';
@@ -570,13 +598,16 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
     ctx.lineTo(width, height);
     ctx.lineTo(width, margin);
     ctx.stroke();
+    if (this.iePanOverlay_) {
+      this.iePanOverlay_.style.display = 'none';
+    }
   } else {
     leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
     rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
 
     ctx.fillStyle = 'rgba(240, 240, 240, 0.6)';
-    ctx.fillRect(margin, margin, leftHandleCanvasPos, height - margin);
-    ctx.fillRect(rightHandleCanvasPos, margin, width - rightHandleCanvasPos, height - margin);
+    ctx.fillRect(0, 0, leftHandleCanvasPos, this.canvasRect_.h);
+    ctx.fillRect(rightHandleCanvasPos, 0, this.canvasRect_.w - rightHandleCanvasPos, this.canvasRect_.h);
 
     ctx.beginPath();
     ctx.moveTo(margin, margin);
@@ -586,6 +617,13 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
     ctx.lineTo(rightHandleCanvasPos, margin);
     ctx.lineTo(width, margin);
     ctx.stroke();
+
+    if (this.isUsingExcanvas_) {
+      this.iePanOverlay_.style.width = (rightHandleCanvasPos - leftHandleCanvasPos) + 'px';
+      this.iePanOverlay_.style.left = leftHandleCanvasPos + 'px';
+      this.iePanOverlay_.style.height = height + 'px';
+      this.iePanOverlay_.style.display = 'inline';
+    }
   }
 };
 
@@ -595,7 +633,7 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
  * @return {Object} The zoom handle status.
  */
 DygraphRangeSelector.prototype.getZoomHandleStatus_ = function() {
-  var halfHandleWidth = Math.round(this.leftZoomHandle_.width/2);
+  var halfHandleWidth = this.leftZoomHandle_.width/2;
   var leftHandlePos = parseInt(this.leftZoomHandle_.style.left) + halfHandleWidth;
   var rightHandlePos = parseInt(this.rightZoomHandle_.style.left) + halfHandleWidth;
   return {

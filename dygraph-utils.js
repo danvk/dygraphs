@@ -494,6 +494,14 @@ Dygraph.update = function (self, o) {
  * @private
  */
 Dygraph.updateDeep = function (self, o) {
+  // Taken from http://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
+  function isNode(o) {
+    return (
+      typeof Node === "object" ? o instanceof Node :
+      typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
+    );
+  }
+
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
@@ -501,7 +509,7 @@ Dygraph.updateDeep = function (self, o) {
           self[k] = null;
         } else if (Dygraph.isArrayLike(o[k])) {
           self[k] = o[k].slice();
-        } else if (o[k] instanceof Node) {
+        } else if (isNode(o[k])) {
           // DOM objects are shallowly-copied.
           self[k] = o[k];
         } else if (typeof(o[k]) == 'object') {
