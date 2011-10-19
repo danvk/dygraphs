@@ -50,15 +50,19 @@ DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  var ctx = this.dygraph_.canvas_ctx_;
-  ctx.beginPath();
-  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-  ctx.clip();
+  if (this.dygraph_.isUsingExcanvas_) {
+    this._createIEClipArea();
+  } else {
+    var ctx = this.dygraph_.canvas_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
 
-  ctx = this.dygraph_.hidden_ctx_;
-  ctx.beginPath();
-  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-  ctx.clip();
+    ctx = this.dygraph_.hidden_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
+  }
 };
 
 DygraphCanvasRenderer.prototype.attr_ = function(x) {
@@ -155,6 +159,7 @@ DygraphCanvasRenderer.prototype.render = function() {
 
   if (this.attr_('drawYGrid')) {
     var ticks = this.layout.yticks;
+    // TODO(konigsberg): I don't think these calls to save() have a corresponding restore().
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
     ctx.lineWidth = this.attr_('gridLineWidth');
@@ -194,6 +199,54 @@ DygraphCanvasRenderer.prototype.render = function() {
   this._renderAnnotations();
 };
 
+DygraphCanvasRenderer.prototype._createIEClipArea = function() {
+  var className = 'dygraph-clip-div';
+  var graphDiv = this.dygraph_.graphDiv;
+
+  // Remove old clip divs.
+  for (var i = graphDiv.childNodes.length-1; i >= 0; i--) {
+    if (graphDiv.childNodes[i].className == className) {
+      graphDiv.removeChild(graphDiv.childNodes[i]);
+    }
+  }
+
+  // Determine background color to give clip divs.
+  var backgroundColor = document.bgColor;
+  var element = this.dygraph_.graphDiv;
+  while (element != document) {
+    var bgcolor = element.currentStyle.backgroundColor;
+    if (bgcolor && bgcolor != 'transparent') {
+      backgroundColor = bgcolor;
+      break;
+    }
+    element = element.parentNode;
+  }
+
+  function createClipDiv(area) {
+    if (area.w == 0 || area.h == 0) {
+      return;
+    }
+    var elem = document.createElement('div');
+    elem.className = className;
+    elem.style.backgroundColor = backgroundColor;
+    elem.style.position = 'absolute';
+    elem.style.left = area.x + 'px';
+    elem.style.top = area.y + 'px';
+    elem.style.width = area.w + 'px';
+    elem.style.height = area.h + 'px';
+    graphDiv.appendChild(elem);
+  }
+
+  var plotArea = this.area;
+  // Left side
+  createClipDiv({x:0, y:0, w:plotArea.x, h:this.height});
+  // Top
+  createClipDiv({x:plotArea.x, y:0, w:this.width-plotArea.x, h:plotArea.y});
+  // Right side
+  createClipDiv({x:plotArea.x+plotArea.w, y:0, w:this.width-plotArea.x-plotArea.w, h:this.height});
+  // Bottom
+  createClipDiv({x:plotArea.x, y:plotArea.y+plotArea.h, w:this.width-plotArea.x, h:this.height-plotArea.h-plotArea.y});
+}
 
 DygraphCanvasRenderer.prototype._renderAxis = function() {
   if (!this.attr_('drawXAxis') && !this.attr_('drawYAxis')) return;
@@ -250,11 +303,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
           prec_axis = 'y2';
         }
         var y = this.area.y + tick[1] * this.area.h;
+
+        /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
         context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize')), halfDown(y));
         context.closePath();
         context.stroke();
+        */
 
         var label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - this.attr_('axisLabelFontSize') / 2);
@@ -315,11 +371,14 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
         var x = this.area.x + tick[0] * this.area.w;
         var y = this.area.y + this.area.h;
+
+        /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
         context.lineTo(halfUp(x), halfDown(y + this.attr_('axisTickSize')));
         context.closePath();
         context.stroke();
+        */
 
         var label = makeDiv(tick[1], 'x');
         label.style.textAlign = "center";
