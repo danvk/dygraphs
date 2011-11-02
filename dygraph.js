@@ -1179,25 +1179,25 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
 
   // Clean up from the previous rect if necessary
   if (prevDirection == Dygraph.HORIZONTAL) {
-    ctx.clearRect(Math.min(startX, prevEndX), this.layout_.plotArea.y,
-                  Math.abs(startX - prevEndX), this.layout_.plotArea.h);
+    ctx.clearRect(Math.min(startX, prevEndX), this.layout_.getPlotArea().y,
+                  Math.abs(startX - prevEndX), this.layout_.getPlotArea().h);
   } else if (prevDirection == Dygraph.VERTICAL){
-    ctx.clearRect(this.layout_.plotArea.x, Math.min(startY, prevEndY),
-                  this.layout_.plotArea.w, Math.abs(startY - prevEndY));
+    ctx.clearRect(this.layout_.getPlotArea().x, Math.min(startY, prevEndY),
+                  this.layout_.getPlotArea().w, Math.abs(startY - prevEndY));
   }
 
   // Draw a light-grey rectangle to show the new viewing area
   if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(Math.min(startX, endX), this.layout_.plotArea.y,
-                   Math.abs(endX - startX), this.layout_.plotArea.h);
+      ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
+                   Math.abs(endX - startX), this.layout_.getPlotArea().h);
     }
   } else if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(this.layout_.plotArea.x, Math.min(startY, endY),
-                   this.layout_.plotArea.w, Math.abs(endY - startY));
+      ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
+                   this.layout_.getPlotArea().w, Math.abs(endY - startY));
     }
   }
 
