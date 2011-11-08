@@ -605,6 +605,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Interactive Elements"],
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
+  },
+  "reverseYAxis": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "Reverse the ordering of the y axis so low values are at the top and high values are at the bottom."
   }
 }
 ;  // </JSON>
