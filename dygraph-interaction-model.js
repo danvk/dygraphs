@@ -266,7 +266,8 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
       var p = g.selPoints_[i];
       var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
                      Math.pow(p.canvasy - context.dragEndY, 2);
-      if (closestIdx == -1 || distance < closestDistance) {
+      if (!isNaN(distance) &&
+          (closestIdx == -1 || distance < closestDistance)) {
         closestDistance = distance;
         closestIdx = i;
       }

@@ -15,6 +15,8 @@ DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;
+  this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
+  this.isMobileDevice_ =  Math.min(screen.width, screen.height) < 480;
   this.createCanvases_();
   if (this.isUsingExcanvas_) {
     this.createIEPanOverlay_();
@@ -131,20 +133,30 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
+
   if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
-      img.width = 7;
-      img.height = 14;
-      img.style.backgroundColor = 'white';
-      img.style.border = '1px solid #333333'; // Just show box in IE7.
+    img.width = 7;
+    img.height = 14;
+    img.style.backgroundColor = 'white';
+    img.style.border = '1px solid #333333'; // Just show box in IE7.
   } else {
-      img.width = 9;
-      img.height = 16;
-      img.src = 'data:image/png;base64,\
+    img.width = 9;
+    img.height = 16;
+    img.src = 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA\
 zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv\
 bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
 6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s\
 qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  }
+
+  var minScreenDim = Math.min(screen.width, screen.height);
+  if (minScreenDim < 480) {
+    img.width *= 3;
+    img.height *= 3;
+  } else if (minScreenDim < 768) {
+    img.width *= 2;
+    img.height *= 2;
   }
 
   this.leftZoomHandle_ = img;
@@ -162,6 +174,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   var handle = null;
   var isZooming = false;
   var isPanning = false;
+  var dynamic = !this.isMobileDevice_ && !this.isUsingExcanvas_;
 
   function toXDataWindow(zoomHandleStatus) {
     var xDataLimits = self.dygraph_.xAxisExtremes();
@@ -205,7 +218,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.drawInteractiveLayer_();
 
     // Zoom on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas_) {
+    if (dynamic) {
       doZoom();
     }
   };
@@ -220,7 +233,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.fgcanvas_.style.cursor = 'default';
 
     // If using excanvas, Zoom now.
-    if (self.isUsingExcanvas_) {
+    if (!dynamic) {
       doZoom();
     }
   };
@@ -245,7 +258,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
         return e.srcElement == self.iePanOverlay_;
     } else {
       // Getting clientX directly from the event is not accurate enough :(
-      var clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
+      var clientX;
+      if (e.layerX != undefined || e.offsetX != undefined) {
+        clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
+      } else {
+        clientX = e.clientX;
+      }
       var zoomHandleStatus = self.getZoomHandleStatus_();
       return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
     }
@@ -294,7 +312,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.drawInteractiveLayer_();
 
     // Do pan on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas_) {
+    if (dynamic) {
       doPan();
     }
   };
@@ -307,7 +325,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     Dygraph.removeEvent(topElem, 'mousemove', onPan);
     Dygraph.removeEvent(topElem, 'mouseup', onPanEnd);
     // If using excanvas, do pan now.
-    if (self.isUsingExcanvas_) {
+    if (!dynamic) {
       doPan();
     }
   };
@@ -361,6 +379,43 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   } else {
     Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
     Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+  }
+
+  // Touch events
+  if (this.hasTouchInterface_) {
+
+    function onZoomHandleTouchEvent(e) {
+      e.preventDefault();
+      if (e.type == 'touchstart') {
+        onZoomStart(e.targetTouches[0]);
+      } else if (e.type == 'touchmove') {
+        onZoom(e.targetTouches[0]);
+      } else {
+        onZoomEnd(e);
+      }
+    }
+
+    function onCanvasTouchEvent(e) {
+      e.preventDefault();
+      if (e.type == 'touchstart') {
+        onPanStart(e.targetTouches[0]);
+      } else if (e.type == 'touchmove') {
+        onPan(e.targetTouches[0]);
+      } else {
+        onPanEnd(e);
+      }
+    }
+
+    function addTouchEvents(elem, fn) {
+        var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
+        for (var i = 0; i < types.length; i++) {
+          Dygraph.addEvent(elem, types[i], fn);
+        }
+    }
+
+    addTouchEvents(this.leftZoomHandle_, onZoomHandleTouchEvent);
+    addTouchEvents(this.rightZoomHandle_, onZoomHandleTouchEvent);
+    addTouchEvents(this.fgcanvas_, onCanvasTouchEvent);
   }
 };
 
