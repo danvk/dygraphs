@@ -2969,6 +2969,9 @@ Dygraph.prototype.size = function() {
 
 /**
  * Update the list of annotations and redraw the chart.
+ * See dygraphs.com/annotations.html for more info on how to use annotations.
+ * @param ann {Array} An array of annotation objects.
+ * @param suppressDraw {Boolean} Set to "true" to block chart redraw (optional).
  */
 Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
