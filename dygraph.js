@@ -201,6 +201,7 @@ Dygraph.DEFAULT_ATTRS = {
   xAxisLabelWidth: 50,
   yAxisLabelWidth: 50,
   rightGap: 5,
+  reverseYAxis: false,
 
   showRoller: false,
   xValueParser: Dygraph.dateParser,
@@ -2141,13 +2142,21 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           if (minY > 0) minAxisY = 0;
         }
       }
-      axis.extremeRange = [minAxisY, maxAxisY];
+      if (this.attr_("reverseYAxis")) {
+        axis.extremeRange = [maxAxisY, minAxisY];
+      } else {
+        axis.extremeRange = [minAxisY, maxAxisY];
+      }
     }
     if (axis.valueWindow) {
       // This is only set if the user has zoomed on the y-axis. It is never set
       // by a user. It takes precedence over axis.valueRange because, if you set
       // valueRange, you'd still expect to be able to pan.
-      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+      if (this.attr_("reverseYAxis")) {
+        axis.computedValueRange = [axis.valueWindow[1], axis.valueWindow[0]];
+      } else {
+        axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
+      } 
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
       axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
