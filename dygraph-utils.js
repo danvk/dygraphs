@@ -589,6 +589,43 @@ Dygraph.createCanvas = function() {
 
 /**
  * @private
+ * Call a function N times at a given interval, then call a cleanup function
+ * once. repeat_fn is called once immediately, then (times - 1) times
+ * asynchronously. If times=1, then cleanup_fn() is also called synchronously.
+ * @param repeat_fn {Function} Called repeatedly -- takes the number of calls
+ * (from 0 to times-1) as an argument.
+ * @param times {number} The number of times to call repeat_fn
+ * @param every_ms {number} Milliseconds between calls
+ * @param cleanup_fn {Function} A function to call after all repeat_fn calls.
+ * @private
+ */
+Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
+  var count = 0;
+  var start_time = new Date().getTime();
+  repeat_fn(count);
+  if (times == 1) {
+    cleanup_fn();
+    return;
+  }
+
+  (function loop() {
+    if (count >= times) return;
+    var target_time = start_time + (1 + count) * every_ms;
+    setTimeout(function() {
+      count++;
+      repeat_fn(count)
+      if (count >= times - 1) {
+        cleanup_fn();
+      } else {
+        loop();
+      }
+    }, target_time - new Date().getTime());
+    // TODO(danvk): adjust every_ms to produce evenly-timed function calls.
+  })();
+};
+
+/**
+ * @private
  * This function will scan the option list and determine if they
  * require us to recalculate the pixel positions of each point.
  * @param { List } a list of options to check.
@@ -608,7 +645,6 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'colorSaturation': true,
     'colorValue': true,
     'colors': true,
-    'connectSeparatedPoints': true,
     'digitsAfterDecimal': true,
     'drawCallback': true,
     'drawPoints': true,

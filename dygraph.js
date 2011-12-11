@@ -89,6 +89,9 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
+Dygraph.ANIMATION_STEPS = 10;
+Dygraph.ANIMATION_DURATION = 200;
+
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
 /**
  * @private
@@ -243,6 +246,7 @@ Dygraph.DEFAULT_ATTRS = {
   gridLineColor: "rgb(128,128,128)",
 
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
+  animatedZooms: false,  // (for now)
 
   // Range selector options
   showRangeSelector: false,
@@ -1149,7 +1153,6 @@ Dygraph.prototype.createDragInterface_ = function() {
   });
 };
 
-
 /**
  * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
  * up any previous zoom rectangles that were drawn. This could be optimized to
@@ -1235,6 +1238,16 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
 };
 
 /**
+ * Transition function to use in animations. Returns values between 0.0
+ * (totally old values) and 1.0 (totally new values) for each frame.
+ * @private
+ */
+Dygraph.zoomAnimationFunction = function(frame, numFrames) {
+  var k = 1.5;
+  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
+};
+
+/**
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
@@ -1244,12 +1257,18 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  * @private
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
-  this.dateWindow_ = [minDate, maxDate];
+  // TODO(danvk): when yAxisRange is null (i.e. "fit to data", the animation
+  // can produce strange effects. Rather than the y-axis transitioning slowly
+  // between values, it can jerk around.)
+  var old_window = this.xAxisRange();
+  var new_window = [minDate, maxDate];
   this.zoomed_x_ = true;
-  this.drawGraph_();
-  if (this.attr_("zoomCallback")) {
-    this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
-  }
+  var that = this;
+  this.doAnimatedZoom(old_window, new_window, null, null, function() {
+    if (that.attr_("zoomCallback")) {
+      that.attr_("zoomCallback")(minDate, maxDate, that.yAxisRanges());
+    }
+  });
 };
 
 /**
@@ -1266,21 +1285,23 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   // Note that lowY (in pixels) corresponds to the max Value (in data coords).
   // This is because pixels increase as you go down on the screen, whereas data
   // coordinates increase as you go up the screen.
-  var valueRanges = [];
+  var oldValueRanges = this.yAxisRanges();
+  var newValueRanges = [];
   for (var i = 0; i < this.axes_.length; i++) {
     var hi = this.toDataYCoord(lowY, i);
     var low = this.toDataYCoord(highY, i);
-    this.axes_[i].valueWindow = [low, hi];
-    valueRanges.push([low, hi]);
+    newValueRanges.push([low, hi]);
   }
 
   this.zoomed_y_ = true;
-  this.drawGraph_();
-  if (this.attr_("zoomCallback")) {
-    var xRange = this.xAxisRange();
-    var yRange = this.yAxisRange();
-    this.attr_("zoomCallback")(xRange[0], xRange[1], this.yAxisRanges());
-  }
+  var that = this;
+  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
+    if (that.attr_("zoomCallback")) {
+      var xRange = that.xAxisRange();
+      var yRange = that.yAxisRange();
+      that.attr_("zoomCallback")(xRange[0], xRange[1], that.yAxisRanges());
+    }
+  });
 };
 
 /**
@@ -1290,16 +1311,16 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
  * @private
  */
 Dygraph.prototype.doUnzoom_ = function() {
-  var dirty = false;
+  var dirty = false, dirtyX = false, dirtyY = false;
   if (this.dateWindow_ != null) {
     dirty = true;
-    this.dateWindow_ = null;
+    dirtyX = true;
   }
 
   for (var i = 0; i < this.axes_.length; i++) {
     if (this.axes_[i].valueWindow != null) {
       dirty = true;
-      delete this.axes_[i].valueWindow;
+      dirtyY = true;
     }
   }
 
@@ -1307,17 +1328,112 @@ Dygraph.prototype.doUnzoom_ = function() {
   this.clearSelection();
 
   if (dirty) {
-    // Putting the drawing operation before the callback because it resets
-    // yAxisRange.
     this.zoomed_x_ = false;
     this.zoomed_y_ = false;
-    this.drawGraph_();
-    if (this.attr_("zoomCallback")) {
-      var minDate = this.rawData_[0][0];
-      var maxDate = this.rawData_[this.rawData_.length - 1][0];
-      this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
+
+    var minDate = this.rawData_[0][0];
+    var maxDate = this.rawData_[this.rawData_.length - 1][0];
+
+    // With only one frame, don't bother calculating extreme ranges.
+    // TODO(danvk): merge this block w/ the code below.
+    if (!this.attr_("animatedZooms")) {
+      this.dateWindow_ = null;
+      for (var i = 0; i < this.axes_.length; i++) {
+        if (this.axes_[i].valueWindow != null) {
+          delete this.axes_[i].valueWindow;
+        }
+      }
+      this.drawGraph_();
+      if (this.attr_("zoomCallback")) {
+        this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
+      }
+      return;
+    }
+
+    var oldWindow=null, newWindow=null, oldValueRanges=null, newValueRanges=null;
+    if (dirtyX) {
+      oldWindow = this.xAxisRange();
+      newWindow = [minDate, maxDate];
+    }
+
+    if (dirtyY) {
+      oldValueRanges = this.yAxisRanges();
+      // TODO(danvk): this is pretty inefficient
+      var packed = this.gatherDatasets_(this.rolledSeries_, null);
+      var extremes = packed[1];
+
+      // this has the side-effect of modifying this.axes_.
+      // this doesn't make much sense in this context, but it's convenient (we
+      // need this.axes_[*].extremeValues) and not harmful since we'll be
+      // calling drawGraph_ shortly, which clobbers these values.
+      this.computeYAxisRanges_(extremes);
+
+      newValueRanges = [];
+      for (var i = 0; i < this.axes_.length; i++) {
+        newValueRanges.push(this.axes_[i].extremeRange);
+      }
+    }
+
+    var that = this;
+    this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
+        function() {
+          that.dateWindow_ = null;
+          for (var i = 0; i < that.axes_.length; i++) {
+            if (that.axes_[i].valueWindow != null) {
+              delete that.axes_[i].valueWindow;
+            }
+          }
+          if (that.attr_("zoomCallback")) {
+            that.attr_("zoomCallback")(minDate, maxDate, that.yAxisRanges());
+          }
+        });
+  }
+};
+
+/**
+ * Combined animation logic for all zoom functions.
+ * either the x parameters or y parameters may be null.
+ * @private
+ */
+Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, newYRanges, callback) {
+  var steps = this.attr_("animatedZooms") ? Dygraph.ANIMATION_STEPS : 1;
+
+  var windows = [];
+  var valueRanges = [];
+
+  if (oldXRange != null && newXRange != null) {
+    for (var step = 1; step <= steps; step++) {
+      var frac = Dygraph.zoomAnimationFunction(step, steps);
+      windows[step-1] = [oldXRange[0]*(1-frac) + frac*newXRange[0],
+                         oldXRange[1]*(1-frac) + frac*newXRange[1]];
     }
   }
+
+  if (oldYRanges != null && newYRanges != null) {
+    for (var step = 1; step <= steps; step++) {
+      var frac = Dygraph.zoomAnimationFunction(step, steps);
+      var thisRange = [];
+      for (var j = 0; j < this.axes_.length; j++) {
+        thisRange.push([oldYRanges[j][0]*(1-frac) + frac*newYRanges[j][0],
+                        oldYRanges[j][1]*(1-frac) + frac*newYRanges[j][1]]);
+      }
+      valueRanges[step-1] = thisRange;
+    }
+  }
+
+  var that = this;
+  Dygraph.repeatAndCleanup(function(step) {
+    if (valueRanges.length) {
+      for (var i = 0; i < that.axes_.length; i++) {
+        var w = valueRanges[step][i];
+        that.axes_[i].valueWindow = [w[0], w[1]];
+      }
+    }
+    if (windows.length) {
+      that.dateWindow_ = windows[step];
+    }
+    that.drawGraph_();
+  }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
 };
 
 /**
@@ -1552,7 +1668,7 @@ Dygraph.prototype.setSelection = function(row) {
   var pos = 0;
 
   if (row !== false) {
-    row = row-this.boundaryIds_[0][0];
+    row = row - this.boundaryIds_[0][0];
   }
 
   if (row !== false && row >= 0) {
@@ -1736,6 +1852,17 @@ Dygraph.prototype.predraw_ = function() {
     this.rangeSelector_.renderStaticLayer();
   }
 
+  // Convert the raw data (a 2D array) into the internal format and compute
+  // rolling averages.
+  this.rolledSeries_ = [null];  // x-axis is the first series and it's special
+  for (var i = 1; i < this.rawData_[0].length; i++) {
+    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
+    var logScale = this.attr_('logscale', i);
+    var series = this.extractSeries_(this.rawData_, i, logScale, connectSeparatedPoints);
+    series = this.rollingAverage(series, this.rollPeriod_);
+    this.rolledSeries_.push(series);
+  }
+
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
 
@@ -1745,80 +1872,42 @@ Dygraph.prototype.predraw_ = function() {
 };
 
 /**
- * Update the graph with new data. This method is called when the viewing area
- * has changed. If the underlying data or options have changed, predraw_ will
- * be called before drawGraph_ is called.
+ * Loop over all fields and create datasets, calculating extreme y-values for
+ * each series and extreme x-indices as we go.
  *
- * clearSelection, when undefined or true, causes this.clearSelection to be
- * called at the end of the draw operation. This should rarely be defined,
- * and never true (that is it should be undefined most of the time, and
- * rarely false.)
+ * dateWindow is passed in as an explicit parameter so that we can compute
+ * extreme values "speculatively", i.e. without actually setting state on the
+ * dygraph.
  *
+ * TODO(danvk): make this more of a true function
+ * @return [ datasets, seriesExtremes, boundaryIds ]
  * @private
  */
-Dygraph.prototype.drawGraph_ = function(clearSelection) {
-  var start = new Date();
-
-  if (typeof(clearSelection) === 'undefined') {
-    clearSelection = true;
-  }
-
-  var data = this.rawData_;
-
-  // This is used to set the second parameter to drawCallback, below.
-  var is_initial_draw = this.is_initial_draw_;
-  this.is_initial_draw_ = false;
-
-  var minY = null, maxY = null;
-  this.layout_.removeAllDatasets();
-  this.setColors_();
-  this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
+Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
+  var boundaryIds = [];
+  var cumulative_y = [];  // For stacked series.
+  var datasets = [];
+  var extremes = {};  // series name -> [low, high]
 
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
-
-  var cumulative_y = [];  // For stacked series.
-  var datasets = [];
-
-  var extremes = {};  // series name -> [low, high]
-
-  // Loop over all fields and create datasets
-  for (var i = data[0].length - 1; i >= 1; i--) {
+  var num_series = rolledSeries.length - 1;
+  for (var i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
-    var seriesName = this.attr_("labels")[i];
-    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
-    var logScale = this.attr_('logscale', i);
-
+    // TODO(danvk): is this copy really necessary?
     var series = [];
-    for (var j = 0; j < data.length; j++) {
-      var date = data[j][0];
-      var point = data[j][i];
-      if (logScale) {
-        // On the log scale, points less than zero do not exist.
-        // This will create a gap in the chart. Note that this ignores
-        // connectSeparatedPoints.
-        if (point <= 0) {
-          point = null;
-        }
-        series.push([date, point]);
-      } else {
-        if (point != null || !connectSeparatedPoints) {
-          series.push([date, point]);
-        }
-      }
+    for (var j = 0; j < rolledSeries[i].length; j++) {
+      series.push(rolledSeries[i][j]);
     }
-
-    // TODO(danvk): move this into predraw_. It's insane to do it here.
-    series = this.rollingAverage(series, this.rollPeriod_);
 
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
     var bars = this.attr_("errorBars") || this.attr_("customBars");
-    if (this.dateWindow_) {
-      var low = this.dateWindow_[0];
-      var high= this.dateWindow_[1];
+    if (dateWindow) {
+      var low = dateWindow[0];
+      var high = dateWindow[1];
       var pruned = [];
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
@@ -1835,13 +1924,13 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
       if (firstIdx > 0) firstIdx--;
       if (lastIdx === null) lastIdx = series.length - 1;
       if (lastIdx < series.length - 1) lastIdx++;
-      this.boundaryIds_[i-1] = [firstIdx, lastIdx];
+      boundaryIds[i-1] = [firstIdx, lastIdx];
       for (var k = firstIdx; k <= lastIdx; k++) {
         pruned.push(series[k]);
       }
       series = pruned;
     } else {
-      this.boundaryIds_[i-1] = [0, series.length-1];
+      boundaryIds[i-1] = [0, series.length-1];
     }
 
     var seriesExtremes = this.extremeValues_(series);
@@ -1875,10 +1964,47 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
         }
       }
     }
-    extremes[seriesName] = seriesExtremes;
 
+    var seriesName = this.attr_("labels")[i];
+    extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
+
+  return [ datasets, extremes, boundaryIds ];
+};
+
+/**
+ * Update the graph with new data. This method is called when the viewing area
+ * has changed. If the underlying data or options have changed, predraw_ will
+ * be called before drawGraph_ is called.
+ *
+ * clearSelection, when undefined or true, causes this.clearSelection to be
+ * called at the end of the draw operation. This should rarely be defined,
+ * and never true (that is it should be undefined most of the time, and
+ * rarely false.)
+ *
+ * @private
+ */
+Dygraph.prototype.drawGraph_ = function(clearSelection) {
+  var start = new Date();
+
+  if (typeof(clearSelection) === 'undefined') {
+    clearSelection = true;
+  }
+
+  // This is used to set the second parameter to drawCallback, below.
+  var is_initial_draw = this.is_initial_draw_;
+  this.is_initial_draw_ = false;
+
+  var minY = null, maxY = null;
+  this.layout_.removeAllDatasets();
+  this.setColors_();
+  this.attrs_['pointSize'] = 0.5 * this.attr_('highlightCircleSize');
+
+  var packed = this.gatherDatasets_(this.rolledSeries_, this.dateWindow_);
+  var datasets = packed[0];
+  var extremes = packed[1];
+  this.boundaryIds_ = packed[2];
 
   for (var i = 1; i < datasets.length; i++) {
     if (!this.visibility()[i - 1]) continue;
@@ -2186,6 +2312,37 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
                           tick_values);
     }
   }
+};
+
+/**
+ * Extracts one series from the raw data (a 2D array) into an array of (date,
+ * value) tuples.
+ *
+ * This is where undesirable points (i.e. negative values on log scales and
+ * missing values through which we wish to connect lines) are dropped.
+ * 
+ * @private
+ */
+Dygraph.prototype.extractSeries_ = function(rawData, i, logScale, connectSeparatedPoints) {
+  var series = [];
+  for (var j = 0; j < rawData.length; j++) {
+    var x = rawData[j][0];
+    var point = rawData[j][i];
+    if (logScale) {
+      // On the log scale, points less than zero do not exist.
+      // This will create a gap in the chart. Note that this ignores
+      // connectSeparatedPoints.
+      if (point <= 0) {
+        point = null;
+      }
+      series.push([x, point]);
+    } else {
+      if (point != null || !connectSeparatedPoints) {
+        series.push([x, point]);
+      }
+    }
+  }
+  return series;
 };
 
 /**
