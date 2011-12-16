@@ -136,11 +136,18 @@ UpdateOptionsTestCase.prototype.testUpdateColors = function() {
   graph.updateOptions({ colors: colors1 });
   assertEquals(colors1, graph.getColors());
 
+  // extra colors are ignored until you add additional data series.
   var colors2 = [ "#aaa", "#bbb", "#ccc" ];
   graph.updateOptions({ colors: colors2 });
+  assertEquals(colors1, graph.getColors());
+
+  graph.updateOptions({ file:
+      "X,Y1,Y2,Y3\n" +
+      "2011-01-01,2,3,4\n" +
+      "2011-02-02,5,3,2\n"
+  });
   assertEquals(colors2, graph.getColors());
 
-
-  graph.updateOptions({ colors: null });
+  graph.updateOptions({ colors: null, file: this.data });
   assertEquals(defaultColors, graph.getColors());
 }
