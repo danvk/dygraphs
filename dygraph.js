@@ -2494,7 +2494,8 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
  */
 Dygraph.prototype.detectTypeFromString_ = function(str) {
   var isDate = false;
-  if (str.indexOf('-') > 0 ||
+  var dashPos = str.indexOf('-');  // could be 2006-01-01 _or_ 1.0e-2
+  if ((dashPos > 0 && (str[dashPos-1] != 'e' && str[dashPos-1] != 'E')) ||
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
