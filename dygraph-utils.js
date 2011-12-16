@@ -25,7 +25,12 @@ Dygraph.INFO = 2;
 Dygraph.WARNING = 3;
 Dygraph.ERROR = 3;
 
-// TODO(danvk): any way I can get the line numbers to be this.warn call?
+// Set this to log stack traces on warnings, etc.
+// This requires stacktrace.js, which is up to you to provide.
+// A copy can be found in the dygraphs repo, or at
+// https://github.com/eriwen/javascript-stacktrace
+Dygraph.LOG_STACK_TRACES = false;
+
 /**
  * @private
  * Log an error on the JS console at the given severity.
@@ -33,6 +38,22 @@ Dygraph.ERROR = 3;
  * @param { String } The message to log.
  */
 Dygraph.log = function(severity, message) {
+  var st;
+  if (typeof(printStackTrace) != 'undefined') {
+    // Remove uninteresting bits: logging functions and paths.
+    var st = printStackTrace({guess:false});
+    while (st[0].indexOf("Function.log") != 0) {
+      st.splice(0, 1);
+    }
+    st.splice(0, 2);
+    for (var i = 0; i < st.length; i++) {
+      st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '($1)')
+          .replace(/\@.*\/([^\/]*)/, '@$1')
+          .replace('[object Object].', '');
+    }
+    message += ' (' + st.splice(0, 1) + ')';
+  }
+
   if (typeof(console) != 'undefined') {
     switch (severity) {
       case Dygraph.DEBUG:
@@ -48,6 +69,10 @@ Dygraph.log = function(severity, message) {
         console.error('dygraphs: ' + message);
         break;
     }
+  }
+
+  if (Dygraph.LOG_STACK_TRACES) {
+    console.log(st.join('\n'));
   }
 };
 
