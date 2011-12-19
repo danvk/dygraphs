@@ -6,12 +6,14 @@
  * a timeline range selector widget for dygraphs.
  */
 
+"use strict";
+
 /**
  * The DygraphRangeSelector class provides a timeline range selector widget.
  * @param {Dygraph} dygraph The dygraph object
  * @constructor
  */
-DygraphRangeSelector = function(dygraph) {
+var DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;

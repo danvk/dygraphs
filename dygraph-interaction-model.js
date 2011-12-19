@@ -10,6 +10,8 @@
  * @author Robert Konigsberg (konigsberg@google.com)
  */
 
+"use strict";
+
 
 /**
  * A collection of functions to facilitate build custom interaction models.

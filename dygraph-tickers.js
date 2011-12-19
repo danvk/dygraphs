@@ -58,6 +58,8 @@
  *   middle of the years.
  */
 
+"use strict";
+
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = opts('pixelsPerLabel');
   var ticks = [];

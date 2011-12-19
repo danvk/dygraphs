@@ -43,6 +43,8 @@
 
  */
 
+"use strict";
+
 /**
  * Creates an interactive, zoomable chart.
  *
@@ -57,7 +59,7 @@
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-Dygraph = function(div, data, opts) {
+var Dygraph = function(div, data, opts) {
   if (arguments.length > 0) {
     if (arguments.length == 4) {
       // Old versions of dygraphs took in the series labels as a constructor
@@ -3202,4 +3204,4 @@ Dygraph.addAnnotationRule = function() {
 }
 
 // Older pages may still use this name.
-DateGraph = Dygraph;
+var DateGraph = Dygraph;

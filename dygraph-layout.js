@@ -9,6 +9,8 @@
  * dygraphs.
  */
 
+"use strict";
+
 /**
  * Creates a new DygraphLayout object.
  *
@@ -25,7 +27,7 @@
  *
  * @constructor
  */
-DygraphLayout = function(dygraph) {
+var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
   this.datasets = new Array();
   this.annotations = new Array();

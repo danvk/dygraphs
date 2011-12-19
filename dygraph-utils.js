@@ -11,6 +11,8 @@
  * search) and generic DOM-manipulation functions.
  */
 
+"use strict";
+
 Dygraph.LOG_SCALE = 10;
 Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
 
@@ -604,7 +606,7 @@ Dygraph.clone = function(o) {
 Dygraph.createCanvas = function() {
   var canvas = document.createElement("canvas");
 
-  isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
+  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
   if (isIE && (typeof(G_vmlCanvasManager) != 'undefined')) {
     canvas = G_vmlCanvasManager.initElement(canvas);
   }
