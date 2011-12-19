@@ -1939,8 +1939,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
     if (bars) {
       for (var j=0; j<series.length; j++) {
-        val = [series[j][0], series[j][1][0], series[j][1][1], series[j][1][2]];
-        series[j] = val;
+        series[j] = [series[j][0],
+                     series[j][1][0],
+                     series[j][1][1],
+                     series[j][1][2]];
       }
     } else if (this.attr_("stackedGraph")) {
       var l = series.length;

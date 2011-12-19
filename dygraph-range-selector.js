@@ -376,6 +376,7 @@ DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
   try {
     this.drawMiniPlot_();
   } catch(ex) {
+    Dygraph.warn(ex);
   }
 
   var margin = .5;
@@ -544,7 +545,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     }
   } else {
     var yExtra;
-    yRange = yMax - yMin;
+    var yRange = yMax - yMin;
     if (yRange <= Number.MIN_VALUE) {
       yExtra = yMax*extraPercent;
     } else {
@@ -604,8 +605,8 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
       this.iePanOverlay_.style.display = 'none';
     }
   } else {
-    leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
-    rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
+    var leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
+    var rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
 
     ctx.fillStyle = 'rgba(240, 240, 240, 0.6)';
     ctx.fillRect(0, 0, leftHandleCanvasPos, this.canvasRect_.h);

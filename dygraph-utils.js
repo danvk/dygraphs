@@ -725,7 +725,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   }
 
   // Iterate through the list of updated options.
-  for (property in attrs) {
+  for (var property in attrs) {
     // Break early if we already know we need new points from a previous option.
     if (requiresNewPoints) {
       break;
@@ -735,7 +735,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
       if (seriesNamesDictionary[property]) {
         // This property value is a list of options for this series.
         // If any of these sub properties are not pixel safe, set the flag.
-        for (subProperty in attrs[property]) {
+        for (var subProperty in attrs[property]) {
           // Break early if we already know we need new points from a previous option.
           if (requiresNewPoints) {
             break;
