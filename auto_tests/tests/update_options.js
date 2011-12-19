@@ -137,9 +137,9 @@ UpdateOptionsTestCase.prototype.testUpdateColors = function() {
   assertEquals(colors1, graph.getColors());
 
   // extra colors are ignored until you add additional data series.
-  var colors2 = [ "#aaa", "#bbb", "#ccc" ];
+  var colors2 = [ "#ddd", "#eee", "#fff" ];
   graph.updateOptions({ colors: colors2 });
-  assertEquals(colors1, graph.getColors());
+  assertEquals(["#ddd", "#eee"], graph.getColors());
 
   graph.updateOptions({ file:
       "X,Y1,Y2,Y3\n" +
