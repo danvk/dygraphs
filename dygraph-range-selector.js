@@ -352,6 +352,35 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
+  function onZoomHandleTouchEvent(e) {
+    e.preventDefault();
+    if (e.type == 'touchstart') {
+      onZoomStart(e.targetTouches[0]);
+    } else if (e.type == 'touchmove') {
+      onZoom(e.targetTouches[0]);
+    } else {
+      onZoomEnd(e);
+    }
+  }
+
+  function onCanvasTouchEvent(e) {
+    e.preventDefault();
+    if (e.type == 'touchstart') {
+      onPanStart(e.targetTouches[0]);
+    } else if (e.type == 'touchmove') {
+      onPan(e.targetTouches[0]);
+    } else {
+      onPanEnd(e);
+    }
+  }
+
+  function addTouchEvents(elem, fn) {
+      var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
+      for (var i = 0; i < types.length; i++) {
+        Dygraph.addEvent(elem, types[i], fn);
+      }
+  }
+
   var interactionModel = {
     mousedown: function(event, g, context) {
       context.initializeMouseDown(event, g, context);
@@ -385,36 +414,6 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
 
   // Touch events
   if (this.hasTouchInterface_) {
-
-    function onZoomHandleTouchEvent(e) {
-      e.preventDefault();
-      if (e.type == 'touchstart') {
-        onZoomStart(e.targetTouches[0]);
-      } else if (e.type == 'touchmove') {
-        onZoom(e.targetTouches[0]);
-      } else {
-        onZoomEnd(e);
-      }
-    }
-
-    function onCanvasTouchEvent(e) {
-      e.preventDefault();
-      if (e.type == 'touchstart') {
-        onPanStart(e.targetTouches[0]);
-      } else if (e.type == 'touchmove') {
-        onPan(e.targetTouches[0]);
-      } else {
-        onPanEnd(e);
-      }
-    }
-
-    function addTouchEvents(elem, fn) {
-        var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
-        for (var i = 0; i < types.length; i++) {
-          Dygraph.addEvent(elem, types[i], fn);
-        }
-    }
-
     addTouchEvents(this.leftZoomHandle_, onZoomHandleTouchEvent);
     addTouchEvents(this.rightZoomHandle_, onZoomHandleTouchEvent);
     addTouchEvents(this.fgcanvas_, onCanvasTouchEvent);
