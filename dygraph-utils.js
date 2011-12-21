@@ -44,16 +44,18 @@ Dygraph.log = function(severity, message) {
   if (typeof(printStackTrace) != 'undefined') {
     // Remove uninteresting bits: logging functions and paths.
     var st = printStackTrace({guess:false});
-    while (st[0].indexOf("Function.log") != 0) {
+    while (st[0].indexOf("stacktrace") != -1) {
       st.splice(0, 1);
     }
+
     st.splice(0, 2);
     for (var i = 0; i < st.length; i++) {
-      st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '($1)')
+      st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
           .replace(/\@.*\/([^\/]*)/, '@$1')
           .replace('[object Object].', '');
     }
-    message += ' (' + st.splice(0, 1) + ')';
+    var top_msg = st.splice(0, 1)[0];
+    message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
   }
 
   if (typeof(console) != 'undefined') {
