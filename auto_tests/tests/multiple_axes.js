@@ -140,7 +140,7 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
   data.push([1,2,2000]);
   data.push([2,4,1000]);
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {

@@ -341,7 +341,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
 
-  this.wilsonInterval_ = attrs.wilsonInterval || true;
   this.is_initial_draw_ = true;
   this.annotations_ = [];
 
@@ -737,7 +736,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
  * @return { Integer } The number of columns.
  */
 Dygraph.prototype.numColumns = function() {
-  return this.rawData_[0].length;
+  return this.rawData_[0] ? this.rawData_[0].length : this.attr_("labels").length;
 };
 
 /**
@@ -747,6 +746,20 @@ Dygraph.prototype.numColumns = function() {
 Dygraph.prototype.numRows = function() {
   return this.rawData_.length;
 };
+
+/**
+ * Returns the full range of the x-axis, as determined by the most extreme
+ * values in the data set. Not affected by zooming, visibility, etc.
+ * @return { Array<Number> } A [low, high] pair
+ * @private
+ */
+Dygraph.prototype.fullXRange_ = function() {
+  if (this.numRows() > 0) {
+    return [this.rawData_[0][0], this.rawData_[this.numRows() - 1][0]];
+  } else {
+    return [0, 1];
+  }
+}
 
 /**
  * Returns the value in the given row and column. If the row and column exceed
@@ -1754,7 +1767,7 @@ Dygraph.prototype.addXTicks_ = function() {
   if (this.dateWindow_) {
     range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    range = [this.rawData_[0][0], this.rawData_[this.rawData_.length - 1][0]];
+    range = this.fullXRange_();
   }
 
   var xAxisOptionsView = this.optionsViewForAxis_('x');
@@ -1849,7 +1862,7 @@ Dygraph.prototype.predraw_ = function() {
   // Convert the raw data (a 2D array) into the internal format and compute
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
-  for (var i = 1; i < this.rawData_[0].length; i++) {
+  for (var i = 1; i < this.numColumns(); i++) {
     var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
     var logScale = this.attr_('logscale', i);
     var series = this.extractSeries_(this.rawData_, i, logScale, connectSeparatedPoints);
@@ -2369,7 +2382,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
       var date = originalData[i][0];
       var value = den ? num / den : 0.0;
       if (this.attr_("errorBars")) {
-        if (this.wilsonInterval_) {
+        if (this.attr_("wilsonInterval")) {
           // For more details on this confidence interval, see:
           // http://en.wikipedia.org/wiki/Binomial_confidence_interval
           if (den) {
@@ -3085,7 +3098,7 @@ Dygraph.prototype.visibility = function() {
   if (!this.attr_("visibility")) {
     this.attrs_["visibility"] = [];
   }
-  while (this.attr_("visibility").length < this.rawData_[0].length - 1) {
+  while (this.attr_("visibility").length < this.numColumns() - 1) {
     this.attr_("visibility").push(true);
   }
   return this.attr_("visibility");
