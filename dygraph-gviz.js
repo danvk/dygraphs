@@ -17,6 +17,8 @@
  * - http://dygraphs.com/tests/annotation-gviz.html
  */
 
+"use strict";
+
 /**
  * A wrapper around Dygraph that implements the gviz API.
  * @param {Object} container The DOM object the visualization should live in.

@@ -605,6 +605,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Interactive Elements"],
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
+  },
+  "animatedZooms": {
+    "default": "false",
+    "labels": ["Interactive Elements"],
+    "type": "boolean",
+    "description": "Set this option to animate the transition between zoom windows. Applies to programmatic and interactive zooms. Note that if you also set a drawCallback, it will be called several times on each zoom. If you set a zoomCallback, it will only be called after the animation is complete."
   }
 }
 ;  // </JSON>

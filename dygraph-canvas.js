@@ -23,7 +23,10 @@
  * @param {Layout} layout The DygraphLayout object for this graph.
  * @constructor
  */
-DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
+
+"use strict";
+
+var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
 
   this.layout = layout;

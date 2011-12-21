@@ -18,6 +18,7 @@
   var source_files = [
     "strftime/strftime-min.js",
     "rgbcolor/rgbcolor.js",
+    "stacktrace.js",
     "dygraph-layout.js",
     "dygraph-canvas.js",
     "dygraph.js",

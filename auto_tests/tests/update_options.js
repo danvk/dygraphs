@@ -25,19 +25,24 @@ UpdateOptionsTestCase.prototype.setUp = function() {
 UpdateOptionsTestCase.prototype.tearDown = function() {
 };
 
-UpdateOptionsTestCase.prototype.wrap = function(g) {
+/*
+ * Tweaks the dygraph so it sets g._testDrawCalled to true when internal method
+ * drawGraph_ is called. Call unWrapDrawGraph when done with this.
+ */
+UpdateOptionsTestCase.prototype.wrapDrawGraph = function(g) {
   g._testDrawCalled = false;
-  var oldDrawGraph = Dygraph.prototype.drawGraph_;
-  Dygraph.prototype.drawGraph_ = function() {
+  g._oldDrawGraph = g.drawGraph_;
+  g.drawGraph_ = function() {
     g._testDrawCalled = true;
-    oldDrawGraph.call(g);
+    g._oldDrawGraph.call(g);
   }
-
-  return oldDrawGraph;
 }
 
-UpdateOptionsTestCase.prototype.unWrap = function(oldDrawGraph) {
-  Dygraph.prototype.drawGraph_ = oldDrawGraph;
+/*
+ * See wrapDrawGraph
+ */
+UpdateOptionsTestCase.prototype.unwrapDrawGraph = function(g) {
+  g.drawGraph_ = g._oldDrawGraph;
 }
 
 UpdateOptionsTestCase.prototype.testStrokeAll = function() {
@@ -49,9 +54,9 @@ UpdateOptionsTestCase.prototype.testStrokeAll = function() {
 
   // These options will allow us to jump to renderGraph_()
   // drawGraph_() will be skipped.
-  var oldDrawGraph = this.wrap(graph);
+  this.wrapDrawGraph(graph);
   graph.updateOptions(updatedOptions);
-  this.unWrap(oldDrawGraph);
+  this.unwrapDrawGraph(graph);
   assertFalse(graph._testDrawCalled);
 };
 
@@ -66,9 +71,9 @@ UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
 
   // These options will allow us to jump to renderGraph_()
   // drawGraph_() will be skipped.
-  var oldDrawGraph = this.wrap(graph);
+  this.wrapDrawGraph(graph);
   graph.updateOptions(updatedOptions);
-  this.unWrap(oldDrawGraph);
+  this.unwrapDrawGraph(graph);
   assertFalse(graph._testDrawCalled);
 };
  
@@ -89,9 +94,9 @@ UpdateOptionsTestCase.prototype.testSingleSeriesRequiresNewPoints = function() {
 
   // These options will not allow us to jump to renderGraph_()
   // drawGraph_() must be called
-  var oldDrawGraph = this.wrap(graph);
+  this.wrapDrawGraph(graph);
   graph.updateOptions(updatedOptions);
-  this.unWrap(oldDrawGraph);
+  this.unwrapDrawGraph(graph);
   assertTrue(graph._testDrawCalled);
 };
 
@@ -105,9 +110,9 @@ UpdateOptionsTestCase.prototype.testWidthChangeNeedsNewPoints = function() {
 
   // These options will not allow us to jump to renderGraph_()
   // drawGraph_() must be called
-  var oldDrawGraph = this.wrap(graph);
+  this.wrapDrawGraph(graph);
   graph.updateOptions(updatedOptions);
-  this.unWrap(oldDrawGraph);
+  this.unwrapDrawGraph(graph);
   assertTrue(graph._testDrawCalled);
 };
 
@@ -119,3 +124,30 @@ UpdateOptionsTestCase.prototype.testUpdateLabelsDivDoesntInfiniteLoop = function
   graph.updateOptions({labelsDiv : labelsDiv});
 }
 
+// Test https://github.com/danvk/dygraphs/issues/247
+UpdateOptionsTestCase.prototype.testUpdateColors = function() {
+  var graphDiv = document.getElementById("graph");
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
+
+  var defaultColors = ["rgb(0,128,0)", "rgb(0,0,128)"];
+  assertEquals(["rgb(0,128,0)", "rgb(0,0,128)"], graph.getColors());
+
+  var colors1 = [ "#aaa", "#bbb" ];
+  graph.updateOptions({ colors: colors1 });
+  assertEquals(colors1, graph.getColors());
+
+  // extra colors are ignored until you add additional data series.
+  var colors2 = [ "#ddd", "#eee", "#fff" ];
+  graph.updateOptions({ colors: colors2 });
+  assertEquals(["#ddd", "#eee"], graph.getColors());
+
+  graph.updateOptions({ file:
+      "X,Y1,Y2,Y3\n" +
+      "2011-01-01,2,3,4\n" +
+      "2011-02-02,5,3,2\n"
+  });
+  assertEquals(colors2, graph.getColors());
+
+  graph.updateOptions({ colors: null, file: this.data });
+  assertEquals(defaultColors, graph.getColors());
+}
