@@ -743,7 +743,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           }
           var newYs;
           if (stackedGraph) {
-            lastY = baseline[point.canvasx];
+            var lastY = baseline[point.canvasx];
             if (lastY === undefined) lastY = axisY;
             baseline[point.canvasx] = point.canvasy;
             newYs = [ point.canvasy, lastY ];
