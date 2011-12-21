@@ -100,3 +100,21 @@ SanityTestCase.prototype.testToDomYCoord = function() {
     assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
   }
 };
+
+// Here is the first of a series of tests that just ensure the graph is drawn
+// without exception.
+//TODO(konigsberg): Move to its own test case.
+SanityTestCase.prototype.testFillStack1 = function() {
+  var graph = document.getElementById("graph");
+  new Dygraph(graph, ZERO_TO_FIFTY, { stackedGraph: true });
+}
+
+SanityTestCase.prototype.testFillStack2 = function() {
+  var graph = document.getElementById("graph");
+  new Dygraph(graph, ZERO_TO_FIFTY, { stackedGraph: true, fillGraph: true });
+}
+
+SanityTestCase.prototype.testFillStack3 = function() {
+  var graph = document.getElementById("graph");
+  new Dygraph(graph, ZERO_TO_FIFTY, { fillGraph: true });
+}
