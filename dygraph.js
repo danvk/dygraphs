@@ -2147,17 +2147,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  // Now we remove series from seriesToAxisMap_ which are not visible. We do
-  // this last so that hiding the first series doesn't destroy the axis
-  // properties of the primary axis.
-  var seriesToAxisFiltered = {};
-  var vis = this.visibility();
-  for (var i = 1; i < labels.length; i++) {
-    var s = labels[i];
-    if (vis[i - 1]) seriesToAxisFiltered[s] = this.seriesToAxisMap_[s];
-  }
-  this.seriesToAxisMap_ = seriesToAxisFiltered;
-
   if (valueWindows != undefined) {
     // Restore valueWindow settings.
     for (var index = 0; index < valueWindows.length; index++) {
@@ -2221,7 +2210,11 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
       var extremeMinY, extremeMaxY;
+
       for (var j = 0; j < series.length; j++) {
+        // this skips invisible series
+        if (!extremes.hasOwnProperty(series[j])) continue;
+
         // Only use valid extremes to stop null data series' from corrupting the scale.
         extremeMinY = extremes[series[j]][0];
         if (extremeMinY != null) {
@@ -2234,9 +2227,9 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       }
       if (axis.includeZero && minY > 0) minY = 0;
 
-      // Ensure we have a valid scale, otherwise defualt to zero for safety.
+      // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
-      if (maxY == -Infinity) maxY = 0;
+      if (maxY == -Infinity) maxY = 1;
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
