@@ -43,9 +43,6 @@ var LOREM_IPSUM =
             drawPoints : true,
             highlightCircleSize : 6,
             pointClickCallback : function(evt, point) {
-              // chrome sez: 243 30 248 124, scroller.offsetLeft/Top = 8/8
-              // ff sez:     245 17 249 126, " "
-              console.log(evt.clientX, evt.clientY, evt.screenX, evt.screenY);
               self.point = point;
             }
           }
