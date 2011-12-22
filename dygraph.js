@@ -750,6 +750,7 @@ Dygraph.prototype.numRows = function() {
 /**
  * Returns the full range of the x-axis, as determined by the most extreme
  * values in the data set. Not affected by zooming, visibility, etc.
+ * TODO(danvk): merge w/ xAxisExtremes
  * @return { Array<Number> } A [low, high] pair
  * @private
  */

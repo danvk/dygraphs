@@ -465,6 +465,11 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
 Dygraph.dateParser = function(dateStr) {
   var dateStrSlashed;
   var d;
+
+  // Let the system try the format first.
+  d = Dygraph.dateStrToMillis(dateStr);
+  if (d && !isNaN(d)) return d;
+
   if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
