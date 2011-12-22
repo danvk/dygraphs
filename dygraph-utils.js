@@ -618,6 +618,15 @@ Dygraph.createCanvas = function() {
 
 /**
  * @private
+ * Checks whether the user is on an Android browser.
+ * Android does not fully support the <canvas> tag, e.g. w/r/t/ clipping.
+ */
+Dygraph.isAndroid = function() {
+  return /Android/.test(navigator.userAgent);
+};
+
+/**
+ * @private
  * Call a function N times at a given interval, then call a cleanup function
  * once. repeat_fn is called once immediately, then (times - 1) times
  * asynchronously. If times=1, then cleanup_fn() is also called synchronously.

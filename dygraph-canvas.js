@@ -56,15 +56,19 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   if (this.dygraph_.isUsingExcanvas_) {
     this._createIEClipArea();
   } else {
-    var ctx = this.dygraph_.canvas_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
+    // on Android 3 and 4, setting a clipping area on a canvas prevents it from
+    // displaying anything.
+    if (!Dygraph.isAndroid()) {
+      var ctx = this.dygraph_.canvas_ctx_;
+      ctx.beginPath();
+      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+      ctx.clip();
 
-    ctx = this.dygraph_.hidden_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
+      ctx = this.dygraph_.hidden_ctx_;
+      ctx.beginPath();
+      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+      ctx.clip();
+    }
   }
 };
 
