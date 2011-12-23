@@ -51,8 +51,10 @@
         <li><a href="mailto:dygraphs-users [at] googlegroups.com">Contact</a></li>
       </ul>
 
-      <h2>Gallery</h2>
+      <h2>Demos/Usage</h2>
       <ul>
+        <li><a href="#gallery">Usage Gallery</a></li>
+        <hr/>
         <li><a href="tests/">(browse demos)</a></li>
         <li><a href="tests/demo.html">Basic Demo</a></li>
         <li><a href="tests/gviz.html">GViz Demo</a></li>
@@ -91,7 +93,7 @@
       <h1>dygraphs JavaScript Visualization Library</h1>
 
       <p><a href="http://github.com/danvk/dygraphs">http://github.com/danvk/dygraphs</a></p>
-      <p>See <a href="http://blog.dygraphs.com/">blog</a>, <a href="http://groups.google.com/group/dygraphs-users">mailing list</a>, <a href="http://github.com/danvk/dygraphs/downloads/">downloads</a>, <a href="tests/">gallery</a> and <a href="http://code.google.com/p/dygraphs/issues/">open issues</a></p>
+      <p>See <a href="http://blog.dygraphs.com/">blog</a>, <a href="http://groups.google.com/group/dygraphs-users">mailing list</a>, <a href="http://github.com/danvk/dygraphs/downloads/">downloads</a>, <a href="tests/">demos</a> and <a href="http://code.google.com/p/dygraphs/issues/">open issues</a></p>
 
       <p>dygraphs is an open source JavaScript library that produces produces interactive, zoomable charts of time series. It is designed to display dense data sets and enable users to explore and interpret them.</p>
 
@@ -129,7 +131,9 @@
 
       <p>dygraphs allows the user to explore the data and discover these facts.</p>
 
-      <p>For more demos, browse the dygraph <a href="tests/">tests</a> directory.</p>
+      <p>For more demos, browse the dygraph <a href="tests/">tests</a>
+      directory. To see other people who are using dygraphs, check out the <a
+      href="#gallery">usage gallery</a>.</p>
 
       <h3>Features</h3>
       <p>Some of the features of dygraphs:</p>
@@ -599,6 +603,40 @@ public static native JavaScriptObject drawDygraph(
   return chart;
 }-*/;
 </pre>
+
+    <a name="gallery" />
+    <h2>Usage Gallery</h2>
+    <p>Since its public release in late 2009, dygraphs has found many users
+    across the web. This is a small collection of the uses that we know about.
+    If you're using dygraphs, please send <a
+    href="mailto:dan@dygraphs.com">Dan</a> a link and he'll add it to this
+    list.</p>
+
+    <p>dygraphs was originally developed at Google and has found wide use on
+    internal dashboards and servers there. There are also a few uses of
+    dygraphs on public Google products:</p>
+
+    <ul class='padded-list'>
+    <li><a href="http://www.google.com/trends/correlate/search?e=id:20xKcnNqHrk&t=weekly">Google Correlate</a><br/>
+    <span class="desc">Uses dygraphs for time series visualization. Mostly a standard configuration, with just a few tweaks to match Google style.</span></li>
+
+    <li><a href="http://www.google.com/trends/correlate/draw?p=us">Google Correlate - Search by Drawing</a><br/>
+    <span class="desc">This is a highly customized configuration which lets the user draw a time series. Based on <a href="tests/drawing.html">this demo</a>.</span></li>
+
+    <li><a href="https://www.google.com/latitude/b/0/history/manage">Google Latitude History Dashboard</a><br/>
+    <span class="desc">Uses mouse interaction callbacks to synchronize time series points with markers on a Google Map.</span></li>
+    </ul>
+
+    <p>dygraphs has also found use in other organizations:</p>
+
+    <ul class='padded-list'>
+    <li><a href="http://toolserver.org/~dartar/moodbar/">Wikimedia Foundation - Moodbar data dashboard</a><br/>
+    <span class="desc">dygraphs is used internally at Wikimedia as a handy solution to monitor the
+    results of a bunch of small experiments.</span></li>
+    </ul>
+
+    <p>Are you using dygraphs? Please let <a href="mailto:dan@dygraphs.com">Dan</a> know and he'll add your link here!</p>
+
 
     <h2 id="policy">Data Policy</h2>
     <p>dygraphs is purely client-side JavaScript. It does not send your data to any servers &ndash; the data is processed entirely in the client's browser.</p>
