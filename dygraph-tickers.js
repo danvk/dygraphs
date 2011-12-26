@@ -199,15 +199,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 
 
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
-  var pixels_per_tick = opts('pixelsPerLabel');
-  var chosen = -1;
-  for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
-    var num_ticks = Dygraph.numDateTicks(a, b, i);
-    if (pixels / num_ticks >= pixels_per_tick) {
-      chosen = i;
-      break;
-    }
-  }
+  var chosen = Dygraph.pickDateTickGranularity(a, b, pixels, opts);
 
   if (chosen >= 0) {
     return Dygraph.getDateAxis(a, b, chosen, opts, dygraph);
@@ -276,6 +268,27 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   }
   return vals;
 }();
+
+/**
+ * Determine the correct granularity of ticks on a date axis.
+ *
+ * @param {Number} a Left edge of the chart (ms)
+ * @param {Number} b Right edge of the chart (ms)
+ * @param {Number} pixels Size of the chart in the relevant dimension (width).
+ * @param {Function} opts Function mapping from option name -> value.
+ * @return {Number} The appropriate axis granularity for this chart. See the
+ * enumeration of possible values in dygraph-tickers.js.
+ */
+Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
+  var pixels_per_tick = opts('pixelsPerLabel');
+  for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
+    var num_ticks = Dygraph.numDateTicks(a, b, i);
+    if (pixels / num_ticks >= pixels_per_tick) {
+      return i;
+    }
+  }
+  return -1;
+};
 
 Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
