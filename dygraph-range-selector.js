@@ -466,17 +466,24 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var sum;
   var count;
   var yVal, y;
-  var mutipleValues = typeof data[0][1] != 'number';
+  var mutipleValues;
   var i, j, k;
 
-  if (mutipleValues) {
-    sum = [];
-    count = [];
-    for (k = 0; k < data[0][1].length; k++) {
-      sum.push(0);
-      count.push(0);
+  // Find out if data has multiple values per datapoint.
+  // Go to first data point that actually has values (see http://code.google.com/p/dygraphs/issues/detail?id=246)
+  for (i = 0; i < data.length; i++) {
+    if (data[i].length > 1 && data[i][1] != null) {
+      mutipleValues = typeof data[i][1] != 'number';
+      if (mutipleValues) {
+        sum = [];
+        count = [];
+        for (k = 0; k < data[0][1].length; k++) {
+          sum.push(0);
+          count.push(0);
+        }
+      }
+      break;
     }
-    mutipleValues = true;
   }
 
   for (i = 0; i < data.length; i++) {
