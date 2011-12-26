@@ -101,6 +101,14 @@ SanityTestCase.prototype.testToDomYCoord = function() {
   }
 };
 
+/**
+ * Test that the two-argument form of the constructor (no options) works.
+ */
+SanityTestCase.prototype.testTwoArgumentConstructor = function() {
+  var graph = document.getElementById("graph");
+  new Dygraph(graph, ZERO_TO_FIFTY);
+};
+
 // Here is the first of a series of tests that just ensure the graph is drawn
 // without exception.
 //TODO(konigsberg): Move to its own test case.

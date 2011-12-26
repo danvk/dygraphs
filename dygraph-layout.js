@@ -9,6 +9,8 @@
  * dygraphs.
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
 
 /**
@@ -29,8 +31,8 @@
  */
 var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.datasets = new Array();
-  this.annotations = new Array();
+  this.datasets = [];
+  this.annotations = [];
   this.yAxes_ = null;
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
@@ -49,7 +51,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 
 DygraphLayout.prototype.getPlotArea = function() {
   return this.computePlotArea_();
-}
+};
 
 // Compute the box which the chart should be drawn in. This is the canvas's
 // box, less space needed for axis and chart labels.
@@ -168,18 +170,18 @@ DygraphLayout.prototype._evaluateLimits = function() {
     }
   }
   this.xrange = this.maxxval - this.minxval;
-  this.xscale = (this.xrange != 0 ? 1/this.xrange : 1.0);
+  this.xscale = (this.xrange !== 0 ? 1/this.xrange : 1.0);
 
   for (var i = 0; i < this.yAxes_.length; i++) {
     var axis = this.yAxes_[i];
     axis.minyval = axis.computedValueRange[0];
     axis.maxyval = axis.computedValueRange[1];
     axis.yrange = axis.maxyval - axis.minyval;
-    axis.yscale = (axis.yrange != 0 ? 1.0 / axis.yrange : 1.0);
+    axis.yscale = (axis.yrange !== 0 ? 1.0 / axis.yrange : 1.0);
 
     if (axis.g.attr_("logscale")) {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
-      axis.ylogscale = (axis.ylogrange != 0 ? 1.0 / axis.ylogrange : 1.0);
+      axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
         axis.g.error('axis ' + i + ' of graph at ' + axis.g +
             ' can\'t be displayed in log scale for range [' +
@@ -199,12 +201,12 @@ DygraphLayout._calcYNormal = function(axis, value) {
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
   // add all the rects
-  this.points = new Array();
+  this.points = [];
   // An array to keep track of how many points will be drawn for each set.
   // This will allow for the canvas renderer to not have to check every point
   // for every data set since the points are added in order of the sets in
   // datasets.
-  this.setPointsLengths = new Array();
+  this.setPointsLengths = [];
 
   for (var setName in this.datasets) {
     if (!this.datasets.hasOwnProperty(setName)) continue;
@@ -216,8 +218,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
-      var xValue = parseFloat(dataset[j][0]);
-      var yValue = parseFloat(dataset[j][1]);
+      var xValue = parseFloat(item[0]);
+      var yValue = parseFloat(item[1]);
 
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;
@@ -240,23 +242,24 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
-  this.xticks = new Array();
-  for (var i = 0; i < this.xTicks_.length; i++) {
-    var tick = this.xTicks_[i];
-    var label = tick.label;
-    var pos = this.xscale * (tick.v - this.minxval);
+  var i, tick, label, pos;
+  this.xticks = [];
+  for (i = 0; i < this.xTicks_.length; i++) {
+    tick = this.xTicks_[i];
+    label = tick.label;
+    pos = this.xscale * (tick.v - this.minxval);
     if ((pos >= 0.0) && (pos <= 1.0)) {
       this.xticks.push([pos, label]);
     }
   }
 
-  this.yticks = new Array();
-  for (var i = 0; i < this.yAxes_.length; i++ ) {
+  this.yticks = [];
+  for (i = 0; i < this.yAxes_.length; i++ ) {
     var axis = this.yAxes_[i];
     for (var j = 0; j < axis.ticks.length; j++) {
-      var tick = axis.ticks[j];
-      var label = tick.label;
-      var pos = this.dygraph_.toPercentYCoord(tick.v, i);
+      tick = axis.ticks[j];
+      label = tick.label;
+      pos = this.dygraph_.toPercentYCoord(tick.v, i);
       if ((pos >= 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
       }
@@ -274,13 +277,13 @@ DygraphLayout.prototype.evaluateWithError = function() {
   if (!(this.attr_('errorBars') || this.attr_('customBars'))) return;
 
   // Copy over the error terms
-  var i = 0; // index in this.points
+  var i = 0;  // index in this.points
   for (var setName in this.datasets) {
     if (!this.datasets.hasOwnProperty(setName)) continue;
     var j = 0;
     var dataset = this.datasets[setName];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
-    for (var j = 0; j < dataset.length; j++, i++) {
+    for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
       var xv = parseFloat(item[0]);
       var yv = parseFloat(item[1]);
@@ -302,8 +305,9 @@ DygraphLayout.prototype.evaluateWithError = function() {
 DygraphLayout.prototype._evaluateAnnotations = function() {
   // Add the annotations to the point to which they belong.
   // Make a map from (setName, xval) to annotation for quick lookups.
+  var i;
   var annotations = {};
-  for (var i = 0; i < this.annotations.length; i++) {
+  for (i = 0; i < this.annotations.length; i++) {
     var a = this.annotations[i];
     annotations[a.xval + "," + a.series] = a;
   }
@@ -316,7 +320,7 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   }
 
   // TODO(antrob): loop through annotations not points.
-  for (var i = 0; i < this.points.length; i++) {
+  for (i = 0; i < this.points.length; i++) {
     var p = this.points[i];
     var k = p.xval + "," + p.name;
     if (k in annotations) {
@@ -331,7 +335,7 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
  */
 DygraphLayout.prototype.removeAllDatasets = function() {
   delete this.datasets;
-  this.datasets = new Array();
+  this.datasets = [];
 };
 
 /**
@@ -343,8 +347,8 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
 
   // Clone the point since we modify it
   var unstackedPoint = {};
-  for (var i in point) {
-    unstackedPoint[i] = point[i];
+  for (var pt in point) {
+    unstackedPoint[pt] = point[pt];
   }
 
   if (!this.attr_("stackedGraph")) {
@@ -361,4 +365,4 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   }
 
   return unstackedPoint;
-}
+};
