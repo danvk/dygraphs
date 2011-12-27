@@ -477,7 +477,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
       if (mutipleValues) {
         sum = [];
         count = [];
-        for (k = 0; k < data[0][1].length; k++) {
+        for (k = 0; k < data[i][1].length; k++) {
           sum.push(0);
           count.push(0);
         }
