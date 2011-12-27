@@ -65,3 +65,11 @@ padding: 0 10px;
   font-weight: normal;
   text-decoration: none;
 }
+
+.padded-list li + li {
+  padding-top: 10px;
+}
+
+.padded-list .desc {
+  font-style: italic;
+}

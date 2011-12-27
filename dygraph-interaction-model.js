@@ -10,8 +10,9 @@
  * @author Robert Konigsberg (konigsberg@google.com)
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
-
 
 /**
  * A collection of functions to facilitate build custom interaction models.
@@ -33,6 +34,7 @@ Dygraph.Interaction = {};
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.startPan = function(event, g, context) {
+  var i, axis;
   context.isPanning = true;
   var xRange = g.xAxisRange();
   context.dateRange = xRange[1] - xRange[0];
@@ -53,8 +55,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
     var boundedValues = [];
     var maxYPixelsToDraw = g.height_ * g.attr_("panEdgeFraction");
 
-    for (var i = 0; i < g.axes_.length; i++) {
-      var axis = g.axes_[i];
+    for (i = 0; i < g.axes_.length; i++) {
+      axis = g.axes_[i];
       var yExtremes = axis.extremeRange;
 
       var boundedTopY = g.toDomYCoord(yExtremes[0], i) + maxYPixelsToDraw;
@@ -71,8 +73,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
   context.is2DPan = false;
-  for (var i = 0; i < g.axes_.length; i++) {
-    var axis = g.axes_[i];
+  for (i = 0; i < g.axes_.length; i++) {
+    axis = g.axes_[i];
     var yRange = g.yAxisRange(i);
     // TODO(konigsberg): These values should be in |context|.
     // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.
@@ -180,7 +182,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
   var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
   if (regionWidth < 2 && regionHeight < 2 &&
-      g.lastx_ != undefined && g.lastx_ != -1) {
+      g.lastx_ !== undefined && g.lastx_ != -1) {
     Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
@@ -314,7 +316,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
   var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
   if (regionWidth < 2 && regionHeight < 2 &&
-      g.lastx_ != undefined && g.lastx_ != -1) {
+      g.lastx_ !== undefined && g.lastx_ != -1) {
     Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
@@ -411,7 +413,7 @@ Dygraph.Interaction.nonInteractiveModel_ = {
     var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
     if (regionWidth < 2 && regionHeight < 2 &&
-        g.lastx_ != undefined && g.lastx_ != -1) {
+        g.lastx_ !== undefined && g.lastx_ != -1) {
       Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
     }
   }

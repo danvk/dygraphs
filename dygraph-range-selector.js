@@ -6,6 +6,8 @@
  * a timeline range selector widget for dygraphs.
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
 
 /**
@@ -72,7 +74,7 @@ DygraphRangeSelector.prototype.resize_ = function() {
     canvas.height = rect.h;
     canvas.style.width = canvas.width + 'px';    // for IE
     canvas.style.height = canvas.height + 'px';  // for IE
-  };
+  }
 
   var plotArea = this.layout_.getPlotArea();
   var xAxisLabelHeight = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
@@ -178,7 +180,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   var isPanning = false;
   var dynamic = !this.isMobileDevice_ && !this.isUsingExcanvas_;
 
-  function toXDataWindow(zoomHandleStatus) {
+  // functions, defined below.  Defining them this way (rather than with
+  // "function foo() {...}" makes JSHint happy.
+  var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
+      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove;
+
+  toXDataWindow = function(zoomHandleStatus) {
     var xDataLimits = self.dygraph_.xAxisExtremes();
     var fact = (xDataLimits[1] - xDataLimits[0])/self.canvasRect_.w;
     var xDataMin = xDataLimits[0] + (zoomHandleStatus.leftHandlePos - self.canvasRect_.x)*fact;
@@ -186,7 +193,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     return [xDataMin, xDataMax];
   };
 
-  function onZoomStart(e) {
+  onZoomStart = function(e) {
     Dygraph.cancelEvent(e);
     isZooming = true;
     xLast = e.screenX;
@@ -196,7 +203,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.fgcanvas_.style.cursor = 'col-resize';
   };
 
-  function onZoom(e) {
+  onZoom = function(e) {
     if (!isZooming) {
       return;
     }
@@ -206,12 +213,13 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
     xLast = e.screenX;
     var zoomHandleStatus = self.getZoomHandleStatus_();
+    var newPos;
     if (handle == self.leftZoomHandle_) {
-      var newPos = zoomHandleStatus.leftHandlePos + delX;
+      newPos = zoomHandleStatus.leftHandlePos + delX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
       newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
-      var newPos = zoomHandleStatus.rightHandlePos + delX;
+      newPos = zoomHandleStatus.rightHandlePos + delX;
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
@@ -225,7 +233,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onZoomEnd(e) {
+  onZoomEnd = function(e) {
     if (!isZooming) {
       return;
     }
@@ -240,7 +248,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function doZoom() {
+  doZoom = function() {
     try {
       var zoomHandleStatus = self.getZoomHandleStatus_();
       self.isChangingRange_ = true;
@@ -255,7 +263,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function isMouseInPanZone(e) {
+  isMouseInPanZone = function(e) {
     if (self.isUsingExcanvas_) {
         return e.srcElement == self.iePanOverlay_;
     } else {
@@ -271,7 +279,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onPanStart(e) {
+  onPanStart = function(e) {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
       Dygraph.cancelEvent(e);
       isPanning = true;
@@ -281,7 +289,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onPan(e) {
+  onPan = function(e) {
     if (!isPanning) {
       return;
     }
@@ -319,7 +327,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onPanEnd(e) {
+  onPanEnd = function(e) {
     if (!isPanning) {
       return;
     }
@@ -332,7 +340,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function doPan() {
+  doPan = function() {
     try {
       self.isChangingRange_ = true;
       self.dygraph_.dateWindow_ = toXDataWindow(self.getZoomHandleStatus_());
@@ -342,7 +350,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onCanvasMouseMove(e) {
+  onCanvasMouseMove = function(e) {
     if (isZooming || isPanning) {
       return;
     }
@@ -399,7 +407,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   };
 
   this.dygraph_.attrs_.interactionModel = interactionModel;
-  this.dygraph_.attrs_.panEdgeFraction = .0001;
+  this.dygraph_.attrs_.panEdgeFraction = 0.0001;
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
   Dygraph.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
@@ -433,7 +441,7 @@ DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
     Dygraph.warn(ex);
   }
 
-  var margin = .5;
+  var margin = 0.5;
   this.bgcanvas_ctx_.lineWidth = 1;
   ctx.strokeStyle = 'gray';
   ctx.beginPath();
@@ -461,7 +469,7 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
 
   // Draw the mini plot.
   var ctx = this.bgcanvas_ctx_;
-  var margin = .5;
+  var margin = 0.5;
 
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xRange = Math.max(xExtremes[1] - xExtremes[0], 1.e-30);
@@ -548,13 +556,13 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
         if (mutipleValues) {
           for (var k = 0; k < sum.length; k++) {
             var y = dataPoint[j][k];
-            if (y == null || isNaN(y)) continue;
+            if (y === null || isNaN(y)) continue;
             sum[k] += y;
             count[k]++;
           }
         } else {
           var y = dataPoint[j];
-          if (y == null || isNaN(y)) continue;
+          if (y === null || isNaN(y)) continue;
           sum += y;
           count++;
         }
@@ -578,7 +586,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
 
   if (typeof combinedSeries[0][1] != 'number') {
     for (var i = 0; i < combinedSeries.length; i++) {
-      var yVal = combinedSeries[i][1];
+      yVal = combinedSeries[i][1];
       combinedSeries[i][1] = yVal[0];
     }
   }
@@ -587,8 +595,8 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var yMin = Number.MAX_VALUE;
   var yMax = -Number.MAX_VALUE;
   for (var i = 0; i < combinedSeries.length; i++) {
-    var yVal = combinedSeries[i][1];
-    if (yVal != null && isFinite(yVal) && (!logscale || yVal > 0)) {
+    yVal = combinedSeries[i][1];
+    if (yVal !== null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
     }
@@ -596,7 +604,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
 
   // Convert Y data to log scale if needed.
   // Also, expand the Y range to compress the mini plot a little.
-  var extraPercent = .25;
+  var extraPercent = 0.25;
   if (logscale) {
     yMax = Dygraph.log10(yMax);
     yMax += yMax*extraPercent;
@@ -698,8 +706,8 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
  */
 DygraphRangeSelector.prototype.getZoomHandleStatus_ = function() {
   var halfHandleWidth = this.leftZoomHandle_.width/2;
-  var leftHandlePos = parseInt(this.leftZoomHandle_.style.left) + halfHandleWidth;
-  var rightHandlePos = parseInt(this.rightZoomHandle_.style.left) + halfHandleWidth;
+  var leftHandlePos = parseInt(this.leftZoomHandle_.style.left, 10) + halfHandleWidth;
+  var rightHandlePos = parseInt(this.rightZoomHandle_.style.left, 10) + halfHandleWidth;
   return {
       leftHandlePos: leftHandlePos,
       rightHandlePos: rightHandlePos,

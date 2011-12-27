@@ -133,3 +133,37 @@ MultipleAxesTestCase.prototype.testMultiAxisLayout = function() {
     // assertTrue((child.offsetTop + child.offsetHeight) <= 350);
   }
 };
+
+MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
+  var data = [];
+  data.push([0,0,0]);
+  data.push([1,2,2000]);
+  data.push([2,4,1000]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar', 'zot' ],
+      'zot': {
+        axis: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+
+  g.setVisibility(0, false);
+
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+
+  g.setVisibility(0, true);
+  g.setVisibility(1, false);
+
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+};

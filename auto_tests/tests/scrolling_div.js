@@ -50,6 +50,29 @@ var LOREM_IPSUM =
   
 };
 
+// This is usually something like 15, but for OS X Lion and its auto-hiding
+// scrollbars, it's 0. This is a large enough difference that we need to
+// consider it when synthesizing clicks.
+// Adapted from http://davidwalsh.name/detect-scrollbar-width
+ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
+  // Create the measurement node
+  var scrollDiv = document.createElement("div");
+  scrollDiv.style.width = "100px";
+  scrollDiv.style.height = "100px";
+  scrollDiv.style.overflow = "scroll";
+  scrollDiv.style.position = "absolute";
+  scrollDiv.style.top = "-9999px";
+  document.body.appendChild(scrollDiv);
+
+  // Get the scrollbar width
+  var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+  // Delete the DIV 
+  document.body.removeChild(scrollDiv);
+
+  return scrollbarWidth;
+};
+
 ScrollingDivTestCase.prototype.tearDown = function() {
 };
 
@@ -83,7 +106,7 @@ ScrollingDivTestCase.prototype.testScrolledDiv = function() {
 
   var clickOn4_40 = {
     clientX: 244,
-    clientY: 20,
+    clientY: 30 - this.detectScrollbarWidth(),
     screenX: 416,
     screenY: 160
   };

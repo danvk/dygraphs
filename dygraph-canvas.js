@@ -24,6 +24,8 @@
  * @constructor
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false,RGBColor:false */
 "use strict";
 
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
@@ -42,9 +44,9 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
       throw "Canvas is not supported.";
 
   // internal state
-  this.xlabels = new Array();
-  this.ylabels = new Array();
-  this.annotations = new Array();
+  this.xlabels = [];
+  this.ylabels = [];
+  this.annotations = [];
   this.chartLabels = {};
 
   this.area = layout.getPlotArea();
@@ -56,15 +58,19 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   if (this.dygraph_.isUsingExcanvas_) {
     this._createIEClipArea();
   } else {
-    var ctx = this.dygraph_.canvas_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
+    // on Android 3 and 4, setting a clipping area on a canvas prevents it from
+    // displaying anything.
+    if (!Dygraph.isAndroid()) {
+      var ctx = this.dygraph_.canvas_ctx_;
+      ctx.beginPath();
+      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+      ctx.clip();
 
-    ctx = this.dygraph_.hidden_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
+      ctx = this.dygraph_.hidden_ctx_;
+      ctx.beginPath();
+      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+      ctx.clip();
+    }
   }
 };
 
@@ -73,6 +79,7 @@ DygraphCanvasRenderer.prototype.attr_ = function(x) {
 };
 
 DygraphCanvasRenderer.prototype.clear = function() {
+  var context;
   if (this.isIE) {
     // VML takes a while to start up, so we just poll every this.IEDelay
     try {
@@ -80,39 +87,38 @@ DygraphCanvasRenderer.prototype.clear = function() {
         this.clearDelay.cancel();
         this.clearDelay = null;
       }
-      var context = this.elementContext;
+      context = this.elementContext;
     }
     catch (e) {
       // TODO(danvk): this is broken, since MochiKit.Async is gone.
-      this.clearDelay = MochiKit.Async.wait(this.IEDelay);
-      this.clearDelay.addCallback(bind(this.clear, this));
+      // this.clearDelay = MochiKit.Async.wait(this.IEDelay);
+      // this.clearDelay.addCallback(bind(this.clear, this));
       return;
     }
   }
 
-  var context = this.elementContext;
+  context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
 
-  for (var i = 0; i < this.xlabels.length; i++) {
-    var el = this.xlabels[i];
-    if (el.parentNode) el.parentNode.removeChild(el);
+  function removeArray(ary) {
+    for (var i = 0; i < ary.length; i++) {
+      var el = ary[i];
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }
   }
-  for (var i = 0; i < this.ylabels.length; i++) {
-    var el = this.ylabels[i];
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }
-  for (var i = 0; i < this.annotations.length; i++) {
-    var el = this.annotations[i];
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }
+
+  removeArray(this.xlabels);
+  removeArray(this.ylabels);
+  removeArray(this.annotations);
+
   for (var k in this.chartLabels) {
     if (!this.chartLabels.hasOwnProperty(k)) continue;
     var el = this.chartLabels[k];
     if (el.parentNode) el.parentNode.removeChild(el);
   }
-  this.xlabels = new Array();
-  this.ylabels = new Array();
-  this.annotations = new Array();
+  this.xlabels = [];
+  this.ylabels = [];
+  this.annotations = [];
   this.chartLabels = {};
 };
 
@@ -120,11 +126,12 @@ DygraphCanvasRenderer.prototype.clear = function() {
 DygraphCanvasRenderer.isSupported = function(canvasName) {
   var canvas = null;
   try {
-    if (typeof(canvasName) == 'undefined' || canvasName == null)
+    if (typeof(canvasName) == 'undefined' || canvasName === null) {
       canvas = document.createElement("canvas");
-    else
+    } else {
       canvas = canvasName;
-    var context = canvas.getContext("2d");
+    }
+    canvas.getContext("2d");
   }
   catch (e) {
     var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
@@ -151,8 +158,8 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
   // half-integers. This prevents them from drawing in two rows/cols.
   var ctx = this.elementContext;
-  function halfUp(x){return Math.round(x)+0.5};
-  function halfDown(y){return Math.round(y)-0.5};
+  function halfUp(x)  { return Math.round(x) + 0.5; }
+  function halfDown(y){ return Math.round(y) - 0.5; }
 
   if (this.attr_('underlayCallback')) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
@@ -160,17 +167,18 @@ DygraphCanvasRenderer.prototype.render = function() {
     this.attr_('underlayCallback')(ctx, this.area, this.dygraph_, this.dygraph_);
   }
 
+  var x, y, i, ticks;
   if (this.attr_('drawYGrid')) {
-    var ticks = this.layout.yticks;
+    ticks = this.layout.yticks;
     // TODO(konigsberg): I don't think these calls to save() have a corresponding restore().
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
     ctx.lineWidth = this.attr_('gridLineWidth');
-    for (var i = 0; i < ticks.length; i++) {
+    for (i = 0; i < ticks.length; i++) {
       // TODO(danvk): allow secondary axes to draw a grid, too.
-      if (ticks[i][0] != 0) continue;
-      var x = halfUp(this.area.x);
-      var y = halfDown(this.area.y + ticks[i][1] * this.area.h);
+      if (ticks[i][0] !== 0) continue;
+      x = halfUp(this.area.x);
+      y = halfDown(this.area.y + ticks[i][1] * this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.area.w, y);
@@ -180,13 +188,13 @@ DygraphCanvasRenderer.prototype.render = function() {
   }
 
   if (this.attr_('drawXGrid')) {
-    var ticks = this.layout.xticks;
+    ticks = this.layout.xticks;
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
     ctx.lineWidth = this.attr_('gridLineWidth');
-    for (var i=0; i<ticks.length; i++) {
-      var x = halfUp(this.area.x + ticks[i][0] * this.area.w);
-      var y = halfDown(this.area.y + this.area.h);
+    for (i=0; i<ticks.length; i++) {
+      x = halfUp(this.area.x + ticks[i][0] * this.area.w);
+      y = halfDown(this.area.y + this.area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, this.area.y);
@@ -226,7 +234,7 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
   }
 
   function createClipDiv(area) {
-    if (area.w == 0 || area.h == 0) {
+    if (area.w === 0 || area.h === 0) {
       return;
     }
     var elem = document.createElement('div');
@@ -242,23 +250,45 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
 
   var plotArea = this.area;
   // Left side
-  createClipDiv({x:0, y:0, w:plotArea.x, h:this.height});
+  createClipDiv({
+    x:0, y:0,
+    w:plotArea.x,
+    h:this.height
+  });
+
   // Top
-  createClipDiv({x:plotArea.x, y:0, w:this.width-plotArea.x, h:plotArea.y});
+  createClipDiv({
+    x: plotArea.x, y: 0,
+    w: this.width - plotArea.x,
+    h: plotArea.y
+  });
+
   // Right side
-  createClipDiv({x:plotArea.x+plotArea.w, y:0, w:this.width-plotArea.x-plotArea.w, h:this.height});
+  createClipDiv({
+    x: plotArea.x + plotArea.w, y: 0,
+    w: this.width-plotArea.x - plotArea.w,
+    h: this.height
+  });
+
   // Bottom
-  createClipDiv({x:plotArea.x, y:plotArea.y+plotArea.h, w:this.width-plotArea.x, h:this.height-plotArea.h-plotArea.y});
-}
+  createClipDiv({
+    x: plotArea.x,
+    y: plotArea.y + plotArea.h,
+    w: this.width - plotArea.x,
+    h: this.height - plotArea.h - plotArea.y
+  });
+};
 
 DygraphCanvasRenderer.prototype._renderAxis = function() {
   if (!this.attr_('drawXAxis') && !this.attr_('drawYAxis')) return;
 
   // Round pixels to half-integer boundaries for crisper drawing.
-  function halfUp(x){return Math.round(x)+0.5};
-  function halfDown(y){return Math.round(y)-0.5};
+  function halfUp(x)  { return Math.round(x) + 0.5; }
+  function halfDown(y){ return Math.round(y) - 0.5; }
 
   var context = this.elementContext;
+
+  var label, x, y, tick, i;
 
   var labelStyle = {
     position: "absolute",
@@ -267,7 +297,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     color: this.attr_('axisLabelColor'),
     width: this.attr_('axisLabelWidth') + "px",
     // height: this.attr_('axisLabelFontSize') + 2 + "px",
-    lineHeight: "normal", // Something other than "normal" line-height screws up label positioning.
+    lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
     overflow: "hidden"
   };
   var makeDiv = function(txt, axis, prec_axis) {
@@ -294,10 +324,10 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   if (this.attr_('drawYAxis')) {
     if (this.layout.yticks && this.layout.yticks.length > 0) {
       var num_axes = this.dygraph_.numAxes();
-      for (var i = 0; i < this.layout.yticks.length; i++) {
-        var tick = this.layout.yticks[i];
+      for (i = 0; i < this.layout.yticks.length; i++) {
+        tick = this.layout.yticks[i];
         if (typeof(tick) == "function") return;
-        var x = this.area.x;
+        x = this.area.x;
         var sgn = 1;
         var prec_axis = 'y1';
         if (tick[0] == 1) {  // right-side y-axis
@@ -305,7 +335,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
           sgn = -1;
           prec_axis = 'y2';
         }
-        var y = this.area.y + tick[1] * this.area.h;
+        y = this.area.y + tick[1] * this.area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
@@ -315,7 +345,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.stroke();
         */
 
-        var label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
+        label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - this.attr_('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 
@@ -324,7 +354,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         } else {
           label.style.top = top + "px";
         }
-        if (tick[0] == 0) {
+        if (tick[0] === 0) {
           label.style.left = (this.area.x - this.attr_('yAxisLabelWidth') - this.attr_('axisTickSize')) + "px";
           label.style.textAlign = "right";
         } else if (tick[0] == 1) {
@@ -342,9 +372,9 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
       // compensate if necessary.
       var bottomTick = this.ylabels[0];
       var fontSize = this.attr_('axisLabelFontSize');
-      var bottom = parseInt(bottomTick.style.top) + fontSize;
+      var bottom = parseInt(bottomTick.style.top, 10) + fontSize;
       if (bottom > this.height - fontSize) {
-        bottomTick.style.top = (parseInt(bottomTick.style.top) -
+        bottomTick.style.top = (parseInt(bottomTick.style.top, 10) -
             fontSize / 2) + "px";
       }
     }
@@ -368,12 +398,10 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
   if (this.attr_('drawXAxis')) {
     if (this.layout.xticks) {
-      for (var i = 0; i < this.layout.xticks.length; i++) {
-        var tick = this.layout.xticks[i];
-        if (typeof(dataset) == "function") return;
-
-        var x = this.area.x + tick[0] * this.area.w;
-        var y = this.area.y + this.area.h;
+      for (i = 0; i < this.layout.xticks.length; i++) {
+        tick = this.layout.xticks[i];
+        x = this.area.x + tick[0] * this.area.w;
+        y = this.area.y + this.area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
@@ -383,7 +411,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
         context.stroke();
         */
 
-        var label = makeDiv(tick[1], 'x');
+        label = makeDiv(tick[1], 'x');
         label.style.textAlign = "center";
         label.style.top = (y + this.attr_('axisTickSize')) + 'px';
 
@@ -416,11 +444,13 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 
 
 DygraphCanvasRenderer.prototype._renderChartLabels = function() {
+  var div, class_div;
+
   // Generate divs for the chart title, xlabel and ylabel.
   // Space for these divs has already been taken away from the charting area in
   // the DygraphCanvasRenderer constructor.
   if (this.attr_('title')) {
-    var div = document.createElement("div");
+    div = document.createElement("div");
     div.style.position = 'absolute';
     div.style.top = '0px';
     div.style.left = this.area.x + 'px';
@@ -429,7 +459,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.textAlign = 'center';
     div.style.fontSize = (this.attr_('titleHeight') - 8) + 'px';
     div.style.fontWeight = 'bold';
-    var class_div = document.createElement("div");
+    class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-title';
     class_div.innerHTML = this.attr_('title');
     div.appendChild(class_div);
@@ -438,7 +468,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
   }
 
   if (this.attr_('xlabel')) {
-    var div = document.createElement("div");
+    div = document.createElement("div");
     div.style.position = 'absolute';
     div.style.bottom = 0;  // TODO(danvk): this is lazy. Calculate style.top.
     div.style.left = this.area.x + 'px';
@@ -447,7 +477,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     div.style.textAlign = 'center';
     div.style.fontSize = (this.attr_('xLabelHeight') - 2) + 'px';
 
-    var class_div = document.createElement("div");
+    class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-xlabel';
     class_div.innerHTML = this.attr_('xlabel');
     div.appendChild(class_div);
@@ -463,7 +493,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
       height: this.area.h
     };
     // TODO(danvk): is this outer div actually necessary?
-    var div = document.createElement("div");
+    div = document.createElement("div");
     div.style.position = 'absolute';
     div.style.left = box.left;
     div.style.top = box.top + 'px';
@@ -498,7 +528,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
       inner_div.style.top = '0px';
     }
 
-    var class_div = document.createElement("div");
+    class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-ylabel';
     class_div.innerHTML = this.attr_('ylabel');
 
@@ -527,7 +557,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
         self.dygraph_.attr_(classEventName)(a, p, self.dygraph_,e );
       }
     };
-  }
+  };
 
   // Get a list of point with annotations.
   var points = this.layout.annotated_points;
@@ -609,7 +639,9 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
 
 
 /**
- * Overrides the CanvasRenderer method to draw error bars
+ * Actually draw the lines chart, including error bars.
+ * TODO(danvk): split this into several smaller functions.
+ * @private
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var isNullOrNaN = function(x) {
@@ -625,6 +657,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var stepPlot = this.attr_("stepPlot");
   var points = this.layout.points;
   var pointsLength = points.length;
+  var point, i, j, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
 
   var setNames = [];
   for (var name in this.layout.datasets) {
@@ -635,15 +668,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var setCount = setNames.length;
 
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
-  this.colors = {}
-  for (var i = 0; i < setCount; i++) {
+  this.colors = {};
+  for (i = 0; i < setCount; i++) {
     this.colors[setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
   }
 
   // Update Points
   // TODO(danvk): here
-  for (var i = pointsLength; i--;) {
-    var point = points[i];
+  for (i = pointsLength; i--;) {
+    point = points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
     point.canvasy = this.area.h * point.y + this.area.y;
   }
@@ -655,25 +688,25 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       this.dygraph_.warn("Can't use fillGraph option with error bars");
     }
 
-    for (var i = 0; i < setCount; i++) {
-      var setName = setNames[i];
-      var axis = this.dygraph_.axisPropertiesForSeries(setName);
-      var color = this.colors[setName];
+    for (i = 0; i < setCount; i++) {
+      setName = setNames[i];
+      axis = this.dygraph_.axisPropertiesForSeries(setName);
+      color = this.colors[setName];
 
       // setup graphics context
       ctx.save();
-      var prevX = NaN;
-      var prevY = NaN;
-      var prevYs = [-1, -1];
-      var yscale = axis.yscale;
+      prevX = NaN;
+      prevY = NaN;
+      prevYs = [-1, -1];
+      yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
-      var rgb = new RGBColor(color);
-      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
+      rgb = new RGBColor(color);
+      err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < pointsLength; j++) {
-        var point = points[j];
+      for (j = 0; j < pointsLength; j++) {
+        point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -682,10 +715,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
           // TODO(danvk): here
           if (stepPlot) {
-            var newYs = [ point.y_bottom, point.y_top ];
+            newYs = [ point.y_bottom, point.y_top ];
             prevY = point.y;
           } else {
-            var newYs = [ point.y_bottom, point.y_top ];
+            newYs = [ point.y_bottom, point.y_top ];
           }
           newYs[0] = this.area.h * newYs[0] + this.area.y;
           newYs[1] = this.area.h * newYs[1] + this.area.y;
@@ -711,13 +744,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       ctx.fill();
     }
   } else if (fillGraph) {
-    var baseline = []  // for stacked graphs: baseline for filling
+    var baseline = [];  // for stacked graphs: baseline for filling
 
     // process sets in reverse order (needed for stacked graphs)
-    for (var i = setCount - 1; i >= 0; i--) {
-      var setName = setNames[i];
-      var color = this.colors[setName];
-      var axis = this.dygraph_.axisPropertiesForSeries(setName);
+    for (i = setCount - 1; i >= 0; i--) {
+      setName = setNames[i];
+      color = this.colors[setName];
+      axis = this.dygraph_.axisPropertiesForSeries(setName);
       var axisY = 1.0 + axis.minyval * axis.yscale;
       if (axisY < 0.0) axisY = 0.0;
       else if (axisY > 1.0) axisY = 1.0;
@@ -725,25 +758,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
       // setup graphics context
       ctx.save();
-      var prevX = NaN;
-      var prevYs = [-1, -1];
-      var yscale = axis.yscale;
+      prevX = NaN;
+      prevYs = [-1, -1];
+      yscale = axis.yscale;
       // should be same color as the lines but only 15% opaque.
-      var rgb = new RGBColor(color);
-      var err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
+      rgb = new RGBColor(color);
+      err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (var j = 0; j < pointsLength; j++) {
-        var point = points[j];
+      for (j = 0; j < pointsLength; j++) {
+        point = points[j];
         if (point.name == setName) {
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
           }
-          var newYs;
           if (stackedGraph) {
-            lastY = baseline[point.canvasx];
+            var lastY = baseline[point.canvasx];
             if (lastY === undefined) lastY = axisY;
             baseline[point.canvasx] = point.canvasy;
             newYs = [ point.canvasy, lastY ];
@@ -773,22 +805,23 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var firstIndexInSet = 0;
   var afterLastIndexInSet = 0;
   var setLength = 0;
-  for (var i = 0; i < setCount; i += 1) {
+  for (i = 0; i < setCount; i += 1) {
     setLength = this.layout.setPointsLengths[i];
     afterLastIndexInSet += setLength;
-    var setName = setNames[i];
-    var color = this.colors[setName];
+    setName = setNames[i];
+    color = this.colors[setName];
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
     context.save();
     var pointSize = this.dygraph_.attr_("pointSize", setName);
-    var prevX = null, prevY = null;
+    prevX = null;
+    prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
-    for (var j = firstIndexInSet; j < afterLastIndexInSet; j++) {
-      var point = points[j];
+    for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
+      point = points[j];
       if (isNullOrNaN(point.canvasy)) {
-        if (stepPlot && prevX != null) {
+        if (stepPlot && prevX !== null) {
           // Draw a horizontal line to the start of the missing data
           ctx.beginPath();
           ctx.strokeStyle = color;
