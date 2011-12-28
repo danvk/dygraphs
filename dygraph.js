@@ -414,10 +414,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * option is also specified).
  */
 Dygraph.prototype.isZoomed = function(axis) {
-  if (axis === null) return this.zoomed_x_ || this.zoomed_y_;
+  if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
   if (axis === 'x') return this.zoomed_x_;
   if (axis === 'y') return this.zoomed_y_;
-  throw "axis parameter to Dygraph.isZoomed must be missing, 'x' or 'y'.";
+  throw "axis parameter is [" + axis + "] must be null, 'x' or 'y'.";
 };
 
 /**
