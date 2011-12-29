@@ -75,14 +75,39 @@
       if (args.command) {
         if (args.command == "runAllTests") {
           console.log("Running all tests for " + args.testCase);
-          tc.runAllTests();
+          postResults(tc.runAllTests());
         }
         if (args.command == "runTest") {
           console.log("Running test " + args.testCase + "." + args.test);
-          tc.runTest(args.test);
+          postResults(tc.runTest(args.test));
         }
       }
     }
+  }
+
+  function postResults(results) {
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.createElement("div");
+    body.insertBefore(div, body.firstChild);
+
+    var resultToHtml = function(result) {
+      return result ?
+          "<span style='color:green;'>pass</span>" :
+          "<span style='color:red;'>fail</span>";
+    }
+
+    if (typeof(results) == "boolean") {
+      div.innerHTML = "Test results: " + resultToHtml(results);
+    } else { // hash
+      var html = "";
+      for (var key in results) {
+        if (results.hasOwnProperty(key)) {
+          html = html + key + ": " + resultToHtml(results[key]) + "<br/>";
+        }
+      }
+      div.innerHTML = "Test results:<br/>" + html;
+    }
+    div.appendChild(document.createElement("hr"));
   }
   </script>
 </head>
@@ -106,36 +131,37 @@
 processVariables();
 addGlobalTestSymbols();
 
-function createAttached(name, parent) {
-  var elem = document.createElement(name);
-  parent.appendChild(elem);
-  return elem;
-}
-
 var selector = document.getElementById("selector");
 if (selector != null) { // running a test
+  var createAttached = function(name, parent) {
+    var elem = document.createElement(name);
+    parent.appendChild(elem);
+    return elem;
+  }
+
   var description = createAttached("div", selector);
   var list = createAttached("ul", selector);
   var parent = list.parentElement;
+  var createLink = function(parent, text, url) {
+      var li = createAttached("li", parent);
+      var a = createAttached("a", li);
+      a.innerText = text;
+      a.href = url;
+  }
   if (tc == null) {
     description.innerHTML = "Test cases:";
     var testCases = getAllTestCases();
     for (var idx in testCases) {
-      var entry = testCases[idx];
-      var li = createAttached("li", list);
-      var a = createAttached("a", li);
-      a.innerText = entry.name;
-      a.href = document.URL + "?testCaseName=" + entry.name;
+      var entryName = testCases[idx].name;
+      createLink(list, entryName, document.URL + "?testCaseName=" + entryName);
     }
   } else {
     description.innerHTML = "Tests for " + name;
     var names = tc.getTestNames();
+    createLink(list, "Run All Tests", document.URL + "&command=runAllTests");
     for (var idx in names) {
       var name = names[idx];
-      var li = createAttached("li", list);
-      var a = createAttached("a", li);
-      a.innerText = name;
-      a.href = document.URL + "&test=" + name + "&command=runTest";
+      createLink(list, name, document.URL + "&test=" + name + "&command=runTest");
     }
   }
 }

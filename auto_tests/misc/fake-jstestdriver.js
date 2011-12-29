@@ -84,6 +84,7 @@ function TestCase(name) {
       return false;
     }
   };
+
   testCase.prototype.runAllTests = function() {
     var results = {};
     var names = this.getTestNames();
