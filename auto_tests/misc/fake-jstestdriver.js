@@ -85,16 +85,16 @@ function TestCase(name) {
     }
   };
   testCase.prototype.runAllTests = function() {
-    // what's better than for ... in for non-array objects?
-    var tests = {};
+    var results = {};
     var names = this.getTestNames();
     for (var idx in names) {
       var name = names[idx];
       console.log("Running " + name);
       var result = this.runTest(name);
-      tests[name] = result;
+      results[name] = result;
     }
-    console.log(prettyPrintEntity_(tests));
+    console.log(prettyPrintEntity_(results));
+    return results;
   };
 
   testCase.prototype.getTestNames = function() {
