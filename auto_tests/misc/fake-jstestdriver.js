@@ -39,12 +39,12 @@ var jstd = {
 var testCaseList = [];
 
 function TestCase(name) {
-  this.name = name;
-  this.toString = function() {
+  var testCase = function() { return this; };
+  testCase.name = name;
+  testCase.toString = function() {
     return "Fake test case " + name;
   };
 
-  var testCase = function() { return this; };
   testCase.prototype.setUp = function() { };
   testCase.prototype.tearDown = function() { };
   /**
@@ -87,17 +87,28 @@ function TestCase(name) {
   testCase.prototype.runAllTests = function() {
     // what's better than for ... in for non-array objects?
     var tests = {};
-    for (var name in this) {
-      if (name.indexOf('test') == 0 && typeof(this[name]) == 'function') {
-        console.log("Running " + name);
-        var result = this.runTest(name);
-        tests[name] = result;
-      }
+    var names = this.getTestNames();
+    for (var idx in names) {
+      var name = names[idx];
+      console.log("Running " + name);
+      var result = this.runTest(name);
+      tests[name] = result;
     }
     console.log(prettyPrintEntity_(tests));
   };
 
-  testCaseList.push(testCase);
+  testCase.prototype.getTestNames = function() {
+    // what's better than for ... in for non-array objects?
+    var tests = [];
+    for (var name in this) {
+      if (name.indexOf('test') == 0 && typeof(this[name]) == 'function') {
+        tests.push(name);
+      }
+    }
+    return tests;
+  }
+
+  testCaseList.push({name : name, testCase : testCase});
   return testCase;
 };
 
@@ -107,7 +118,7 @@ function addGlobalTestSymbols() {
 
   var num_tests = 0;
   for (var i = 0; i < testCaseList.length; i++) {
-    var tc_class = testCaseList[i];
+    var tc_class = testCaseList[i].testCase;
     for (var name in tc_class.prototype) {
       if (name.indexOf('test') == 0 && typeof(tc_class.prototype[name]) == 'function') {
         if (globalTestDb.hasOwnProperty(name)) {
@@ -127,4 +138,8 @@ function addGlobalTestSymbols() {
   }
   console.log('Loaded ' + num_tests + ' tests in ' +
               testCaseList.length + ' test cases');
+}
+
+function getAllTestCases() {
+  return testCaseList;
 }

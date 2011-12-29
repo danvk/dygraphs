@@ -58,8 +58,20 @@
     var test = args.test;
     var command = args.command;
 
-    if (args.testCase) {
+    if (args.testCaseName) {
+      var testCases = getAllTestCases();
+      for (var idx in testCases) {
+        var entry = testCases[idx];
+        if (entry.name == args.testCaseName) {
+          var prototype = entry.testCase;
+          tc = new entry.testCase();
+          break;
+        }
+      }
+    } else if (args.testCase) {
       eval("tc = new " + args.testCase + "()");
+    }
+    if (tc != null) {
       if (args.command) {
         if (args.command == "runAllTests") {
           console.log("Running all tests for " + args.testCase);
@@ -87,9 +99,45 @@
   <li>command - either runTest or runAllTests.
   </ul>
   Example: <code>local.html?testCase=ScrollingDivTestCase&test=testNestedDiv_Scrolled&command=runTest</code>
+  <p/>
+  <div id="selector"></div>
 </body>
 <script>
 processVariables();
 addGlobalTestSymbols();
+
+function createAttached(name, parent) {
+  var elem = document.createElement(name);
+  parent.appendChild(elem);
+  return elem;
+}
+
+var selector = document.getElementById("selector");
+if (selector != null) { // running a test
+  var description = createAttached("div", selector);
+  var list = createAttached("ul", selector);
+  var parent = list.parentElement;
+  if (tc == null) {
+    description.innerHTML = "Test cases:";
+    var testCases = getAllTestCases();
+    for (var idx in testCases) {
+      var entry = testCases[idx];
+      var li = createAttached("li", list);
+      var a = createAttached("a", li);
+      a.innerText = entry.name;
+      a.href = document.URL + "?testCaseName=" + entry.name;
+    }
+  } else {
+    description.innerHTML = "Tests for " + name;
+    var names = tc.getTestNames();
+    for (var idx in names) {
+      var name = names[idx];
+      var li = createAttached("li", list);
+      var a = createAttached("a", li);
+      a.innerText = name;
+      a.href = document.URL + "&test=" + name + "&command=runTest";
+    }
+  }
+}
 </script>
 </html>

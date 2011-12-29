@@ -242,3 +242,6 @@ InteractionModelTestCase.prototype.testClickCallback_clickOnPoint = function() {
   assertEquals(1, clicked);
 };
 
+InteractionModelTestCase.prototype.testIsZoomed_1 = function() {
+};
+
