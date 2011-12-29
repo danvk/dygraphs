@@ -113,19 +113,20 @@
 </head>
 <body>
   <div id='graph'></div>
+  <div id="selector"></div>
   <p>This file is really nothing more than all the tests coalesced into a single
-  HTML file. To run a test, open a Javascript console and execute, for
-  instance,</p>
+  HTML file. To run a test, use the selector above, or
+  open a Javascript console and execute, for instance,</p>
   <code>testDrawSimpleRangePlusOne()</code>
 
   <p>Alternatively you can use query args: <ul>
-  <li>testCase - for the name of the test case
+  <li>testCase - for the name of the test case prototype
+  <li>testCaseName - for the name of the test case
   <li>test - for the name of the test (use command=runTest)
   <li>command - either runTest or runAllTests.
   </ul>
   Example: <code>local.html?testCase=ScrollingDivTestCase&test=testNestedDiv_Scrolled&command=runTest</code>
   <p/>
-  <div id="selector"></div>
 </body>
 <script>
 processVariables();
