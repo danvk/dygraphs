@@ -2654,9 +2654,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
                           this.parseFloat_(vals[1], i, line),
                           this.parseFloat_(vals[2], i, line) ];
           } else {
-            this.warning('When using customBars, values must be either blank ' +
-                         'or "low;center;high" tuples (got "' + val +
-                         '" on line ' + (1+i));
+            this.warn('When using customBars, values must be either blank ' +
+                      'or "low;center;high" tuples (got "' + val +
+                      '" on line ' + (1+i));
           }
         }
       }
