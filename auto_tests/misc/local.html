@@ -42,6 +42,7 @@
 
   <script type="text/javascript">
   var tc = null;
+  var name = null;
   function processVariables() {
     var splitVariables = function() { // http://www.idealog.us/2006/06/javascript_to_p.html
       var query = window.location.search.substring(1); 
@@ -60,6 +61,7 @@
 
     if (args.testCaseName) {
       var testCases = getAllTestCases();
+      name = args.testCaseName;
       for (var idx in testCases) {
         var entry = testCases[idx];
         if (entry.name == args.testCaseName) {
@@ -69,6 +71,7 @@
         }
       }
     } else if (args.testCase) {
+      name = args.testCase;
       eval("tc = new " + args.testCase + "()");
     }
     if (tc != null) {
@@ -133,6 +136,7 @@ processVariables();
 addGlobalTestSymbols();
 
 var selector = document.getElementById("selector");
+
 if (selector != null) { // running a test
   var createAttached = function(name, parent) {
     var elem = document.createElement(name);
