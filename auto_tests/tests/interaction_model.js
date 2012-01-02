@@ -242,3 +242,92 @@ InteractionModelTestCase.prototype.testClickCallback_clickOnPoint = function() {
   assertEquals(1, clicked);
 };
 
+InteractionModelTestCase.prototype.testIsZoomed_none = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  assertFalse(g.isZoomed());
+  assertFalse(g.isZoomed("x"));
+  assertFalse(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_x = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseMove_Point(g, 30, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 30, 10);
+
+  assertTrue(g.isZoomed());
+  assertTrue(g.isZoomed("x"));
+  assertFalse(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_y = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseMove_Point(g, 10, 30);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 30);
+
+  assertTrue(g.isZoomed());
+  assertFalse(g.isZoomed("x"));
+  assertTrue(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_both = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  // Zoom x axis
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseMove_Point(g, 30, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 30, 10);
+
+  // Now zoom y axis
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseMove_Point(g, 10, 30);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 30);
+
+
+  assertTrue(g.isZoomed());
+  assertTrue(g.isZoomed("x"));
+  assertTrue(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_updateOptions_none = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  g.updateOptions({});
+
+  assertFalse(g.isZoomed());
+  assertFalse(g.isZoomed("x"));
+  assertFalse(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_updateOptions_x = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  g.updateOptions({dateWindow: [-.5, .3]});
+  assertTrue(g.isZoomed());
+  assertTrue(g.isZoomed("x"));
+  assertFalse(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_updateOptions_y = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  g.updateOptions({valueRange: [1, 10]});
+
+  assertTrue(g.isZoomed());
+  assertFalse(g.isZoomed("x"));
+  assertTrue(g.isZoomed("y"));
+};
+
+InteractionModelTestCase.prototype.testIsZoomed_updateOptions_both = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {});
+
+  g.updateOptions({dateWindow: [-1, 1], valueRange: [1, 10]});
+
+  assertTrue(g.isZoomed());
+  assertTrue(g.isZoomed("x"));
+  assertTrue(g.isZoomed("y"));
+};
