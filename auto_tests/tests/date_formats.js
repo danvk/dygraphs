@@ -15,7 +15,12 @@ dateFormatsTestCase.prototype.testISO8601 = function() {
   // Format: YYYY-MM-DDTHH:MM:SS.ddddddZ
   // The "Z" indicates UTC, so this test should pass regardless of the time
   // zone of the machine on which it is run.
-  assertEquals(946816496789, Dygraph.dateParser("2000-01-02T12:34:56.789012Z"));
+
+  // Firefox <4 does not support this format:
+  // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/parse
+  if (new Date("2000-01-02T12:34:56.789012Z")) {
+    assertEquals(946816496789, Dygraph.dateParser("2000-01-02T12:34:56.789012Z"));
+  }
 };
 
 dateFormatsTestCase.prototype.testHyphenatedDate = function() {
