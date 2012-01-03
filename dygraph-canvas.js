@@ -551,7 +551,7 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     this.container.appendChild(div);
     this.chartLabels.ylabel = div;
   }
-  if (this.attr_('y2label')) {
+  if (this.attr_('y2label') && this.dygraph_.numAxes() == 2) {
     div = createRotatedDiv(2, 'dygraph-label dygraph-y2label',
                            this.attr_('y2label'));
     this.container.appendChild(div);
