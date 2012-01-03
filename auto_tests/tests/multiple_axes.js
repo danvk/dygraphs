@@ -167,3 +167,54 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
   assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
   assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
 };
+
+// verifies that all four chart labels (title, x-, y-, y2-axis label) can be
+// used simultaneously.
+MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var el = document.getElementById("graph");
+  el.style.border = '1px solid black';
+  el.style.marginLeft = '200px';
+  el.style.marginTop = '200px';
+
+  g = new Dygraph(
+    el,
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      xlabel: 'x-axis',
+      ylabel: 'y-axis',
+      y2label: 'y2-axis',
+      title: 'Chart title'
+    }
+  );
+
+  // returns all text in tags w/ a given css class, sorted.
+  function getTexts(css_class) {
+    var texts = [];
+    var els = document.getElementsByClassName(css_class);
+    for (var i = 0; i < els.length; i++) {
+      texts[i] = els[i].textContent;
+    }
+    texts.sort();
+    return texts;
+  }
+
+  assertEquals(["Chart title", "x-axis", "y-axis", "y2-axis"],
+               getTexts("dygraph-label"));
+  assertEquals(["Chart title"], getTexts("dygraph-title"));
+  assertEquals(["x-axis"], getTexts("dygraph-xlabel"));
+  assertEquals(["y-axis"], getTexts("dygraph-ylabel"));
+  assertEquals(["y2-axis"], getTexts("dygraph-y2label"));
+
+  // TODO(danvk): check relative positioning here: title on top, y left of y2.
+};
