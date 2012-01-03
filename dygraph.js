@@ -2051,10 +2051,10 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
 
-  if (is_initial_draw) {
-    // Generate a static legend before any particular point is selected.
-    this.setLegendHTML_();
-  } else {
+  // Generate a static legend before any particular point is selected.
+  this.setLegendHTML_();
+
+  if (!is_initial_draw) {
     if (clearSelection) {
       if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
         // We should select the point nearest the page x/y here, but it's easier
