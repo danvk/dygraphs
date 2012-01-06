@@ -77,7 +77,7 @@ Palette.prototype.create = function(document, parentElement) {
                var entry = palette.model[opt];
                var inputValue = entry.functionString;
                if (inputValue == null || inputValue.length == 0) {
-                 inputValue = type + "{ }";
+                 inputValue = opts[opt].type + "{ }";
                }
                var value = prompt("enter function", inputValue);
                if (value != null) {
