@@ -99,6 +99,11 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     // doesn't, the yAxisLabelWidth option can be increased.
   }
 
+  if (this.attr_('y2label')) {
+    // same logic applies here as for ylabel.
+    // TODO(danvk): make yAxisLabelWidth a per-axis property
+  }
+
   // Add space for range selector, if needed.
   if (this.attr_('showRangeSelector')) {
     area.h -= this.attr_('rangeSelectorHeight') + 4;

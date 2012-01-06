@@ -485,21 +485,26 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
     this.chartLabels.xlabel = div;
   }
 
-  if (this.attr_('ylabel')) {
+  var that = this;
+  function createRotatedDiv(axis, classes, html) {
     var box = {
       left: 0,
-      top: this.area.y,
-      width: this.attr_('yLabelWidth'),
-      height: this.area.h
+      top: that.area.y,
+      width: that.attr_('yLabelWidth'),
+      height: that.area.h
     };
     // TODO(danvk): is this outer div actually necessary?
     div = document.createElement("div");
     div.style.position = 'absolute';
-    div.style.left = box.left;
+    if (axis == 1) {
+      div.style.left = box.left;
+    } else {
+      div.style.right = box.left;
+    }
     div.style.top = box.top + 'px';
     div.style.width = box.width + 'px';
     div.style.height = box.height + 'px';
-    div.style.fontSize = (this.attr_('yLabelWidth') - 2) + 'px';
+    div.style.fontSize = (that.attr_('yLabelWidth') - 2) + 'px';
 
     var inner_div = document.createElement("div");
     inner_div.style.position = 'absolute';
@@ -511,11 +516,12 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
 
     // CSS rotation is an HTML5 feature which is not standardized. Hence every
     // browser has its own name for the CSS style.
-    inner_div.style.transform = 'rotate(-90deg)';        // HTML5
-    inner_div.style.WebkitTransform = 'rotate(-90deg)';  // Safari/Chrome
-    inner_div.style.MozTransform = 'rotate(-90deg)';     // Firefox
-    inner_div.style.OTransform = 'rotate(-90deg)';       // Opera
-    inner_div.style.msTransform = 'rotate(-90deg)';      // IE9
+    var val = 'rotate(' + (axis == 1 ? '-' : '') + '90deg)';
+    inner_div.style.transform = val;        // HTML5
+    inner_div.style.WebkitTransform = val;  // Safari/Chrome
+    inner_div.style.MozTransform = val;     // Firefox
+    inner_div.style.OTransform = val;       // Opera
+    inner_div.style.msTransform = val;      // IE9
 
     if (typeof(document.documentMode) !== 'undefined' &&
         document.documentMode < 9) {
@@ -523,19 +529,33 @@ DygraphCanvasRenderer.prototype._renderChartLabels = function() {
       // using a BasicImage transform. This uses a different origin of rotation
       // than HTML5 rotation (top left of div vs. its center).
       inner_div.style.filter =
-       'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+          'progid:DXImageTransform.Microsoft.BasicImage(rotation=' +
+          (axis == 1 ? '3' : '1') + ')';
       inner_div.style.left = '0px';
       inner_div.style.top = '0px';
     }
 
     class_div = document.createElement("div");
-    class_div.className = 'dygraph-label dygraph-ylabel';
-    class_div.innerHTML = this.attr_('ylabel');
+    class_div.className = classes;
+    class_div.innerHTML = html;
 
     inner_div.appendChild(class_div);
     div.appendChild(inner_div);
+    return div;
+  }
+
+  var div;
+  if (this.attr_('ylabel')) {
+    div = createRotatedDiv(1, 'dygraph-label dygraph-ylabel',
+                           this.attr_('ylabel'));
     this.container.appendChild(div);
     this.chartLabels.ylabel = div;
+  }
+  if (this.attr_('y2label') && this.dygraph_.numAxes() == 2) {
+    div = createRotatedDiv(2, 'dygraph-label dygraph-y2label',
+                           this.attr_('y2label'));
+    this.container.appendChild(div);
+    this.chartLabels.y2label = div;
   }
 };
 

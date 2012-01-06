@@ -414,10 +414,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * option is also specified).
  */
 Dygraph.prototype.isZoomed = function(axis) {
-  if (axis === null) return this.zoomed_x_ || this.zoomed_y_;
+  if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
   if (axis === 'x') return this.zoomed_x_;
   if (axis === 'y') return this.zoomed_y_;
-  throw "axis parameter to Dygraph.isZoomed must be missing, 'x' or 'y'.";
+  throw "axis parameter is [" + axis + "] must be null, 'x' or 'y'.";
 };
 
 /**
@@ -2051,10 +2051,10 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
 
-  if (is_initial_draw) {
-    // Generate a static legend before any particular point is selected.
-    this.setLegendHTML_();
-  } else {
+  // Generate a static legend before any particular point is selected.
+  this.setLegendHTML_();
+
+  if (!is_initial_draw) {
     if (clearSelection) {
       if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
         // We should select the point nearest the page x/y here, but it's easier
@@ -2654,9 +2654,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
                           this.parseFloat_(vals[1], i, line),
                           this.parseFloat_(vals[2], i, line) ];
           } else {
-            this.warning('When using customBars, values must be either blank ' +
-                         'or "low;center;high" tuples (got "' + val +
-                         '" on line ' + (1+i));
+            this.warn('When using customBars, values must be either blank ' +
+                      'or "low;center;high" tuples (got "' + val +
+                      '" on line ' + (1+i));
           }
         }
       }

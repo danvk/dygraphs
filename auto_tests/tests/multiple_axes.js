@@ -24,6 +24,17 @@ function getLegend() {
   return legend.textContent;
 }
 
+// returns all text in tags w/ a given css class, sorted.
+function getClassTexts(css_class) {
+  var texts = [];
+  var els = document.getElementsByClassName(css_class);
+  for (var i = 0; i < els.length; i++) {
+    texts[i] = els[i].textContent;
+  }
+  texts.sort();
+  return texts;
+}
+
 MultipleAxesTestCase.getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
@@ -45,7 +56,7 @@ MultipleAxesTestCase.getData = function() {
 MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
   var data = MultipleAxesTestCase.getData();
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {
@@ -71,7 +82,7 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
 MultipleAxesTestCase.prototype.testNewStylePerAxisOptions = function() {
   var data = MultipleAxesTestCase.getData();
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {
@@ -101,7 +112,7 @@ MultipleAxesTestCase.prototype.testMultiAxisLayout = function() {
 
   var el = document.getElementById("graph");
 
-  g = new Dygraph(
+  var g = new Dygraph(
     el,
     data,
     {
@@ -166,4 +177,69 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
 
   assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
   assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+};
+
+// verifies that all four chart labels (title, x-, y-, y2-axis label) can be
+// used simultaneously.
+MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var el = document.getElementById("graph");
+  el.style.border = '1px solid black';
+  el.style.marginLeft = '200px';
+  el.style.marginTop = '200px';
+
+  var g = new Dygraph(
+    el,
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      xlabel: 'x-axis',
+      ylabel: 'y-axis',
+      y2label: 'y2-axis',
+      title: 'Chart title'
+    }
+  );
+
+  assertEquals(["Chart title", "x-axis", "y-axis", "y2-axis"],
+               getClassTexts("dygraph-label"));
+  assertEquals(["Chart title"], getClassTexts("dygraph-title"));
+  assertEquals(["x-axis"], getClassTexts("dygraph-xlabel"));
+  assertEquals(["y-axis"], getClassTexts("dygraph-ylabel"));
+  assertEquals(["y2-axis"], getClassTexts("dygraph-y2label"));
+
+  // TODO(danvk): check relative positioning here: title on top, y left of y2.
+};
+
+// Check that a chart w/o a secondary y-axis will not get a y2label, even if one
+// is specified.
+MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    MultipleAxesTestCase.getData(),
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      xlabel: 'x-axis',
+      ylabel: 'y-axis',
+      y2label: 'y2-axis',
+      title: 'Chart title'
+    }
+  );
+
+  assertEquals(["Chart title", "x-axis", "y-axis"],
+               getClassTexts("dygraph-label"));
+  assertEquals(["Chart title"], getClassTexts("dygraph-title"));
+  assertEquals(["x-axis"], getClassTexts("dygraph-xlabel"));
+  assertEquals(["y-axis"], getClassTexts("dygraph-ylabel"));
+  assertEquals([], getClassTexts("dygraph-y2label"));
 };

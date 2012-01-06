@@ -42,6 +42,7 @@
 
   <script type="text/javascript">
   var tc = null;
+  var name = null;
   function processVariables() {
     var splitVariables = function() { // http://www.idealog.us/2006/06/javascript_to_p.html
       var query = window.location.search.substring(1); 
@@ -58,38 +59,116 @@
     var test = args.test;
     var command = args.command;
 
-    if (args.testCase) {
+    if (args.testCaseName) {
+      var testCases = getAllTestCases();
+      name = args.testCaseName;
+      for (var idx in testCases) {
+        var entry = testCases[idx];
+        if (entry.name == args.testCaseName) {
+          var prototype = entry.testCase;
+          tc = new entry.testCase();
+          break;
+        }
+      }
+    } else if (args.testCase) {
+      name = args.testCase;
       eval("tc = new " + args.testCase + "()");
+    }
+    if (tc != null) {
       if (args.command) {
         if (args.command == "runAllTests") {
           console.log("Running all tests for " + args.testCase);
-          tc.runAllTests();
+          postResults(tc.runAllTests());
         }
         if (args.command == "runTest") {
           console.log("Running test " + args.testCase + "." + args.test);
-          tc.runTest(args.test);
+          postResults(tc.runTest(args.test));
         }
       }
     }
+  }
+
+  function postResults(results) {
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.createElement("div");
+    body.insertBefore(div, body.firstChild);
+
+    var resultToHtml = function(result) {
+      return result ?
+          "<span style='color:green;'>pass</span>" :
+          "<span style='color:red;'>fail</span>";
+    }
+
+    if (typeof(results) == "boolean") {
+      div.innerHTML = "Test results: " + resultToHtml(results);
+    } else { // hash
+      var html = "";
+      for (var key in results) {
+        if (results.hasOwnProperty(key)) {
+          html = html + key + ": " + resultToHtml(results[key]) + "<br/>";
+        }
+      }
+      div.innerHTML = "Test results:<br/>" + html;
+    }
+    div.appendChild(document.createElement("hr"));
   }
   </script>
 </head>
 <body>
   <div id='graph'></div>
+  <div id="selector"></div>
   <p>This file is really nothing more than all the tests coalesced into a single
-  HTML file. To run a test, open a Javascript console and execute, for
-  instance,</p>
+  HTML file. To run a test, use the selector above, or
+  open a Javascript console and execute, for instance,</p>
   <code>testDrawSimpleRangePlusOne()</code>
 
   <p>Alternatively you can use query args: <ul>
-  <li>testCase - for the name of the test case
+  <li>testCase - for the name of the test case prototype
+  <li>testCaseName - for the name of the test case
   <li>test - for the name of the test (use command=runTest)
   <li>command - either runTest or runAllTests.
   </ul>
   Example: <code>local.html?testCase=ScrollingDivTestCase&test=testNestedDiv_Scrolled&command=runTest</code>
+  <p/>
 </body>
 <script>
 processVariables();
 addGlobalTestSymbols();
+
+var selector = document.getElementById("selector");
+
+if (selector != null) { // running a test
+  var createAttached = function(name, parent) {
+    var elem = document.createElement(name);
+    parent.appendChild(elem);
+    return elem;
+  }
+
+  var description = createAttached("div", selector);
+  var list = createAttached("ul", selector);
+  var parent = list.parentElement;
+  var createLink = function(parent, text, url) {
+      var li = createAttached("li", parent);
+      var a = createAttached("a", li);
+      a.innerText = text;
+      a.href = url;
+  }
+  if (tc == null) {
+    description.innerHTML = "Test cases:";
+    var testCases = getAllTestCases();
+    for (var idx in testCases) {
+      var entryName = testCases[idx].name;
+      createLink(list, entryName, document.URL + "?testCaseName=" + entryName);
+    }
+  } else {
+    description.innerHTML = "Tests for " + name;
+    var names = tc.getTestNames();
+    createLink(list, "Run All Tests", document.URL + "&command=runAllTests");
+    for (var idx in names) {
+      var name = names[idx];
+      createLink(list, name, document.URL + "&test=" + name + "&command=runTest");
+    }
+  }
+}
 </script>
 </html>
