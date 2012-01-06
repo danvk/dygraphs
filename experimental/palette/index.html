@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Palette Demo</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../dygraph-dev.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="palette.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <link rel="stylesheet" type="text/css" href="palette.css" />
+    <style>
+    </style>
+  </head>
+  <body>
+    <h2>Palette</h2>
+    <div style="font-size:smaller;"><p>To configure this chart, tweak the values on the right.
+    Enter applies changes, and the filter bar on the top reduces selections</p></div>
+    <table>
+      <tr>
+        <td valign="top">
+          <div id="graph"></div>
+          <div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
+          Other messages:
+          <div id="messages"></div>
+        </td>
+        <td valign="top"><div class="palette" id="optionsPalette"></div></td>
+     </tr>
+    </table>
+  </body>
+  <script type="text/javascript">start();</script>
+</html>
