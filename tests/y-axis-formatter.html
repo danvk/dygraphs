@@ -21,7 +21,7 @@
         (this was more of a problem before dygraphs automatically switched to scientific notation)</p>
         <div id="graph1"></div>
         <script type="text/javascript">
-            new Dygraph(
+            var g1 = new Dygraph(
                 document.getElementById("graph1"),
                 [
                     [1, 0.0],
@@ -40,7 +40,7 @@
         <p>The solution using a Y axis formatting function:</p>
         <div id="graph2"></div>
         <script type="text/javascript">
-            new Dygraph(
+            var g2 = new Dygraph(
                 document.getElementById("graph2"),
                 [
                     [1, 0.0],
@@ -67,7 +67,7 @@
         <p>Different yValueFormatter and yAxisLabelFormatter functions:</p>
         <div id="graph3"></div>
         <script type="text/javascript">
-            new Dygraph(
+            var g3 = new Dygraph(
                 document.getElementById("graph3"),
                 [
                     [1, 0.0],

@@ -23,7 +23,7 @@
     <p>Hopefully this stays in its border:</p>
     <div id="bordered" style="width:600px; height:300px;"></div>
     <script type="text/javascript">
-    new Dygraph(document.getElementById('bordered'), data,
+    var g = new Dygraph(document.getElementById('bordered'), data,
     {
       labelsDivStyles: { border: '1px solid black' },
       title: 'Chart Title',

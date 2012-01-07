@@ -28,13 +28,13 @@
                   "3,2/3,17/49\n"+
                   "4,25/30,100/200";
 
-      new Dygraph(document.getElementById("dg"),
+      var g1 = new Dygraph(document.getElementById("dg"),
                   frac_str,
                   {
                     fractions: true
                   });
 
-      new Dygraph(document.getElementById("dg2"),
+      var g2 = new Dygraph(document.getElementById("dg2"),
                   frac_str,
                   {
                     fractions: true,

@@ -42,11 +42,11 @@
         new google.visualization.LineChart(
             document.getElementById('gviz')).draw(data, null);
 
-        new Dygraph.GVizChart(document.getElementById('dygraphs'))
+        var chart1 = new Dygraph.GVizChart(document.getElementById('dygraphs'))
           .draw(data, { });
 
         data = createDataTable('datetime');
-        new Dygraph.GVizChart(
+        var chart2 = new Dygraph.GVizChart(
             document.getElementById('dygraphs_datetime')).draw(data, {
             });
       }
