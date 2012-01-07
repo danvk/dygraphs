@@ -61,11 +61,11 @@ Index.addMessage = function(text) {
 
 Index.start = function() {
   var variables = Index.splitVariables();
-  var sampleIndex = variables["sampleIndex"];
-  if (!(sampleIndex)) {
-    sampleIndex = 0;
+  var sampleName = variables["sample"];
+  if (!(sampleName)) {
+    sampleName = "interestingShapes";
   }
-  var sample = Samples.samples[sampleIndex];
+  var sample = Samples[sampleName];
   var data = sample.data;
   var redraw = function() {
     Index.draw(document.getElementById("graph"), data, palette.read());
