@@ -3,7 +3,7 @@
 # and then reverts the combined file.
 
 if [ "$1" == "" ] ; then
-  echo "usage: $0 URL"
+  echo "usage: $0 destination"
   exit 1
 fi
 
