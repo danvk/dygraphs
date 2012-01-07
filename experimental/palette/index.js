@@ -32,9 +32,11 @@ Index.splitVariables = function() { // http://www.idealog.us/2006/06/javascript_
   var query = window.location.search.substring(1); 
   var args = {};
   var vars = query.split("&"); 
-  for (var i = 0;i < vars.length; i++) { 
-    var pair = vars[i].split("="); 
-    args[pair[0]] = pair[1];
+  for (var i = 0; i < vars.length; i++) { 
+    if (vars[i].length > 0) {
+      var pair = vars[i].split("="); 
+      args[pair[0]] = pair[1];
+    }
   }
   return args;
 }
