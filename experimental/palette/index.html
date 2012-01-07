@@ -9,8 +9,9 @@
     <script type="text/javascript" src="../../dygraph-dev.js"></script>
     <script type="text/javascript" src="options.js"></script>
     <script type="text/javascript" src="palette.js"></script>
+    <script type="text/javascript" src="samples.js"></script>
     <script type="text/javascript" src="index.js"></script>
-    <link rel="stylesheet" type="text/css" href="palette.css" />
+    <link rel="stylesheet" type="text/css" href="index.css" />
     <style>
     </style>
   </head>
@@ -21,6 +22,14 @@
     <table>
       <tr>
         <td valign="top">
+          <div id="selector">
+            <select id="dataSelector">
+              <option value="1">Interesting Shapes</option>
+              <option value="2">Many Points</option>
+              <option value="3">Mercedes</option>
+              <option value="4">Audi</option>
+            </select>
+          </div>
           <div id="graph"></div>
           <div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
           Other messages:
@@ -86,5 +95,5 @@
      </tr>
     </table>
   </body>
-  <script type="text/javascript">start();</script>
+  <script type="text/javascript">Index.start();</script>
 </html>

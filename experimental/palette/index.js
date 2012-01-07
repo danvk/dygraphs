@@ -26,71 +26,54 @@
 
 "use strict";
 
-function draw(element, options) {
-  try {
-    element.innerHTML = "";
-    element.removeAttribute("style");
-    var g = new Dygraph(
-      element,
-        function() {
-          var zp = function(x) { if (x < 10) return "0"+x; else return x; };
-          var r = "date,parabola,line,another line,sine wave\n";
-          for (var i=1; i<=31; i++) {
-            r += "201110" + zp(i);
-            r += "," + 10*(i*(31-i));
-            r += "," + 10*(8*i);
-            r += "," + 10*(250 - 8*i);
-            r += "," + 10*(125 + 125 * Math.sin(0.3*i));
-            r += "\n";
-          }
-          return r;
-        }, options
-    );
-  
-    // These don't work yet.
-    g.updateOptions({
-      labelsDiv: 'status',
-    });
-  } catch(err) {
-   addMessage(err);
-   throw(err);
-  } finally {
+var Index = {};
+
+Index.splitVariables = function() { // http://www.idealog.us/2006/06/javascript_to_p.html
+  var query = window.location.search.substring(1); 
+  var args = {};
+  var vars = query.split("&"); 
+  for (var i = 0;i < vars.length; i++) { 
+    var pair = vars[i].split("="); 
+    args[pair[0]] = pair[1];
   }
+  return args;
 }
 
-function addMessage(text) {
+Index.draw = function(element, data, options) {
+  element.innerHTML = "";
+  element.removeAttribute("style");
+  var g = new Dygraph(
+    element,
+    data,
+    options
+  );
+  
+  // These don't work yet.
+  g.updateOptions({
+    labelsDiv: 'status',
+  });
+}
+
+Index.addMessage = function(text) {
   var messages = document.getElementById("messages");
   messages.innerText = messages.innerText + text + "\n";
 }
 
-function start() {
-  var options = {
-    colors: [
-      "rgb(51,204,204)",
-      "rgb(255,100,100)",
-      "#00DD55",
-      "rgba(50,50,200,0.4)"
-    ],
-    labelsSeparateLines: true,
-    labelsKMB: true,
-    legend: 'always',
-    width: 640,
-    height: 480,
-    title: 'Interesting Shapes',
-    xlabel: 'Date',
-    ylabel: 'Count',
-    axisLineColor: 'white',
-    drawXGrid: false,
-    pointClickCallback: function() { alert("p-click!"); },
-  };
-
+Index.start = function() {
+  var variables = Index.splitVariables();
+  var sampleIndex = variables["sampleIndex"];
+  if (!(sampleIndex)) {
+    sampleIndex = 0;
+  }
+  var sample = Samples.samples[sampleIndex];
+  var data = sample.data;
   var redraw = function() {
-    draw(document.getElementById("graph"), palette.read());
+    Index.draw(document.getElementById("graph"), data, palette.read());
   }
 
   var palette = new Palette();
   palette.create(document, document.getElementById("optionsPalette"));
-  palette.write(options);
+  palette.write(sample.options);
   palette.onchange = redraw;
   palette.filterBar.focus();
   redraw();

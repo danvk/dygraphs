@@ -2897,21 +2897,25 @@ Dygraph.prototype.parseDataTable_ = function(data) {
  * @private
  */
 Dygraph.prototype.start_ = function() {
-  if (typeof this.file_ == 'function') {
-    // CSV string. Pretend we got it via XHR.
-    this.loadedEvent_(this.file_());
-  } else if (Dygraph.isArrayLike(this.file_)) {
-    this.rawData_ = this.parseArray_(this.file_);
+  var data = this.file_;
+
+  // Functions can return references of all other types.
+  if (typeof data == 'function') {
+    data = data();
+  }
+
+  if (Dygraph.isArrayLike(data)) {
+    this.rawData_ = this.parseArray_(data);
     this.predraw_();
-  } else if (typeof this.file_ == 'object' &&
-             typeof this.file_.getColumnRange == 'function') {
+  } else if (typeof data == 'object' &&
+             typeof data.getColumnRange == 'function') {
     // must be a DataTable from gviz.
-    this.parseDataTable_(this.file_);
+    this.parseDataTable_(data);
     this.predraw_();
-  } else if (typeof this.file_ == 'string') {
+  } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
-    if (this.file_.indexOf('\n') >= 0) {
-      this.loadedEvent_(this.file_);
+    if (data.indexOf('\n') >= 0) {
+      this.loadedEvent_(data);
     } else {
       var req = new XMLHttpRequest();
       var caller = this;
@@ -2924,11 +2928,11 @@ Dygraph.prototype.start_ = function() {
         }
       };
 
-      req.open("GET", this.file_, true);
+      req.open("GET", data, true);
       req.send(null);
     }
   } else {
-    this.error("Unknown data format: " + (typeof this.file_));
+    this.error("Unknown data format: " + (typeof data));
   }
 };
 
