@@ -65,12 +65,37 @@ Index.start = function() {
   if (!(sampleName)) {
     sampleName = "interestingShapes";
   }
-  var sample = Samples[sampleName];
+  var sampleIndex = Samples.indexOf(sampleName);
+  var sample = Samples.data[sampleIndex];
   var data = sample.data;
   var redraw = function() {
     Index.draw(document.getElementById("graph"), data, palette.read());
   }
 
+  var selector = document.getElementById("selector").getElementsByTagName("select")[0];
+  for (var idx in Samples.data) {
+    var entry = Samples.data[idx];
+    var option = document.createElement("option");
+    option.value = entry.id;
+    option.innerText = entry.title;
+    selector.appendChild(option);
+  }
+  selector.onchange = function() {
+    var id = selector.options[selector.selectedIndex].value;
+    var url = document.URL;
+    var qmIndex = url.indexOf("?");
+    if (qmIndex >= 0) {
+      url = url.substring(0, qmIndex);
+    }
+    url = url + "?sample=" + id;
+    for (var idx in variables) {
+      if (idx != "sample") {
+        url = url + "&" + idx + "=" + variables[idx];
+      }
+    }
+    window.location = url;
+  }
+  selector.selectedIndex = sampleIndex;
   var palette = new Palette();
   palette.create(document, document.getElementById("optionsPalette"));
   palette.write(sample.options);

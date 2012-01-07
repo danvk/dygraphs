@@ -26,8 +26,11 @@
 
 "use strict";
 
-var Samples = {
-  interestingShapes: {
+var Samples = {};
+Samples.data = [
+  {
+    id: "interestingShapes",
+    title: "Interesting Shapes",
     data: function() {
       var zp = function(x) { if (x < 10) return "0"+x; else return x; };
       var r = "date,parabola,line,another line,sine wave\n";
@@ -62,22 +65,26 @@ var Samples = {
     }
   },
   
-  sparse: {
-   data: [
-     [ new Date("2009/12/01"), 10, 10, 10],
-     [ new Date("2009/12/02"), 15, 11, 12],
-     [ new Date("2009/12/03"), null, null, 12],
-     [ new Date("2009/12/04"), 20, 14, null],
-     [ new Date("2009/12/05"), 15, null, 17],
-     [ new Date("2009/12/06"), 18, null, null],
-     [ new Date("2009/12/07"), 12, 14, null]
-   ],
-   options: {
-     labels: ["Date", "Series1", "Series2", "Series3"]
-   }
+  {
+    id: "sparse",
+    title: "Sparse Data",
+    data: [
+      [ new Date("2009/12/01"), 10, 10, 10],
+      [ new Date("2009/12/02"), 15, 11, 12],
+      [ new Date("2009/12/03"), null, null, 12],
+      [ new Date("2009/12/04"), 20, 14, null],
+      [ new Date("2009/12/05"), 15, null, 17],
+      [ new Date("2009/12/06"), 18, null, null],
+      [ new Date("2009/12/07"), 12, 14, null]
+    ],
+    options: {
+      labels: ["Date", "Series1", "Series2", "Series3"]
+    }
   },
   
-  manyPoints: {
+  {
+    id: "manyPoints",
+    title: "Dense Data",
     data: function() {
       var numPoints = 1000;
       var numSeries = 100;
@@ -106,5 +113,34 @@ var Samples = {
       title: 'Many Points',
       axisLineColor: 'white',
     }
+  },
+
+  {
+    id: "errorBars",
+    title: "Error Bars",
+    data: [
+      [1, [10,  10, 100]],
+      [2, [15,  20, 110]],
+      [3, [10,  30, 100]],
+      [4, [15,  40, 110]],
+      [5, [10, 120, 100]],
+      [6, [15,  50, 110]],
+      [7, [10,  70, 100]],
+      [8, [15,  90, 110]],
+      [9, [10,  50, 100]]
+    ],
+    options: {
+      customBars: true,
+      errorBars: true
+    }
   }
+];
+
+Samples.indexOf = function(id) {
+  for (var idx in Samples.data) {
+    if (Samples.data[idx].id == id) {
+      return idx;
+    }
+  }
+  return null;
 }
