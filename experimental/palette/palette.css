@@ -34,7 +34,6 @@
 .tooltip {
   position: absolute;
   border: 1px solid black;
-  layer-background-color: lightyellow;
   background-color: lightyellow;
   width: 280px;
 }
@@ -52,3 +51,24 @@
 .tooltip .body {
   font-size: smaller;
 }
+
+.textarea {
+  position: absolute;
+  border: 1px solid black;
+  background-color: #dddddd;
+  z-index: 12;
+}
+
+.textarea .prompt {
+}
+
+.textarea .buttons {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.textarea button {
+  color: #222222;
+}
+

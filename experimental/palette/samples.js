@@ -61,7 +61,9 @@ Samples.data = [
       ylabel: 'Count',
       axisLineColor: 'white',
       drawXGrid: false,
-      pointClickCallback: function() { alert("p-click!"); },
+      pointClickCallback: function() {
+  alert("p-click!");
+},
     }
   },
   

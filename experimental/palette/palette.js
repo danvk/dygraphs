@@ -57,11 +57,17 @@ Palette.prototype.create = function(document, parentElement) {
     palette.filter(palette.filterBar.value)
   };
   this.filterBar.onclick = this.filterBar.onkeyup;
-  var go = document.createElement("button");
-  Palette.createChild("span", row).appendChild(go);
+  var go = Palette.createChild("button", Palette.createChild("span", row));
   go.innerText = "Redraw"
   go.onclick = function() {
     palette.onchange();
+  };
+
+  var tmp = Palette.createChild("button", Palette.createChild("span", row));
+  tmp.innerText = "Copy"
+  tmp.onclick = function() {
+    var textarea = new TextArea();
+    textarea.show("Now is the time for all good men\nto come to the aid of their country");
   };
 
   for (var opt in opts) {
@@ -91,13 +97,11 @@ Palette.prototype.create = function(document, parentElement) {
                var entry = palette.model[opt];
                var inputValue = entry.functionString;
                if (inputValue == null || inputValue.length == 0) {
-                 inputValue = opts[opt].type + "{ }";
+                 inputValue = opts[opt].type + "{\n\n}";
                }
-               var value = prompt("enter function", inputValue);
-               if (value != null) {
-                 if (value.length == 0) {
-                   value = null;
-                 }
+	       var textarea = new TextArea();
+	       textarea.show("enter function", inputValue);
+	       textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
                    entry.input.innerText = value ? "defined" : "not defined";
