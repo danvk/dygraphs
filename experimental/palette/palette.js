@@ -55,7 +55,7 @@ function Tooltip(parent) {
 Tooltip.prototype.show = function(source, event, title, type, body) {
   this.title.innerHTML = title;
   this.body.innerHTML = body;
-  this.type.innerHTML = type;
+  this.type.innerText = type; // innerText for arrays.
 
   var getTopLeft = function(element) {
     var x = element.offsetLeft;

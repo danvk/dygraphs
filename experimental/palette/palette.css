@@ -22,7 +22,10 @@
 }
 
 .palette .name {
-  
+}
+
+.palette .name:after {
+  content: ":";
 }
 
 .palette .option {
