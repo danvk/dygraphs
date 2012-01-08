@@ -100,7 +100,7 @@ Palette.prototype.create = function(document, parentElement) {
                  inputValue = opts[opt].type + "{\n\n}";
                }
 	       var textarea = new TextArea();
-	       textarea.show("enter function", inputValue);
+	       textarea.show("Function for " + opt, inputValue);
 	       textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
