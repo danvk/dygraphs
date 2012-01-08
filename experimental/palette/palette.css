@@ -1,9 +1,12 @@
 .palette {
   border-style: solid;
   border-width: 1px;
+  border-color: #bbbbbb;
   font-size: smaller;
   font-family: Arial, Verdana, sans-serif;
   width: 300px;
+  padding:2px;
+  color: #333333;
 }
 
 .palette .header {
