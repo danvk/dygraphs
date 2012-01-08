@@ -37,51 +37,6 @@ Palette.createChild = function(type, parentElement) {
   return element;
 };
 
-function Tooltip(parent) {
-  if (!parent) {
-    parent = document.getElementsByTagName("body")[0];
-  }
-  this.elem = Palette.createChild("div", parent);
-  this.title = Palette.createChild("div", this.elem);
-  this.elem.className = "tooltip";
-  this.title.className = "title";
-  this.type = Palette.createChild("div", this.elem);
-  this.type.className = "type";
-  this.body = Palette.createChild("div", this.elem);
-  this.body.className = "body";
-  this.hide();
-}
-
-Tooltip.prototype.show = function(source, event, title, type, body) {
-  this.title.innerHTML = title;
-  this.body.innerHTML = body;
-  this.type.innerText = type; // innerText for arrays.
-
-  var getTopLeft = function(element) {
-    var x = element.offsetLeft;
-    var y = element.offsetTop;
-    element = element.offsetParent;
-
-    while(element != null) {
-      x = parseInt(x) + parseInt(element.offsetLeft);
-      y = parseInt(y) + parseInt(element.offsetTop);
-      element = element.offsetParent;
-    }
-    return [y, x];
-  }
-
-  this.elem.style.height = source.style.height;
-  this.elem.style.width = "280";
-  var topLeft = getTopLeft(source);
-  this.elem.style.top = parseInt(topLeft[0] + source.offsetHeight) + 'px';
-  this.elem.style.left = parseInt(topLeft[1] + 10) + 'px';
-  this.elem.style.visibility = "visible";
-}
-
-Tooltip.prototype.hide = function() {
-  this.elem.style.visibility = "hidden";
-}
-
 Palette.prototype.create = function(document, parentElement) {
   var palette = this;
 
