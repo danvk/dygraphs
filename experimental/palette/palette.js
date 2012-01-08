@@ -97,9 +97,11 @@ Palette.prototype.create = function(document, parentElement) {
 
   Palette.createChild("span", row).innerText = "Filter:";
   this.filterBar = Palette.createChild("input", Palette.createChild("span", row));
+  this.filterBar.type = "search";
   this.filterBar.onkeyup = function() {
     palette.filter(palette.filterBar.value)
   };
+  this.filterBar.onclick = this.filterBar.onkeyup;
   var go = document.createElement("button");
   Palette.createChild("span", row).appendChild(go);
   go.innerText = "Redraw"
