@@ -63,12 +63,14 @@ Palette.prototype.create = function(document, parentElement) {
     palette.onchange();
   };
 
+  // CURRENTLY HIDDEN.
   var tmp = Palette.createChild("button", Palette.createChild("span", row));
   tmp.innerText = "Copy"
   tmp.onclick = function() {
     var textarea = new TextArea();
-    textarea.show("Now is the time for all good men\nto come to the aid of their country");
+    textarea.show("header", "Now is the time for all good men\nto come to the aid of their country");
   };
+  tmp.style.display = "none";
 
   for (var opt in opts) {
     try {
