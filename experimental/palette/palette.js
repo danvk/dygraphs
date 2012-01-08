@@ -31,24 +31,25 @@ function Palette() {
   this.filterBar = null;
 }
 
-Palette.createChild = function(type, parentElement) {
+Palette.createChild = function(type, parentElement, className) {
   var element = document.createElement(type);
   parentElement.appendChild(element);
+  if (className) {
+    element.className = className;
+  }
   return element;
 };
 
 Palette.prototype.create = function(document, parentElement) {
   var palette = this;
 
-  var table = Palette.createChild("div", parentElement);
-  table.className = "palette";
+  var table = Palette.createChild("div", parentElement, "palette");
   table.width="300px";
 
   this.tooltip = new Tooltip();
 
-  var row = Palette.createChild("div", table);
+  var row = Palette.createChild("div", table, "header");
   row.style.visibility = "visible";
-  row.className = "header";
 
   Palette.createChild("span", row).innerText = "Filter:";
   this.filterBar = Palette.createChild("input", Palette.createChild("span", row));
@@ -85,12 +86,10 @@ Palette.prototype.create = function(document, parentElement) {
         } (row, opt, type, Dygraph.OPTIONS_REFERENCE[opt].description);
         row.onmouseout = function() { palette.tooltip.hide(); };
 
-        var div = Palette.createChild("span", row);
+        var div = Palette.createChild("span", row, "name");
         div.innerText = opt;
-        div.className = "name";
 
-        var value = Palette.createChild("span", row);
-        value.className = "option";
+        var value = Palette.createChild("span", row, "option");
 
         if (isFunction) {
            var input = Palette.createChild("button", value);
@@ -102,7 +101,7 @@ Palette.prototype.create = function(document, parentElement) {
                  inputValue = opts[opt].type + "{\n\n}";
                }
 	       var textarea = new TextArea();
-	       textarea.show("Function for " + opt, inputValue);
+	       textarea.show(opt, inputValue);
 	       textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
