@@ -1,5 +1,48 @@
 .palette {
   border-style: solid;
   border-width: 1px;
-  font-size:smaller;
+  font-size: smaller;
+  font-family: Arial, Verdana, sans-serif;
+  width: 300px;
+}
+
+.palette .header {
+  background-color: #b0c0e0;
+}
+
+.palette .odd {
+  background-color: #ccddff;
+}
+
+.palette .even {
+  background-color: #c6d6f4;
+}
+
+.palette .name {
+  
+}
+
+.palette .option {
+}
+
+.tooltip {
+  position: absolute;
+  border: 1px solid black;
+  layer-background-color: lightyellow;
+  background-color: lightyellow;
+  width: 280px;
+}
+
+.tooltip .title {
+  font-family: Inconsolata, Courier New, Courier;
+}
+
+.tooltip .type {
+  font-family: Inconsolata, Courier New, Courier;
+  margin-bottom: 0.5em;
+  font-size: smaller;
+}
+
+.tooltip .body {
+  font-size: smaller;
 }

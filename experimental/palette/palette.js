@@ -31,27 +31,77 @@ function Palette() {
   this.filterBar = null;
 }
 
+Palette.createChild = function(type, parentElement) {
+  var element = document.createElement(type);
+  parentElement.appendChild(element);
+  return element;
+};
+
+function Tooltip(parent) {
+  if (!parent) {
+    parent = document.getElementsByTagName("body")[0];
+  }
+  this.elem = Palette.createChild("div", parent);
+  this.title = Palette.createChild("div", this.elem);
+  this.elem.className = "tooltip";
+  this.title.className = "title";
+  this.type = Palette.createChild("div", this.elem);
+  this.type.className = "type";
+  this.body = Palette.createChild("div", this.elem);
+  this.body.className = "body";
+  this.hide();
+}
+
+Tooltip.prototype.show = function(source, event, title, type, body) {
+  this.title.innerHTML = title;
+  this.body.innerHTML = body;
+  this.type.innerHTML = type;
+
+  var getTopLeft = function(element) {
+    var x = element.offsetLeft;
+    var y = element.offsetTop;
+    element = element.offsetParent;
+
+    while(element != null) {
+      x = parseInt(x) + parseInt(element.offsetLeft);
+      y = parseInt(y) + parseInt(element.offsetTop);
+      element = element.offsetParent;
+    }
+    return [y, x];
+  }
+
+  this.elem.style.height = source.style.height;
+  this.elem.style.width = "280";
+  var topLeft = getTopLeft(source);
+  this.elem.style.top = parseInt(topLeft[0] + source.offsetHeight) + 'px';
+  this.elem.style.left = parseInt(topLeft[1] + 10) + 'px';
+  this.elem.style.visibility = "visible";
+}
+
+Tooltip.prototype.hide = function() {
+  this.elem.style.visibility = "hidden";
+}
+
 Palette.prototype.create = function(document, parentElement) {
   var palette = this;
-  var createChild = function(type, parentElement) {
-    var element = document.createElement(type);
-    parentElement.appendChild(element);
-    return element;
-  };
 
-  var table = createChild("table", parentElement);
-  table.class = "palette";
+  var table = Palette.createChild("div", parentElement);
+  table.className = "palette";
+  table.width="300px";
 
-  var row = createChild("tr", table);
-  row.style.display = "block";
+  this.tooltip = new Tooltip();
 
-  createChild("td", row).innerText = "Filter:";
-  this.filterBar = createChild("input", createChild("td", row));
+  var row = Palette.createChild("div", table);
+  row.style.visibility = "visible";
+  row.className = "header";
+
+  Palette.createChild("span", row).innerText = "Filter:";
+  this.filterBar = Palette.createChild("input", Palette.createChild("span", row));
   this.filterBar.onkeyup = function() {
     palette.filter(palette.filterBar.value)
   };
   var go = document.createElement("button");
-  createChild("td", row).appendChild(go);
+  Palette.createChild("span", row).appendChild(go);
   go.innerText = "Redraw"
   go.onclick = function() {
     palette.onchange();
@@ -62,16 +112,23 @@ Palette.prototype.create = function(document, parentElement) {
       if (opts.hasOwnProperty(opt)) {
         var type = opts[opt].type;
         var isFunction = type.indexOf("function(") == 0;
-        var row = createChild("tr", table);
-        var div = createChild("div", createChild("td", row));
-        var a = createChild("a", div);
-        a.innerText = opt;
-        a.href = "http://dygraphs.com/options.html#" + opt;
-        a.title = Dygraph.OPTIONS_REFERENCE[opt].description;
-        a.target="_blank";
+        var row = Palette.createChild("div", table);
+        row.onmouseover = function(source, title, type, body, e) {
+          return function(e) {
+            palette.tooltip.show(source, e, title, type, body);
+          };
+        } (row, opt, type, Dygraph.OPTIONS_REFERENCE[opt].description);
+        row.onmouseout = function() { palette.tooltip.hide(); };
+
+        var div = Palette.createChild("span", row);
+        div.innerText = opt;
+        div.className = "name";
+
+        var value = Palette.createChild("span", row);
+        value.className = "option";
 
         if (isFunction) {
-           var input = createChild("button", createChild("td", row));
+           var input = Palette.createChild("button", value);
            input.onclick = function(opt, palette) {
              return function(event) {
                var entry = palette.model[opt];
@@ -93,7 +150,7 @@ Palette.prototype.create = function(document, parentElement) {
              }
            }(opt, this);
         } else {
-          var input = createChild("input", createChild("td", row));
+          var input = Palette.createChild("input", value);
           input.onkeypress = function(event) {
             var keycode = event.which;
             if (keycode == 13 || keycode == 8) {
@@ -210,10 +267,16 @@ Palette.prototype.write = function(hash) {
 
 Palette.prototype.filter = function(pattern) {
   pattern = pattern.toLowerCase();
+  var even = true;
   for (var opt in this.model) {
     if (this.model.hasOwnProperty(opt)) {
       var row = this.model[opt].row;
-      row.style.display = (opt.toLowerCase().indexOf(pattern) >= 0) ? "block" : "none";
+      var matches = opt.toLowerCase().indexOf(pattern) >= 0;
+      row.style.display = matches ? "block" : "none";
+      if (matches) {
+        row.className = even ? "even" : "odd";
+        even = !even;
+      }
     }
   }
 }
