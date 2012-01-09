@@ -51,7 +51,7 @@ Palette.prototype.create = function(document, parentElement) {
   var row = Palette.createChild("div", table, "header");
   row.style.visibility = "visible";
 
-  Palette.createChild("span", row).innerText = "Filter:";
+  Palette.createChild("span", row).textContent = "Filter:";
   this.filterBar = Palette.createChild("input", Palette.createChild("span", row));
   this.filterBar.type = "search";
   this.filterBar.onkeyup = function() {
@@ -59,14 +59,14 @@ Palette.prototype.create = function(document, parentElement) {
   };
   this.filterBar.onclick = this.filterBar.onkeyup;
   var go = Palette.createChild("button", Palette.createChild("span", row));
-  go.innerText = "Redraw"
+  go.textContent = "Redraw"
   go.onclick = function() {
     palette.onchange();
   };
 
   // CURRENTLY HIDDEN.
   var tmp = Palette.createChild("button", Palette.createChild("span", row));
-  tmp.innerText = "Copy"
+  tmp.textContent = "Copy"
   tmp.onclick = function() {
     var textarea = new TextArea();
     textarea.show("header", "Now is the time for all good men\nto come to the aid of their country");
@@ -87,7 +87,7 @@ Palette.prototype.create = function(document, parentElement) {
         row.onmouseout = function() { palette.tooltip.hide(); };
 
         var div = Palette.createChild("span", row, "name");
-        div.innerText = opt;
+        div.textContent = opt;
 
         var value = Palette.createChild("span", row, "option");
 
@@ -105,14 +105,18 @@ Palette.prototype.create = function(document, parentElement) {
 	       textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
-                   entry.input.innerText = value ? "defined" : "not defined";
+                   entry.input.textContent = value ? "defined" : "not defined";
                    palette.onchange();
                  }
                }
              }
            }(opt, this);
         } else {
-          var input = Palette.createChild("input", value);
+          var input = Palette.createChild("input", value, "textInput");
+          if (type == "boolean") {
+            input.size = "5";
+            input.maxlength = "5";
+          }
           input.onkeypress = function(event) {
             var keycode = event.which;
             if (keycode == 13 || keycode == 8) {
@@ -216,7 +220,7 @@ Palette.prototype.write = function(hash) {
           input.value = value.join(", ");
         }
       } else if (type.indexOf("function(") == 0) {
-        input.innerText = value ? "defined" : "not defined";
+        input.textContent = value ? "defined" : "not defined";
         this.model[opt].functionString = value ? value.toString() : null;
       } else {
         if (value) {

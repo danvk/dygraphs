@@ -58,7 +58,7 @@ Index.draw = function(element, data, options) {
 
 Index.addMessage = function(text) {
   var messages = document.getElementById("messages");
-  messages.innerText = messages.innerText + text + "\n";
+  messages.textContent = messages.textContent + text + "\n";
 }
 
 Index.start = function() {
@@ -79,7 +79,7 @@ Index.start = function() {
     var entry = Samples.data[idx];
     var option = document.createElement("option");
     option.value = entry.id;
-    option.innerText = entry.title;
+    option.textContent = entry.title;
     selector.appendChild(option);
   }
   selector.onchange = function() {

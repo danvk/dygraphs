@@ -31,6 +31,12 @@
 .palette .option {
 }
 
+.palette .textInput {
+  padding: 1px;
+  border: 2px inset;
+  border-color: #EEE;
+}
+
 .tooltip {
   position: absolute;
   border: 1px solid black;
