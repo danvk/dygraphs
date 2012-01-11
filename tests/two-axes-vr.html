@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
-    <title>Multiple y-axes</title>
+    <title>Multiple y-axes with valueRange</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
@@ -15,11 +15,11 @@
   </head>
   <body>
     <h2>Multiple y-axes with valueRange</h2>
-    <p>The same data with both different valueRanges. Two-axis old valueRange:</p>
+    <p>The same data with both different valueRanges. Two-axis old y[40, 70] valueRange:</p>
     <div id="demodiv" style="width: 640; height: 350; border: 1px solid black"></div>
-    <p>Two-axis new valueRange set:</p>
+    <p>Two-axis new valueRange y[40, 80] set:</p>
     <div id="demodiv_one" style="width: 640; height: 350; border: 1px solid black"></div>
-    <p>Two-axis new both axis valueRange:</p>
+    <p>Two-axis new valueRange y[40, 80] &amp; y2[1e6, 1.2e6] set:</p>
     <div id="demodiv_two" style="width: 640; height: 350; border: 1px solid black"></div>
     <script type="text/javascript">
       var data = [];
@@ -49,7 +49,7 @@
             'Y4': {
               axis: 'Y3'  // use the same y-axis as series Y3
             },
-            valueRange: [40, 80],
+            valueRange: [40, 70],
             axes: {
               y2: {
                 // set axis-related properties here

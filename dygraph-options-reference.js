@@ -298,7 +298,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Axis display"],
     "type": "Array of two numbers",
     "example": "[10, 110]",
-    "description": "Explicitly set the vertical range of the graph to [low, high]."
+    "description": "Explicitly set the vertical range of the graph to [low, high]. Can be used by itself to control the first y-axis or in axes to define each y-axis separately. Prefer axes: { y: { valueRange } }"
   },
   "labelsDivWidth": {
     "default": "250",

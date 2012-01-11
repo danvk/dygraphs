@@ -2170,6 +2170,22 @@ Dygraph.prototype.computeYAxes_ = function() {
       this.axes_[index].valueWindow = valueWindows[index];
     }
   }
+
+  // New axes options
+  for(axis = 0; axis < this.axes_.length; axis++) {
+    if(axis === 0) {
+      var opts = this.optionsViewForAxis_('y'+(axis ? 2 : ''));
+      var v = opts("valueRange");
+      if (v) this.axes_[axis]["valueRange"] = v;
+    } else { //To keep old behavior
+      var axes = this.user_attrs_.axes;
+      if(axes && axes.y2) {
+        var v = axes.y2.valueRange;
+        if (v) this.axes_[axis]["valueRange"] = v;
+      }
+    }
+  }
+
 };
 
 /**
