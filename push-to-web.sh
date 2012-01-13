@@ -14,12 +14,16 @@ site=$1
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
-./generate-jsdoc.sh
+if [ -s docs/options.html ] ; then
+  ./generate-jsdoc.sh
 
-# Copy everything to the site.
-scp -r tests jsdoc experimental $site \
-&& \
-scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
+  # Copy everything to the site.
+  scp -r tests jsdoc experimental $site \
+  && \
+  scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
+else
+  echo "generate-documentation.py failed"
+fi
 
 # Revert changes to dygraph-combined.js and docs/options.html
 git checkout dygraph-combined.js
