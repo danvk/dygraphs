@@ -243,3 +243,51 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
   assertEquals(["y-axis"], getClassTexts("dygraph-ylabel"));
   assertEquals([], getClassTexts("dygraph-y2label"));
 };
+
+MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      'Y3': {
+        axis: {
+        }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      axes: {
+        y: {
+          valueRange: [40, 70]
+        },
+        y2: {
+          // set axis-related properties here
+          labelsKMB: true
+        }
+      },
+      ylabel: 'Primary y-axis',
+      y2label: 'Secondary y-axis',
+      yAxisLabelWidth: 60
+    }
+  );
+  assertEquals(["40", "45", "50", "55", "60", "65"], getYLabelsForAxis("1"));
+  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], getYLabelsForAxis("2"));
+  
+  g.updateOptions(
+    {
+      axes: {
+        y: {
+          valueRange: [40, 80]
+        },
+        y2: {
+          valueRange: [1e6, 1.2e6]
+        }
+     }
+    }
+  );
+  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], getYLabelsForAxis("1"));
+  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], getYLabelsForAxis("2"));
+};
