@@ -123,6 +123,6 @@ aside {
   padding: 2px;
 }
 
-@workarea #temperature-sf-ny #bordered {
+#workarea #temperature-sf-ny #bordered {
   border: 1px solid red;
 }
