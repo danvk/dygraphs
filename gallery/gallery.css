@@ -1,0 +1,82 @@
+body {
+  font-family: Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-size: 90%;
+}
+
+#toc {
+  vertical-align: top;
+  width: 200px;
+}
+
+#rhs {
+  vertical-align: top;
+}
+
+#workarea {
+  border-style: solid;
+  border-color: #ddd;
+  padding: 4px;
+}
+
+#toc .entry {
+  background-color: #eee;
+  padding: .7em;
+
+  /* These two lines result in indenting wrapped lines forward a little bit. */
+  /* text-indent: -1em;
+  padding-left: 1em; */
+}
+
+#toc .entry .selected {
+  color: #00b;
+}
+
+#title {
+  text-align: center;
+  font-size: 1.5em;
+  vertical-align: bottom;
+}
+
+/* CSS for drawing tool */
+#workarea #drawing #tool_zoom {
+  background: url('images/tool-palette.png');
+  background-position: 0px 0px;
+  width: 32px;
+  height: 33px;
+  margin-left: 50px;
+  display: inline-block;
+}
+#workarea #drawing #tool_pencil {
+  background: url('images/tool-palette.png');
+  background-position: -32px 0px;
+  width: 32px;
+  height: 33px;
+  display: inline-block;
+}
+#workarea #drawing #tool_eraser {
+  background: url('images/tool-palette.png');
+  background-position: -64px 0px;
+  width: 33px;
+  height: 33px;
+  display: inline-block;
+}
+#workarea #drawing #toolbar {
+  display: inline-block;
+}
+
+/* CSS for independent series */
+#workarea #independent-series .thinborder {
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+  border-collapse: collapse;
+}
+
+#workarea #independent-series .thinborder td,
+#workarea #independent-series .thinborder th {
+  border-width: 1px;
+  padding: 5px;
+  border-style: solid;
+  border-color: black;
+}
