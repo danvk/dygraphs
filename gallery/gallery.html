@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Dygraphs Gallery</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+
+    <script src="../dygraph-dev.js"></script>
+    <script src="gallery.js"></script>
+    <script src="data.js"></script>
+    <script src='http://www.google.com/jsapi'></script> <!-- required in some cases -->
+
+    <!-- gallery entries. Can these be auto-loaded? -->
+    <script src="annotation.js"></script>
+    <script src="drawing.js"></script>
+    <script src="dynamic-update.js"></script>
+    <script src="highlighted-region.js"></script>
+    <script src="independent-series.js"></script>
+    <script src="plotter.js"></script>
+
+    <!-- These might not remain in the gallery -->
+    <script src="dygraph-simple.js"></script>
+    <script src="demo.js"></script>
+    <script src="border.js"></script>
+    <script src="callback.js"></script>
+    <script src="avoidMinZero.js"></script>
+    <script src="color-cycle.js"></script>
+    <script src="color-visibility.js"></script>
+    <script src="two-axes.js"></script>
+    <script src="number-format.js"></script>
+    <script src="no-range.js"></script>
+    <script src="negative.js"></script>
+    <script src="annotation-gviz.js"></script>
+    <script src="annotation-native.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="gallery.css" />
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td><h2>Gallery</h2></td>
+        <td></td>
+        <td id="title"></td>
+      </tr>
+      <tr>
+        <td id="toc"></td>
+        <td style="width:0.5em;"></td>
+        <td id="rhs">
+          <div id="workarea"></div>
+        </td>
+      </tr>
+    </table>
+  <script type="text/javascript">Gallery.start()</script>
+  </body>
+</html>
