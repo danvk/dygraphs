@@ -94,3 +94,31 @@ aside {
   top: 100px;
   bottom: 10px;
 }
+
+/* CSS for styled-chart-label */
+#workarea #styled-chart-labels .infotext {
+    
+}
+
+#workarea #styled-chart-labels #div_g .dygraph-label {
+  /* This applies to the title, x-axis label and y-axis label */
+  font-family: Georgia, Verdana, serif;
+}
+
+#workarea #styled-chart-labels #div_g .dygraph-title {
+  /* This rule only applies to the chart title */
+  font-size: 36px;
+  text-shadow: gray 2px 2px 2px;  /* color, delta-x, delta-y, blur radius */
+}
+
+#workarea #styled-chart-labels #div_g .dygraph-ylabel {
+  /* This rule only applies to the y-axis label */
+  font-size: 18px;
+  text-shadow: gray -2px 2px 2px;  /* (offsets are in a rotated frame) */
+}
+
+#workarea #styled-chart-labels .chart {
+  border: 1px dashed black;
+  margin: 5px 5px 5px 50px;
+  padding: 2px;
+}
