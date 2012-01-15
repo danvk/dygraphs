@@ -70,7 +70,9 @@ Gallery.register = function(id, demo) {
 };
 
 Gallery.hashChange = function(event) {
-  var id = location.hash.substring(1) + "-toc";
-  var elem = document.getElementById(id);
-  elem.onclick();
+  if (location.hash) {
+    var id = location.hash.substring(1) + "-toc";
+    var elem = document.getElementById(id);
+    elem.onclick();
+  }
 };
