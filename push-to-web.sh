@@ -18,7 +18,7 @@ if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
 
   # Copy everything to the site.
-  scp -r tests jsdoc experimental $site \
+  scp -r gallery tests jsdoc experimental $site \
   && \
   scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
 else
