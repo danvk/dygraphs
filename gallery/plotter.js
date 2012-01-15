@@ -2,8 +2,8 @@
 Gallery.register(
   'plotter',
   {
-    name: 'Plotter',
-    title: 'title',
+    name: 'Function Plotter',
+    title: 'Define your data with functions',
     setup: function(parent) {
       parent.innerHTML =
         "<p><b>Equation: </b><br/>\n" +
@@ -71,5 +71,6 @@ Gallery.register(
 
         g = new Dygraph(graph, data);
       }
+      window.plot();
     }
   });
