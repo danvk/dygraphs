@@ -46,7 +46,7 @@ Gallery.start = function() {
       document.getElementById("title").textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
       Gallery.workareaChild.id = id;
-      location.hash = id;
+      location.hash = "g/" + id;
       Gallery.workareaChild.innerHTML='';
       if (demo.setup) {
         demo.setup(Gallery.workareaChild);
@@ -70,7 +70,11 @@ Gallery.register = function(id, demo) {
 };
 
 Gallery.hashChange = function(event) {
-  var id = location.hash.substring(1) + "-toc";
-  var elem = document.getElementById(id);
-  elem.onclick();
+  if (location.hash) {
+    if (location.hash.indexOf("#g/") == 0) {
+      var id = location.hash.substring(3) + "-toc";
+      var elem = document.getElementById(id);
+      elem.onclick();
+    }
+  }
 };
