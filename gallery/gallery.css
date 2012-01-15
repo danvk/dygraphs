@@ -119,6 +119,10 @@ aside {
 
 #workarea #styled-chart-labels .chart {
   border: 1px dashed black;
-  margin: 5px 5px 5px 50px;
+  margin: 5px  5px 5px 50px;
   padding: 2px;
+}
+
+@workarea #temperature-sf-ny #bordered {
+  border: 1px solid red;
 }
