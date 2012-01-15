@@ -3,6 +3,10 @@ body {
   font-size: 90%;
 }
 
+aside {
+  font-size: 90%;
+}
+
 #toc {
   vertical-align: top;
   width: 200px;
