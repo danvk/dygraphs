@@ -84,3 +84,13 @@ aside {
   border-style: solid;
   border-color: black;
 }
+
+/* CSS for resize */
+#workarea #resize #div_g {
+  /* The left and top are just guesses, this needs a proper run-through */
+  position: absolute;
+  left: 200px;
+  right: 10px;
+  top: 100px;
+  bottom: 10px;
+}
