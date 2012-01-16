@@ -20,7 +20,7 @@ Gallery.register(
       zoom.onclick = function() { change_tool(zoom) };
       var pencil = document.getElementById('tool_pencil');
       pencil.onclick = function() { change_tool(pencil) };
-      var eraser = document.getElementById('tool_pencil');
+      var eraser = document.getElementById('tool_eraser');
       eraser.onclick = function() { change_tool(eraser) };
 
       var start_date = new Date("2002/12/29").getTime();
