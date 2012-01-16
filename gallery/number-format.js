@@ -15,7 +15,7 @@ Gallery.register(
           "   variety of precisions.</p>" +
 
           "<p>Precision to use (1 to 21):" +
-          "  <input type='text' id='p_input' size='20' onchange='updateTable();'></p>" +
+          "  <input type='text' id='p_input' size='20'></p>" +
           "<p/>" +
           "<div id='content' style='font-family:Courier New,monospace'></div>";
     },
@@ -50,7 +50,7 @@ Gallery.register(
         return table;
       };
 
-      window.updateTable = function() {
+      updateTable = function() {
         var headers = ['Dygraph.floatFormat()', 'toPrecision()',
                        'Dygraph.floatFormat()', 'toPrecision()'];
         var numbers = [];
@@ -74,6 +74,7 @@ Gallery.register(
       };
 
       document.getElementById('p_input').value = '4';
+      document.getElementById('p_input').onchange = updateTable;
       updateTable();
     }
   });
