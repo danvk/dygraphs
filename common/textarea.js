@@ -30,13 +30,13 @@ function TextArea(parent) {
   if (!parent) {
     parent = body;
   }
-  this.elem = Palette.createChild("div", parent, "textarea");
-  this.title = Palette.createChild("div", this.elem, "title");
-  this.textarea = Palette.createChild("textarea", this.elem, "editor");
-  this.buttons = Palette.createChild("div", this.elem, "buttons");
-  this.ok = Palette.createChild("button", this.buttons);
+  this.elem = TextArea.createChild("div", parent, "textarea");
+  this.title = TextArea.createChild("div", this.elem, "title");
+  this.textarea = TextArea.createChild("textarea", this.elem, "editor");
+  this.buttons = TextArea.createChild("div", this.elem, "buttons");
+  this.ok = TextArea.createChild("button", this.buttons);
   this.ok.textContent = "OK";
-  this.cancel = Palette.createChild("button", this.buttons);
+  this.cancel = TextArea.createChild("button", this.buttons);
   this.cancel.textContent = "Cancel";
 
   var textarea = this;
@@ -51,15 +51,24 @@ function TextArea(parent) {
   this.reposition = function() {
     var left = (document.documentElement.clientWidth - textarea.elem.offsetWidth) / 2;
     var top = (document.documentElement.clientHeight - textarea.elem.offsetHeight) / 2;
-    console.log("reposition", left, top);
     textarea.elem.style.left = Math.max(left, 0) + "px";
     textarea.elem.style.top = Math.max(top, 0) + "px";
   }
 
-  this.background = Palette.createChild("div", body, "background");
+  this.background = TextArea.createChild("div", body, "background");
   this.background.id = "modalBackground";
   this.hide();
 }
+
+/* I think this is the third place I've copied this function */
+TextArea.createChild = function(type, parent, className) {
+  var elem = document.createElement(type);
+  parent.appendChild(elem);
+  if (className) {
+    elem.className = className;
+  }
+  return elem;
+};
 
 TextArea.prototype.cancelCallback = function() {
 };

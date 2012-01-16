@@ -8,9 +8,14 @@ Gallery.register(
           "<div id='demodiv' style='width: 640; height: 350; border: 1px solid black'></div>" +
           "<p>A single y-axis:</p>" +
           "<div id='demodiv_one' style='width: 640; height: 350; border: 1px solid black'></div>" +
-          "<input type=checkbox id='check' onChange='update(this)'><label for='check'> Fill?</label>";
+          "<input type='checkbox' id='check'><label for='check'> Fill?</label>";
     },
     run: function() {
+      document.getElementById('check') = function(el) {
+        g.updateOptions( { fillGraph: el.checked } );
+        g2.updateOptions( { fillGraph: el.checked } );
+      }
+
       var data = [];
       for (var i = 1; i <= 100; i++) {
         var m = "01", d = i;
@@ -60,10 +65,5 @@ Gallery.register(
             y2label: 'Secondary y-axis',
           }
       );
-
-      window.update = function(el) {
-        g.updateOptions( { fillGraph: el.checked } );
-        g2.updateOptions( { fillGraph: el.checked } );
-      }
     }
   });

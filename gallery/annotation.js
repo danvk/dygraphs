@@ -6,8 +6,8 @@ Gallery.register(
     setup: function(parent) {
       parent.innerHTML = 
           "<p>Click any point to add an annotation to it or click 'Add Annotation'.</p>" +
-          "<input type='button' value='Add Annotation' onclick='add()' />" +
-          "<input type='button' value='Shove to bottom' onclick='bottom(this)' />" +
+          "<button id='add'>Add Annotation></button>" +
+          "<button id='bottom'>Shove to bottom</button>" +
           "<div id='list'></div>" +
           "<div id='g_div'></div>" +
           "<div id='events'></div>";
@@ -79,7 +79,7 @@ Gallery.register(
       } );
       g.setAnnotations(annotations);
     
-      window.add = function() {
+      document.getElementById('add').onclick = function() {
         var x = last_ann + 2;
         var annnotations = g.annotations();
         annotations.push( {
@@ -92,10 +92,11 @@ Gallery.register(
         last_ann = x;
         g.setAnnotations(annotations);
       }
-    
-      window.bottom = function(el) {
-        var to_bottom = true;
-        if (el.value != 'Shove to bottom') to_bottom = false;
+
+      var bottom = document.getElementById('bottom');
+
+      bottom.onclick = function() {
+        var to_bottom = bottom.textContent == 'Shove to bottom';
     
         var anns = g.annotations();
         for (var i = 0; i < anns.length; i++) {
@@ -104,9 +105,9 @@ Gallery.register(
         g.setAnnotations(anns);
     
         if (to_bottom) {
-          el.value = 'Lift back up';
+          bottom.textContent = 'Lift back up';
         } else {
-          el.value = 'Shove to bottom';
+          bottom.textContent = 'Shove to bottom';
         }
       }
     
