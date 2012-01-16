@@ -10,26 +10,27 @@ Gallery.register(
         "<textarea cols='80' rows='10' id='eq'>function(x) {\n" +
         "  return [0.1 * x, 0.1 * x + Math.sin(x), 0.1*x + Math.cos(x)];\n" +
         "}</textarea><br/>\n" +
-        "<b>Preset functions:</b> <select id='presets' onchange='preset()'>\n" +
+        "<b>Preset functions:</b> <select id='presets'>\n" +
         "<option id='custom'>(custom)</option>\n" +
         "<option id='id'>Identity</option>\n" +
         "<option id='sine'>Sine Wave</option>\n" +
         "<option id='taylor'>Taylor series</option>\n" +
         "<option selected id='sawtooth'>Sawtooth</option>\n" +
         "</select>\n" +
-        "    </p>\n" +
+        "</p>\n" +
         "\n" +
         "    <p><b>x range: </b> <input type='text' width='5' id='x1' value='-10' />\n" +
         "    to <input type='text' width='5' id='x2' value='10' /></p>\n" +
-        "    <p><input type=button value='Plot' onClick='plot()' /></p>\n" +
+        "    <p><button id='plot'>Plot</button></p>\n" +
         "\n" +
         "    <div id='graph_div' style='width:800px; height:400px;'></div>";
 
     },
     run: function() {
-      window.preset = function() {
-        var sel = document.getElementById("presets").selectedIndex;
-        var id = document.getElementById("presets").options[sel].id;
+      var select = document.getElementById("presets");
+      select.onchange = function() {
+        var sel = select.selectedIndex;
+        var id = select.options[sel].id;
         var presets = {
           'id': [ -10, 10, 'function(x) {\n  return x;\n}' ],
           'sine': [ -10, 10, 'function(x) {\n  return Math.sin(x);\n}' ],
@@ -44,7 +45,8 @@ Gallery.register(
         plot();
       }
 
-      window.plot = function() {
+      var plotButton = document.getElementById("plot");
+      var plot = function() {
         var eq = document.getElementById("eq").value;
         eval("fn = " + eq);
 
@@ -71,6 +73,7 @@ Gallery.register(
 
         g = new Dygraph(graph, data);
       }
-      window.plot();
+      plot.onclick = plot;
+      plot();
     }
   });

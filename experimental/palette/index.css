@@ -1,6 +1,6 @@
 @import url("palette.css");
 @import url("tooltip.css");
-@import url("textarea.css");
+@import url("../../common/textarea.css");
 
 #selector {
   width: 150px;

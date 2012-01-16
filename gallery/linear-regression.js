@@ -29,17 +29,6 @@ Gallery.register(
                    30.0 - i / 5.0 - 10.0 * Math.sin(i / 3.0 + 1.0)]);
       }
 
-      g = new Dygraph(
-              document.getElementById("demodiv"),
-              data,
-              {
-                labels: ['X', 'Y1', 'Y2'],
-                underlayCallback: drawLines,
-                drawPoints: true,
-                strokeWidth: 0.0
-              }
-          );
-
       // coefficients of regression for each series.
       // if coeffs = [ null, [1, 2], null ] then we draw a regression for series 1
       // only. The regression line is y = 1 + 2 * x.
@@ -116,5 +105,16 @@ Gallery.register(
           ctx.restore();
         }
       }
+      
+      g = new Dygraph(
+              document.getElementById("demodiv"),
+              data,
+              {
+                labels: ['X', 'Y1', 'Y2'],
+                underlayCallback: drawLines,
+                drawPoints: true,
+                strokeWidth: 0.0
+              }
+          );
     }
   });

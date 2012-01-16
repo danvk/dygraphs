@@ -11,7 +11,7 @@ Gallery.register(
           "<div id='dg_div' style='width: 700px; height: 240px;'></div>";
     },
     run: function() {
-      window.drawChart = function() {
+      drawChart = function() {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
         data.addColumn('number', 'Sold Pencils');
@@ -33,7 +33,7 @@ Gallery.register(
         chart.draw(data, {displayAnnotations: true});
 
       };
-       //google.setOnLoadCallback(window.drawChart);
+      google.setOnLoadCallback(drawChart);
       var f = function() { alert("!"); };
       google.setOnLoadCallback(f);
       var g = new Dygraph.GVizChart(document.getElementById("dg_div"));

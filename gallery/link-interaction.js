@@ -7,14 +7,14 @@ Gallery.register(
       parent.innerHTML =
           "<div id='div_g'></div>" +
           "<b>Zoom:</b>" +
-          "<a href='#' onclick='zoom(3600)'>hour</a> " +
-          "<a href='#' onclick='zoom(86400)'>day</a> " +
-          "<a href='#' onclick='zoom(604800)'>week</a> " +
-          "<a href='#' onclick='zoom(30 * 86400)'>month</a> " +
-          "<a href='#' onclick='reset()'>full</a> " +
+          "<a href='#' id='hour'>hour</a> " +
+          "<a href='#' id='day'>day</a> " +
+          "<a href='#' id='week'>week</a> " +
+          "<a href='#' id='month'>month</a> " +
+          "<a href='#' id='full'>full</a> " +
           "<b>Pan:</b> " +
-          "<a href='#' onclick='pan(-1)'>left</a> " +
-          "<a href='#' onclick='pan(+1)'>right</a> ";
+          "<a href='#' id='left'>left</a> " +
+          "<a href='#' id='right'>right</a> ";
     },
     run: function() {
       var r = [ ];
@@ -60,23 +60,31 @@ Gallery.register(
         setTimeout(approach_range, 50);
       }
 
-      window.zoom = function(res) {
+      var zoom = function(res) {
         var w = g.xAxisRange();
         desired_range = [ w[0], w[0] + res * 1000 ];
         animate();
       }
 
-      window.reset= function() {
+      var reset = function() {
         desired_range = orig_range;
         animate();
       }
 
-      window.pan = function(dir) {
+      var pan = function(dir) {
         var w = g.xAxisRange();
         var scale = w[1] - w[0];
         var amount = scale * 0.25 * dir;
         desired_range = [ w[0] + amount, w[1] + amount ];
         animate();
       }
+
+      document.getElementById('hour').onclick = function() { zoom(3600); };
+      document.getElementById('day').onclick = function() { zoom(86400); };
+      document.getElementById('week').onclick = function() { zoom(604800); };
+      document.getElementById('month').onclick = function() { zoom(30 * 86400); };
+      document.getElementById('full').onclick = function() { reset(); };
+      document.getElementById('left').onclick = function() { pan(-1); };
+      document.getElementById('right').onclick = function() { pan(+1); };
     }
   });

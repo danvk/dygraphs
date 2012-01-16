@@ -17,11 +17,14 @@ Gallery.create = function(type, parent, className) {
 };
 
 Gallery.start = function() {
-  google.load('visualization', '1', {'packages':['annotatedtimeline']});
   Gallery.toc = document.getElementById("toc");
   Gallery.workarea = document.getElementById("workarea");
+  Gallery.subtitle = Gallery.create("div", Gallery.workarea);
   Gallery.workareaChild = Gallery.create("div", Gallery.workarea);
   Gallery.workarea.style.visibility = "hidden";
+  Gallery.title = document.getElementById("title");
+  Gallery.textarea = new TextArea();
+
   for (var idx in Gallery.entryOrder) {
     var id = Gallery.entryOrder[idx];
     var demo = Gallery.entries[id];
@@ -42,8 +45,12 @@ Gallery.start = function() {
           Gallery.runningDemo.clean(Gallery.workareaChild);
         }
       }
+      Gallery.subtitle.innerHTML = "";
+      var codeLink = Gallery.create("a", Gallery.subtitle);
+      codeLink.textContent = "code";
+      codeLink.href = "#";
       Gallery.workarea.style.visibility = "visible";
-      document.getElementById("title").textContent = demo.title ? demo.title : "";
+      Gallery.title.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
       Gallery.workareaChild.id = id;
       location.hash = "g/" + id;
@@ -51,6 +58,11 @@ Gallery.start = function() {
       if (demo.setup) {
         demo.setup(Gallery.workareaChild);
       }
+      var html = Gallery.workareaChild.innerHTML;
+      codeLink.onclick = function() {
+        var javascript = demo.run.toString();
+        Gallery.textarea.show("Code", "HTML\n\n" + html + "\n\njavascript\n\n" + javascript);
+      };
       demo.run(Gallery.workareaChild);
       Gallery.runningDemo = demo;
     }; }(demo, id);
