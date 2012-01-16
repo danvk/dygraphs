@@ -26,9 +26,7 @@ Tips on adding entries to the gallery
 TODOs:
   * Remove the awful tables in interaction.html (that I wrote)
   * Move all style to css
-  * Create links to get code
   * Consider moving HTML to HTML files that are read via XMLHTTP
   * Add margin-left: 30px to #workarea, and then make #workarea h2 { margin-left: -30px}
-  * Replace <input type='button'> with <button>
   * Standard width. No need for very wide graphs.
   * Remove runtime warnings.
