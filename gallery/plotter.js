@@ -11,11 +11,11 @@ Gallery.register(
         "  return [0.1 * x, 0.1 * x + Math.sin(x), 0.1*x + Math.cos(x)];",
         "}</textarea><br/>",
         "<b>Preset functions:</b> <select id='presets'>",
-        "<option id='custom'>(custom)</option>",
+        "<option selected id='custom'>(custom)</option>",
         "<option id='id'>Identity</option>",
         "<option id='sine'>Sine Wave</option>",
         "<option id='taylor'>Taylor series</option>",
-        "<option selected id='sawtooth'>Sawtooth</option>",
+        "<option id='sawtooth'>Sawtooth</option>",
         "</select>",
         "</p>",
         "",
@@ -28,15 +28,15 @@ Gallery.register(
     },
     run: function() {
       var select = document.getElementById("presets");
+      var presets = {
+        'id': [ -10, 10, 'function(x) {\n  return x;\n}' ],
+        'sine': [ -10, 10, 'function(x) {\n  return Math.sin(x);\n}' ],
+        'taylor': [ -3, 3, 'function(x) {\n  return [Math.cos(x), 1 - x*x/2 + x*x*x*x/24];\n}' ],
+        'sawtooth': [-10, 10, 'function(x) {\n  var y = 0;\n  for (var i = 1; i < 20; i+=2) {\n    y += Math.sin(i * x)/i;\n  }\n  var final = 1 - 2*(Math.abs(Math.floor(x / Math.PI)) % 2);\n  return [4/Math.PI * y, final];\n}' ]
+      };
       select.onchange = function() {
         var sel = select.selectedIndex;
         var id = select.options[sel].id;
-        var presets = {
-          'id': [ -10, 10, 'function(x) {\n  return x;\n}' ],
-          'sine': [ -10, 10, 'function(x) {\n  return Math.sin(x);\n}' ],
-          'taylor': [ -3, 3, 'function(x) {\n  return [Math.cos(x), 1 - x*x/2 + x*x*x*x/24];\n}' ],
-          'sawtooth': [-10, 10, 'function(x) {\n  var y = 0;\n  for (var i = 1; i < 20; i+=2) {\n    y += Math.sin(i * x)/i;\n  }\n  var final = 1 - 2*(Math.abs(Math.floor(x / Math.PI)) % 2);\n  return [4/Math.PI * y, final];\n}' ]
-        };
 
         if (id == "custom") { return; }
         document.getElementById("x1").value = presets[id][0];
@@ -73,7 +73,7 @@ Gallery.register(
 
         g = new Dygraph(graph, data);
       }
-      plot.onclick = plot;
+      plotButton.onclick = plot;
       plot();
     }
   });
