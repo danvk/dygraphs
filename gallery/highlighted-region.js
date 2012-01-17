@@ -4,9 +4,9 @@ Gallery.register(
     name: 'Highlighted Region',
     title: 'Draws a time series with an unusual region highlighted',
     setup: function(parent) {
-      parent.innerHTML = 
-        "<div id='div_g' style='width:600px; height:300px;'></div>" +
-        "<p>When you zoom and pan, the region remains highlighted.</p>";
+      parent.innerHTML = [
+        "<div id='div_g' style='width:600px; height:300px;'></div>",
+        "<p>When you zoom and pan, the region remains highlighted.</p>"].join("\n");
     },
     run: function() {
       // A basic sinusoidal data series.

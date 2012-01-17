@@ -21,7 +21,6 @@ Gallery.start = function() {
   Gallery.workarea = document.getElementById("workarea");
   Gallery.subtitle = Gallery.create("div", Gallery.workarea);
   Gallery.workareaChild = Gallery.create("div", Gallery.workarea);
-  Gallery.workarea.style.visibility = "hidden";
   Gallery.title = document.getElementById("title");
   Gallery.textarea = new TextArea();
 
@@ -49,7 +48,6 @@ Gallery.start = function() {
       var codeLink = Gallery.create("a", Gallery.subtitle);
       codeLink.textContent = "code";
       codeLink.href = "#";
-      Gallery.workarea.style.visibility = "visible";
       Gallery.title.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
       Gallery.workareaChild.id = id;
@@ -87,6 +85,8 @@ Gallery.hashChange = function(event) {
       var id = location.hash.substring(3) + "-toc";
       var elem = document.getElementById(id);
       elem.onclick();
+      return;
     }
   }
+  Gallery.workareaChild.innerHTML = "<h3>Select a demo from the gallery on the left</h3>"
 };

@@ -5,11 +5,12 @@ Gallery.register(
     name: 'Roll Periods and Error Bars',
     title: 'Demo of a graph with many data points and custom error bars.',
     setup: function(parent) {
-      parent.innerHTML =
-          "<p>Roll period of 14 timesteps.</p>" +
-          "<div id='roll14' style='width:800px; height:320px;'></div>" +
-          "<p>No roll period.</p>" +
-          "<div id='noroll' style='width:800px; height:320px;'></div>";
+      parent.innerHTML = [
+          "<p>Roll period of 14 timesteps.</p>",
+          "<div id='roll14' style='width:600px; height:300px;'></div>",
+          "<p>No roll period.</p>",
+          "<div id='noroll' style='width:600px; height:300px;'></div>"]
+          .join("\n");
     },
     run: function() {
       g1 = new Dygraph(
