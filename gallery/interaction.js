@@ -5,7 +5,7 @@ Gallery.register(
     title: 'title',
     setup: function(parent) {
       parent.innerHTML = [
-          "<h2>Default interaction model</h2>",
+          "<h3>Default interaction model</h3>",
           "<div style='width:600px;'>",
           "  <p style='text-align:center;'>",
           "    Zoom: click-drag, Pan: shift-click-drag, Restore: double-click",
@@ -13,7 +13,7 @@ Gallery.register(
           "  <div id='div_g' style='width:600px; height:300px;'></div>",
           "</div>",
           "",
-          "<h2>Empty interaction model</h2>",
+          "<h3>Empty interaction model</h3>",
           "<div style='width:600px;'>",
           "  <p style='text-align:center;'>",
           "    Click and drag all you like, it won't do anything!",
@@ -22,7 +22,7 @@ Gallery.register(
           "</div>",
           "<div id='g2_console'></div>", // what is this?
           "",
-          "<h2>Custom interaction model</h2>",
+          "<h3>Custom interaction model</h3>",
           "<div style='width:600px;'>",
           "  <p style='text-align:center;'>",
           "    Zoom in: double-click, scroll wheel<br/>",
@@ -34,7 +34,7 @@ Gallery.register(
           "  <button id='restore3'>Restore position</button>",
           "  <div id='div_g3' style='width:600px; height:300px;'></div>",
           "</div>",
-          "<h2>Fun model!</h2>",
+          "<h3>Fun model!</h3>",
           "<div style='width:600px;'>",
           "  <p style='text-align:center;'>",
           "    Keep the mouse button pressed, and hover over all points",
