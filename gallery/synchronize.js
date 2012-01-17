@@ -5,15 +5,15 @@ Gallery.register(
     name: 'Synchronization',
     title: 'Multiple graphs in sync',
     setup: function(parent) {
-      parent.innerHTML =
-        "<p>Zooming and panning on any of the charts will zoom and pan all the" +
-        "others.</p>" +
-        "<p><aside>(zoom: Click and drag, pan: shift-click and drag, unzoom: double-click)</aside></p>" +
-        "<table><tr>" +
-        "<td><div id='div1' style='width:500px; height:300px;'></div></td>" +
-        "<td><div id='div3' style='width:500px; height:300px;'></div></td></tr>" +
-        "<tr><td><div id='div2' style='width:500px; height:300px;'></div></td>" +
-        "<td><div id='div4' style='width:500px; height:300px;'></div></td></table>";
+      parent.innerHTML = [
+        "<p>Zooming and panning on any of the charts will zoom and pan all the",
+        "others.</p>",
+        "<p><aside>(zoom: Click and drag, pan: shift-click and drag, unzoom: double-click)</aside></p>",
+        "<table><tr>",
+        "<td><div id='div1' style='width:500px; height:300px;'></div></td>",
+        "<td><div id='div3' style='width:500px; height:300px;'></div></td></tr>",
+        "<tr><td><div id='div2' style='width:500px; height:300px;'></div></td>",
+        "<td><div id='div4' style='width:500px; height:300px;'></div></td></table>"].join("\n");
     },
     run: function() {
       gs = [];

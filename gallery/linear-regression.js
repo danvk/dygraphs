@@ -5,17 +5,17 @@ Gallery.register(
     name: 'Linear Regressions',
     title: 'Linear Regression Demo',
     setup: function(parent) {
-      parent.innerHTML =
-        "<p>Click the buttons to generate linear regressions over either data "+
-        "series. If you zoom in and then click the regression button, the regression "+
-        "will only be run over visible points. Zoom back out to see what the local "+
-        "regression looks like over the full data.</p> "+
-        "<div id='demodiv' style='width: 480px; height: 320px;'></div>" +
-        "<div style='text-align:center; width: 480px'>" + 
-        "<button style='color: green;' id='ry1'>Regression (Y1)</button> " +
-        "<button style='color: blue;' id='ry2'>Regression (Y2)</button> " +
-        "<button id='clear'>Clear Lines</button>" +
-        "</div>";
+      parent.innerHTML = [
+        "<p>Click the buttons to generate linear regressions over either data ",
+        "series. If you zoom in and then click the regression button, the regression ",
+        "will only be run over visible points. Zoom back out to see what the local ",
+        "regression looks like over the full data.</p> ",
+        "<div id='demodiv' style='width: 480px; height: 320px;'></div>",
+        "<div style='text-align:center; width: 480px'>",
+        "<button style='color: green;' id='ry1'>Regression (Y1)</button> ",
+        "<button style='color: blue;' id='ry2'>Regression (Y2)</button> ",
+        "<button id='clear'>Clear Lines</button>",
+        "</div>"].join("\n");
     },
     run: function() {
       document.getElementById("ry1").onclick = function() { regression(1) };

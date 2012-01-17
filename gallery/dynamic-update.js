@@ -4,11 +4,12 @@ Gallery.register(
     name: 'Dynamic Update',
     title: 'Live random data',
     setup: function(parent) {
-      parent.innerHTML = "<div id='div_g' style='width:800px; height:400px;'></div>" +
-      "<p>This test is modeled after a " +
-      "<a href='http://www.highcharts.com/demo/?example=dynamic-update&theme=default'>highcharts" +
-      "test</a>. New points should appear once per second. Try zooming and " +
-      "panning over to the right edge to watch them show up.</p>";
+      parent.innerHTML = [
+          "<div id='div_g' style='width:800px; height:400px;'></div>",
+          "<p>This test is modeled after a ",
+          "<a href='http://www.highcharts.com/demo/?example=dynamic-update&theme=default'>highcharts",
+          "test</a>. New points should appear once per second. Try zooming and ",
+          "panning over to the right edge to watch them show up.</p>"].join("\n");
     },
     run: function() {
       var data = [];

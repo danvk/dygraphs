@@ -4,11 +4,12 @@ Gallery.register(
     name: 'Stock Chart Demo',
     title: 'Stock Chart Demo',
     setup: function(parent) {
-      parent.innerHTML = "<div id='stock_div' style='width: 800px; height: 400px;'></div><br/>" +
-          "<div style='width: 800px; text-align: center;'>" +
-          "<button id='linear'>Linear Scale</button>&nbsp;" +
-          "<button id='log' disabled='true'>Log Scale</button>" +
-          "</div>";
+      parent.innerHTML = [
+          "<div id='stock_div' style='width: 800px; height: 400px;'></div><br/>",
+          "<div style='width: 800px; text-align: center;'>",
+          "  <button id='linear'>Linear Scale</button>&nbsp;",
+          "  <button id='log' disabled='true'>Log Scale</button>",
+          "</div>"].join("\n");
     },
     run: function() {
       var g = new Dygraph(document.getElementById("stock_div"), stockData,

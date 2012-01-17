@@ -5,25 +5,25 @@ Gallery.register(
     name: 'Function Plotter',
     title: 'Define your data with functions',
     setup: function(parent) {
-      parent.innerHTML =
-        "<p><b>Equation: </b><br/>\n" +
-        "<textarea cols='80' rows='10' id='eq'>function(x) {\n" +
-        "  return [0.1 * x, 0.1 * x + Math.sin(x), 0.1*x + Math.cos(x)];\n" +
-        "}</textarea><br/>\n" +
-        "<b>Preset functions:</b> <select id='presets'>\n" +
-        "<option id='custom'>(custom)</option>\n" +
-        "<option id='id'>Identity</option>\n" +
-        "<option id='sine'>Sine Wave</option>\n" +
-        "<option id='taylor'>Taylor series</option>\n" +
-        "<option selected id='sawtooth'>Sawtooth</option>\n" +
-        "</select>\n" +
-        "</p>\n" +
-        "\n" +
-        "    <p><b>x range: </b> <input type='text' width='5' id='x1' value='-10' />\n" +
-        "    to <input type='text' width='5' id='x2' value='10' /></p>\n" +
-        "    <p><button id='plot'>Plot</button></p>\n" +
-        "\n" +
-        "    <div id='graph_div' style='width:800px; height:400px;'></div>";
+      parent.innerHTML = [
+        "<p><b>Equation: </b><br/>",
+        "<textarea cols='80' rows='10' id='eq'>function(x) {",
+        "  return [0.1 * x, 0.1 * x + Math.sin(x), 0.1*x + Math.cos(x)];",
+        "}</textarea><br/>",
+        "<b>Preset functions:</b> <select id='presets'>",
+        "<option id='custom'>(custom)</option>",
+        "<option id='id'>Identity</option>",
+        "<option id='sine'>Sine Wave</option>",
+        "<option id='taylor'>Taylor series</option>",
+        "<option selected id='sawtooth'>Sawtooth</option>",
+        "</select>",
+        "</p>",
+        "",
+        "    <p><b>x range: </b> <input type='text' width='5' id='x1' value='-10' />",
+        "    to <input type='text' width='5' id='x2' value='10' /></p>",
+        "    <p><button id='plot'>Plot</button></p>",
+        "",
+        "    <div id='graph_div' style='width:800px; height:400px;'></div>"].join("\n");
 
     },
     run: function() {

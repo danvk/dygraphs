@@ -4,11 +4,12 @@ Gallery.register(
     name: 'Range Selector',
     title: 'Demo of the Range Selector',
     setup: function(parent) {
-      parent.innerHTML =
-          "<p>No roll period.</p>" +
-          "<div id='noroll' style='width:800px; height:320px;'></div>" +
-          "<p>Roll period of 14 timesteps, custom range selector height and plot color.</p>" +
-          "<div id='roll14' style='width:800px; height:320px;'></div>";
+      parent.innerHTML = [
+          "<p>No roll period.</p>",
+          "<div id='noroll' style='width:800px; height:320px;'></div>",
+          "",
+          "<p>Roll period of 14 timesteps, custom range selector height and plot color.</p>",
+          "<div id='roll14' style='width:800px; height:320px;'></div>"].join("\n");
     },
     run: function() {
       g1 = new Dygraph(

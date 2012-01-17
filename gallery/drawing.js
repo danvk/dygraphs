@@ -4,15 +4,15 @@ Gallery.register(
     name: 'Time Series Drawing Demo',
     title: 'Time Series Drawing Demo',
     setup: function(parent) {
-      parent.innerHTML =
-          "<div id='toolbar'>" +
-          "<div id='tool_zoom'></div>" +
-          "<div id='tool_pencil'></div>" +
-          "<div id='tool_eraser'></div>" +
-          "</div>" +
-          "<div id='draw_div' style='width: 800px; height: 400px;'></div>" +
-          "<p style='font-size: 10pt'>Toolbar/cursor icons are CC-licensed from " +
-          "<a href='http://www.fatcow.com/free-icons'>FatCow</a>.</p>";
+      parent.innerHTML = [
+          "<div id='toolbar'>",
+          "<div id='tool_zoom'></div>",
+          "<div id='tool_pencil'></div>",
+          "<div id='tool_eraser'></div>",
+          "</div>",
+          "<div id='draw_div' style='width: 800px; height: 400px;'></div>",
+          "<p style='font-size: 10pt'>Toolbar/cursor icons are CC-licensed from ",
+          "<a href='http://www.fatcow.com/free-icons'>FatCow</a>.</p>"].join("\n");
     },
 
     run: function() {
