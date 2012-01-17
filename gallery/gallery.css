@@ -68,6 +68,7 @@ aside {
 a {
   text-decoration: none;
 }
+
 /* CSS for drawing tool */
 #workarea #drawing #tool_zoom {
   background: url('images/tool-palette.png');
