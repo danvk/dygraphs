@@ -38,6 +38,8 @@ function TextArea(parent) {
   this.ok.textContent = "OK";
   this.cancel = TextArea.createChild("button", this.buttons);
   this.cancel.textContent = "Cancel";
+  this.height = 315;
+  this.width = 445;
 
   var textarea = this;
   this.ok.onclick = function() {
@@ -80,10 +82,6 @@ TextArea.prototype.show = function(title, content) {
   this.title.textContent = title;
   this.textarea.value = content;
 
-  var height = 315;
-  var width = 445;
-
-
   var sums = function(adds, subtracts, field) {
     var total = 0;
     for (var idx in adds) {
@@ -97,8 +95,8 @@ TextArea.prototype.show = function(title, content) {
   this.elem.style.display = "block";
   this.background.style.display = "block";
 
-  this.elem.style.height = height + "px";
-  this.elem.style.width = width + "px";
+  this.elem.style.height = this.height + "px";
+  this.elem.style.width = this.width + "px";
 
   this.textarea.style.height = (-18 + sums([this.elem], [this.title, this.buttons], "offsetHeight")) + "px";
   this.textarea.style.width = (-16 + sums([this.elem], [ ], "offsetWidth")) + "px";

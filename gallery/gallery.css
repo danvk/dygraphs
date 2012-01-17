@@ -13,9 +13,16 @@ aside {
   vertical-align: top;
   width: 200px;
 }
+#gap {
+  style="width:0.5em;"
+}
 
-#rhs {
+#rhs, #lhs {
   vertical-align: top;
+}
+
+#subtitle a:visited {
+  color: blue;  
 }
 
 #workarea {
