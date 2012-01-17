@@ -40,16 +40,34 @@ aside {
   padding-left: 1em; */
 }
 
-#toc .entry .selected {
-  color: #00b;
+#toc .entry:hover {
+  color: blue;
+  cursor: pointer;
 }
 
-#title {
+#toc .entry .selected {
+  color: #090;
+}
+
+#demotitle {
   text-align: center;
   font-size: 1.5em;
   vertical-align: bottom;
 }
 
+.subdued:link,
+.subdued:visited,
+.subdued:active {
+  color: #000;
+}
+
+.subdued:hover {
+  color: blue;
+}
+
+a {
+  text-decoration: none;
+}
 /* CSS for drawing tool */
 #workarea #drawing #tool_zoom {
   background: url('images/tool-palette.png');
