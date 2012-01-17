@@ -10,7 +10,7 @@ Gallery.register(
           "<div id='tool_pencil'></div>",
           "<div id='tool_eraser'></div>",
           "</div>",
-          "<div id='draw_div' style='width: 800px; height: 400px;'></div>",
+          "<div id='draw_div' style='width: 600px; height: 300px;'></div>",
           "<p style='font-size: 10pt'>Toolbar/cursor icons are CC-licensed from ",
           "<a href='http://www.fatcow.com/free-icons'>FatCow</a>.</p>"].join("\n");
     },

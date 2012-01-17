@@ -6,10 +6,10 @@ Gallery.register(
     setup: function(parent) {
       parent.innerHTML = [
           "<p>No roll period.</p>",
-          "<div id='noroll' style='width:800px; height:320px;'></div>",
+          "<div id='noroll' style='width:600px; height:300px;'></div>",
           "",
           "<p>Roll period of 14 timesteps, custom range selector height and plot color.</p>",
-          "<div id='roll14' style='width:800px; height:320px;'></div>"].join("\n");
+          "<div id='roll14' style='width:600px; height:300px;'></div>"].join("\n");
     },
     run: function() {
       g1 = new Dygraph(

@@ -19,11 +19,11 @@ Gallery.register(
         "</select>",
         "</p>",
         "",
-        "    <p><b>x range: </b> <input type='text' width='5' id='x1' value='-10' />",
-        "    to <input type='text' width='5' id='x2' value='10' /></p>",
-        "    <p><button id='plot'>Plot</button></p>",
+        "<p><b>x range: </b> <input type='text' width='5' id='x1' value='-10' />",
+        "to <input type='text' width='5' id='x2' value='10' /></p>",
+        "<p><button id='plot'>Plot</button></p>",
         "",
-        "    <div id='graph_div' style='width:800px; height:400px;'></div>"].join("\n");
+        "<div id='graph_div' style='width:600px; height:300px;'></div>"].join("\n");
 
     },
     run: function() {

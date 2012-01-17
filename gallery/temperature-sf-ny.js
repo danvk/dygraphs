@@ -7,9 +7,9 @@ Gallery.register(
     setup: function(parent) {
       parent.innerHTML = [
           "<p>Roll period of 14 timesteps.</p>",
-          "<div id='roll14' style='width:800px; height:320px;'></div>",
+          "<div id='roll14' style='width:600px; height:300px;'></div>",
           "<p>No roll period.</p>",
-          "<div id='noroll' style='width:800px; height:320px;'></div>"]
+          "<div id='noroll' style='width:600px; height:300px;'></div>"]
           .join("\n");
     },
     run: function() {

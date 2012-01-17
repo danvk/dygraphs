@@ -5,7 +5,7 @@ Gallery.register(
     title: 'Live random data',
     setup: function(parent) {
       parent.innerHTML = [
-          "<div id='div_g' style='width:800px; height:400px;'></div>",
+          "<div id='div_g' style='width:600px; height:300px;'></div>",
           "<p>This test is modeled after a ",
           "<a href='http://www.highcharts.com/demo/?example=dynamic-update&theme=default'>highcharts",
           "test</a>. New points should appear once per second. Try zooming and ",
