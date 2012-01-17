@@ -20,9 +20,12 @@ Gallery.start = function() {
   Gallery.toc = document.getElementById("toc");
   Gallery.workarea = document.getElementById("workarea");
   Gallery.subtitle = Gallery.create("div", Gallery.workarea);
+  Gallery.subtitle.id = "subtitle";
   Gallery.workareaChild = Gallery.create("div", Gallery.workarea);
   Gallery.title = document.getElementById("title");
   Gallery.textarea = new TextArea();
+  Gallery.textarea.width = 600;
+  Gallery.textarea.height = 400;
 
   for (var idx in Gallery.entryOrder) {
     var id = Gallery.entryOrder[idx];
