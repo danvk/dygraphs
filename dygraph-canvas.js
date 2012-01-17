@@ -28,6 +28,79 @@
 /*global Dygraph:false,RGBColor:false */
 "use strict";
 
+/**
+ * Compares two arrays to see if they are equal. If any of the parameters are
+ * not arrays it will return false.
+ * @param array1 First array
+ * @param array2 second array
+ * @return True if all parameters are arrays and contents are equal.
+ */
+CanvasRenderingContext2D.prototype.dashedLineToArrayEquals_ = function(array1, array2) {
+  var i;
+  if(!array1 || !array2 || !array1.length || !array2.length || array1.length !== array2.length) {
+    return false;
+  }
+  for(i = 0; i < array1.length; i++) {
+    if(array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * Extends html canvas to support dashed lines.
+ * @param x The start of the line's x coordinate.
+ * @param y The start of the line's y coordinate.
+ * @param x2 The end of the line's x coordinate.
+ * @param y2 The end of the line's y coordinate.
+ * @param pattern The dash pattern to draw, an array of integers where even
+ * index is draw and odd index is not drawn (Ex. [10, 2, 5, 2], 10 is drawn 5 
+ * is draw, 2 is the space between.).
+ */
+CanvasRenderingContext2D.prototype.dashedLine = function(x, y, x2, y2, pattern) {
+  //Original version http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvas
+  //Modified by Russell Valentine to keep line history and continue the pattern where it left off.
+  var dx, dy, len, rot, dc, di, draw, segment;
+  
+  if (!pattern) pattern = [10,5];
+  if(!this.dashedLineToArrayEquals_(pattern, this.dashedLineToHistoryPattern_)) {
+    this.dashedLineToHistoryPattern_ = pattern;
+    this.dashedLineToHistory_=[0, 0];
+  }
+  this.save();
+  dx = (x2-x);
+  dy = (y2-y);
+  len = Math.sqrt(dx*dx + dy*dy);
+  rot = Math.atan2(dy, dx);
+  this.translate(x, y);
+  this.moveTo(0, 0);
+  this.rotate(rot);
+  dc = pattern.length;
+  di = this.dashedLineToHistory_[0];
+  x = 0;
+  while (len > x) {
+    segment = pattern[di];
+    if(this.dashedLineToHistory_[1]) {
+      x += this.dashedLineToHistory_[1];
+    } else {
+      x += segment;
+    }
+    draw = di % 2 == 0;
+    if (x > len) {
+      this.dashedLineToHistory_=[di, x-len];
+      x = len;
+    } else {
+      this.dashedLineToHistory_=[(di+1)%dc, 0];
+    }
+    draw ? this.lineTo(x, 0): this.moveTo(x, 0);
+    di=(di+1) % dc;
+  }
+  this.restore();
+};
+
+
+
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
 
@@ -838,6 +911,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     prevX = null;
     prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
+    var strokePattern = this.dygraph_.attr_("strokePattern", setName);
     for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       point = points[j];
       if (isNullOrNaN(point.canvasy)) {
@@ -846,8 +920,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           ctx.beginPath();
           ctx.strokeStyle = color;
           ctx.lineWidth = this.attr_('strokeWidth');
-          ctx.moveTo(prevX, prevY);
-          ctx.lineTo(point.canvasx, prevY);
+          if(strokePattern) {
+            ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
+          } else {
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(point.canvasx, prevY);
+          }
           ctx.stroke();
         }
         // this will make us move to the next point, not draw a line to it.
@@ -875,11 +953,19 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineWidth = strokeWidth;
             ctx.moveTo(prevX, prevY);
             if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
+              if(strokePattern) {
+                ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
+              } else {
+                ctx.lineTo(point.canvasx, prevY);
+              }
+            }
+            if(strokePattern) {
+              ctx.dashedLine(prevX, prevY, point.canvasx, point.canvasy, strokePattern);
+            } else {
+              ctx.lineTo(point.canvasx, point.canvasy);
             }
             prevX = point.canvasx;
             prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
             ctx.stroke();
           }
         }
