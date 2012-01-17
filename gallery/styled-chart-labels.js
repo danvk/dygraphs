@@ -4,11 +4,11 @@ Gallery.register(
     name: 'CSS label styling',
     title: 'Each chart label is styled independently with CSS',
     setup: function(parent) {
-      parent.innerHTML =
-          "<p class='infotext'>This chart's labels are styled</p>" +
-          "<div class='chart' id='div_g' style='width:600px; height:300px;'></div>" +
-          "<p class='infotext'>This version of the chart uses the default styles:</p>" +
-          "<div class='chart' id='div_g2' style='width:600px; height:300px;'></div>";
+      parent.innerHTML = [
+          "<p class='infotext'>This chart's labels are styled</p>",
+          "<div class='chart' id='div_g' style='width:600px; height:300px;'></div>",
+          "<p class='infotext'>This version of the chart uses the default styles:</p>",
+          "<div class='chart' id='div_g2' style='width:600px; height:300px;'></div>"].join("\n");
     },
     run: function() {
       g = new Dygraph(

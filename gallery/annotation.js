@@ -4,13 +4,13 @@ Gallery.register(
     name: 'Annotations', 
     title: 'Dynamic Annotations Demo',
     setup: function(parent) {
-      parent.innerHTML = 
-          "<p>Click any point to add an annotation to it or click 'Add Annotation'.</p>" +
-          "<button id='add'>Add Annotation></button>" +
-          "<button id='bottom'>Shove to bottom</button>" +
-          "<div id='list'></div>" +
-          "<div id='g_div'></div>" +
-          "<div id='events'></div>";
+      parent.innerHTML = [
+          "<p>Click any point to add an annotation to it or click 'Add Annotation'.</p>",
+          "<button id='add'>Add Annotation></button>",
+          "<button id='bottom'>Shove to bottom</button>",
+          "<div id='list'></div>",
+          "<div id='g_div'></div>",
+          "<div id='events'></div>" ].join("\n");
      },
 
     run: function() {

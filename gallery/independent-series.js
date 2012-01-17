@@ -5,84 +5,84 @@ Gallery.register(
     name: 'Independent Series',
     title: 'Independent Series',
     setup: function(parent) {
-      parent.innerHTML = 
-    "<p>By using the <i>connectSeparated</i> attribute, it's possible to display a chart of several time series with completely independent x-values.</p> \
-\
-    <p>The trick is to specify values for the series at the union of the x-values of all series. For one series' x values, specify <code>null</code> for each of the other series.</p> \
-\
-    <div id='graph' style='float: right; margin-right: 50px; width: 400px; height: 300px;'></div> \
-    <p>For example, say you had two series:</p> \
-    <table><tr> \
-    <td valign=top> \
-    <table> \
-      <table class='thinborder'> \
-        <tr><th>x</th><th>A</th></tr> \
-        <tr><td>2</td><td>2</td></tr> \
-        <tr><td>4</td><td>6</td></tr> \
-        <tr><td>6</td><td>4</td></tr> \
-      </table> \
-    </td> \
-    <td valign=top style='padding-left:25px;'> \
-      <table class='thinborder'> \
-        <tr><th>x</th><th>B</th></tr> \
-        <tr><td>1</td><td>3</td></tr> \
-        <tr><td>3</td><td>7</td></tr> \
-        <tr><td>5</td><td>5</td></tr> \
-      </table> \
-    </td> \
-    </tr></table> \
-\
-    <p>Then you would specify the following CSV or native data:</p> \
-    <table><tr> \
-    <td valign=top> \
-    (CSV) \
-    <pre id='csv1'></pre> \
-    </td> \
-    <td valign=top style='padding-left: 25px;'>\
-    (native) \
-    <pre id='native1'></pre> \
-    </td> \
-    </tr></table> \
-\
-    <h3>Encoding a gap</h3>\
-    <p>There's one extra wrinkle. What if one of the series has a missing \
-    value, i.e. what if your series are something like </p> \
-\
-    <table><tr> \
-    <td valign=top> \
-    <table> \
-      <table class='thinborder'> \
-        <tr><th>x</th><th>A</th></tr> \
-        <tr><td>2</td><td>2</td></tr> \
-        <tr><td>4</td><td>4</td></tr> \
-        <tr><td>6</td><td>(gap)</td></tr> \
-        <tr><td>8</td><td>8</td></tr> \
-        <tr><td>10</td><td>10</td></tr> \
-      </table> \
-    </td> \
-    <td valign=top style='padding-left:25px;'> \
-      <table class='thinborder'> \
-        <tr><th>x</th><th>B</th></tr> \
-        <tr><td>1</td><td>3</td></tr> \
-        <tr><td>3</td><td>5</td></tr> \
-        <tr><td>5</td><td>7</td></tr> \
-      </table> \
-    </td> \
-    </tr></table> \
-\
-    <div id='graph2' style='float: right; margin-right: 50px; width: 400px; height: 300px;'></div> \
-    <p>The gap would normally be encoded as a null, or missing value. But when you use <code>connectSeparatedPoints</code>, that has a special meaning. Instead, you have to use <code>NaN</code>. This is a bit of a hack, but it gets the job done.</p> \
-\
-    <table><tr> \
-    <td valign=top> \
-    (CSV) \
-    <pre id='csv2'></pre> \
-    </td> \
-    <td valign=top style='padding-left: 25px;'> \
-    (native) \
-    <pre id='native2'></pre> \
-    </td> \
-    </tr></table>"
+      parent.innerHTML = [
+    "<p>By using the <i>connectSeparated</i> attribute, it's possible to display a chart of several time series with completely independent x-values.</p> ",
+    "",
+    "<p>The trick is to specify values for the series at the union of the x-values of all series. For one series' x values, specify <code>null</code> for each of the other series.</p> ",
+    "",
+    "<div id='graph' style='float: right; margin-right: 50px; width: 400px; height: 300px;'></div> ",
+    "<p>For example, say you had two series:</p> ",
+    "<table><tr> ",
+    "<td valign=top> ",
+    "<table> ",
+    "  <table class='thinborder'> ",
+    "    <tr><th>x</th><th>A</th></tr> ",
+    "    <tr><td>2</td><td>2</td></tr> ",
+    "    <tr><td>4</td><td>6</td></tr> ",
+    "    <tr><td>6</td><td>4</td></tr> ",
+    "  </table> ",
+    "</td> ",
+    "<td valign=top style='padding-left:25px;'> ",
+    "  <table class='thinborder'> ",
+    "    <tr><th>x</th><th>B</th></tr> ",
+    "    <tr><td>1</td><td>3</td></tr> ",
+    "    <tr><td>3</td><td>7</td></tr> ",
+    "    <tr><td>5</td><td>5</td></tr> ",
+    "  </table> ",
+    "</td> ",
+    "</tr></table> ",
+    "",
+    "<p>Then you would specify the following CSV or native data:</p> ",
+    "<table><tr> ",
+    "<td valign=top> ",
+    "(CSV) ",
+    "<pre id='csv1'></pre> ",
+    "</td> ",
+    "<td valign=top style='padding-left: 25px;'>",
+    "(native) ",
+    "<pre id='native1'></pre> ",
+    "</td> ",
+    "</tr></table> ",
+    "",
+    "<h3>Encoding a gap</h3>",
+    "<p>There's one extra wrinkle. What if one of the series has a missing ",
+    "value, i.e. what if your series are something like </p> ",
+    "",
+    "<table><tr> ",
+    "<td valign=top> ",
+    "<table> ",
+    "  <table class='thinborder'> ",
+    "    <tr><th>x</th><th>A</th></tr> ",
+    "    <tr><td>2</td><td>2</td></tr> ",
+    "    <tr><td>4</td><td>4</td></tr> ",
+    "    <tr><td>6</td><td>(gap)</td></tr> ",
+    "    <tr><td>8</td><td>8</td></tr> ",
+    "    <tr><td>10</td><td>10</td></tr> ",
+    "  </table> ",
+    "</td> ",
+    "<td valign=top style='padding-left:25px;'> ",
+    "  <table class='thinborder'> ",
+    "    <tr><th>x</th><th>B</th></tr> ",
+    "    <tr><td>1</td><td>3</td></tr> ",
+    "    <tr><td>3</td><td>5</td></tr> ",
+    "    <tr><td>5</td><td>7</td></tr> ",
+    "  </table> ",
+    "</td> ",
+    "</tr></table> ",
+    "",
+    "<div id='graph2' style='float: right; margin-right: 50px; width: 400px; height: 300px;'></div> ",
+    "<p>The gap would normally be encoded as a null, or missing value. But when you use <code>connectSeparatedPoints</code>, that has a special meaning. Instead, you have to use <code>NaN</code>. This is a bit of a hack, but it gets the job done.</p> ",
+    "",
+    "<table><tr> ",
+    "<td valign=top> ",
+    "(CSV) ",
+    "<pre id='csv2'></pre> ",
+    "</td> ",
+    "<td valign=top style='padding-left: 25px;'> ",
+    "(native) ",
+    "<pre id='native2'></pre> ",
+    "</td> ",
+    "</tr></table>"].join("\n");
     },
     run: function() {
       document.getElementById("csv1").textContent =
