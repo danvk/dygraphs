@@ -57,14 +57,19 @@ CanvasRenderingContext2D.prototype.dashedLineToArrayEquals_ = function(array1, a
  * @param y2 The end of the line's y coordinate.
  * @param pattern The dash pattern to draw, an array of integers where even
  * index is draw and odd index is not drawn (Ex. [10, 2, 5, 2], 10 is drawn 5 
- * is draw, 2 is the space between.).
+ * is draw, 2 is the space between.). A null patern of array of length one will
+ * do just a solid line.
  */
 CanvasRenderingContext2D.prototype.dashedLine = function(x, y, x2, y2, pattern) {
   //Original version http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvas
   //Modified by Russell Valentine to keep line history and continue the pattern where it left off.
   var dx, dy, len, rot, dc, di, draw, segment;
   
-  if (!pattern) pattern = [10,5];
+  if (!pattern || pattern.length === 1) {
+    this.moveTo(x, y);
+    this.lineTo(x2, y2);
+    return;
+  }
   if(!this.dashedLineToArrayEquals_(pattern, this.dashedLineToHistoryPattern_)) {
     this.dashedLineToHistoryPattern_ = pattern;
     this.dashedLineToHistory_=[0, 0];
@@ -921,6 +926,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       strokePattern = [2, 2];
     } else if (strokePattern === 'dashdotted') {
       strokePattern = [7, 2, 2, 2];
+    } else if(strokePattern && !strokePattern.length) {
+      strokePattern = null;
     }
     for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       point = points[j];
@@ -930,12 +937,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           ctx.beginPath();
           ctx.strokeStyle = color;
           ctx.lineWidth = this.attr_('strokeWidth');
-          if(strokePattern) {
-            ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
-          } else {
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(point.canvasx, prevY);
-          }
+          ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
           ctx.stroke();
         }
         // this will make us move to the next point, not draw a line to it.
@@ -963,17 +965,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineWidth = strokeWidth;
             ctx.moveTo(prevX, prevY);
             if (stepPlot) {
-              if(strokePattern) {
-                ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
-              } else {
-                ctx.lineTo(point.canvasx, prevY);
-              }
+              ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
             }
-            if(strokePattern) {
-              ctx.dashedLine(prevX, prevY, point.canvasx, point.canvasy, strokePattern);
-            } else {
-              ctx.lineTo(point.canvasx, point.canvasy);
-            }
+            ctx.dashedLine(prevX, prevY, point.canvasx, point.canvasy, strokePattern);
             prevX = point.canvasx;
             prevY = point.canvasy;
             ctx.stroke();
