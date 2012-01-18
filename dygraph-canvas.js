@@ -29,6 +29,7 @@
 "use strict";
 
 /**
+ * @private
  * Compares two arrays to see if they are equal. If any of the parameters are
  * not arrays it will return false.
  * @param array1 First array
@@ -912,6 +913,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
     var strokePattern = this.dygraph_.attr_("strokePattern", setName);
+    if (strokePattern === 'solid') {
+      strokePattern = null;
+    } else if (strokePattern === 'dashed') {
+      strokePattern = [7, 3];
+    } else if (strokePattern === 'dotted') {
+      strokePattern = [2, 2];
+    } else if (strokePattern === 'dashdotted') {
+      strokePattern = [7, 2, 2, 2];
+    }
     for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       point = points[j];
       if (isNullOrNaN(point.canvasy)) {
