@@ -2855,7 +2855,6 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           var ann = {};
           ann.series = data.getColumnLabel(col);
           ann.xval = row[0];
-          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length);
           ann.shortText = String.fromCharCode(65 /* A */ + annotations.length % 26) + Math.floor(annotations.length / 26);
           ann.text = '';
           for (var k = 0; k < annotationCols[col].length; k++) {
