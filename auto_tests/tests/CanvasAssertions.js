@@ -66,6 +66,9 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
         found = matchp1 ? 1 : 2;
       }
     }
+    if(!found && call.name == "dashedLine") {
+      return;
+    }
     priorFound = found;
   }
 
@@ -93,7 +96,7 @@ CanvasAssertions.numLinesDrawn = function(proxy, color) {
   var num_lines = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
     var call = proxy.calls__[i];
-    if (call.name == "lineTo" && call.properties.strokeStyle == color) {
+    if ((call.name == "lineTo" || call.name == 'dashedLine') && call.properties.strokeStyle == color) {
       num_lines++;
     }
   }
@@ -107,6 +110,16 @@ CanvasAssertions.matchPixels = function(expected, actual) {
   return Math.abs(expected[0] - actual[0]) < 1 &&
       Math.abs(expected[1] - actual[1]) < 1;
 }
+
+CanvasAssertions.matchPathPixels = function(expected, actual) {
+  // Expect array of four integers. Assuming the values are within one
+  // integer unit of each other. This should be tightened down by someone
+  // who knows what pixel a value of 5.8888 results in.
+  return Math.abs(expected[0] - actual[0]) < 1 &&
+      Math.abs(expected[1] - actual[1]) < 1 &&
+      Math.abs(expected[2] - actual[2]) < 1 &&
+      Math.abs(expected[3] - actual[3]) < 1;
+};
 
 CanvasAssertions.matchAttributes = function(expected, actual) {
   for (var attr in expected) {
