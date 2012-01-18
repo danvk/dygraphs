@@ -32,14 +32,17 @@
           [new Date(2008, 11 ,5), 41476, 'Bought Pens','Bought 200k pens', 66467, undefined, undefined],
           [new Date(2008, 11 ,6), 33322, undefined, undefined, 39463, undefined, undefined]
         ]);
-
-        for(var j=0; j<12; j++) {
-          for(var i=1; i<32; i++) {
-            data.addRows([
-              [new Date(2009, j ,i), i*1000, 'title1-' + i, 'text1 ' + (i*1000 - i ), ( i*2000 + i ), 'title2-' + i, 'text2 ' + i*1000],
-            ]);
+        
+        for(var y=0; y <3; y++) {
+          for(var j=0; j<12; j++) {
+            for(var i=1; i<32; i++) {
+              data.addRows([
+                [new Date(2009 + y, j ,i), i*1000, 'title1-' + i, 'text1 ' + (i*1000 - i ), ( i*2000 + i ), 'title2-' + i, 'text2 ' + i*1000],
+              ]);
+            }
           }
         }
+
         var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('gviz_div'));
         chart.draw(data, {displayAnnotations: true});
 
