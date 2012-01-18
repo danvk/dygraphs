@@ -1547,20 +1547,16 @@ Dygraph.prototype.generateLegendDashHTML_ = function(strokePattern, color) {
   var dash;
   if(strokePattern === 'dotted') {
     dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px "+strokePattern+" "+color+";\"></div>";
-  } else if(strokePattern === 'dashed') {
-    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; height: 2px;\">"+
-    "<div style=\"display: inline-block; background-color: "+color+";padding-left: .4em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block;padding-left: .2em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block; background-color: "+color+";padding-left: .4em; padding-bottom: 2px;\"></div>"+
-    "</div>";
+  } else if(strokePattern == 'dashed') {
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-left: .2em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
   } else if(strokePattern === 'dashdotted') {
-    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; height: 2px;\">"+
-    "<div style=\"display: inline-block; background-color: "+color+";padding-left: .3em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block;padding-left: .1em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block; background-color: "+color+";padding-left: .1em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block;padding-left: .1em; padding-bottom: 2px;\"></div>"+
-    "<div style=\"display: inline-block; background-color: "+color+";padding-left: .3em; padding-bottom: 2px;\"></div>"+
-    "</div>";
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
   } else {
     dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
   }
