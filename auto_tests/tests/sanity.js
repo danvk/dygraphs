@@ -80,6 +80,8 @@ SanityTestCase.prototype.testYAxisRange_custom = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, { valueRange: [0,50] });
   assertEquals([0, 50], g.yAxisRange(0));
+  g.updateOptions({valueRange: null, axes: {y: {valueRange: [10, 40]}}});
+  assertEquals([10, 40], g.yAxisRange(0));
 };
 
 /**
@@ -95,7 +97,15 @@ SanityTestCase.prototype.testToDomYCoord = function() {
 
   assertEquals(50, g.toDomYCoord(0));
   assertEquals(0, g.toDomYCoord(50));
-  
+
+  for (var x = 0; x <= 50; x++) {
+    assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+  }
+  g.updateOptions({valueRange: null, axes: {y: {valueRange: [0, 50]}}});
+
+  assertEquals(50, g.toDomYCoord(0));
+  assertEquals(0, g.toDomYCoord(50));
+
   for (var x = 0; x <= 50; x++) {
     assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
   }
