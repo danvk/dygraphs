@@ -1548,14 +1548,11 @@ Dygraph.prototype.generateLegendDashHTML_ = function(strokePattern, color) {
   if(strokePattern === 'dotted') {
     dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px "+strokePattern+" "+color+";\"></div>";
   } else if(strokePattern == 'dashed') {
-    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
-    "<div style=\"display: inline-block; margin-left: .2em; height: 1px\"></div>"+
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-right: .2em; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
     "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
   } else if(strokePattern === 'dashdotted') {
     dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
-    "<div style=\"display: inline-block; margin-left: .1em; height: 1px;\"></div>"+
-    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
-    "<div style=\"display: inline-block; margin-left: .1em; height: 1px;\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-left: .1em; margin-right: .1em; padding-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
     "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
   } else {
     dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";

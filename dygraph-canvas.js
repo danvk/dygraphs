@@ -65,14 +65,14 @@ CanvasRenderingContext2D.prototype.dashedLine = function(x, y, x2, y2, pattern) 
   //Modified by Russell Valentine to keep line history and continue the pattern where it left off.
   var dx, dy, len, rot, dc, di, draw, segment;
   
+  if(!this.dashedLineToArrayEquals_(pattern, this.dashedLineToHistoryPattern_)) {
+    this.dashedLineToHistoryPattern_ = pattern;
+    this.dashedLineToHistory_=[0, 0];
+  }
   if (!pattern || pattern.length === 1) {
     this.moveTo(x, y);
     this.lineTo(x2, y2);
     return;
-  }
-  if(!this.dashedLineToArrayEquals_(pattern, this.dashedLineToHistoryPattern_)) {
-    this.dashedLineToHistoryPattern_ = pattern;
-    this.dashedLineToHistory_=[0, 0];
   }
   this.save();
   dx = (x2-x);
@@ -963,7 +963,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = strokeWidth;
-            ctx.moveTo(prevX, prevY);
             if (stepPlot) {
               ctx.dashedLine(prevX, prevY, point.canvasx, prevY, strokePattern);
             }
