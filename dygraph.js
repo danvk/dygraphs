@@ -2855,7 +2855,17 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           var ann = {};
           ann.series = data.getColumnLabel(col);
           ann.xval = row[0];
-          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length % 26) + Math.floor(annotations.length / 26);
+
+          // base26 numbering with A - Z, Aa-Zz, Aaa-Zzz,...
+          var ann_len = annotations.length; 
+          var suffix = String.fromCharCode(65 /* A */ + ann_len % 26);
+          ann_len = Math.floor(ann_len / 26);
+          while ( ann_len > 0 ) {
+            suffix = String.fromCharCode(65 /* A */ + (ann_len - 1) % 26 ) + suffix.toLowerCase();
+            ann_len = Math.floor((ann_len -1 )/ 26);
+          } 
+          ann.shortText = suffix;
+          
           ann.text = '';
           for (var k = 0; k < annotationCols[col].length; k++) {
             if (k) ann.text += "\n";
