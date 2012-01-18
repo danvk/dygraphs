@@ -2090,7 +2090,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
 Dygraph.prototype.computeYAxes_ = function() {
   // Preserve valueWindow settings if they exist, and if the user hasn't
   // specified a new valueRange.
-  var i, valueWindows, seriesName, axis, index;
+  var i, valueWindows, seriesName, axis, index, opts, v;
   if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
     valueWindows = [];
     for (index = 0; index < this.axes_.length; index++) {
@@ -2122,7 +2122,7 @@ Dygraph.prototype.computeYAxes_ = function() {
   // Copy global axis options over to the first axis.
   for (i = 0; i < axisOptions.length; i++) {
     var k = axisOptions[i];
-    var v = this.attr_(k);
+    v = this.attr_(k);
     if (v) this.axes_[0][k] = v;
   }
 
@@ -2136,7 +2136,7 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
     if (typeof(axis) == 'object') {
       // Add a new axis, making a copy of its per-axis options.
-      var opts = {};
+      opts = {};
       Dygraph.update(opts, this.axes_[0]);
       Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
       var yAxisId = this.axes_.length;
@@ -2170,6 +2170,22 @@ Dygraph.prototype.computeYAxes_ = function() {
       this.axes_[index].valueWindow = valueWindows[index];
     }
   }
+
+  // New axes options
+  for (axis = 0; axis < this.axes_.length; axis++) {
+    if (axis === 0) {
+      opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
+      v = opts("valueRange");
+      if (v) this.axes_[axis].valueRange = v;
+    } else {  // To keep old behavior
+      var axes = this.user_attrs_.axes;
+      if (axes && axes.y2) {
+        v = axes.y2.valueRange;
+        if (v) this.axes_[axis].valueRange = v;
+      }
+    }
+  }
+
 };
 
 /**

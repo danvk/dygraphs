@@ -70,8 +70,12 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
   g.updateOptions({  });
   assertEquals([12, 18], g.xAxisRange());
   assertEquals([10, 40], g.yAxisRange(0));
+  
+  g.updateOptions({valueRange : null, axes: {y:{valueRange : [15, 20]}}});
+  assertEquals([12, 18], g.xAxisRange());
+  assertEquals([15, 20], g.yAxisRange(0));
 
-  g.updateOptions({ dateWindow : null, valueRange : null });
+  g.updateOptions({ dateWindow : null, valueRange : null, axes: null });
   assertEquals([10, 20], g.xAxisRange());
   assertEquals([0, 55], g.yAxisRange(0));
 };
