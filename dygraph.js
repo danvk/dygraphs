@@ -1537,6 +1537,31 @@ Dygraph.prototype.idxToRow_ = function(idx) {
 
 /**
  * @private
+ * Generates legend html dash for line pattern type. Currently only 
+ * supports solid, dashed, dotted, dashdotted. If unsupport will return
+ * as if solid.
+ * @param strokePattern The pattern
+ * @param color The color of the series.
+ */
+Dygraph.prototype.generateLegendDashHTML_ = function(strokePattern, color) {
+  var dash;
+  if(strokePattern === 'dotted') {
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px "+strokePattern+" "+color+";\"></div>";
+  } else if(strokePattern == 'dashed') {
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-right: .2em; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .4em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
+  } else if(strokePattern === 'dashdotted') {
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; margin-left: .1em; margin-right: .1em; padding-left: .1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>"+
+    "<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: .3em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
+  } else {
+    dash="<div style=\"display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px solid "+color+";\"></div>";
+  }
+  return dash;
+};
+
+/**
+ * @private
  * Generates HTML for the legend which is displayed when hovering over the
  * chart. If no selected points are specified, a default legend is returned
  * (this may just be the empty string).
@@ -1548,7 +1573,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
   // If no points are selected, we display a default legend. Traditionally,
   // this has been blank. But a better default would be a conventional legend,
   // which provides essential information for a non-interactive chart.
-  var html, sepLines, i, c;
+  var html, sepLines, i, c, dash, strokePattern;
   if (typeof(x) === 'undefined') {
     if (this.attr_('legend') != 'always') return '';
 
@@ -1559,7 +1584,9 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
       if (!this.visibility()[i - 1]) continue;
       c = this.plotter_.colors[labels[i]];
       if (html !== '') html += (sepLines ? '<br/>' : ' ');
-      html += "<b><span style='color: " + c + ";'>&mdash;" + labels[i] +
+      strokePattern = this.attr_("strokePattern", labels[i]);
+      dash = this.generateLegendDashHTML_(strokePattern, c);
+      html += "<b><span style='color: " + c + ";'>"+dash+" " + labels[i] +
         "</span></b>";
     }
     return html;
@@ -2170,6 +2197,22 @@ Dygraph.prototype.computeYAxes_ = function() {
       this.axes_[index].valueWindow = valueWindows[index];
     }
   }
+
+  // New axes options
+  for(axis = 0; axis < this.axes_.length; axis++) {
+    if(axis === 0) {
+      var opts = this.optionsViewForAxis_('y'+(axis ? 2 : ''));
+      var v = opts("valueRange");
+      if (v) this.axes_[axis]["valueRange"] = v;
+    } else { //To keep old behavior
+      var axes = this.user_attrs_.axes;
+      if(axes && axes.y2) {
+        var v = axes.y2.valueRange;
+        if (v) this.axes_[axis]["valueRange"] = v;
+      }
+    }
+  }
+
 };
 
 /**

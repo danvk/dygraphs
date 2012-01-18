@@ -263,6 +263,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "example": "0.5, 2.0",
     "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
   },
+  "strokePattern": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "string or array<integer>",
+    "example": "[10, 2, 5, 2]",
+    "description": "Acceptable strings are: solid, dashed, dotted, dashdotted. A custom pattern could be use with an array the even index is a draw and odd is a space in pixels. If null then it draws a solid line."
+  },
   "wilsonInterval": {
     "default": "true",
     "labels": ["Error Bars"],
@@ -298,7 +305,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Axis display"],
     "type": "Array of two numbers",
     "example": "[10, 110]",
-    "description": "Explicitly set the vertical range of the graph to [low, high]."
+    "description": "Explicitly set the vertical range of the graph to [low, high]. Can be used by itself to control the first y-axis or in axes to define each y-axis separately. Prefer axes: { y: { valueRange } }"
   },
   "labelsDivWidth": {
     "default": "250",

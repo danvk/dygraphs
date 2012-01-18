@@ -723,6 +723,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'showRoller': true,
     'sigFigs': true,
     'strokeWidth': true,
+    'strokePattern': true,
     'underlayCallback': true,
     'unhighlightCallback': true,
     'xAxisLabelFormatter': true,
