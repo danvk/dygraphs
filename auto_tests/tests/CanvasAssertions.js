@@ -67,7 +67,9 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
       }
     }
     if(!found && call.name == "dashedLine") {
-      return;
+      if (CanvasAssertions.matchPathPixels([p1[0], p1[1], p2[0], p2[1]], call.args)) {
+        return;
+      }
     }
     priorFound = found;
   }
