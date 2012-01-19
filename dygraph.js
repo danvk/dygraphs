@@ -2790,6 +2790,19 @@ Dygraph.prototype.parseArray_ = function(data) {
  * @private
  */
 Dygraph.prototype.parseDataTable_ = function(data) {
+  var shortTextForAnnotationNum = function(num) {
+    // converts [0-9]+ [A-Z][a-z]*
+    // example: 0=A, 1=B, 25=Z, 26=Aa, 27=Ab
+    // and continues like.. Ba Bb .. Za .. Zz..Aaa...Zzz Aaaa Zzzz
+    var shortText = String.fromCharCode(65 /* A */ + num % 26);
+    num = Math.floor(num / 26);
+    while ( num > 0 ) {
+      shortText = String.fromCharCode(65 /* A */ + (num - 1) % 26 ) + shortText.toLowerCase();
+      num = Math.floor((num - 1) / 26);
+    }
+    return shortText;
+  }
+
   var cols = data.getNumberOfColumns();
   var rows = data.getNumberOfRows();
 
@@ -2871,7 +2884,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
           var ann = {};
           ann.series = data.getColumnLabel(col);
           ann.xval = row[0];
-          ann.shortText = String.fromCharCode(65 /* A */ + annotations.length);
+          ann.shortText = shortTextForAnnotationNum(annotations.length);
           ann.text = '';
           for (var k = 0; k < annotationCols[col].length; k++) {
             if (k) ann.text += "\n";
