@@ -36,6 +36,17 @@ Dygraph.ERROR = 3;
 Dygraph.LOG_STACK_TRACES = false;
 
 /**
+ * The stroke patterns arrays for the string stroke patterns.
+ * @private
+ */
+Dygraph.DEFAULT_STROKE_PATTERNS = {
+    solid: null,
+    dashed: [7,3],
+    dotted: [2, 2],
+    dashdotted: [7, 2, 2, 2]
+};
+
+/**
  * @private
  * Log an error on the JS console at the given severity.
  * @param { Integer } severity One of Dygraph.{DEBUG,INFO,WARNING,ERROR}
@@ -777,11 +788,11 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
 };
 
 /**
- * Compares two arrays to see if they are equal. If any of the parameters are
- * not arrays it will return false.
- * @param array1 First array
+ * Compares two arrays to see if they are equal. If either parameter is not an
+ * array it will return false.
+ * @param array1 first array
  * @param array2 second array
- * @return True if all parameters are arrays and contents are equal.
+ * @return True if both parameters are arrays, and contents are equal.
  */
 Dygraph.compareArrays = function(array1, array2) {
   if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
