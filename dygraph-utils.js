@@ -775,3 +775,25 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
 
   return requiresNewPoints;
 };
+
+/**
+ * Compares two arrays to see if they are equal. If any of the parameters are
+ * not arrays it will return false.
+ * @param array1 First array
+ * @param array2 second array
+ * @return True if all parameters are arrays and contents are equal.
+ */
+Dygraph.compareArrays = function(array1, array2) {
+  if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
+    return false;
+  }
+  if (array1.length !== array2.length) {
+    return false;
+  }
+  for (var i = 0; i < array1.length; i++) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
