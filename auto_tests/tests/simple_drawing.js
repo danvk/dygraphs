@@ -56,3 +56,24 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
     lineWidth: 1
   });
 }
+
+/**
+ * Tests that it is drawing dashes, and it remember the dash history between
+ * points.
+ */
+SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
+  var opts = {
+      drawXGrid: false,
+      drawYGrid: false,
+      drawXAxis: false,
+      drawYAxis: false,
+      'Y1': {strokePattern: [25, 7, 7, 7]},
+      colors: ['#ff0000']
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, [[1, 4], [2, 5], [3, 3], [4, 7], [5, 9]], opts);
+  htx = g.hidden_ctx_;
+
+  assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+};
