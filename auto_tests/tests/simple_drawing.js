@@ -72,6 +72,9 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   };
 
   var graph = document.getElementById("graph");
+  // Set the dims so we pass if default changes.
+  graph.style.width='480px';
+  graph.style.height='320px';
   var g = new Dygraph(graph, [[1, 4], [2, 5], [3, 3], [4, 7], [5, 9]], opts);
   htx = g.hidden_ctx_;
 
