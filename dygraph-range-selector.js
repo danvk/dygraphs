@@ -342,24 +342,8 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  var interactionModel = {
-    mousedown: function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
-      Dygraph.startPan(event, g, context);
-    },
-    mousemove: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
-    mouseup: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
-    }
-  };
-
-  this.dygraph_.attrs_.interactionModel = interactionModel;
+  this.dygraph_.attrs_.interactionModel =
+      Dygraph.Interaction.dragIsPanInteractionModel;
   this.dygraph_.attrs_.panEdgeFraction = 0.0001;
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';

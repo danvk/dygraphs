@@ -418,3 +418,21 @@ Dygraph.Interaction.nonInteractiveModel_ = {
     }
   }
 };
+
+// Default interaction model when using the range selector.
+Dygraph.Interaction.dragIsPanInteractionModel = {
+  mousedown: function(event, g, context) {
+    context.initializeMouseDown(event, g, context);
+    Dygraph.startPan(event, g, context);
+  },
+  mousemove: function(event, g, context) {
+    if (context.isPanning) {
+      Dygraph.movePan(event, g, context);
+    }
+  },
+  mouseup: function(event, g, context) {
+    if (context.isPanning) {
+      Dygraph.endPan(event, g, context);
+    }
+  }
+};
