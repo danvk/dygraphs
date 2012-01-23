@@ -170,7 +170,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
-      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove;
+      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove, onCanvasDblClick;
 
   toXDataWindow = function(zoomHandleStatus) {
     var xDataLimits = self.dygraph_.xAxisExtremes();
@@ -342,6 +342,14 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
+  onCanvasDblClick = function(e) {
+    if (isMouseInPanZone(e)) {
+      var xDataLimits = self.dygraph_.xAxisExtremes();
+      self.dygraph_.doZoomXDates_(xDataLimits[0], xDataLimits[1]);
+      self.dygraph_.drawGraph_(false);
+    }
+  }
+
   var interactionModel = {
     mousedown: function(event, g, context) {
       context.initializeMouseDown(event, g, context);
@@ -368,9 +376,11 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
 
   if (this.isUsingExcanvas_) {
     Dygraph.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
+    Dygraph.addEvent(this.iePanOverlay_, 'dblclick', onCanvasDblClick);
   } else {
     Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
     Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+    Dygraph.addEvent(this.fgcanvas_, 'dblclick', onCanvasDblClick);
   }
 };
 
