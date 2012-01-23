@@ -18,6 +18,9 @@
       connected with lines, and hovering over them should produce dot and legend
       overlays in the proper color.</p>
 
+    <p>When zoomed out, the bounds of the graph should be at 2009/12/01 and
+    2009/12/07; the all-null row with date 2009/12/11 should be ignored.</p>
+
     <div id="graphdiv" style="width:600px; height:300px;"></div>
     <script type="text/javascript">
       var g = new Dygraph(document.getElementById("graphdiv"),
@@ -28,7 +31,8 @@
         [ new Date("2009/12/04"), 20, 14, null],
         [ new Date("2009/12/05"), 15, null, 17],
         [ new Date("2009/12/06"), 18, null, null],
-        [ new Date("2009/12/07"), 12, 14, null]
+        [ new Date("2009/12/07"), 12, 14, null],
+        [ new Date("2009/12/11"), null, null, null ]
       ],
       {
         connectSeparatedPoints: true,
