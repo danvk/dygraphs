@@ -311,7 +311,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
                           (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
-    inner_div.appendChild(document.createTextNode(txt));
+    inner_div.innerHTML=txt;
     div.appendChild(inner_div);
     return div;
   };
