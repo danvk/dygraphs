@@ -195,7 +195,7 @@ function upV4(event, g, context) {
 }
 
 function dblClickV4(event, g, context) {
-  restorePositioning(g4);
+  restorePositioning(g);
 }
 
 function drawV4(x, y) {

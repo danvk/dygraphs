@@ -62,6 +62,12 @@ function offsetToPercentage(g, offsetX, offsetY) {
 function dblClickV3(event, g, context) {
   // Reducing by 20% makes it 80% the original size, which means
   // to restore to original size it must grow by 25%
+
+  if (!(event.offsetX && event.offsetY)){
+    event.offsetX = event.layerX - event.target.offsetLeft;
+    event.offsetY = event.layerY - event.target.offsetTop;
+  }
+
   var percentages = offsetToPercentage(g, event.offsetX, event.offsetY);
   var xPct = percentages[0];
   var yPct = percentages[1];
@@ -88,6 +94,11 @@ function scrollV3(event, g, context) {
   // For me the normalized value shows 0.075 for one click. If I took
   // that verbatim, it would be a 7.5%.
   var percentage = normal / 50;
+
+  if (!(event.offsetX && event.offsetY)){
+    event.offsetX = event.layerX - event.target.offsetLeft;
+    event.offsetY = event.layerY - event.target.offsetTop;
+  }
 
   var percentages = offsetToPercentage(g, event.offsetX, event.offsetY);
   var xPct = percentages[0];
