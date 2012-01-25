@@ -839,12 +839,14 @@ Dygraph.prototype.createInterface_ = function() {
 
   this.createStatusMessage_();
   this.createDragInterface_();
+  
+  this.resizeHandler = function(e) {
+	  dygraph.resize();
+  }
 
   // Update when the window is resized.
   // TODO(danvk): drop frames depending on complexity of the chart.
-  Dygraph.addEvent(window, 'resize', function(e) {
-    dygraph.resize();
-  });
+  Dygraph.addEvent(window, 'resize', this.resizeHandler);
 };
 
 /**
@@ -868,7 +870,9 @@ Dygraph.prototype.destroy = function() {
       }
     }
   };
-
+  // remove event handlers 
+  Dygraph.removeEvent(window,'resize',this.resizeHandler);
+  this.resizeHandler = null;
   // These may not all be necessary, but it can't hurt...
   nullOut(this.layout_);
   nullOut(this.plotter_);
