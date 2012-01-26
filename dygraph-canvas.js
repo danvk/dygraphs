@@ -840,10 +840,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
     var strokePattern = this.dygraph_.attr_("strokePattern", setName);
-    if (typeof(strokePattern) === "string") {
-     // replace string with array pattern
-     strokePattern = Dygraph.DEFAULT_STROKE_PATTERNS[strokePattern];
-    } else if (!Dygraph.isArrayLike(strokePattern)) {
+    if (!Dygraph.isArrayLike(strokePattern)) {
       strokePattern = null;
     }
     for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {

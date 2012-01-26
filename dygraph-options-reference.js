@@ -266,9 +266,9 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "strokePattern": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "string or array<integer>",
+    "type": "array<integer>",
     "example": "[10, 2, 5, 2]",
-    "description": "Acceptable strings are: solid, dashed, dotted, dashdotted. A custom pattern could be use with an array the even index is a draw and odd is a space in pixels. If null then it draws a solid line."
+    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
   },
   "wilsonInterval": {
     "default": "true",

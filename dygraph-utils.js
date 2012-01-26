@@ -36,17 +36,6 @@ Dygraph.ERROR = 3;
 Dygraph.LOG_STACK_TRACES = false;
 
 /**
- * The stroke patterns arrays for the string stroke patterns.
- * @private
- */
-Dygraph.DEFAULT_STROKE_PATTERNS = {
-    solid: null,
-    dashed: [7,3],
-    dotted: [2, 2],
-    dashdotted: [7, 2, 2, 2]
-};
-
-/**
  * @private
  * Log an error on the JS console at the given severity.
  * @param { Integer } severity One of Dygraph.{DEBUG,INFO,WARNING,ERROR}
