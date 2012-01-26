@@ -839,12 +839,14 @@ Dygraph.prototype.createInterface_ = function() {
 
   this.createStatusMessage_();
   this.createDragInterface_();
+  
+  this.resizeHandler = function(e) {
+	  dygraph.resize();
+  }
 
   // Update when the window is resized.
   // TODO(danvk): drop frames depending on complexity of the chart.
-  Dygraph.addEvent(window, 'resize', function(e) {
-    dygraph.resize();
-  });
+  Dygraph.addEvent(window, 'resize', this.resizeHandler);
 };
 
 /**
@@ -868,7 +870,9 @@ Dygraph.prototype.destroy = function() {
       }
     }
   };
-
+  // remove event handlers 
+  Dygraph.removeEvent(window,'resize',this.resizeHandler);
+  this.resizeHandler = null;
   // These may not all be necessary, but it can't hurt...
   nullOut(this.layout_);
   nullOut(this.plotter_);
@@ -1525,10 +1529,19 @@ Dygraph.prototype.mouseMove_ = function(event) {
  */
 Dygraph.prototype.idxToRow_ = function(idx) {
   if (idx < 0) return -1;
-
+  //make sure that you get the boundaryIds record which is also defined (see bug #236)
+  var boundaryIdx = -1;
+  for (i =0;i< this.boundaryIds_.length;i++) {
+	  if (this.boundaryIds_[i] !== undefined) {
+		  boundaryIdx =i;
+		  break;
+	  }
+  }
+  if (boundaryIdx < 0)
+	  return -1;
   for (var i in this.layout_.datasets) {
     if (idx < this.layout_.datasets[i].length) {
-      return this.boundaryIds_[0][0]+idx;
+      return this.boundaryIds_[boundaryIdx][0]+idx;
     }
     idx -= this.layout_.datasets[i].length;
   }
