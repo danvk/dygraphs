@@ -269,8 +269,8 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     } else {
       // Getting clientX directly from the event is not accurate enough :(
       var clientX;
-      if (e.layerX != undefined || e.offsetX != undefined) {
-        clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
+      if (e.offsetX != undefined) {
+        clientX = self.canvasRect_.x + e.offsetX;
       } else {
         clientX = e.clientX;
       }
