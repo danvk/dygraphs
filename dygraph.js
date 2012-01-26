@@ -1550,18 +1550,92 @@ Dygraph.prototype.idxToRow_ = function(idx) {
 
 /**
  * @private
+ * Generates legend html dash for any stroke pattern. It will try to scale the
+ * pattern to fit in 1em width. Or if small enough repeat the partern for 1em
+ * width.
+ * @param strokePattern The pattern
+ * @param color The color of the series.
+ * @param oneEmWidth The width in pixels of 1em in the legend.
+ */
+Dygraph.prototype.generateLegendDashHTML_ = function(strokePattern, color, oneEmWidth) {
+  var dash = "";
+  var i, j, paddingLeft, marginRight;
+  var strokePixelLength = 0, segmentLoop = 0;
+  var normalizedPattern = [];
+  var loop;
+  // IE 7,8 fail at these divs, so they get boring legend, have not tested 9.
+  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
+  if(isIE) {
+    return "&mdash;";
+  }
+  if (!strokePattern || strokePattern.length <= 1) {
+    // Solid line
+    dash = "<div style=\"display: inline-block; position: relative; " +
+    "bottom: .5ex; padding-left: 1em; height: 1px; " +
+    "border-bottom: 2px solid " + color + ";\"></div>";
+  } else {
+    // Compute the length of the pixels including the first segment twice, 
+    // since we repeat it.
+    for (i = 0; i <= strokePattern.length; i++) {
+      strokePixelLength += strokePattern[i%strokePattern.length];
+    }
+
+    // See if we can loop the pattern by itself at least twice.
+    loop = Math.floor(oneEmWidth/(strokePixelLength-strokePattern[0]));
+    if (loop > 1) {
+      // This pattern fits at least two times, no scaling just convert to em;
+      for (i = 0; i < strokePattern.length; i++) {
+        normalizedPattern[i] = strokePattern[i]/oneEmWidth;
+      }
+      // Since we are repeating the pattern, we don't worry about repeating the
+      // first segment in one draw.
+      segmentLoop = normalizedPattern.length;
+    } else {
+      // If the pattern doesn't fit in the legend we scale it to fit.
+      loop = 1;
+      for (i = 0; i < strokePattern.length; i++) {
+        normalizedPattern[i] = strokePattern[i]/strokePixelLength;
+      }
+      // For the scaled patterns we do redraw the first segment.
+      segmentLoop = normalizedPattern.length+1;
+    }
+    // Now make the pattern.
+    for (j = 0; j < loop; j++) {
+      for (i = 0; i < segmentLoop; i+=2) {
+        // The padding is the drawn segment.
+        paddingLeft = normalizedPattern[i%normalizedPattern.length];
+        if (i < strokePattern.length) {
+          // The margin is the space segment.
+          marginRight = normalizedPattern[(i+1)%normalizedPattern.length];
+        } else {
+          // The repeated first segment has no right margin.
+          marginRight = 0;
+        }
+        dash += "<div style=\"display: inline-block; position: relative; " +
+          "bottom: .5ex; margin-right: " + marginRight + "em; padding-left: " +
+          paddingLeft + "em; height: 1px; border-bottom: 2px solid " + color +
+          ";\"></div>";
+      }
+    }
+  }
+  return dash;
+};
+
+/**
+ * @private
  * Generates HTML for the legend which is displayed when hovering over the
  * chart. If no selected points are specified, a default legend is returned
  * (this may just be the empty string).
  * @param { Number } [x] The x-value of the selected points.
  * @param { [Object] } [sel_points] List of selected points for the given
  * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
+ * @param { Number } [oneEmWidth] The pixel width for 1em in the legend.
  */
-Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
+Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
   // If no points are selected, we display a default legend. Traditionally,
   // this has been blank. But a better default would be a conventional legend,
   // which provides essential information for a non-interactive chart.
-  var html, sepLines, i, c;
+  var html, sepLines, i, c, dash, strokePattern;
   if (typeof(x) === 'undefined') {
     if (this.attr_('legend') != 'always') return '';
 
@@ -1572,8 +1646,10 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
       if (!this.visibility()[i - 1]) continue;
       c = this.plotter_.colors[labels[i]];
       if (html !== '') html += (sepLines ? '<br/>' : ' ');
-      html += "<b><span style='color: " + c + ";'>&mdash;" + labels[i] +
-        "</span></b>";
+      strokePattern = this.attr_("strokePattern", labels[i]);
+      dash = this.generateLegendDashHTML_(strokePattern, c, oneEmWidth);
+      html += "<span style='font-weight: bold; color: " + c + ";'>" + dash + 
+        " " + labels[i] + "</span>";
     }
     return html;
   }
@@ -1616,8 +1692,14 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points) {
  * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
  */
 Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
-  var html = this.generateLegendHTML_(x, sel_points);
   var labelsDiv = this.attr_("labelsDiv");
+  var sizeSpan = document.createElement('span');
+  // Calculates the width of 1em in pixels for the legend.
+  sizeSpan.setAttribute('style', 'margin: 0; padding: 0 0 0 1em; border: 0;');
+  labelsDiv.appendChild(sizeSpan);
+  var oneEmWidth=sizeSpan.offsetWidth;
+
+  var html = this.generateLegendHTML_(x, sel_points, oneEmWidth);
   if (labelsDiv !== null) {
     labelsDiv.innerHTML = html;
   } else {

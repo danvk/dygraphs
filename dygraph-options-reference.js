@@ -263,6 +263,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "example": "0.5, 2.0",
     "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
   },
+  "strokePattern": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "array<integer>",
+    "example": "[10, 2, 5, 2]",
+    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
+  },
   "wilsonInterval": {
     "default": "true",
     "labels": ["Error Bars"],
