@@ -255,7 +255,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
         return e.srcElement == self.iePanOverlay_;
     } else {
       // Getting clientX directly from the event is not accurate enough :(
-      var clientX = self.canvasRect_.x + (e.layerX !== undefined ? e.layerX : e.offsetX);
+      var clientX;
+      if (e.offsetX != undefined) {
+        clientX = self.canvasRect_.x + e.offsetX;
+      } else {
+        clientX = e.clientX;
+      }
       var zoomHandleStatus = self.getZoomHandleStatus_();
       return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
     }
