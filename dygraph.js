@@ -1635,8 +1635,8 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
       if (html !== '') html += (sepLines ? '<br/>' : ' ');
       strokePattern = this.attr_("strokePattern", labels[i]);
       dash = this.generateLegendDashHTML_(strokePattern, c, oneEmWidth);
-      html += "<span style='font-weight: bold; color: " + c + ";'>"+dash+" " + labels[i] +
-        "</span>";
+      html += "<span style='font-weight: bold; color: " + c + ";'>" + dash + 
+        " " + labels[i] + "</span>";
     }
     return html;
   }

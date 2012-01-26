@@ -35,6 +35,13 @@ Dygraph.ERROR = 3;
 // https://github.com/eriwen/javascript-stacktrace
 Dygraph.LOG_STACK_TRACES = false;
 
+/** A dotted line stroke pattern. */
+Dygraph.DOTTED_LINE = [2, 2];
+/** A dashed line stroke pattern. */
+Dygraph.DASHED_LINE = [7, 3];
+/** A dot dash stroke pattern. */
+Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
+
 /**
  * @private
  * Log an error on the JS console at the given severity.
@@ -778,7 +785,8 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
 
 /**
  * Compares two arrays to see if they are equal. If either parameter is not an
- * array it will return false.
+ * array it will return false. Does a shallow compare 
+ * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
  * @param array1 first array
  * @param array2 second array
  * @return True if both parameters are arrays, and contents are equal.

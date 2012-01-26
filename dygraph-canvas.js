@@ -926,19 +926,20 @@ DygraphCanvasRenderer.prototype._dashedLine = function(ctx, x, y, x2, y2, patter
   // where it left off.
   var dx, dy, len, rot, patternIndex, segment;
 
-  // If we have a different dash pattern than the last time this was called we
-  // reset our dash history and start the pattern from the begging 
-  // regardless of state of the last pattern.
-  if (!Dygraph.compareArrays(pattern, this._dashedLineToHistoryPattern)) {
-    this._dashedLineToHistoryPattern = pattern;
-    this._dashedLineToHistory = [0, 0];
-  }
   // If we don't have a pattern or it is an empty array or of size one just
   // do a solid line.
   if (!pattern || pattern.length <= 1) {
     ctx.moveTo(x, y);
     ctx.lineTo(x2, y2);
     return;
+  }
+
+  // If we have a different dash pattern than the last time this was called we
+  // reset our dash history and start the pattern from the begging 
+  // regardless of state of the last pattern.
+  if (!Dygraph.compareArrays(pattern, this._dashedLineToHistoryPattern)) {
+    this._dashedLineToHistoryPattern = pattern;
+    this._dashedLineToHistory = [0, 0];
   }
   ctx.save();
 
