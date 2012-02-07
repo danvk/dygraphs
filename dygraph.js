@@ -397,6 +397,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   Dygraph.updateDeep(this.attrs_, Dygraph.DEFAULT_ATTRS);
 
   this.boundaryIds_ = [];
+  this.setIndexByName_ = {};
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -1539,11 +1540,12 @@ Dygraph.prototype.idxToRow_ = function(idx) {
     }
   }
   if (boundaryIdx < 0) return -1;
-  for (var name in this.layout_.datasets) {
-    if (idx < this.layout_.datasets[name].length) {
+  for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
+    var set = this.layout_.datasets[setIdx];
+    if (idx < set.length) {
       return this.boundaryIds_[boundaryIdx][0] + idx;
     }
-    idx -= this.layout_.datasets[name].length;
+    idx -= set.length;
   }
   return -1;
 };
@@ -1778,8 +1780,9 @@ Dygraph.prototype.setSelection = function(row) {
   }
 
   if (row !== false && row >= 0) {
-    for (var i in this.layout_.datasets) {
-      if (row < this.layout_.datasets[i].length) {
+    for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
+      var set = this.layout_.datasets[setIdx];
+      if (row < set.length) {
         var point = this.layout_.points[pos+row];
 
         if (this.attr_("stackedGraph")) {
@@ -1788,7 +1791,7 @@ Dygraph.prototype.setSelection = function(row) {
 
         this.selPoints_.push(point);
       }
-      pos += this.layout_.datasets[i].length;
+      pos += set.length;
     }
   }
 
@@ -2114,9 +2117,15 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   var extremes = packed[1];
   this.boundaryIds_ = packed[2];
 
+  this.setIndexByName_ = {};
+  var labels = this.attr_("labels");
+  if (labels.length > 0) {
+    this.setIndexByName_[labels[0]] = 0;
+  }
   for (var i = 1; i < datasets.length; i++) {
+    this.setIndexByName_[labels[i]] = i;
     if (!this.visibility()[i - 1]) continue;
-    this.layout_.addDataset(this.attr_("labels")[i], datasets[i]);
+    this.layout_.addDataset(labels[i], datasets[i]);
   }
 
   this.computeYAxisRanges_(extremes);
@@ -3286,15 +3295,19 @@ Dygraph.prototype.annotations = function() {
 };
 
 /**
+ * Get the list of label names for this graph. The first column is the
+ * x-axis, so the data series names start at index 1.
+ */
+Dygraph.prototype.getLabels = function(name) {
+  return this.attr_("labels").slice();
+};
+
+/**
  * Get the index of a series (column) given its name. The first column is the
  * x-axis, so the data series start with index 1.
  */
 Dygraph.prototype.indexFromSetName = function(name) {
-  var labels = this.attr_("labels");
-  for (var i = 0; i < labels.length; i++) {
-    if (labels[i] == name) return i;
-  }
-  return null;
+  return this.setIndexByName_[name];
 };
 
 /**
