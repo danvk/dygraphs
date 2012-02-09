@@ -8,6 +8,9 @@ var CallbackTestCase = TestCase("callback");
 
 CallbackTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
+  this.styleSheet = document.createElement("style");
+  this.styleSheet.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(this.styleSheet);
 };
 
 CallbackTestCase.prototype.tearDown = function() {
@@ -52,3 +55,87 @@ CallbackTestCase.prototype.tearDown = function() {
    //check there are only two points (because first series is hidden)
    assertEquals(2, h_pts.length);
  };
+
+var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
+  var h_row;
+  var h_pts;
+  var h_series;
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data,
+      {
+	width: 600,
+	height : 400,
+	stackedGraph: isStacked,
+	strokeWidth: widthNormal,
+	highlightCircleSize: widthNormal * 2,
+
+	highlightSeriesOpts: {
+	  strokeWidth: widthHighlighted,
+	  highlightCircleSize: widthHighlighted * 2,
+	},
+      });
+
+  var highlightCallback	 =  function(e, x, pts, row, set) {
+    h_row = row;
+    h_pts = pts;
+    h_series = set;
+  };
+
+  g.updateOptions({highlightCallback: highlightCallback}, true);
+
+  if (isStacked) {
+    DygraphOps.dispatchMouseMove(g, 12, 6.4);
+    assertEquals(2, h_row);
+    assertEquals('b', h_series);
+
+    //now move up in the same row
+    DygraphOps.dispatchMouseMove(g, 12, 6.6);
+    assertEquals(2, h_row);
+    assertEquals('a', h_series);
+  } else {
+    DygraphOps.dispatchMouseMove(g, 11, 1.5);
+    assertEquals(1, h_row);
+    assertEquals('c', h_series);
+
+    //now move up in the same row
+    DygraphOps.dispatchMouseMove(g, 11, 2.5);
+    assertEquals(1, h_row);
+    assertEquals('b', h_series);
+  }
+};
+
+/**
+ * Test basic closest-point highlighting.
+ */
+CallbackTestCase.prototype.testClosestPointCallback = function() {
+  runClosestTest(false, 1, 3);
+}
+
+/**
+ * Test closest-point highlighting for stacked graph
+ */
+CallbackTestCase.prototype.testClosestPointStackedCallback = function() {
+  runClosestTest(true, 1, 3);
+}
+
+/**
+ * Closest-point highlighting with legend CSS - border around active series.
+ */
+CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
+  var css = "div.dygraph-legend > span { display: block; }\n" +
+    "div.dygraph-legend > span.highlight { border: 1px solid grey; }\n";
+  this.styleSheet.innerHTML = css;
+  runClosestTest(false, 2, 4);
+}
+
+/**
+ * Closest-point highlighting with legend CSS - show only closest series.
+ */
+CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
+  var css = "div.dygraph-legend > span { display: none; }\n" +
+    "div.dygraph-legend > span.highlight { display: inline; }\n";
+  this.styleSheet.innerHTML = css;
+  runClosestTest(false, 10, 15);
+  // TODO(klausw): verify that the highlighted line is drawn on top?
+}

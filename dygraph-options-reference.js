@@ -78,8 +78,14 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "highlightCallback": {
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(event, x, points,row)",
-    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"
+    "type": "function(event, x, points, row, closestSeries)",
+    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points, an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>, and the index of the data row corresponding to the x-coordinate. If highlightSeriesOpts is set, closestSeries is passed as an additional argument giving the name of the timeseries closest to the mouse pointer, and the callback gets called whenever this changes, including vertical movement."
+  },
+  "highlightSeriesOpts": {
+    "default": "null",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also 'highlightCallback'. Example: highlightSeriesOpts: { strokeWidth: 3 }."
   },
   "includeZero": {
     "default": "false",
