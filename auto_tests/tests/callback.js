@@ -103,6 +103,8 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
     assertEquals(1, h_row);
     assertEquals('b', h_series);
   }
+
+  return g;
 };
 
 /**
@@ -110,6 +112,16 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
  */
 CallbackTestCase.prototype.testClosestPointCallback = function() {
   runClosestTest(false, 1, 3);
+}
+
+/**
+ * Test setSelection() with series name
+ */
+CallbackTestCase.prototype.testSetSelection = function() {
+  var g = runClosestTest(false, 1, 3);
+  assertEquals(1, g.attr_('strokeWidth', 'c'));
+  g.setSelection(false, 'c');
+  assertEquals(3, g.attr_('strokeWidth', 'c'));
 }
 
 /**
