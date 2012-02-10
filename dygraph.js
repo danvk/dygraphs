@@ -1863,6 +1863,10 @@ Dygraph.prototype.clearSelection = function() {
   this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
+  if (this.highlightSet_ !== null) {
+    this.highlightSet_ = null;
+    this.renderGraph_(false, false);
+  }
 };
 
 /**
