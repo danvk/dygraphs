@@ -1804,8 +1804,10 @@ Dygraph.prototype.updateSelection_ = function() {
  * using getSelection().
  * @param { Integer } row number that should be highlighted (i.e. appear with
  * hover dots on the chart). Set to false to clear any selection.
+ * @param { seriesName } optional series name to highlight that series with the
+ * the highlightSeriesOpts setting.
  */
-Dygraph.prototype.setSelection = function(row) {
+Dygraph.prototype.setSelection = function(row, opt_seriesName) {
   // Extract the points we've selected
   this.selPoints_ = [];
   var pos = 0;
@@ -1836,6 +1838,10 @@ Dygraph.prototype.setSelection = function(row) {
     this.clearSelection();
   }
 
+  if (opt_seriesName !== undefined) {
+    this.highlightSet_ = opt_seriesName;
+    this.renderGraph_(false, false);
+  }
 };
 
 /**
