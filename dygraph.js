@@ -1831,16 +1831,16 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
     }
   }
 
+  if (opt_seriesName !== undefined) {
+    this.highlightSet_ = opt_seriesName;
+    this.renderGraph_(false, false);
+  }
+
   if (this.selPoints_.length) {
     this.lastx_ = this.selPoints_[0].xval;
     this.updateSelection_();
   } else {
     this.clearSelection();
-  }
-
-  if (opt_seriesName !== undefined) {
-    this.highlightSet_ = opt_seriesName;
-    this.renderGraph_(false, false);
   }
 };
 
