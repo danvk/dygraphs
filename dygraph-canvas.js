@@ -680,12 +680,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var pointsLength = points.length;
   var point, i, j, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
 
-  var setNames = [];
-  for (var name in this.layout.datasets) {
-    if (this.layout.datasets.hasOwnProperty(name)) {
-      setNames.push(name);
-    }
-  }
+  var setNames = this.layout.setNames;
   var setCount = setNames.length;
 
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
@@ -827,8 +822,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var afterLastIndexInSet = 0;
   var setLength = 0;
   for (i = 0; i < setCount; i += 1) {
+    firstIndexInSet = this.layout.setPointsOffsets[i];
     setLength = this.layout.setPointsLengths[i];
-    afterLastIndexInSet += setLength;
+    afterLastIndexInSet = firstIndexInSet + setLength;
     setName = setNames[i];
     color = this.colors[setName];
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
@@ -896,7 +892,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         }
       }
     }
-    firstIndexInSet = afterLastIndexInSet;
   }
 
   context.restore();
