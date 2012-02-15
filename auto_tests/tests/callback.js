@@ -45,7 +45,7 @@ CallbackTestCase.prototype.tearDown = function() {
          width: 100,
          height : 100,
          visibility: [false, true, true],
-         highlightCallback : highlightCallback,
+         highlightCallback : highlightCallback
        });
 
    DygraphOps.dispatchMouseMove(g, 13, 10);
@@ -64,19 +64,19 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data,
       {
-	width: 600,
-	height : 400,
-	stackedGraph: isStacked,
-	strokeWidth: widthNormal,
-	highlightCircleSize: widthNormal * 2,
+        width: 600,
+        height : 400,
+        stackedGraph: isStacked,
+        strokeWidth: widthNormal,
+        highlightCircleSize: widthNormal * 2,
 
-	highlightSeriesOpts: {
-	  strokeWidth: widthHighlighted,
-	  highlightCircleSize: widthHighlighted * 2,
-	},
+        highlightSeriesOpts: {
+          strokeWidth: widthHighlighted,
+          highlightCircleSize: widthHighlighted * 2
+        }
       });
 
-  var highlightCallback	 =  function(e, x, pts, row, set) {
+  var highlightCallback  =  function(e, x, pts, row, set) {
     h_row = row;
     h_pts = pts;
     h_series = set;
