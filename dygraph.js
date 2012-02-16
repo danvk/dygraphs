@@ -1332,7 +1332,7 @@ Dygraph.prototype.doUnzoom_ = function() {
   }
 
   for (var i = 0; i < this.axes_.length; i++) {
-    if (this.axes_[i].valueWindow !== null) {
+    if (typeof(this.axes_[i].valueWindow) !== 'undefined' && this.axes_[i].valueWindow !== null) {
       dirty = true;
       dirtyY = true;
     }
@@ -1384,7 +1384,8 @@ Dygraph.prototype.doUnzoom_ = function() {
 
       newValueRanges = [];
       for (i = 0; i < this.axes_.length; i++) {
-        newValueRanges.push(this.axes_[i].extremeRange);
+        var axis = this.axes_[i];
+        newValueRanges.push(axis.valueRange != null ? axis.valueRange : axis.extremeRange);
       }
     }
 
