@@ -187,6 +187,8 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
+  highlightSeriesBackgroundFade: 0,
+  highlightSeriesAnimated: false,
 
   labelsDivWidth: 250,
   labelsDivStyles: {
@@ -1748,17 +1750,62 @@ Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
   }
 };
 
+Dygraph.prototype.animateSelection_ = function(direction) {
+  var totalSteps = 10;
+  var millis = 30;
+  if (this.fadeLevel === undefined) {
+    this.fadeLevel = 0;
+    this.animateId = 0;
+  }
+  var start = this.fadeLevel;
+  var steps = direction < 0 ? start : totalSteps - start;
+  if (steps <= 0) {
+    if (this.fadeLevel) {
+      this.updateSelection_(1.0);
+    }
+    return;
+  }
+
+  var thisId = ++this.animateId;
+  var that = this;
+  Dygraph.repeatAndCleanup(function(n) {
+        // ignore simultaneous animations
+        if (that.animateId != thisId) return;
+
+        that.fadeLevel += direction;
+        if (that.fadeLevel === 0) {
+          that.clearSelection();
+        } else {
+          that.updateSelection_(that.fadeLevel / totalSteps);
+        }
+      },
+      steps, millis, function() {});
+};
+
 /**
  * Draw dots over the selectied points in the data series. This function
  * takes care of cleanup of previously-drawn dots.
  * @private
  */
-Dygraph.prototype.updateSelection_ = function() {
+Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   // Clear the previously drawn vertical, if there is one
   var i;
   var ctx = this.canvas_ctx_;
   if (this.attr_('highlightSeriesOpts')) {
     ctx.clearRect(0, 0, this.width_, this.height_);
+    var alpha = this.attr_('highlightSeriesBackgroundFade');
+    if (alpha) {
+      if (this.attr_('highlightSeriesAnimate')) {
+        if (opt_animFraction === undefined) {
+          // start a new animation
+          this.animateSelection_(1);
+          return;
+        }
+        alpha *= opt_animFraction;
+      }
+      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      ctx.fillRect(0, 0, this.width_, this.height_);
+    }
     this.plotter_._drawLine(ctx, this.indexFromSetName(this.highlightSet_) - 1);
   } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
@@ -1875,7 +1922,12 @@ Dygraph.prototype.mouseOut_ = function(event) {
  */
 Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
+  if (this.fadeLevel) {
+    this.animateSelection_(-1);
+    return;
+  }
   this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
+  this.fadeLevel = 0;
   this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
