@@ -331,3 +331,20 @@ InteractionModelTestCase.prototype.testIsZoomed_updateOptions_both = function() 
   assertTrue(g.isZoomed("x"));
   assertTrue(g.isZoomed("y"));
 };
+
+
+InteractionModelTestCase.prototype.testCorrectYAxisValueRangeAfterUnzoom = function() {
+  var g = new Dygraph(document.getElementById("graph"), data2, {valueRange:[1,50],animatedZooms:true});
+  
+  currentYAxisRange = g.yAxisRange(0);
+  assertEquals(1,currentYAxisRange[0]);
+  assertEquals(50,currentYAxisRange[1]);
+  
+  g.updateOptions({dateWindow: [-1, 1], valueWindow: [5, 10]});
+
+  DygraphOps.dispatchDoubleClick(g, null);
+  
+  newYAxisRange = g.yAxisRange(0);
+  assertEquals(1,newYAxisRange[0]);
+  assertEquals(50,newYAxisRange[1]);
+};
