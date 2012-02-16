@@ -203,6 +203,8 @@ Dygraph.DEFAULT_ATTRS = {
   sigFigs: null,
 
   strokeWidth: 1.0,
+  strokeBorderWidth: 0,
+  strokeBorderColor: "white",
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
@@ -1552,9 +1554,6 @@ Dygraph.prototype.mouseMove_ = function(event) {
   this.lastx_ = lastx;
   this.highlightSet_ = highlightSet;
 
-  if (highlightSeriesOpts) {
-    this.renderGraph_(false, false);
-  }
   this.updateSelection_();
 };
 
@@ -1758,7 +1757,10 @@ Dygraph.prototype.updateSelection_ = function() {
   // Clear the previously drawn vertical, if there is one
   var i;
   var ctx = this.canvas_ctx_;
-  if (this.previousVerticalX_ >= 0) {
+  if (this.attr_('highlightSeriesOpts')) {
+    ctx.clearRect(0, 0, this.width_, this.height_);
+    this.plotter_._drawLine(ctx, this.indexFromSetName(this.highlightSet_) - 1);
+  } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
     var labels = this.attr_('labels');
@@ -1834,17 +1836,20 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
     }
   }
 
-  if (!this.selPoints_.length) {
-    this.clearSelection();
+  var update = false;
+  if (this.selPoints_.length) {
+    this.lastx_ = this.selPoints_[0].xval;
+    update = true;
+  } else {
+    this.lastx_ = -1;
   }
 
   if (opt_seriesName !== undefined) {
     this.highlightSet_ = opt_seriesName;
-    this.renderGraph_(false, false);
+    update = true;
   }
 
-  if (this.selPoints_.length) {
-    this.lastx_ = this.selPoints_[0].xval;
+  if (update) {
     this.updateSelection_();
   }
 };

@@ -68,6 +68,7 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
         height : 400,
         stackedGraph: isStacked,
         strokeWidth: widthNormal,
+        strokeBorderWidth: 2,
         highlightCircleSize: widthNormal * 2,
 
         highlightSeriesOpts: {

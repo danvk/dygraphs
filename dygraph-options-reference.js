@@ -276,6 +276,20 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
   },
+  "strokeBorderWidth": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "integer",
+    "example": "0.5, 2.0",
+    "description": "Draw a border around graph lines to make crossing lines more easily distinguishable. Useful for graphs with many lines."
+  },
+  "strokeBorderColor": {
+    "default": "white",
+    "labels": ["Data Line display"],
+    "type": "string",
+    "example": "red, #ccffdd",
+    "description": "Color for the line border used if strokeBorderWidth is set."
+  },
   "wilsonInterval": {
     "default": "true",
     "labels": ["Error Bars"],
