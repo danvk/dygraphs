@@ -724,7 +724,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       for (j = 0; j < pointsLength; j++) {
         point = points[j];
         if (point.name == setName) {
-          if (!Dygraph.isOK(point.y)) {
+          if ((!stepPlot && !Dygraph.isOK(point.y)) || (stepPlot && !isNaN(prevY) && !Dygraph.isOK(prevY))) {
             prevX = NaN;
             continue;
           }
@@ -740,17 +740,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           newYs[1] = this.area.h * newYs[1] + this.area.y;
           if (!isNaN(prevX)) {
             if (stepPlot) {
-              ctx.moveTo(prevX, newYs[0]);
+              ctx.moveTo(prevX, prevYs[0]);
+              ctx.lineTo(point.canvasx, prevYs[0]);
+              ctx.lineTo(point.canvasx, prevYs[1]);
             } else {
               ctx.moveTo(prevX, prevYs[0]);
+              ctx.lineTo(point.canvasx, newYs[0]);
+              ctx.lineTo(point.canvasx, newYs[1]);
             }
-            ctx.lineTo(point.canvasx, newYs[0]);
-            ctx.lineTo(point.canvasx, newYs[1]);
-            if (stepPlot) {
-              ctx.lineTo(prevX, newYs[1]);
-            } else {
-              ctx.lineTo(prevX, prevYs[1]);
-            }
+            ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
           }
           prevYs = newYs;
