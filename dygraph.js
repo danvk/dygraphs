@@ -186,6 +186,9 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
+  highlightSeriesOpts: null,
+  highlightSeriesBackgroundFade: 0,
+  highlightSeriesAnimated: false,
 
   labelsDivWidth: 250,
   labelsDivStyles: {
@@ -202,6 +205,8 @@ Dygraph.DEFAULT_ATTRS = {
   sigFigs: null,
 
   strokeWidth: 1.0,
+  strokeBorderWidth: 0,
+  strokeBorderColor: "white",
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
@@ -452,18 +457,29 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-  if (seriesName &&
-      typeof(this.user_attrs_[seriesName]) != 'undefined' &&
-      this.user_attrs_[seriesName] !== null &&
-      typeof(this.user_attrs_[seriesName][name]) != 'undefined') {
-    return this.user_attrs_[seriesName][name];
-  } else if (typeof(this.user_attrs_[name]) != 'undefined') {
-    return this.user_attrs_[name];
-  } else if (typeof(this.attrs_[name]) != 'undefined') {
-    return this.attrs_[name];
-  } else {
-    return null;
+
+  var sources = [];
+  sources.push(this.attrs_);
+  sources.push(this.user_attrs_);
+  if (seriesName) {
+    if (this.user_attrs_.hasOwnProperty(seriesName)) {
+      sources.push(this.user_attrs_[seriesName]);
+    }
+    if (seriesName === this.highlightSet_ &&
+        this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
+      sources.push(this.user_attrs_['highlightSeriesOpts']);
+    }
   }
+
+  var ret = null;
+  for (var i = sources.length - 1; i >= 0; --i) {
+    var source = sources[i];
+    if (source.hasOwnProperty(name)) {
+      ret = source[name];
+      break;
+    }
+  }
+  return ret;
 };
 
 /**
@@ -1465,60 +1481,81 @@ Dygraph.prototype.mouseMove_ = function(event) {
   if (points === undefined) return;
 
   var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
+  var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
 
   var lastx = -1;
+  var highlightSet = null;
   var i;
 
   // Loop through all the points and find the date nearest to our current
   // location.
-  var minDist = 1e+100;
+  var minDistX = null;
   var idx = -1;
-  for (i = 0; i < points.length; i++) {
+  var l = points.length;
+  for (i = 0; i < l; i++) {
     var point = points[i];
     if (point === null) continue;
     var dist = Math.abs(point.canvasx - canvasx);
-    if (dist > minDist) continue;
-    minDist = dist;
+    if (minDistX !== null && dist > minDistX) continue;
+    minDistX = dist;
     idx = i;
   }
   if (idx >= 0) lastx = points[idx].xval;
 
   // Extract the points we've selected
   this.selPoints_ = [];
-  var l = points.length;
-  if (!this.attr_("stackedGraph")) {
-    for (i = 0; i < l; i++) {
-      if (points[i].xval == lastx) {
-        this.selPoints_.push(points[i]);
-      }
+  var minDistY = null;
+  for (i = 0; i < l; i++) {
+    var point = points[i];
+    if (point === null) continue;
+    if (point.xval == lastx) {
+      this.selPoints_.push(point);
+
+      // Find the vertically closest series
+      var dist = Math.abs(point.canvasy - canvasy);
+      if (minDistY !== null && dist > minDistY) continue;
+      minDistY = dist;
+      idx = i;
+      highlightSet = point.name;
     }
-  } else {
+  }
+  if (this.attr_("stackedGraph")) {
     // Need to 'unstack' points starting from the bottom
     var cumulative_sum = 0;
-    for (i = l - 1; i >= 0; i--) {
-      if (points[i].xval == lastx) {
-        var p = {};  // Clone the point since we modify it
-        for (var k in points[i]) {
-          p[k] = points[i][k];
-        }
-        p.yval -= cumulative_sum;
-        cumulative_sum += p.yval;
-        this.selPoints_.push(p);
+    for (var i = this.selPoints_.length - 1; i >= 0; --i) {
+      var point = this.selPoints_[i];
+      var p = {};  // Clone the point since we modify it
+      for (var k in point) {
+        p[k] = point[k];
       }
+      p.yval -= cumulative_sum;
+      cumulative_sum += p.yval;
+      this.selPoints_[i] = p;
     }
-    this.selPoints_.reverse();
   }
 
-  if (this.attr_("highlightCallback")) {
+  var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
+  var callback = this.attr_("highlightCallback");
+  if (callback) {
     var px = this.lastx_;
-    if (px !== null && lastx != px) {
-      // only fire if the selected point has changed.
-      this.attr_("highlightCallback")(event, lastx, this.selPoints_, this.idxToRow_(idx));
+    var highlightRow = this.idxToRow_(idx);
+    // If higlightSeriesStyle is active, fire when the closest series changes.
+    // Otherwise, only fire if the selected point has changed.
+    if (highlightSeriesOpts) {
+      if (px !== null && (highlightSet != this.highlightSet_ || lastx != px)) {
+        callback(event, lastx, this.selPoints_, highlightRow, highlightSet);
+      }
+      this.highlightSet_ = highlightSet;
+    } else {
+      if (px !== null && lastx != px) {
+        callback(event, lastx, this.selPoints_, highlightRow);
+      }
     }
   }
 
   // Save last x position for callbacks.
   this.lastx_ = lastx;
+  this.highlightSet_ = highlightSet;
 
   this.updateSelection_();
 };
@@ -1651,7 +1688,7 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
       if (html !== '') html += (sepLines ? '<br/>' : ' ');
       strokePattern = this.attr_("strokePattern", labels[i]);
       dash = this.generateLegendDashHTML_(strokePattern, c, oneEmWidth);
-      html += "<span style='font-weight: bold; color: " + c + ";'>" + dash + 
+      html += "<span style='font-weight: bold; color: " + c + ";'>" + dash +
         " " + labels[i] + "</span>";
     }
     return html;
@@ -1679,9 +1716,10 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
     c = this.plotter_.colors[pt.name];
     var yval = fmtFunc(pt.yval, yOptView, pt.name, this);
 
+    var cls = (pt.name == this.highlightSet_) ? " class='highlight'" : "";
     // TODO(danvk): use a template string here and make it an attribute.
-    html += " <b><span style='color: " + c + ";'>" + pt.name +
-        "</span></b>:" + yval;
+    html += "<span" + cls + ">" + " <b><span style='color: " + c + ";'>" + pt.name +
+        "</span></b>:" + yval + "</span>";
   }
   return html;
 };
@@ -1713,16 +1751,64 @@ Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
   }
 };
 
+Dygraph.prototype.animateSelection_ = function(direction) {
+  var totalSteps = 10;
+  var millis = 30;
+  if (this.fadeLevel === undefined) {
+    this.fadeLevel = 0;
+    this.animateId = 0;
+  }
+  var start = this.fadeLevel;
+  var steps = direction < 0 ? start : totalSteps - start;
+  if (steps <= 0) {
+    if (this.fadeLevel) {
+      this.updateSelection_(1.0);
+    }
+    return;
+  }
+
+  var thisId = ++this.animateId;
+  var that = this;
+  Dygraph.repeatAndCleanup(function(n) {
+        // ignore simultaneous animations
+        if (that.animateId != thisId) return;
+
+        that.fadeLevel += direction;
+        if (that.fadeLevel === 0) {
+          that.clearSelection();
+        } else {
+          that.updateSelection_(that.fadeLevel / totalSteps);
+        }
+      },
+      steps, millis, function() {});
+};
+
 /**
  * Draw dots over the selectied points in the data series. This function
  * takes care of cleanup of previously-drawn dots.
  * @private
  */
-Dygraph.prototype.updateSelection_ = function() {
+Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   // Clear the previously drawn vertical, if there is one
   var i;
   var ctx = this.canvas_ctx_;
-  if (this.previousVerticalX_ >= 0) {
+  if (this.attr_('highlightSeriesOpts')) {
+    ctx.clearRect(0, 0, this.width_, this.height_);
+    var alpha = this.attr_('highlightSeriesBackgroundFade');
+    if (alpha) {
+      if (this.attr_('highlightSeriesAnimate')) {
+        if (opt_animFraction === undefined) {
+          // start a new animation
+          this.animateSelection_(1);
+          return;
+        }
+        alpha *= opt_animFraction;
+      }
+      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      ctx.fillRect(0, 0, this.width_, this.height_);
+    }
+    this.plotter_._drawLine(ctx, this.indexFromSetName(this.highlightSet_) - 1);
+  } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
     var labels = this.attr_('labels');
@@ -1770,8 +1856,10 @@ Dygraph.prototype.updateSelection_ = function() {
  * using getSelection().
  * @param { Integer } row number that should be highlighted (i.e. appear with
  * hover dots on the chart). Set to false to clear any selection.
+ * @param { seriesName } optional series name to highlight that series with the
+ * the highlightSeriesOpts setting.
  */
-Dygraph.prototype.setSelection = function(row) {
+Dygraph.prototype.setSelection = function(row, opt_seriesName) {
   // Extract the points we've selected
   this.selPoints_ = [];
   var pos = 0;
@@ -1796,13 +1884,22 @@ Dygraph.prototype.setSelection = function(row) {
     }
   }
 
+  var update = false;
   if (this.selPoints_.length) {
     this.lastx_ = this.selPoints_[0].xval;
-    this.updateSelection_();
+    update = true;
   } else {
-    this.clearSelection();
+    this.lastx_ = -1;
   }
 
+  if (opt_seriesName !== undefined) {
+    this.highlightSet_ = opt_seriesName;
+    update = true;
+  }
+
+  if (update) {
+    this.updateSelection_();
+  }
 };
 
 /**
@@ -1826,10 +1923,16 @@ Dygraph.prototype.mouseOut_ = function(event) {
  */
 Dygraph.prototype.clearSelection = function() {
   // Get rid of the overlay data
+  if (this.fadeLevel) {
+    this.animateSelection_(-1);
+    return;
+  }
   this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
+  this.fadeLevel = 0;
   this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
+  this.highlightSet_ = null;
 };
 
 /**
