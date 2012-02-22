@@ -67,14 +67,10 @@ Dygraph.GVizChart.prototype.getSelection = function() {
 
   if (row < 0) return selection;
 
-  var col = 1;
   var datasets = this.date_graph.layout_.datasets;
-  for (var k in datasets) {
-    if (!datasets.hasOwnProperty(k)) continue;
-    selection.push({row: row, column: col});
-    col++;
+  for (var setIdx = 0; setIdx < datasets.length; ++setIdx) {
+    selection.push({row: row, column: setIdx + 1});
   }
 
   return selection;
 };
-

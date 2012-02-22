@@ -28,6 +28,7 @@
 /*global Dygraph:false,RGBColor:false */
 "use strict";
 
+
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
 
@@ -311,7 +312,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
                           (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
-    inner_div.appendChild(document.createTextNode(txt));
+    inner_div.innerHTML=txt;
     div.appendChild(inner_div);
     return div;
   };
@@ -679,12 +680,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var pointsLength = points.length;
   var point, i, j, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
 
-  var setNames = [];
-  for (var name in this.layout.datasets) {
-    if (this.layout.datasets.hasOwnProperty(name)) {
-      setNames.push(name);
-    }
-  }
+  var setNames = this.layout.setNames;
   var setCount = setNames.length;
 
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
@@ -826,8 +822,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var afterLastIndexInSet = 0;
   var setLength = 0;
   for (i = 0; i < setCount; i += 1) {
+    firstIndexInSet = this.layout.setPointsOffsets[i];
     setLength = this.layout.setPointsLengths[i];
-    afterLastIndexInSet += setLength;
+    afterLastIndexInSet = firstIndexInSet + setLength;
     setName = setNames[i];
     color = this.colors[setName];
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
@@ -844,6 +841,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       drawPointCallback = Dygraph.Circles.DEFAULT;
     }
     var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
+    var strokePattern = this.dygraph_.attr_("strokePattern", setName);
+    if (!Dygraph.isArrayLike(strokePattern)) {
+      strokePattern = null;
+    }
     for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
       point = points[j];
       if (isNullOrNaN(point.canvasy)) {
@@ -852,8 +853,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
           ctx.beginPath();
           ctx.strokeStyle = color;
           ctx.lineWidth = this.attr_('strokeWidth');
-          ctx.moveTo(prevX, prevY);
-          ctx.lineTo(point.canvasx, prevY);
+          this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
           ctx.stroke();
         }
         // this will make us move to the next point, not draw a line to it.
@@ -879,13 +879,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = strokeWidth;
-            ctx.moveTo(prevX, prevY);
             if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
+              this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
             }
+            this._dashedLine(ctx, prevX, prevY, point.canvasx, point.canvasy, strokePattern);
             prevX = point.canvasx;
             prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
             ctx.stroke();
           }
         }
@@ -907,4 +906,95 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
 
   context.restore();
+};
+
+/**
+ * This does dashed lines onto a canvas for a given pattern. You must call
+ * ctx.stroke() after to actually draw it, much line ctx.lineTo(). It remembers
+ * the state of the line in regards to where we left off on drawing the pattern.
+ * You can draw a dashed line in several function calls and the pattern will be
+ * continous as long as you didn't call this function with a different pattern
+ * in between.
+ * @param ctx The canvas 2d context to draw on.
+ * @param x The start of the line's x coordinate.
+ * @param y The start of the line's y coordinate.
+ * @param x2 The end of the line's x coordinate.
+ * @param y2 The end of the line's y coordinate.
+ * @param pattern The dash pattern to draw, an array of integers where even 
+ * index is drawn and odd index is not drawn (Ex. [10, 2, 5, 2], 10 is drawn 5
+ * is drawn, 2 is the space between.). A null pattern, array of length one, or
+ * empty array will do just a solid line.
+ * @private
+ */
+DygraphCanvasRenderer.prototype._dashedLine = function(ctx, x, y, x2, y2, pattern) {
+  // Original version http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvas
+  // Modified by Russell Valentine to keep line history and continue the pattern
+  // where it left off.
+  var dx, dy, len, rot, patternIndex, segment;
+
+  // If we don't have a pattern or it is an empty array or of size one just
+  // do a solid line.
+  if (!pattern || pattern.length <= 1) {
+    ctx.moveTo(x, y);
+    ctx.lineTo(x2, y2);
+    return;
+  }
+
+  // If we have a different dash pattern than the last time this was called we
+  // reset our dash history and start the pattern from the begging 
+  // regardless of state of the last pattern.
+  if (!Dygraph.compareArrays(pattern, this._dashedLineToHistoryPattern)) {
+    this._dashedLineToHistoryPattern = pattern;
+    this._dashedLineToHistory = [0, 0];
+  }
+  ctx.save();
+
+  // Calculate transformation parameters
+  dx = (x2-x);
+  dy = (y2-y);
+  len = Math.sqrt(dx*dx + dy*dy);
+  rot = Math.atan2(dy, dx);
+
+  // Set transformation
+  ctx.translate(x, y);
+  ctx.moveTo(0, 0);
+  ctx.rotate(rot);
+
+  // Set last pattern index we used for this pattern.
+  patternIndex = this._dashedLineToHistory[0];
+  x = 0;
+  while (len > x) {
+    // Get the length of the pattern segment we are dealing with.
+    segment = pattern[patternIndex];
+    // If our last draw didn't complete the pattern segment all the way we 
+    // will try to finish it. Otherwise we will try to do the whole segment.
+    if (this._dashedLineToHistory[1]) {
+      x += this._dashedLineToHistory[1];
+    } else {
+      x += segment;
+    }
+    if (x > len) {
+      // We were unable to complete this pattern index all the way, keep
+      // where we are the history so our next draw continues where we left off
+      // in the pattern.
+      this._dashedLineToHistory = [patternIndex, x-len];
+      x = len;
+    } else {
+      // We completed this patternIndex, we put in the history that we are on
+      // the beginning of the next segment.
+      this._dashedLineToHistory = [(patternIndex+1)%pattern.length, 0];
+    }
+
+    // We do a line on a even pattern index and just move on a odd pattern index.
+    // The move is the empty space in the dash.
+    if(patternIndex % 2 === 0) {
+      ctx.lineTo(x, 0);
+    } else {
+      ctx.moveTo(x, 0);
+    }
+    // If we are not done, next loop process the next pattern segment, or the
+    // first segment again if we are at the end of the pattern.
+    patternIndex = (patternIndex+1) % pattern.length;
+  }
+  ctx.restore();
 };

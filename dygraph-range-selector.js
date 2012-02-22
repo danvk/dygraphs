@@ -255,7 +255,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
         return e.srcElement == self.iePanOverlay_;
     } else {
       // Getting clientX directly from the event is not accurate enough :(
-      var clientX = self.canvasRect_.x + (e.layerX !== undefined ? e.layerX : e.offsetX);
+      var clientX;
+      if (e.offsetX != undefined) {
+        clientX = self.canvasRect_.x + e.offsetX;
+      } else {
+        clientX = e.clientX;
+      }
       var zoomHandleStatus = self.getZoomHandleStatus_();
       return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
     }
@@ -342,24 +347,8 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  var interactionModel = {
-    mousedown: function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
-      Dygraph.startPan(event, g, context);
-    },
-    mousemove: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
-    mouseup: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
-    }
-  };
-
-  this.dygraph_.attrs_.interactionModel = interactionModel;
+  this.dygraph_.attrs_.interactionModel =
+      Dygraph.Interaction.dragIsPanInteractionModel;
   this.dygraph_.attrs_.panEdgeFraction = 0.0001;
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
