@@ -693,7 +693,9 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'clickCallback': true,
     'digitsAfterDecimal': true,
     'drawCallback': true,
+    'drawHighlightCallback': true,
     'drawPoints': true,
+    'drawPointCallback': true,
     'drawXGrid': true,
     'drawYGrid': true,
     'fillAlpha': true,
@@ -774,4 +776,71 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   }
 
   return requiresNewPoints;
+};
+
+
+Dygraph.RegularConvex = function(sides, rotation) {
+  this.sides = sides;
+  this.rotation = rotation ? rotation : 0;
+  this.delta = Math.PI * 2 / sides;
+}
+
+Dygraph.RegularConvex.prototype.draw = function(ctx, cx, cy, radius, angleAdjustment) {
+ ctx.beginPath();
+ var first = true;
+ if (!angleAdjustment) angleAdjustment = 0;
+ var angle = this.rotation + angleAdjustment;
+
+ var x = cx + (Math.sin(angle) * radius);
+ var y = cy + (-Math.cos(angle) * radius);
+ ctx.moveTo(x, y);
+
+ for (var idx = 0; idx < this.sides; idx++) {
+   angle = (idx == this.sides - 1) ? this.rotation : (angle + this.delta);
+   var x = cx + (Math.sin(angle) * radius);
+   var y = cy + (-Math.cos(angle) * radius);
+   ctx.lineTo(x, y);
+ }
+ ctx.stroke();
+ ctx.closePath();
+}
+
+Dygraph.DrawPolygon_ = function(sides, rotation, ctx, cx, cy, color, radius, angleAdjustment) {
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = color;
+  new Dygraph.RegularConvex(sides, rotation).draw(ctx, cx, cy, radius, angleAdjustment);
+}
+
+Dygraph.Circles = {
+  DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+  },
+  TRIANGLE : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(3, Math.PI / 3, ctx, cx, cy, color, radius);
+  },
+  SQUARE : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(4, Math.PI / 4, ctx, cx, cy, color, radius);
+  },
+  DIAMOND : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(4, Math.PI / 4, ctx, cx, cy, color, radius, Math.PI / 8);
+  },
+  PENTAGON : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(5, Math.PI / 5, ctx, cx, cy, color, radius);
+  },
+  HEXAGON : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(6, Math.PI / 6, ctx, cx, cy, color, radius);
+  },
+  CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.beginPath();
+    ctx.lineStyle = color;
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+  },
+  STAR : function(g, name, ctx, cx, cy, color, radius) {
+    Dygraph.DrawPolygon_(5, 2 * Math.PI / 5, ctx, cx, cy, color, radius);
+  }
+  // TODO: plus, x.
 };
