@@ -22,7 +22,7 @@ CallbackTestCase.prototype.tearDown = function() {
  
 /**
  * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
- * is properly called when the  first series is hidden (setVisibility = false) 
+ * is properly called when the first series is hidden (setVisibility = false) 
  * 
  */
 CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
@@ -33,8 +33,6 @@ CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
     h_row = row;
     h_pts = pts;
   }; 
-
-   
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data,
@@ -52,3 +50,42 @@ CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
   //check there are only two points (because first series is hidden)
   assertEquals(2, h_pts.length);
 };
+
+
+/**
+ * Test that drawPointCallback isn't called when drawPoints is false
+ */
+CallbackTestCase.prototype.testDrawPointCallback_disabled = function() {
+  var called = false;
+
+  var callback =  function() {
+    called = true;
+  }; 
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, {
+      drawPointCallback : callback,
+    });
+
+  assertFalse(called);
+};
+
+/**
+ * Test that drawPointCallback is called when drawPoints is true
+ */
+CallbackTestCase.prototype.testDrawPointCallback_enabled = function() {
+  var called = false;
+
+  var callback =  function() {
+    called = true;
+  }; 
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, {
+      drawPoints : true,
+      drawPointCallback : callback
+    });
+
+  assertTrue(called);
+};
+// TODO * @fileoverview Test cases for drawPointCallback and drawHighlightCallback
