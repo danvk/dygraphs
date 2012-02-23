@@ -855,7 +855,7 @@ Dygraph.Circles = {
     Dygraph.DrawPolygon_(4, Math.PI / 4, ctx, cx, cy, color, radius);
   },
   DIAMOND : function(g, name, ctx, cx, cy, color, radius) {
-    Dygraph.DrawPolygon_(4, Math.PI / 4, ctx, cx, cy, color, radius, Math.PI / 8);
+    Dygraph.DrawPolygon_(4, Math.PI / 4, ctx, cx, cy, color, radius, Math.PI / 4);
   },
   PENTAGON : function(g, name, ctx, cx, cy, color, radius) {
     Dygraph.DrawPolygon_(5, Math.PI / 5, ctx, cx, cy, color, radius);
