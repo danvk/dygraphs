@@ -884,7 +884,7 @@ Dygraph.Circles = {
   },
   CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
     ctx.beginPath();
-    ctx.lineStyle = color;
+    ctx.strokeStyle = color;
     ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
     ctx.stroke();
   },
