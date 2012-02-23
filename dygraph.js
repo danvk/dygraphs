@@ -452,14 +452,14 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-  if (seriesName &&
+  if (this.user_attrs_ !== null && seriesName &&
       typeof(this.user_attrs_[seriesName]) != 'undefined' &&
       this.user_attrs_[seriesName] !== null &&
       typeof(this.user_attrs_[seriesName][name]) != 'undefined') {
     return this.user_attrs_[seriesName][name];
-  } else if (typeof(this.user_attrs_[name]) != 'undefined') {
+  } else if (this.user_attrs_ !== null && typeof(this.user_attrs_[name]) != 'undefined') {
     return this.user_attrs_[name];
-  } else if (typeof(this.attrs_[name]) != 'undefined') {
+  } else if (this.attrs_ !== null && typeof(this.attrs_[name]) != 'undefined') {
     return this.attrs_[name];
   } else {
     return null;
@@ -831,19 +831,23 @@ Dygraph.prototype.createInterface_ = function() {
   }
 
   var dygraph = this;
-  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', function(e) {
-    dygraph.mouseMove_(e);
-  });
-  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', function(e) {
-    dygraph.mouseOut_(e);
-  });
+  
+  this.mouseMoveHandler = function(e) {
+	  dygraph.mouseMove_(e);
+  };
+  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  
+  this.mouseOutHandler = function(e) {
+	  dygraph.mouseOut_(e);
+  };
+  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
   this.createStatusMessage_();
   this.createDragInterface_();
 
   this.resizeHandler = function(e) {
     dygraph.resize();
-  }
+  };
 
   // Update when the window is resized.
   // TODO(danvk): drop frames depending on complexity of the chart.
@@ -862,6 +866,10 @@ Dygraph.prototype.destroy = function() {
       node.removeChild(node.firstChild);
     }
   };
+  
+  // remove mouse event handlers
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   removeRecursive(this.maindiv_);
 
   var nullOut = function(obj) {
