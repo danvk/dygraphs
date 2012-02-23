@@ -875,6 +875,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             ctx.lineWidth = strokeWidth;
             if (stepPlot) {
               this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
+              prevX = point.canvasx;
             }
             this._dashedLine(ctx, prevX, prevY, point.canvasx, point.canvasy, strokePattern);
             prevX = point.canvasx;
