@@ -700,7 +700,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'clickCallback': true,
     'digitsAfterDecimal': true,
     'drawCallback': true,
-    'drawHighlightCallback': true,
+    'drawHighlightPointCallback': true,
     'drawPoints': true,
     'drawPointCallback': true,
     'drawXGrid': true,
@@ -809,21 +809,23 @@ Dygraph.compareArrays = function(array1, array2) {
 };
 
 /**
- * this.sides: the number of sides in the shape.
- * this.rotation: the shift of the initial angle.
- * this.delta: the angle shift for each line. If missing, creates a regular
+ * ctx: the canvas context
+ * sides: the number of sides in the shape.
+ * radius: the radius of the image.
+ * cx: center x coordate
+ * cy: center y coordinate
+ * rotationRadians: the shift of the initial angle, in radians.
+ * delta: the angle shift for each line. If missing, creates a regular
  *   polygon.
  */
-Dygraph.RegularShape_ = function(sides, rotation, delta) {
-  this.sides = sides;
-  this.rotation = rotation ? rotation : 0;
-  this.delta = delta ? delta : Math.PI * 2 / sides;
-}
+Dygraph.regularShape_ = function(
+    ctx, sides, radius, cx, cy, rotationRadians, delta) {
+  rotationRadians = rotationRadians ? rotationRadians : 0;
+  delta = delta ? delta : Math.PI * 2 / sides;
 
-Dygraph.RegularShape_.prototype.draw = function(ctx, cx, cy, radius) {
   ctx.beginPath();
   var first = true;
-  var initialAngle = this.rotation;
+  var initialAngle = rotationRadians;
   var angle = initialAngle;
 
   var computeCoordinates = function() {
@@ -837,8 +839,8 @@ Dygraph.RegularShape_.prototype.draw = function(ctx, cx, cy, radius) {
   var y = initialCoordinates[1];
   ctx.moveTo(x, y);
 
-  for (var idx = 0; idx < this.sides; idx++) {
-    angle = (idx == this.sides - 1) ? initialAngle : (angle + this.delta);
+  for (var idx = 0; idx < sides; idx++) {
+    angle = (idx == sides - 1) ? initialAngle : (angle + delta);
     var coords = computeCoordinates();
     ctx.lineTo(coords[0], coords[1]);
   }
@@ -846,8 +848,16 @@ Dygraph.RegularShape_.prototype.draw = function(ctx, cx, cy, radius) {
   ctx.closePath();
 }
 
-Dygraph.DrawPolygon_ = function(sides, rotation, ctx, cx, cy, color, radius, delta) {
-  new Dygraph.RegularShape_(sides, rotation, delta).draw(ctx, cx, cy, radius);
+Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
+  return function(g, name, ctx, cx, cy, color, radius) {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = color;
+    Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
+  };
+};
+
+Dygraph.DrawPolygon_ = function(sides, rotationRadians, ctx, cx, cy, color, radius, delta) {
+  new Dygraph.RegularShape_(sides, rotationRadians, delta).draw(ctx, cx, cy, radius);
 }
 
 Dygraph.Circles = {
@@ -857,42 +867,18 @@ Dygraph.Circles = {
     ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
     ctx.fill();
   },
-  TRIANGLE : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(3).draw(ctx, cx, cy, radius);
-  },
-  SQUARE : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(4, Math.PI / 4).draw(ctx, cx, cy, radius);
-  },
-  DIAMOND : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(4).draw(ctx, cx, cy, radius);
-  },
-  PENTAGON : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(5).draw(ctx, cx, cy, radius);
-  },
-  HEXAGON : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(6).draw(ctx, cx, cy, radius);
-  },
+  TRIANGLE : Dygraph.shapeFunction_(3),
+  SQUARE : Dygraph.shapeFunction_(4, Math.PI / 4),
+  DIAMOND : Dygraph.shapeFunction_(4),
+  PENTAGON : Dygraph.shapeFunction_(5),
+  HEXAGON : Dygraph.shapeFunction_(6),
   CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
     ctx.stroke();
   },
-  STAR : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color;
-    new Dygraph.RegularShape_(5, 0, 4 * Math.PI / 5).draw(ctx, cx, cy, radius);
-  },
+  STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
   PLUS : function(g, name, ctx, cx, cy, color, radius) {
     ctx.lineWidth = 1;
     ctx.strokeStyle = color;

@@ -124,10 +124,10 @@ CallbackTestCase.prototype.testDrawPointCallback_pointSize = function() {
  * is properly called when the first series is hidden (setVisibility = false) 
  * 
  */
-CallbackTestCase.prototype.testDrawHighlightCallbackIsCalled = function() {
+CallbackTestCase.prototype.testDrawHighlightPointCallbackIsCalled = function() {
   var called = false;
 
-  var drawHighlightCallback  = function() {
+  var drawHighlightPointCallback  = function() {
     called = true;
   }; 
 
@@ -136,7 +136,7 @@ CallbackTestCase.prototype.testDrawHighlightCallbackIsCalled = function() {
       {
         width: 100,
         height : 100,
-        drawHighlightCallback : drawHighlightCallback
+        drawHighlightPointCallback : drawHighlightPointCallback
       });
 
   assertFalse(called);

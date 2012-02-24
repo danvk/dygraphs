@@ -87,7 +87,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "function(event, x, points,row)",
     "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"
   },
-  "drawHighlightCallback": {
+  "drawHighlightPointCallback": {
     "default": "null",
     "labels": ["Data Line display"],
     "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",

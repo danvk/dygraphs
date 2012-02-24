@@ -1753,7 +1753,7 @@ Dygraph.prototype.updateSelection_ = function() {
       if (!Dygraph.isOK(pt.canvasy)) continue;
 
       var circleSize = this.attr_('highlightCircleSize', pt.name);
-      var callback = this.attr_("drawHighlightCallback", pt.name);
+      var callback = this.attr_("drawHighlightPointCallback", pt.name);
       if (!callback) {
         callback = Dygraph.Circles.DEFAULT;
       }
