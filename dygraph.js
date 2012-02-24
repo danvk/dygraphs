@@ -1002,9 +1002,11 @@ Dygraph.prototype.createStatusMessage_ = function() {
     var div = document.createElement("div");
     div.className = "dygraph-legend";
     for (var name in messagestyle) {
-      if (messagestyle.hasOwnProperty(name)) {
-        div.style[name] = messagestyle[name];
-      }
+		try {
+			div.style[name] = messagestyle[name];
+		} catch (e) {
+			console.warn("You are using unsupported css properties for your browser in labelsDivStyles");
+		}
     }
     this.graphDiv.appendChild(div);
     this.attrs_.labelsDiv = div;
