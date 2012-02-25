@@ -41,7 +41,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart."
+    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a drawPointCallback."
+  },
+  "drawPointCallback": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "description": "Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color."
   },
   "height": {
     "default": "320",
@@ -95,6 +101,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
       ["row", "???"]
     ]
+  },
+  "drawHighlightPointCallback": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "description": "Draw a custom item when a point is highlighted. Default is a small dot matching the series color."
   },
   "includeZero": {
     "default": "false",

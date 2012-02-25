@@ -830,11 +830,17 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
 
     // setup graphics context
+    // TODO(konigsberg): This function has ctx and context. Clarify the difference.
     context.save();
     var pointSize = this.dygraph_.attr_("pointSize", setName);
     prevX = null;
     prevY = null;
     var drawPoints = this.dygraph_.attr_("drawPoints", setName);
+    var drawPointCallback = this.dygraph_.attr_("drawPointCallback", setName);
+    if (!drawPointCallback) {
+      drawPointCallback = Dygraph.Circles.DEFAULT;
+    }
+    var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
     var strokePattern = this.dygraph_.attr_("strokePattern", setName);
     if (!Dygraph.isArrayLike(strokePattern)) {
       strokePattern = null;
@@ -885,14 +891,19 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
         }
 
         if (drawPoints || isIsolated) {
-          ctx.beginPath();
-          ctx.fillStyle = color;
-          ctx.arc(point.canvasx, point.canvasy, pointSize,
-                  0, 2 * Math.PI, false);
-          ctx.fill();
+          pointsOnLine.push([point.canvasx, point.canvasy]);
         }
       }
     }
+    for (var idx = 0; idx < pointsOnLine.length; idx++) {
+      var cb = pointsOnLine[idx];
+      ctx.save();
+      drawPointCallback(
+          this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+      ctx.restore();
+
+    }
+    firstIndexInSet = afterLastIndexInSet;
   }
 
   context.restore();
