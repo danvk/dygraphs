@@ -65,9 +65,12 @@ Gallery.start = function() {
 
       Gallery.subtitle.appendChild(document.createTextNode(" "));
 
-      var cssLink = Gallery.create("a", Gallery.subtitle);
-      cssLink.textContent = "CSS";
-      cssLink.href = "#";
+      var css = getCss(id);
+      if (css) {
+        var cssLink = Gallery.create("a", Gallery.subtitle);
+        cssLink.textContent = "CSS";
+        cssLink.href = "#";
+      }
 
       Gallery.workareaChild.id = id;
       location.hash = "g/" + id;
@@ -88,7 +91,6 @@ Gallery.start = function() {
       };
 
       cssLink.onclick = function() {
-        var css = getCss(demo.title);
         Gallery.textarea.show("CSS", css);
       };
 
@@ -102,11 +104,30 @@ Gallery.start = function() {
   window.onhashchange = Gallery.setHash;("hashchange", Gallery.hashChange, false);
 };
 
-var getCss = function(section) {
-  // Pretty presumptive of me to assume the first style sheet is the correct one.
-  // TODO(konigsberg): find the right style sheet by searching.
-  var ss = document.styleSheets[0];
-  return ss.toString();
+var getCss = function(id) {
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    var ss = document.styleSheets[i];
+    if (ss.title == "gallery") {
+      try {
+        var rules = ss.rules || ss.cssRules;
+        if (rules) {
+          var arry = [];
+          for (var j = 0; j < rules.length; j++) {
+            var rule = rules[j];
+            var cssText = rule.cssText;
+            var key = "#workarea #" + id + " ";
+            if (cssText.indexOf(key) == 0) {
+              arry.push(cssText.substr(key.length));
+            }
+          }
+          return arry.join("\n\n");
+        }
+      } catch(e) { // security error
+        console.log(e);
+      }
+    }
+  }
+  return "not found";
 }
 
 Gallery.register = function(id, demo) {
