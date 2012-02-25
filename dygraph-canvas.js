@@ -659,7 +659,8 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
 };
 
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
-    ctx, i, color, strokeWidth, strokePattern, drawPoints, pointSize) {
+    ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
+    drawPointCallback, pointSize) {
   var isNullOrNaN = function(x) {
     return (x === null || isNaN(x));
   };
@@ -671,6 +672,7 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   var points = this.layout.points;
   var prevX = null;
   var prevY = null;
+  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
@@ -723,14 +725,18 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
       }
 
       if (drawPoints || isIsolated) {
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.arc(point.canvasx, point.canvasy, pointSize,
-                0, 2 * Math.PI, false);
-        ctx.fill();
+        pointsOnLine.push([point.canvasx, point.canvasy]);
       }
     }
   }
+  for (var idx = 0; idx < pointsOnLine.length; idx++) {
+    var cb = pointsOnLine[idx];
+    ctx.save();
+    drawPointCallback(
+        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+    ctx.restore();
+  }
+  firstIndexInSet = afterLastIndexInSet;
   ctx.restore();
 };
 
@@ -740,20 +746,24 @@ DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
 
   var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
   var borderWidth = this.dygraph_.attr_("strokeBorderWidth", setName);
+  var drawPointCallback = this.dygraph_.attr_("drawPointCallback", setName) ||
+      Dygraph.Circles.DEFAULT;
   if (borderWidth && strokeWidth) {
-    this._drawStyledLine(ctx, i,
+    this._drawStyledLine(ctx, i, setName,
         this.dygraph_.attr_("strokeBorderColor", setName),
         strokeWidth + 2 * borderWidth,
         this.dygraph_.attr_("strokePattern", setName),
         this.dygraph_.attr_("drawPoints", setName),
+        drawPointCallback,
         this.dygraph_.attr_("pointSize", setName));
   }
 
-  this._drawStyledLine(ctx, i,
+  this._drawStyledLine(ctx, i, setName,
       this.colors[setName],
       strokeWidth,
       this.dygraph_.attr_("strokePattern", setName),
       this.dygraph_.attr_("drawPoints", setName),
+      drawPointCallback,
       this.dygraph_.attr_("pointSize", setName));
 };
 

@@ -41,7 +41,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart."
+    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a drawPointCallback."
+  },
+  "drawPointCallback": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "description": "Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color."
   },
   "height": {
     "default": "320",
@@ -53,14 +59,23 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(minDate, maxDate, yRanges)",
-    "description": "A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis."
+    "parameters": [
+      [ "minDate" , "milliseconds since epoch" ],
+      [ "maxDate" , "milliseconds since epoch." ],
+      [ "yRanges" , "is an array of [bottom, top] pairs, one for each y-axis." ]
+    ],
+    "description": "A function to call when the zoom window is changed (either by zooming in or out)."
   },
   "pointClickCallback": {
     "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
     "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
     "type": "function(e, point)",
-    "description": "A function to call when a data point is clicked. The function should take two arguments, the event object for the click, and the point that was clicked. The 'point' argument has these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
+    "parameters": [
+      [ "e" , "the event object for the click" ],
+      [ "point" , "the point that was clicked See <a href='#point_properties'>Point properties</a> for details" ]
+    ],
+    "description": "A function to call when a data point is clicked. and the point that was clicked."
   },
   "colors": {
     "default": "(see description)",
@@ -78,8 +93,21 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "highlightCallback": {
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(event, x, points, row, closestSeries)",
-    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points, an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>, and the index of the data row corresponding to the x-coordinate. If highlightSeriesOpts is set, closestSeries is passed as an additional argument giving the name of the timeseries closest to the mouse pointer, and the callback gets called whenever this changes, including vertical movement."
+    "type": "function(event, x, points, row, seriesName)",
+    "description": "When set, this callback gets called every time a new point is highlighted.",
+    "parameters": [
+      ["event", "the JavaScript mousemove event"],
+      ["x", "the x-coordinate of the highlighted points"],
+      ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
+      ["row", "integer index of the highlighted row in the data table, starting from 0"],
+      ["seriesName", "name of the highlighted series, only present if highlightSeriesOpts is set."]
+    ]
+  },
+  "drawHighlightPointCallback": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "description": "Draw a custom item when a point is highlighted. Default is a small dot matching the series color."
   },
   "highlightSeriesOpts": {
     "default": "null",
@@ -115,7 +143,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(event)",
-    "description": "When set, this callback gets called every time the user stops highlighting any point by mousing out of the graph.  The parameter is the mouseout event."
+    "parameters": [
+      [ "event" , "the mouse event" ]
+    ],
+    "description": "When set, this callback gets called every time the user stops highlighting any point by mousing out of the graph."
   },
   "axisTickSize": {
     "default": "3.0",
@@ -157,25 +188,47 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Annotations"],
     "type": "function(annotation, point, dygraph, event)",
+    "parameters": [
+      [ "annotation" , "the annotation left" ],
+      [ "point" , "the point associated with the annotation" ],
+      [ "dygraph" , "the reference graph" ],
+      [ "event" , "the mouse event" ]
+    ],
     "description": "If provided, this function is called whenever the user mouses out of an annotation."
   },
   "annotationClickHandler": {
     "default": "null",
     "labels": ["Annotations"],
     "type": "function(annotation, point, dygraph, event)",
+    "parameters": [
+      [ "annotation" , "the annotation left" ],
+      [ "point" , "the point associated with the annotation" ],
+      [ "dygraph" , "the reference graph" ],
+      [ "event" , "the mouse event" ]
+    ],
     "description": "If provided, this function is called whenever the user clicks on an annotation."
   },
   "annotationDblClickHandler": {
     "default": "null",
     "labels": ["Annotations"],
     "type": "function(annotation, point, dygraph, event)",
+    "parameters": [
+      [ "annotation" , "the annotation left" ],
+      [ "point" , "the point associated with the annotation" ],
+      [ "dygraph" , "the reference graph" ],
+      [ "event" , "the mouse event" ]
+    ],
     "description": "If provided, this function is called whenever the user double-clicks on an annotation."
   },
   "drawCallback": {
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(dygraph, is_initial)",
-    "description": "When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning. The first parameter is the dygraph being drawn. The second is a boolean value indicating whether this is the initial draw."
+    "parameters": [
+      [ "dygraph" , "The graph being drawn" ],
+      [ "is_initial" , "True if this is the initial draw, false for subsequent draws." ]
+    ],
+    "description": "When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning."
   },
   "labelsKMG2": {
     "default": "false",
@@ -199,6 +252,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(canvas, area, dygraph)",
+    "parameters": [
+      [ "canvas" , "the canvas to draw on" ],
+      [ "area" , "" ],
+      [ "dygraph" , "the reference graph" ]
+    ],
     "description": "When set, this callback gets called before the chart is drawn. It details on how to use this."
   },
   "width": {
@@ -217,6 +275,14 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "Dygraph.dateTicker or Dygraph.numericTicks",
     "labels": ["Axis display"],
     "type": "function(min, max, pixels, opts, dygraph, vals) -> [{v: ..., label: ...}, ...]",
+    "parameters": [
+      [ "min" , "" ],
+      [ "max" , "" ],
+      [ "pixels" , "" ],
+      [ "opts" , "" ],
+      [ "dygraph" , "the reference graph" ],
+      [ "vals" , "" ]
+    ],
     "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "xAxisLabelWidth": {
@@ -415,14 +481,25 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "Depends on the data type",
     "labels": ["Axis display"],
     "type": "function(number or Date, granularity, opts, dygraph)",
-    "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. The first parameter is either a number (for a numeric axis) or a Date object (for a date axis). The second argument specifies how fine-grained the axis is. For date axes, this is a reference to the time granularity enumeration, defined in dygraph-tickers.js, e.g. Dygraph.WEEKLY. opts is a function which provides access to various options on the dygraph, e.g. opts('labelsKMB')."
+    "parameters": [
+      [ "number or date" , "Either a number (for a numeric axis) or a Date object (for a date axis)" ],
+      [ "granularity" , "specifies how fine-grained the axis is. For date axes, this is a reference to the time granularity enumeration, defined in dygraph-tickers.js, e.g. Dygraph.WEEKLY." ],
+      [ "opts" , "a function which provides access to various options on the dygraph, e.g. opts('labelsKMB')." ],
+      [ "dygraph" , "the referenced graph" ]
+    ],
+    "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "clickCallback": {
     "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(e, x, points)",
-    "description": "A function to call when the canvas is clicked. The function should take three arguments, the event object for the click, the x-value that was clicked (for dates this is millis since epoch), and the closest points along that date. The points have these properties:\n * xval/yval: The data coordinates of the point (with dates/times as millis since epoch) \n * canvasx/canvasy: The canvas coordinates at which the point is drawn. \n name: The name of the data series to which the point belongs"
+    "parameters": [
+      [ "e" , "The event object for the click" ],
+      [ "x" , "The x value that was clicked (for dates, this is milliseconds since epoch)" ],
+      [ "points" , "The closest points along that date. See <a href='#point_properties'>Point properties</a> for details." ]
+    ],
+    "description": "A function to call when the canvas is clicked."
   },
   "yAxisLabelFormatter": {
     "default": "",

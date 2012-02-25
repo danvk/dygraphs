@@ -1922,10 +1922,12 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       if (!Dygraph.isOK(pt.canvasy)) continue;
 
       var circleSize = this.attr_('highlightCircleSize', pt.name);
-      ctx.beginPath();
-      ctx.fillStyle = this.plotter_.colors[pt.name];
-      ctx.arc(canvasx, pt.canvasy, circleSize, 0, 2 * Math.PI, false);
-      ctx.fill();
+      var callback = this.attr_("drawHighlightPointCallback", pt.name);
+      if (!callback) {
+        callback = Dygraph.Circles.DEFAULT;
+      }
+      callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
+          this.plotter_.colors[pt.name], circleSize);
     }
     ctx.restore();
 

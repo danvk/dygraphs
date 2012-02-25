@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Custom Circles</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+  </head>
+  <body>
+    <h2>Custom circles and hover circles</h2>
+    <div id="demodiv"></div>
+
+    <script type="text/javascript">
+      var smile = function(g, series, ctx, cx, cy, color, radius) {
+        mouthlessFace(g, series, ctx, cx, cy, color, radius);
+
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 2, .3, Math.PI - .3, false);
+        ctx.stroke();
+      };
+
+      var frown = function(g, series, ctx, cx, cy, color, radius) {
+        mouthlessFace(g, series, ctx, cx, cy, color, radius);
+
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(cx, cy + radius, radius - 2, Math.PI + .3, -.3, false);
+        ctx.stroke();
+      };
+
+      var mouthlessFace = function(g, series, ctx, cx, cy, color, radius) {
+        ctx.strokeStyle = "#000000";
+        ctx.fillStyle = "#FFFF00";
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, Math.PI * 2, false);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.arc(cx - (radius / 3) , cy - (radius / 4), 1, Math.PI * 2, false);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(cx + (radius / 3) , cy - (radius / 4), 1, Math.PI * 2, false);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+      };
+
+      g = new Dygraph(
+          document.getElementById("demodiv"),
+          function() {
+
+            var r = "xval,default,triangle,square,diamond,pentagon,hexagon,circle,star,plus,ex,custom\n";
+            for (var i=1; i<=20; i++) {
+              r += i;
+              for (var j = 0; j < 11; j++) {
+                r += "," + j + (i / 3);
+              }
+              r += "\n";
+            }
+            return r;
+          },
+          {
+            drawPoints : true,
+            pointSize : 5,
+            highlightCircleSize : 8,
+            'default' : {
+              drawPointCallback : Dygraph.Circles.DEFAULT,
+              drawHighlightPointCallback : Dygraph.Circles.DEFAULT
+            },
+            'triangle' : {
+              drawPointCallback : Dygraph.Circles.TRIANGLE,
+              drawHighlightPointCallback : Dygraph.Circles.TRIANGLE
+            },
+            'square' : {
+              drawPointCallback : Dygraph.Circles.SQUARE,
+              drawHighlightPointCallback : Dygraph.Circles.SQUARE
+            },
+            'diamond' : {
+              drawPointCallback : Dygraph.Circles.DIAMOND,
+              drawHighlightPointCallback : Dygraph.Circles.DIAMOND
+            },
+            'pentagon' : {
+              drawPointCallback : Dygraph.Circles.PENTAGON,
+              drawHighlightPointCallback : Dygraph.Circles.PENTAGON
+            },
+            'hexagon' : {
+              drawPointCallback : Dygraph.Circles.HEXAGON,
+              drawHighlightPointCallback : Dygraph.Circles.HEXAGON
+            },
+            'circle' : {
+              drawPointCallback : Dygraph.Circles.CIRCLE,
+              drawHighlightPointCallback : Dygraph.Circles.CIRCLE
+            },
+            'star' : {
+              drawPointCallback : Dygraph.Circles.STAR,
+              drawHighlightPointCallback : Dygraph.Circles.STAR
+            },
+            'plus' : {
+              drawPointCallback : Dygraph.Circles.PLUS,
+              drawHighlightPointCallback : Dygraph.Circles.PLUS
+            },
+            'ex' : {
+              drawPointCallback : Dygraph.Circles.EX,
+              drawHighlightPointCallback : Dygraph.Circles.EX
+            },
+            'custom' : {
+              drawPointCallback : frown,
+              drawHighlightPointCallback : smile
+            }
+          }
+      );
+    </script>
+</body>
+</html>
