@@ -71,7 +71,7 @@ for nu, opt in docs.iteritems():
     if label not in labels:
       labels.append(label)
 
-print """
+print """<!DOCTYPE HTML>
 <html>
 <head>
   <title>Dygraphs Options Reference</title>
@@ -79,6 +79,9 @@ print """
   <style type="text/css">
     p.option {
       padding-left: 25px;
+    }
+    div.parameters {
+      padding-left: 15px;
     }
     #nav {
       position: fixed;
@@ -92,7 +95,7 @@ print """
 """
 
 print """
-<div id=nav>
+<div id='nav'>
 <h2>Dygraphs</h2>
 <ul>
   <li><a href="index.html">Home</a>
@@ -112,12 +115,12 @@ def name(f):
   return f.replace('tests/', '').replace('.html', '')
 
 print """
-<div id=content>
+<div id='content'>
 <h2>Options Reference</h2>
 <p>Dygraphs tries to do a good job of displaying your data without any further configuration. But inevitably, you're going to want to tinker. Dygraphs provides a rich set of options for configuring its display and behavior.</p>
 
-<a name="usage"><h3>Usage</h3>
-<p>You specify options in the third parameter to the dygraphs constructor:
+<a name="usage"></a><h3>Usage</h3>
+<p>You specify options in the third parameter to the dygraphs constructor:</p>
 <pre>g = new Dygraph(div,
                 data,
                 {
@@ -127,13 +130,12 @@ print """
                 });
 </pre>
 
-After you've created a Dygraph, you can change an option by calling the <code>updateOptions</code> method:
+<p>After you've created a Dygraph, you can change an option by calling the <code>updateOptions</code> method:</p>
 <pre>g.updateOptions({
                   new_option1: value1,
                   new_option2: value2
                 });
 </pre>
-
 <p>And, without further ado, here's the complete list of options:</p>
 """
 for label in sorted(labels):
@@ -149,25 +151,40 @@ for label in sorted(labels):
       examples_html = ' '.join(
         '<a href="%s">%s</a>' % (f, name(f)) for f in tests)
 
+    if 'parameters' in opt:
+      parameters = opt['parameters']
+      parameters_html = '\n'.join("<i>%s</i>: %s<br/>" % (p[0], p[1]) for p in parameters)
+      parameters_html = "\n  <div class='parameters'>\n%s</div>" % (parameters_html);
+    else:
+      parameters_html = ''
+
     if not opt['type']: opt['type'] = '(missing)'
     if not opt['default']: opt['default'] = '(missing)'
     if not opt['description']: opt['description'] = '(missing)'
 
     print """
-  <p class='option'><a name="%(name)s"/><b>%(name)s</b><br/>
+  <div class='option'><a name="%(name)s"></a><b>%(name)s</b><br/>
   %(desc)s<br/>
-  <i>Type: %(type)s<br/>
-  Default: %(default)s</i><br/>
+  <i>Type: %(type)s</i><br/>%(parameters)s
+  <i>Default: %(default)s</i><br/>
   Examples: %(examples_html)s<br/>
-  <br/>
+  <br/></div>
   """ % { 'name': opt_name,
           'type': opt['type'],
+          'parameters': parameters_html,
           'default': opt['default'],
           'desc': opt['description'],
           'examples_html': examples_html}
 
 
 print """
+<a name="point_properties"></a><h3>Point Properties</h3>
+Some callbacks take a point argument. Its properties are:<br/>
+<ul>
+<li>xval/yval: The data coordinates of the point (with dates/times as millis since epoch)</li>
+<li>canvasx/canvasy: The canvas coordinates at which the point is drawn.</li>
+<li>name: The name of the data series to which the point belongs</li>
+</ul>
 </div>
 </body>
 </html>
