@@ -1620,13 +1620,6 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var canvasx = canvasCoords[0];
   var canvasy = canvasCoords[1];
 
-  var mouseoverCallback = this.attr_("mouseoverCallback");
-  if (mouseoverCallback) {
-    var highlightRow = this.idxToRow_(idx);
-    var ret = mouseoverCallback(this, event);
-    if (ret) return;
-  }
-
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
   if (highlightSeriesOpts) {
@@ -1897,8 +1890,6 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.fillRect(0, 0, this.width_, this.height_);
     }
     var setIdx = this.datasetIndexFromSetName_(this.highlightSet_);
-    var underlay = this.attr_('highlightUnderlay');
-    if (underlay) underlay(this, ctx, setIdx);
     this.plotter_._drawLine(ctx, setIdx);
   } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
