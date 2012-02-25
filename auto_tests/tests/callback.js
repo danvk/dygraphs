@@ -15,47 +15,50 @@ CallbackTestCase.prototype.setUp = function() {
 
 CallbackTestCase.prototype.tearDown = function() {
 };
- 
- var data = "X,a\,b,c\n" +
+
+var data = "X,a\,b,c\n" +
  "10,-1,1,2\n" +
  "11,0,3,1\n" +
  "12,1,4,2\n" +
  "13,0,2,3\n";
- 
- 
- /**
-  * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
-  * is properly called when the  first series is hidden (setVisibility = false) 
-  * 
-  */
- CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
-   var h_row;
-   var h_pts;
 
-   var highlightCallback  =  function(e, x, pts, row) {
-   	  h_row = row;
-   	  h_pts = pts;
-   }; 
 
-   
+/**
+ * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
+ * is properly called when the  first series is hidden (setVisibility = false)
+ *
+ */
+CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
+  var h_row;
+  var h_pts;
 
-   var graph = document.getElementById("graph");
-   var g = new Dygraph(graph, data,
-       {
-         width: 100,
-         height : 100,
-         visibility: [false, true, true],
-         highlightCallback : highlightCallback
-       });
+  var highlightCallback  =  function(e, x, pts, row) {
+    h_row = row;
+    h_pts = pts;
+  };
 
-   DygraphOps.dispatchMouseMove(g, 13, 10);
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data,
+      {
+        width: 100,
+        height: 100,
+        visibility: [false, true, true],
+        highlightCallback: highlightCallback
+      });
 
-   //check correct row is returned
-   assertEquals(3, h_row);
-   //check there are only two points (because first series is hidden)
-   assertEquals(2, h_pts.length);
- };
+  DygraphOps.dispatchMouseMove(g, 13, 10);
 
+  //check correct row is returned
+  assertEquals(3, h_row);
+  //check there are only two points (because first series is hidden)
+  assertEquals(2, h_pts.length);
+};
+
+/**
+ * Test the closest-series highlighting methods for normal and stacked modes.
+ * Also pass in line widths for plain and highlighted lines for easier visual
+ * confirmation that the highlighted line is drawn on top of the others.
+ */
 var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
   var h_row;
   var h_pts;
@@ -65,7 +68,7 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
   var g = new Dygraph(graph, data,
       {
         width: 600,
-        height : 400,
+        height: 400,
         visibility: [false, true, true],
         stackedGraph: isStacked,
         strokeWidth: widthNormal,

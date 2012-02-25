@@ -461,14 +461,16 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
 
   var sources = [];
   sources.push(this.attrs_);
-  if (this.user_attrs_) sources.push(this.user_attrs_);
-  if (this.user_attrs_ && seriesName) {
-    if (this.user_attrs_.hasOwnProperty(seriesName)) {
-      sources.push(this.user_attrs_[seriesName]);
-    }
-    if (seriesName === this.highlightSet_ &&
-        this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
-      sources.push(this.user_attrs_['highlightSeriesOpts']);
+  if (this.user_attrs_) {
+    sources.push(this.user_attrs_);
+    if (seriesName) {
+      if (this.user_attrs_.hasOwnProperty(seriesName)) {
+        sources.push(this.user_attrs_[seriesName]);
+      }
+      if (seriesName === this.highlightSet_ &&
+          this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
+        sources.push(this.user_attrs_['highlightSeriesOpts']);
+      }
     }
   }
 
@@ -1855,18 +1857,19 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 
   var thisId = ++this.animateId;
   var that = this;
-  Dygraph.repeatAndCleanup(function(n) {
-        // ignore simultaneous animations
-        if (that.animateId != thisId) return;
+  Dygraph.repeatAndCleanup(
+    function(n) {
+      // ignore simultaneous animations
+      if (that.animateId != thisId) return;
 
-        that.fadeLevel += direction;
-        if (that.fadeLevel === 0) {
-          that.clearSelection();
-        } else {
-          that.updateSelection_(that.fadeLevel / totalSteps);
-        }
-      },
-      steps, millis, function() {});
+      that.fadeLevel += direction;
+      if (that.fadeLevel === 0) {
+        that.clearSelection();
+      } else {
+        that.updateSelection_(that.fadeLevel / totalSteps);
+      }
+    },
+    steps, millis, function() {});
 };
 
 /**

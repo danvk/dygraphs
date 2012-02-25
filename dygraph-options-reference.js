@@ -93,10 +93,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "number",
     "description": "When nonzero, dim the background while highlighting series. 0=fully visible, 1=hidden"
   },
-  "highlightSeriesAnimated": {
+  "highlightSeriesAnimate": {
     "default": "false",
     "labels": ["Interactive Elements"],
-    "type": "Object",
+    "type": "boolean",
     "description": "Animate the background dimming for nonzero highlightSeriesBackgroundFade."
   },
   "includeZero": {
@@ -277,7 +277,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "strokeWidth": {
     "default": "1.0",
     "labels": ["Data Line display"],
-    "type": "integer",
+    "type": "float",
     "example": "0.5, 2.0",
     "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
   },
@@ -291,8 +291,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "strokeBorderWidth": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "integer",
-    "example": "0.5, 2.0",
+    "type": "float",
+    "example": "1.0",
     "description": "Draw a border around graph lines to make crossing lines more easily distinguishable. Useful for graphs with many lines."
   },
   "strokeBorderColor": {
