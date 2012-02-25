@@ -78,8 +78,26 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "highlightCallback": {
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(event, x, points,row)",
-    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points and an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"
+    "type": "function(event, x, points, row, closestSeries)",
+    "description": "When set, this callback gets called every time a new point is highlighted. The parameters are the JavaScript mousemove event, the x-coordinate of the highlighted points, an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>, and the index of the data row corresponding to the x-coordinate. If highlightSeriesOpts is set, closestSeries is passed as an additional argument giving the name of the timeseries closest to the mouse pointer, and the callback gets called whenever this changes, including vertical movement."
+  },
+  "highlightSeriesOpts": {
+    "default": "null",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also 'highlightCallback'. Example: highlightSeriesOpts: { strokeWidth: 3 }."
+  },
+  "highlightSeriesBackgroundFade": {
+    "default": "0",
+    "labels": ["Interactive Elements"],
+    "type": "number",
+    "description": "When nonzero, dim the background while highlighting series. 0=fully visible, 1=hidden"
+  },
+  "highlightSeriesAnimated": {
+    "default": "false",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "Animate the background dimming for nonzero highlightSeriesBackgroundFade."
   },
   "includeZero": {
     "default": "false",
@@ -269,6 +287,20 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "array<integer>",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
+  },
+  "strokeBorderWidth": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "integer",
+    "example": "0.5, 2.0",
+    "description": "Draw a border around graph lines to make crossing lines more easily distinguishable. Useful for graphs with many lines."
+  },
+  "strokeBorderColor": {
+    "default": "white",
+    "labels": ["Data Line display"],
+    "type": "string",
+    "example": "red, #ccffdd",
+    "description": "Color for the line border used if strokeBorderWidth is set."
   },
   "wilsonInterval": {
     "default": "true",
