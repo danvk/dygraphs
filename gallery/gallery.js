@@ -24,6 +24,7 @@ Gallery.start = function() {
   Gallery.workareaChild = Gallery.create("div", Gallery.workarea);
   Gallery.demotitle = document.getElementById("demotitle");
   Gallery.textarea = new TextArea();
+  Gallery.textarea.cancel.style.display = "none";
   Gallery.textarea.width = 600;
   Gallery.textarea.height = 400;
 
@@ -48,22 +49,49 @@ Gallery.start = function() {
         }
       }
       Gallery.subtitle.innerHTML = "";
-      var codeLink = Gallery.create("a", Gallery.subtitle);
-      codeLink.textContent = "code";
-      codeLink.href = "#";
+
       Gallery.demotitle.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
+
+      var htmlLink = Gallery.create("a", Gallery.subtitle);
+      htmlLink.textContent = "HTML";
+      htmlLink.href = "#";
+
+      Gallery.subtitle.appendChild(document.createTextNode(" "));
+
+      var javascriptLink = Gallery.create("a", Gallery.subtitle);
+      javascriptLink.textContent = "Javascript";
+      javascriptLink.href = "#";
+
+      Gallery.subtitle.appendChild(document.createTextNode(" "));
+
+      var cssLink = Gallery.create("a", Gallery.subtitle);
+      cssLink.textContent = "CSS";
+      cssLink.href = "#";
+
       Gallery.workareaChild.id = id;
       location.hash = "g/" + id;
+
       Gallery.workareaChild.innerHTML='';
       if (demo.setup) {
         demo.setup(Gallery.workareaChild);
       }
+
       var html = Gallery.workareaChild.innerHTML;
-      codeLink.onclick = function() {
-        var javascript = demo.run.toString();
-        Gallery.textarea.show("Code", "HTML\n\n" + html + "\n\njavascript\n\n" + javascript);
+
+      htmlLink.onclick = function() {
+        Gallery.textarea.show("HTML", html);
       };
+
+      javascriptLink.onclick = function() {
+        Gallery.textarea.show("Javascript", demo.run.toString());
+      };
+
+      cssLink.onclick = function() {
+        var css = getCss(demo.title);
+        Gallery.textarea.show("CSS", css);
+      };
+
       demo.run(Gallery.workareaChild);
       Gallery.runningDemo = demo;
     }; }(demo, id);
@@ -73,6 +101,13 @@ Gallery.start = function() {
 
   window.onhashchange = Gallery.setHash;("hashchange", Gallery.hashChange, false);
 };
+
+var getCss = function(section) {
+  // Pretty presumptive of me to assume the first style sheet is the correct one.
+  // TODO(konigsberg): find the right style sheet by searching.
+  var ss = document.styleSheets[0];
+  return ss.toString();
+}
 
 Gallery.register = function(id, demo) {
   if (Gallery.entries[id]) {
