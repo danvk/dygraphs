@@ -329,9 +329,11 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
     g.doZoomX_(Math.min(context.dragStartX, context.dragEndX),
                Math.max(context.dragStartX, context.dragEndX));
+    context.cancelNextDblclick = true;
   } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
     g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
                Math.max(context.dragStartY, context.dragEndY));
+    context.cancelNextDblclick = true;
   } else {
     g.clearZoomRect_();
   }
@@ -548,6 +550,10 @@ Dygraph.Interaction.defaultModel = {
 
   // Disable zooming out if panning.
   dblclick: function(event, g, context) {
+    if (context.cancelNextDblclick) {
+      context.cancelNextDblclick = false;
+      return;
+    }
     if (event.altKey || event.shiftKey) {
       return;
     }

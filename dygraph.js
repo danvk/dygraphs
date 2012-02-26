@@ -851,12 +851,12 @@ Dygraph.prototype.createInterface_ = function() {
   var dygraph = this;
   
   this.mouseMoveHandler = function(e) {
-	  dygraph.mouseMove_(e);
+    dygraph.mouseMove_(e);
   };
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   
   this.mouseOutHandler = function(e) {
-	  dygraph.mouseOut_(e);
+    dygraph.mouseOut_(e);
   };
   Dygraph.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
@@ -1120,6 +1120,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     prevEndX: null, // pixel coordinates
     prevEndY: null, // pixel coordinates
     prevDragDirection: null,
+    cancelNextDblclick: false,  // see comment in dygraph-interaction-model.js
 
     // The value on the left side of the graph when a pan operation starts.
     initialLeftmostDate: null,
@@ -1156,6 +1157,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       context.py = Dygraph.findPosY(g.canvas_);
       context.dragStartX = g.dragGetX_(event, context);
       context.dragStartY = g.dragGetY_(event, context);
+      context.cancelNextDblclick = false;
     }
   };
 
