@@ -844,9 +844,8 @@ Dygraph.regularShape_ = function(
     var coords = computeCoordinates();
     ctx.lineTo(coords[0], coords[1]);
   }
-  ctx.stroke();
   ctx.fill();
-  ctx.closePath();
+  ctx.stroke();
 }
 
 Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
@@ -878,9 +877,8 @@ Dygraph.Circles = {
     ctx.strokeStyle = color;
     ctx.fillStyle = "white";
     ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
-    ctx.stroke();
     ctx.fill();
-    ctx.closePath();
+    ctx.stroke();
   },
   STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
   PLUS : function(g, name, ctx, cx, cy, color, radius) {
@@ -889,14 +887,14 @@ Dygraph.Circles = {
     ctx.beginPath();
     ctx.moveTo(cx + radius, cy);
     ctx.lineTo(cx - radius, cy);
-    ctx.stroke();
     ctx.closePath();
+    ctx.stroke();
 
     ctx.beginPath();
     ctx.moveTo(cx, cy + radius);
     ctx.lineTo(cx, cy - radius);
-    ctx.stroke();
     ctx.closePath();
+    ctx.stroke();
   },
   EX : function(g, name, ctx, cx, cy, color, radius) {
     ctx.strokeStyle = color;
@@ -911,7 +909,6 @@ Dygraph.Circles = {
     ctx.moveTo(cx + radius, cy - radius);
     ctx.lineTo(cx - radius, cy + radius);
     ctx.closePath();
-
     ctx.stroke();
   }
 };
