@@ -15,7 +15,6 @@
   </head>
   <body>
     <h2>Custom circles and hover circles</h2>
-    <div id="demodiv"></div>
 
     <script type="text/javascript">
       var smile = function(g, series, ctx, cx, cy, color, radius) {
@@ -61,70 +60,69 @@
         ctx.fill();
       };
 
-      g = new Dygraph(
-          document.getElementById("demodiv"),
-          function() {
+      var makeGraph = function(yFunc, extraOpts) {
+        var opts = {
+            drawPoints : true,
+            pointSize : 5
+        };
 
-            var r = "xval,default,triangle,square,diamond,pentagon,hexagon,circle,star,plus,ex,custom\n";
+        var shapes = [];
+        var addShape = function(name, fn) {
+          shapes.push(name);
+          opts[name] = {
+            drawPointCallback: fn,
+            drawHighlightPointCallback: fn
+          };
+        };
+
+        for (var shape in Dygraph.Circles) {
+          if (!Dygraph.Circles.hasOwnProperty(shape)) continue;
+          var fn = Dygraph.Circles[shape];
+          if (typeof fn !== 'function') continue;
+          addShape(shape.toLowerCase(), fn, fn);
+        };
+        addShape('custom', frown, smile);
+
+        for (var key in extraOpts) {
+          if (extraOpts.hasOwnProperty(key)) {
+            opts[key] = extraOpts[key];
+          }
+        };
+
+        var div = document.createElement('div');
+        document.body.appendChild(div);
+        var g = new Dygraph(
+          div,
+          function() {
+            var r = "xval," + shapes.join(',') + "\n";
+            var n = shapes.length;
             for (var i=1; i<=20; i++) {
               r += i;
-              for (var j = 0; j < 11; j++) {
-                r += "," + j + (i / 3);
+              for (var j = 0; j < n; j++) {
+                r += "," + yFunc(i, j, n);
               }
               r += "\n";
             }
             return r;
-          },
-          {
-            drawPoints : true,
-            pointSize : 5,
-            highlightCircleSize : 8,
-            'default' : {
-              drawPointCallback : Dygraph.Circles.DEFAULT,
-              drawHighlightPointCallback : Dygraph.Circles.DEFAULT
-            },
-            'triangle' : {
-              drawPointCallback : Dygraph.Circles.TRIANGLE,
-              drawHighlightPointCallback : Dygraph.Circles.TRIANGLE
-            },
-            'square' : {
-              drawPointCallback : Dygraph.Circles.SQUARE,
-              drawHighlightPointCallback : Dygraph.Circles.SQUARE
-            },
-            'diamond' : {
-              drawPointCallback : Dygraph.Circles.DIAMOND,
-              drawHighlightPointCallback : Dygraph.Circles.DIAMOND
-            },
-            'pentagon' : {
-              drawPointCallback : Dygraph.Circles.PENTAGON,
-              drawHighlightPointCallback : Dygraph.Circles.PENTAGON
-            },
-            'hexagon' : {
-              drawPointCallback : Dygraph.Circles.HEXAGON,
-              drawHighlightPointCallback : Dygraph.Circles.HEXAGON
-            },
-            'circle' : {
-              drawPointCallback : Dygraph.Circles.CIRCLE,
-              drawHighlightPointCallback : Dygraph.Circles.CIRCLE
-            },
-            'star' : {
-              drawPointCallback : Dygraph.Circles.STAR,
-              drawHighlightPointCallback : Dygraph.Circles.STAR
-            },
-            'plus' : {
-              drawPointCallback : Dygraph.Circles.PLUS,
-              drawHighlightPointCallback : Dygraph.Circles.PLUS
-            },
-            'ex' : {
-              drawPointCallback : Dygraph.Circles.EX,
-              drawHighlightPointCallback : Dygraph.Circles.EX
-            },
-            'custom' : {
-              drawPointCallback : frown,
-              drawHighlightPointCallback : smile
-            }
-          }
-      );
+          }, opts);
+        };
+
+        makeGraph(
+          function(x, c, n) {
+            return x / 3 + c * 10;
+          }, {
+            highlightCircleSize : 8
+          });
+        makeGraph(
+          function(x, c, n) {
+            return Math.sin(x * c / n);
+          }, {
+            strokeBorderWidth: 2,
+            highlightSeriesOpts: {
+              pointSize: 6,
+              highlightCircleSize: 10,
+              strokeWidth: 2,
+            }});
     </script>
 </body>
 </html>
