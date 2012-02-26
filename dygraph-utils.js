@@ -845,13 +845,14 @@ Dygraph.regularShape_ = function(
     ctx.lineTo(coords[0], coords[1]);
   }
   ctx.stroke();
+  ctx.fill();
   ctx.closePath();
 }
 
 Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
   return function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
     ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
     Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
   };
 };
@@ -875,30 +876,30 @@ Dygraph.Circles = {
   CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
     ctx.beginPath();
     ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
     ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
     ctx.stroke();
+    ctx.fill();
+    ctx.closePath();
   },
   STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
   PLUS : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
     ctx.strokeStyle = color;
 
     ctx.beginPath();
     ctx.moveTo(cx + radius, cy);
     ctx.lineTo(cx - radius, cy);
-    ctx.closePath();
     ctx.stroke();
+    ctx.closePath();
 
     ctx.beginPath();
     ctx.moveTo(cx, cy + radius);
     ctx.lineTo(cx, cy - radius);
-    ctx.closePath();
-
     ctx.stroke();
+    ctx.closePath();
   },
   EX : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = color;
 
     ctx.beginPath();
     ctx.moveTo(cx + radius, cy + radius);

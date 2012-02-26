@@ -1762,11 +1762,15 @@ Dygraph.prototype.updateSelection_ = function() {
 
       var circleSize = this.attr_('highlightCircleSize', pt.name);
       var callback = this.attr_("drawHighlightPointCallback", pt.name);
+      var color = this.plotter_.colors[pt.name];
       if (!callback) {
         callback = Dygraph.Circles.DEFAULT;
       }
+      ctx.lineWidth = this.attr_('strokeWidth', pt.name);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
       callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
-          this.plotter_.colors[pt.name], circleSize);
+          color, circleSize);
     }
     ctx.restore();
 
