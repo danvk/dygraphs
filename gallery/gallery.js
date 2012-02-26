@@ -24,6 +24,7 @@ Gallery.start = function() {
   Gallery.workareaChild = Gallery.create("div", Gallery.workarea);
   Gallery.demotitle = document.getElementById("demotitle");
   Gallery.textarea = new TextArea();
+  Gallery.textarea.cancel.style.display = "none";
   Gallery.textarea.width = 600;
   Gallery.textarea.height = 400;
 
@@ -48,22 +49,51 @@ Gallery.start = function() {
         }
       }
       Gallery.subtitle.innerHTML = "";
-      var codeLink = Gallery.create("a", Gallery.subtitle);
-      codeLink.textContent = "code";
-      codeLink.href = "#";
+
       Gallery.demotitle.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
+
+      var htmlLink = Gallery.create("a", Gallery.subtitle);
+      htmlLink.textContent = "HTML";
+      htmlLink.href = "#";
+
+      Gallery.subtitle.appendChild(document.createTextNode(" "));
+
+      var javascriptLink = Gallery.create("a", Gallery.subtitle);
+      javascriptLink.textContent = "Javascript";
+      javascriptLink.href = "#";
+
+      Gallery.subtitle.appendChild(document.createTextNode(" "));
+
+      var css = getCss(id);
+      if (css) {
+        var cssLink = Gallery.create("a", Gallery.subtitle);
+        cssLink.textContent = "CSS";
+        cssLink.href = "#";
+      }
+
       Gallery.workareaChild.id = id;
       location.hash = "g/" + id;
+
       Gallery.workareaChild.innerHTML='';
       if (demo.setup) {
         demo.setup(Gallery.workareaChild);
       }
+
       var html = Gallery.workareaChild.innerHTML;
-      codeLink.onclick = function() {
-        var javascript = demo.run.toString();
-        Gallery.textarea.show("Code", "HTML\n\n" + html + "\n\njavascript\n\n" + javascript);
+
+      htmlLink.onclick = function() {
+        Gallery.textarea.show("HTML", html);
       };
+
+      javascriptLink.onclick = function() {
+        Gallery.textarea.show("Javascript", demo.run.toString());
+      };
+
+      cssLink.onclick = function() {
+        Gallery.textarea.show("CSS", css);
+      };
+
       demo.run(Gallery.workareaChild);
       Gallery.runningDemo = demo;
     }; }(demo, id);
@@ -73,6 +103,32 @@ Gallery.start = function() {
 
   window.onhashchange = Gallery.setHash;("hashchange", Gallery.hashChange, false);
 };
+
+var getCss = function(id) {
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    var ss = document.styleSheets[i];
+    if (ss.title == "gallery") {
+      try {
+        var rules = ss.rules || ss.cssRules;
+        if (rules) {
+          var arry = [];
+          for (var j = 0; j < rules.length; j++) {
+            var rule = rules[j];
+            var cssText = rule.cssText;
+            var key = "#workarea #" + id + " ";
+            if (cssText.indexOf(key) == 0) {
+              arry.push(cssText.substr(key.length));
+            }
+          }
+          return arry.join("\n\n");
+        }
+      } catch(e) { // security error
+        console.log(e);
+      }
+    }
+  }
+  return "not found";
+}
 
 Gallery.register = function(id, demo) {
   if (Gallery.entries[id]) {

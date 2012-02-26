@@ -41,19 +41,36 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a drawPointCallback."
+    "description": "Draw a small dot at each point, in addition to a line going through \
+        the point. This makes the individual data points easier to see, but  \
+        can increase visual clutter in the chart. The small dot can be \
+        replaced with a custom rendering by supplying a \
+        <a href='#drawPointCallback'>drawPointCallback</a>."
   },
   "drawPointCallback": {
     "default": "null",
     "labels": ["Data Line display"],
     "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
-    "description": "Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color."
+    "parameters": [
+      [ "g" , "the reference graph" ],
+      [ "seriesName" , "the name of the series" ],
+      [ "canvasContext" , "the canvas to draw on" ],
+      [ "cx" , "center x coordinate" ],
+      [ "cy" , "center y coordinate" ],
+      [ "color" , "series color" ],
+      [ "pointSize" , "the radius of the image." ]
+    ],
+    "description": "Draw a custom item when drawPoints is enabled. \
+        Default is a small dot matching the series color. This method \
+        should constrain drawing to within pointSize pixels from (cx, cy). \
+        Also see <a href='#drawHighlightPointCallback'>drawHighlightPointCallback</a>"
   },
   "height": {
     "default": "320",
     "labels": ["Overall display"],
     "type": "integer",
-    "description": "Height, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored."
+    "description": "Height, in pixels, of the chart. If the container div has \
+      been explicitly sized, this will be ignored."
   },
   "zoomCallback": {
     "default": "null",
@@ -64,7 +81,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "maxDate" , "milliseconds since epoch." ],
       [ "yRanges" , "is an array of [bottom, top] pairs, one for each y-axis." ]
     ],
-    "description": "A function to call when the zoom window is changed (either by zooming in or out)."
+    "description": "A function to call when the zoom window is changed (either \
+      by zooming in or out)."
   },
   "pointClickCallback": {
     "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
@@ -107,7 +125,19 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Data Line display"],
     "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
-    "description": "Draw a custom item when a point is highlighted. Default is a small dot matching the series color."
+    "parameters": [
+      [ "g" , "the reference graph" ],
+      [ "seriesName" , "the name of the series" ],
+      [ "canvasContext" , "the canvas to draw on" ],
+      [ "cx" , "center x coordinate" ],
+      [ "cy" , "center y coordinate" ],
+      [ "color" , "series color" ],
+      [ "pointSize" , "the radius of the image." ]
+    ],
+    "description": "Draw a custom item when a point is highlighted. \
+        Default is a small dot matching the series color. This method \
+        should constrain drawing to within pointSize pixels from (cx, cy) \
+        Also see <a href='#drawPointCallback'>drawPointCallback</a>"
   },
   "highlightSeriesOpts": {
     "default": "null",

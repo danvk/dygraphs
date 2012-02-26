@@ -21,6 +21,8 @@ for line in file('dygraph-options-reference.js'):
   elif '</JSON>' in line:
     in_json = False
   elif in_json:
+    if line.endswith("\\\n"): # hacked in line continuation support with trailing \.
+      line = line[:-2]
     js += line
 
 # TODO(danvk): better errors here.
