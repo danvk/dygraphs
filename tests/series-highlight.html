@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
-    <title>Custom Circles</title>
+    <title>Series highlighting</title>
     <!--[if IE]>
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
@@ -45,6 +45,7 @@ var getData = function(numSeries, numRows, isStacked) {
 var makeGraph = function(className, numSeries, numRows, isStacked) {
   var div = document.createElement('div');
   div.className = className;
+  div.style.display = 'inline-block';
   document.body.appendChild(div);
 
   var labels = ['x'];
@@ -57,14 +58,13 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
       div,
       getData(numSeries, numRows, isStacked),
       {
-        width: 600,
-        height: 400,
+        width: 480,
+        height: 320,
         stackedGraph: isStacked,
         labels: labels.slice(),
         highlightCircleSize: 2,
         strokeWidth: 1,
         strokeBorderWidth: isStacked ? null : 1,
-        //strokeBorderColor: 'white',
         highlightSeriesBackgroundFade: 0.5,
         highlightSeriesAnimate: true,
         highlightSeriesOpts: {
@@ -79,8 +79,8 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
 
 makeGraph("few", 20, 50, false);
 makeGraph("few", 10, 20, true);
-makeGraph("many", 100, 100, false);
-makeGraph("many", 100, 100, true);
+makeGraph("many", 75, 50, false);
+makeGraph("many", 40, 50, true);
 </script>
 </body>
 </html>
