@@ -30,6 +30,7 @@
       var frown = function(g, series, ctx, cx, cy, color, radius) {
         mouthlessFace(g, series, ctx, cx, cy, color, radius);
 
+        ctx.lineWidth = 1;
         ctx.fillStyle = "#000000";
         ctx.beginPath();
         ctx.arc(cx, cy + radius, radius - 2, Math.PI + .3, -.3, false);
@@ -37,6 +38,7 @@
       };
 
       var mouthlessFace = function(g, series, ctx, cx, cy, color, radius) {
+        ctx.lineWidth = 1;
         ctx.strokeStyle = "#000000";
         ctx.fillStyle = "#FFFF00";
         ctx.beginPath();
