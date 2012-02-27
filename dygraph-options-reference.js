@@ -145,11 +145,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "Object",
     "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also 'highlightCallback'. Example: highlightSeriesOpts: { strokeWidth: 3 }."
   },
-  "highlightSeriesBackgroundFade": {
+  "highlightSeriesBackgroundAlpha": {
     "default": "0.5",
     "labels": ["Interactive Elements"],
     "type": "float",
-    "description": "When nonzero, dim the background while highlighting series. 0=fully visible background, 1=hiddden background (show highlighted series only)."
+    "description": "Fade the background while highlighting series. 1=fully visible background (disable fading), 0=hiddden background (show highlighted series only)."
   },
   "includeZero": {
     "default": "false",

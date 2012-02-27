@@ -187,7 +187,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
-  highlightSeriesBackgroundFade: 0.5,
+  highlightSeriesBackgroundAlpha: 0.5,
 
   labelsDivWidth: 250,
   labelsDivStyles: {
@@ -1885,7 +1885,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   var ctx = this.canvas_ctx_;
   if (this.attr_('highlightSeriesOpts')) {
     ctx.clearRect(0, 0, this.width_, this.height_);
-    var alpha = this.attr_('highlightSeriesBackgroundFade');
+    var alpha = 1.0 - this.attr_('highlightSeriesBackgroundAlpha');
     if (alpha) {
       // Activating background fade includes an animation effect for a gradual
       // fade. TODO(klausw): make this independently configurable if it causes
