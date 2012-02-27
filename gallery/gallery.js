@@ -90,9 +90,11 @@ Gallery.start = function() {
         Gallery.textarea.show("Javascript", demo.run.toString());
       };
 
-      cssLink.onclick = function() {
-        Gallery.textarea.show("CSS", css);
-      };
+      if (css) {
+        cssLink.onclick = function() {
+          Gallery.textarea.show("CSS", css);
+        };
+      }
 
       demo.run(Gallery.workareaChild);
       Gallery.runningDemo = demo;
