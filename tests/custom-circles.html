@@ -17,6 +17,32 @@
     <h2>Custom circles and hover circles</h2>
 
     <script type="text/javascript">
+      // Simple version
+      var div = document.createElement('div');
+      document.body.appendChild(div);
+
+      var data = 'x,A,B\n' +
+        '1,1,2\n' +
+        '2,2,4\n' +
+        '3,3,6\n' +
+        '4,4,8\n' +
+        '5,5,7\n';
+      var g = new Dygraph(div, data, {
+            drawPoints : true,
+            pointSize : 5,
+            highlightCircleSize: 8,
+            A : {
+              drawPointCallback : Dygraph.Circles.TRIANGLE,
+              drawHighlightPointCallback : Dygraph.Circles.TRIANGLE
+            },
+            B : {
+              drawPointCallback : Dygraph.Circles.HEXAGON,
+              drawHighlightPointCallback : Dygraph.Circles.HEXAGON
+            }
+        });
+
+
+      // Fancy demos
       var smile = function(g, series, ctx, cx, cy, color, radius) {
         mouthlessFace(g, series, ctx, cx, cy, color, radius);
 
@@ -60,18 +86,18 @@
         ctx.fill();
       };
 
-      var makeGraph = function(yFunc, extraOpts) {
+      var makeGraph = function(title, yFunc, extraOpts) {
         var opts = {
             drawPoints : true,
             pointSize : 5
         };
 
         var shapes = [];
-        var addShape = function(name, fn) {
+        var addShape = function(name, pointFn, highlightPointFn) {
           shapes.push(name);
           opts[name] = {
-            drawPointCallback: fn,
-            drawHighlightPointCallback: fn
+            drawPointCallback: pointFn,
+            drawHighlightPointCallback: highlightPointFn
           };
         };
 
@@ -89,8 +115,13 @@
           }
         };
 
+        var header = document.createElement('h3');
+        header.appendChild(document.createTextNode(title));
+        document.body.appendChild(header);
+
         var div = document.createElement('div');
         document.body.appendChild(div);
+
         var g = new Dygraph(
           div,
           function() {
@@ -108,12 +139,14 @@
         };
 
         makeGraph(
+          "Gallery of predefined shapes, adding a custom shape:",
           function(x, c, n) {
             return x / 3 + c * 10;
           }, {
             highlightCircleSize : 8
           });
         makeGraph(
+          "With interactive per-series highlighting:",
           function(x, c, n) {
             return Math.sin(x * c / n);
           }, {
