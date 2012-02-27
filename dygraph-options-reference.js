@@ -111,13 +111,14 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "highlightCallback": {
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(event, x, points, row)",
+    "type": "function(event, x, points, row, seriesName)",
     "description": "When set, this callback gets called every time a new point is highlighted.",
     "parameters": [
       ["event", "the JavaScript mousemove event"],
       ["x", "the x-coordinate of the highlighted points"],
       ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
-      ["row", "???"]
+      ["row", "integer index of the highlighted row in the data table, starting from 0"],
+      ["seriesName", "name of the highlighted series, only present if highlightSeriesOpts is set."]
     ]
   },
   "drawHighlightPointCallback": {
@@ -137,6 +138,18 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
         Default is a small dot matching the series color. This method \
         should constrain drawing to within pointSize pixels from (cx, cy) \
         Also see <a href='#drawPointCallback'>drawPointCallback</a>"
+  },
+  "highlightSeriesOpts": {
+    "default": "null",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also 'highlightCallback'. Example: highlightSeriesOpts: { strokeWidth: 3 }."
+  },
+  "highlightSeriesBackgroundAlpha": {
+    "default": "0.5",
+    "labels": ["Interactive Elements"],
+    "type": "float",
+    "description": "Fade the background while highlighting series. 1=fully visible background (disable fading), 0=hiddden background (show highlighted series only)."
   },
   "includeZero": {
     "default": "false",
@@ -354,7 +367,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "strokeWidth": {
     "default": "1.0",
     "labels": ["Data Line display"],
-    "type": "integer",
+    "type": "float",
     "example": "0.5, 2.0",
     "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
   },
@@ -364,6 +377,20 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "array<integer>",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
+  },
+  "strokeBorderWidth": {
+    "default": "null",
+    "labels": ["Data Line display"],
+    "type": "float",
+    "example": "1.0",
+    "description": "Draw a border around graph lines to make crossing lines more easily distinguishable. Useful for graphs with many lines."
+  },
+  "strokeBorderColor": {
+    "default": "white",
+    "labels": ["Data Line display"],
+    "type": "string",
+    "example": "red, #ccffdd",
+    "description": "Color for the line border used if strokeBorderWidth is set."
   },
   "wilsonInterval": {
     "default": "true",
