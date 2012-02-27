@@ -187,8 +187,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
-  highlightSeriesBackgroundFade: 0,
-  highlightSeriesAnimated: false,
+  highlightSeriesBackgroundFade: 0.5,
 
   labelsDivWidth: 250,
   labelsDivStyles: {
@@ -1522,7 +1521,12 @@ Dygraph.prototype.findClosestRow = function(domX) {
 };
 
 /**
- * Given canvas X,Y coordinates, find the closest point
+ * Given canvas X,Y coordinates, find the closest point.
+ *
+ * This finds the individual data point across all visible series
+ * that's closest to the supplied DOM coordinates using the standard
+ * Euclidean X,Y distance.
+ *
  * @param {Number} domX graph-relative DOM X coordinate
  * @param {Number} domY graph-relative DOM Y coordinate
  * Returns: {row, seriesName, point}
@@ -1559,6 +1563,11 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
 
 /**
  * Given canvas X,Y coordinates, find the touched area in a stacked graph.
+ *
+ * This first finds the X data point closest to the supplied DOM X coordinate,
+ * then finds the series which puts the Y coordinate on top of its filled area,
+ * using linear interpolation between adjacent point pairs.
+ *
  * @param {Number} domX graph-relative DOM X coordinate
  * @param {Number} domY graph-relative DOM Y coordinate
  * Returns: {row, seriesName, point}
@@ -1878,7 +1887,11 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
     ctx.clearRect(0, 0, this.width_, this.height_);
     var alpha = this.attr_('highlightSeriesBackgroundFade');
     if (alpha) {
-      if (this.attr_('highlightSeriesAnimate')) {
+      // Activating background fade includes an animation effect for a gradual
+      // fade. TODO(klausw): make this independently configurable if it causes
+      // issues? Use a shared preference to control animations?
+      var animateBackgroundFade = true;
+      if (animateBackgroundFade) {
         if (opt_animFraction === undefined) {
           // start a new animation
           this.animateSelection_(1);

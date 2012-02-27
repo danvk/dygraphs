@@ -60,13 +60,13 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
       {
         width: 480,
         height: 320,
-        stackedGraph: isStacked,
         labels: labels.slice(),
+        stackedGraph: isStacked,
+
         highlightCircleSize: 2,
         strokeWidth: 1,
         strokeBorderWidth: isStacked ? null : 1,
-        highlightSeriesBackgroundFade: 0.5,
-        highlightSeriesAnimate: true,
+
         highlightSeriesOpts: {
           strokeWidth: 3,
           strokeBorderWidth: 1,

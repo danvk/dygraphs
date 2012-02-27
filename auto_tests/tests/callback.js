@@ -168,7 +168,6 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
         strokeBorderWidth: 2,
         highlightCircleSize: widthNormal * 2,
         highlightSeriesBackgroundFade: 0.7,
-        highlightSeriesAnimate: true,
 
         highlightSeriesOpts: {
           strokeWidth: widthHighlighted,
