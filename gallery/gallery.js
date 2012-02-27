@@ -53,23 +53,23 @@ Gallery.start = function() {
       Gallery.demotitle.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
 
-      var htmlLink = Gallery.create("a", Gallery.subtitle);
+      var codeSpan = Gallery.create("span", Gallery.subtitle);
+      codeSpan.id = "code";
+
+      var htmlLink = Gallery.create("a", codeSpan);
       htmlLink.textContent = "HTML";
-      htmlLink.href = "#";
 
-      Gallery.subtitle.appendChild(document.createTextNode(" "));
+      codeSpan.appendChild(document.createTextNode(" "));
 
-      var javascriptLink = Gallery.create("a", Gallery.subtitle);
+      var javascriptLink = Gallery.create("a", codeSpan);
       javascriptLink.textContent = "Javascript";
-      javascriptLink.href = "#";
 
-      Gallery.subtitle.appendChild(document.createTextNode(" "));
+      codeSpan.appendChild(document.createTextNode(" "));
 
       var css = getCss(id);
       if (css) {
-        var cssLink = Gallery.create("a", Gallery.subtitle);
+        var cssLink = Gallery.create("a", codeSpan);
         cssLink.textContent = "CSS";
-        cssLink.href = "#";
       }
 
       Gallery.workareaChild.id = id;

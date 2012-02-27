@@ -47,6 +47,11 @@ aside {
   color: #090;
 }
 
+#code a:hover {
+  color: blue;
+  cursor: pointer;
+}
+
 #demotitle {
   text-align: center;
   font-size: 1.5em;
