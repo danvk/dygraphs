@@ -244,6 +244,7 @@ CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
     "div.dygraph-legend > span.highlight { border: 1px solid grey; }\n";
   this.styleSheet.innerHTML = css;
   runClosestTest(false, 2, 4);
+  this.styleSheet.innerHTML = '';
 }
 
 /**
@@ -254,5 +255,55 @@ CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
     "div.dygraph-legend > span.highlight { display: inline; }\n";
   this.styleSheet.innerHTML = css;
   runClosestTest(false, 10, 15);
+  this.styleSheet.innerHTML = '';
   // TODO(klausw): verify that the highlighted line is drawn on top?
 }
+
+/**
+ * This tests that closest point searches work for data containing NaNs.
+ *
+ * It's intended to catch a regression where a NaN Y value confuses the
+ * closest-point algorithm, treating it as closer as any previous point.
+ */
+CallbackTestCase.prototype.testNaNData = function() {
+  var dataNaN = [
+    [10, -1, 1, 2],
+    [11, 0, 3, 1],
+    [12, 1, 4, NaN],
+    [13, 0, 2, 3],
+    [14, -1, 1, 4]];
+
+  var h_row;
+  var h_pts;
+
+  var highlightCallback  =  function(e, x, pts, row) {
+    h_row = row;
+    h_pts = pts;
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, dataNaN,
+      {
+        width: 600,
+        height: 400,
+        labels: ['x', 'a', 'b', 'c'],
+        visibility: [false, true, true],
+        highlightCallback: highlightCallback
+      });
+
+  DygraphOps.dispatchMouseMove(g, 10.1, 0.9);
+  //check correct row is returned
+  assertEquals(0, h_row);
+
+  // Explicitly test closest point algorithms
+  var dom = g.toDomCoords(10.1, 0.9);
+  assertEquals(0, g.findClosestRow(dom[0]));
+
+  var res = g.findClosestPoint(dom[0], dom[1]);
+  assertEquals(0, res.row);
+  assertEquals('b', res.seriesName);
+
+  res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(0, res.row);
+  assertEquals('c', res.seriesName);
+};
