@@ -1,5 +1,5 @@
 Gallery.register(
-  'border-test',
+  'border',
   { 
     name: "Border test",
     title: 'Graph stays within the border',
