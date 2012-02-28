@@ -30,6 +30,7 @@ docs = json.loads(js)
 # Go through the tests and find uses of each option.
 for opt in docs:
   docs[opt]['tests'] = []
+  docs[opt]['gallery'] = []
 
 # This is helpful for differentiating uses of options like 'width' and 'height'
 # from appearances of identically-named options in CSS.
@@ -47,20 +48,23 @@ def find_braces(txt):
       level -= 1
   return out
 
-# Find text followed by a colon. These won't all be options, but those that
-# have the same name as a Dygraph option probably will be.
-prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
-tests = debug_tests or glob.glob('tests/*.html')
-for test_file in tests:
-  braced_html = find_braces(file(test_file).read())
-  if debug_tests:
-    print braced_html
+def search_files(type, files):
+  # Find text followed by a colon. These won't all be options, but those that
+  # have the same name as a Dygraph option probably will be.
+  prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
+  for test_file in files:
+    braced_html = find_braces(file(test_file).read())
+    if debug_tests:
+      print braced_html
 
-  ms = re.findall(prop_re, braced_html)
-  for opt in ms:
-    if debug_tests: print '\n'.join(ms)
-    if opt in docs and test_file not in docs[opt]['tests']:
-      docs[opt]['tests'].append(test_file)
+    ms = re.findall(prop_re, braced_html)
+    for opt in ms:
+      if debug_tests: print '\n'.join(ms)
+      if opt in docs and test_file not in docs[opt][type]:
+        docs[opt][type].append(test_file)
+
+search_files("tests", glob.glob("tests/*.html"))
+search_files("gallery", glob.glob("gallery/*.js")) #TODO add grep "Gallery.register\("
 
 if debug_tests: sys.exit(0)
 
@@ -110,10 +114,6 @@ for label in sorted(labels):
   print '  <li><a href="#%s">%s</a>\n' % (label, label)
 print '</ul>\n</div>\n\n'
 
-def name(f):
-  """Takes 'tests/demo.html' -> 'demo'"""
-  return f.replace('tests/', '').replace('.html', '')
-
 print """
 <div id='content'>
 <h2>Options Reference</h2>
@@ -138,6 +138,20 @@ print """
 </pre>
 <p>And, without further ado, here's the complete list of options:</p>
 """
+
+def de_tests(f):
+  """Takes 'tests/demo.html' -> 'demo'"""
+  return f.replace('tests/', '').replace('.html', '')
+
+def de_gallery(f):
+  """Takes 'gallery/demo.js' -> 'demo'"""
+  return f.replace('gallery/', '').replace('.js', '')
+
+def urlify_gallery(f):
+  """Takes 'gallery/demo.js' -> 'demo'"""
+  return f.replace('gallery/', 'gallery/#g/').replace('.js', '')
+
+
 for label in sorted(labels):
   print '<a name="%s"><h3>%s</h3>\n' % (label, label)
 
@@ -149,7 +163,14 @@ for label in sorted(labels):
       examples_html = '<font color=red>NONE</font>'
     else:
       examples_html = ' '.join(
-        '<a href="%s">%s</a>' % (f, name(f)) for f in tests)
+        '<a href="%s">%s</a>' % (f, de_tests(f)) for f in tests)
+
+    gallery = opt['gallery']
+    if not gallery:
+      gallery_html = '<font color=red>NONE</font>'
+    else:
+      gallery_html = ' '.join(
+        '<a href="%s">%s</a>' % (urlify_gallery(f), de_gallery(f)) for f in gallery)
 
     if 'parameters' in opt:
       parameters = opt['parameters']
@@ -168,13 +189,15 @@ for label in sorted(labels):
   <i>Type: %(type)s</i><br/>%(parameters)s
   <i>Default: %(default)s</i><br/>
   Examples: %(examples_html)s<br/>
+  Gallery: %(gallery_html)s<br/>
   <br/></div>
   """ % { 'name': opt_name,
           'type': opt['type'],
           'parameters': parameters_html,
           'default': opt['default'],
           'desc': opt['description'],
-          'examples_html': examples_html}
+          'examples_html': examples_html,
+          'gallery_html': gallery_html}
 
 
 print """

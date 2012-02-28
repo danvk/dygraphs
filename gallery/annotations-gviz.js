@@ -1,5 +1,5 @@
 Gallery.register(
-  'annotation-gviz',
+  'annotations-gviz',
   {
     name: 'Annotation Gviz (broken)',
     title: 'Comparison of Gviz and Dygraphs annotated timelines',
