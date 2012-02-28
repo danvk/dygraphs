@@ -1,4 +1,3 @@
-// Use this as a template for new Gallery entries.
 Gallery.register(
   'per-series',
   {
