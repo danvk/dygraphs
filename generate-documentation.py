@@ -188,8 +188,8 @@ for label in sorted(labels):
   %(desc)s<br/>
   <i>Type: %(type)s</i><br/>%(parameters)s
   <i>Default: %(default)s</i><br/>
-  Examples: %(examples_html)s<br/>
-  Gallery: %(gallery_html)s<br/>
+  Gallery Samples: %(gallery_html)s<br/>
+  Other Examples: %(examples_html)s<br/>
   <br/></div>
   """ % { 'name': opt_name,
           'type': opt['type'],
