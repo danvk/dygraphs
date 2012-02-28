@@ -80,5 +80,47 @@
         )
     </script>
 
+    <p>5: Line chart with <code>avoidMinZero</code>, <code>{x,y}AxisPad</code> and <code>{x,y}AxisAtZero</code> options:</p>
+    <div id="graph5"></div>
+    <script type="text/javascript">
+        var g3 = new Dygraph(document.getElementById("graph5"),
+            "x,y\n" +
+            "0,0\n" +
+            "10,1\n" +
+            "20,0\n" +
+            "30,0\n" +
+            "40,3\n" +
+            "50,4\n",
+            {
+                xAxisPad: 0.01,
+                yAxisPad: 0.02,
+                xAxisAtZero: true,
+                yAxisAtZero: true,
+                avoidMinZero: true
+            }
+        )
+    </script>
+
+    <p>6: Step chart with <code>avoidMinZero</code>, <code>{x,y}AxisPad</code> and <code>{x,y}AxisAtZero</code> options:</p>
+    <div id="graph6"></div>
+    <script type="text/javascript">
+        var g4 = new Dygraph(document.getElementById("graph6"),
+            "x,y\n" +
+            "0,0\n" +
+            "10,1\n" +
+            "20,0\n" +
+            "30,0\n" +
+            "40,3\n" +
+            "50,4\n",
+            {
+               stepPlot: true,
+               xAxisPad: 0.01,
+               yAxisPad: 0.02,
+               xAxisAtZero: true,
+               yAxisAtZero: true,
+               avoidMinZero: true
+            }
+        )
+    </script>
   </body>
 </html>

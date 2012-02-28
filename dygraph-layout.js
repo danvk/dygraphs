@@ -175,6 +175,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
       }
     }
   }
+  var pad = this.attr_('xAxisPad');
+  if (pad) {
+    // Must keep this in sync with dygraph xAxisExtremes()
+    var range = this.maxxval - this.minxval;
+    this.minxval -= range * pad;
+    this.maxxval += range * pad;
+  }
   this.xrange = this.maxxval - this.minxval;
   this.xscale = (this.xrange !== 0 ? 1/this.xrange : 1.0);
 

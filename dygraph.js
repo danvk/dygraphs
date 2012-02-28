@@ -235,6 +235,10 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+  xAxisPad: 0,
+  yAxisPad: 0.1,
+  xAxisAtZero: false,
+  yAxisAtZero: false,
 
   // Sizes of the various chart labels.
   titleHeight: 28,
@@ -542,6 +546,13 @@ Dygraph.prototype.xAxisRange = function() {
 Dygraph.prototype.xAxisExtremes = function() {
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
+  var pad = this.attr_('xAxisPad');
+  if (pad) {
+    // Must keep this in sync with dygraph-layout _evaluateLimits()
+    var range = right - left;
+    left -= range * pad;
+    right += range * pad;
+  }
   return [left, right];
 };
 
@@ -776,7 +787,7 @@ Dygraph.prototype.numRows = function() {
  */
 Dygraph.prototype.fullXRange_ = function() {
   if (this.numRows() > 0) {
-    return [this.rawData_[0][0], this.rawData_[this.numRows() - 1][0]];
+    return this.xAxisExtremes();
   } else {
     return [0, 1];
   }
@@ -2601,12 +2612,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       if (span === 0) { span = maxY; }
 
       var maxAxisY, minAxisY;
+      var ypad = this.attr_('yAxisPad');
       if (axis.logscale) {
-        maxAxisY = maxY + 0.1 * span;
+        maxAxisY = maxY + ypad * span;
         minAxisY = minY;
       } else {
-        maxAxisY = maxY + 0.1 * span;
-        minAxisY = minY - 0.1 * span;
+        maxAxisY = maxY + ypad * span;
+        minAxisY = minY - ypad * span;
 
         // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
         if (!this.attr_("avoidMinZero")) {
