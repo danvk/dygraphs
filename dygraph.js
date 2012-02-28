@@ -1517,9 +1517,10 @@ Dygraph.prototype.findClosestRow = function(domX) {
     var point = points[i];
     if (point === null) continue;
     var dist = Math.abs(point.canvasx - domX);
-    if (minDistX !== null && dist >= minDistX) continue;
-    minDistX = dist;
-    idx = i;
+    if (minDistX === null || dist < minDistX) {
+      minDistX = dist;
+      idx = i;
+    }
   }
   return this.idxToRow_(idx);
 };
@@ -1550,11 +1551,12 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (minDist !== null && dist >= minDist) continue;
-      minDist = dist;
-      closestPoint = point;
-      closestSeries = setIdx;
-      idx = i;
+      if (minDist === null || dist < minDist) {
+        minDist = dist;
+        closestPoint = point;
+        closestSeries = setIdx;
+        idx = i;
+      }
     }
   }
   var name = this.layout_.setNames[closestSeries];
@@ -1605,9 +1607,10 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
       }
     }
     // Stop if the point (domX, py) is above this series' upper edge
-    if (setIdx > 0 && py >= domY) break;
-    closestPoint = p1;
-    closestSeries = setIdx;
+    if (setIdx == 0 || py < domY) {
+      closestPoint = p1;
+      closestSeries = setIdx;
+    }
   }
   var name = this.layout_.setNames[closestSeries];
   return {
