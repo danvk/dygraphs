@@ -267,6 +267,7 @@ CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
  */
 CallbackTestCase.prototype.testNaNData = function() {
   var dataNaN = [
+    [9, -1, NaN, NaN],
     [10, -1, 1, 2],
     [11, 0, 3, 1],
     [12, 1, 4, NaN],
@@ -293,17 +294,17 @@ CallbackTestCase.prototype.testNaNData = function() {
 
   DygraphOps.dispatchMouseMove(g, 10.1, 0.9);
   //check correct row is returned
-  assertEquals(0, h_row);
+  assertEquals(1, h_row);
 
   // Explicitly test closest point algorithms
   var dom = g.toDomCoords(10.1, 0.9);
-  assertEquals(0, g.findClosestRow(dom[0]));
+  assertEquals(1, g.findClosestRow(dom[0]));
 
   var res = g.findClosestPoint(dom[0], dom[1]);
-  assertEquals(0, res.row);
+  assertEquals(1, res.row);
   assertEquals('b', res.seriesName);
 
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(0, res.row);
+  assertEquals(1, res.row);
   assertEquals('c', res.seriesName);
 };
