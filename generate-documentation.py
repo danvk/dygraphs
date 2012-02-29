@@ -146,11 +146,11 @@ print """
 <p>And, without further ado, here's the complete list of options:</p>
 """
 
-def de_tests(f):
+def test_name(f):
   """Takes 'tests/demo.html' -> 'demo'"""
   return f.replace('tests/', '').replace('.html', '')
 
-def de_gallery(f):
+def gallery_name(f):
   """Takes 'gallery/demo.js' -> 'demo'"""
   return f.replace('gallery/', '').replace('.js', '')
 
@@ -170,14 +170,14 @@ for label in sorted(labels):
       examples_html = '<font color=red>NONE</font>'
     else:
       examples_html = ' '.join(
-        '<a href="%s">%s</a>' % (f, de_tests(f)) for f in tests)
+        '<a href="%s">%s</a>' % (f, test_name(f)) for f in tests)
 
     gallery = opt['gallery']
     if not gallery:
       gallery_html = '<font color=red>NONE</font>'
     else:
       gallery_html = ' '.join(
-        '<a href="%s">%s</a>' % (urlify_gallery(f), de_gallery(f)) for f in gallery)
+        '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f)) for f in gallery)
 
     if 'parameters' in opt:
       parameters = opt['parameters']
