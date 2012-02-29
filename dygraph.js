@@ -2607,8 +2607,17 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
-      // special case: if we have no sense of scale, use +/-10% of the sole value.
-      if (span === 0) { span = maxY; }
+      // special case: if we have no sense of scale, center on the sole value.
+      if (span === 0) {
+        if (maxY !== 0) {
+          span = Math.abs(maxY);
+        } else {
+          // ... and if the sole value is zero, use range 0-1.
+          maxY = 1;
+          span = 1;
+        }
+      }
+      if (span === 0) { maxY = 1; span = 1; }
 
       var maxAxisY, minAxisY;
       var ypad = this.attr_('yAxisPad');
@@ -2639,7 +2648,14 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
-      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+      var y0 = axis.valueRange[0];
+      var y1 = axis.valueRange[1];
+      if (ypad) {
+        var span = y1 - y0;
+        y0 -= span * ypad;
+        y1 += span * ypad;
+      }
+      axis.computedValueRange = [y0, y1];
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
