@@ -1851,10 +1851,8 @@ Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
 Dygraph.prototype.animateSelection_ = function(direction) {
   var totalSteps = 10;
   var millis = 30;
-  if (this.fadeLevel === undefined) {
-    this.fadeLevel = 0;
-    this.animateId = 0;
-  }
+  if (this.fadeLevel === undefined) this.fadeLevel = 0;
+  if (this.animateId === undefined) this.animateId = 0;
   var start = this.fadeLevel;
   var steps = direction < 0 ? start : totalSteps - start;
   if (steps <= 0) {
