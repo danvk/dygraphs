@@ -544,9 +544,12 @@ Dygraph.prototype.xAxisRange = function() {
  * data set.
  */
 Dygraph.prototype.xAxisExtremes = function() {
+  var pad = this.attr_('xAxisPad');
+  if (!this.numRows() > 0) {
+    return [0 - pad, 1 + pad];
+  }
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
-  var pad = this.attr_('xAxisPad');
   if (pad) {
     // Must keep this in sync with dygraph-layout _evaluateLimits()
     var range = right - left;
@@ -786,11 +789,7 @@ Dygraph.prototype.numRows = function() {
  * @private
  */
 Dygraph.prototype.fullXRange_ = function() {
-  if (this.numRows() > 0) {
-    return this.xAxisExtremes();
-  } else {
-    return [0, 1];
-  }
+  return this.xAxisExtremes();
 };
 
 /**
