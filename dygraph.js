@@ -1515,7 +1515,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
   var l = points.length;
   for (var i = 0; i < l; i++) {
     var point = points[i];
-    if (point === null) continue;
+    if (!Dygraph.isValidPoint(point)) continue;
     var dist = Math.abs(point.canvasx - domX);
     if (minDistX === null || dist < minDistX) {
       minDistX = dist;
@@ -1547,13 +1547,12 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
     var len = this.layout_.setPointsLengths[setIdx];
     for (var i = 0; i < len; ++i) {
       var point = points[first + i];
-      if (point === null) continue;
+      if (!Dygraph.isValidPoint(point)) continue;
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
       if (minDist === null || dist < minDist) {
-    	if (!isNaN(dist))
-          minDist = dist;
+        minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;
         idx = i;
@@ -1589,22 +1588,27 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
     var len = this.layout_.setPointsLengths[setIdx];
     if (row >= len) continue;
     var p1 = points[first + row];
+    if (!Dygraph.isValidPoint(p1)) continue;
     var py = p1.canvasy;
     if (domX > p1.canvasx && row + 1 < len) {
       // interpolate series Y value using next point
       var p2 = points[first + row + 1];
-      var dx = p2.canvasx - p1.canvasx;
-      if (dx > 0) {
-        var r = (domX - p1.canvasx) / dx;
-        py += r * (p2.canvasy - p1.canvasy);
+      if (Dygraph.isValidPoint(p2)) {
+        var dx = p2.canvasx - p1.canvasx;
+        if (dx > 0) {
+          var r = (domX - p1.canvasx) / dx;
+          py += r * (p2.canvasy - p1.canvasy);
+        }
       }
     } else if (domX < p1.canvasx && row > 0) {
       // interpolate series Y value using previous point
       var p0 = points[first + row - 1];
-      var dx = p1.canvasx - p0.canvasx;
-      if (dx > 0) {
-        var r = (p1.canvasx - domX) / dx;
-        py += r * (p0.canvasy - p1.canvasy);
+      if (Dygraph.isValidPoint(p0)) {
+        var dx = p1.canvasx - p0.canvasx;
+        if (dx > 0) {
+          var r = (p1.canvasx - domX) / dx;
+          py += r * (p0.canvasy - p1.canvasy);
+        }
       }
     }
     // Stop if the point (domX, py) is above this series' upper edge
