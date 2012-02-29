@@ -332,6 +332,18 @@ Dygraph.isOK = function(x) {
 };
 
 /**
+ * @private
+ * @param { Object } p The point to consider, valid points are {x, y} objects
+ * @return { Boolean } Whether the point has numeric x and y.
+ */
+Dygraph.isValidPoint = function(p) {
+  if (!p) return false; // null or undefined object
+  if (isNaN(p.x) || p.x === null || p.x === undefined) return false;
+  if (isNaN(p.y) || p.y === null || p.y === undefined) return false;
+  return true;
+};
+
+/**
  * Number formatting function which mimicks the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
