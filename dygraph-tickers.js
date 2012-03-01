@@ -62,6 +62,14 @@
 /*global Dygraph:false */
 "use strict";
 
+Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
+  var nonLogscaleOpts = function(opt) {
+    if (opt === 'logscale') return false;
+    return opts(opt);
+  };
+  return Dygraph.numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
+};
+
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = opts('pixelsPerLabel');
   var ticks = [];
