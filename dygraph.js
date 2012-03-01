@@ -1509,7 +1509,7 @@ Dygraph.prototype.eventToDomCoords = function(event) {
  * @private
  */
 Dygraph.prototype.findClosestRow = function(domX) {
-  var minDistX = null;
+  var minDistX = Infinity;
   var idx = -1;
   var points = this.layout_.points;
   var l = points.length;
@@ -1517,7 +1517,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
     var point = points[i];
     if (!Dygraph.isValidPoint(point)) continue;
     var dist = Math.abs(point.canvasx - domX);
-    if (minDistX === null || dist < minDistX) {
+    if (dist < minDistX) {
       minDistX = dist;
       idx = i;
     }
@@ -1538,7 +1538,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
  * @private
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
-  var minDist = null;
+  var minDist = Infinity;
   var idx = -1;
   var points = this.layout_.points;
   var dist, dx, dy, point, closestPoint, closestSeries;
@@ -1551,7 +1551,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (minDist === null || dist < minDist) {
+      if (dist < minDist) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;
@@ -1561,7 +1561,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
   }
   var name = this.layout_.setNames[closestSeries];
   return {
-    row: idx,
+    row: idx + this.getLeftBoundary_(),
     seriesName: name,
     point: closestPoint
   };
@@ -1581,18 +1581,20 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
  */
 Dygraph.prototype.findStackedPoint = function(domX, domY) {
   var row = this.findClosestRow(domX);
+  var boundary = this.getLeftBoundary_();
+  var rowIdx = row - boundary;
   var points = this.layout_.points;
   var closestPoint, closestSeries;
   for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
     var first = this.layout_.setPointsOffsets[setIdx];
     var len = this.layout_.setPointsLengths[setIdx];
-    if (row >= len) continue;
-    var p1 = points[first + row];
+    if (rowIdx >= len) continue;
+    var p1 = points[first + rowIdx];
     if (!Dygraph.isValidPoint(p1)) continue;
     var py = p1.canvasy;
-    if (domX > p1.canvasx && row + 1 < len) {
+    if (domX > p1.canvasx && rowIdx + 1 < len) {
       // interpolate series Y value using next point
-      var p2 = points[first + row + 1];
+      var p2 = points[first + rowIdx + 1];
       if (Dygraph.isValidPoint(p2)) {
         var dx = p2.canvasx - p1.canvasx;
         if (dx > 0) {
@@ -1600,9 +1602,9 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
           py += r * (p2.canvasy - p1.canvasy);
         }
       }
-    } else if (domX < p1.canvasx && row > 0) {
+    } else if (domX < p1.canvasx && rowIdx > 0) {
       // interpolate series Y value using previous point
-      var p0 = points[first + row - 1];
+      var p0 = points[first + rowIdx - 1];
       if (Dygraph.isValidPoint(p0)) {
         var dx = p1.canvasx - p0.canvasx;
         if (dx > 0) {
@@ -1663,6 +1665,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
+ * Fetch left offset from first defined boundaryIds record (see bug #236).
+ */
+Dygraph.prototype.getLeftBoundary_ = function() {
+  for (var i = 0; i < this.boundaryIds_.length; i++) {
+    if (this.boundaryIds_[i] !== undefined) {
+      return this.boundaryIds_[i][0];
+    }
+  }
+  return 0;
+};
+
+/**
  * Transforms layout_.points index into data row number.
  * @param int layout_.points index
  * @return int row number, or -1 if none could be found.
@@ -1671,19 +1685,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
 Dygraph.prototype.idxToRow_ = function(idx) {
   if (idx < 0) return -1;
 
-  // make sure that you get the boundaryIds record which is also defined (see bug #236)
-  var boundaryIdx = -1;
-  for (var i = 0; i < this.boundaryIds_.length; i++) {
-    if (this.boundaryIds_[i] !== undefined) {
-      boundaryIdx = i;
-      break;
-    }
-  }
-  if (boundaryIdx < 0) return -1;
+  var boundary = this.getLeftBoundary_();
   for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
     var set = this.layout_.datasets[setIdx];
     if (idx < set.length) {
-      return this.boundaryIds_[boundaryIdx][0] + idx;
+      return boundary + idx;
     }
     idx -= set.length;
   }
@@ -1977,12 +1983,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
   var pos = 0;
 
   if (row !== false) {
-    for (var i = 0; i < this.boundaryIds_.length; i++) {
-      if (this.boundaryIds_[i] !== undefined) {
-        row -= this.boundaryIds_[i][0];
-        break;
-      }
-    }
+    row -= this.getLeftBoundary_();
   }
 
   var changed = false;
@@ -2070,7 +2071,7 @@ Dygraph.prototype.getSelection = function() {
 
   for (var row=0; row<this.layout_.points.length; row++ ) {
     if (this.layout_.points[row].x == this.selPoints_[0].x) {
-      return row + this.boundaryIds_[0][0];
+      return row + this.getLeftBoundary_();
     }
   }
   return -1;
