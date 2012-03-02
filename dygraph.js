@@ -1515,7 +1515,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
   var l = points.length;
   for (var i = 0; i < l; i++) {
     var point = points[i];
-    if (!Dygraph.isValidPoint(point)) continue;
+    if (!Dygraph.isValidPoint(point, true)) continue;
     var dist = Math.abs(point.canvasx - domX);
     if (dist < minDistX) {
       minDistX = dist;
@@ -1999,7 +1999,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
           point = this.layout_.unstackPointAtIndex(pos+row);
         }
 
-        this.selPoints_.push(point);
+        if (!(point.yval === null)) this.selPoints_.push(point);
       }
       pos += set.length;
     }
@@ -2197,9 +2197,8 @@ Dygraph.prototype.predraw_ = function() {
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
-    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
-    var logScale = this.attr_('logscale', i);
-    var series = this.extractSeries_(this.rawData_, i, logScale, connectSeparatedPoints);
+    var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong
+    var series = this.extractSeries_(this.rawData_, i, logScale);
     series = this.rollingAverage(series, this.rollPeriod_);
     this.rolledSeries_.push(series);
   }
@@ -2296,6 +2295,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         }
 
         actual_y = series[j][1];
+        if (actual_y === null) {
+          series[j] = [x, null];
+          continue;
+        }
+
         cumulative_y[x] += actual_y;
 
         series[j] = [x, cumulative_y[x]];
@@ -2682,24 +2686,19 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * 
  * @private
  */
-Dygraph.prototype.extractSeries_ = function(rawData, i, logScale, connectSeparatedPoints) {
+Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   var series = [];
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
     if (logScale) {
       // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart. Note that this ignores
-      // connectSeparatedPoints.
+      // This will create a gap in the chart.
       if (point <= 0) {
         point = null;
       }
-      series.push([x, point]);
-    } else {
-      if (point !== null || !connectSeparatedPoints) {
-        series.push([x, point]);
-      }
     }
+    series.push([x, point]);
   }
   return series;
 };
