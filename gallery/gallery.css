@@ -157,3 +157,7 @@ a {
 #workarea #temperature-sf-ny #bordered {
   border: 1px solid red;
 }
+
+#workarea #highlighted-series .few .dygraph-legend > span.highlight { border: 1px solid grey; }
+#workarea #highlighted-series .many .dygraph-legend > span { display: none; }
+#workarea #highlighted-series .many .dygraph-legend > span.highlight { display: inline; }
