@@ -53,7 +53,14 @@ def search_files(type, files):
   # have the same name as a Dygraph option probably will be.
   prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
   for test_file in files:
-    braced_html = find_braces(file(test_file).read())
+    text = file(test_file).read()
+    # Hack for slipping past gallery demos that have title in their attributes
+    # so they don't appear as reasons for the demo to have 'title' options.
+    if type == "gallery":
+      idx = text.find("function(")
+      if idx >= 0:
+        text = text[idx:]
+    braced_html = find_braces(text)
     if debug_tests:
       print braced_html
 
@@ -139,11 +146,11 @@ print """
 <p>And, without further ado, here's the complete list of options:</p>
 """
 
-def de_tests(f):
+def test_name(f):
   """Takes 'tests/demo.html' -> 'demo'"""
   return f.replace('tests/', '').replace('.html', '')
 
-def de_gallery(f):
+def gallery_name(f):
   """Takes 'gallery/demo.js' -> 'demo'"""
   return f.replace('gallery/', '').replace('.js', '')
 
@@ -163,14 +170,14 @@ for label in sorted(labels):
       examples_html = '<font color=red>NONE</font>'
     else:
       examples_html = ' '.join(
-        '<a href="%s">%s</a>' % (f, de_tests(f)) for f in tests)
+        '<a href="%s">%s</a>' % (f, test_name(f)) for f in tests)
 
     gallery = opt['gallery']
     if not gallery:
       gallery_html = '<font color=red>NONE</font>'
     else:
       gallery_html = ' '.join(
-        '<a href="%s">%s</a>' % (urlify_gallery(f), de_gallery(f)) for f in gallery)
+        '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f)) for f in gallery)
 
     if 'parameters' in opt:
       parameters = opt['parameters']
@@ -185,9 +192,9 @@ for label in sorted(labels):
 
     print """
   <div class='option'><a name="%(name)s"></a><b>%(name)s</b><br/>
-  %(desc)s<br/>
+  <p>%(desc)s</p>
   <i>Type: %(type)s</i><br/>%(parameters)s
-  <i>Default: %(default)s</i><br/>
+  <i>Default: %(default)s</i></p>
   Gallery Samples: %(gallery_html)s<br/>
   Other Examples: %(examples_html)s<br/>
   <br/></div>
