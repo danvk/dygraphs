@@ -308,3 +308,54 @@ CallbackTestCase.prototype.testNaNData = function() {
   assertEquals(1, res.row);
   assertEquals('c', res.seriesName);
 };
+
+CallbackTestCase.prototype.testGapHighlight = function() {
+var dataGap = [
+    [1, null, 3],
+    [2, 2, null],
+    [3, null, 5],
+    [4, 4, null],
+    [5, null, 7],
+    [6, NaN, null],
+    [8, 8, null],
+    [10, 10, null]];
+
+  var h_row;
+  var h_pts;
+
+  var highlightCallback  =  function(e, x, pts, row) {
+    h_row = row;
+    h_pts = pts;
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, dataGap, {
+     width: 400,
+     height: 300,
+     //stackedGraph: true,
+     connectSeparatedPoints: true,
+     drawPoints: true,
+     labels: ['x', 'A', 'B'],
+     highlightCallback : highlightCallback
+  });
+
+  DygraphOps.dispatchMouseMove(g, 1.1, 10);
+  //point from series B
+  assertEquals(0, h_row);
+  assertEquals(1, h_pts.length);
+  assertEquals(3, h_pts[0].yval);
+  assertEquals('B', h_pts[0].name);
+
+  DygraphOps.dispatchMouseMove(g, 6.1, 10);
+  // A is NaN at x=6
+  assertEquals(1, h_pts.length);
+  assert(isNaN(h_pts[0].yval));
+  assertEquals('A', h_pts[0].name);
+
+  DygraphOps.dispatchMouseMove(g, 8.1, 10);
+  //point from series A
+  assertEquals(6, h_row);
+  assertEquals(1, h_pts.length);
+  assertEquals(8, h_pts[0].yval);
+  assertEquals('A', h_pts[0].name);
+};

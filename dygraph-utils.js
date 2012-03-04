@@ -334,12 +334,15 @@ Dygraph.isOK = function(x) {
 /**
  * @private
  * @param { Object } p The point to consider, valid points are {x, y} objects
+ * @param { Boolean } allowNaNY Treat point with y=NaN as valid
  * @return { Boolean } Whether the point has numeric x and y.
  */
-Dygraph.isValidPoint = function(p) {
+Dygraph.isValidPoint = function(p, allowNaNY) {
   if (!p) return false; // null or undefined object
-  if (isNaN(p.x) || p.x === null || p.x === undefined) return false;
-  if (isNaN(p.y) || p.y === null || p.y === undefined) return false;
+  if (p.yval === null) return false; // missing point
+  if (p.x === null || p.x === undefined) return false;
+  if (p.y === null || p.y === undefined) return false;
+  if (isNaN(p.x) || (!allowNaNY && isNaN(p.y))) return false;
   return true;
 };
 
