@@ -2873,7 +2873,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     // TODO(danvk): use Dygraph.numberValueFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
 };
@@ -3112,7 +3112,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     return data;
   }
 };
@@ -3152,7 +3152,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
     this.error("only 'date', 'datetime' and 'number' types are supported for " +
