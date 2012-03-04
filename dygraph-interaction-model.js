@@ -72,20 +72,26 @@ Dygraph.Interaction.startPan = function(event, g, context) {
 
   // Record the range of each y-axis at the start of the drag.
   // If any axis has a valueRange or valueWindow, then we want a 2D pan.
+  // We can't store data directly in g.axes_, because it does not belong to us
+  // and could change out from under us during a pan (say if there's a data
+  // update).
   context.is2DPan = false;
+  context.axes = [];
   for (i = 0; i < g.axes_.length; i++) {
     axis = g.axes_[i];
+    var axis_data = {};
     var yRange = g.yAxisRange(i);
     // TODO(konigsberg): These values should be in |context|.
     // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.
     if (axis.logscale) {
-      axis.initialTopValue = Dygraph.log10(yRange[1]);
-      axis.dragValueRange = Dygraph.log10(yRange[1]) - Dygraph.log10(yRange[0]);
+      axis_data.initialTopValue = Dygraph.log10(yRange[1]);
+      axis_data.dragValueRange = Dygraph.log10(yRange[1]) - Dygraph.log10(yRange[0]);
     } else {
-      axis.initialTopValue = yRange[1];
-      axis.dragValueRange = yRange[1] - yRange[0];
+      axis_data.initialTopValue = yRange[1];
+      axis_data.dragValueRange = yRange[1] - yRange[0];
     }
-    axis.unitsPerPixel = axis.dragValueRange / (g.plotter_.area.h - 1);
+    axis_data.unitsPerPixel = axis_data.dragValueRange / (g.plotter_.area.h - 1);
+    context.axes.push(axis_data);
 
     // While calculating axes, set 2dpan.
     if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
@@ -130,23 +136,24 @@ Dygraph.Interaction.movePan = function(event, g, context) {
     // Adjust each axis appropriately.
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
+      var axis_data = context.axes[i];
 
       var pixelsDragged = context.dragEndY - context.dragStartY;
-      var unitsDragged = pixelsDragged * axis.unitsPerPixel;
+      var unitsDragged = pixelsDragged * axis_data.unitsPerPixel;
 
       var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
 
       // In log scale, maxValue and minValue are the logs of those values.
-      var maxValue = axis.initialTopValue + unitsDragged;
+      var maxValue = axis_data.initialTopValue + unitsDragged;
       if (boundedValue) {
         maxValue = Math.min(maxValue, boundedValue[1]);
       }
-      var minValue = maxValue - axis.dragValueRange;
+      var minValue = maxValue - axis_data.dragValueRange;
       if (boundedValue) {
         if (minValue < boundedValue[0]) {
           // Adjust maxValue, and recompute minValue.
           maxValue = maxValue - (minValue - boundedValue[0]);
-          minValue = maxValue - axis.dragValueRange;
+          minValue = maxValue - axis_data.dragValueRange;
         }
       }
       if (axis.logscale) {
@@ -186,8 +193,6 @@ Dygraph.Interaction.endPan = function(event, g, context) {
     Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
-  // TODO(konigsberg): Clear the context data from the axis.
-  // (replace with "context = {}" ?)
   // TODO(konigsberg): mouseup should just delete the
   // context object, and mousedown should create a new one.
   context.isPanning = false;
@@ -197,6 +202,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
   context.valueRange = null;
   context.boundedDates = null;
   context.boundedValues = null;
+  context.axes = null;
 };
 
 /**
