@@ -332,6 +332,18 @@ Dygraph.isOK = function(x) {
 };
 
 /**
+ * @private
+ * @param { Object } p The point to consider, valid points are {x, y} objects
+ * @return { Boolean } Whether the point has numeric x and y.
+ */
+Dygraph.isValidPoint = function(p) {
+  if (!p) return false; // null or undefined object
+  if (isNaN(p.x) || p.x === null || p.x === undefined) return false;
+  if (isNaN(p.y) || p.y === null || p.y === undefined) return false;
+  return true;
+};
+
+/**
  * Number formatting function which mimicks the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
@@ -844,14 +856,14 @@ Dygraph.regularShape_ = function(
     var coords = computeCoordinates();
     ctx.lineTo(coords[0], coords[1]);
   }
+  ctx.fill();
   ctx.stroke();
-  ctx.closePath();
 }
 
 Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
   return function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
     ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
     Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
   };
 };
@@ -875,12 +887,13 @@ Dygraph.Circles = {
   CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
     ctx.beginPath();
     ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
     ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
     ctx.stroke();
   },
   STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
   PLUS : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
     ctx.strokeStyle = color;
 
     ctx.beginPath();
@@ -893,12 +906,10 @@ Dygraph.Circles = {
     ctx.moveTo(cx, cy + radius);
     ctx.lineTo(cx, cy - radius);
     ctx.closePath();
-
     ctx.stroke();
   },
   EX : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = color;
 
     ctx.beginPath();
     ctx.moveTo(cx + radius, cy + radius);
@@ -910,7 +921,6 @@ Dygraph.Circles = {
     ctx.moveTo(cx + radius, cy - radius);
     ctx.lineTo(cx - radius, cy + radius);
     ctx.closePath();
-
     ctx.stroke();
   }
 };
