@@ -420,3 +420,30 @@ AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
   g.setSelection(9);
   assertEquals("vf9: y:vf18", getLegend());
 };
+
+AxisLabelsTestCase.prototype.testSeriesOrder = function() {
+  var opts = {
+    width: 480,
+    height: 320
+  };
+  var data = "x,00,01,10,11\n" +
+      "0,101,201,301,401\n" +
+      "1,102,202,302,402\n" +
+      "2,103,203,303,403\n" +
+      "3,104,204,304,404\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  g.setSelection(2);
+  assertEquals('2: 00:103 01:203 10:303 11:403', getLegend());
+
+  // Sanity checks for indexFromSetName
+  assertEquals(0, g.indexFromSetName("x"));
+  assertEquals(1, g.indexFromSetName("00"));
+  assertEquals(null, g.indexFromSetName("abcde"));
+
+  // Verify that we get the label list back in the right order
+  assertEquals(["x", "00", "01", "10", "11"], g.getLabels());
+};

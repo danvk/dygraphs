@@ -20,7 +20,7 @@
 
     <div id="graphdiv" style="width:600px; height:300px;"></div>
     <script type="text/javascript">
-      new Dygraph(document.getElementById("graphdiv"),
+      var g = new Dygraph(document.getElementById("graphdiv"),
       [
         [ new Date("2009/12/01"), 10, 10, 10],
         [ new Date("2009/12/02"), 15, 11, 12],

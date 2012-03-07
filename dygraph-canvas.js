@@ -28,6 +28,7 @@
 /*global Dygraph:false,RGBColor:false */
 "use strict";
 
+
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
 
@@ -311,7 +312,7 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
                           (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
-    inner_div.appendChild(document.createTextNode(txt));
+    inner_div.innerHTML=txt;
     div.appendChild(inner_div);
     return div;
   };
@@ -657,6 +658,128 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   }
 };
 
+DygraphCanvasRenderer.makeNextPointStep_ = function(connect, points, end) {
+  if (connect) {
+    return function(j) {
+      while (++j < end) {
+        if (!(points[j].yval === null)) break;
+      }
+      return j;
+    }
+  } else {
+    return function(j) { return j + 1 };
+  }
+};
+
+DygraphCanvasRenderer.prototype._drawStyledLine = function(
+    ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
+    drawPointCallback, pointSize) {
+  var isNullOrNaN = function(x) {
+    return (x === null || isNaN(x));
+  };
+
+  var stepPlot = this.attr_("stepPlot");
+  var firstIndexInSet = this.layout.setPointsOffsets[i];
+  var setLength = this.layout.setPointsLengths[i];
+  var afterLastIndexInSet = firstIndexInSet + setLength;
+  var points = this.layout.points;
+  var prevX = null;
+  var prevY = null;
+  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
+  if (!Dygraph.isArrayLike(strokePattern)) {
+    strokePattern = null;
+  }
+
+  var point;
+  var next = DygraphCanvasRenderer.makeNextPointStep_(
+      this.attr_('connectSeparatedPoints'), points, afterLastIndexInSet);
+  ctx.save();
+  for (var j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
+    point = points[j];
+    if (isNullOrNaN(point.canvasy)) {
+      if (stepPlot && prevX !== null) {
+        // Draw a horizontal line to the start of the missing data
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = this.attr_('strokeWidth');
+        this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
+        ctx.stroke();
+      }
+      // this will make us move to the next point, not draw a line to it.
+      prevX = prevY = null;
+    } else {
+      // A point is "isolated" if it is non-null but both the previous
+      // and next points are null.
+      var isIsolated = (!prevX && (j == points.length - 1 ||
+                                   isNullOrNaN(points[j+1].canvasy)));
+      if (prevX === null) {
+        prevX = point.canvasx;
+        prevY = point.canvasy;
+      } else {
+        // Skip over points that will be drawn in the same pixel.
+        if (Math.round(prevX) == Math.round(point.canvasx) &&
+            Math.round(prevY) == Math.round(point.canvasy)) {
+          continue;
+        }
+        // TODO(antrob): skip over points that lie on a line that is already
+        // going to be drawn. There is no need to have more than 2
+        // consecutive points that are collinear.
+        if (strokeWidth) {
+          ctx.beginPath();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = strokeWidth;
+          if (stepPlot) {
+            this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
+            prevX = point.canvasx;
+          }
+          this._dashedLine(ctx, prevX, prevY, point.canvasx, point.canvasy, strokePattern);
+          prevX = point.canvasx;
+          prevY = point.canvasy;
+          ctx.stroke();
+        }
+      }
+
+      if (drawPoints || isIsolated) {
+        pointsOnLine.push([point.canvasx, point.canvasy]);
+      }
+    }
+  }
+  for (var idx = 0; idx < pointsOnLine.length; idx++) {
+    var cb = pointsOnLine[idx];
+    ctx.save();
+    drawPointCallback(
+        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+    ctx.restore();
+  }
+  ctx.restore();
+};
+
+DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
+  var setNames = this.layout.setNames;
+  var setName = setNames[i];
+
+  var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
+  var borderWidth = this.dygraph_.attr_("strokeBorderWidth", setName);
+  var drawPointCallback = this.dygraph_.attr_("drawPointCallback", setName) ||
+      Dygraph.Circles.DEFAULT;
+  if (borderWidth && strokeWidth) {
+    this._drawStyledLine(ctx, i, setName,
+        this.dygraph_.attr_("strokeBorderColor", setName),
+        strokeWidth + 2 * borderWidth,
+        this.dygraph_.attr_("strokePattern", setName),
+        this.dygraph_.attr_("drawPoints", setName),
+        drawPointCallback,
+        this.dygraph_.attr_("pointSize", setName));
+  }
+
+  this._drawStyledLine(ctx, i, setName,
+      this.colors[setName],
+      strokeWidth,
+      this.dygraph_.attr_("strokePattern", setName),
+      this.dygraph_.attr_("drawPoints", setName),
+      drawPointCallback,
+      this.dygraph_.attr_("pointSize", setName));
+};
 
 /**
  * Actually draw the lines chart, including error bars.
@@ -664,12 +787,8 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * @private
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
-  var isNullOrNaN = function(x) {
-    return (x === null || isNaN(x));
-  };
-
   // TODO(danvk): use this.attr_ for many of these.
-  var context = this.elementContext;
+  var ctx = this.elementContext;
   var fillAlpha = this.attr_('fillAlpha');
   var errorBars = this.attr_("errorBars") || this.attr_("customBars");
   var fillGraph = this.attr_("fillGraph");
@@ -679,12 +798,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var pointsLength = points.length;
   var point, i, j, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
 
-  var setNames = [];
-  for (var name in this.layout.datasets) {
-    if (this.layout.datasets.hasOwnProperty(name)) {
-      setNames.push(name);
-    }
-  }
+  var setNames = this.layout.setNames;
   var setCount = setNames.length;
 
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
@@ -702,8 +816,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
 
   // create paths
-  var ctx = context;
   if (errorBars) {
+    ctx.save();
     if (fillGraph) {
       this.dygraph_.warn("Can't use fillGraph option with error bars");
     }
@@ -713,8 +827,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       axis = this.dygraph_.axisPropertiesForSeries(setName);
       color = this.colors[setName];
 
+      var firstIndexInSet = this.layout.setPointsOffsets[i];
+      var setLength = this.layout.setPointsLengths[i];
+      var afterLastIndexInSet = firstIndexInSet + setLength;
+
+      var next = DygraphCanvasRenderer.makeNextPointStep_(
+        this.attr_('connectSeparatedPoints'), points,
+        afterLastIndexInSet);
+
       // setup graphics context
-      ctx.save();
       prevX = NaN;
       prevY = NaN;
       prevYs = [-1, -1];
@@ -725,9 +846,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = 0; j < pointsLength; j++) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
         point = points[j];
-        if (point.name == setName) {
+        if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
@@ -763,7 +884,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       }
       ctx.fill();
     }
+    ctx.restore();
   } else if (fillGraph) {
+    ctx.save();
     var baseline = [];  // for stacked graphs: baseline for filling
 
     // process sets in reverse order (needed for stacked graphs)
@@ -775,9 +898,15 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       if (axisY < 0.0) axisY = 0.0;
       else if (axisY > 1.0) axisY = 1.0;
       axisY = this.area.h * axisY + this.area.y;
+      var firstIndexInSet = this.layout.setPointsOffsets[i];
+      var setLength = this.layout.setPointsLengths[i];
+      var afterLastIndexInSet = firstIndexInSet + setLength;
+
+      var next = DygraphCanvasRenderer.makeNextPointStep_(
+        this.attr_('connectSeparatedPoints'), points,
+        afterLastIndexInSet);
 
       // setup graphics context
-      ctx.save();
       prevX = NaN;
       prevYs = [-1, -1];
       yscale = axis.yscale;
@@ -787,9 +916,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = 0; j < pointsLength; j++) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
         point = points[j];
-        if (point.name == setName) {
+        if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
@@ -819,82 +948,102 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       }
       ctx.fill();
     }
+    ctx.restore();
   }
 
   // Drawing the lines.
-  var firstIndexInSet = 0;
-  var afterLastIndexInSet = 0;
-  var setLength = 0;
   for (i = 0; i < setCount; i += 1) {
-    setLength = this.layout.setPointsLengths[i];
-    afterLastIndexInSet += setLength;
-    setName = setNames[i];
-    color = this.colors[setName];
-    var strokeWidth = this.dygraph_.attr_("strokeWidth", setName);
+    this._drawLine(ctx, i);
+  }
+};
 
-    // setup graphics context
-    context.save();
-    var pointSize = this.dygraph_.attr_("pointSize", setName);
-    prevX = null;
-    prevY = null;
-    var drawPoints = this.dygraph_.attr_("drawPoints", setName);
-    for (j = firstIndexInSet; j < afterLastIndexInSet; j++) {
-      point = points[j];
-      if (isNullOrNaN(point.canvasy)) {
-        if (stepPlot && prevX !== null) {
-          // Draw a horizontal line to the start of the missing data
-          ctx.beginPath();
-          ctx.strokeStyle = color;
-          ctx.lineWidth = this.attr_('strokeWidth');
-          ctx.moveTo(prevX, prevY);
-          ctx.lineTo(point.canvasx, prevY);
-          ctx.stroke();
-        }
-        // this will make us move to the next point, not draw a line to it.
-        prevX = prevY = null;
-      } else {
-        // A point is "isolated" if it is non-null but both the previous
-        // and next points are null.
-        var isIsolated = (!prevX && (j == points.length - 1 ||
-                                     isNullOrNaN(points[j+1].canvasy)));
-        if (prevX === null) {
-          prevX = point.canvasx;
-          prevY = point.canvasy;
-        } else {
-          // Skip over points that will be drawn in the same pixel.
-          if (Math.round(prevX) == Math.round(point.canvasx) &&
-              Math.round(prevY) == Math.round(point.canvasy)) {
-            continue;
-          }
-          // TODO(antrob): skip over points that lie on a line that is already
-          // going to be drawn. There is no need to have more than 2
-          // consecutive points that are collinear.
-          if (strokeWidth) {
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = strokeWidth;
-            ctx.moveTo(prevX, prevY);
-            if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevY);
-            }
-            prevX = point.canvasx;
-            prevY = point.canvasy;
-            ctx.lineTo(prevX, prevY);
-            ctx.stroke();
-          }
-        }
+/**
+ * This does dashed lines onto a canvas for a given pattern. You must call
+ * ctx.stroke() after to actually draw it, much line ctx.lineTo(). It remembers
+ * the state of the line in regards to where we left off on drawing the pattern.
+ * You can draw a dashed line in several function calls and the pattern will be
+ * continous as long as you didn't call this function with a different pattern
+ * in between.
+ * @param ctx The canvas 2d context to draw on.
+ * @param x The start of the line's x coordinate.
+ * @param y The start of the line's y coordinate.
+ * @param x2 The end of the line's x coordinate.
+ * @param y2 The end of the line's y coordinate.
+ * @param pattern The dash pattern to draw, an array of integers where even 
+ * index is drawn and odd index is not drawn (Ex. [10, 2, 5, 2], 10 is drawn 5
+ * is drawn, 2 is the space between.). A null pattern, array of length one, or
+ * empty array will do just a solid line.
+ * @private
+ */
+DygraphCanvasRenderer.prototype._dashedLine = function(ctx, x, y, x2, y2, pattern) {
+  // Original version http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvas
+  // Modified by Russell Valentine to keep line history and continue the pattern
+  // where it left off.
+  var dx, dy, len, rot, patternIndex, segment;
 
-        if (drawPoints || isIsolated) {
-          ctx.beginPath();
-          ctx.fillStyle = color;
-          ctx.arc(point.canvasx, point.canvasy, pointSize,
-                  0, 2 * Math.PI, false);
-          ctx.fill();
-        }
-      }
-    }
-    firstIndexInSet = afterLastIndexInSet;
+  // If we don't have a pattern or it is an empty array or of size one just
+  // do a solid line.
+  if (!pattern || pattern.length <= 1) {
+    ctx.moveTo(x, y);
+    ctx.lineTo(x2, y2);
+    return;
   }
 
-  context.restore();
+  // If we have a different dash pattern than the last time this was called we
+  // reset our dash history and start the pattern from the begging 
+  // regardless of state of the last pattern.
+  if (!Dygraph.compareArrays(pattern, this._dashedLineToHistoryPattern)) {
+    this._dashedLineToHistoryPattern = pattern;
+    this._dashedLineToHistory = [0, 0];
+  }
+  ctx.save();
+
+  // Calculate transformation parameters
+  dx = (x2-x);
+  dy = (y2-y);
+  len = Math.sqrt(dx*dx + dy*dy);
+  rot = Math.atan2(dy, dx);
+
+  // Set transformation
+  ctx.translate(x, y);
+  ctx.moveTo(0, 0);
+  ctx.rotate(rot);
+
+  // Set last pattern index we used for this pattern.
+  patternIndex = this._dashedLineToHistory[0];
+  x = 0;
+  while (len > x) {
+    // Get the length of the pattern segment we are dealing with.
+    segment = pattern[patternIndex];
+    // If our last draw didn't complete the pattern segment all the way we 
+    // will try to finish it. Otherwise we will try to do the whole segment.
+    if (this._dashedLineToHistory[1]) {
+      x += this._dashedLineToHistory[1];
+    } else {
+      x += segment;
+    }
+    if (x > len) {
+      // We were unable to complete this pattern index all the way, keep
+      // where we are the history so our next draw continues where we left off
+      // in the pattern.
+      this._dashedLineToHistory = [patternIndex, x-len];
+      x = len;
+    } else {
+      // We completed this patternIndex, we put in the history that we are on
+      // the beginning of the next segment.
+      this._dashedLineToHistory = [(patternIndex+1)%pattern.length, 0];
+    }
+
+    // We do a line on a even pattern index and just move on a odd pattern index.
+    // The move is the empty space in the dash.
+    if(patternIndex % 2 === 0) {
+      ctx.lineTo(x, 0);
+    } else {
+      ctx.moveTo(x, 0);
+    }
+    // If we are not done, next loop process the next pattern segment, or the
+    // first segment again if we are at the end of the pattern.
+    patternIndex = (patternIndex+1) % pattern.length;
+  }
+  ctx.restore();
 };

@@ -47,11 +47,11 @@
       function drawVisualization() {
         data = createDataTable('date');
 
-        new Dygraph.GVizChart(
+        var chart = new Dygraph.GVizChart(
             document.getElementById('dygraphs_gviz')).draw(data, {
             });
 
-        new Dygraph(document.getElementById('dygraphs'), csv);
+        var graph = new Dygraph(document.getElementById('dygraphs'), csv);
 
       }
       google.setOnLoadCallback(drawVisualization);

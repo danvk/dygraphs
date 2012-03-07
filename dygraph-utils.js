@@ -35,6 +35,13 @@ Dygraph.ERROR = 3;
 // https://github.com/eriwen/javascript-stacktrace
 Dygraph.LOG_STACK_TRACES = false;
 
+/** A dotted line stroke pattern. */
+Dygraph.DOTTED_LINE = [2, 2];
+/** A dashed line stroke pattern. */
+Dygraph.DASHED_LINE = [7, 3];
+/** A dot dash stroke pattern. */
+Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
+
 /**
  * @private
  * Log an error on the JS console at the given severity.
@@ -322,6 +329,21 @@ Dygraph.pageY = function(e) {
 // TODO(danvk): determine when else this returns false (e.g. for undefined or null)
 Dygraph.isOK = function(x) {
   return x && !isNaN(x);
+};
+
+/**
+ * @private
+ * @param { Object } p The point to consider, valid points are {x, y} objects
+ * @param { Boolean } allowNaNY Treat point with y=NaN as valid
+ * @return { Boolean } Whether the point has numeric x and y.
+ */
+Dygraph.isValidPoint = function(p, allowNaNY) {
+  if (!p) return false; // null or undefined object
+  if (p.yval === null) return false; // missing point
+  if (p.x === null || p.x === undefined) return false;
+  if (p.y === null || p.y === undefined) return false;
+  if (isNaN(p.x) || (!allowNaNY && isNaN(p.y))) return false;
+  return true;
 };
 
 /**
@@ -693,7 +715,9 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'clickCallback': true,
     'digitsAfterDecimal': true,
     'drawCallback': true,
+    'drawHighlightPointCallback': true,
     'drawPoints': true,
+    'drawPointCallback': true,
     'drawXGrid': true,
     'drawYGrid': true,
     'fillAlpha': true,
@@ -774,4 +798,132 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   }
 
   return requiresNewPoints;
+};
+
+/**
+ * Compares two arrays to see if they are equal. If either parameter is not an
+ * array it will return false. Does a shallow compare 
+ * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
+ * @param array1 first array
+ * @param array2 second array
+ * @return True if both parameters are arrays, and contents are equal.
+ */
+Dygraph.compareArrays = function(array1, array2) {
+  if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
+    return false;
+  }
+  if (array1.length !== array2.length) {
+    return false;
+  }
+  for (var i = 0; i < array1.length; i++) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * ctx: the canvas context
+ * sides: the number of sides in the shape.
+ * radius: the radius of the image.
+ * cx: center x coordate
+ * cy: center y coordinate
+ * rotationRadians: the shift of the initial angle, in radians.
+ * delta: the angle shift for each line. If missing, creates a regular
+ *   polygon.
+ */
+Dygraph.regularShape_ = function(
+    ctx, sides, radius, cx, cy, rotationRadians, delta) {
+  rotationRadians = rotationRadians ? rotationRadians : 0;
+  delta = delta ? delta : Math.PI * 2 / sides;
+
+  ctx.beginPath();
+  var first = true;
+  var initialAngle = rotationRadians;
+  var angle = initialAngle;
+
+  var computeCoordinates = function() {
+    var x = cx + (Math.sin(angle) * radius);
+    var y = cy + (-Math.cos(angle) * radius);
+    return [x, y]; 
+  };
+
+  var initialCoordinates = computeCoordinates();
+  var x = initialCoordinates[0];
+  var y = initialCoordinates[1];
+  ctx.moveTo(x, y);
+
+  for (var idx = 0; idx < sides; idx++) {
+    angle = (idx == sides - 1) ? initialAngle : (angle + delta);
+    var coords = computeCoordinates();
+    ctx.lineTo(coords[0], coords[1]);
+  }
+  ctx.fill();
+  ctx.stroke();
+}
+
+Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
+  return function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
+    Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
+  };
+};
+
+Dygraph.DrawPolygon_ = function(sides, rotationRadians, ctx, cx, cy, color, radius, delta) {
+  new Dygraph.RegularShape_(sides, rotationRadians, delta).draw(ctx, cx, cy, radius);
+}
+
+Dygraph.Circles = {
+  DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+  },
+  TRIANGLE : Dygraph.shapeFunction_(3),
+  SQUARE : Dygraph.shapeFunction_(4, Math.PI / 4),
+  DIAMOND : Dygraph.shapeFunction_(4),
+  PENTAGON : Dygraph.shapeFunction_(5),
+  HEXAGON : Dygraph.shapeFunction_(6),
+  CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.stroke();
+  },
+  STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
+  PLUS : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy);
+    ctx.lineTo(cx - radius, cy);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + radius);
+    ctx.lineTo(cx, cy - radius);
+    ctx.closePath();
+    ctx.stroke();
+  },
+  EX : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy + radius);
+    ctx.lineTo(cx - radius, cy - radius);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy - radius);
+    ctx.lineTo(cx - radius, cy + radius);
+    ctx.closePath();
+    ctx.stroke();
+  }
 };

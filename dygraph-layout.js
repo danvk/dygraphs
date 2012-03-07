@@ -32,6 +32,7 @@
 var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
   this.datasets = [];
+  this.setNames = [];
   this.annotations = [];
   this.yAxes_ = null;
 
@@ -46,7 +47,8 @@ DygraphLayout.prototype.attr_ = function(name) {
 };
 
 DygraphLayout.prototype.addDataset = function(setname, set_xy) {
-  this.datasets[setname] = set_xy;
+  this.datasets.push(set_xy);
+  this.setNames.push(setname);
 };
 
 DygraphLayout.prototype.getPlotArea = function() {
@@ -162,9 +164,8 @@ DygraphLayout.prototype._evaluateLimits = function() {
     this.minxval = this.dateWindow_[0];
     this.maxxval = this.dateWindow_[1];
   } else {
-    for (var name in this.datasets) {
-      if (!this.datasets.hasOwnProperty(name)) continue;
-      var series = this.datasets[name];
+    for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+      var series = this.datasets[setIdx];
       if (series.length > 1) {
         var x1 = series[0][0];
         if (!this.minxval || x1 < this.minxval) this.minxval = x1;
@@ -212,13 +213,15 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // for every data set since the points are added in order of the sets in
   // datasets.
   this.setPointsLengths = [];
+  this.setPointsOffsets = [];
 
-  for (var setName in this.datasets) {
-    if (!this.datasets.hasOwnProperty(setName)) continue;
-
-    var dataset = this.datasets[setName];
+  var connectSeparated = this.attr_('connectSeparatedPoints');
+  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+    var dataset = this.datasets[setIdx];
+    var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
+    this.setPointsOffsets.push(this.points.length);
     var setPointsLength = 0;
 
     for (var j = 0; j < dataset.length; j++) {
@@ -239,6 +242,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         yval: yValue,
         name: setName
       };
+      if (connectSeparated && item[1] === null) {
+        point.yval = null;
+      }
       this.points.push(point);
       setPointsLength += 1;
     }
@@ -283,10 +289,10 @@ DygraphLayout.prototype.evaluateWithError = function() {
 
   // Copy over the error terms
   var i = 0;  // index in this.points
-  for (var setName in this.datasets) {
-    if (!this.datasets.hasOwnProperty(setName)) continue;
+  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
     var j = 0;
-    var dataset = this.datasets[setName];
+    var dataset = this.datasets[setIdx];
+    var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
@@ -340,7 +346,13 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
  */
 DygraphLayout.prototype.removeAllDatasets = function() {
   delete this.datasets;
+  delete this.setNames;
+  delete this.setPointsLengths;
+  delete this.setPointsOffsets;
   this.datasets = [];
+  this.setNames = [];
+  this.setPointsLengths = [];
+  this.setPointsOffsets = [];
 };
 
 /**

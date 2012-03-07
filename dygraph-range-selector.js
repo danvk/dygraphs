@@ -185,6 +185,9 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
       onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove;
 
+  // Touch event functions
+  var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
+
   toXDataWindow = function(zoomHandleStatus) {
     var xDataLimits = self.dygraph_.xAxisExtremes();
     var fact = (xDataLimits[1] - xDataLimits[0])/self.canvasRect_.w;
@@ -360,7 +363,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onZoomHandleTouchEvent(e) {
+  onZoomHandleTouchEvent = function(e) {
     e.preventDefault();
     if (e.type == 'touchstart') {
       onZoomStart(e.targetTouches[0]);
@@ -371,7 +374,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   }
 
-  function onCanvasTouchEvent(e) {
+  onCanvasTouchEvent = function(e) {
     e.preventDefault();
     if (e.type == 'touchstart') {
       onPanStart(e.targetTouches[0]);
@@ -382,31 +385,15 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   }
 
-  function addTouchEvents(elem, fn) {
+  addTouchEvents = function(elem, fn) {
       var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
       for (var i = 0; i < types.length; i++) {
         Dygraph.addEvent(elem, types[i], fn);
       }
   }
 
-  var interactionModel = {
-    mousedown: function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
-      Dygraph.startPan(event, g, context);
-    },
-    mousemove: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
-    mouseup: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
-    }
-  };
-
-  this.dygraph_.attrs_.interactionModel = interactionModel;
+  this.dygraph_.attrs_.interactionModel =
+      Dygraph.Interaction.dragIsPanInteractionModel;
   this.dygraph_.attrs_.panEdgeFraction = 0.0001;
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';

@@ -21,7 +21,7 @@ errorBarsTestCase.prototype.tearDown = function() {
   Dygraph.getContext = _origFunc;
 };
 
-errorBarsTestCase.prototype.testNameGoesHere = function() {
+errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
   var opts = {
     width: 480,
     height: 320,
