@@ -186,6 +186,7 @@ DygraphCanvasRenderer.prototype.render = function() {
       ctx.closePath();
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   if (this.attr_('drawXGrid')) {
@@ -202,6 +203,7 @@ DygraphCanvasRenderer.prototype.render = function() {
       ctx.closePath();
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   // Do the ordinary rendering, as before
