@@ -309,6 +309,71 @@ CallbackTestCase.prototype.testNaNData = function() {
   assertEquals('c', res.seriesName);
 };
 
+/**
+ * This tests that stacked point searches work for data containing NaNs.
+ */
+CallbackTestCase.prototype.testNaNDataStack = function() {
+  var dataNaN = [
+    [9, -1, NaN, NaN],
+    [10, -1, 1, 2],
+    [11, 0, 3, 1],
+    [12, 1, NaN, 2],
+    [13, 0, 2, 3],
+    [14, -1, 1, 4],
+    [15, 0, 2, NaN],
+    [16, 1, 1, 3],
+    [17, 1, NaN, 3],
+    [18, 0, 2, 5],
+    [19, 0, 1, 4]];
+
+  var h_row;
+  var h_pts;
+
+  var highlightCallback  =  function(e, x, pts, row) {
+    h_row = row;
+    h_pts = pts;
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, dataNaN,
+      {
+        width: 600,
+        height: 400,
+        labels: ['x', 'a', 'b', 'c'],
+        visibility: [false, true, true],
+        stackedGraph: true,
+        highlightCallback: highlightCallback
+      });
+
+  DygraphOps.dispatchMouseMove(g, 10.1, 0.9);
+  //check correct row is returned
+  assertEquals(1, h_row);
+
+  // Explicitly test stacked point algorithm.
+  var dom = g.toDomCoords(10.1, 0.9);
+  var res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(1, res.row);
+  assertEquals('c', res.seriesName);
+
+  // First gap, no data due to NaN contagion.
+  dom = g.toDomCoords(12.1, 0.9);
+  res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(3, res.row);
+  assertEquals(undefined, res.seriesName);
+
+  // Second gap, no data due to NaN contagion.
+  dom = g.toDomCoords(15.1, 0.9);
+  res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(6, res.row);
+  assertEquals(undefined, res.seriesName);
+
+  // Isolated points should work, finding series b in this case.
+  dom = g.toDomCoords(15.9, 3.1);
+  res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(7, res.row);
+  assertEquals('b', res.seriesName);
+};
+
 CallbackTestCase.prototype.testGapHighlight = function() {
 var dataGap = [
     [1, null, 3],
