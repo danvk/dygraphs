@@ -494,9 +494,17 @@ Dygraph.dateParser = function(dateStr) {
   var dateStrSlashed;
   var d;
 
-  // Let the system try the format first.
-  d = Dygraph.dateStrToMillis(dateStr);
-  if (d && !isNaN(d)) return d;
+  // Let the system try the format first, with one caveat:
+  // YYYY-MM-DD[ HH:MM:SS] is interpreted as UTC by a variety of browsers.
+  // dygraphs displays dates in local time, so this will result in surprising
+  // inconsistencies. But if you specify "T" or "Z" (i.e. YYYY-MM-DDTHH:MM:SS),
+  // then you probably know what you're doing, so we'll let you go ahead.
+  // Issue: http://code.google.com/p/dygraphs/issues/detail?id=255
+  if (dateStr.search("-") == -1 ||
+      dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
+    d = Dygraph.dateStrToMillis(dateStr);
+    if (d && !isNaN(d)) return d;
+  }
 
   if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
