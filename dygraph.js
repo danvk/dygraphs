@@ -1842,6 +1842,8 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
  */
 Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
   var labelsDiv = this.attr_("labelsDiv");
+  if (!labelsDiv) return;
+
   var sizeSpan = document.createElement('span');
   // Calculates the width of 1em in pixels for the legend.
   sizeSpan.setAttribute('style', 'margin: 0; padding: 0 0 0 1em; border: 0;');
