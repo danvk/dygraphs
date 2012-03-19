@@ -176,7 +176,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param { Event } event the event object which led to the startZoom call.
+ * @param { Event } event the event object which led to the endPan call.
  * @param { Dygraph} g The dygraph on which to act.
  * @param { Object} context The dragging context object (with
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
@@ -340,6 +340,154 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
 };
 
 /**
+ * @private
+ */
+Dygraph.Interaction.startTouch = function(event, g, context) {
+  event.preventDefault();  // touch browsers are all nice.
+  var touches = [];
+  for (var i = 0; i < event.touches.length; i++) {
+    var t = event.touches[i];
+    // we dispense with 'dragGetX_' because all touchBrowsers support pageX
+    touches.push({
+      pageX: t.pageX,
+      pageY: t.pageY,
+      dataX: g.toDataXCoord(t.pageX),
+      dataY: g.toDataYCoord(t.pageY)
+      // identifier: t.identifier
+    });
+  }
+  context.initialTouches = touches;
+
+  if (touches.length == 1) {
+    // This is just a swipe.
+    context.initialPinchCenter = touches[0];
+    context.touchDirections = { x: true, y: true };
+  } else if (touches.length == 2) {
+    // It's become a pinch!
+
+    // only screen coordinates can be averaged (data coords could be log scale).
+    context.initialPinchCenter = {
+      pageX: 0.5 * (touches[0].pageX + touches[1].pageX),
+      pageY: 0.5 * (touches[0].pageY + touches[1].pageY),
+
+      // TODO(danvk): remove
+      dataX: 0.5 * (touches[0].dataX + touches[1].dataX),
+      dataY: 0.5 * (touches[0].dataY + touches[1].dataY),
+    };
+
+    // Make pinches in a 45-degree swath around either axis 1-dimensional zooms.
+    var initialAngle = 180 / Math.PI * Math.atan2(
+        context.initialPinchCenter.pageY - touches[0].pageY,
+        touches[0].pageX - context.initialPinchCenter.pageX);
+
+    // use symmetry to get it into the first quadrant.
+    initialAngle = Math.abs(initialAngle);
+    if (initialAngle > 90) initialAngle = 90 - initialAngle;
+
+    context.touchDirections = {
+      x: (initialAngle < (90 - 45/2)),
+      y: (initialAngle > 45/2)
+    };
+  }
+
+  // save the full x & y ranges.
+  context.initialRange = {
+    x: g.xAxisRange(),
+    y: g.yAxisRange()
+  };
+};
+
+/**
+ * @private
+ */
+Dygraph.Interaction.moveTouch = function(event, g, context) {
+  var touches = [];
+  for (var i = 0; i < event.touches.length; i++) {
+    var t = event.touches[i];
+    touches.push({
+      pageX: t.pageX,
+      pageY: t.pageY,
+    });
+  }
+  var initialTouches = context.initialTouches;
+
+  var c_now;
+
+  // old and new centers.
+  var c_init = context.initialPinchCenter;
+  if (touches.length == 1) {
+    c_now = touches[0];
+  } else {
+    c_now = {
+      pageX: 0.5 * (touches[0].pageX + touches[1].pageX),
+      pageY: 0.5 * (touches[0].pageY + touches[1].pageY)
+    };
+  }
+
+  // this is the "swipe" component
+  // we toss it out for now, but could use it in the future.
+  var swipe = {
+    pageX: c_now.pageX - c_init.pageX,
+    pageY: c_now.pageY - c_init.pageY,
+  };
+  var dataWidth = context.initialRange.x[1] - context.initialRange.x[0];
+  var dataHeight = context.initialRange.y[0] - context.initialRange.y[1];
+  swipe.dataX = (swipe.pageX / g.plotter_.area.w) * dataWidth;
+  swipe.dataY = (swipe.pageY / g.plotter_.area.h) * dataHeight;
+  var xScale, yScale;
+
+  // The residual bits are usually split into scale & rotate bits, but we split
+  // them into x-scale and y-scale bits.
+  if (touches.length == 1) {
+    xScale = 1.0;
+    yScale = 1.0;
+  } else if (touches.length == 2) {
+    var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
+    xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
+
+    var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
+    yScale = (touches[1].pageY - c_now.pageY) / initHalfHeight;
+  }
+
+  // Clip scaling to [1/8, 8] to prevent too much blowup.
+  xScale = Math.min(8, Math.max(0.125, xScale));
+  yScale = Math.min(8, Math.max(0.125, yScale));
+
+  if (context.touchDirections.x) {
+    g.dateWindow_ = [
+      c_init.dataX - swipe.dataX + (context.initialRange.x[0] - c_init.dataX) / xScale,
+      c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale,
+    ];
+  }
+  
+  if (context.touchDirections.y) {
+    for (var i = 0; i < 1  /*g.axes_.length*/; i++) {
+      var axis = g.axes_[i];
+      if (axis.logscale) {
+        // TODO(danvk): implement
+      } else {
+        axis.valueWindow = [
+          c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
+          c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale,
+        ];
+      }
+    }
+  }
+
+  g.drawGraph_(false);
+};
+
+/**
+ * @private
+ */
+Dygraph.Interaction.endTouch = function(event, g, context) {
+  if (event.touches.length != 0) {
+    // this is effectively a "reset"
+    Dygraph.Interaction.startTouch(event, g, context);
+  }
+};
+
+/**
  * Default interation model for dygraphs. You can refer to specific elements of
  * this when constructing your own interaction model, e.g.:
  * g.updateOptions( {
@@ -375,6 +523,16 @@ Dygraph.Interaction.defaultModel = {
     } else if (context.isPanning) {
       Dygraph.endPan(event, g, context);
     }
+  },
+
+  touchstart: function(event, g, context) {
+    Dygraph.Interaction.startTouch(event, g, context);
+  },
+  touchmove: function(event, g, context) {
+    Dygraph.Interaction.moveTouch(event, g, context);
+  },
+  touchend: function(event, g, context) {
+    Dygraph.Interaction.endTouch(event, g, context);
   },
 
   // Temporarily cancel the dragging event when the mouse leaves the graph
