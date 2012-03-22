@@ -499,6 +499,9 @@ Dygraph.Interaction.endTouch = function(event, g, context) {
 Dygraph.Interaction.defaultModel = {
   // Track the beginning of drag events
   mousedown: function(event, g, context) {
+    // Right-click should not initiate a zoom.
+    if (event.button && event.button == 2) return;
+
     context.initializeMouseDown(event, g, context);
 
     if (event.altKey || event.shiftKey) {
