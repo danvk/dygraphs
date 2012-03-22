@@ -586,7 +586,8 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   var points = this.layout.annotated_points;
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
-    if (p.canvasx < this.area.x || p.canvasx > this.area.x + this.area.w) {
+    if (p.canvasx < this.area.x || p.canvasx > this.area.x + this.area.w ||
+        p.canvasy < this.area.y || p.canvasy > this.area.y + this.area.h) {
       continue;
     }
 
