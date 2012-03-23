@@ -888,6 +888,7 @@ Dygraph.prototype.destroy = function() {
   // remove mouse event handlers
   Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
   removeRecursive(this.maindiv_);
 
   var nullOut = function(obj) {
@@ -1182,7 +1183,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  Dygraph.addEvent(document, 'mouseup', function(event) {
+  this.mouseUpHandler_ = function(event) {
     if (context.isZooming || context.isPanning) {
       context.isZooming = false;
       context.dragStartX = null;
@@ -1198,7 +1199,9 @@ Dygraph.prototype.createDragInterface_ = function() {
         delete self.axes_[i].dragValueRange;
       }
     }
-  });
+  };
+
+  Dygraph.addEvent(document, 'mouseup', this.mouseUpHandler_);
 };
 
 /**
