@@ -86,5 +86,6 @@ errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
     xy2 = g.toDomCoords(data[i + 1][0], data[i + 1][1][1]);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
   }
+  CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 

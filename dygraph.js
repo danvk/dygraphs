@@ -851,12 +851,12 @@ Dygraph.prototype.createInterface_ = function() {
   var dygraph = this;
   
   this.mouseMoveHandler = function(e) {
-	  dygraph.mouseMove_(e);
+    dygraph.mouseMove_(e);
   };
   Dygraph.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   
   this.mouseOutHandler = function(e) {
-	  dygraph.mouseOut_(e);
+    dygraph.mouseOut_(e);
   };
   Dygraph.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
@@ -1120,6 +1120,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     prevEndX: null, // pixel coordinates
     prevEndY: null, // pixel coordinates
     prevDragDirection: null,
+    cancelNextDblclick: false,  // see comment in dygraph-interaction-model.js
 
     // The value on the left side of the graph when a pan operation starts.
     initialLeftmostDate: null,
@@ -1156,6 +1157,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       context.py = Dygraph.findPosY(g.canvas_);
       context.dragStartX = g.dragGetX_(event, context);
       context.dragStartY = g.dragGetY_(event, context);
+      context.cancelNextDblclick = false;
     }
   };
 
@@ -1842,6 +1844,8 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
  */
 Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
   var labelsDiv = this.attr_("labelsDiv");
+  if (!labelsDiv) return;
+
   var sizeSpan = document.createElement('span');
   // Calculates the width of 1em in pixels for the legend.
   sizeSpan.setAttribute('style', 'margin: 0; padding: 0 0 0 1em; border: 0;');
@@ -2316,6 +2320,26 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     var seriesName = this.attr_("labels")[i];
     extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
+  }
+
+  // For stacked graphs, a NaN value for any point in the sum should create a
+  // clean gap in the graph. Back-propagate NaNs to all points at this X value.
+  if (this.attr_("stackedGraph")) {
+    for (k = datasets.length - 1; k >= 0; --k) {
+      // Use the first nonempty dataset to get X values.
+      if (!datasets[k]) continue;
+      for (j = 0; j < datasets[k].length; j++) {
+        var x = datasets[k][j][0];
+        if (isNaN(cumulative_y[x])) {
+          // Set all Y values to NaN at that X value.
+          for (i = datasets.length - 1; i >= 0; i--) {
+            if (!datasets[i]) continue;
+            datasets[i][j][1] = NaN;
+          }
+        }
+      }
+      break;
+    }
   }
 
   return [ datasets, extremes, boundaryIds ];

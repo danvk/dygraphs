@@ -170,12 +170,12 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var k_labels = [];
   if (opts("labelsKMB")) {
     k = 1000;
-    k_labels = [ "K", "M", "B", "T" ];
+    k_labels = [ "K", "M", "B", "T", "Q" ];
   }
   if (opts("labelsKMG2")) {
     if (k) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
     k = 1024;
-    k_labels = [ "k", "M", "G", "T" ];
+    k_labels = [ "k", "M", "G", "T", "P", "E" ];
   }
 
   var formatter = opts('axisLabelFormatter');
@@ -190,8 +190,8 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     if (k_labels.length > 0) {
       // TODO(danvk): should this be integrated into the axisLabelFormatter?
       // Round up to an appropriate unit.
-      var n = k*k*k*k;
-      for (j = 3; j >= 0; j--, n /= k) {
+      var n = Math.pow(k, k_labels.length);
+      for (j = k_labels.length - 1; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
           label = Dygraph.round_(tickV / n, opts('digitsAfterDecimal')) +
               k_labels[j];
