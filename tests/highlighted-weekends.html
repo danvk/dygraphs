@@ -15,13 +15,13 @@
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
-    <p>Should draw a time series with 2011 weekends highlighted:</p>
+    <p>Should draw a time series with weekends highlighted:</p>
     <div id="div_g" style="width:600px; height:300px;"></div>
 
-    <p>When you zoom/pan, the region should remain highlighted.</p>
+    <p>When you zoom/pan, the weekend regions should remain highlighted.</p>
 
     <script type="text/javascript">
-      // A basic sinusoidal data series.
+      // Some sample data
       var data = "2011-01-01," + Math.random()*100 + "\n"
         + "2011-01-02," + Math.random()*100 + "\n"
         + "2011-01-03," + Math.random()*100 + "\n"
