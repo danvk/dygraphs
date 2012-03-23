@@ -1014,6 +1014,7 @@ Dygraph.prototype.createStatusMessage_ = function() {
       "top": "0px",
       "left": (this.width_ - divWidth - 2) + "px",
       "background": "white",
+      "lineHeight": "normal",
       "textAlign": "left",
       "overflow": "hidden"};
     Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
