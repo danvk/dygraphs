@@ -550,6 +550,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "When set, parse each CSV cell as \"low;middle;high\". Error bars will be drawn for each point between low and high, with the series itself going through middle."
   },
+  "renderer": {
+    "default": "line",
+    "labels": ["Data Line display"],
+    "type": "string",
+    "description": "How to render the graph (as line or candle etc)."
+  },
   "colorValue": {
     "default": "1.0",
     "labels": ["Data Series Colors"],
