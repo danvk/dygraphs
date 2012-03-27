@@ -403,8 +403,8 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.moveTouch = function(event, g, context) {
-  var touches = [];
-  for (var i = 0; i < event.touches.length; i++) {
+  var i, touches = [];
+  for (i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
     touches.push({
       pageX: t.pageX,
@@ -463,7 +463,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   }
 
   if (context.touchDirections.y) {
-    for (var i = 0; i < 1  /*g.axes_.length*/; i++) {
+    for (i = 0; i < 1  /*g.axes_.length*/; i++) {
       var axis = g.axes_[i];
       if (axis.logscale) {
         // TODO(danvk): implement
