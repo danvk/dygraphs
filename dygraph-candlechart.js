@@ -4,22 +4,32 @@ function DygraphCandleChartRenderer(dygraph, element, elementContext, layout) {
 }
 
 DygraphCandleChartRenderer.prototype = new DygraphCanvasRenderer();
-
 DygraphCandleChartRenderer.prototype.constructor = DygraphCandleChartRenderer ;
-
-DygraphCandleChartRenderer.prototype._setColors = function(colors) {
-};
-
 
 DygraphCandleChartRenderer.prototype._renderLineChart=function(){
   var ctx = this.elementContext;
   var points = this.layout.points;
   var pointsLength = points.length;
+  var i, point;
+  
+  // Update Points
+  // TODO(danvk): here
+  for (i = pointsLength; i--;) {
+    point = points[i];
+    point.canvasx = this.area.w * point.x + this.area.x;
+    point.canvasy = this.area.h * point.y + this.area.y;
+  }
 
   var setCount = this.layout.setNames.length;
   if (setCount != 4 || pointsLength % 4 !== 0)
     throw "Exactly 4 prices each point must be provided for candle chart (open close high low)";
 
+  // TODO(danvk): Move this mapping into Dygraph and get it out of here.
+  this.colors = {};
+  for (i = 0; i < setCount; i++) {
+    this.colors[this.layout.setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
+  }
+  
   var prices = [];
   var price;
   var num_candles = pointsLength / 4;
