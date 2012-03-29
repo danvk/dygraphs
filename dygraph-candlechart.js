@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2012 Zhenlei Cai (jpenguin@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
+
 var BAR_WIDTH = 8;
 function DygraphCandleChartRenderer(dygraph, element, elementContext, layout) {
   DygraphCanvasRenderer.call(this,dygraph, element, elementContext, layout);
@@ -32,12 +39,12 @@ DygraphCandleChartRenderer.prototype._renderLineChart=function(){
   
   var prices = [];
   var price;
-  var num_candles = pointsLength / 4;
-  for (var p = 0 ; p < num_candles; p++) {
-    price = { open : points[p].yval, close : points[p + num_candles].yval,
-                  high : points[p + num_candles * 2].yval, low : points[p + num_candles * 3].yval,
-                  openY : points[p].y, closeY : points[p + num_candles].y,
-                  highY : points[p + num_candles * 2].y, lowY : points[p + num_candles * 3].y
+  var numCandles = pointsLength / 4;
+  for (var p = 0 ; p < numCandles; p++) {
+    price = { open : points[p].yval, close : points[p + numCandles].yval,
+                  high : points[p + numCandles * 2].yval, low : points[p + numCandles * 3].yval,
+                  openY : points[p].y, closeY : points[p + numCandles].y,
+                  highY : points[p + numCandles * 2].y, lowY : points[p + numCandles * 3].y
                 };
     prices.push(price);
   }
@@ -46,7 +53,7 @@ DygraphCandleChartRenderer.prototype._renderLineChart=function(){
   ctx.strokeStyle = '#202020';
   ctx.lineWidth = 0.6;
 
-  for (p = 0 ; p < num_candles; p++) {
+  for (p = 0 ; p < numCandles; p++) {
     ctx.beginPath();
     ctx.strokeStyle = '#202020';
 
