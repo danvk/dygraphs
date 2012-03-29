@@ -146,12 +146,12 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   } else {
     img.width = 9;
     img.height = 16;
-    img.src = 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA\
-zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv\
-bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
-6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s\
-qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+    img.src = 'data:image/png;base64,' +
+'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
+'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
+'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
+'6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
+'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
   }
 
   var minScreenDim = Math.min(screen.width, screen.height);
@@ -368,7 +368,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     } else {
       onZoomEnd(e);
     }
-  }
+  };
 
   onCanvasTouchEvent = function(e) {
     e.preventDefault();
@@ -379,14 +379,14 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     } else {
       onPanEnd(e);
     }
-  }
+  };
 
   addTouchEvents = function(elem, fn) {
       var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
       for (var i = 0; i < types.length; i++) {
         Dygraph.addEvent(elem, types[i], fn);
       }
-  }
+  };
 
   this.dygraph_.attrs_.interactionModel =
       Dygraph.Interaction.dragIsPanInteractionModel;
@@ -503,16 +503,18 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var sum;
   var count;
   var mutipleValues;
+  var i, j, k;
+  var xVal, yVal;
 
   // Find out if data has multiple values per datapoint.
   // Go to first data point that actually has values (see http://code.google.com/p/dygraphs/issues/detail?id=246)
-  for (var i = 0; i < data.length; i++) {
-    if (data[i].length > 1 && data[i][1] != null) {
+  for (i = 0; i < data.length; i++) {
+    if (data[i].length > 1 && data[i][1] !== null) {
       mutipleValues = typeof data[i][1] != 'number';
       if (mutipleValues) {
         sum = [];
         count = [];
-        for (var k = 0; k < data[i][1].length; k++) {
+        for (k = 0; k < data[i][1].length; k++) {
           sum.push(0);
           count.push(0);
         }
@@ -521,30 +523,30 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     }
   }
 
-  for (var i = 0; i < data.length; i++) {
+  for (i = 0; i < data.length; i++) {
     var dataPoint = data[i];
-    var xVal = dataPoint[0];
-    var yVal;
+    xVal = dataPoint[0];
 
     if (mutipleValues) {
-      for (var k = 0; k < sum.length; k++) {
+      for (k = 0; k < sum.length; k++) {
         sum[k] = count[k] = 0;
       }
     } else {
       sum = count = 0;
     }
 
-    for (var j = 1; j < dataPoint.length; j++) {
+    for (j = 1; j < dataPoint.length; j++) {
       if (this.dygraph_.visibility()[j-1]) {
+        var y;
         if (mutipleValues) {
-          for (var k = 0; k < sum.length; k++) {
-            var y = dataPoint[j][k];
+          for (k = 0; k < sum.length; k++) {
+            y = dataPoint[j][k];
             if (y === null || isNaN(y)) continue;
             sum[k] += y;
             count[k]++;
           }
         } else {
-          var y = dataPoint[j];
+          y = dataPoint[j];
           if (y === null || isNaN(y)) continue;
           sum += y;
           count++;
@@ -553,7 +555,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     }
 
     if (mutipleValues) {
-      for (var k = 0; k < sum.length; k++) {
+      for (k = 0; k < sum.length; k++) {
         sum[k] /= count[k];
       }
       yVal = sum.slice(0);
@@ -568,7 +570,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   combinedSeries = this.dygraph_.rollingAverage(combinedSeries, this.dygraph_.rollPeriod_);
 
   if (typeof combinedSeries[0][1] != 'number') {
-    for (var i = 0; i < combinedSeries.length; i++) {
+    for (i = 0; i < combinedSeries.length; i++) {
       yVal = combinedSeries[i][1];
       combinedSeries[i][1] = yVal[0];
     }
@@ -577,7 +579,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   // Compute the y range.
   var yMin = Number.MAX_VALUE;
   var yMax = -Number.MAX_VALUE;
-  for (var i = 0; i < combinedSeries.length; i++) {
+  for (i = 0; i < combinedSeries.length; i++) {
     yVal = combinedSeries[i][1];
     if (yVal !== null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
@@ -592,7 +594,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     yMax = Dygraph.log10(yMax);
     yMax += yMax*extraPercent;
     yMin = Dygraph.log10(yMin);
-    for (var i = 0; i < combinedSeries.length; i++) {
+    for (i = 0; i < combinedSeries.length; i++) {
       combinedSeries[i][1] = Dygraph.log10(combinedSeries[i][1]);
     }
   } else {
