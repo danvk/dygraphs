@@ -461,7 +461,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
       c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
   }
-
+  
   if (context.touchDirections.y) {
     for (i = 0; i < 1  /*g.axes_.length*/; i++) {
       var axis = g.axes_[i];
