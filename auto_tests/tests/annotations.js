@@ -3,16 +3,16 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var annotationsTestCase = TestCase("annotations");
+var AnnotationsTestCase = TestCase("annotations");
 
-annotationsTestCase.prototype.setUp = function() {
+AnnotationsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-annotationsTestCase.prototype.tearDown = function() {
+AnnotationsTestCase.prototype.tearDown = function() {
 };
 
-annotationsTestCase.prototype.testAnnotationsDrawn = function() {
+AnnotationsTestCase.prototype.testAnnotationsDrawn = function() {
   var opts = {
     width: 480,
     height: 320
@@ -59,7 +59,7 @@ annotationsTestCase.prototype.testAnnotationsDrawn = function() {
 // 1. Invalid series name (e.g. 'X' or 'non-existent')
 // 2. Passing a string as 'x' instead of a number (e.g. x: '1')
 
-annotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() {
+AnnotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() {
   var opts = {
   };
   var data = "X,Y\n" +
@@ -98,7 +98,7 @@ annotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() 
 };
 
 // Verify that annotations outside of the visible x-range are not shown.
-annotationsTestCase.prototype.testAnnotationsOutOfRangeX = function() {
+AnnotationsTestCase.prototype.testAnnotationsOutOfRangeX = function() {
   var opts = {
   };
   var data = "X,Y\n" +
@@ -141,7 +141,7 @@ annotationsTestCase.prototype.testAnnotationsOutOfRangeX = function() {
 };
 
 // Verify that annotations outside of the visible y-range are not shown.
-annotationsTestCase.prototype.testAnnotationsOutOfRangeY = function() {
+AnnotationsTestCase.prototype.testAnnotationsOutOfRangeY = function() {
   var opts = {
   };
   var data = "X,Y\n" +
@@ -174,4 +174,34 @@ annotationsTestCase.prototype.testAnnotationsOutOfRangeY = function() {
   assertEquals(1, g.annotations().length);
   a1 = document.getElementsByClassName('ann1');
   assertEquals(1, a1.length);
+};
+
+AnnotationsTestCase.prototype.testAnnotationsDrawnInDrawCallback = function() {
+  var data = "X,Y\n" +
+      "0,-1\n" +
+      "1,0\n" +
+      "2,1\n";
+
+  var graph = document.getElementById("graph");
+
+  var calls = [];
+  var g = new Dygraph(graph, data, {
+      width: 480,
+      height: 320,
+      drawCallback: function(g, initial) {
+        calls.push(initial);
+        if (initial) {
+          g.setAnnotations([
+            {
+              series: 'Y',
+              x: 1,
+              shortText: 'A',
+              text: 'Long A',
+            },
+          ]);
+        }
+      }
+    });
+
+  assertEquals([true, false], calls);
 };
