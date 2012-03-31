@@ -1,3 +1,9 @@
+// Invoke via: ./test.sh
+//
+// or phantomjs phantom-driver.js [testCase.test]
+//
+// For more on phantomjs, visit www.phantomjs.org.
+
 var page = require('webpage').create();
 
 // NOTE: Cannot include '#' or '?' in this URL.
@@ -44,6 +50,7 @@ page.open(url, function(status) {
   var results;
   
   // Run all tests.
+  var start = new Date().getTime();
   results = page.evaluate(function() {
     // Phantom doesn't like stacktrace.js using the "arguments" object
     // in stacktrace.js, which it interprets in strict mode.
@@ -61,23 +68,31 @@ page.open(url, function(status) {
     }
     return results;
   });
+  var end = new Date().getTime();
+  var elapsed = (end - start) / 1000;
 
   var num_passing = 0, num_failing = 0;
+  var failures = [];
   for (var testCase in results) {
     var caseResults = results[testCase];
     for (var test in caseResults) {
       if (caseResults[test] !== true) {
-        // TODO(danvk): print an auto_test/misc/local URL that runs this test.
         num_failing++;
-        console.log(testCase + '.' + test + ' failed');
+        failures.push(testCase + '.' + test + ' failed');
       } else {
         // console.log(testCase + '.' + test + ' passed');
         num_passing++;
       }
     }
   }
+
+  console.log('Ran ' + (num_passing + num_failing) + ' tests in ' + elapsed + 's.');
   console.log(num_passing + ' test(s) passed');
-  console.log(num_failing + ' test(s) failed');
+  console.log(num_failing + ' test(s) failed:');
+  for (var i = 0; i < failures.length; i++) {
+    // TODO(danvk): print an auto_test/misc/local URL that runs this test.
+    console.log('  ' + failures[i] + ' failed.');
+  }
 
   if (num_failing == 0) {
     console.log('PASS');
