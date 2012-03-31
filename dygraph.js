@@ -61,17 +61,15 @@
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts) {
-  if (arguments.length > 0) {
-    if (arguments.length == 4) {
-      // Old versions of dygraphs took in the series labels as a constructor
-      // parameter. This doesn't make sense anymore, but it's easy to continue
-      // to support this usage.
-      this.warn("Using deprecated four-argument dygraph constructor");
-      this.__old_init__(div, data, arguments[2], arguments[3]);
-    } else {
-      this.__init__(div, data, opts);
-    }
+var Dygraph = function(div, data, opts, opt_fourth_param) {
+  if (opt_fourth_param !== undefined) {
+    // Old versions of dygraphs took in the series labels as a constructor
+    // parameter. This doesn't make sense anymore, but it's easy to continue
+    // to support this usage.
+    this.warn("Using deprecated four-argument dygraph constructor");
+    this.__old_init__(div, data, opts, opt_fourth_param);
+  } else {
+    this.__init__(div, data, opts);
   }
 };
 
