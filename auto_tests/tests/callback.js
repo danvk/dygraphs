@@ -375,7 +375,7 @@ CallbackTestCase.prototype.testNaNDataStack = function() {
 };
 
 CallbackTestCase.prototype.testGapHighlight = function() {
-var dataGap = [
+  var dataGap = [
     [1, null, 3],
     [2, 2, null],
     [3, null, 5],
