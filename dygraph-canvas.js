@@ -186,6 +186,7 @@ DygraphCanvasRenderer.prototype.render = function() {
       ctx.closePath();
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   if (this.attr_('drawXGrid')) {
@@ -202,6 +203,7 @@ DygraphCanvasRenderer.prototype.render = function() {
       ctx.closePath();
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   // Do the ordinary rendering, as before
@@ -674,6 +676,19 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   }
 };
 
+DygraphCanvasRenderer.makeNextPointStep_ = function(connect, points, end) {
+  if (connect) {
+    return function(j) {
+      while (++j < end) {
+        if (!(points[j].yval === null)) break;
+      }
+      return j;
+    }
+  } else {
+    return function(j) { return j + 1 };
+  }
+};
+
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
     ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
@@ -694,8 +709,10 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   }
 
   var point;
+  var next = DygraphCanvasRenderer.makeNextPointStep_(
+      this.attr_('connectSeparatedPoints'), points, afterLastIndexInSet);
   ctx.save();
-  for (var j = firstIndexInSet; j < afterLastIndexInSet; j++) {
+  for (var j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
     point = points[j];
     if (isNullOrNaN(point.canvasy)) {
       if (stepPlot && prevX !== null) {
@@ -752,7 +769,6 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
         this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
     ctx.restore();
   }
-  firstIndexInSet = afterLastIndexInSet;
   ctx.restore();
 };
 
@@ -829,6 +845,14 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       axis = this.dygraph_.axisPropertiesForSeries(setName);
       color = this.colors[setName];
 
+      var firstIndexInSet = this.layout.setPointsOffsets[i];
+      var setLength = this.layout.setPointsLengths[i];
+      var afterLastIndexInSet = firstIndexInSet + setLength;
+
+      var next = DygraphCanvasRenderer.makeNextPointStep_(
+        this.attr_('connectSeparatedPoints'), points,
+        afterLastIndexInSet);
+
       // setup graphics context
       prevX = NaN;
       prevY = NaN;
@@ -840,9 +864,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = 0; j < pointsLength; j++) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
         point = points[j];
-        if (point.name == setName) {
+        if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
@@ -892,6 +916,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       if (axisY < 0.0) axisY = 0.0;
       else if (axisY > 1.0) axisY = 1.0;
       axisY = this.area.h * axisY + this.area.y;
+      var firstIndexInSet = this.layout.setPointsOffsets[i];
+      var setLength = this.layout.setPointsLengths[i];
+      var afterLastIndexInSet = firstIndexInSet + setLength;
+
+      var next = DygraphCanvasRenderer.makeNextPointStep_(
+        this.attr_('connectSeparatedPoints'), points,
+        afterLastIndexInSet);
 
       // setup graphics context
       prevX = NaN;
@@ -903,9 +934,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = 0; j < pointsLength; j++) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
         point = points[j];
-        if (point.name == setName) {
+        if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
             continue;
@@ -939,9 +970,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
 
   // Drawing the lines.
-  var firstIndexInSet = 0;
-  var afterLastIndexInSet = 0;
-  var setLength = 0;
   for (i = 0; i < setCount; i += 1) {
     this._drawLine(ctx, i);
   }

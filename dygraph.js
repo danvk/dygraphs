@@ -1521,15 +1521,15 @@ Dygraph.prototype.eventToDomCoords = function(event) {
  * @private
  */
 Dygraph.prototype.findClosestRow = function(domX) {
-  var minDistX = null;
+  var minDistX = Infinity;
   var idx = -1;
   var points = this.layout_.points;
   var l = points.length;
   for (var i = 0; i < l; i++) {
     var point = points[i];
-    if (!Dygraph.isValidPoint(point)) continue;
+    if (!Dygraph.isValidPoint(point, true)) continue;
     var dist = Math.abs(point.canvasx - domX);
-    if (minDistX === null || dist < minDistX) {
+    if (dist < minDistX) {
       minDistX = dist;
       idx = i;
     }
@@ -1550,7 +1550,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
  * @private
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
-  var minDist = null;
+  var minDist = Infinity;
   var idx = -1;
   var points = this.layout_.points;
   var dist, dx, dy, point, closestPoint, closestSeries;
@@ -1563,7 +1563,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (minDist === null || dist < minDist) {
+      if (dist < minDist) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;
@@ -1573,7 +1573,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
   }
   var name = this.layout_.setNames[closestSeries];
   return {
-    row: idx,
+    row: idx + this.getLeftBoundary_(),
     seriesName: name,
     point: closestPoint
   };
@@ -1593,18 +1593,20 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
  */
 Dygraph.prototype.findStackedPoint = function(domX, domY) {
   var row = this.findClosestRow(domX);
+  var boundary = this.getLeftBoundary_();
+  var rowIdx = row - boundary;
   var points = this.layout_.points;
   var closestPoint, closestSeries;
   for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
     var first = this.layout_.setPointsOffsets[setIdx];
     var len = this.layout_.setPointsLengths[setIdx];
-    if (row >= len) continue;
-    var p1 = points[first + row];
+    if (rowIdx >= len) continue;
+    var p1 = points[first + rowIdx];
     if (!Dygraph.isValidPoint(p1)) continue;
     var py = p1.canvasy;
-    if (domX > p1.canvasx && row + 1 < len) {
+    if (domX > p1.canvasx && rowIdx + 1 < len) {
       // interpolate series Y value using next point
-      var p2 = points[first + row + 1];
+      var p2 = points[first + rowIdx + 1];
       if (Dygraph.isValidPoint(p2)) {
         var dx = p2.canvasx - p1.canvasx;
         if (dx > 0) {
@@ -1612,9 +1614,9 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
           py += r * (p2.canvasy - p1.canvasy);
         }
       }
-    } else if (domX < p1.canvasx && row > 0) {
+    } else if (domX < p1.canvasx && rowIdx > 0) {
       // interpolate series Y value using previous point
-      var p0 = points[first + row - 1];
+      var p0 = points[first + rowIdx - 1];
       if (Dygraph.isValidPoint(p0)) {
         var dx = p1.canvasx - p0.canvasx;
         if (dx > 0) {
@@ -1675,6 +1677,18 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
+ * Fetch left offset from first defined boundaryIds record (see bug #236).
+ */
+Dygraph.prototype.getLeftBoundary_ = function() {
+  for (var i = 0; i < this.boundaryIds_.length; i++) {
+    if (this.boundaryIds_[i] !== undefined) {
+      return this.boundaryIds_[i][0];
+    }
+  }
+  return 0;
+};
+
+/**
  * Transforms layout_.points index into data row number.
  * @param int layout_.points index
  * @return int row number, or -1 if none could be found.
@@ -1683,19 +1697,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
 Dygraph.prototype.idxToRow_ = function(idx) {
   if (idx < 0) return -1;
 
-  // make sure that you get the boundaryIds record which is also defined (see bug #236)
-  var boundaryIdx = -1;
-  for (var i = 0; i < this.boundaryIds_.length; i++) {
-    if (this.boundaryIds_[i] !== undefined) {
-      boundaryIdx = i;
-      break;
-    }
-  }
-  if (boundaryIdx < 0) return -1;
+  var boundary = this.getLeftBoundary_();
   for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
     var set = this.layout_.datasets[setIdx];
     if (idx < set.length) {
-      return this.boundaryIds_[boundaryIdx][0] + idx;
+      return boundary + idx;
     }
     idx -= set.length;
   }
@@ -1848,6 +1854,8 @@ Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
  */
 Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
   var labelsDiv = this.attr_("labelsDiv");
+  if (!labelsDiv) return;
+
   var sizeSpan = document.createElement('span');
   // Calculates the width of 1em in pixels for the legend.
   sizeSpan.setAttribute('style', 'margin: 0; padding: 0 0 0 1em; border: 0;');
@@ -1989,12 +1997,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
   var pos = 0;
 
   if (row !== false) {
-    for (var i = 0; i < this.boundaryIds_.length; i++) {
-      if (this.boundaryIds_[i] !== undefined) {
-        row -= this.boundaryIds_[i][0];
-        break;
-      }
-    }
+    row -= this.getLeftBoundary_();
   }
 
   var changed = false;
@@ -2010,7 +2013,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
           point = this.layout_.unstackPointAtIndex(pos+row);
         }
 
-        this.selPoints_.push(point);
+        if (!(point.yval === null)) this.selPoints_.push(point);
       }
       pos += set.length;
     }
@@ -2082,7 +2085,7 @@ Dygraph.prototype.getSelection = function() {
 
   for (var row=0; row<this.layout_.points.length; row++ ) {
     if (this.layout_.points[row].x == this.selPoints_[0].x) {
-      return row + this.boundaryIds_[0][0];
+      return row + this.getLeftBoundary_();
     }
   }
   return -1;
@@ -2208,9 +2211,8 @@ Dygraph.prototype.predraw_ = function() {
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
-    var connectSeparatedPoints = this.attr_('connectSeparatedPoints', i);
-    var logScale = this.attr_('logscale', i);
-    var series = this.extractSeries_(this.rawData_, i, logScale, connectSeparatedPoints);
+    var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong
+    var series = this.extractSeries_(this.rawData_, i, logScale);
     series = this.rollingAverage(series, this.rollPeriod_);
     this.rolledSeries_.push(series);
   }
@@ -2307,6 +2309,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         }
 
         actual_y = series[j][1];
+        if (actual_y === null) {
+          series[j] = [x, null];
+          continue;
+        }
+
         cumulative_y[x] += actual_y;
 
         series[j] = [x, cumulative_y[x]];
@@ -2323,6 +2330,26 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     var seriesName = this.attr_("labels")[i];
     extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
+  }
+
+  // For stacked graphs, a NaN value for any point in the sum should create a
+  // clean gap in the graph. Back-propagate NaNs to all points at this X value.
+  if (this.attr_("stackedGraph")) {
+    for (k = datasets.length - 1; k >= 0; --k) {
+      // Use the first nonempty dataset to get X values.
+      if (!datasets[k]) continue;
+      for (j = 0; j < datasets[k].length; j++) {
+        var x = datasets[k][j][0];
+        if (isNaN(cumulative_y[x])) {
+          // Set all Y values to NaN at that X value.
+          for (i = datasets.length - 1; i >= 0; i--) {
+            if (!datasets[i]) continue;
+            datasets[i][j][1] = NaN;
+          }
+        }
+      }
+      break;
+    }
   }
 
   return [ datasets, extremes, boundaryIds ];
@@ -2738,24 +2765,19 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * 
  * @private
  */
-Dygraph.prototype.extractSeries_ = function(rawData, i, logScale, connectSeparatedPoints) {
+Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   var series = [];
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
     if (logScale) {
       // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart. Note that this ignores
-      // connectSeparatedPoints.
+      // This will create a gap in the chart.
       if (point <= 0) {
         point = null;
       }
-      series.push([x, point]);
-    } else {
-      if (point !== null || !connectSeparatedPoints) {
-        series.push([x, point]);
-      }
     }
+    series.push([x, point]);
   }
   return series;
 };
@@ -2930,7 +2952,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     // TODO(danvk): use Dygraph.numberValueFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
 };
@@ -3169,7 +3191,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     return data;
   }
 };
@@ -3209,7 +3231,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
     this.error("only 'date', 'datetime' and 'number' types are supported for " +

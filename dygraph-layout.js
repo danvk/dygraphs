@@ -202,6 +202,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   this.setPointsLengths = [];
   this.setPointsOffsets = [];
 
+  var connectSeparated = this.attr_('connectSeparatedPoints');
   for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
@@ -228,6 +229,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         yval: yValue,
         name: setName
       };
+      if (connectSeparated && item[1] === null) {
+        point.yval = null;
+      }
       this.points.push(point);
       setPointsLength += 1;
     }

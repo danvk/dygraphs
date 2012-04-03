@@ -83,7 +83,29 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
   };
   fail("Can't find a line drawn between " + p1 +
       " and " + p2 + " with attributes " + toString(attrs));
-}
+};
+
+/**
+ * Verifies that every call to context.save() has a matching call to
+ * context.restore().
+ */
+CanvasAssertions.assertBalancedSaveRestore = function(proxy) {
+  var depth = 0;
+  for (var i = 0; i < proxy.calls__.length; i++) {
+    var call = proxy.calls__[i];
+    if (call.name == "save") depth++
+    if (call.name == "restore") {
+      if (depth == 0) {
+        fail("Too many calls to restore()");
+      }
+      depth--;
+    }
+  }
+
+  if (depth > 0) {
+    fail("Missing matching 'context.restore()' calls.");
+  }
+};
 
 /**
  * Checks how many lines of the given color have been drawn.
@@ -98,7 +120,7 @@ CanvasAssertions.numLinesDrawn = function(proxy, color) {
     }
   }
   return num_lines;
-}
+};
 
 CanvasAssertions.matchPixels = function(expected, actual) {
   // Expect array of two integers. Assuming the values are within one
@@ -106,7 +128,7 @@ CanvasAssertions.matchPixels = function(expected, actual) {
   // who knows what pixel a value of 5.8888 results in.
   return Math.abs(expected[0] - actual[0]) < 1 &&
       Math.abs(expected[1] - actual[1]) < 1;
-}
+};
 
 CanvasAssertions.matchAttributes = function(expected, actual) {
   for (var attr in expected) {
@@ -115,4 +137,4 @@ CanvasAssertions.matchAttributes = function(expected, actual) {
     }
   }
   return true;
-}
+};

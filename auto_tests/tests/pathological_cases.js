@@ -116,3 +116,16 @@ pathologicalCasesTestCase.prototype.testCombinations = function() {
     }
   }
 };
+
+pathologicalCasesTestCase.prototype.testNullLegend = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    labelsDiv: null
+  };
+  var data = "X,Y\n" +
+             "1,2\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+};

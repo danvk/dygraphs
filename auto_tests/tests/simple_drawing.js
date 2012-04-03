@@ -55,7 +55,16 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
     strokeStyle: "#008080",
     lineWidth: 1
   });
-}
+  CanvasAssertions.assertBalancedSaveRestore(htx);
+};
+
+SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, ZERO_TO_FIFTY);
+
+  var htx = g.hidden_ctx_;
+  CanvasAssertions.assertBalancedSaveRestore(htx);
+};
 
 /**
  * Tests that it is drawing dashes, and it remember the dash history between
@@ -79,4 +88,5 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   htx = g.hidden_ctx_;
 
   assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  CanvasAssertions.assertBalancedSaveRestore(htx);
 };
