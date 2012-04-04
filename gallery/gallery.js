@@ -50,6 +50,14 @@ Gallery.start = function() {
       }
       Gallery.subtitle.innerHTML = "";
 
+      Gallery.workareaChild.id = id;
+      location.hash = "g/" + id;
+
+      Gallery.workareaChild.innerHTML='';
+      if (demo.setup) {
+        demo.setup(Gallery.workareaChild);
+      }
+
       Gallery.demotitle.textContent = demo.title ? demo.title : "";
       demo.innerDiv.className = "selected";
 
@@ -59,35 +67,70 @@ Gallery.start = function() {
       var htmlLink = Gallery.create("a", codeSpan);
       htmlLink.textContent = "HTML";
 
-      codeSpan.appendChild(document.createTextNode(" "));
+      Gallery.create("span", codeSpan).textContent = " | ";
 
       var javascriptLink = Gallery.create("a", codeSpan);
       javascriptLink.textContent = "Javascript";
 
-      codeSpan.appendChild(document.createTextNode(" "));
-
       var css = getCss(id);
       if (css) {
+        Gallery.create("span", codeSpan).textContent = " | ";
         var cssLink = Gallery.create("a", codeSpan);
         cssLink.textContent = "CSS";
       }
 
-      Gallery.workareaChild.id = id;
-      location.hash = "g/" + id;
+      var jsFiddleForm = Gallery.create("form", codeSpan);
+      var jsfs = $(jsFiddleForm);
+      jsFiddleForm.method = "post";
+      jsFiddleForm.action = "http://jsfiddle.net/api/post/jquery/1.4/";
 
-      Gallery.workareaChild.innerHTML='';
-      if (demo.setup) {
-        demo.setup(Gallery.workareaChild);
-      }
+      jsfs.html("<input type='submit' value='Edit in jsFiddle'/>\n" +
+      "<span style='display:none'>\n" +
+      "<textarea name='resources'>http://dygraphs.com/dygraph-combined.js</textarea>\n" +
+      "<input type='text' name='dtd' value='html 5'/></span>\n");
 
+      var javascript = demo.run.toString();
       var html = Gallery.workareaChild.innerHTML;
+
+      // tweak for use in jsfiddle
+      javascript = " $(document).ready(" + javascript + "\n);"
+      jQuery('<textarea/>', { name: 'html' })
+      .val(html)
+      .hide()
+      .appendTo(jsfs);
+
+      jQuery('<textarea/>', { name: 'js' })
+      .val(javascript)
+      .hide()
+      .appendTo(jsfs);
+
+      if (css) {
+        jQuery('<textarea/>', { name: 'css' })
+        .val(css)
+        .hide()
+        .appendTo(jsfs);
+      }      
+      jQuery('<input/>', {
+        type: 'text',
+        name: 'title',
+        value: 'title tbd'
+      })
+      .hide()
+      .appendTo(jsfs);
+      jQuery('<input/>', {
+        type: 'text',
+        name: 'description',
+        value: 'desc tbd'
+      })
+      .hide()
+      .appendTo(jsfs);
 
       htmlLink.onclick = function() {
         Gallery.textarea.show("HTML", html);
       };
 
       javascriptLink.onclick = function() {
-        Gallery.textarea.show("Javascript", demo.run.toString());
+        Gallery.textarea.show("Javascript", javascript);
       };
 
       if (css) {
