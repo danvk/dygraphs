@@ -35,7 +35,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Legend"],
     "type": "{}",
-    "description": "Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold."
+    "description": "Additional styles to apply to the currently-highlighted points div. For example, { 'fontWeight': 'bold' } will make the labels bold. In general, it is better to use CSS to style the .dygraph-legend class than to use this property."
   },
   "drawPoints": {
     "default": "false",
@@ -364,7 +364,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array<integer>",
     "example": "[10, 2, 5, 2]",
-    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
+    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed lines."
   },
   "strokeBorderWidth": {
     "default": "null",
