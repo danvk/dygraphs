@@ -59,7 +59,7 @@ legend.prototype.activate = function(g, r) {
       "zIndex": 10,
       "width": divWidth + "px",
       "top": "0px",
-      "right": "2px",
+      "left": (g.size().width - divWidth - 2) + "px",
       "background": "white",
       "lineHeight": "normal",
       "textAlign": "left",
