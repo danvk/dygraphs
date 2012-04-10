@@ -33,7 +33,7 @@
       };
 
       var data = [];
-      for (var i = 0, n = 1; i < 43; i++, n *= 2) {
+      for (var i = 0, n = 1; i < 63; i++, n *= 2) {
         data.push([i, n]);
       }
 
@@ -48,9 +48,9 @@
           suffixes[magnitude];
       }
 
-      new Dygraph(document.getElementById("labelsKMB"), data, { labelsKMB: true });
-      new Dygraph(document.getElementById("labelsKMG2"), data, { labelsKMG2: true });
-      var g = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data,
+      var g = new Dygraph(document.getElementById("labelsKMB"), data, { labelsKMB: true });
+      var g2 = new Dygraph(document.getElementById("labelsKMG2"), data, { labelsKMG2: true });
+      var g3 = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data,
                           { labelsKMG2: true, yValueFormatter: formatValue });
     </script>
   </body>

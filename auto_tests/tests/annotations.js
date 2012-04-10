@@ -3,16 +3,16 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var annotationsTestCase = TestCase("annotations");
+var AnnotationsTestCase = TestCase("annotations");
 
-annotationsTestCase.prototype.setUp = function() {
+AnnotationsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-annotationsTestCase.prototype.tearDown = function() {
+AnnotationsTestCase.prototype.tearDown = function() {
 };
 
-annotationsTestCase.prototype.testAnnotationsDrawn = function() {
+AnnotationsTestCase.prototype.testAnnotationsDrawn = function() {
   var opts = {
     width: 480,
     height: 320
@@ -59,7 +59,7 @@ annotationsTestCase.prototype.testAnnotationsDrawn = function() {
 // 1. Invalid series name (e.g. 'X' or 'non-existent')
 // 2. Passing a string as 'x' instead of a number (e.g. x: '1')
 
-annotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() {
+AnnotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() {
   var opts = {
   };
   var data = "X,Y\n" +
@@ -95,4 +95,113 @@ annotationsTestCase.prototype.testAnnotationsDontDisappearOnResize = function() 
   assertEquals(1, a1.length);
   a1 = a1[0];
   assertEquals('A', a1.textContent);
+};
+
+// Verify that annotations outside of the visible x-range are not shown.
+AnnotationsTestCase.prototype.testAnnotationsOutOfRangeX = function() {
+  var opts = {
+  };
+  var data = "X,Y\n" +
+      "0,-1\n" +
+      "1,0\n" +
+      "2,1\n" +
+      "3,0\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.setAnnotations([
+    {
+      series: 'Y',
+      x: 1,
+      shortText: 'A',
+      text: 'Long A',
+      cssClass: 'ann1'
+    }
+  ]);
+
+  // Check that it displays at all
+  assertEquals(1, g.annotations().length);
+  var a1 = document.getElementsByClassName('ann1');
+  assertEquals(1, a1.length);
+  a1 = a1[0];
+  assertEquals('A', a1.textContent);
+
+  // ... and that panning right removes the annotation.
+  g.updateOptions({dateWindow: [2, 6]});
+  assertEquals(1, g.annotations().length);
+  a1 = document.getElementsByClassName('ann1');
+  assertEquals(0, a1.length);
+
+  // ... and that panning left brings it back.
+  g.updateOptions({dateWindow: [0, 4]});
+  assertEquals(1, g.annotations().length);
+  a1 = document.getElementsByClassName('ann1');
+  assertEquals(1, a1.length);
+};
+
+// Verify that annotations outside of the visible y-range are not shown.
+AnnotationsTestCase.prototype.testAnnotationsOutOfRangeY = function() {
+  var opts = {
+  };
+  var data = "X,Y\n" +
+      "0,-1\n" +
+      "1,0\n" +
+      "2,1\n" +
+      "3,0\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.setAnnotations([
+    {
+      series: 'Y',
+      x: 1,
+      shortText: 'A',
+      text: 'Long A',
+      cssClass: 'ann1'
+    }
+  ]);
+
+  // ... check that panning up removes the annotation.
+  g.updateOptions({valueRange: [0.5, 2.5]});
+  assertEquals(1, g.annotations().length);
+  a1 = document.getElementsByClassName('ann1');
+  assertEquals(0, a1.length);
+
+  // ... and that panning down brings it back.
+  g.updateOptions({valueRange: [-1, 1]});
+  assertEquals(1, g.annotations().length);
+  a1 = document.getElementsByClassName('ann1');
+  assertEquals(1, a1.length);
+};
+
+AnnotationsTestCase.prototype.testAnnotationsDrawnInDrawCallback = function() {
+  var data = "X,Y\n" +
+      "0,-1\n" +
+      "1,0\n" +
+      "2,1\n";
+
+  var graph = document.getElementById("graph");
+
+  var calls = [];
+  var g = new Dygraph(graph, data, {
+      width: 480,
+      height: 320,
+      drawCallback: function(g, initial) {
+        calls.push(initial);
+        if (initial) {
+          g.setAnnotations([
+            {
+              series: 'Y',
+              x: 1,
+              shortText: 'A',
+              text: 'Long A',
+            },
+          ]);
+        }
+      }
+    });
+
+  assertEquals([true, false], calls);
 };

@@ -11,6 +11,8 @@
  * search) and generic DOM-manipulation functions.
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false, G_vmlCanvasManager:false, Node:false, printStackTrace: false */
 "use strict";
 
 Dygraph.LOG_SCALE = 10;
@@ -19,7 +21,7 @@ Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
 /** @private */
 Dygraph.log10 = function(x) {
   return Math.log(x) / Dygraph.LN_TEN;
-}
+};
 
 // Various logging levels.
 Dygraph.DEBUG = 1;
@@ -33,6 +35,13 @@ Dygraph.ERROR = 3;
 // https://github.com/eriwen/javascript-stacktrace
 Dygraph.LOG_STACK_TRACES = false;
 
+/** A dotted line stroke pattern. */
+Dygraph.DOTTED_LINE = [2, 2];
+/** A dashed line stroke pattern. */
+Dygraph.DASHED_LINE = [7, 3];
+/** A dot dash stroke pattern. */
+Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
+
 /**
  * @private
  * Log an error on the JS console at the given severity.
@@ -43,7 +52,7 @@ Dygraph.log = function(severity, message) {
   var st;
   if (typeof(printStackTrace) != 'undefined') {
     // Remove uninteresting bits: logging functions and paths.
-    var st = printStackTrace({guess:false});
+    st = printStackTrace({guess:false});
     while (st[0].indexOf("stacktrace") != -1) {
       st.splice(0, 1);
     }
@@ -317,8 +326,24 @@ Dygraph.pageY = function(e) {
  * @return { Boolean } Whether the number is zero or NaN.
  */
 // TODO(danvk): rename this function to something like 'isNonZeroNan'.
+// TODO(danvk): determine when else this returns false (e.g. for undefined or null)
 Dygraph.isOK = function(x) {
   return x && !isNaN(x);
+};
+
+/**
+ * @private
+ * @param { Object } p The point to consider, valid points are {x, y} objects
+ * @param { Boolean } allowNaNY Treat point with y=NaN as valid
+ * @return { Boolean } Whether the point has numeric x and y.
+ */
+Dygraph.isValidPoint = function(p, allowNaNY) {
+  if (!p) return false; // null or undefined object
+  if (p.yval === null) return false; // missing point
+  if (p.x === null || p.x === undefined) return false;
+  if (p.y === null || p.y === undefined) return false;
+  if (isNaN(p.x) || (!allowNaNY && isNaN(p.y))) return false;
+  return true;
 };
 
 /**
@@ -359,7 +384,7 @@ Dygraph.floatFormat = function(x, opt_precision) {
   //
   // Finally, the argument for toExponential() is the number of trailing digits,
   // so we take off 1 for the value before the '.'.
-  return (Math.abs(x) < 1.0e-3 && x != 0.0) ?
+  return (Math.abs(x) < 1.0e-3 && x !== 0.0) ?
       x.toExponential(p - 1) : x.toPrecision(p);
 };
 
@@ -414,28 +439,31 @@ Dygraph.round_ = function(num, places) {
  * @param { Integer } [high] The last index in arry to consider (optional)
  */
 Dygraph.binarySearch = function(val, arry, abs, low, high) {
-  if (low == null || high == null) {
+  if (low === null || low === undefined ||
+      high === null || high === undefined) {
     low = 0;
     high = arry.length - 1;
   }
   if (low > high) {
     return -1;
   }
-  if (abs == null) {
+  if (abs === null || abs === undefined) {
     abs = 0;
   }
   var validIndex = function(idx) {
     return idx >= 0 && idx < arry.length;
-  }
-  var mid = parseInt((low + high) / 2);
+  };
+  var mid = parseInt((low + high) / 2, 10);
   var element = arry[mid];
   if (element == val) {
     return mid;
   }
+
+  var idx;
   if (element > val) {
     if (abs > 0) {
       // Accept if element > val, but also if prior element < val.
-      var idx = mid - 1;
+      idx = mid - 1;
       if (validIndex(idx) && arry[idx] < val) {
         return mid;
       }
@@ -445,7 +473,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
   if (element < val) {
     if (abs < 0) {
       // Accept if element < val, but also if prior element > val.
-      var idx = mid + 1;
+      idx = mid + 1;
       if (validIndex(idx) && arry[idx] > val) {
         return mid;
       }
@@ -466,9 +494,17 @@ Dygraph.dateParser = function(dateStr) {
   var dateStrSlashed;
   var d;
 
-  // Let the system try the format first.
-  d = Dygraph.dateStrToMillis(dateStr);
-  if (d && !isNaN(d)) return d;
+  // Let the system try the format first, with one caveat:
+  // YYYY-MM-DD[ HH:MM:SS] is interpreted as UTC by a variety of browsers.
+  // dygraphs displays dates in local time, so this will result in surprising
+  // inconsistencies. But if you specify "T" or "Z" (i.e. YYYY-MM-DDTHH:MM:SS),
+  // then you probably know what you're doing, so we'll let you go ahead.
+  // Issue: http://code.google.com/p/dygraphs/issues/detail?id=255
+  if (dateStr.search("-") == -1 ||
+      dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
+    d = Dygraph.dateStrToMillis(dateStr);
+    if (d && !isNaN(d)) return d;
+  }
 
   if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
@@ -478,8 +514,8 @@ Dygraph.dateParser = function(dateStr) {
     d = Dygraph.dateStrToMillis(dateStrSlashed);
   } else if (dateStr.length == 8) {  // e.g. '20090712'
     // TODO(danvk): remove support for this format. It's confusing.
-    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2)
-                       + "/" + dateStr.substr(6,2);
+    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2) + "/" +
+        dateStr.substr(6,2);
     d = Dygraph.dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
@@ -539,7 +575,7 @@ Dygraph.updateDeep = function (self, o) {
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
-        if (o[k] == null) {
+        if (o[k] === null) {
           self[k] = null;
         } else if (Dygraph.isArrayLike(o[k])) {
           self[k] = o[k].slice();
@@ -627,7 +663,7 @@ Dygraph.createCanvas = function() {
  * Android does not fully support the <canvas> tag, e.g. w/r/t/ clipping.
  */
 Dygraph.isAndroid = function() {
-  return /Android/.test(navigator.userAgent);
+  return (/Android/).test(navigator.userAgent);
 };
 
 /**
@@ -656,7 +692,7 @@ Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
     var target_time = start_time + (1 + count) * every_ms;
     setTimeout(function() {
       count++;
-      repeat_fn(count)
+      repeat_fn(count);
       if (count >= times - 1) {
         cleanup_fn();
       } else {
@@ -687,7 +723,9 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'clickCallback': true,
     'digitsAfterDecimal': true,
     'drawCallback': true,
+    'drawHighlightPointCallback': true,
     'drawPoints': true,
+    'drawPointCallback': true,
     'drawXGrid': true,
     'drawYGrid': true,
     'fillAlpha': true,
@@ -768,4 +806,132 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   }
 
   return requiresNewPoints;
+};
+
+/**
+ * Compares two arrays to see if they are equal. If either parameter is not an
+ * array it will return false. Does a shallow compare 
+ * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
+ * @param array1 first array
+ * @param array2 second array
+ * @return True if both parameters are arrays, and contents are equal.
+ */
+Dygraph.compareArrays = function(array1, array2) {
+  if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
+    return false;
+  }
+  if (array1.length !== array2.length) {
+    return false;
+  }
+  for (var i = 0; i < array1.length; i++) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * ctx: the canvas context
+ * sides: the number of sides in the shape.
+ * radius: the radius of the image.
+ * cx: center x coordate
+ * cy: center y coordinate
+ * rotationRadians: the shift of the initial angle, in radians.
+ * delta: the angle shift for each line. If missing, creates a regular
+ *   polygon.
+ */
+Dygraph.regularShape_ = function(
+    ctx, sides, radius, cx, cy, rotationRadians, delta) {
+  rotationRadians = rotationRadians ? rotationRadians : 0;
+  delta = delta ? delta : Math.PI * 2 / sides;
+
+  ctx.beginPath();
+  var first = true;
+  var initialAngle = rotationRadians;
+  var angle = initialAngle;
+
+  var computeCoordinates = function() {
+    var x = cx + (Math.sin(angle) * radius);
+    var y = cy + (-Math.cos(angle) * radius);
+    return [x, y]; 
+  };
+
+  var initialCoordinates = computeCoordinates();
+  var x = initialCoordinates[0];
+  var y = initialCoordinates[1];
+  ctx.moveTo(x, y);
+
+  for (var idx = 0; idx < sides; idx++) {
+    angle = (idx == sides - 1) ? initialAngle : (angle + delta);
+    var coords = computeCoordinates();
+    ctx.lineTo(coords[0], coords[1]);
+  }
+  ctx.fill();
+  ctx.stroke();
+}
+
+Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
+  return function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
+    Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
+  };
+};
+
+Dygraph.DrawPolygon_ = function(sides, rotationRadians, ctx, cx, cy, color, radius, delta) {
+  new Dygraph.RegularShape_(sides, rotationRadians, delta).draw(ctx, cx, cy, radius);
+}
+
+Dygraph.Circles = {
+  DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+  },
+  TRIANGLE : Dygraph.shapeFunction_(3),
+  SQUARE : Dygraph.shapeFunction_(4, Math.PI / 4),
+  DIAMOND : Dygraph.shapeFunction_(4),
+  PENTAGON : Dygraph.shapeFunction_(5),
+  HEXAGON : Dygraph.shapeFunction_(6),
+  CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = "white";
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.stroke();
+  },
+  STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
+  PLUS : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy);
+    ctx.lineTo(cx - radius, cy);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + radius);
+    ctx.lineTo(cx, cy - radius);
+    ctx.closePath();
+    ctx.stroke();
+  },
+  EX : function(g, name, ctx, cx, cy, color, radius) {
+    ctx.strokeStyle = color;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy + radius);
+    ctx.lineTo(cx - radius, cy - radius);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx + radius, cy - radius);
+    ctx.lineTo(cx - radius, cy + radius);
+    ctx.closePath();
+    ctx.stroke();
+  }
 };

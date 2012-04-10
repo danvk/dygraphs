@@ -17,7 +17,7 @@
     <p>1: Line chart with axis at zero problem:</p>
     <div id="graph1"></div>
     <script type="text/javascript">
-        new Dygraph(document.getElementById("graph1"),
+        var g1 = new Dygraph(document.getElementById("graph1"),
             "Date,Temperature\n" +
             "2008-05-07,0\n" +
             "2008-05-08,1\n" +
@@ -31,7 +31,7 @@
     <p>2: Step chart with axis at zero problem:</p>
     <div id="graphd2"></div>
     <script type="text/javascript">
-        new Dygraph(document.getElementById("graphd2"),
+        var g2 = new Dygraph(document.getElementById("graphd2"),
             "Date,Temperature\n" +
             "2008-05-07,0\n" +
             "2008-05-08,1\n" +
@@ -48,7 +48,7 @@
     <p>3: Line chart with <code>avoidMinZero</code> option:</p>
     <div id="graph3"></div>
     <script type="text/javascript">
-        new Dygraph(document.getElementById("graph3"),
+        var g3 = new Dygraph(document.getElementById("graph3"),
             "Date,Temperature\n" +
             "2008-05-07,0\n" +
             "2008-05-08,1\n" +
@@ -65,7 +65,7 @@
     <p>4: Step chart with <code>avoidMinZero</code> option:</p>
     <div id="graphd4"></div>
     <script type="text/javascript">
-        new Dygraph(document.getElementById("graphd4"),
+        var g4 = new Dygraph(document.getElementById("graphd4"),
             "Date,Temperature\n" +
             "2008-05-07,0\n" +
             "2008-05-08,1\n" +

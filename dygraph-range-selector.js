@@ -6,6 +6,8 @@
  * a timeline range selector widget for dygraphs.
  */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
 
 /**
@@ -17,6 +19,8 @@ var DygraphRangeSelector = function(dygraph) {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;
+  this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
+  this.isMobileDevice_ =  Math.min(screen.width, screen.height) < 480;
   this.createCanvases_();
   if (this.isUsingExcanvas_) {
     this.createIEPanOverlay_();
@@ -70,7 +74,7 @@ DygraphRangeSelector.prototype.resize_ = function() {
     canvas.height = rect.h;
     canvas.style.width = canvas.width + 'px';    // for IE
     canvas.style.height = canvas.height + 'px';  // for IE
-  };
+  }
 
   var plotArea = this.layout_.getPlotArea();
   var xAxisLabelHeight = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
@@ -133,20 +137,30 @@ DygraphRangeSelector.prototype.createZoomHandles_ = function() {
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
+
   if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
-      img.width = 7;
-      img.height = 14;
-      img.style.backgroundColor = 'white';
-      img.style.border = '1px solid #333333'; // Just show box in IE7.
+    img.width = 7;
+    img.height = 14;
+    img.style.backgroundColor = 'white';
+    img.style.border = '1px solid #333333'; // Just show box in IE7.
   } else {
-      img.width = 9;
-      img.height = 16;
-      img.src = 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA\
-zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv\
-bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl\
-6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s\
-qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+    img.width = 9;
+    img.height = 16;
+    img.src = 'data:image/png;base64,' +
+'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
+'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
+'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
+'6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
+'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  }
+
+  var minScreenDim = Math.min(screen.width, screen.height);
+  if (minScreenDim < 480) {
+    img.width *= 3;
+    img.height *= 3;
+  } else if (minScreenDim < 768) {
+    img.width *= 2;
+    img.height *= 2;
   }
 
   this.leftZoomHandle_ = img;
@@ -164,8 +178,17 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   var handle = null;
   var isZooming = false;
   var isPanning = false;
+  var dynamic = !this.isMobileDevice_ && !this.isUsingExcanvas_;
 
-  function toXDataWindow(zoomHandleStatus) {
+  // functions, defined below.  Defining them this way (rather than with
+  // "function foo() {...}" makes JSHint happy.
+  var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
+      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove;
+
+  // Touch event functions
+  var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
+
+  toXDataWindow = function(zoomHandleStatus) {
     var xDataLimits = self.dygraph_.xAxisExtremes();
     var fact = (xDataLimits[1] - xDataLimits[0])/self.canvasRect_.w;
     var xDataMin = xDataLimits[0] + (zoomHandleStatus.leftHandlePos - self.canvasRect_.x)*fact;
@@ -173,7 +196,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     return [xDataMin, xDataMax];
   };
 
-  function onZoomStart(e) {
+  onZoomStart = function(e) {
     Dygraph.cancelEvent(e);
     isZooming = true;
     xLast = e.screenX;
@@ -183,7 +206,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.fgcanvas_.style.cursor = 'col-resize';
   };
 
-  function onZoom(e) {
+  onZoom = function(e) {
     if (!isZooming) {
       return;
     }
@@ -193,12 +216,13 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
     xLast = e.screenX;
     var zoomHandleStatus = self.getZoomHandleStatus_();
+    var newPos;
     if (handle == self.leftZoomHandle_) {
-      var newPos = zoomHandleStatus.leftHandlePos + delX;
+      newPos = zoomHandleStatus.leftHandlePos + delX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
       newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
-      var newPos = zoomHandleStatus.rightHandlePos + delX;
+      newPos = zoomHandleStatus.rightHandlePos + delX;
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
@@ -207,12 +231,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.drawInteractiveLayer_();
 
     // Zoom on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas_) {
+    if (dynamic) {
       doZoom();
     }
   };
 
-  function onZoomEnd(e) {
+  onZoomEnd = function(e) {
     if (!isZooming) {
       return;
     }
@@ -222,12 +246,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.fgcanvas_.style.cursor = 'default';
 
     // If using excanvas, Zoom now.
-    if (self.isUsingExcanvas_) {
+    if (!dynamic) {
       doZoom();
     }
   };
 
-  function doZoom() {
+  doZoom = function() {
     try {
       var zoomHandleStatus = self.getZoomHandleStatus_();
       self.isChangingRange_ = true;
@@ -242,18 +266,19 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function isMouseInPanZone(e) {
+  isMouseInPanZone = function(e) {
     if (self.isUsingExcanvas_) {
         return e.srcElement == self.iePanOverlay_;
     } else {
-      // Getting clientX directly from the event is not accurate enough :(
-      var clientX = self.canvasRect_.x + (e.layerX != undefined ? e.layerX : e.offsetX);
-      var zoomHandleStatus = self.getZoomHandleStatus_();
-      return (clientX > zoomHandleStatus.leftHandlePos && clientX < zoomHandleStatus.rightHandlePos);
+      var rect = self.leftZoomHandle_.getBoundingClientRect();
+      var leftHandleClientX = rect.left + rect.width/2;
+      rect = self.rightZoomHandle_.getBoundingClientRect();
+      var rightHandleClientX = rect.left + rect.width/2;
+      return (e.clientX > leftHandleClientX && e.clientX < rightHandleClientX);
     }
   };
 
-  function onPanStart(e) {
+  onPanStart = function(e) {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
       Dygraph.cancelEvent(e);
       isPanning = true;
@@ -263,7 +288,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onPan(e) {
+  onPan = function(e) {
     if (!isPanning) {
       return;
     }
@@ -296,12 +321,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.drawInteractiveLayer_();
 
     // Do pan on the fly (if not using excanvas).
-    if (!self.isUsingExcanvas_) {
+    if (dynamic) {
       doPan();
     }
   };
 
-  function onPanEnd(e) {
+  onPanEnd = function(e) {
     if (!isPanning) {
       return;
     }
@@ -309,12 +334,12 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     Dygraph.removeEvent(topElem, 'mousemove', onPan);
     Dygraph.removeEvent(topElem, 'mouseup', onPanEnd);
     // If using excanvas, do pan now.
-    if (self.isUsingExcanvas_) {
+    if (!dynamic) {
       doPan();
     }
   };
 
-  function doPan() {
+  doPan = function() {
     try {
       self.isChangingRange_ = true;
       self.dygraph_.dateWindow_ = toXDataWindow(self.getZoomHandleStatus_());
@@ -324,7 +349,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  function onCanvasMouseMove(e) {
+  onCanvasMouseMove = function(e) {
     if (isZooming || isPanning) {
       return;
     }
@@ -334,25 +359,38 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  var interactionModel = {
-    mousedown: function(event, g, context) {
-      context.initializeMouseDown(event, g, context);
-      Dygraph.startPan(event, g, context);
-    },
-    mousemove: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.movePan(event, g, context);
-      }
-    },
-    mouseup: function(event, g, context) {
-      if (context.isPanning) {
-        Dygraph.endPan(event, g, context);
-      }
+  onZoomHandleTouchEvent = function(e) {
+    e.preventDefault();
+    if (e.type == 'touchstart') {
+      onZoomStart(e.targetTouches[0]);
+    } else if (e.type == 'touchmove') {
+      onZoom(e.targetTouches[0]);
+    } else {
+      onZoomEnd(e);
     }
   };
 
-  this.dygraph_.attrs_.interactionModel = interactionModel;
-  this.dygraph_.attrs_.panEdgeFraction = .0001;
+  onCanvasTouchEvent = function(e) {
+    e.preventDefault();
+    if (e.type == 'touchstart') {
+      onPanStart(e.targetTouches[0]);
+    } else if (e.type == 'touchmove') {
+      onPan(e.targetTouches[0]);
+    } else {
+      onPanEnd(e);
+    }
+  };
+
+  addTouchEvents = function(elem, fn) {
+      var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
+      for (var i = 0; i < types.length; i++) {
+        Dygraph.addEvent(elem, types[i], fn);
+      }
+  };
+
+  this.dygraph_.attrs_.interactionModel =
+      Dygraph.Interaction.dragIsPanInteractionModel;
+  this.dygraph_.attrs_.panEdgeFraction = 0.0001;
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
   Dygraph.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
@@ -363,6 +401,13 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   } else {
     Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
     Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+  }
+
+  // Touch events
+  if (this.hasTouchInterface_) {
+    addTouchEvents(this.leftZoomHandle_, onZoomHandleTouchEvent);
+    addTouchEvents(this.rightZoomHandle_, onZoomHandleTouchEvent);
+    addTouchEvents(this.fgcanvas_, onCanvasTouchEvent);
   }
 };
 
@@ -379,7 +424,7 @@ DygraphRangeSelector.prototype.drawStaticLayer_ = function() {
     Dygraph.warn(ex);
   }
 
-  var margin = .5;
+  var margin = 0.5;
   this.bgcanvas_ctx_.lineWidth = 1;
   ctx.strokeStyle = 'gray';
   ctx.beginPath();
@@ -407,7 +452,7 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
 
   // Draw the mini plot.
   var ctx = this.bgcanvas_ctx_;
-  var margin = .5;
+  var margin = 0.5;
 
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xRange = Math.max(xExtremes[1] - xExtremes[0], 1.e-30);
@@ -457,43 +502,52 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var combinedSeries = [];
   var sum;
   var count;
-  var mutipleValues = typeof data[0][1] != 'number';
+  var mutipleValues;
+  var i, j, k;
+  var xVal, yVal;
 
-  if (mutipleValues) {
-    sum = [];
-    count = [];
-    for (var k = 0; k < data[0][1].length; k++) {
-      sum.push(0);
-      count.push(0);
+  // Find out if data has multiple values per datapoint.
+  // Go to first data point that actually has values (see http://code.google.com/p/dygraphs/issues/detail?id=246)
+  for (i = 0; i < data.length; i++) {
+    if (data[i].length > 1 && data[i][1] !== null) {
+      mutipleValues = typeof data[i][1] != 'number';
+      if (mutipleValues) {
+        sum = [];
+        count = [];
+        for (k = 0; k < data[i][1].length; k++) {
+          sum.push(0);
+          count.push(0);
+        }
+      }
+      break;
     }
-    mutipleValues = true;
   }
 
-  for (var i = 0; i < data.length; i++) {
+  for (i = 0; i < data.length; i++) {
     var dataPoint = data[i];
-    var xVal = dataPoint[0];
-    var yVal;
+    xVal = dataPoint[0];
 
     if (mutipleValues) {
-      for (var k = 0; k < sum.length; k++) {
+      for (k = 0; k < sum.length; k++) {
         sum[k] = count[k] = 0;
       }
     } else {
       sum = count = 0;
     }
 
-    for (var j = 1; j < dataPoint.length; j++) {
+    for (j = 1; j < dataPoint.length; j++) {
       if (this.dygraph_.visibility()[j-1]) {
+        var y;
         if (mutipleValues) {
-          for (var k = 0; k < sum.length; k++) {
-            var y = dataPoint[j][k];
-            if (y == null || isNaN(y)) continue;
+          for (k = 0; k < sum.length; k++) {
+            y = dataPoint[j][k];
+            if (y === null || isNaN(y)) continue;
             sum[k] += y;
             count[k]++;
           }
         } else {
-          var y = dataPoint[j];
-          if (y == null || isNaN(y)) continue;
+          y = dataPoint[j];
+          if (y === null || isNaN(y)) continue;
           sum += y;
           count++;
         }
@@ -501,7 +555,7 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     }
 
     if (mutipleValues) {
-      for (var k = 0; k < sum.length; k++) {
+      for (k = 0; k < sum.length; k++) {
         sum[k] /= count[k];
       }
       yVal = sum.slice(0);
@@ -516,8 +570,8 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   combinedSeries = this.dygraph_.rollingAverage(combinedSeries, this.dygraph_.rollPeriod_);
 
   if (typeof combinedSeries[0][1] != 'number') {
-    for (var i = 0; i < combinedSeries.length; i++) {
-      var yVal = combinedSeries[i][1];
+    for (i = 0; i < combinedSeries.length; i++) {
+      yVal = combinedSeries[i][1];
       combinedSeries[i][1] = yVal[0];
     }
   }
@@ -525,9 +579,9 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   // Compute the y range.
   var yMin = Number.MAX_VALUE;
   var yMax = -Number.MAX_VALUE;
-  for (var i = 0; i < combinedSeries.length; i++) {
-    var yVal = combinedSeries[i][1];
-    if (yVal != null && isFinite(yVal) && (!logscale || yVal > 0)) {
+  for (i = 0; i < combinedSeries.length; i++) {
+    yVal = combinedSeries[i][1];
+    if (yVal !== null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
     }
@@ -535,12 +589,12 @@ DygraphRangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
 
   // Convert Y data to log scale if needed.
   // Also, expand the Y range to compress the mini plot a little.
-  var extraPercent = .25;
+  var extraPercent = 0.25;
   if (logscale) {
     yMax = Dygraph.log10(yMax);
     yMax += yMax*extraPercent;
     yMin = Dygraph.log10(yMin);
-    for (var i = 0; i < combinedSeries.length; i++) {
+    for (i = 0; i < combinedSeries.length; i++) {
       combinedSeries[i][1] = Dygraph.log10(combinedSeries[i][1]);
     }
   } else {
@@ -637,8 +691,8 @@ DygraphRangeSelector.prototype.drawInteractiveLayer_ = function() {
  */
 DygraphRangeSelector.prototype.getZoomHandleStatus_ = function() {
   var halfHandleWidth = this.leftZoomHandle_.width/2;
-  var leftHandlePos = parseInt(this.leftZoomHandle_.style.left) + halfHandleWidth;
-  var rightHandlePos = parseInt(this.rightZoomHandle_.style.left) + halfHandleWidth;
+  var leftHandlePos = parseInt(this.leftZoomHandle_.style.left, 10) + halfHandleWidth;
+  var rightHandlePos = parseInt(this.rightZoomHandle_.style.left, 10) + halfHandleWidth;
   return {
       leftHandlePos: leftHandlePos,
       rightHandlePos: rightHandlePos,

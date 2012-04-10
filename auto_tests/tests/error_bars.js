@@ -21,7 +21,7 @@ errorBarsTestCase.prototype.tearDown = function() {
   Dygraph.getContext = _origFunc;
 };
 
-errorBarsTestCase.prototype.testNameGoesHere = function() {
+errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
   var opts = {
     width: 480,
     height: 320,
@@ -86,5 +86,6 @@ errorBarsTestCase.prototype.testNameGoesHere = function() {
     xy2 = g.toDomCoords(data[i + 1][0], data[i + 1][1][1]);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
   }
+  CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 

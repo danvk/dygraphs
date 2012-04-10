@@ -15,3 +15,6 @@ gwt: generate-gwt
 generate-gwt:
 	@echo Generating GWT JAR file
 	@./generate-jar.sh
+
+test:
+	@./test.sh

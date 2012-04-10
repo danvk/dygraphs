@@ -151,3 +151,24 @@ UpdateOptionsTestCase.prototype.testUpdateColors = function() {
   graph.updateOptions({ colors: null, file: this.data });
   assertEquals(defaultColors, graph.getColors());
 }
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=249
+// Verifies that setting 'legend: always' via update immediately shows the
+// legend.
+UpdateOptionsTestCase.prototype.testUpdateLegendAlways = function() {
+  var graphDiv = document.getElementById("graph");
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
+
+  var legend = document.getElementsByClassName("dygraph-legend");
+  assertEquals(1, legend.length);
+  legend = legend[0];
+  assertEquals("", legend.innerHTML);
+
+  graph.updateOptions({legend: 'always'});
+
+  legend = document.getElementsByClassName("dygraph-legend");
+  assertEquals(1, legend.length);
+  legend = legend[0];
+  assertNotEquals(-1, legend.textContent.indexOf("Y1"));
+  assertNotEquals(-1, legend.textContent.indexOf("Y2"));
+};

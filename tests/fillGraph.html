@@ -24,7 +24,7 @@
     <div id="div_g3" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      new Dygraph(
+      var g1 = new Dygraph(
         document.getElementById("div_g"),
         function() {
           var ret = "X,Y1,Y2\n";
@@ -36,7 +36,7 @@
         { fillGraph: true }
       );
 
-      new Dygraph(
+      var g2 = new Dygraph(
         document.getElementById("div_g2"),
         function() {
           var ret = "X,Y1,Y2\n";
@@ -49,7 +49,7 @@
         { fillGraph: true }
       );
 
-      new Dygraph(
+      var g3 = new Dygraph(
         document.getElementById("div_g3"),
         function() {
           var ret = "X,Y1,Y2\n";

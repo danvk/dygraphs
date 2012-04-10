@@ -20,7 +20,7 @@
     <div id="g2" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      new Dygraph(
+      var g1 = new Dygraph(
           document.getElementById("g"),
           NoisyData, {
             rollPeriod: 7,
@@ -29,7 +29,7 @@
           }
         );
 
-      new Dygraph(
+      var g2 = new Dygraph(
           document.getElementById("g2"),
           NoisyData, {
             rollPeriod: 7,
