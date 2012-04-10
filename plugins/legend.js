@@ -61,6 +61,7 @@ legend.prototype.activate = function(g, r) {
       "top": "0px",
       "right": "2px",
       "background": "white",
+      "lineHeight": "normal",
       "textAlign": "left",
       "overflow": "hidden"};
 
