@@ -4,6 +4,8 @@
 //
 // For more on phantomjs, visit www.phantomjs.org.
 
+var RunAllAutoTests = function(done_callback) {
+
 var page = require('webpage').create();
 
 // NOTE: Cannot include '#' or '?' in this URL.
@@ -94,11 +96,102 @@ page.open(url, function(status) {
     console.log('  ' + failures[i] + ' failed.');
   }
 
-  if (num_failing == 0) {
-    console.log('PASS');
-  } else {
-    console.log('FAIL');
-  }
+  done_callback(num_failing, num_passing);
+});
 
+};
+
+// Load all "tests/" pages.
+var LoadAllManualTests = function(totally_done_callback) {
+
+var fs = require('fs');
+var tests = fs.list('tests');
+var pages = [];
+
+function make_barrier_closure(n, fn) {
+  var calls = 0;
+  return function() {
+    calls++;
+    if (calls == n) {
+      fn();
+    } else {
+      // console.log('' + calls + ' done, ' + (n - calls) + ' remain');
+    }
+  };
+}
+
+var tasks = [];
+for (var i = 0; i < tests.length; i++) {
+  if (tests[i].substr(-5) != '.html') continue;
+  tasks.push(tests[i]);
+}
+tasks = [ 'independent-series.html' ];
+
+var loaded_page = make_barrier_closure(tasks.length, function() {
+  // Wait 2 secs to allow JS errors to happen after page load.
+  setTimeout(function() {
+    var success = 0, failures = 0;
+    for (var i = 0; i < pages.length; i++) {
+      if (pages[i].success && !pages[i].hasErrors) {
+        success++;
+      } else {
+        failures++;
+      }
+    }
+    console.log('Successfully loaded ' + success + ' / ' +
+                (success + failures) + ' test pages.');
+    totally_done_callback(failures, success);
+  }, 2000);
+});
+
+
+for (var i = 0; i < tasks.length; i++) {
+  var url = 'file://' + fs.absolute('tests/' + tasks[i]);
+  pages.push(function(path, url) {
+    var page = require('webpage').create();
+    page.success = false;
+    page.hasErrors = false;
+    page.onError = function (msg, trace) {
+      console.log(path + ': ' + msg);
+      page.hasErrors = true;
+      trace.forEach(function(item) {
+        console.log('  ', item.file, ':', item.line);
+      });
+    };
+    page.onLoadFinished = function(status) {
+      if (status == 'success') {
+        page.success = true;
+      }
+      if (!page.done) loaded_page();
+      page.done = true;
+    };
+    page.open(url);
+    return page;
+  }(tasks[i], url));
+}
+
+};
+
+
+// First run all auto_tests.
+// If they all pass, load the manual tests.
+RunAllAutoTests(function(num_failing, num_passing) {
+  if (num_failing !== 0) {
+    console.log('FAIL');
+    phantom.exit();
+  }
+  console.log('PASS');
   phantom.exit();
+
+  // This is not yet reliable enough to be useful:
+  /*
+  LoadAllManualTests(function(failing, passing) {
+    if (failing !== 0) {
+      console.log('FAIL');
+    } else {
+      console.log('PASS');
+    }
+    phantom.exit();
+  });
+  */
 });

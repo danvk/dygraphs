@@ -48,10 +48,19 @@
           suffixes[magnitude];
       }
 
-      var g = new Dygraph(document.getElementById("labelsKMB"), data, { labelsKMB: true });
-      var g2 = new Dygraph(document.getElementById("labelsKMG2"), data, { labelsKMG2: true });
-      var g3 = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data,
-                          { labelsKMG2: true, yValueFormatter: formatValue });
+      var g = new Dygraph(document.getElementById("labelsKMB"), data, {
+        labelsKMB: true,
+        labels: ['Base', 'Power']
+      });
+      var g2 = new Dygraph(document.getElementById("labelsKMG2"), data, {
+        labelsKMG2: true,
+        labels: ['Base', 'Power']
+      });
+      var g3 = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data, {
+        labelsKMG2: true,
+        yValueFormatter: formatValue,
+        labels: ['Base', 'Power']
+      });
     </script>
   </body>
 </html>
