@@ -14,6 +14,11 @@
 
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
+      // Capture warnings, since these are what we want in this test.
+      Dygraph.prototype.warn = function(msg) {
+        console.log(msg);
+      };
+
       google.load('visualization', '1');
 
       function createDataTable(dateType) {

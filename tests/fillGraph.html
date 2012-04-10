@@ -48,22 +48,6 @@
         },
         { fillGraph: true }
       );
-
-      var g3 = new Dygraph(
-        document.getElementById("div_g3"),
-        function() {
-          var ret = "X,Y1,Y2\n";
-          for (var i = 0; i < 100; i++) {
-            ret += i + "," + i + ",10," +
-              (i * (100-i) * 100/(50*50)) + ",5\n";
-          }
-          return ret;
-        },
-        {
-          errorBars: true,
-          fillGraph: true
-        }
-      );
     </script>
   </body>
 </html>
