@@ -422,16 +422,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       pluginOptions: {}
     };
 
-    var registerer = (function(pluginDict) {
-      return {
-        addEventListener: function(eventName, callback) {
-          // TODO(danvk): validate eventName.
-          pluginDict.events[eventName] = callback;
-        }
-      };
-    })(pluginDict);
-    pluginInstance.activate(this, registerer);
-    // TODO(danvk): prevent activate() from holding a reference to registerer.
+    var handlers = pluginInstance.activate(this);
+    for (var eventName in handlers) {
+      pluginDict.events[eventName] = handlers[eventName];
+    }
 
     this.plugins_.push(pluginDict);
   }
