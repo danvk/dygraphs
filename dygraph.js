@@ -424,6 +424,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
     var handlers = pluginInstance.activate(this);
     for (var eventName in handlers) {
+      // TODO(danvk): validate eventName.
       pluginDict.events[eventName] = handlers[eventName];
     }
 
