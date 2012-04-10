@@ -477,7 +477,7 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
     },
     propagationStopped: false,
     stopPropagation: function() {
-      propagationStopped = true;
+      e.propagationStopped = true;
     }
   };
   Dygraph.update(e, extra_props);
