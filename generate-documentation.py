@@ -2,8 +2,9 @@
 
 # Generate docs/options.html
 
-import json
 import glob
+import json
+import os
 import re
 import sys
 
@@ -53,22 +54,24 @@ def search_files(type, files):
   # have the same name as a Dygraph option probably will be.
   prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
   for test_file in files:
-    text = file(test_file).read()
-    # Hack for slipping past gallery demos that have title in their attributes
-    # so they don't appear as reasons for the demo to have 'title' options.
-    if type == "gallery":
-      idx = text.find("function(")
-      if idx >= 0:
-        text = text[idx:]
-    braced_html = find_braces(text)
-    if debug_tests:
-      print braced_html
+    if os.path.isfile(test_file): # Basically skips directories
+      text = file(test_file).read()
 
-    ms = re.findall(prop_re, braced_html)
-    for opt in ms:
-      if debug_tests: print '\n'.join(ms)
-      if opt in docs and test_file not in docs[opt][type]:
-        docs[opt][type].append(test_file)
+      # Hack for slipping past gallery demos that have title in their attributes
+      # so they don't appear as reasons for the demo to have 'title' options.
+      if type == "gallery":
+        idx = text.find("function(")
+        if idx >= 0:
+          text = text[idx:]
+      braced_html = find_braces(text)
+      if debug_tests:
+        print braced_html
+
+      ms = re.findall(prop_re, braced_html)
+      for opt in ms:
+        if debug_tests: print '\n'.join(ms)
+        if opt in docs and test_file not in docs[opt][type]:
+          docs[opt][type].append(test_file)
 
 search_files("tests", glob.glob("tests/*.html"))
 search_files("gallery", glob.glob("gallery/*.js")) #TODO add grep "Gallery.register\("
