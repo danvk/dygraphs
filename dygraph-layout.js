@@ -361,6 +361,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
  */
 DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   var point = this.points[idx];
+  // If the point is missing, no unstacking is necessary
   if (!point.yval) {
     return point;
   }
