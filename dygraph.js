@@ -424,16 +424,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       pluginOptions: {}
     };
 
-    var registerer = (function(pluginDict) {
-      return {
-        addEventListener: function(eventName, callback) {
-          // TODO(danvk): validate eventName.
-          pluginDict.events[eventName] = callback;
-        }
-      };
-    })(pluginDict);
-    pluginInstance.activate(this, registerer);
-    // TODO(danvk): prevent activate() from holding a reference to registerer.
+    var handlers = pluginInstance.activate(this);
+    for (var eventName in handlers) {
+      // TODO(danvk): validate eventName.
+      pluginDict.events[eventName] = handlers[eventName];
+    }
 
     this.plugins_.push(pluginDict);
   }
@@ -485,11 +480,13 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
   Dygraph.update(e, extra_props);
 
   var callback_plugin_pairs = this.eventListeners_[name];
-  for (var i = callback_plugin_pairs.length - 1; i >= 0; i--) {
-    var plugin = callback_plugin_pairs[i][0];
-    var callback = callback_plugin_pairs[i][1];
-    callback.call(plugin, e);
-    if (e.propagationStopped) break;
+  if (callback_plugin_pairs) {
+    for (var i = callback_plugin_pairs.length - 1; i >= 0; i--) {
+      var plugin = callback_plugin_pairs[i][0];
+      var callback = callback_plugin_pairs[i][1];
+      callback.call(plugin, e);
+      if (e.propagationStopped) break;
+    }
   }
   return e.defaultPrevented;
 };
