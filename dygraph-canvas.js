@@ -634,13 +634,13 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
     div.style.borderColor = this.colors[p.name];
     a.div = div;
 
-    Dygraph.addEvent(div, 'click',
+    this.dygraph_.addEvent(div, 'click',
         bindEvt('clickHandler', 'annotationClickHandler', p, this));
-    Dygraph.addEvent(div, 'mouseover',
+    this.dygraph_.addEvent(div, 'mouseover',
         bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
-    Dygraph.addEvent(div, 'mouseout',
+    this.dygraph_.addEvent(div, 'mouseout',
         bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
-    Dygraph.addEvent(div, 'dblclick',
+    this.dygraph_.addEvent(div, 'dblclick',
         bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
 
     this.container.appendChild(div);
