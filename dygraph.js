@@ -985,14 +985,14 @@ Dygraph.prototype.destroy = function() {
  
   for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
     var reg = this.registeredEvents_[idx];
-    this.removeEvent(reg.elem, reg.type, reg.fn);
+    Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
   }
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
-  this.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
-  this.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
-  this.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
   removeRecursive(this.maindiv_);
 
   var nullOut = function(obj) {
@@ -1003,7 +1003,7 @@ Dygraph.prototype.destroy = function() {
     }
   };
   // remove event handlers
-  this.removeEvent(window,'resize',this.resizeHandler);
+  Dygraph.removeEvent(window,'resize',this.resizeHandler);
   this.resizeHandler = null;
   // These may not all be necessary, but it can't hurt...
   nullOut(this.layout_);

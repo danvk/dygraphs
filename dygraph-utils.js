@@ -136,13 +136,27 @@ Dygraph.getContext = function(canvas) {
  * @param { Function } fn The function to call on the event. The function takes
  * one parameter: the event object.
  */
-Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+Dygraph.addEvent = function addEvent(elem, type, fn) {
   if (elem.addEventListener) {
     elem.addEventListener(type, fn, false);
   } else {
     elem[type+fn] = function(){fn(window.event);};
     elem.attachEvent('on'+type, elem[type+fn]);
   }
+};
+
+/**
+ * @private
+ * Add an event handler. This event handler is kept until the graph is
+ * destroyed with a call to graph.destroy().
+ *
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param { Function } fn The function to call on the event. The function takes
+ * one parameter: the event object.
+ */
+Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+  Dygraph.addEvent(elem, type, fn);
   this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
 
@@ -155,7 +169,7 @@ Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
  * @param { Function } fn The function to call on the event. The function takes
  * one parameter: the event object.
  */
-Dygraph.prototype.removeEvent = function addEvent(elem, type, fn) {
+Dygraph.removeEvent = function addEvent(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
