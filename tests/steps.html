@@ -14,6 +14,7 @@
 
   </head>
   <body>
+  <!--  
     <p>1: Simple line chart:</p>
     <div id="graphdiv1"></div>
     <script type="text/javascript">
@@ -134,6 +135,24 @@
         GapSeries2: { axis: {} }
       }
     );
+    </script>
+    -->
+    <p>8: Stacked filled step chart:</p>
+    <div id="graphdiv8"></div>
+    <script type="text/javascript">
+      g8 = new Dygraph(document.getElementById("graphdiv8"),
+                      "Date,Idle,Used\n" +
+                      "2008-05-07,70,30\n" +
+                      "2008-05-08,12,88\n" +
+                      "2008-05-09,88,12\n" +
+                      "2008-05-10,63,37\n" +
+                      "2008-05-11,35,65\n",
+                       {
+                          stepPlot: true,
+                          fillGraph: true,
+                          stackedGraph: true,
+                          includeZero: true
+                       });
     </script>
 
   </body>
