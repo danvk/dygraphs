@@ -890,7 +890,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
     ctx.restore();
   } else if (fillGraph) {
     ctx.save();
-    var baseline = [];  // for stacked graphs: baseline for filling
+    var baseline = {};  // for stacked graphs: baseline for filling
+    var currBaseline;
 
     // process sets in reverse order (needed for stacked graphs)
     for (i = setCount - 1; i >= 0; i--) {
@@ -927,21 +928,50 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             continue;
           }
           if (stackedGraph) {
-            var lastY = baseline[point.canvasx];
-            if (lastY === undefined) lastY = axisY;
-            baseline[point.canvasx] = point.canvasy;
+            currBaseline = baseline[point.canvasx];
+            var lastY;
+            if (currBaseline === undefined) {
+              lastY = axisY;
+            } else {
+              if(stepPlot) {
+                lastY = currBaseline[0];
+              } else {
+                lastY = currBaseline;
+              }
+            }
             newYs = [ point.canvasy, lastY ];
+            
+            if(stepPlot) {
+              // Step plots must keep track of the top and bottom of
+              // the baseline at each point.
+              if(prevYs[0] === -1) {
+                baseline[point.canvasx] = [ point.canvasy, axisY ];
+              } else {
+                baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
+              }
+            } else {
+              baseline[point.canvasx] = point.canvasy;
+            }
+            
           } else {
             newYs = [ point.canvasy, axisY ];
           }
           if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
+            
             if (stepPlot) {
               ctx.lineTo(point.canvasx, prevYs[0]);
+              if(currBaseline) {
+                // Draw to the bottom of the baseline
+                ctx.lineTo(point.canvasx, currBaseline[1]);
+              } else {
+                ctx.lineTo(point.canvasx, newYs[1]);
+              }
             } else {
               ctx.lineTo(point.canvasx, newYs[0]);
+              ctx.lineTo(point.canvasx, newYs[1]);
             }
-            ctx.lineTo(point.canvasx, newYs[1]);
+            
             ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
           }
