@@ -14,6 +14,7 @@ site=$1
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
+chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
 
