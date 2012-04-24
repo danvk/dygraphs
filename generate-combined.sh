@@ -25,9 +25,8 @@ plugins/install.js \
 java -jar yuicompressor-2.4.2.jar /tmp/dygraph.js \
 > /tmp/dygraph-packed.js
 
-# TODO(danvk): ensure the dygraphs copyright, etc. gets into the packed js.
-
-cat \
-/tmp/dygraph-packed.js \
-> dygraph-combined.js
+(
+  echo '/*! dygraphs v1.2 dygraphs.com | dygraphs.com/license */'
+  cat /tmp/dygraph-packed.js
+) > dygraph-combined.js
 chmod a+r dygraph-combined.js

@@ -1,5 +1,8 @@
-// Copyright 2011 Paul Felix (paul.eric.felix@gmail.com)
-// All Rights Reserved.
+/*
+ * @license
+ * Copyright 2011 Paul Felix (paul.eric.felix@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
 
 /**
  * @fileoverview This file contains the DygraphRangeSelector class used to provide
