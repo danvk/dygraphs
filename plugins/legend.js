@@ -144,6 +144,7 @@ legend.prototype.predraw = function(e) {
   if (!this.is_generated_div_) return;
 
   // TODO(danvk): only use real APIs for this.
+  e.dygraph.graphDiv.appendChild(this.legend_div_);
   var area = e.dygraph.plotter_.area;
   this.legend_div_.style.left = area.x + area.w - e.dygraph.getOption("labelsDivWidth") - 1 + "px";
   this.legend_div_.style.top = area.y + "px";
