@@ -9,6 +9,7 @@ fi
 
 set -x
 site=$1
+
 # Produce dygraph-combined.js.
 ./generate-combined.sh
 
@@ -17,6 +18,10 @@ site=$1
 chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
+
+  # Make sure everything will be readable on the web.
+  # This is like "chmod -R a+rX", but excludes the .git directory.
+  find . -path ./.git -prune -o -print | xargs chmod a+rX
 
   # Copy everything to the site.
   rsync -avzr gallery common tests jsdoc experimental plugins $site \
