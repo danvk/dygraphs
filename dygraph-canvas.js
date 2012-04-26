@@ -692,6 +692,7 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
+  var drawGapPoints = this.dygraph_.attr_('drawGapPoints', setName);
 
   var point;
   var next = DygraphCanvasRenderer.makeNextPointStep_(
@@ -715,6 +716,14 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
       // and next points are null.
       var isIsolated = (!prevX && (j == points.length - 1 ||
                                    isNullOrNaN(points[j+1].canvasy)));
+      if (drawGapPoints) {
+        // Also consider a point to be is "isolated" if it's adjacent to a
+        // null point, excluding the graph edges.
+        if ((j > 0 && !prevX) ||
+            (j < points.length - 1 && isNullOrNaN(points[j+1].canvasy))) {
+          isIsolated = true;
+        }
+      }
       if (prevX === null) {
         prevX = point.canvasx;
         prevY = point.canvasy;
