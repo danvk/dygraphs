@@ -38,7 +38,18 @@
           data.push(row);
         }
 
-        g = new Dygraph(graph, data);
+        var labels = ['X'];
+        if (data[0].length == 2) {
+          labels.push('Y');
+        } else {
+          for (var i = 0; i < data[0].length; i++) {
+            labels.push('Y' + (1 + i));
+          }
+        }
+
+        g = new Dygraph(graph, data, {
+          labels: labels
+        });
       }
 
       function preset() {
