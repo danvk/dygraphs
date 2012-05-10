@@ -14,4 +14,6 @@ if [ -s /tmp/dygraphs-jsdocerrors.txt ]; then
   echo Please fix any jsdoc errors/warnings before sending patches.
 fi
 
+chmod -R a+rX jsdoc
+
 echo Done

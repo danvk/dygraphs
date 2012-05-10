@@ -407,6 +407,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.setIndexByName_ = {};
   this.datasetIndex_ = [];
 
+  this.registeredEvents_ = [];
+
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
@@ -422,16 +424,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       pluginOptions: {}
     };
 
-    var registerer = (function(pluginDict) {
-      return {
-        addEventListener: function(eventName, callback) {
-          // TODO(danvk): validate eventName.
-          pluginDict.events[eventName] = callback;
-        }
-      };
-    })(pluginDict);
-    pluginInstance.activate(this, registerer);
-    // TODO(danvk): prevent activate() from holding a reference to registerer.
+    var handlers = pluginInstance.activate(this);
+    for (var eventName in handlers) {
+      // TODO(danvk): validate eventName.
+      pluginDict.events[eventName] = handlers[eventName];
+    }
 
     this.plugins_.push(pluginDict);
   }
@@ -483,11 +480,13 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
   Dygraph.update(e, extra_props);
 
   var callback_plugin_pairs = this.eventListeners_[name];
-  for (var i = callback_plugin_pairs.length - 1; i >= 0; i--) {
-    var plugin = callback_plugin_pairs[i][0];
-    var callback = callback_plugin_pairs[i][1];
-    callback.call(plugin, e);
-    if (e.propagationStopped) break;
+  if (callback_plugin_pairs) {
+    for (var i = callback_plugin_pairs.length - 1; i >= 0; i--) {
+      var plugin = callback_plugin_pairs[i][0];
+      var callback = callback_plugin_pairs[i][1];
+      callback.call(plugin, e);
+      if (e.propagationStopped) break;
+    }
   }
   return e.defaultPrevented;
 };
@@ -953,12 +952,12 @@ Dygraph.prototype.createInterface_ = function() {
   this.mouseMoveHandler = function(e) {
     dygraph.mouseMove_(e);
   };
-  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   
   this.mouseOutHandler = function(e) {
     dygraph.mouseOut_(e);
   };
-  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
+  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
   this.createDragInterface_();
 
@@ -968,7 +967,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // Update when the window is resized.
   // TODO(danvk): drop frames depending on complexity of the chart.
-  Dygraph.addEvent(window, 'resize', this.resizeHandler);
+  this.addEvent(window, 'resize', this.resizeHandler);
 };
 
 /**
@@ -983,8 +982,14 @@ Dygraph.prototype.destroy = function() {
       node.removeChild(node.firstChild);
     }
   };
-  
-  // remove mouse event handlers
+ 
+  for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+    var reg = this.registeredEvents_[idx];
+    Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+  }
+  this.registeredEvents_ = [];
+
+  // remove mouse event handlers (This may not be necessary anymore)
   Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
@@ -1217,7 +1222,8 @@ Dygraph.prototype.createDragInterface_ = function() {
     boundedDates: null, // [minDate, maxDate]
     boundedValues: null, // [[minValue, maxValue] ...]
 
-    initializeMouseDown: function(event, g, context) {
+    // contextB is the same thing as this context object but renamed.
+    initializeMouseDown: function(event, g, contextB) {
       // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
         event.preventDefault();  // Firefox, Chrome, etc.
@@ -1226,11 +1232,11 @@ Dygraph.prototype.createDragInterface_ = function() {
         event.cancelBubble = true;
       }
 
-      context.px = Dygraph.findPosX(g.canvas_);
-      context.py = Dygraph.findPosY(g.canvas_);
-      context.dragStartX = g.dragGetX_(event, context);
-      context.dragStartY = g.dragGetY_(event, context);
-      context.cancelNextDblclick = false;
+      contextB.px = Dygraph.findPosX(g.canvas_);
+      contextB.py = Dygraph.findPosY(g.canvas_);
+      contextB.dragStartX = g.dragGetX_(event, contextB);
+      contextB.dragStartY = g.dragGetY_(event, contextB);
+      contextB.cancelNextDblclick = false;
     }
   };
 
@@ -1248,7 +1254,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   for (var eventName in interactionModel) {
     if (!interactionModel.hasOwnProperty(eventName)) continue;
-    Dygraph.addEvent(this.mouseEventElement_, eventName,
+    this.addEvent(this.mouseEventElement_, eventName,
         bindHandler(interactionModel[eventName]));
   }
 
@@ -1272,7 +1278,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     }
   };
 
-  Dygraph.addEvent(document, 'mouseup', this.mouseUpHandler_);
+  this.addEvent(document, 'mouseup', this.mouseUpHandler_);
 };
 
 /**

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
 Dygraph.Plugins.Legend = (function() {
 
 /*
@@ -8,7 +14,6 @@ Current bits of jankiness:
     2. dygraph.plotter_.area
 - Registers for a "predraw" event, which should be renamed.
 - I call calculateEmWidthInDiv more often than needed.
-- Why can't I call "this.deselect(e)" instead of "legend.deselect.call(this, e)"?
 
 */
 
@@ -38,8 +43,11 @@ legend.prototype.toString = function() {
  * - Reading your own options
  * - DOM manipulation
  * - Registering event listeners
+ *
+ * @param {Dygraph} g Graph instance.
+ * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
  */
-legend.prototype.activate = function(g, r) {
+legend.prototype.activate = function(g) {
   var div;
   var divWidth = g.getOption('labelsDivWidth');
 
@@ -87,12 +95,13 @@ legend.prototype.activate = function(g, r) {
 
   this.legend_div_ = div;
 
-  r.addEventListener('select', legend.select);
-  r.addEventListener('deselect', legend.deselect);
-
-  // TODO(danvk): rethink the name "predraw" before we commit to it in any API.
-  r.addEventListener('predraw', legend.predraw);
-  r.addEventListener('drawChart', legend.drawChart);
+  return {
+    select: this.select,
+    deselect: this.deselect,
+    // TODO(danvk): rethink the name "predraw" before we commit to it in any API.
+    predraw: this.predraw,
+    drawChart: this.drawChart
+  };
 };
 
 // Needed for dashed lines.
@@ -105,7 +114,7 @@ var calculateEmWidthInDiv = function(div) {
   return oneEmWidth;
 };
 
-legend.select = function(e) {
+legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
@@ -117,15 +126,14 @@ legend.select = function(e) {
   this.legend_div_.innerHTML = html;
 };
 
-legend.deselect = function(e) {
+legend.prototype.deselect = function(e) {
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   var html = generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
   this.legend_div_.innerHTML = html;
 };
 
-legend.drawChart = function(e) {
-  // TODO(danvk): why doesn't this.deselect(e) work here?
-  legend.deselect.call(this, e);
+legend.prototype.drawChart = function(e) {
+  this.deselect(e);
 }
 
 // Right edge should be flush with the right edge of the charting area (which
@@ -137,7 +145,7 @@ legend.drawChart = function(e) {
  * - its top edge is flush with the top edge of the charting area
  * @private
  */
-legend.predraw = function(e) {
+legend.prototype.predraw = function(e) {
   // Don't touch a user-specified labelsDiv.
   if (!this.is_generated_div_) return;
 
