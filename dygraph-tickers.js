@@ -330,7 +330,8 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // Find a time less than start_time which occurs on a "nice" time boundary
     // for this granularity.
     var g = spacing / 1000;
-    var d = new Date(start_time).setMilliseconds(0);
+    var d = new Date(start_time);
+    d.setMilliseconds(0);
     var x;
     if (g <= 60) {  // seconds
       x = d.getSeconds(); d.setSeconds(x - x % g);
