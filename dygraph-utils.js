@@ -598,7 +598,7 @@ Dygraph.updateDeep = function (self, o) {
           // DOM objects are shallowly-copied.
           self[k] = o[k];
         } else if (typeof(o[k]) == 'object') {
-          if (typeof(self[k]) != 'object') {
+          if (typeof(self[k]) != 'object' || self[k] === null) {
             self[k] = {};
           }
           Dygraph.updateDeep(self[k], o[k]);

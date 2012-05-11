@@ -361,6 +361,10 @@ DygraphLayout.prototype.removeAllDatasets = function() {
  */
 DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   var point = this.points[idx];
+  // If the point is missing, no unstacking is necessary
+  if (!point.yval) {
+    return point;
+  }
 
   // Clone the point since we modify it
   var unstackedPoint = {};
@@ -375,7 +379,7 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
   // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
   for (var i = idx+1; i < this.points.length; i++) {
-    if (this.points[i].xval == point.xval) {
+    if ((this.points[i].xval == point.xval) && this.points[i].yval) {
       unstackedPoint.yval -= this.points[i].yval;
       break;
     }
