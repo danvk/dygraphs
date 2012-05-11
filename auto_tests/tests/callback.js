@@ -152,11 +152,11 @@ CallbackTestCase.prototype.testDrawPointCallback_isolated = function() {
   assertEquals(13, xvalues[0]);
   assertEquals(15, xvalues[1]);
 
-  // Test that isolated points + gap points get drawn when drawGapPoints is set.
-  // This should add one point at the right edge of the segment at x=11, but not
-  // at the graph edge at x=10.
+  // Test that isolated points + gap points get drawn when
+  // drawGapEdgePoints is set.  This should add one point at the right
+  // edge of the segment at x=11, but not at the graph edge at x=10.
   xvalues = []; // Reset for new test
-  graphOpts.drawGapPoints = true;
+  graphOpts.drawGapEdgePoints = true;
   g = new Dygraph(graph, testdata, graphOpts);
   assertEquals(3, xvalues.length);
   assertEquals(11, xvalues[0]);

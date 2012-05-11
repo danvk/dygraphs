@@ -661,11 +661,12 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   }
 };
 
-DygraphCanvasRenderer.makeNextPointStep_ = function(connect, points, end) {
+DygraphCanvasRenderer.makeNextPointStep_ = function(
+    connect, points, start, end) {
   if (connect) {
     return function(j) {
-      while (++j < end) {
-        if (!(points[j].yval === null)) break;
+      while (++j + start < end) {
+        if (!(points[start + j].yval === null)) break;
       }
       return j;
     }
@@ -688,18 +689,22 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   var points = this.layout.points;
   var prevX = null;
   var prevY = null;
+  var nextY = null;
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
-  var drawGapPoints = this.dygraph_.attr_('drawGapPoints', setName);
+  var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
-  var point;
+  var point, nextPoint;
   var next = DygraphCanvasRenderer.makeNextPointStep_(
-      this.attr_('connectSeparatedPoints'), points, afterLastIndexInSet);
+      this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
+      afterLastIndexInSet);
   ctx.save();
-  for (var j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
-    point = points[j];
+  for (var j = 0; j < setLength; j = next(j)) {
+    point = points[firstIndexInSet + j];
+    nextY = (next(j) < setLength) ?
+        points[firstIndexInSet + next(j)].canvasy : null;
     if (isNullOrNaN(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
@@ -714,13 +719,12 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
     } else {
       // A point is "isolated" if it is non-null but both the previous
       // and next points are null.
-      var isIsolated = (!prevX && (j == points.length - 1 ||
-                                   isNullOrNaN(points[j+1].canvasy)));
+      var isIsolated = (!prevX && isNullOrNaN(nextY));
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > 0 && !prevX) ||
-            (j < points.length - 1 && isNullOrNaN(points[j+1].canvasy))) {
+            (next(j) < setLength && isNullOrNaN(nextY))) {
           isIsolated = true;
         }
       }
