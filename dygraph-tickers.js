@@ -331,6 +331,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // for this granularity.
     var g = spacing / 1000;
     var d = new Date(start_time);
+    d.setMilliseconds(0);
     var x;
     if (g <= 60) {  // seconds
       x = d.getSeconds(); d.setSeconds(x - x % g);
