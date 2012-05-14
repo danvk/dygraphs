@@ -489,6 +489,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
   },
+  "drawAxesAtZero": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph's visible area. Otherwise, draw the axes at the bottom or left graph edge as usual."
+  },
   "xAxisLabelFormatter": {
     "default": "",
     "labels": ["Deprecated"],

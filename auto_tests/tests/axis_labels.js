@@ -84,6 +84,7 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
 
 AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
   var opts = {
+    drawAxesAtZero: true,
     width: 480,
     height: 320
   };
