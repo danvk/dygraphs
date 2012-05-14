@@ -383,9 +383,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     // draw a vertical line on the left to separate the chart from the labels.
+    var axisX;
+    if (this.attr_('yAxisAtZero')) {
+      var r = this.dygraph_.toPercentXCoord(0);
+      if (r > 1 || r < 0) r = 0;
+      axisX = halfUp(this.area.x + r * this.area.w);
+    } else {
+      axisX = halfUp(this.area.x);
+    }
     context.beginPath();
-    context.moveTo(halfUp(this.area.x), halfDown(this.area.y));
-    context.lineTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
+    context.moveTo(axisX, halfDown(this.area.y));
+    context.lineTo(axisX, halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
 
@@ -436,8 +444,16 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     context.beginPath();
-    context.moveTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
-    context.lineTo(halfUp(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
+    var axisY;
+    if (this.attr_('xAxisAtZero')) {
+      var r = this.dygraph_.toPercentYCoord(0, 0);
+      if (r > 1 || r < 0) r = 1;
+      axisY = halfDown(this.area.y + r * this.area.h);
+    } else {
+      axisY = halfDown(this.area.y + this.area.h);
+    }
+    context.moveTo(halfUp(this.area.x), axisY);
+    context.lineTo(halfUp(this.area.x + this.area.w), axisY);
     context.closePath();
     context.stroke();
   }
