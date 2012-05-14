@@ -233,6 +233,7 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+  drawAxesAtZero: false,
 
   // Sizes of the various chart labels.
   titleHeight: 28,
