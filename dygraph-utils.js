@@ -147,6 +147,21 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
 
 /**
  * @private
+ * Add an event handler. This event handler is kept until the graph is
+ * destroyed with a call to graph.destroy().
+ *
+ * @param { DOM element } elem The element to add the event to.
+ * @param { String } type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param { Function } fn The function to call on the event. The function takes
+ * one parameter: the event object.
+ */
+Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+  Dygraph.addEvent(elem, type, fn);
+  this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
+};
+
+/**
+ * @private
  * Remove an event handler. This smooths a difference between IE and the rest of
  * the world.
  * @param { DOM element } elem The element to add the event to.
@@ -583,7 +598,7 @@ Dygraph.updateDeep = function (self, o) {
           // DOM objects are shallowly-copied.
           self[k] = o[k];
         } else if (typeof(o[k]) == 'object') {
-          if (typeof(self[k]) != 'object') {
+          if (typeof(self[k]) != 'object' || self[k] === null) {
             self[k] = {};
           }
           Dygraph.updateDeep(self[k], o[k]);

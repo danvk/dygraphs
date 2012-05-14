@@ -16,14 +16,17 @@ dygraph-range-selector.js \
 dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
+plugins/base.js \
+plugins/legend.js \
+plugins/install.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \
 > /tmp/dygraph.js
 
 java -jar yuicompressor-2.4.2.jar /tmp/dygraph.js \
 > /tmp/dygraph-packed.js
 
-# TODO(danvk): ensure the dygraphs copyright, etc. gets into the packed js.
-
-cat \
-/tmp/dygraph-packed.js \
-> dygraph-combined.js
+(
+  echo '/*! dygraphs v1.2 dygraphs.com | dygraphs.com/license */'
+  cat /tmp/dygraph-packed.js
+) > dygraph-combined.js
+chmod a+r dygraph-combined.js

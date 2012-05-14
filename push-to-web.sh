@@ -9,18 +9,24 @@ fi
 
 set -x
 site=$1
+
 # Produce dygraph-combined.js.
 ./generate-combined.sh
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
+chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
 
+  # Make sure everything will be readable on the web.
+  # This is like "chmod -R a+rX", but excludes the .git directory.
+  find . -path ./.git -prune -o -print | xargs chmod a+rX
+
   # Copy everything to the site.
-  scp -r gallery common tests jsdoc experimental $site \
+  rsync -avzr gallery common tests jsdoc experimental plugins $site \
   && \
-  scp dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
+  rsync -avzr dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/ $site/
 else
   echo "generate-documentation.py failed"
 fi

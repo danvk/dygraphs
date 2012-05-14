@@ -4,6 +4,18 @@ These tests are run with js-test-driver
 Running tests
 -------------
 
+With phantomjs:
+
+- Install phantomjs (http://www.phantomjs.org).
+
+- Start a terminal window at the dygraphs root directory (one
+  directory up from here.)
+
+- Run "./test.sh". This will tell you whether the tests passed.
+
+
+With a real browser:
+
 - Start a terminal window at the dygraphs root directory (one
   directory up from here.)
 

@@ -35,13 +35,19 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Legend"],
     "type": "{}",
-    "description": "Additional styles to apply to the currently-highlighted points div. For example, { 'font-weight': 'bold' } will make the labels bold."
+    "description": "Additional styles to apply to the currently-highlighted points div. For example, { 'fontWeight': 'bold' } will make the labels bold. In general, it is better to use CSS to style the .dygraph-legend class than to use this property."
   },
   "drawPoints": {
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
     "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a <a href='#drawPointCallback'>drawPointCallback</a>."
+  },
+  "drawGapEdgePoints": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Draw points at the edges of gaps in the data. This improves visibility of small data segments or other data irregularities."
   },
   "drawPointCallback": {
     "default": "null",
@@ -364,7 +370,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array<integer>",
     "example": "[10, 2, 5, 2]",
-    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array."
+    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed lines."
   },
   "strokeBorderWidth": {
     "default": "null",

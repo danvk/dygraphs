@@ -329,9 +329,11 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
     g.doZoomX_(Math.min(context.dragStartX, context.dragEndX),
                Math.max(context.dragStartX, context.dragEndX));
+    context.cancelNextDblclick = true;
   } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
     g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
                Math.max(context.dragStartY, context.dragEndY));
+    context.cancelNextDblclick = true;
   } else {
     g.clearZoomRect_();
   }
@@ -372,7 +374,7 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
 
       // TODO(danvk): remove
       dataX: 0.5 * (touches[0].dataX + touches[1].dataX),
-      dataY: 0.5 * (touches[0].dataY + touches[1].dataY),
+      dataY: 0.5 * (touches[0].dataY + touches[1].dataY)
     };
 
     // Make pinches in a 45-degree swath around either axis 1-dimensional zooms.
@@ -401,12 +403,12 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.moveTouch = function(event, g, context) {
-  var touches = [];
-  for (var i = 0; i < event.touches.length; i++) {
+  var i, touches = [];
+  for (i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
     touches.push({
       pageX: t.pageX,
-      pageY: t.pageY,
+      pageY: t.pageY
     });
   }
   var initialTouches = context.initialTouches;
@@ -428,7 +430,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   // we toss it out for now, but could use it in the future.
   var swipe = {
     pageX: c_now.pageX - c_init.pageX,
-    pageY: c_now.pageY - c_init.pageY,
+    pageY: c_now.pageY - c_init.pageY
   };
   var dataWidth = context.initialRange.x[1] - context.initialRange.x[0];
   var dataHeight = context.initialRange.y[0] - context.initialRange.y[1];
@@ -456,19 +458,19 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   if (context.touchDirections.x) {
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX + (context.initialRange.x[0] - c_init.dataX) / xScale,
-      c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale,
+      c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
   }
   
   if (context.touchDirections.y) {
-    for (var i = 0; i < 1  /*g.axes_.length*/; i++) {
+    for (i = 0; i < 1  /*g.axes_.length*/; i++) {
       var axis = g.axes_[i];
       if (axis.logscale) {
         // TODO(danvk): implement
       } else {
         axis.valueWindow = [
           c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
-          c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale,
+          c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
       }
     }
@@ -499,6 +501,9 @@ Dygraph.Interaction.endTouch = function(event, g, context) {
 Dygraph.Interaction.defaultModel = {
   // Track the beginning of drag events
   mousedown: function(event, g, context) {
+    // Right-click should not initiate a zoom.
+    if (event.button && event.button == 2) return;
+
     context.initializeMouseDown(event, g, context);
 
     if (event.altKey || event.shiftKey) {
@@ -545,6 +550,10 @@ Dygraph.Interaction.defaultModel = {
 
   // Disable zooming out if panning.
   dblclick: function(event, g, context) {
+    if (context.cancelNextDblclick) {
+      context.cancelNextDblclick = false;
+      return;
+    }
     if (event.altKey || event.shiftKey) {
       return;
     }

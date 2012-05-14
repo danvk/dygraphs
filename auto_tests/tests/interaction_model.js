@@ -354,7 +354,12 @@ InteractionModelTestCase.prototype.testCorrectAxisValueRangeAfterUnzoom = functi
   assertNotEquals(1,currentYAxisRange[0]);
   assertNotEquals(50,currentYAxisRange[1]);
   
-  // unzoom by doubleclick
+  // unzoom by doubleclick.  This is really the order in which a browser
+  // generates events, and we depend on it.
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
   DygraphOps.dispatchDoubleClick(g, null);
   
   // check if range for y-axis was reset to original value 

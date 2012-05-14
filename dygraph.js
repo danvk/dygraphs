@@ -61,17 +61,15 @@
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts) {
-  if (arguments.length > 0) {
-    if (arguments.length == 4) {
-      // Old versions of dygraphs took in the series labels as a constructor
-      // parameter. This doesn't make sense anymore, but it's easy to continue
-      // to support this usage.
-      this.warn("Using deprecated four-argument dygraph constructor");
-      this.__old_init__(div, data, arguments[2], arguments[3]);
-    } else {
-      this.__init__(div, data, opts);
-    }
+var Dygraph = function(div, data, opts, opt_fourth_param) {
+  if (opt_fourth_param !== undefined) {
+    // Old versions of dygraphs took in the series labels as a constructor
+    // parameter. This doesn't make sense anymore, but it's easy to continue
+    // to support this usage.
+    this.warn("Using deprecated four-argument dygraph constructor");
+    this.__old_init__(div, data, opts, opt_fourth_param);
+  } else {
+    this.__init__(div, data, opts);
   }
 };
 
@@ -294,6 +292,11 @@ Dygraph.DEFAULT_ATTRS = {
 Dygraph.HORIZONTAL = 1;
 Dygraph.VERTICAL = 2;
 
+// Installed plugins, in order of precedence (most-general to most-specific).
+// Plugins are installed after they are defined, in plugins/install.js.
+Dygraph.PLUGINS = [
+];
+
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
@@ -408,10 +411,88 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.setIndexByName_ = {};
   this.datasetIndex_ = [];
 
+  this.registeredEvents_ = [];
+
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
+  // Activate plugins.
+  this.plugins_ = [];
+  for (var i = 0; i < Dygraph.PLUGINS.length; i++) {
+    var plugin = Dygraph.PLUGINS[i];
+    var pluginInstance = new plugin();
+    var pluginDict = {
+      plugin: pluginInstance,
+      events: {},
+      options: {},
+      pluginOptions: {}
+    };
+
+    var handlers = pluginInstance.activate(this);
+    for (var eventName in handlers) {
+      // TODO(danvk): validate eventName.
+      pluginDict.events[eventName] = handlers[eventName];
+    }
+
+    this.plugins_.push(pluginDict);
+  }
+
+  // At this point, plugins can no longer register event handlers.
+  // Construct a map from event -> ordered list of [callback, plugin].
+  this.eventListeners_ = {};
+  for (var i = 0; i < this.plugins_.length; i++) {
+    var plugin_dict = this.plugins_[i];
+    for (var eventName in plugin_dict.events) {
+      if (!plugin_dict.events.hasOwnProperty(eventName)) continue;
+      var callback = plugin_dict.events[eventName];
+
+      var pair = [plugin_dict.plugin, callback];
+      if (!(eventName in this.eventListeners_)) {
+        this.eventListeners_[eventName] = [pair];
+      } else {
+        this.eventListeners_[eventName].push(pair);
+      }
+    }
+  }
+
   this.start_();
+};
+
+/**
+ * Triggers a cascade of events to the various plugins which are interested in them.
+ * Returns true if the "default behavior" should be performed, i.e. if none of
+ * the event listeners called event.preventDefault().
+ * @private
+ */
+Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
+  if (!name in this.eventListeners_) return true;
+
+  // QUESTION: can we use objects & prototypes to speed this up?
+  var e = {
+    dygraph: this,
+    cancelable: false,
+    defaultPrevented: false,
+    preventDefault: function() {
+      if (!e.cancelable) throw "Cannot call preventDefault on non-cancelable event.";
+      e.defaultPrevented = true;
+    },
+    propagationStopped: false,
+    stopPropagation: function() {
+      e.propagationStopped = true;
+    }
+  };
+  Dygraph.update(e, extra_props);
+
+  var callback_plugin_pairs = this.eventListeners_[name];
+  if (callback_plugin_pairs) {
+    for (var i = callback_plugin_pairs.length - 1; i >= 0; i--) {
+      var plugin = callback_plugin_pairs[i][0];
+      var callback = callback_plugin_pairs[i][1];
+      callback.call(plugin, e);
+      if (e.propagationStopped) break;
+    }
+  }
+  return e.defaultPrevented;
 };
 
 /**
@@ -486,6 +567,24 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     }
   }
   return ret;
+};
+
+/**
+ * Returns the current value for an option, as set in the constructor or via
+ * updateOptions. You may pass in an (optional) series name to get per-series
+ * values for the option.
+ *
+ * All values returned by this method should be considered immutable. If you
+ * modify them, there is no guarantee that the changes will be honored or that
+ * dygraphs will remain in a consistent state. If you want to modify an option,
+ * use updateOptions() instead.
+ *
+ * @param { String } name The name of the option (e.g. 'strokeWidth')
+ * @param { String } [opt_seriesName] Series name to get per-series values.
+ * @return { ... } The value of the option.
+ */
+Dygraph.prototype.getOption = function(name, opt_seriesName) {
+  return this.attr_(name, opt_seriesName);
 };
 
 /**
@@ -863,16 +962,15 @@ Dygraph.prototype.createInterface_ = function() {
   var dygraph = this;
   
   this.mouseMoveHandler = function(e) {
-	  dygraph.mouseMove_(e);
+    dygraph.mouseMove_(e);
   };
-  Dygraph.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
   
   this.mouseOutHandler = function(e) {
-	  dygraph.mouseOut_(e);
+    dygraph.mouseOut_(e);
   };
-  Dygraph.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
+  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
-  this.createStatusMessage_();
   this.createDragInterface_();
 
   this.resizeHandler = function(e) {
@@ -881,7 +979,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // Update when the window is resized.
   // TODO(danvk): drop frames depending on complexity of the chart.
-  Dygraph.addEvent(window, 'resize', this.resizeHandler);
+  this.addEvent(window, 'resize', this.resizeHandler);
 };
 
 /**
@@ -896,10 +994,17 @@ Dygraph.prototype.destroy = function() {
       node.removeChild(node.firstChild);
     }
   };
-  
-  // remove mouse event handlers
+ 
+  for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+    var reg = this.registeredEvents_[idx];
+    Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+  }
+  this.registeredEvents_ = [];
+
+  // remove mouse event handlers (This may not be necessary anymore)
   Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
   removeRecursive(this.maindiv_);
 
   var nullOut = function(obj) {
@@ -998,6 +1103,7 @@ Dygraph.prototype.setColors_ = function() {
 /**
  * Return the list of colors. This is either the list of colors passed in the
  * attributes or the autogenerated list of rgb(r,g,b) strings.
+ * This does not return colors for invisible series.
  * @return {Array<string>} The list of colors.
  */
 Dygraph.prototype.getColors = function() {
@@ -1005,60 +1111,32 @@ Dygraph.prototype.getColors = function() {
 };
 
 /**
- * Create the div that contains information on the selected point(s)
- * This goes in the top right of the canvas, unless an external div has already
- * been specified.
- * @private
+ * Returns a few attributes of a series, i.e. its color, its visibility, which
+ * axis it's assigned to, and its column in the original data.
+ * Returns null if the series does not exist.
+ * Otherwise, returns an object with column, visibility, color and axis properties.
+ * The "axis" property will be set to 1 for y1 and 2 for y2.
+ * The "column" property can be fed back into getValue(row, column) to get
+ * values for this series.
  */
-Dygraph.prototype.createStatusMessage_ = function() {
-  var userLabelsDiv = this.user_attrs_.labelsDiv;
-  if (userLabelsDiv && null !== userLabelsDiv &&
-      (typeof(userLabelsDiv) == "string" || userLabelsDiv instanceof String)) {
-    this.user_attrs_.labelsDiv = document.getElementById(userLabelsDiv);
-  }
-  if (!this.attr_("labelsDiv")) {
-    var divWidth = this.attr_('labelsDivWidth');
-    var messagestyle = {
-      "position": "absolute",
-      "fontSize": "14px",
-      "zIndex": 10,
-      "width": divWidth + "px",
-      "top": "0px",
-      "left": (this.width_ - divWidth - 2) + "px",
-      "background": "white",
-      "textAlign": "left",
-      "overflow": "hidden"};
-    Dygraph.update(messagestyle, this.attr_('labelsDivStyles'));
-    var div = document.createElement("div");
-    div.className = "dygraph-legend";
-    for (var name in messagestyle) {
-      if (messagestyle.hasOwnProperty(name)) {
-        try {
-          div.style[name] = messagestyle[name];
-        } catch (e) {
-          this.warn("You are using unsupported css properties for your browser in labelsDivStyles");
-        }
-      }
+Dygraph.prototype.getPropertiesForSeries = function(series_name) {
+  var idx = -1;
+  var labels = this.getLabels();
+  for (var i = 1; i < labels.length; i++) {
+    if (labels[i] == series_name) {
+      idx = i;
+      break;
     }
-    this.graphDiv.appendChild(div);
-    this.attrs_.labelsDiv = div;
   }
-};
+  if (idx == -1) return null;
 
-/**
- * Position the labels div so that:
- * - its right edge is flush with the right edge of the charting area
- * - its top edge is flush with the top edge of the charting area
- * @private
- */
-Dygraph.prototype.positionLabelsDiv_ = function() {
-  // Don't touch a user-specified labelsDiv.
-  if (this.user_attrs_.hasOwnProperty("labelsDiv")) return;
-
-  var area = this.plotter_.area;
-  var div = this.attr_("labelsDiv");
-  div.style.left = area.x + area.w - this.attr_("labelsDivWidth") - 1 + "px";
-  div.style.top = area.y + "px";
+  return {
+    name: series_name,
+    column: idx,
+    visible: this.visibility()[idx - 1],
+    color: this.plotter_.colors[series_name],
+    axis: 1 + this.seriesToAxisMap_[series_name]
+  };
 };
 
 /**
@@ -1132,6 +1210,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     prevEndX: null, // pixel coordinates
     prevEndY: null, // pixel coordinates
     prevDragDirection: null,
+    cancelNextDblclick: false,  // see comment in dygraph-interaction-model.js
 
     // The value on the left side of the graph when a pan operation starts.
     initialLeftmostDate: null,
@@ -1155,7 +1234,8 @@ Dygraph.prototype.createDragInterface_ = function() {
     boundedDates: null, // [minDate, maxDate]
     boundedValues: null, // [[minValue, maxValue] ...]
 
-    initializeMouseDown: function(event, g, context) {
+    // contextB is the same thing as this context object but renamed.
+    initializeMouseDown: function(event, g, contextB) {
       // prevents mouse drags from selecting page text.
       if (event.preventDefault) {
         event.preventDefault();  // Firefox, Chrome, etc.
@@ -1164,10 +1244,11 @@ Dygraph.prototype.createDragInterface_ = function() {
         event.cancelBubble = true;
       }
 
-      context.px = Dygraph.findPosX(g.canvas_);
-      context.py = Dygraph.findPosY(g.canvas_);
-      context.dragStartX = g.dragGetX_(event, context);
-      context.dragStartY = g.dragGetY_(event, context);
+      contextB.px = Dygraph.findPosX(g.canvas_);
+      contextB.py = Dygraph.findPosY(g.canvas_);
+      contextB.dragStartX = g.dragGetX_(event, contextB);
+      contextB.dragStartY = g.dragGetY_(event, contextB);
+      contextB.cancelNextDblclick = false;
     }
   };
 
@@ -1185,13 +1266,13 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   for (var eventName in interactionModel) {
     if (!interactionModel.hasOwnProperty(eventName)) continue;
-    Dygraph.addEvent(this.mouseEventElement_, eventName,
+    this.addEvent(this.mouseEventElement_, eventName,
         bindHandler(interactionModel[eventName]));
   }
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  Dygraph.addEvent(document, 'mouseup', function(event) {
+  this.mouseUpHandler_ = function(event) {
     if (context.isZooming || context.isPanning) {
       context.isZooming = false;
       context.dragStartX = null;
@@ -1207,7 +1288,9 @@ Dygraph.prototype.createDragInterface_ = function() {
         delete self.axes_[i].dragValueRange;
       }
     }
-  });
+  };
+
+  this.addEvent(document, 'mouseup', this.mouseUpHandler_);
 };
 
 /**
@@ -1678,6 +1761,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
 /**
  * Fetch left offset from first defined boundaryIds record (see bug #236).
+ * @private
  */
 Dygraph.prototype.getLeftBoundary_ = function() {
   for (var i = 0; i < this.boundaryIds_.length; i++) {
@@ -1706,171 +1790,6 @@ Dygraph.prototype.idxToRow_ = function(idx) {
     idx -= set.length;
   }
   return -1;
-};
-
-/**
- * @private
- * Generates legend html dash for any stroke pattern. It will try to scale the
- * pattern to fit in 1em width. Or if small enough repeat the partern for 1em
- * width.
- * @param strokePattern The pattern
- * @param color The color of the series.
- * @param oneEmWidth The width in pixels of 1em in the legend.
- */
-Dygraph.prototype.generateLegendDashHTML_ = function(strokePattern, color, oneEmWidth) {
-  var dash = "";
-  var i, j, paddingLeft, marginRight;
-  var strokePixelLength = 0, segmentLoop = 0;
-  var normalizedPattern = [];
-  var loop;
-  // IE 7,8 fail at these divs, so they get boring legend, have not tested 9.
-  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if(isIE) {
-    return "&mdash;";
-  }
-  if (!strokePattern || strokePattern.length <= 1) {
-    // Solid line
-    dash = "<div style=\"display: inline-block; position: relative; " +
-    "bottom: .5ex; padding-left: 1em; height: 1px; " +
-    "border-bottom: 2px solid " + color + ";\"></div>";
-  } else {
-    // Compute the length of the pixels including the first segment twice, 
-    // since we repeat it.
-    for (i = 0; i <= strokePattern.length; i++) {
-      strokePixelLength += strokePattern[i%strokePattern.length];
-    }
-
-    // See if we can loop the pattern by itself at least twice.
-    loop = Math.floor(oneEmWidth/(strokePixelLength-strokePattern[0]));
-    if (loop > 1) {
-      // This pattern fits at least two times, no scaling just convert to em;
-      for (i = 0; i < strokePattern.length; i++) {
-        normalizedPattern[i] = strokePattern[i]/oneEmWidth;
-      }
-      // Since we are repeating the pattern, we don't worry about repeating the
-      // first segment in one draw.
-      segmentLoop = normalizedPattern.length;
-    } else {
-      // If the pattern doesn't fit in the legend we scale it to fit.
-      loop = 1;
-      for (i = 0; i < strokePattern.length; i++) {
-        normalizedPattern[i] = strokePattern[i]/strokePixelLength;
-      }
-      // For the scaled patterns we do redraw the first segment.
-      segmentLoop = normalizedPattern.length+1;
-    }
-    // Now make the pattern.
-    for (j = 0; j < loop; j++) {
-      for (i = 0; i < segmentLoop; i+=2) {
-        // The padding is the drawn segment.
-        paddingLeft = normalizedPattern[i%normalizedPattern.length];
-        if (i < strokePattern.length) {
-          // The margin is the space segment.
-          marginRight = normalizedPattern[(i+1)%normalizedPattern.length];
-        } else {
-          // The repeated first segment has no right margin.
-          marginRight = 0;
-        }
-        dash += "<div style=\"display: inline-block; position: relative; " +
-          "bottom: .5ex; margin-right: " + marginRight + "em; padding-left: " +
-          paddingLeft + "em; height: 1px; border-bottom: 2px solid " + color +
-          ";\"></div>";
-      }
-    }
-  }
-  return dash;
-};
-
-/**
- * @private
- * Generates HTML for the legend which is displayed when hovering over the
- * chart. If no selected points are specified, a default legend is returned
- * (this may just be the empty string).
- * @param { Number } [x] The x-value of the selected points.
- * @param { [Object] } [sel_points] List of selected points for the given
- * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
- * @param { Number } [oneEmWidth] The pixel width for 1em in the legend.
- */
-Dygraph.prototype.generateLegendHTML_ = function(x, sel_points, oneEmWidth) {
-  // If no points are selected, we display a default legend. Traditionally,
-  // this has been blank. But a better default would be a conventional legend,
-  // which provides essential information for a non-interactive chart.
-  var html, sepLines, i, c, dash, strokePattern;
-  if (typeof(x) === 'undefined') {
-    if (this.attr_('legend') != 'always') return '';
-
-    sepLines = this.attr_('labelsSeparateLines');
-    var labels = this.attr_('labels');
-    html = '';
-    for (i = 1; i < labels.length; i++) {
-      if (!this.visibility()[i - 1]) continue;
-      c = this.plotter_.colors[labels[i]];
-      if (html !== '') html += (sepLines ? '<br/>' : ' ');
-      strokePattern = this.attr_("strokePattern", labels[i]);
-      dash = this.generateLegendDashHTML_(strokePattern, c, oneEmWidth);
-      html += "<span style='font-weight: bold; color: " + c + ";'>" + dash +
-        " " + labels[i] + "</span>";
-    }
-    return html;
-  }
-
-  var xOptView = this.optionsViewForAxis_('x');
-  var xvf = xOptView('valueFormatter');
-  html = xvf(x, xOptView, this.attr_('labels')[0], this) + ":";
-
-  var yOptViews = [];
-  var num_axes = this.numAxes();
-  for (i = 0; i < num_axes; i++) {
-    yOptViews[i] = this.optionsViewForAxis_('y' + (i ? 1 + i : ''));
-  }
-  var showZeros = this.attr_("labelsShowZeroValues");
-  sepLines = this.attr_("labelsSeparateLines");
-  for (i = 0; i < this.selPoints_.length; i++) {
-    var pt = this.selPoints_[i];
-    if (pt.yval === 0 && !showZeros) continue;
-    if (!Dygraph.isOK(pt.canvasy)) continue;
-    if (sepLines) html += "<br/>";
-
-    var yOptView = yOptViews[this.seriesToAxisMap_[pt.name]];
-    var fmtFunc = yOptView('valueFormatter');
-    c = this.plotter_.colors[pt.name];
-    var yval = fmtFunc(pt.yval, yOptView, pt.name, this);
-
-    var cls = (pt.name == this.highlightSet_) ? " class='highlight'" : "";
-    // TODO(danvk): use a template string here and make it an attribute.
-    html += "<span" + cls + ">" + " <b><span style='color: " + c + ";'>" + pt.name +
-        "</span></b>:" + yval + "</span>";
-  }
-  return html;
-};
-
-/**
- * @private
- * Displays information about the selected points in the legend. If there is no
- * selection, the legend will be cleared.
- * @param { Number } [x] The x-value of the selected points.
- * @param { [Object] } [sel_points] List of selected points for the given
- * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
- */
-Dygraph.prototype.setLegendHTML_ = function(x, sel_points) {
-  var labelsDiv = this.attr_("labelsDiv");
-  if (!labelsDiv) return;
-
-  var sizeSpan = document.createElement('span');
-  // Calculates the width of 1em in pixels for the legend.
-  sizeSpan.setAttribute('style', 'margin: 0; padding: 0 0 0 1em; border: 0;');
-  labelsDiv.appendChild(sizeSpan);
-  var oneEmWidth=sizeSpan.offsetWidth;
-
-  var html = this.generateLegendHTML_(x, sel_points, oneEmWidth);
-  if (labelsDiv !== null) {
-    labelsDiv.innerHTML = html;
-  } else {
-    if (typeof(this.shown_legend_error_) == 'undefined') {
-      this.error('labelsDiv is set to something nonexistent; legend will not be shown.');
-      this.shown_legend_error_ = true;
-    }
-  }
 };
 
 Dygraph.prototype.animateSelection_ = function(direction) {
@@ -1910,6 +1829,12 @@ Dygraph.prototype.animateSelection_ = function(direction) {
  * @private
  */
 Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
+  var defaultPrevented = this.cascadeEvents_('select', {
+    selectedX: this.lastx_,
+    selectedPoints: this.selPoints_
+  });
+  // TODO(danvk): use defaultPrevented here?
+
   // Clear the previously drawn vertical, if there is one
   var i;
   var ctx = this.canvas_ctx_;
@@ -1952,11 +1877,6 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   }
 
   if (this.selPoints_.length > 0) {
-    // Set the status message to indicate the selected point(s)
-    if (this.attr_('showLabelsOnHighlight')) {
-      this.setLegendHTML_(this.lastx_, this.selPoints_);
-    }
-
     // Draw colored circles over the center of each selected point
     var canvasx = this.selPoints_[0].canvasx;
     ctx.save();
@@ -2059,6 +1979,8 @@ Dygraph.prototype.mouseOut_ = function(event) {
  * the mouse over the chart).
  */
 Dygraph.prototype.clearSelection = function() {
+  this.cascadeEvents_('deselect', {});
+
   // Get rid of the overlay data
   if (this.fadeLevel) {
     this.animateSelection_(-1);
@@ -2066,7 +1988,6 @@ Dygraph.prototype.clearSelection = function() {
   }
   this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
   this.fadeLevel = 0;
-  this.setLegendHTML_();
   this.selPoints_ = [];
   this.lastx_ = -1;
   this.lastRow_ = -1;
@@ -2091,6 +2012,10 @@ Dygraph.prototype.getSelection = function() {
   return -1;
 };
 
+/**
+ * Returns the name of the currently-highlighted series.
+ * Only available when the highlightSeriesOpts option is in use.
+ */
 Dygraph.prototype.getHighlightSeries = function() {
   return this.highlightSet_;
 };
@@ -2198,10 +2123,7 @@ Dygraph.prototype.predraw_ = function() {
   // this will be until the options are available, so it's positioned here.
   this.createRollInterface_();
 
-  // Same thing applies for the labelsDiv. It's right edge should be flush with
-  // the right edge of the charting area (which may not be the same as the right
-  // edge of the div, if we have two y-axes.
-  this.positionLabelsDiv_();
+  this.cascadeEvents_('predraw');
 
   if (this.rangeSelector_) {
     this.rangeSelector_.renderStaticLayer();
@@ -2360,19 +2282,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
  * has changed. If the underlying data or options have changed, predraw_ will
  * be called before drawGraph_ is called.
  *
- * clearSelection, when undefined or true, causes this.clearSelection to be
- * called at the end of the draw operation. This should rarely be defined,
- * and never true (that is it should be undefined most of the time, and
- * rarely false.)
- *
  * @private
  */
-Dygraph.prototype.drawGraph_ = function(clearSelection) {
+Dygraph.prototype.drawGraph_ = function() {
   var start = new Date();
-
-  if (typeof(clearSelection) === 'undefined') {
-    clearSelection = true;
-  }
 
   // This is used to set the second parameter to drawCallback, below.
   var is_initial_draw = this.is_initial_draw_;
@@ -2411,7 +2324,7 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
-  this.renderGraph_(is_initial_draw, false);
+  this.renderGraph_(is_initial_draw);
 
   if (this.attr_("timingName")) {
     var end = new Date();
@@ -2421,32 +2334,25 @@ Dygraph.prototype.drawGraph_ = function(clearSelection) {
   }
 };
 
-Dygraph.prototype.renderGraph_ = function(is_initial_draw, clearSelection) {
+/**
+ * This does the work of drawing the chart. It assumes that the layout and axis
+ * scales have already been set (e.g. by predraw_).
+ *
+ * @private
+ */
+Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.plotter_.clear();
   this.plotter_.render();
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
 
   // Generate a static legend before any particular point is selected.
-  this.setLegendHTML_();
-
-  if (!is_initial_draw) {
-    if (clearSelection) {
-      if (typeof(this.selPoints_) !== 'undefined' && this.selPoints_.length) {
-        // We should select the point nearest the page x/y here, but it's easier
-        // to just clear the selection. This prevents erroneous hover dots from
-        // being displayed.
-        this.clearSelection();
-      } else {
-        this.clearSelection();
-      }
-    }
-  }
 
   if (this.rangeSelector_) {
     this.rangeSelector_.renderInteractiveLayer();
   }
 
+  this.cascadeEvents_('drawChart');
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
@@ -3439,7 +3345,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
       if (requiresNewPoints) {
         this.predraw_();
       } else {
-        this.renderGraph_(false, false);
+        this.renderGraph_(false);
       }
     }
   }
@@ -3610,7 +3516,7 @@ Dygraph.prototype.annotations = function() {
  * Get the list of label names for this graph. The first column is the
  * x-axis, so the data series names start at index 1.
  */
-Dygraph.prototype.getLabels = function(name) {
+Dygraph.prototype.getLabels = function() {
   return this.attr_("labels").slice();
 };
 

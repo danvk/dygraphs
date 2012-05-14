@@ -44,11 +44,6 @@
 
         var chart1 = new Dygraph.GVizChart(document.getElementById('dygraphs'))
           .draw(data, { });
-
-        data = createDataTable('datetime');
-        var chart2 = new Dygraph.GVizChart(
-            document.getElementById('dygraphs_datetime')).draw(data, {
-            });
       }
 
       google.setOnLoadCallback(drawVisualization);

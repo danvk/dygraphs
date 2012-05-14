@@ -123,6 +123,48 @@ CallbackTestCase.prototype.testDrawPointCallback_pointSize = function() {
 };
 
 /**
+ * Test that drawPointCallback is called for isolated points when
+ * drawPoints is false, and also for gap points if that's enabled.
+ */
+CallbackTestCase.prototype.testDrawPointCallback_isolated = function() {
+  var xvalues = [];
+
+  var g;
+  var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam) {
+    var dx = g.toDataXCoord(cx);
+    xvalues.push(dx);
+    Dygraph.Circles.DEFAULT.apply(this, arguments);
+  };
+
+  var graph = document.getElementById("graph");
+  var testdata = [[10, 2], [11, 3], [12, NaN], [13, 2], [14, NaN], [15, 3]];
+  var graphOpts = {
+      labels: ['X', 'Y'],
+      valueRange: [0, 4],
+      drawPoints : false,
+      drawPointCallback : callback,
+      pointSize : 8
+  };
+
+  // Test that isolated points get drawn
+  g = new Dygraph(graph, testdata, graphOpts);
+  assertEquals(2, xvalues.length);
+  assertEquals(13, xvalues[0]);
+  assertEquals(15, xvalues[1]);
+
+  // Test that isolated points + gap points get drawn when
+  // drawGapEdgePoints is set.  This should add one point at the right
+  // edge of the segment at x=11, but not at the graph edge at x=10.
+  xvalues = []; // Reset for new test
+  graphOpts.drawGapEdgePoints = true;
+  g = new Dygraph(graph, testdata, graphOpts);
+  assertEquals(3, xvalues.length);
+  assertEquals(11, xvalues[0]);
+  assertEquals(13, xvalues[1]);
+  assertEquals(15, xvalues[2]);
+};
+
+/**
  * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
  * is properly called when the first series is hidden (setVisibility = false)
  *
@@ -375,7 +417,7 @@ CallbackTestCase.prototype.testNaNDataStack = function() {
 };
 
 CallbackTestCase.prototype.testGapHighlight = function() {
-var dataGap = [
+  var dataGap = [
     [1, null, 3],
     [2, 2, null],
     [3, null, 5],
