@@ -23,7 +23,7 @@ var DygraphRangeSelector = function(dygraph) {
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   this.dygraph_ = dygraph;
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
-  this.isMobileDevice_ = /mobile/gi.test(navigator.appVersion);
+  this.isMobileDevice_ = /mobile|android/gi.test(navigator.appVersion);
   this.createCanvases_();
   if (this.isUsingExcanvas_) {
     this.createIEPanOverlay_();
