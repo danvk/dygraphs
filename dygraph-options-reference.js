@@ -43,6 +43,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a <a href='#drawPointCallback'>drawPointCallback</a>."
   },
+  "drawGapEdgePoints": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Draw points at the edges of gaps in the data. This improves visibility of small data segments or other data irregularities."
+  },
   "drawPointCallback": {
     "default": "null",
     "labels": ["Data Line display"],
@@ -482,6 +488,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Axis display"],
     "type": "boolean",
     "description": "When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
+  },
+  "drawAxesAtZero": {
+    "default": "false",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description": "When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph's visible area. Otherwise, draw the axes at the bottom or left graph edge as usual."
   },
   "xAxisLabelFormatter": {
     "default": "",

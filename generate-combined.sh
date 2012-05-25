@@ -26,7 +26,7 @@ java -jar yuicompressor-2.4.2.jar /tmp/dygraph.js \
 > /tmp/dygraph-packed.js
 
 (
-  echo '/*! dygraphs v1.2 dygraphs.com | dygraphs.com/license */'
+  echo '/*! @license Copyright 2011 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
   cat /tmp/dygraph-packed.js
 ) > dygraph-combined.js
 chmod a+r dygraph-combined.js

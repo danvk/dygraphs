@@ -383,9 +383,17 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     // draw a vertical line on the left to separate the chart from the labels.
+    var axisX;
+    if (this.attr_('drawAxesAtZero')) {
+      var r = this.dygraph_.toPercentXCoord(0);
+      if (r > 1 || r < 0) r = 0;
+      axisX = halfUp(this.area.x + r * this.area.w);
+    } else {
+      axisX = halfUp(this.area.x);
+    }
     context.beginPath();
-    context.moveTo(halfUp(this.area.x), halfDown(this.area.y));
-    context.lineTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
+    context.moveTo(axisX, halfDown(this.area.y));
+    context.lineTo(axisX, halfDown(this.area.y + this.area.h));
     context.closePath();
     context.stroke();
 
@@ -436,8 +444,16 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
     }
 
     context.beginPath();
-    context.moveTo(halfUp(this.area.x), halfDown(this.area.y + this.area.h));
-    context.lineTo(halfUp(this.area.x + this.area.w), halfDown(this.area.y + this.area.h));
+    var axisY;
+    if (this.attr_('drawAxesAtZero')) {
+      var r = this.dygraph_.toPercentYCoord(0, 0);
+      if (r > 1 || r < 0) r = 1;
+      axisY = halfDown(this.area.y + r * this.area.h);
+    } else {
+      axisY = halfDown(this.area.y + this.area.h);
+    }
+    context.moveTo(halfUp(this.area.x), axisY);
+    context.lineTo(halfUp(this.area.x + this.area.w), axisY);
     context.closePath();
     context.stroke();
   }
@@ -661,11 +677,12 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   }
 };
 
-DygraphCanvasRenderer.makeNextPointStep_ = function(connect, points, end) {
+DygraphCanvasRenderer.makeNextPointStep_ = function(
+    connect, points, start, end) {
   if (connect) {
     return function(j) {
-      while (++j < end) {
-        if (!(points[j].yval === null)) break;
+      while (++j + start < end) {
+        if (!(points[start + j].yval === null)) break;
       }
       return j;
     }
@@ -688,17 +705,22 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   var points = this.layout.points;
   var prevX = null;
   var prevY = null;
+  var nextY = null;
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
+  var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
-  var point;
+  var point, nextPoint;
   var next = DygraphCanvasRenderer.makeNextPointStep_(
-      this.attr_('connectSeparatedPoints'), points, afterLastIndexInSet);
+      this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
+      afterLastIndexInSet);
   ctx.save();
-  for (var j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
-    point = points[j];
+  for (var j = 0; j < setLength; j = next(j)) {
+    point = points[firstIndexInSet + j];
+    nextY = (next(j) < setLength) ?
+        points[firstIndexInSet + next(j)].canvasy : null;
     if (isNullOrNaN(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
@@ -713,8 +735,15 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
     } else {
       // A point is "isolated" if it is non-null but both the previous
       // and next points are null.
-      var isIsolated = (!prevX && (j == points.length - 1 ||
-                                   isNullOrNaN(points[j+1].canvasy)));
+      var isIsolated = (!prevX && isNullOrNaN(nextY));
+      if (drawGapPoints) {
+        // Also consider a point to be is "isolated" if it's adjacent to a
+        // null point, excluding the graph edges.
+        if ((j > 0 && !prevX) ||
+            (next(j) < setLength && isNullOrNaN(nextY))) {
+          isIsolated = true;
+        }
+      }
       if (prevX === null) {
         prevX = point.canvasx;
         prevY = point.canvasy;

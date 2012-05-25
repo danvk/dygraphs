@@ -112,6 +112,7 @@ Gallery.register(
                 labels: ['X', 'Y1', 'Y2'],
                 underlayCallback: drawLines,
                 drawPoints: true,
+                drawAxesAtZero: true,
                 strokeWidth: 0.0
               }
           );
