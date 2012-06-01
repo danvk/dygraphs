@@ -219,6 +219,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // points and drawing the lines. The brunt of the cost comes from allocating
   // the |point| structures.
   var i = 0;
+
+  // Preallocating the size of points reduces reallocations, and therefore,
+  // calls to collect garbage.
   var totalPoints = 0;
   for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
     totalPoints += this.datasets[setIdx].length;
@@ -241,7 +244,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yNormal = DygraphLayout._calcYNormal(axis, yValue);
 
-      if (connectSeparated && item[1] === null) {
+      if (connectSeparated && yValue === null) {
         yValue = null;
       }
       this.points[i] = {

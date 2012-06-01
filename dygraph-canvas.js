@@ -698,6 +698,7 @@ DygraphCanvasRenderer.isNullOrNaN_ = function(x) {
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
     ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
+  // TODO(konigsberg): Compute attributes outside this method call.
   var stepPlot = this.attr_("stepPlot");
   var firstIndexInSet = this.layout.setPointsOffsets[i];
   var setLength = this.layout.setPointsLengths[i];
@@ -850,6 +851,8 @@ DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
   var borderWidth = this.dygraph_.attr_("strokeBorderWidth", setName);
   var drawPointCallback = this.dygraph_.attr_("drawPointCallback", setName) ||
       Dygraph.Circles.DEFAULT;
+
+  // TODO(konigsberg): Turn this into one call, and then consider inlining drawStyledLine.
   if (borderWidth && strokeWidth) {
     this._drawStyledLine(ctx, i, setName,
         this.dygraph_.attr_("strokeBorderColor", setName),
