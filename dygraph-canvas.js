@@ -691,7 +691,7 @@ DygraphCanvasRenderer.makeNextPointStep_ = function(
   }
 };
 
-var _isNullOrNaN = function(x) {
+DygraphCanvasRenderer.isNullOrNaN_ = function(x) {
   return (x === null || isNaN(x));
 };
 
@@ -730,7 +730,7 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
     point = points[firstIndexInSet + j];
     nextY = (next(j) < setLength) ?
         points[firstIndexInSet + next(j)].canvasy : null;
-    if (_isNullOrNaN(point.canvasy)) {
+    if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
         ctx.beginPath();
@@ -744,12 +744,12 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
     } else {
       // A point is "isolated" if it is non-null but both the previous
       // and next points are null.
-      var isIsolated = (!prevX && _isNullOrNaN(nextY));
+      var isIsolated = (!prevX && DygraphCanvasRenderer.isNullOrNaN_(nextY));
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > 0 && !prevX) ||
-            (next(j) < setLength && _isNullOrNaN(nextY))) {
+            (next(j) < setLength && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
@@ -806,15 +806,15 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
   for (var j = firstIndexInSet; j < firstIndexInSet + setLength; ++j) {
     var point = points[j];
     nextY = (j + 1 < firstIndexInSet + setLength) ? points[j + 1].canvasy : null;
-    if (_isNullOrNaN(point.canvasy)) {
+    if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       prevX = prevY = null;
     } else {
-      var isIsolated = (!prevX && _isNullOrNaN(nextY));
+      var isIsolated = (!prevX && DygraphCanvasRenderer.isNullOrNaN_(nextY));
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > firstIndexInSet && !prevX) ||
-            ((j + 1 < firstIndexInSet + setLength) && _isNullOrNaN(nextY))) {
+            ((j + 1 < firstIndexInSet + setLength) && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
