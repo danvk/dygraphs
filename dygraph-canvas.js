@@ -691,37 +691,46 @@ DygraphCanvasRenderer.makeNextPointStep_ = function(
   }
 };
 
+var _isNullOrNaN = function(x) {
+  return (x === null || isNaN(x));
+};
+
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
     ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
-  var isNullOrNaN = function(x) {
-    return (x === null || isNaN(x));
-  };
-
   var stepPlot = this.attr_("stepPlot");
   var firstIndexInSet = this.layout.setPointsOffsets[i];
   var setLength = this.layout.setPointsLengths[i];
-  var afterLastIndexInSet = firstIndexInSet + setLength;
   var points = this.layout.points;
-  var prevX = null;
-  var prevY = null;
-  var nextY = null;
-  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
   var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
+  ctx.save();
+  if (strokeWidth && !stepPlot && (!strokePattern || strokePattern.length <= 1)) {
+    this._drawTrivialLine(ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints);
+  } else {
+    this._drawNonTrivialLine(ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot);
+  }
+  ctx.restore();
+};
+
+DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
+    ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot) {
+  var prevX = null;
+  var prevY = null;
+  var nextY = null;
   var point, nextPoint;
+  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   var next = DygraphCanvasRenderer.makeNextPointStep_(
       this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
-      afterLastIndexInSet);
-  ctx.save();
+      firstIndexInSet + setLength);
   for (var j = 0; j < setLength; j = next(j)) {
     point = points[firstIndexInSet + j];
     nextY = (next(j) < setLength) ?
         points[firstIndexInSet + next(j)].canvasy : null;
-    if (isNullOrNaN(point.canvasy)) {
+    if (_isNullOrNaN(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
         ctx.beginPath();
@@ -735,12 +744,12 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
     } else {
       // A point is "isolated" if it is non-null but both the previous
       // and next points are null.
-      var isIsolated = (!prevX && isNullOrNaN(nextY));
+      var isIsolated = (!prevX && _isNullOrNaN(nextY));
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > 0 && !prevX) ||
-            (next(j) < setLength && isNullOrNaN(nextY))) {
+            (next(j) < setLength && _isNullOrNaN(nextY))) {
           isIsolated = true;
         }
       }
@@ -783,7 +792,54 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
         this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
     ctx.restore();
   }
-  ctx.restore();
+};
+
+DygraphCanvasRenderer.prototype._drawTrivialLine = function(
+    ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints) {
+  var prevX = null;
+  var prevY = null;
+  var nextY = null;
+  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = strokeWidth;
+  for (var j = firstIndexInSet; j < firstIndexInSet + setLength; ++j) {
+    var point = points[j];
+    nextY = (j + 1 < firstIndexInSet + setLength) ? points[j + 1].canvasy : null;
+    if (_isNullOrNaN(point.canvasy)) {
+      prevX = prevY = null;
+    } else {
+      var isIsolated = (!prevX && _isNullOrNaN(nextY));
+      if (drawGapPoints) {
+        // Also consider a point to be is "isolated" if it's adjacent to a
+        // null point, excluding the graph edges.
+        if ((j > firstIndexInSet && !prevX) ||
+            ((j + 1 < firstIndexInSet + setLength) && _isNullOrNaN(nextY))) {
+          isIsolated = true;
+        }
+      }
+      if (prevX === null) {
+        prevX = point.canvasx;
+        prevY = point.canvasy;
+        if (j === firstIndexInSet) {
+          ctx.moveTo(point.canvasx, point.canvasy);
+        }
+      } else {
+        ctx.lineTo(point.canvasx, point.canvasy);
+      }
+      if (drawPoints || isIsolated) {
+        pointsOnLine.push([point.canvasx, point.canvasy]);
+      }
+    }
+  }
+  ctx.stroke();
+  for (var idx = 0; idx < pointsOnLine.length; idx++) {
+    var cb = pointsOnLine[idx];
+    ctx.save();
+    drawPointCallback(
+        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+    ctx.restore();
+  }
 };
 
 DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
@@ -841,6 +897,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
   // Update Points
   // TODO(danvk): here
+  //
+  // TODO(bhs): this loop is a hot-spot for high-point-count charts. These
+  // transformations can be pushed into the canvas via linear transformation
+  // matrices.
   for (i = pointsLength; i--;) {
     point = points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
@@ -969,7 +1029,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
               }
             }
             newYs = [ point.canvasy, lastY ];
-            
+
             if(stepPlot) {
               // Step plots must keep track of the top and bottom of
               // the baseline at each point.
@@ -981,13 +1041,13 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
             } else {
               baseline[point.canvasx] = point.canvasy;
             }
-            
+
           } else {
             newYs = [ point.canvasy, axisY ];
           }
           if (!isNaN(prevX)) {
             ctx.moveTo(prevX, prevYs[0]);
-            
+
             if (stepPlot) {
               ctx.lineTo(point.canvasx, prevYs[0]);
               if(currBaseline) {
@@ -1000,7 +1060,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
               ctx.lineTo(point.canvasx, newYs[0]);
               ctx.lineTo(point.canvasx, newYs[1]);
             }
-            
+
             ctx.lineTo(prevX, prevYs[1]);
             ctx.closePath();
           }
