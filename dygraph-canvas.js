@@ -822,9 +822,7 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
       if (prevX === null) {
         prevX = point.canvasx;
         prevY = point.canvasy;
-        if (j === firstIndexInSet) {
-          ctx.moveTo(point.canvasx, point.canvasy);
-        }
+        ctx.moveTo(point.canvasx, point.canvasy);
       } else {
         ctx.lineTo(point.canvasx, point.canvasy);
       }
