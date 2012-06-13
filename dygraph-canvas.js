@@ -677,9 +677,17 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
   }
 };
 
+/**
+ * Returns a function which returns the next index with a renderable point.
+ * When connectSeparatedPoints is false, it just returns the next index.
+ * But when it's true, the returned function will skip past points with null
+ * yvals.
+ *
+ * @private
+ */
 DygraphCanvasRenderer.makeNextPointStep_ = function(
-    connect, points, start, end) {
-  if (connect) {
+    connectSeparatedPoints, points, start, end) {
+  if (connectSeparatedPoints) {
     return function(j) {
       while (++j + start < end) {
         if (!(points[start + j].yval === null)) break;
