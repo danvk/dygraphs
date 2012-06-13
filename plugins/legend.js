@@ -210,7 +210,7 @@ var generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
   html = xvf(x, xOptView, labels[0], g);
-  if(html) {
+  if(html !== '') {
   	html += ':';
   }
 
