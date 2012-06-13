@@ -49,7 +49,7 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   CanvasAssertions.assertLineDrawn(htx, [0,320], [475,6.2745], {
     strokeStyle: "#008080",
@@ -90,3 +90,15 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
+
+SimpleDrawingTestCase.prototype.testSeparatedPointsDontDraw = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(
+      graph,
+      [[1, 10, 11], [2, 11, null], [3, 12, 13]],
+      { colors: ['red', 'blue']});
+  var htx = g.hidden_ctx_;
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(0, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+}
+
