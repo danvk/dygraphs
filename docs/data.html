@@ -292,8 +292,13 @@
       <i>customBars</i>: [x, [low1, val1, high1], [low2, val2, high2], ...]
     </code>
 
-    <p>To specify missing data, set the value to null. You may not set a value
-    inside an array to null. Use null instead of the entire array.</p>
+    <p>To specify missing data, set the value to null or NaN. You may not set a value
+    inside an array to null or NaN. Use null or NaN instead of the entire array. 
+    The only difference between the two is when the option
+    <a href="options.html#conectSeparatedPoints">connectSeparatedPoints</a>
+    true. In that case, the gaps created by nulls are filled in, and gaps
+    created by NaNs are preserved.
+    </p>
 
     <a name="function"><h3>Functions</h3>
 
