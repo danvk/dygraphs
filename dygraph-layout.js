@@ -219,16 +219,17 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // points and drawing the lines. The brunt of the cost comes from allocating
   // the |point| structures.
   var i = 0;
+  var setIdx;
 
   // Preallocating the size of points reduces reallocations, and therefore,
   // calls to collect garbage.
   var totalPoints = 0;
-  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
     totalPoints += this.datasets[setIdx].length;
   }
   this.points = new Array(totalPoints);
 
-  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
     this.setPointsOffsets.push(i);
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
@@ -236,15 +237,15 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
-      var xValue = item[0];
-      var yValue = item[1];
+      var xValue = DygraphLayout.parseFloat_(item[0]);
+      var yValue = DygraphLayout.parseFloat_(item[1]);
 
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yNormal = DygraphLayout._calcYNormal(axis, yValue);
 
-      if (connectSeparated && yValue === null) {
+      if (connectSeparated && item[1] === null) {
         yValue = null;
       }
       this.points[i] = {
@@ -260,6 +261,20 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     this.setPointsLengths.push(i - this.setPointsOffsets[setIdx]);
   }
 };
+
+/**
+ * Optimized replacement for parseFloat, which was way too slow when almost
+ * all values were type number, with few edge cases, none of which were strings.
+ */
+DygraphLayout.parseFloat_ = function(val) {
+  // parseFloat(null) is NaN
+  if (val === null) {
+    return NaN;
+  }
+
+  // Assume it's a number or NaN. If it's something else, I'll be shocked.
+  return val;
+}
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
   var i, tick, label, pos;
@@ -305,13 +320,13 @@ DygraphLayout.prototype.evaluateWithError = function() {
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
-      var xv = item[0];
-      var yv = item[1];
+      var xv = DygraphLayout.parseFloat_(item[0]);
+      var yv = DygraphLayout.parseFloat_(item[1]);
 
       if (xv == this.points[i].xval &&
           yv == this.points[i].yval) {
-        var errorMinus = item[2];
-        var errorPlus = item[3];
+        var errorMinus = DygraphLayout.parseFloat_(item[2]);
+        var errorPlus = DygraphLayout.parseFloat_(item[3]);
 
         var yv_minus = yv - errorMinus;
         var yv_plus = yv + errorPlus;
