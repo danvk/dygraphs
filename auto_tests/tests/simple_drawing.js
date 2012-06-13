@@ -115,6 +115,36 @@ SimpleDrawingTestCase.prototype.testSeparatedPointsDontDraw_expanded = function(
        [4, 14]],
       { colors: ['blue']});
   var htx = g.hidden_ctx_;
+  /*
+  var num_lines = 0;
+  var lines = CanvasAssertions.getLinesDrawn(htx);
+  for (var idx = 0; idx < lines.length; idx++) {
+    var line = lines[idx];
+    var color = line[1].properties.strokeStyle;
+    if (color === "#ff0000" || color === "#0000ff") {
+      console.log(line[0].args, line[1].args, color);
+    }
+  }
+  */
+
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  CanvasAssertions.assertLineDrawn(htx, [56, 275], [161, 212],
+      { strokeStyle: '#0000ff', });
+  CanvasAssertions.assertLineDrawn(htx, [370, 87], [475, 25],
+      { strokeStyle: '#0000ff', });
+}
+
+SimpleDrawingTestCase.prototype.testSeparatedPointsDontDraw_expanded_connected = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(
+      graph,
+      [[0, 10],
+       [1, 11],
+       [2, null],
+       [3, 13],
+       [4, 14]],
+      { colors: ['blue'], connectSeparatedPoints: true});
+  var htx = g.hidden_ctx_;
   var num_lines = 0;
   var lines = CanvasAssertions.getLinesDrawn(htx);
   for (var idx = 0; idx < lines.length; idx++) {
@@ -125,9 +155,11 @@ SimpleDrawingTestCase.prototype.testSeparatedPointsDontDraw_expanded = function(
     }
   }
 
-  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-  CanvasAssertions.assertLineDrawn(htx, [370, 87], [475, 25],
-      { strokeStyle: '#0000ff', });
+  assertEquals(3, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
   CanvasAssertions.assertLineDrawn(htx, [56, 275], [161, 212],
+      { strokeStyle: '#0000ff', });
+  CanvasAssertions.assertLineDrawn(htx, [161, 212], [370, 87],
+      { strokeStyle: '#0000ff', });
+  CanvasAssertions.assertLineDrawn(htx, [370, 87], [475, 25],
       { strokeStyle: '#0000ff', });
 }

@@ -685,7 +685,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  *
  * @private
  */
-DygraphCanvasRenderer.makeNextPointStep_ = function(
+DygraphCanvasRenderer.makePointIteratorFunction_ = function(
     connectSeparatedPoints, points, start, end) {
   if (connectSeparatedPoints) {
     return function(j) {
@@ -732,13 +732,13 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
   var nextY = null;
   var point, nextPoint;
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
-  var next = DygraphCanvasRenderer.makeNextPointStep_(
+  var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
       this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
       firstIndexInSet + setLength);
-  for (var j = 0; j < setLength; j = next(j)) {
+  for (var j = 0; j < setLength; j = nextFunc(j)) {
     point = points[firstIndexInSet + j];
-    nextY = (next(j) < setLength) ?
-        points[firstIndexInSet + next(j)].canvasy : null;
+    nextY = (nextFunc(j) < setLength) ?
+        points[firstIndexInSet + nextFunc(j)].canvasy : null;
     if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
@@ -758,7 +758,7 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > 0 && !prevX) ||
-            (next(j) < setLength && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
+            (nextFunc(j) < setLength && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
@@ -812,9 +812,13 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
   ctx.beginPath();
   ctx.strokeStyle = color;
   ctx.lineWidth = strokeWidth;
-  for (var j = firstIndexInSet; j < firstIndexInSet + setLength; ++j) {
+  var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
+      this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
+      firstIndexInSet + setLength);
+  for (var j = firstIndexInSet; j < firstIndexInSet + setLength; j = nextFunc(j)) {
+    var nextJ = nextFunc(j);
     var point = points[j];
-    nextY = (j + 1 < firstIndexInSet + setLength) ? points[j + 1].canvasy : null;
+    nextY = (nextJ < firstIndexInSet + setLength) ? points[nextJ].canvasy : null;
     if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       prevX = prevY = null;
     } else {
@@ -823,7 +827,7 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((j > firstIndexInSet && !prevX) ||
-            ((j + 1 < firstIndexInSet + setLength) && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
+            ((nextJ < firstIndexInSet + setLength) && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
@@ -932,7 +936,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var setLength = this.layout.setPointsLengths[i];
       var afterLastIndexInSet = firstIndexInSet + setLength;
 
-      var next = DygraphCanvasRenderer.makeNextPointStep_(
+      var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
         this.attr_('connectSeparatedPoints'), points,
         afterLastIndexInSet);
 
@@ -947,7 +951,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = nextFunc(j)) {
         point = points[j];
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
@@ -1004,7 +1008,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       var setLength = this.layout.setPointsLengths[i];
       var afterLastIndexInSet = firstIndexInSet + setLength;
 
-      var next = DygraphCanvasRenderer.makeNextPointStep_(
+      var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
         this.attr_('connectSeparatedPoints'), points,
         afterLastIndexInSet);
 
@@ -1018,7 +1022,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = firstIndexInSet; j < afterLastIndexInSet; j = next(j)) {
+      for (j = firstIndexInSet; j < afterLastIndexInSet; j = nextFunc(j)) {
         point = points[j];
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
