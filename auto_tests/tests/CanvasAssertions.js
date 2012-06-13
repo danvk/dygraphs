@@ -86,6 +86,35 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
 };
 
 /**
+ * Return the lines drawn with specific attributes.
+ *
+ * This merely looks for one of these four possibilities:
+ * moveTo(p1) -> lineTo(p2)
+ * moveTo(p2) -> lineTo(p1)
+ * lineTo(p1) -> lineTo(p2)
+ * lineTo(p2) -> lineTo(p1)
+ *
+ * attrs is meant to be used when you want to track things like
+ * color and stroke width.
+ */
+CanvasAssertions.getLinesDrawn = function(proxy) {
+  var lastCall;
+  var lines = [];
+  for (var i = 0; i < proxy.calls__.length; i++) {
+    var call = proxy.calls__[i];
+
+    if (call.name == "lineTo") {
+      if (lastCall != null) {
+        lines.push([lastCall, call]);
+      }
+    }
+
+    lastCall = (call.name === "lineTo" || call.name === "moveTo") ? call : null;
+  }
+  return lines;
+};
+
+/**
  * Verifies that every call to context.save() has a matching call to
  * context.restore().
  */
