@@ -725,6 +725,16 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   ctx.restore();
 };
 
+DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize) {
+  for (var idx = 0; idx < pointsOnLine.length; idx++) {
+    var cb = pointsOnLine[idx];
+    ctx.save();
+    drawPointCallback(
+        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+    ctx.restore();
+  }
+}
+
 DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
     ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot) {
   var prevX = null;
@@ -794,13 +804,7 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
       }
     }
   }
-  for (var idx = 0; idx < pointsOnLine.length; idx++) {
-    var cb = pointsOnLine[idx];
-    ctx.save();
-    drawPointCallback(
-        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
-    ctx.restore();
-  }
+  this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
 };
 
 DygraphCanvasRenderer.prototype._drawTrivialLine = function(
@@ -844,13 +848,7 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
     }
   }
   ctx.stroke();
-  for (var idx = 0; idx < pointsOnLine.length; idx++) {
-    var cb = pointsOnLine[idx];
-    ctx.save();
-    drawPointCallback(
-        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
-    ctx.restore();
-  }
+  this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
 };
 
 DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
