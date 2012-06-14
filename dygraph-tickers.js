@@ -168,6 +168,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   // Add formatted labels to the ticks.
   var k;
   var k_labels = [];
+  var m_labels = [];
   if (opts("labelsKMB")) {
     k = 1000;
     k_labels = [ "K", "M", "B", "T", "Q" ];
@@ -176,6 +177,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     if (k) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
     k = 1024;
     k_labels = [ "k", "M", "G", "T", "P", "E" ];
+    m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
   }
 
   var formatter = opts('axisLabelFormatter');
@@ -197,6 +199,19 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
               k_labels[j];
           break;
         }
+      }
+    }
+    if(opts("labelsKMG2")){
+      tickV = String(tickV.toExponential());
+      if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3){
+        if(tickV.split('e-')[1] % 3 > 0) {
+          label = Dygraph.round_(tickV.split('e-')[0] /
+              Math.pow(10,(tickV.split('e-')[1] % 3)),
+              opts('digitsAfterDecimal'));
+        } else {
+          label = Number(tickV.split('e-')[0]).toFixed(2);
+        }
+        label += m_labels[Math.floor(tickV.split('e-')[1] / 3) - 1];
       }
     }
     ticks[i].label = label;
