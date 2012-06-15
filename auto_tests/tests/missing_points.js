@@ -63,17 +63,6 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded = function(
        [4, 14]],
       { colors: ['blue']});
   var htx = g.hidden_ctx_;
-  /*
-  var num_lines = 0;
-  var lines = CanvasAssertions.getLinesDrawn(htx);
-  for (var idx = 0; idx < lines.length; idx++) {
-    var line = lines[idx];
-    var color = line[1].properties.strokeStyle;
-    if (color === "#ff0000" || color === "#0000ff") {
-      console.log(line[0].args, line[1].args, color);
-    }
-  }
-  */
 
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
   CanvasAssertions.assertLineDrawn(htx, [56, 275], [161, 212],
@@ -94,22 +83,11 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded_connected =
       { colors: ['blue'], connectSeparatedPoints: true});
   var htx = g.hidden_ctx_;
   var num_lines = 0;
-  var lines = CanvasAssertions.getLinesDrawn(htx);
-  for (var idx = 0; idx < lines.length; idx++) {
-    var line = lines[idx];
-    var color = line[1].properties.strokeStyle;
-    if (color === "#ff0000" || color === "#0000ff") {
-      console.log(line[0].args, line[1].args, color);
-    }
-  }
 
   assertEquals(3, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-  CanvasAssertions.assertLineDrawn(htx, [56, 275], [161, 212],
-      { strokeStyle: '#0000ff', });
-  CanvasAssertions.assertLineDrawn(htx, [161, 212], [370, 87],
-      { strokeStyle: '#0000ff', });
-  CanvasAssertions.assertLineDrawn(htx, [370, 87], [475, 25],
-      { strokeStyle: '#0000ff', });
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [[56, 275], [161, 212], [370, 87], [475, 25]],
+      { strokeStyle: '#0000ff' });
 }
 
 /**
@@ -132,7 +110,18 @@ MissingPointsTestCase.prototype.testConnectSeparatedPoints = function() {
       colors: ['red', 'blue']
     }
   );
-  fail("write assertions");
+
+  var htx = g.hidden_ctx_;
+
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [[56, 225], [223, 25], [391, 125]],
+      { strokeStyle: '#0000ff' });
+
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [[140, 275], [307, 125], [475, 225]],
+      { strokeStyle: '#ff0000' });
 }
 
 /**
@@ -156,5 +145,25 @@ MissingPointsTestCase.prototype.testConnectSeparatedPointsWithNan = function() {
       colors: ['red', 'blue']
     }
   );
-  fail("write assertions");
+
+  var htx = g.hidden_ctx_;
+
+  // Red has two disconnected line segments
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  CanvasAssertions.assertLineDrawn(htx, [102, 275], [195, 212], { strokeStyle: '#ff0000' });
+  CanvasAssertions.assertLineDrawn(htx, [381, 87], [475, 25], { strokeStyle: '#ff0000' });
+
+  // Blue's lines are consecutive, however.
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [[56, 244], [149, 181], [242, 118]],
+      { strokeStyle: '#0000ff' });
 }
+
+/* These lines contain awesome powa!  
+  var lines = CanvasAssertions.getLinesDrawn(htx, {strokeStyle: "#0000ff"});
+  for (var idx = 0; idx < lines.length; idx++) {
+    var line = lines[idx];
+    console.log(line[0].args, line[1].args, line[0].properties.strokeStyle);
+  }
+*/
