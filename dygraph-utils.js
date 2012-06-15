@@ -683,6 +683,63 @@ Dygraph.isAndroid = function() {
 
 /**
  * @private
+ * Returns a new iterator over array, between indexes start and 
+ * start + length, and only returns entries that pass the accept function
+ *
+ * @param array the array to iterate over.
+ * @param start the first index to iterate over
+ * @param length the number of elements in the array to iterate over.
+ * This, along with start, defines a slice of the array, and so length
+ * doesn't imply the number of elements in the iterator when accept
+ * doesn't always accept all values.
+ * @param predicate a function that takes parameters array and idx, which
+ * returns true when the element should be returned. If omitted, all
+ * elements are accepted.
+ *
+ * TODO(konigsberg): add default vlues to start and length.
+ */
+Dygraph.createIterator = function(array, start, length, predicate) {
+  predicate = predicate || function() { return true; };
+
+  var iter = new function() {
+    this.idx_ = start - 1; // use -1 so initial call to advance works.
+    this.end_ = Math.min(array.length, start + length);
+    this.nextIdx_ = this.idx_;
+    var self = this;
+
+    this.hasNext = function() {
+      return self.nextIdx_ < self.end_;
+    }
+    this.next = function() {
+      if (self.hasNext()) {
+        self.idx_ = self.nextIdx_;
+        self.advance_();
+        return array[self.idx_];
+      }
+      return null;
+    }
+    this.peek = function() {
+      if (self.hasNext()) {
+        return array[self.nextIdx_];
+      }
+      return null;
+    }
+    this.advance_ = function() {
+      self.nextIdx_++;
+      while(self.hasNext()) {
+        if (predicate(array, self.nextIdx_)) {
+          return;
+        }
+        self.nextIdx_++;
+      }
+    }
+  };
+  iter.advance_();
+  return iter;
+};
+
+/**
+ * @private
  * Call a function N times at a given interval, then call a cleanup function
  * once. repeat_fn is called once immediately, then (times - 1) times
  * asynchronously. If times=1, then cleanup_fn() is also called synchronously.

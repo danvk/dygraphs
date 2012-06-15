@@ -683,6 +683,7 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
  * But when it's true, the returned function will skip past points with null
  * yvals.
  *
+ * TODO(konigsberg): Replace the two uses of this function with the Dygraph iterator.
  * @private
  */
 DygraphCanvasRenderer.makePointIteratorFunction_ = function(
@@ -717,10 +718,16 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
   ctx.save();
+
+  var iteratorPredicate = this.attr_("connectSeparatedPoints") ?
+      function(array, idx) { return array[idx].yval !== null; } : null;
+  var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+      iteratorPredicate);
+
   if (strokeWidth && !stepPlot && (!strokePattern || strokePattern.length <= 1)) {
-    this._drawTrivialLine(ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints);
+    this._drawTrivialLine(ctx, iter, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints);
   } else {
-    this._drawNonTrivialLine(ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot);
+    this._drawNonTrivialLine(ctx, iter, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot);
   }
   ctx.restore();
 };
@@ -736,19 +743,16 @@ DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, 
 }
 
 DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
-    ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot) {
+    ctx, iter, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot) {
   var prevX = null;
   var prevY = null;
   var nextY = null;
   var point, nextPoint;
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
-  var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
-      this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
-      firstIndexInSet + setLength);
-  for (var j = 0; j < setLength; j = nextFunc(j)) {
-    point = points[firstIndexInSet + j];
-    nextY = (nextFunc(j) < setLength) ?
-        points[firstIndexInSet + nextFunc(j)].canvasy : null;
+  var first = true;
+  while(iter.hasNext()) {
+    point = iter.next();
+    nextY = iter.hasNext() ? iter.peek().canvasy : null;
     if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       if (stepPlot && prevX !== null) {
         // Draw a horizontal line to the start of the missing data
@@ -767,8 +771,8 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
-        if ((j > 0 && !prevX) ||
-            (nextFunc(j) < setLength && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
+        if ((!first && !prevX) ||
+            (iter.hasNext() && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
@@ -803,12 +807,13 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
         pointsOnLine.push([point.canvasx, point.canvasy]);
       }
     }
+    first = false;
   }
   this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
 };
 
 DygraphCanvasRenderer.prototype._drawTrivialLine = function(
-    ctx, points, setLength, firstIndexInSet, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints) {
+    ctx, iter, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints) {
   var prevX = null;
   var prevY = null;
   var nextY = null;
@@ -816,13 +821,10 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
   ctx.beginPath();
   ctx.strokeStyle = color;
   ctx.lineWidth = strokeWidth;
-  var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
-      this.attr_('connectSeparatedPoints'), points, firstIndexInSet,
-      firstIndexInSet + setLength);
-  for (var j = firstIndexInSet; j < firstIndexInSet + setLength; j = nextFunc(j)) {
-    var nextJ = nextFunc(j);
-    var point = points[j];
-    nextY = (nextJ < firstIndexInSet + setLength) ? points[nextJ].canvasy : null;
+  var first = true;
+  while(iter.hasNext()) {
+    var point = iter.next();
+    nextY = iter.hasNext() ? iter.peek().canvasy : null;
     if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
       prevX = prevY = null;
     } else {
@@ -830,8 +832,8 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
       if (drawGapPoints) {
         // Also consider a point to be is "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
-        if ((j > firstIndexInSet && !prevX) ||
-            ((nextJ < firstIndexInSet + setLength) && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
+        if ((!first && !prevX) ||
+            (iter.hasNext() && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
           isIsolated = true;
         }
       }
@@ -846,6 +848,7 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
         pointsOnLine.push([point.canvasx, point.canvasy]);
       }
     }
+    first = false;
   }
   ctx.stroke();
   this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
