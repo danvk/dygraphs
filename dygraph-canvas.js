@@ -747,7 +747,7 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
   var prevX = null;
   var prevY = null;
   var nextY = null;
-  var point, nextPoint;
+  var point;
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   var first = true;
   while(iter.hasNext()) {
