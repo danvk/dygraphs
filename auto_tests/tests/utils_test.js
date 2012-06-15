@@ -146,7 +146,8 @@ UtilsTestCase.prototype.testIterator_whole_array = function() {
           throw "err";
         } else {
           return true;
-        });
+        };
+      });
   assertTrue(iter.hasNext());
   assertEquals('a', iter.next());
   assertTrue(iter.hasNext());
