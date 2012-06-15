@@ -678,27 +678,17 @@ DygraphCanvasRenderer.prototype._renderAnnotations = function() {
 };
 
 /**
- * Returns a function which returns the next index with a renderable point.
- * When connectSeparatedPoints is false, it just returns the next index.
- * But when it's true, the returned function will skip past points with null
- * yvals.
- *
- * TODO(konigsberg): Replace the two uses of this function with the Dygraph iterator.
- * @private
+ * Returns a predicate to be used with an iterator, which will
+ * iterate over points appropriately, depending on whether
+ * connectSeparatedPoints is true. When it's false, the predicate will
+ * skip over points with missing yVals.
  */
-DygraphCanvasRenderer.makePointIteratorFunction_ = function(
-    connectSeparatedPoints, points, start, end) {
-  if (connectSeparatedPoints) {
-    return function(j) {
-      while (++j + start < end) {
-        if (!(points[start + j].yval === null)) break;
-      }
-      return j;
-    }
-  } else {
-    return function(j) { return j + 1 };
-  }
-};
+DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
+  return connectSeparatedPoints ? DygraphCanvasRenderer._predicateThatSkipsEmptyPoints : null;
+}
+
+DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
+  function(array, idx) { return array[idx].yval !== null; }
 
 DygraphCanvasRenderer.isNullOrNaN_ = function(x) {
   return (x === null || isNaN(x));
@@ -719,10 +709,8 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
 
   ctx.save();
 
-  var iteratorPredicate = this.attr_("connectSeparatedPoints") ?
-      function(array, idx) { return array[idx].yval !== null; } : null;
   var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
-      iteratorPredicate);
+      DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
 
   if (strokeWidth && !stepPlot && (!strokePattern || strokePattern.length <= 1)) {
     this._drawTrivialLine(ctx, iter, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints);
@@ -898,7 +886,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var stepPlot = this.attr_("stepPlot");
   var points = this.layout.points;
   var pointsLength = points.length;
-  var point, i, j, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
+  var point, i, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
 
   var setNames = this.layout.setNames;
   var setCount = setNames.length;
@@ -935,11 +923,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
 
       var firstIndexInSet = this.layout.setPointsOffsets[i];
       var setLength = this.layout.setPointsLengths[i];
-      var afterLastIndexInSet = firstIndexInSet + setLength;
 
-      var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
-        this.attr_('connectSeparatedPoints'), points,
-        afterLastIndexInSet);
+      var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+          DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
 
       // setup graphics context
       prevX = NaN;
@@ -952,8 +938,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = firstIndexInSet; j < afterLastIndexInSet; j = nextFunc(j)) {
-        point = points[j];
+      while (iter.hasNext()) {
+        point = iter.next();
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
@@ -1007,11 +993,9 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       axisY = this.area.h * axisY + this.area.y;
       var firstIndexInSet = this.layout.setPointsOffsets[i];
       var setLength = this.layout.setPointsLengths[i];
-      var afterLastIndexInSet = firstIndexInSet + setLength;
 
-      var nextFunc = DygraphCanvasRenderer.makePointIteratorFunction_(
-        this.attr_('connectSeparatedPoints'), points,
-        afterLastIndexInSet);
+      var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+          DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
 
       // setup graphics context
       prevX = NaN;
@@ -1023,8 +1007,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      for (j = firstIndexInSet; j < afterLastIndexInSet; j = nextFunc(j)) {
-        point = points[j];
+      while(iter.hasNext()) {
+        point = iter.next();
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
             prevX = NaN;
