@@ -85,7 +85,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
     return s + "}";
   };
   fail("Can't find a line drawn between " + p1 +
-      " and " + p2 + " with attributes " + toString(attrs));
+      " and " + p2 + " with attributes " + toString(predicate));
 };
 
 /**
@@ -108,7 +108,7 @@ CanvasAssertions.getLinesDrawn = function(proxy, predicate) {
 
     if (call.name == "lineTo") {
       if (lastCall != null) {
-        if (!predicate || predicate(lastCall, call)) {
+        if (CanvasAssertions.match(predicate, call)) {
           lines.push([lastCall, call]);
         }
       }
@@ -159,6 +159,19 @@ CanvasAssertions.numLinesDrawn = function(proxy, color) {
   return num_lines;
 };
 
+/**
+ * Asserts that a series of lines are connected. For example,
+ * assertConsecutiveLinesDrawn(proxy, [[x1, y1], [x2, y2], [x3, y3]], predicate)
+ * is shorthand for
+ * assertLineDrawn(proxy, [x1, y1], [x2, y2], predicate)
+ * assertLineDrawn(proxy, [x2, y2], [x3, y3], predicate)
+ */
+CanvasAssertions.assertConsecutiveLinesDrawn = function(proxy, segments, predicate) {
+  for (var i = 0; i < segments.length - 1; i++) {
+    CanvasAssertions.assertLineDrawn(proxy, segments[i], segments[i+1], predicate);
+  }
+}
+
 CanvasAssertions.matchPixels = function(expected, actual) {
   // Expect array of two integers. Assuming the values are within one
   // integer unit of each other. This should be tightened down by someone
@@ -171,8 +184,12 @@ CanvasAssertions.matchPixels = function(expected, actual) {
  * For matching a proxy call against defined conditions.
  * predicate can either by a hash of items compared against call.properties,
  * or it can be a function that accepts the call, and returns true or false.
+ * If it's null, this function returns true.
  */
 CanvasAssertions.match = function(predicate, call) {
+  if (predicate === null) {
+    return true;
+  }
   if (typeof(predicate) === "function") {
     return predicate(call);
   } else {
