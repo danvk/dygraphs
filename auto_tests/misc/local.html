@@ -124,15 +124,16 @@
       }
     }
     resultsDiv = createResultsDiv();
-    postResults(results);
+    var failures = postResults(results);
     resultsDiv.appendChild(document.createElement("hr"));
+    document.getElementById('summary').innerText = "(" + failures + " failures)";
   }
 
   function createResultsDiv() {
     var body = document.getElementsByTagName("body")[0];
     div = document.createElement("div");
     div.id='results';
-    div.innerHTML = "Test results: <a href='#' id='passed'>passed</a> <a href='#' id='failed'>failed</a> <a href='#' id='all'>all</a><br/>";
+    div.innerHTML = "Test results: <span id='summary'></span> <a href='#' id='passed'>passed</a> <a href='#' id='failed'>failed</a> <a href='#' id='all'>all</a><br/>";
     body.insertBefore(div, body.firstChild);
 
     var setByClassName = function(name, displayStyle) {
@@ -167,6 +168,7 @@
     return div;
   }
 
+  /* also returns an in representing sum of failures below. */
   function postResults(results, title) {
     if (typeof(results) == "boolean") {
       var elem = document.createElement("div");
@@ -175,18 +177,21 @@
       var prefix = title ? (title + ": ") : "";
       elem.innerHTML = prefix + '<span class=\'outcome\'>' + (results ? 'pass' : 'fail') + '</span>';
       resultsDiv.appendChild(elem);
+      return results ? 0 : 1;
     } else { // hash
+      var failed = 0;
       var html = "";
       for (var key in results) {
         if (results.hasOwnProperty(key)) {
           var elem = results[key];
           if (typeof(elem) == "boolean" && title) {
-            postResults(results[key], title + "." + key);
+            failed += postResults(results[key], title + "." + key);
           } else {
-            postResults(results[key], key);
+            failed += postResults(results[key], key);
           }
         }
       }
+      return failed;
     }
   }
 
