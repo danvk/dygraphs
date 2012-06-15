@@ -35,10 +35,11 @@ var CanvasAssertions = {};
  * lineTo(p1) -> lineTo(p2)
  * lineTo(p2) -> lineTo(p1)
  *
- * attrs is meant to be used when you want to track things like
- * color and stroke width.
+ * predicate is meant to be used when you want to track things like
+ * color and stroke width. It can either be a hash of context properties,
+ * or a function that accepts the current call.
  */
-CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
+CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
   // found = 1 when prior loop found p1.
   // found = 2 when prior loop found p2.
   var priorFound = 0;
@@ -56,12 +57,14 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
       var matchp2 = CanvasAssertions.matchPixels(p2, call.args);
       if (matchp1 || matchp2) {
         if (priorFound == 1 && matchp2) {
-// TODO -- add property test here  CanvasAssertions.matchAttributes(attrs, call.properties)
-          return;
+          if (CanvasAssertions.match(predicate, call)) {
+            return;
+          }
         }
         if (priorFound == 2 && matchp1) {
-       // TODO -- add property test here  CanvasAssertions.matchAttributes(attrs, call.properties)
-          return;
+          if (CanvasAssertions.match(predicate, call.properties)) {
+            return;
+          }
         }
         found = matchp1 ? 1 : 2;
       }
@@ -97,7 +100,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, attrs) {
  * attrs is meant to be used when you want to track things like
  * color and stroke width.
  */
-CanvasAssertions.getLinesDrawn = function(proxy) {
+CanvasAssertions.getLinesDrawn = function(proxy, predicate) {
   var lastCall;
   var lines = [];
   for (var i = 0; i < proxy.calls__.length; i++) {
@@ -105,7 +108,9 @@ CanvasAssertions.getLinesDrawn = function(proxy) {
 
     if (call.name == "lineTo") {
       if (lastCall != null) {
-        lines.push([lastCall, call]);
+        if (!predicate || predicate(lastCall, call)) {
+          lines.push([lastCall, call]);
+        }
       }
     }
 
@@ -140,6 +145,9 @@ CanvasAssertions.assertBalancedSaveRestore = function(proxy) {
  * Checks how many lines of the given color have been drawn.
  * @return {Integer} The number of lines of the given color.
  */
+// TODO(konigsberg): change 'color' to predicate? color is the
+// common case. Possibly allow predicate to be function, hash, or
+// string representing color?
 CanvasAssertions.numLinesDrawn = function(proxy, color) {
   var num_lines = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
@@ -159,10 +167,19 @@ CanvasAssertions.matchPixels = function(expected, actual) {
       Math.abs(expected[1] - actual[1]) < 1;
 };
 
-CanvasAssertions.matchAttributes = function(expected, actual) {
-  for (var attr in expected) {
-    if (expected.hasOwnProperty(attr) && expected[attr] != actual[attr]) {
-      return false;
+/**
+ * For matching a proxy call against defined conditions.
+ * predicate can either by a hash of items compared against call.properties,
+ * or it can be a function that accepts the call, and returns true or false.
+ */
+CanvasAssertions.match = function(predicate, call) {
+  if (typeof(predicate) === "function") {
+    return predicate(call);
+  } else {
+    for (var attr in predicate) {
+      if (predicate.hasOwnProperty(attr) && predicate[attr] != call.properties[attr]) {
+        return false;
+      }
     }
   }
   return true;
