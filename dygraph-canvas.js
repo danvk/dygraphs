@@ -690,10 +690,6 @@ DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
 DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
   function(array, idx) { return array[idx].yval !== null; }
 
-DygraphCanvasRenderer.isNullOrNaN_ = function(x) {
-  return (x === null || isNaN(x));
-};
-
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
     ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
@@ -712,12 +708,63 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
       DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
 
-  if (strokeWidth && !stepPlot && (!strokePattern || strokePattern.length <= 1)) {
-    this._drawTrivialLine(ctx, iter, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints);
+  var pointsOnLine;
+  var strategy;
+  if (!strokePattern || strokePattern.length <= 1) {
+    strategy = trivialStrategy(ctx, color, strokeWidth);
   } else {
-    this._drawNonTrivialLine(ctx, iter, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot);
+    strategy = nonTrivialStrategy(this, ctx, color, strokeWidth, strokePattern);
   }
+  pointsOnLine = this._drawSeries(ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, strategy);
+  this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
+
   ctx.restore();
+};
+
+var nonTrivialStrategy = function(renderer, ctx, color, strokeWidth, strokePattern) {
+  return new function() {
+    this.init = function() {  };
+    this.finish = function() { };
+    this.startSegment = function() {
+       ctx.beginPath();
+       ctx.strokeStyle = color;
+       ctx.lineWidth = strokeWidth;
+    };
+    this.endSegment = function() {
+      ctx.stroke(); // should this include closePath?
+    };
+    this.drawLine = function(x1, y1, x2, y2) {
+      renderer._dashedLine(ctx, x1, y1, x2, y2, strokePattern);
+    };
+    this.skipPixel = function(prevX, prevY, curX, curY) {
+      // TODO(konigsberg): optimize with http://jsperf.com/math-round-vs-hack/6 ?
+      return (Math.round(prevX) == Math.round(curX) &&
+           Math.round(prevY) == Math.round(curY));
+    };
+  };
+};
+
+var trivialStrategy = function(ctx, color, strokeWidth) {
+  return new function() {
+    this.init = function() {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = strokeWidth;
+    };
+    this.finish = function() {
+      ctx.stroke(); // should this include closePath?
+    };
+    this.startSegment = function() { };
+    this.endSegment = function() { };
+    this.drawLine = function(x1, y1, x2, y2) {
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+    };
+    // don't skip pixels.
+    this.skipPixel = function() {
+      return false;
+    };
+  };
 };
 
 DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize) {
@@ -730,116 +777,69 @@ DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, 
   }
 }
 
-DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
-    ctx, iter, setName, color, strokeWidth, strokePattern, drawPointCallback, pointSize, drawPoints, drawGapPoints, stepPlot) {
-  var prevX = null;
-  var prevY = null;
-  var nextY = null;
-  var point;
+DygraphCanvasRenderer.prototype._drawSeries = function(
+    ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints,
+    stepPlot, strategy) {
+
+  var isNullOrNaN = function(x) {
+    return (x === null || isNaN(x));
+  };
+    
+  var prevCanvasX = null;
+  var prevCanvasY = null;
+  var nextCanvasY = null;
+  var isIsolated; // true if this point is isolated (no line segments)
+  var point; // the point being processed in the while loop
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
-  var first = true;
+  var first = true; // the first cycle through the while loop
+
+  strategy.init();
+
   while(iter.hasNext()) {
     point = iter.next();
-    nextY = iter.hasNext() ? iter.peek().canvasy : null;
-    if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
-      if (stepPlot && prevX !== null) {
+    if (isNullOrNaN(point.canvasy)) {
+      if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = this.attr_('strokeWidth');
-        this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
-        ctx.stroke();
+        strategy.startSegment();
+        strategy.drawLine(prevX, prevY, point.canvasx, prevY);
+        strategy.endSegment();
       }
-      // this will make us move to the next point, not draw a line to it.
-      prevX = prevY = null;
+      prevCanvasX = prevCanvasY = null;
     } else {
-      // A point is "isolated" if it is non-null but both the previous
-      // and next points are null.
-      var isIsolated = (!prevX && DygraphCanvasRenderer.isNullOrNaN_(nextY));
+      nextCanvasY = iter.hasNext() ? iter.peek().canvasy : null;
+      isIsolated = (!prevCanvasX && isNullOrNaN(nextCanvasY));
       if (drawGapPoints) {
-        // Also consider a point to be is "isolated" if it's adjacent to a
+        // Also consider a point to be "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
-        if ((!first && !prevX) ||
-            (iter.hasNext() && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
+        if ((!first && !prevCanvasX) ||
+            (iter.hasNext() && isNullOrNaN(nextCanvasY))) {
           isIsolated = true;
         }
       }
-      if (prevX === null) {
-        prevX = point.canvasx;
-        prevY = point.canvasy;
-      } else {
-        // Skip over points that will be drawn in the same pixel.
-        if (Math.round(prevX) == Math.round(point.canvasx) &&
-            Math.round(prevY) == Math.round(point.canvasy)) {
+      if (prevCanvasX !== null) {
+        if (strategy.skipPixel(prevCanvasX, prevCanvasY, point.canvasx, point.canvasy)) {
           continue;
         }
-        // TODO(antrob): skip over points that lie on a line that is already
-        // going to be drawn. There is no need to have more than 2
-        // consecutive points that are collinear.
         if (strokeWidth) {
-          ctx.beginPath();
-          ctx.strokeStyle = color;
-          ctx.lineWidth = strokeWidth;
+          strategy.startSegment();
           if (stepPlot) {
-            this._dashedLine(ctx, prevX, prevY, point.canvasx, prevY, strokePattern);
-            prevX = point.canvasx;
+            strategy.drawLine(prevCanvasX, prevCanvasY, point.canvasx, prevCanvasY);
+            prevCanvasX = point.canvasx;
           }
-          this._dashedLine(ctx, prevX, prevY, point.canvasx, point.canvasy, strokePattern);
-          prevX = point.canvasx;
-          prevY = point.canvasy;
-          ctx.stroke();
+          strategy.drawLine(prevCanvasX, prevCanvasY, point.canvasx, point.canvasy);      
+          strategy.endSegment();
         }
-      }
-
-      if (drawPoints || isIsolated) {
-        pointsOnLine.push([point.canvasx, point.canvasy]);
-      }
-    }
-    first = false;
-  }
-  this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
-};
-
-DygraphCanvasRenderer.prototype._drawTrivialLine = function(
-    ctx, iter, setName, color, strokeWidth, drawPointCallback, pointSize, drawPoints, drawGapPoints) {
-  var prevX = null;
-  var prevY = null;
-  var nextY = null;
-  var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
-  ctx.beginPath();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = strokeWidth;
-  var first = true;
-  while(iter.hasNext()) {
-    var point = iter.next();
-    nextY = iter.hasNext() ? iter.peek().canvasy : null;
-    if (DygraphCanvasRenderer.isNullOrNaN_(point.canvasy)) {
-      prevX = prevY = null;
-    } else {
-      var isIsolated = (!prevX && DygraphCanvasRenderer.isNullOrNaN_(nextY));
-      if (drawGapPoints) {
-        // Also consider a point to be is "isolated" if it's adjacent to a
-        // null point, excluding the graph edges.
-        if ((!first && !prevX) ||
-            (iter.hasNext() && DygraphCanvasRenderer.isNullOrNaN_(nextY))) {
-          isIsolated = true;
-        }
-      }
-      if (prevX === null) {
-        prevX = point.canvasx;
-        prevY = point.canvasy;
-        ctx.moveTo(point.canvasx, point.canvasy);
-      } else {
-        ctx.lineTo(point.canvasx, point.canvasy);
       }
       if (drawPoints || isIsolated) {
         pointsOnLine.push([point.canvasx, point.canvasy]);
       }
+      prevCanvasX = point.canvasx;
+      prevCanvasY = point.canvasy;
     }
     first = false;
   }
-  ctx.stroke();
-  this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
+  strategy.finish();
+  return pointsOnLine;
 };
 
 DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
@@ -851,7 +851,6 @@ DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
   var drawPointCallback = this.dygraph_.attr_("drawPointCallback", setName) ||
       Dygraph.Circles.DEFAULT;
 
-  // TODO(konigsberg): Turn this into one call, and then consider inlining drawStyledLine.
   if (borderWidth && strokeWidth) {
     this._drawStyledLine(ctx, i, setName,
         this.dygraph_.attr_("strokeBorderColor", setName),
