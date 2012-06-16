@@ -781,10 +781,6 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
     ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints,
     stepPlot, strategy) {
 
-  var isNullOrNaN = function(x) {
-    return (x === null || isNaN(x));
-  };
-    
   var prevCanvasX = null;
   var prevCanvasY = null;
   var nextCanvasY = null;
@@ -797,7 +793,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
 
   while(iter.hasNext()) {
     point = iter.next();
-    if (isNullOrNaN(point.canvasy)) {
+    if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
         strategy.startSegment();
@@ -807,12 +803,15 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
       prevCanvasX = prevCanvasY = null;
     } else {
       nextCanvasY = iter.hasNext() ? iter.peek().canvasy : null;
-      isIsolated = (!prevCanvasX && isNullOrNaN(nextCanvasY));
+      // TODO: we calculate isNullOrNaN for this point, and the next, and then, when
+      // we iterate, test for isNullOrNaN again. Why bother?
+      var isNextCanvasYNullOrNaN = nextCanvasY === null || nextCanvasY != nextCanvasY;
+      isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
       if (drawGapPoints) {
         // Also consider a point to be "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((!first && !prevCanvasX) ||
-            (iter.hasNext() && isNullOrNaN(nextCanvasY))) {
+            (iter.hasNext() && isNextCanvasYNullOrNaN)) {
           isIsolated = true;
         }
       }
