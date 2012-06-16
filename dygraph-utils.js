@@ -702,10 +702,10 @@ Dygraph.createIterator = function(array, start, length, predicate) {
   predicate = predicate || function() { return true; };
 
   var iter = new function() {
-    this.idx_ = start - 1; // use -1 so initial call to advance works.
     this.end_ = Math.min(array.length, start + length);
-    this.nextIdx_ = this.idx_;
+    this.nextIdx_ = start - 1; // use -1 so initial call to advance works.
     this.hasNext_ = true;
+    this.peek_ = null;
     var self = this;
 
     this.hasNext = function() {
@@ -714,27 +714,26 @@ Dygraph.createIterator = function(array, start, length, predicate) {
 
     this.next = function() {
       if (self.hasNext_) {
-        self.idx_ = self.nextIdx_;
+        var obj = self.peek_;
         self.advance_();
-        return array[self.idx_];
+        return obj;
       }
       return null;
     }
     this.peek = function() {
-      if (self.hasNext_) {
-        return array[self.nextIdx_];
-      }
-      return null;
+      return self.peek_;
     }
     this.advance_ = function() {
       self.nextIdx_++;
       while(self.nextIdx_ < self.end_) {
         if (predicate(array, self.nextIdx_)) {
+          self.peek_ = array[self.nextIdx_];
           return;
         }
         self.nextIdx_++;
       }
       self.hasNext_ = false;
+      self.peek_ = null;
     }
   };
   iter.advance_();
