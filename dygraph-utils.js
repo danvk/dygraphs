@@ -699,8 +699,6 @@ Dygraph.isAndroid = function() {
  * TODO(konigsberg): add default vlues to start and length.
  */
 Dygraph.createIterator = function(array, start, length, predicate) {
-  predicate = predicate || function() { return true; };
-
   var iter = new function() {
     this.end_ = Math.min(array.length, start + length);
     this.nextIdx_ = start - 1; // use -1 so initial call to advance works.
@@ -724,14 +722,17 @@ Dygraph.createIterator = function(array, start, length, predicate) {
       return self.peek_;
     }
     this.advance_ = function() {
-      self.nextIdx_++;
-      while(self.nextIdx_ < self.end_) {
-        if (predicate(array, self.nextIdx_)) {
-          self.peek_ = array[self.nextIdx_];
+      var nextIdx = self.nextIdx_;
+      nextIdx++;
+      while(nextIdx < self.end_) {
+        if (!predicate || predicate(array, nextIdx)) {
+          self.peek_ = array[nextIdx];
+          self.nextIdx_ = nextIdx;
           return;
         }
-        self.nextIdx_++;
+        nextIdx++;
       }
+      self.nextIdx_ = nextIdx;
       self.hasNext_ = false;
       self.peek_ = null;
     }
