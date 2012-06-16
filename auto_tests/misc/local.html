@@ -60,8 +60,8 @@
   }
 </style>
   <script type="text/javascript">
-  var tc = null;
-  var name = null;
+  var tc = null; // Selected test case
+  var name = null; 
 
   var resultDiv = null;
 
@@ -124,9 +124,10 @@
       }
     }
     resultsDiv = createResultsDiv();
-    var failures = postResults(results);
+    var summary = { failed: 0, passed: 0 };
+    postResults(results, summary);
     resultsDiv.appendChild(document.createElement("hr"));
-    document.getElementById('summary').innerText = "(" + failures + " failures)";
+    document.getElementById('summary').innerText = "(" + summary.failed + " failed, " + summary.passed + " passed)";
   }
 
   function createResultsDiv() {
@@ -168,8 +169,7 @@
     return div;
   }
 
-  /* also returns an in representing sum of failures below. */
-  function postResults(results, title) {
+  function postResults(results, summary, title) {
     if (typeof(results) == "boolean") {
       var elem = document.createElement("div");
       elem.setAttribute("class", results ? 'pass' : 'fail');
@@ -177,7 +177,11 @@
       var prefix = title ? (title + ": ") : "";
       elem.innerHTML = prefix + '<span class=\'outcome\'>' + (results ? 'pass' : 'fail') + '</span>';
       resultsDiv.appendChild(elem);
-      return results ? 0 : 1;
+      if (results) {
+        summary.passed++;
+      } else {
+        summary.failed++;
+      }
     } else { // hash
       var failed = 0;
       var html = "";
@@ -185,13 +189,12 @@
         if (results.hasOwnProperty(key)) {
           var elem = results[key];
           if (typeof(elem) == "boolean" && title) {
-            failed += postResults(results[key], title + "." + key);
+            postResults(results[key], summary, title + "." + key);
           } else {
-            failed += postResults(results[key], key);
+            postResults(results[key], summary, key);
           }
         }
       }
-      return failed;
     }
   }
 
