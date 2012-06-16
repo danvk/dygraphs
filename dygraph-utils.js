@@ -705,13 +705,15 @@ Dygraph.createIterator = function(array, start, length, predicate) {
     this.idx_ = start - 1; // use -1 so initial call to advance works.
     this.end_ = Math.min(array.length, start + length);
     this.nextIdx_ = this.idx_;
+    this.hasNext_ = true;
     var self = this;
 
     this.hasNext = function() {
-      return self.nextIdx_ < self.end_;
+      return self.hasNext_;
     }
+
     this.next = function() {
-      if (self.hasNext()) {
+      if (self.hasNext_) {
         self.idx_ = self.nextIdx_;
         self.advance_();
         return array[self.idx_];
@@ -719,19 +721,20 @@ Dygraph.createIterator = function(array, start, length, predicate) {
       return null;
     }
     this.peek = function() {
-      if (self.hasNext()) {
+      if (self.hasNext_) {
         return array[self.nextIdx_];
       }
       return null;
     }
     this.advance_ = function() {
       self.nextIdx_++;
-      while(self.hasNext()) {
+      while(self.nextIdx_ < self.end_) {
         if (predicate(array, self.nextIdx_)) {
           return;
         }
         self.nextIdx_++;
       }
+      self.hasNext_ = false;
     }
   };
   iter.advance_();
