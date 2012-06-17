@@ -782,15 +782,16 @@ DygraphCanvasRenderer.prototype._drawNonTrivialLine = function(
       }
 
       if (drawPoints || isIsolated) {
-        pointsOnLine.push([point.canvasx, point.canvasy]);
+        pointsOnLine.push(point);
       }
     }
   }
+  
   for (var idx = 0; idx < pointsOnLine.length; idx++) {
-    var cb = pointsOnLine[idx];
+    var point = pointsOnLine[idx];
     ctx.save();
     drawPointCallback(
-        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+        this.dygraph_, setName, ctx, point.canvasx, point.canvasy, color, pointSize, point.xval, point.yval);
     ctx.restore();
   }
 };
@@ -829,16 +830,16 @@ DygraphCanvasRenderer.prototype._drawTrivialLine = function(
         ctx.lineTo(point.canvasx, point.canvasy);
       }
       if (drawPoints || isIsolated) {
-        pointsOnLine.push([point.canvasx, point.canvasy]);
+        pointsOnLine.push(point);
       }
     }
   }
   ctx.stroke();
   for (var idx = 0; idx < pointsOnLine.length; idx++) {
-    var cb = pointsOnLine[idx];
+    var point = pointsOnLine[idx];
     ctx.save();
     drawPointCallback(
-        this.dygraph_, setName, ctx, cb[0], cb[1], color, pointSize);
+        this.dygraph_, setName, ctx, point.canvasx, point.canvasy, color, pointSize, point.xval, point.yval);
     ctx.restore();
   }
 };
