@@ -1883,7 +1883,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
-          color, circleSize);
+          color, circleSize, pt.xval, pt.yval);
     }
     ctx.restore();
 
