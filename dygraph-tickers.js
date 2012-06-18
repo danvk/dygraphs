@@ -203,7 +203,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     }
     if(opts("labelsKMG2")){
       tickV = String(tickV.toExponential());
-      if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3){
+      if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3 && tickV.split('e-')[1] <= 24){
         if(tickV.split('e-')[1] % 3 > 0) {
           label = Dygraph.round_(tickV.split('e-')[0] /
               Math.pow(10,(tickV.split('e-')[1] % 3)),
