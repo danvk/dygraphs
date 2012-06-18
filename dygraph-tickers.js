@@ -176,7 +176,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   if (opts("labelsKMG2")) {
     if (k) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
     k = 1024;
-    k_labels = [ "k", "M", "G", "T", "P", "E" ];
+    k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
     m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
   }
 
