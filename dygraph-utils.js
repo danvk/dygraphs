@@ -695,10 +695,10 @@ Dygraph.isAndroid = function() {
  * @param predicate a function that takes parameters array and idx, which
  * returns true when the element should be returned. If omitted, all
  * elements are accepted.
- *
- * TODO(konigsberg): add default vlues to start and length.
  */
 Dygraph.createIterator = function(array, start, length, predicate) {
+  start = start || 0;
+  length = length || array.length;
   var iter = new function() {
     this.end_ = Math.min(array.length, start + length);
     this.nextIdx_ = start - 1; // use -1 so initial call to advance works.

@@ -157,3 +157,16 @@ UtilsTestCase.prototype.testIterator_whole_array = function() {
   assertFalse(iter.hasNext());
   assertNull(iter.next());
 }
+
+UtilsTestCase.prototype.testIterator_no_args = function() {
+  var array = ['a', 'b', 'c'];
+  var iter = Dygraph.createIterator(array);
+  assertTrue(iter.hasNext());
+  assertEquals('a', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('c', iter.next());
+  assertFalse(iter.hasNext());
+  assertNull(iter.next());
+}
