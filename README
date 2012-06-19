@@ -7,7 +7,7 @@ Source: http://github.com/danvk/dygraphs
 Issues: http://code.google.com/p/dygraphs/
 
 
-The dygraphs JavaScript library produces produces interactive, zoomable charts of time series.
+The dygraphs JavaScript library produces interactive, zoomable charts of time series.
 
 Features
 - Plots time series without using an external server or Flash
