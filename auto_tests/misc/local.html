@@ -24,6 +24,7 @@
   <script type="text/javascript" src="../tests/error_bars.js"></script>
   <script type="text/javascript" src="../tests/formats.js"></script>
   <script type="text/javascript" src="../tests/interaction_model.js"></script>
+  <script type="text/javascript" src="../tests/missing_points.js"></script>
   <script type="text/javascript" src="../tests/multiple_axes.js"></script>
   <script type="text/javascript" src="../tests/multi_csv.js"></script>
   <script type="text/javascript" src="../tests/no_hours.js"></script>
@@ -59,8 +60,8 @@
   }
 </style>
   <script type="text/javascript">
-  var tc = null;
-  var name = null;
+  var tc = null; // Selected test case
+  var name = null; 
 
   var resultDiv = null;
 
@@ -123,15 +124,17 @@
       }
     }
     resultsDiv = createResultsDiv();
-    postResults(results);
+    var summary = { failed: 0, passed: 0 };
+    postResults(results, summary);
     resultsDiv.appendChild(document.createElement("hr"));
+    document.getElementById('summary').innerText = "(" + summary.failed + " failed, " + summary.passed + " passed)";
   }
 
   function createResultsDiv() {
     var body = document.getElementsByTagName("body")[0];
     div = document.createElement("div");
     div.id='results';
-    div.innerHTML = "Test results: <a href='#' id='passed'>passed</a> <a href='#' id='failed'>failed</a> <a href='#' id='all'>all</a><br/>";
+    div.innerHTML = "Test results: <span id='summary'></span> <a href='#' id='passed'>passed</a> <a href='#' id='failed'>failed</a> <a href='#' id='all'>all</a><br/>";
     body.insertBefore(div, body.firstChild);
 
     var setByClassName = function(name, displayStyle) {
@@ -166,7 +169,7 @@
     return div;
   }
 
-  function postResults(results, title) {
+  function postResults(results, summary, title) {
     if (typeof(results) == "boolean") {
       var elem = document.createElement("div");
       elem.setAttribute("class", results ? 'pass' : 'fail');
@@ -174,15 +177,21 @@
       var prefix = title ? (title + ": ") : "";
       elem.innerHTML = prefix + '<span class=\'outcome\'>' + (results ? 'pass' : 'fail') + '</span>';
       resultsDiv.appendChild(elem);
+      if (results) {
+        summary.passed++;
+      } else {
+        summary.failed++;
+      }
     } else { // hash
+      var failed = 0;
       var html = "";
       for (var key in results) {
         if (results.hasOwnProperty(key)) {
           var elem = results[key];
           if (typeof(elem) == "boolean" && title) {
-            postResults(results[key], title + "." + key);
+            postResults(results[key], summary, title + "." + key);
           } else {
-            postResults(results[key], key);
+            postResults(results[key], summary, key);
           }
         }
       }

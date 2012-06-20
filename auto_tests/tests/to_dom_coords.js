@@ -56,6 +56,7 @@ ToDomCoordsTestCase.prototype.testPlainChart = function() {
 
   this.checkForInverses(g);
 
+  // TODO(konigsberg): This doesn't really belong here. Move to its own test.
   var htx = g.hidden_ctx_;
   assertEquals(1, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 }

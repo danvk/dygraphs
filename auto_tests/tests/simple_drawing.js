@@ -49,7 +49,7 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   CanvasAssertions.assertLineDrawn(htx, [0,320], [475,6.2745], {
     strokeStyle: "#008080",
