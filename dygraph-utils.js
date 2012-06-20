@@ -681,6 +681,70 @@ Dygraph.isAndroid = function() {
   return (/Android/).test(navigator.userAgent);
 };
 
+Dygraph.Iterator = function(array, start, length, predicate) {
+  start = start || 0;
+  length = length || array.length;
+  this.array_ = array;
+  this.predicate_ = predicate;
+  this.end_ = Math.min(array.length, start + length);
+  this.nextIdx_ = start - 1; // use -1 so initial call to advance works.
+  this.hasNext_ = true;
+  this.peek_ = null;
+  this.advance_();
+}
+
+Dygraph.Iterator.prototype.hasNext = function() {
+  return this.hasNext_;
+}
+
+Dygraph.Iterator.prototype.next = function() {
+  if (this.hasNext_) {
+    var obj = this.peek_;
+    this.advance_();
+    return obj;
+  }
+  return null;
+}
+
+Dygraph.Iterator.prototype.peek = function() {
+  return this.peek_;
+}
+
+Dygraph.Iterator.prototype.advance_ = function() {
+  var nextIdx = this.nextIdx_;
+  nextIdx++;
+  while(nextIdx < this.end_) {
+    if (!this.predicate_ || this.predicate_(this.array_, nextIdx)) {
+      this.peek_ = this.array_[nextIdx];
+      this.nextIdx_ = nextIdx;
+      return;
+    }
+    nextIdx++;
+  }
+  this.nextIdx_ = nextIdx;
+  this.hasNext_ = false;
+  this.peek_ = null;
+}
+
+/**
+ * @private
+ * Returns a new iterator over array, between indexes start and 
+ * start + length, and only returns entries that pass the accept function
+ *
+ * @param array the array to iterate over.
+ * @param start the first index to iterate over, 0 if absent.
+ * @param length the number of elements in the array to iterate over.
+ * This, along with start, defines a slice of the array, and so length
+ * doesn't imply the number of elements in the iterator when accept
+ * doesn't always accept all values. array.length when absent.
+ * @param predicate a function that takes parameters array and idx, which
+ * returns true when the element should be returned. If omitted, all
+ * elements are accepted.
+ */
+Dygraph.createIterator = function(array, start, length, predicate) {
+  return new Dygraph.Iterator(array, start, length, predicate);
+};
+
 /**
  * @private
  * Call a function N times at a given interval, then call a cleanup function
