@@ -84,6 +84,16 @@ DygraphLayout.prototype.computePlotArea_ = function() {
       area.w -= px;
       return r;
     },
+    reserveSpaceRight: function(px) {
+      var r = {
+        x: area.x + area.w - px,
+        y: area.y,
+        w: px,
+        h: area.h
+      };
+      area.w -= px;
+      return r;
+    },
     reserveSpaceTop: function(px) {
       var r = {
         x: area.x,
@@ -92,6 +102,16 @@ DygraphLayout.prototype.computePlotArea_ = function() {
         h: px
       };
       area.y += px;
+      area.h -= px;
+      return r;
+    },
+    reserveSpaceBottom: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y + area.h - px,
+        w: area.w,
+        h: px
+      };
       area.h -= px;
       return r;
     },
