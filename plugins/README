@@ -90,3 +90,17 @@ return legend;
 })();
 
 ----------------
+
+Plugin Events Reference:
+
+- predraw
+- clearChart
+- drawChart
+- select
+- deselect
+
+Special methods:
+- (constructor)
+- activate
+- destroy
+
