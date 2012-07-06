@@ -64,12 +64,6 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     y: 0
   };
 
-  /*
-  if (this.attr_('drawYAxis')) {
-   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
-  }
-  */
-
   area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
   area.h = this.dygraph_.height_;
 
@@ -123,25 +117,6 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     }
   };
   this.dygraph_.cascadeEvents_('layout', e);
-
-  /*
-  if (this.attr_('drawXAxis')) {
-    if (this.attr_('xAxisHeight')) {
-      area.h -= this.attr_('xAxisHeight');
-    } else {
-      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
-    }
-  }
-  */
-
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
-  }
 
   // Add space for range selector, if needed.
   if (this.attr_('showRangeSelector')) {
