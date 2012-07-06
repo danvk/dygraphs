@@ -69,6 +69,38 @@ DygraphLayout.prototype.computePlotArea_ = function() {
 
   area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
   area.h = this.dygraph_.height_;
+
+  // Let plugins reserve space.
+  var e = {
+    chart_div: this.dygraph_.graphDiv,
+    reserveSpaceLeft: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y,
+        w: px,
+        h: area.h
+      };
+      area.x += px;
+      area.w -= px;
+      return r;
+    },
+    reserveSpaceTop: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y,
+        w: area.w,
+        h: px
+      };
+      area.y += px;
+      area.h -= px;
+      return r;
+    },
+    chartRect: function() {
+      return {x:area.x, y:area.y, w:area.w, h:area.h};
+    }
+  };
+  this.dygraph_.cascadeEvents_('layout', e);
+
   if (this.attr_('drawXAxis')) {
     if (this.attr_('xAxisHeight')) {
       area.h -= this.attr_('xAxisHeight');
@@ -86,6 +118,7 @@ DygraphLayout.prototype.computePlotArea_ = function() {
                         "to use " + this.dygraph_.numAxes() + ")");
   }
 
+/*
   // Add space for chart labels: title, xlabel and ylabel.
   if (this.attr_('title')) {
     area.h -= this.attr_('titleHeight');
@@ -105,6 +138,7 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     // same logic applies here as for ylabel.
     // TODO(danvk): make yAxisLabelWidth a per-axis property
   }
+*/
 
   // Add space for range selector, if needed.
   if (this.attr_('showRangeSelector')) {

@@ -35,7 +35,7 @@ var createDivInRect = function(r) {
   return div;
 };
 
-chart_labels.layout = function(e) {
+chart_labels.prototype.layout = function(e) {
   var g = e.dygraph;
   var div = e.chart_div;
   if (g.getOption('title')) {

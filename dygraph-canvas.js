@@ -239,7 +239,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  this._renderChartLabels();
+  // this._renderChartLabels();
   this._renderAnnotations();
 };
 
