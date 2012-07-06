@@ -138,28 +138,6 @@ DygraphLayout.prototype.computePlotArea_ = function() {
                         "to use " + this.dygraph_.numAxes() + ")");
   }
 
-/*
-  // Add space for chart labels: title, xlabel and ylabel.
-  if (this.attr_('title')) {
-    area.h -= this.attr_('titleHeight');
-    area.y += this.attr_('titleHeight');
-  }
-  if (this.attr_('xlabel')) {
-    area.h -= this.attr_('xLabelHeight');
-  }
-  if (this.attr_('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-  }
-
-  if (this.attr_('y2label')) {
-    // same logic applies here as for ylabel.
-    // TODO(danvk): make yAxisLabelWidth a per-axis property
-  }
-*/
-
   // Add space for range selector, if needed.
   if (this.attr_('showRangeSelector')) {
     area.h -= this.attr_('rangeSelectorHeight') + 4;

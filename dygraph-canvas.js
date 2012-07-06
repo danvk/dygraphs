@@ -65,7 +65,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.xlabels = [];
   this.ylabels = [];
   this.annotations = [];
-  this.chartLabels = {};
 
   this.area = layout.getPlotArea();
   this.container.style.position = "relative";
@@ -135,15 +134,9 @@ DygraphCanvasRenderer.prototype.clear = function() {
   removeArray(this.ylabels);
   removeArray(this.annotations);
 
-  for (var k in this.chartLabels) {
-    if (!this.chartLabels.hasOwnProperty(k)) continue;
-    var el = this.chartLabels[k];
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }
   this.xlabels = [];
   this.ylabels = [];
   this.annotations = [];
-  this.chartLabels = {};
 };
 
 /**
@@ -239,7 +232,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  // this._renderChartLabels();
   this._renderAnnotations();
 };
 
@@ -489,123 +481,6 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
   }
 
   context.restore();
-};
-
-
-DygraphCanvasRenderer.prototype._renderChartLabels = function() {
-  var div, class_div;
-
-  // Generate divs for the chart title, xlabel and ylabel.
-  // Space for these divs has already been taken away from the charting area in
-  // the DygraphCanvasRenderer constructor.
-  if (this.attr_('title')) {
-    div = document.createElement("div");
-    div.style.position = 'absolute';
-    div.style.top = '0px';
-    div.style.left = this.area.x + 'px';
-    div.style.width = this.area.w + 'px';
-    div.style.height = this.attr_('titleHeight') + 'px';
-    div.style.textAlign = 'center';
-    div.style.fontSize = (this.attr_('titleHeight') - 8) + 'px';
-    div.style.fontWeight = 'bold';
-    class_div = document.createElement("div");
-    class_div.className = 'dygraph-label dygraph-title';
-    class_div.innerHTML = this.attr_('title');
-    div.appendChild(class_div);
-    this.container.appendChild(div);
-    this.chartLabels.title = div;
-  }
-
-  if (this.attr_('xlabel')) {
-    div = document.createElement("div");
-    div.style.position = 'absolute';
-    div.style.bottom = 0;  // TODO(danvk): this is lazy. Calculate style.top.
-    div.style.left = this.area.x + 'px';
-    div.style.width = this.area.w + 'px';
-    div.style.height = this.attr_('xLabelHeight') + 'px';
-    div.style.textAlign = 'center';
-    div.style.fontSize = (this.attr_('xLabelHeight') - 2) + 'px';
-
-    class_div = document.createElement("div");
-    class_div.className = 'dygraph-label dygraph-xlabel';
-    class_div.innerHTML = this.attr_('xlabel');
-    div.appendChild(class_div);
-    this.container.appendChild(div);
-    this.chartLabels.xlabel = div;
-  }
-
-  var that = this;
-  function createRotatedDiv(axis, classes, html) {
-    var box = {
-      left: 0,
-      top: that.area.y,
-      width: that.attr_('yLabelWidth'),
-      height: that.area.h
-    };
-    // TODO(danvk): is this outer div actually necessary?
-    div = document.createElement("div");
-    div.style.position = 'absolute';
-    if (axis == 1) {
-      div.style.left = box.left;
-    } else {
-      div.style.right = box.left;
-    }
-    div.style.top = box.top + 'px';
-    div.style.width = box.width + 'px';
-    div.style.height = box.height + 'px';
-    div.style.fontSize = (that.attr_('yLabelWidth') - 2) + 'px';
-
-    var inner_div = document.createElement("div");
-    inner_div.style.position = 'absolute';
-    inner_div.style.width = box.height + 'px';
-    inner_div.style.height = box.width + 'px';
-    inner_div.style.top = (box.height / 2 - box.width / 2) + 'px';
-    inner_div.style.left = (box.width / 2 - box.height / 2) + 'px';
-    inner_div.style.textAlign = 'center';
-
-    // CSS rotation is an HTML5 feature which is not standardized. Hence every
-    // browser has its own name for the CSS style.
-    var val = 'rotate(' + (axis == 1 ? '-' : '') + '90deg)';
-    inner_div.style.transform = val;        // HTML5
-    inner_div.style.WebkitTransform = val;  // Safari/Chrome
-    inner_div.style.MozTransform = val;     // Firefox
-    inner_div.style.OTransform = val;       // Opera
-    inner_div.style.msTransform = val;      // IE9
-
-    if (typeof(document.documentMode) !== 'undefined' &&
-        document.documentMode < 9) {
-      // We're dealing w/ an old version of IE, so we have to rotate the text
-      // using a BasicImage transform. This uses a different origin of rotation
-      // than HTML5 rotation (top left of div vs. its center).
-      inner_div.style.filter =
-          'progid:DXImageTransform.Microsoft.BasicImage(rotation=' +
-          (axis == 1 ? '3' : '1') + ')';
-      inner_div.style.left = '0px';
-      inner_div.style.top = '0px';
-    }
-
-    class_div = document.createElement("div");
-    class_div.className = classes;
-    class_div.innerHTML = html;
-
-    inner_div.appendChild(class_div);
-    div.appendChild(inner_div);
-    return div;
-  }
-
-  var div;
-  if (this.attr_('ylabel')) {
-    div = createRotatedDiv(1, 'dygraph-label dygraph-ylabel',
-                           this.attr_('ylabel'));
-    this.container.appendChild(div);
-    this.chartLabels.ylabel = div;
-  }
-  if (this.attr_('y2label') && this.dygraph_.numAxes() == 2) {
-    div = createRotatedDiv(2, 'dygraph-label dygraph-y2label',
-                           this.attr_('y2label'));
-    this.container.appendChild(div);
-    this.chartLabels.y2label = div;
-  }
 };
 
 
