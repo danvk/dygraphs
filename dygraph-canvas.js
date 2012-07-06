@@ -175,7 +175,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   var x, y, i, ticks;
   if (this.attr_('drawYGrid')) {
     ticks = this.layout.yticks;
-    // TODO(konigsberg): I don't think these calls to save() have a corresponding restore().
     ctx.save();
     ctx.strokeStyle = this.attr_('gridLineColor');
     ctx.lineWidth = this.attr_('gridLineWidth');
