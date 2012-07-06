@@ -6,6 +6,7 @@
 Dygraph.Plugins.ChartLabels = (function() {
 
 // TODO(danvk): move chart label options out of dygraphs and into the plugin.
+// TODO(danvk): only tear down & rebuild the DIVs when it's necessary.
 
 var chart_labels = function() {
   this.title_div_ = null;
