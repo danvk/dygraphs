@@ -2102,7 +2102,10 @@ Dygraph.prototype.predraw_ = function() {
   this.computeYAxes_();
 
   // Create a new plotter.
-  if (this.plotter_) this.plotter_.clear();
+  if (this.plotter_) {
+    this.cascadeEvents_('clear');
+    this.plotter_.clear();
+  }
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
@@ -2330,7 +2333,9 @@ Dygraph.prototype.drawGraph_ = function() {
  * @private
  */
 Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
+  this.cascadeEvents_('clear');
   this.plotter_.clear();
+
   this.plotter_.render();
 
   // TODO(danvk): is this a performance bottleneck when panning?
