@@ -2332,6 +2332,9 @@ Dygraph.prototype.drawGraph_ = function() {
 Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.plotter_.clear();
   this.plotter_.render();
+
+  // TODO(danvk): is this a performance bottleneck when panning?
+  // The interaction canvas should already be empty in that situation.
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
 

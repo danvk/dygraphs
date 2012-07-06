@@ -29,6 +29,23 @@
 "use strict";
 
 
+/**
+ * @constructor
+ *
+ * This gets called when there are "new points" to chart. This is generally the
+ * case when the underlying data being charted has changed. It is _not_ called
+ * in the common case that the user has zoomed or is panning the view.
+ *
+ * The chart canvas has already been created by the Dygraph object. The
+ * renderer simply gets a drawing context.
+ *
+ * @param {Dyraph} dygraph The chart to which this renderer belongs.
+ * @param {Canvas} element The &lt;canvas&gt; DOM element on which to draw.
+ * @param {CanvasRenderingContext2D} elementContext The drawing context.
+ * @param {DygraphLayout} layout The chart's DygraphLayout object.
+ *
+ * TODO(danvk): remove the elementContext property.
+ */
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.dygraph_ = dygraph;
 
@@ -79,6 +96,12 @@ DygraphCanvasRenderer.prototype.attr_ = function(x) {
   return this.dygraph_.attr_(x);
 };
 
+/**
+ * Clears out all chart content and DOM elements.
+ * This is called immediately before render() on every frame, including
+ * during zooms and pans.
+ * @private
+ */
 DygraphCanvasRenderer.prototype.clear = function() {
   var context;
   if (this.isIE) {
@@ -123,7 +146,10 @@ DygraphCanvasRenderer.prototype.clear = function() {
   this.chartLabels = {};
 };
 
-
+/**
+ * Checks whether the browser supports the &lt;canvas&gt; tag.
+ * @private
+ */
 DygraphCanvasRenderer.isSupported = function(canvasName) {
   var canvas = null;
   try {
@@ -153,7 +179,11 @@ DygraphCanvasRenderer.prototype.setColors = function(colors) {
 };
 
 /**
- * Draw an X/Y grid on top of the existing plot
+ * This method is responsible for drawing everything on the chart, including
+ * lines, error bars, fills and axes.
+ * It is called immediately after clear() on every frame, including during pans
+ * and zooms.
+ * @private
  */
 DygraphCanvasRenderer.prototype.render = function() {
   // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
