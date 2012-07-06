@@ -1063,8 +1063,10 @@ Dygraph.prototype.createMouseEventElement_ = function() {
  * @private
  */
 Dygraph.prototype.setColors_ = function() {
-  var num = this.attr_("labels").length - 1;
+  var labels = this.getLabels();
+  var num = labels.length - 1;
   this.colors_ = [];
+  this.colorsMap_ = {};
   var colors = this.attr_('colors');
   var i;
   if (!colors) {
@@ -1076,13 +1078,16 @@ Dygraph.prototype.setColors_ = function() {
       // alternate colors for high contrast.
       var idx = i % 2 ? Math.ceil(i / 2) : (half + i / 2);
       var hue = (1.0 * idx/ (1 + num));
-      this.colors_.push(Dygraph.hsvToRGB(hue, sat, val));
+      var colorStr = Dygraph.hsvToRGB(hue, sat, val);
+      this.colors_.push(colorStr);
+      this.colorsMap_[labels[i]] = colorStr;
     }
   } else {
     for (i = 0; i < num; i++) {
       if (!this.visibility()[i]) continue;
       var colorStr = colors[i % colors.length];
       this.colors_.push(colorStr);
+      this.colorsMap_[labels[1 + i]] = colorStr;
     }
   }
 
@@ -2349,7 +2354,10 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
     this.rangeSelector_.renderInteractiveLayer();
   }
 
-  this.cascadeEvents_('drawChart');
+  this.cascadeEvents_('drawChart', {
+    canvas: this.hidden_,
+    drawingContext: this.hidden_ctx_,
+  });
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }

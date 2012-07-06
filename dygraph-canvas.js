@@ -232,7 +232,7 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  this._renderAnnotations();
+  // this._renderAnnotations();
 };
 
 DygraphCanvasRenderer.prototype._createIEClipArea = function() {
@@ -795,10 +795,10 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var setCount = setNames.length;
 
   // TODO(danvk): Move this mapping into Dygraph and get it out of here.
-  this.colors = {};
-  for (i = 0; i < setCount; i++) {
-    this.colors[setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
-  }
+  this.colors = this.dygraph_.colorsMap_;
+  // for (i = 0; i < setCount; i++) {
+  //   this.colors[setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
+  // }
 
   // Update Points
   // TODO(danvk): here

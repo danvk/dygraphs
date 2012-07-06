@@ -19,6 +19,7 @@ strftime/strftime-min.js \
 plugins/base.js \
 plugins/legend.js \
 plugins/chart-labels \
+plugins/annotations.js \
 plugins/install.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \
 > /tmp/dygraph.js

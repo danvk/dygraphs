@@ -30,6 +30,7 @@
     "plugins/base.js",
     "plugins/legend.js",
     "plugins/chart-labels.js",
+    "plugins/annotations.js",
     "plugins/install.js",
     "dygraph-options-reference.js"  // Shouldn't be included in generate-combined.sh
   ];
