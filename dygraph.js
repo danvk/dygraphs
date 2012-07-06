@@ -2103,7 +2103,7 @@ Dygraph.prototype.predraw_ = function() {
 
   // Create a new plotter.
   if (this.plotter_) {
-    this.cascadeEvents_('clear');
+    this.cascadeEvents_('clearChart');
     this.plotter_.clear();
   }
   this.plotter_ = new DygraphCanvasRenderer(this,
@@ -2333,7 +2333,7 @@ Dygraph.prototype.drawGraph_ = function() {
  * @private
  */
 Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
-  this.cascadeEvents_('clear');
+  this.cascadeEvents_('clearChart');
   this.plotter_.clear();
 
   this.plotter_.render();

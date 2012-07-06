@@ -20,7 +20,9 @@ chart_labels.prototype.toString = function() {
 
 chart_labels.prototype.activate = function(g) {
   return {
-    layout: this.layout
+    layout: this.layout,
+    // clearChart: this.clearChart,
+    drawChart: this.drawChart
   };
 };
 
@@ -35,7 +37,27 @@ var createDivInRect = function(r) {
   return div;
 };
 
+// Detach and null out any existing nodes.
+chart_labels.prototype.detachLabels_ = function() {
+  var els = [ this.title_div_,
+              this.xlabel_div_,
+              this.ylabel_div_,
+              this.y2label_div_ ];
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    if (!el) continue;
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  this.title_div_ = null;
+  this.xlabel_div_ = null;
+  this.ylabel_div_ = null;
+  this.y2label_div_ = null;
+};
+
 chart_labels.prototype.layout = function(e) {
+  this.detachLabels_();
+
   var g = e.dygraph;
   var div = e.chart_div;
   if (g.getOption('title')) {
@@ -64,11 +86,18 @@ chart_labels.prototype.layout = function(e) {
   */
 };
 
+chart_labels.prototype.drawChart = function(e) {
+  var g = e.dygraph;
+  if (this.title_div_) {
+    this.title_div_.innerHTML = g.getOption('title');
+  }
+};
+
+chart_labels.prototype.clearChart = function() {
+};
+
 chart_labels.prototype.destroy = function() {
-  this.title_div_ = null;
-  this.xlabel_div_ = null;
-  this.ylabel_div_ = null;
-  this.y2label_div_ = null;
+  detachLabels();
 };
 
 
