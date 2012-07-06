@@ -10,6 +10,13 @@ Dygraph.Plugins.Annotations = (function() {
 Current bits of jankiness:
 - Uses dygraph.layout_ to get the parsed annotations.
 - Uses dygraph.plotter_.area
+
+It would be nice if the plugin didn't require so much special support inside
+the core dygraphs classes, but annotations involve quite a bit of parsing and
+layout.
+
+TODO(danvk): cache DOM elements.
+
 */
 
 var annotations = function() {

@@ -232,7 +232,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   // Do the ordinary rendering, as before
   this._renderLineChart();
   this._renderAxis();
-  // this._renderAnnotations();
 };
 
 DygraphCanvasRenderer.prototype._createIEClipArea = function() {
@@ -484,104 +483,6 @@ DygraphCanvasRenderer.prototype._renderAxis = function() {
 };
 
 
-DygraphCanvasRenderer.prototype._renderAnnotations = function() {
-  var annotationStyle = {
-    "position": "absolute",
-    "fontSize": this.attr_('axisLabelFontSize') + "px",
-    "zIndex": 10,
-    "overflow": "hidden"
-  };
-
-  var bindEvt = function(eventName, classEventName, p, self) {
-    return function(e) {
-      var a = p.annotation;
-      if (a.hasOwnProperty(eventName)) {
-        a[eventName](a, p, self.dygraph_, e);
-      } else if (self.dygraph_.attr_(classEventName)) {
-        self.dygraph_.attr_(classEventName)(a, p, self.dygraph_,e );
-      }
-    };
-  };
-
-  // Get a list of point with annotations.
-  var points = this.layout.annotated_points;
-  for (var i = 0; i < points.length; i++) {
-    var p = points[i];
-    if (p.canvasx < this.area.x || p.canvasx > this.area.x + this.area.w ||
-        p.canvasy < this.area.y || p.canvasy > this.area.y + this.area.h) {
-      continue;
-    }
-
-    var a = p.annotation;
-    var tick_height = 6;
-    if (a.hasOwnProperty("tickHeight")) {
-      tick_height = a.tickHeight;
-    }
-
-    var div = document.createElement("div");
-    for (var name in annotationStyle) {
-      if (annotationStyle.hasOwnProperty(name)) {
-        div.style[name] = annotationStyle[name];
-      }
-    }
-    if (!a.hasOwnProperty('icon')) {
-      div.className = "dygraphDefaultAnnotation";
-    }
-    if (a.hasOwnProperty('cssClass')) {
-      div.className += " " + a.cssClass;
-    }
-
-    var width = a.hasOwnProperty('width') ? a.width : 16;
-    var height = a.hasOwnProperty('height') ? a.height : 16;
-    if (a.hasOwnProperty('icon')) {
-      var img = document.createElement("img");
-      img.src = a.icon;
-      img.width = width;
-      img.height = height;
-      div.appendChild(img);
-    } else if (p.annotation.hasOwnProperty('shortText')) {
-      div.appendChild(document.createTextNode(p.annotation.shortText));
-    }
-    div.style.left = (p.canvasx - width / 2) + "px";
-    if (a.attachAtBottom) {
-      div.style.top = (this.area.h - height - tick_height) + "px";
-    } else {
-      div.style.top = (p.canvasy - height - tick_height) + "px";
-    }
-    div.style.width = width + "px";
-    div.style.height = height + "px";
-    div.title = p.annotation.text;
-    div.style.color = this.colors[p.name];
-    div.style.borderColor = this.colors[p.name];
-    a.div = div;
-
-    this.dygraph_.addEvent(div, 'click',
-        bindEvt('clickHandler', 'annotationClickHandler', p, this));
-    this.dygraph_.addEvent(div, 'mouseover',
-        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
-    this.dygraph_.addEvent(div, 'mouseout',
-        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
-    this.dygraph_.addEvent(div, 'dblclick',
-        bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
-
-    this.container.appendChild(div);
-    this.annotations.push(div);
-
-    var ctx = this.elementContext;
-    ctx.strokeStyle = this.colors[p.name];
-    ctx.beginPath();
-    if (!a.attachAtBottom) {
-      ctx.moveTo(p.canvasx, p.canvasy);
-      ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
-    } else {
-      ctx.moveTo(p.canvasx, this.area.h);
-      ctx.lineTo(p.canvasx, this.area.h - 2 - tick_height);
-    }
-    ctx.closePath();
-    ctx.stroke();
-  }
-};
-
 /**
  * Returns a predicate to be used with an iterator, which will
  * iterate over points appropriately, depending on whether
@@ -794,11 +695,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   var setNames = this.layout.setNames;
   var setCount = setNames.length;
 
-  // TODO(danvk): Move this mapping into Dygraph and get it out of here.
   this.colors = this.dygraph_.colorsMap_;
-  // for (i = 0; i < setCount; i++) {
-  //   this.colors[setNames[i]] = this.colorScheme_[i % this.colorScheme_.length];
-  // }
 
   // Update Points
   // TODO(danvk): here

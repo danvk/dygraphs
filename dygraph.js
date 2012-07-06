@@ -3504,6 +3504,7 @@ Dygraph.prototype.datasetIndexFromSetName_ = function(name) {
  * called once -- all calls after the first will return immediately.
  */
 Dygraph.addAnnotationRule = function() {
+  // TODO(danvk): move this function into plugins/annotations.js?
   if (Dygraph.addedAnnotationCSS) return;
 
   var rule = "border: 1px solid black; " +
