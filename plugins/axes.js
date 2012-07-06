@@ -94,6 +94,8 @@ axes.prototype.drawChart = function(e) {
 
   var context = e.drawingContext;
   var containerDiv = e.canvas.parentNode;
+  var canvasWidth = e.canvas.width;
+  var canvasHeight = e.canvas.height;
 
   var label, x, y, tick, i;
 
@@ -159,7 +161,7 @@ axes.prototype.drawChart = function(e) {
         var top = (y - g.getOption('axisLabelFontSize') / 2);
         if (top < 0) top = 0;
 
-        if (top + g.getOption('axisLabelFontSize') + 3 > this.height) {
+        if (top + g.getOption('axisLabelFontSize') + 3 > canvasHeight) {
           label.style.bottom = "0px";
         } else {
           label.style.top = top + "px";
@@ -183,7 +185,7 @@ axes.prototype.drawChart = function(e) {
       var bottomTick = this.ylabels_[0];
       var fontSize = g.getOption('axisLabelFontSize');
       var bottom = parseInt(bottomTick.style.top, 10) + fontSize;
-      if (bottom > this.height - fontSize) {
+      if (bottom > canvasHeight - fontSize) {
         bottomTick.style.top = (parseInt(bottomTick.style.top, 10) -
             fontSize / 2) + "px";
       }
@@ -192,7 +194,7 @@ axes.prototype.drawChart = function(e) {
     // draw a vertical line on the left to separate the chart from the labels.
     var axisX;
     if (g.getOption('drawAxesAtZero')) {
-      var r = this.dygraph_.toPercentXCoord(0);
+      var r = g.toPercentXCoord(0);
       if (r > 1 || r < 0) r = 0;
       axisX = halfUp(area.x + r * area.w);
     } else {
@@ -234,8 +236,8 @@ axes.prototype.drawChart = function(e) {
         label.style.top = (y + g.getOption('axisTickSize')) + 'px';
 
         var left = (x - g.getOption('axisLabelWidth')/2);
-        if (left + g.getOption('axisLabelWidth') > this.width) {
-          left = this.width - g.getOption('xAxisLabelWidth');
+        if (left + g.getOption('axisLabelWidth') > canvasWidth) {
+          left = canvasWidth - g.getOption('xAxisLabelWidth');
           label.style.textAlign = "right";
         }
         if (left < 0) {
