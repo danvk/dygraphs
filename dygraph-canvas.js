@@ -172,43 +172,6 @@ DygraphCanvasRenderer.prototype.render = function() {
     this.attr_('underlayCallback')(ctx, this.area, this.dygraph_, this.dygraph_);
   }
 
-  var x, y, i, ticks;
-  if (this.attr_('drawYGrid')) {
-    ticks = this.layout.yticks;
-    ctx.save();
-    ctx.strokeStyle = this.attr_('gridLineColor');
-    ctx.lineWidth = this.attr_('gridLineWidth');
-    for (i = 0; i < ticks.length; i++) {
-      // TODO(danvk): allow secondary axes to draw a grid, too.
-      if (ticks[i][0] !== 0) continue;
-      x = halfUp(this.area.x);
-      y = halfDown(this.area.y + ticks[i][1] * this.area.h);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + this.area.w, y);
-      ctx.closePath();
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  if (this.attr_('drawXGrid')) {
-    ticks = this.layout.xticks;
-    ctx.save();
-    ctx.strokeStyle = this.attr_('gridLineColor');
-    ctx.lineWidth = this.attr_('gridLineWidth');
-    for (i=0; i<ticks.length; i++) {
-      x = halfUp(this.area.x + ticks[i][0] * this.area.w);
-      y = halfDown(this.area.y + this.area.h);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, this.area.y);
-      ctx.closePath();
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
   // Do the ordinary rendering, as before
   this._renderLineChart();
 };

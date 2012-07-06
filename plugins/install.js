@@ -12,5 +12,6 @@ Dygraph.PLUGINS.push(
   Dygraph.Plugins.Legend,
   Dygraph.Plugins.Axes,
   Dygraph.Plugins.ChartLabels,
-  Dygraph.Plugins.Annotations
+  Dygraph.Plugins.Annotations,
+  Dygraph.Plugins.Grid
 );

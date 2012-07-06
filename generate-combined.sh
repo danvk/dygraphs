@@ -17,10 +17,11 @@ dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
 plugins/base.js \
-plugins/axes.js \
-plugins/legend.js \
-plugins/chart-labels \
 plugins/annotations.js \
+plugins/axes.js \
+plugins/chart-labels \
+plugins/grid \
+plugins/legend.js \
 plugins/install.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \
 > /tmp/dygraph.js
