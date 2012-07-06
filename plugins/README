@@ -99,8 +99,15 @@ Plugin Events Reference:
 - select
 - deselect
 
+TODO(danvk): document all event properties for each event.
+
+
 Special methods:
 - (constructor)
 - activate
 - destroy
 
+
+----------------
+
+Notes on plugin registration and event cascade ordering/behavior.

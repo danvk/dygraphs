@@ -1128,7 +1128,7 @@ Dygraph.prototype.getPropertiesForSeries = function(series_name) {
     name: series_name,
     column: idx,
     visible: this.visibility()[idx - 1],
-    color: this.plotter_.colors[series_name],
+    color: this.colorsMap_[series_name],
     axis: 1 + this.seriesToAxisMap_[series_name]
   };
 };
@@ -2341,6 +2341,10 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('clearChart');
   this.plotter_.clear();
 
+  this.cascadeEvents_('drawChart', {
+    canvas: this.hidden_,
+    drawingContext: this.hidden_ctx_,
+  });
   this.plotter_.render();
 
   // TODO(danvk): is this a performance bottleneck when panning?
@@ -2353,11 +2357,6 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   if (this.rangeSelector_) {
     this.rangeSelector_.renderInteractiveLayer();
   }
-
-  this.cascadeEvents_('drawChart', {
-    canvas: this.hidden_,
-    drawingContext: this.hidden_ctx_,
-  });
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
