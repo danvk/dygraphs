@@ -17,6 +17,7 @@ dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
 plugins/base.js \
+plugins/axes.js \
 plugins/legend.js \
 plugins/chart-labels \
 plugins/annotations.js \

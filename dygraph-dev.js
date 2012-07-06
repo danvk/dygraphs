@@ -28,6 +28,7 @@
     "dygraph-range-selector.js",
     "dygraph-tickers.js",
     "plugins/base.js",
+    "plugins/axes.js",
     "plugins/legend.js",
     "plugins/chart-labels.js",
     "plugins/annotations.js",

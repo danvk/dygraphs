@@ -63,9 +63,12 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     x: 0,
     y: 0
   };
+
+  /*
   if (this.attr_('drawYAxis')) {
    area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
   }
+  */
 
   area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
   area.h = this.dygraph_.height_;
@@ -121,6 +124,7 @@ DygraphLayout.prototype.computePlotArea_ = function() {
   };
   this.dygraph_.cascadeEvents_('layout', e);
 
+  /*
   if (this.attr_('drawXAxis')) {
     if (this.attr_('xAxisHeight')) {
       area.h -= this.attr_('xAxisHeight');
@@ -128,6 +132,7 @@ DygraphLayout.prototype.computePlotArea_ = function() {
       area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
     }
   }
+  */
 
   // Shrink the drawing area to accomodate additional y-axes.
   if (this.dygraph_.numAxes() == 2) {
