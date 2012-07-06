@@ -145,14 +145,6 @@ DygraphCanvasRenderer.isSupported = function(canvasName) {
 };
 
 /**
- * @param { [String] } colors Array of color strings. Should have one entry for
- * each series to be rendered.
- */
-DygraphCanvasRenderer.prototype.setColors = function(colors) {
-  this.colorScheme_ = colors;
-};
-
-/**
  * This method is responsible for drawing everything on the chart, including
  * lines, error bars, fills and axes.
  * It is called immediately after clear() on every frame, including during pans
@@ -160,19 +152,6 @@ DygraphCanvasRenderer.prototype.setColors = function(colors) {
  * @private
  */
 DygraphCanvasRenderer.prototype.render = function() {
-  // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
-  // half-integers. This prevents them from drawing in two rows/cols.
-  var ctx = this.elementContext;
-  function halfUp(x)  { return Math.round(x) + 0.5; }
-  function halfDown(y){ return Math.round(y) - 0.5; }
-
-  if (this.attr_('underlayCallback')) {
-    // NOTE: we pass the dygraph object to this callback twice to avoid breaking
-    // users who expect a deprecated form of this callback.
-    this.attr_('underlayCallback')(ctx, this.area, this.dygraph_, this.dygraph_);
-  }
-
-  // Do the ordinary rendering, as before
   this._renderLineChart();
 };
 

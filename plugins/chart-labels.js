@@ -23,7 +23,7 @@ chart_labels.prototype.activate = function(g) {
   return {
     layout: this.layout,
     // clearChart: this.clearChart,
-    drawChart: this.drawChart
+    didDrawChart: this.didDrawChart
   };
 };
 
@@ -169,7 +169,7 @@ chart_labels.prototype.layout = function(e) {
   }
 };
 
-chart_labels.prototype.drawChart = function(e) {
+chart_labels.prototype.didDrawChart = function(e) {
   var g = e.dygraph;
   if (this.title_div_) {
     this.title_div_.children[0].innerHTML = g.getOption('title');

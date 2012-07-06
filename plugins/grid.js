@@ -30,11 +30,11 @@ grid.prototype.toString = function() {
 
 grid.prototype.activate = function(g) {
   return {
-    drawChart: this.drawChart
+    willDrawChart: this.willDrawChart
   };
 };
 
-grid.prototype.drawChart = function(e) {
+grid.prototype.willDrawChart = function(e) {
   // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
   // half-integers. This prevents them from drawing in two rows/cols.
   var g = e.dygraph;

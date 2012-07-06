@@ -100,7 +100,7 @@ legend.prototype.activate = function(g) {
     deselect: this.deselect,
     // TODO(danvk): rethink the name "predraw" before we commit to it in any API.
     predraw: this.predraw,
-    drawChart: this.drawChart
+    didDrawChart: this.didDrawChart
   };
 };
 
@@ -132,7 +132,7 @@ legend.prototype.deselect = function(e) {
   this.legend_div_.innerHTML = html;
 };
 
-legend.prototype.drawChart = function(e) {
+legend.prototype.didDrawChart = function(e) {
   this.deselect(e);
 }
 

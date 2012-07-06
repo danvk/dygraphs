@@ -33,7 +33,7 @@ axes.prototype.activate = function(g) {
   return {
     layout: this.layout,
     clearChart: this.clearChart,
-    drawChart: this.drawChart
+    willDrawChart: this.willDrawChart
   };
 };
 
@@ -84,7 +84,7 @@ axes.prototype.clearChart = function(e) {
   this.detachLabels();
 }
 
-axes.prototype.drawChart = function(e) {
+axes.prototype.willDrawChart = function(e) {
   var g = e.dygraph;
   if (!g.getOption('drawXAxis') && !g.getOption('drawYAxis')) return;
   

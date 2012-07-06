@@ -30,7 +30,7 @@ annotations.prototype.toString = function() {
 annotations.prototype.activate = function(g) {
   return {
     clearChart: this.clearChart,
-    drawChart: this.drawChart
+    didDrawChart: this.didDrawChart
   };
 };
 
@@ -47,7 +47,7 @@ annotations.prototype.clearChart = function(e) {
   this.detachLabels();
 };
 
-annotations.prototype.drawChart = function(e) {
+annotations.prototype.didDrawChart = function(e) {
   var g = e.dygraph;
 
   // Early out in the (common) case of zero annotations.

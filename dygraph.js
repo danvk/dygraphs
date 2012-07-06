@@ -1090,8 +1090,6 @@ Dygraph.prototype.setColors_ = function() {
       this.colorsMap_[labels[1 + i]] = colorStr;
     }
   }
-
-  this.plotter_.setColors(this.colors_);
 };
 
 /**
@@ -2341,11 +2339,20 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('clearChart');
   this.plotter_.clear();
 
-  this.cascadeEvents_('drawChart', {
+  if (this.attr_('underlayCallback')) {
+    // NOTE: we pass the dygraph object to this callback twice to avoid breaking
+    // users who expect a deprecated form of this callback.
+    this.attr_('underlayCallback')(
+        this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
+  }
+
+  var e = {
     canvas: this.hidden_,
     drawingContext: this.hidden_ctx_,
-  });
+  };
+  this.cascadeEvents_('willDrawChart', e);
   this.plotter_.render();
+  this.cascadeEvents_('didDrawChart', e);
 
   // TODO(danvk): is this a performance bottleneck when panning?
   // The interaction canvas should already be empty in that situation.
