@@ -64,7 +64,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   // internal state
   this.xlabels = [];
   this.ylabels = [];
-  this.annotations = [];
 
   this.area = layout.getPlotArea();
   this.container.style.position = "relative";
@@ -132,11 +131,9 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   removeArray(this.xlabels);
   removeArray(this.ylabels);
-  removeArray(this.annotations);
 
   this.xlabels = [];
   this.ylabels = [];
-  this.annotations = [];
 };
 
 /**
