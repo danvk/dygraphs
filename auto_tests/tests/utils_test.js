@@ -75,3 +75,98 @@ UtilsTestCase.prototype.testUpdateDeepDecoupled = function() {
   b.c.x = "new value";
   assertEquals("original", a.c.x);
 };
+
+
+UtilsTestCase.prototype.testIterator_nopredicate = function() {
+  var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  var iter = Dygraph.createIterator(array, 1, 4);
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.peek());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+
+  assertEquals('c', iter.peek());
+  assertEquals('c', iter.next());
+
+  assertTrue(iter.hasNext());
+  assertEquals('d', iter.next());
+
+  assertTrue(iter.hasNext());
+  assertEquals('e', iter.next());
+
+  assertFalse(iter.hasNext());
+}
+
+UtilsTestCase.prototype.testIterator_predicate = function() {
+  var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  var iter = Dygraph.createIterator(array, 1, 4,
+      function(array, idx) { return array[idx] !== 'd' });
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.peek());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+
+  assertEquals('c', iter.peek());
+  assertEquals('c', iter.next());
+
+  assertTrue(iter.hasNext());
+  assertEquals('e', iter.next());
+
+  assertFalse(iter.hasNext());
+}
+
+UtilsTestCase.prototype.testIterator_empty = function() {
+  var array = [];
+  var iter = Dygraph.createIterator([], 0, 0);
+  assertFalse(iter.hasNext());
+}
+
+UtilsTestCase.prototype.testIterator_outOfRange = function() {
+  var array = ['a', 'b', 'c'];
+  var iter = Dygraph.createIterator(array, 1, 4,
+      function(array, idx) { return array[idx] !== 'd' });
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.peek());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+
+  assertEquals('c', iter.peek());
+  assertEquals('c', iter.next());
+
+  assertFalse(iter.hasNext());
+}
+
+// Makes sure full array is tested, and that the predicate isn't called
+// with invalid boundaries.
+UtilsTestCase.prototype.testIterator_whole_array = function() {
+  var array = ['a', 'b', 'c'];
+  var iter = Dygraph.createIterator(array, 0, array.length,
+      function(array, idx) {
+        if (idx < 0 || idx >= array.length) {
+          throw "err";
+        } else {
+          return true;
+        };
+      });
+  assertTrue(iter.hasNext());
+  assertEquals('a', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('c', iter.next());
+  assertFalse(iter.hasNext());
+  assertNull(iter.next());
+}
+
+UtilsTestCase.prototype.testIterator_no_args = function() {
+  var array = ['a', 'b', 'c'];
+  var iter = Dygraph.createIterator(array);
+  assertTrue(iter.hasNext());
+  assertEquals('a', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('b', iter.next());
+  assertTrue(iter.hasNext());
+  assertEquals('c', iter.next());
+  assertFalse(iter.hasNext());
+  assertNull(iter.next());
+}

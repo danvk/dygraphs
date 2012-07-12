@@ -206,8 +206,6 @@ DygraphLayout._calcYNormal = function(axis, value) {
 };
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
-  // add all the rects
-  this.points = [];
   // An array to keep track of how many points will be drawn for each set.
   // This will allow for the canvas renderer to not have to check every point
   // for every data set since the points are added in order of the sets in
@@ -216,25 +214,41 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   this.setPointsOffsets = [];
 
   var connectSeparated = this.attr_('connectSeparatedPoints');
-  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+  // TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
+  // on chrome+linux, they are 6 times more expensive than iterating through the
+  // points and drawing the lines. The brunt of the cost comes from allocating
+  // the |point| structures.
+  var i = 0;
+  var setIdx;
+
+  // Preallocating the size of points reduces reallocations, and therefore,
+  // calls to collect garbage.
+  var totalPoints = 0;
+  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+    totalPoints += this.datasets[setIdx].length;
+  }
+  this.points = new Array(totalPoints);
+
+  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+    this.setPointsOffsets.push(i);
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
 
-    this.setPointsOffsets.push(this.points.length);
-    var setPointsLength = 0;
-
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
-      var xValue = parseFloat(item[0]);
-      var yValue = parseFloat(item[1]);
+      var xValue = DygraphLayout.parseFloat_(item[0]);
+      var yValue = DygraphLayout.parseFloat_(item[1]);
 
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yNormal = DygraphLayout._calcYNormal(axis, yValue);
 
-      var point = {
+      if (connectSeparated && item[1] === null) {
+        yValue = null;
+      }
+      this.points[i] = {
         // TODO(danvk): here
         x: xNormal,
         y: yNormal,
@@ -242,15 +256,25 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         yval: yValue,
         name: setName
       };
-      if (connectSeparated && item[1] === null) {
-        point.yval = null;
-      }
-      this.points.push(point);
-      setPointsLength += 1;
+      i++;
     }
-    this.setPointsLengths.push(setPointsLength);
+    this.setPointsLengths.push(i - this.setPointsOffsets[setIdx]);
   }
 };
+
+/**
+ * Optimized replacement for parseFloat, which was way too slow when almost
+ * all values were type number, with few edge cases, none of which were strings.
+ */
+DygraphLayout.parseFloat_ = function(val) {
+  // parseFloat(null) is NaN
+  if (val === null) {
+    return NaN;
+  }
+
+  // Assume it's a number or NaN. If it's something else, I'll be shocked.
+  return val;
+}
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
   var i, tick, label, pos;
@@ -296,13 +320,13 @@ DygraphLayout.prototype.evaluateWithError = function() {
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
-      var xv = parseFloat(item[0]);
-      var yv = parseFloat(item[1]);
+      var xv = DygraphLayout.parseFloat_(item[0]);
+      var yv = DygraphLayout.parseFloat_(item[1]);
 
       if (xv == this.points[i].xval &&
           yv == this.points[i].yval) {
-        var errorMinus = parseFloat(item[2]);
-        var errorPlus = parseFloat(item[3]);
+        var errorMinus = DygraphLayout.parseFloat_(item[2]);
+        var errorPlus = DygraphLayout.parseFloat_(item[3]);
 
         var yv_minus = yv - errorMinus;
         var yv_plus = yv + errorPlus;

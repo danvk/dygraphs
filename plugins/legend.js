@@ -209,7 +209,10 @@ var generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // TODO(danvk): remove this use of a private API
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
-  html = xvf(x, xOptView, labels[0], g) + ":";
+  html = xvf(x, xOptView, labels[0], g);
+  if(html !== '') {
+  	html += ':';
+  }
 
   var yOptViews = [];
   var num_axes = g.numAxes();
