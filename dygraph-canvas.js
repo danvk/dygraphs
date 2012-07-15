@@ -339,7 +339,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
 
   strategy.init();
 
-  while(iter.hasNext()) {
+  while(iter.hasNext) {
     point = iter.next();
     if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
@@ -350,7 +350,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
       }
       prevCanvasX = prevCanvasY = null;
     } else {
-      nextCanvasY = iter.hasNext() ? iter.peek().canvasy : null;
+      nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
       // TODO: we calculate isNullOrNaN for this point, and the next, and then, when
       // we iterate, test for isNullOrNaN again. Why bother?
       var isNextCanvasYNullOrNaN = nextCanvasY === null || nextCanvasY != nextCanvasY;
@@ -359,7 +359,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
         // Also consider a point to be "isolated" if it's adjacent to a
         // null point, excluding the graph edges.
         if ((!first && !prevCanvasX) ||
-            (iter.hasNext() && isNextCanvasYNullOrNaN)) {
+            (iter.hasNext && isNextCanvasYNullOrNaN)) {
           isIsolated = true;
         }
       }
@@ -480,7 +480,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      while (iter.hasNext()) {
+      while (iter.hasNext) {
         point = iter.next();
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
@@ -549,7 +549,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
                             fillAlpha + ')';
       ctx.fillStyle = err_color;
       ctx.beginPath();
-      while(iter.hasNext()) {
+      while(iter.hasNext) {
         point = iter.next();
         if (point.name == setName) { // TODO(klausw): this is always true
           if (!Dygraph.isOK(point.y)) {
