@@ -232,12 +232,18 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
  * skip over points with missing yVals.
  */
 DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
-  return connectSeparatedPoints ? DygraphCanvasRenderer._predicateThatSkipsEmptyPoints : null;
+  return connectSeparatedPoints
+      ? DygraphCanvasRenderer._predicateThatSkipsEmptyPoints
+      : null;
 }
 
 DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
   function(array, idx) { return array[idx].yval !== null; }
 
+/**
+ *
+ * @private
+ */
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
     ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
@@ -254,7 +260,8 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   ctx.save();
 
   var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
-      DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
+      DygraphCanvasRenderer._getIteratorPredicate(
+          this.attr_("connectSeparatedPoints")));
 
   var pointsOnLine;
   var strategy;
@@ -351,8 +358,8 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
       prevCanvasX = prevCanvasY = null;
     } else {
       nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
-      // TODO: we calculate isNullOrNaN for this point, and the next, and then, when
-      // we iterate, test for isNullOrNaN again. Why bother?
+      // TODO: we calculate isNullOrNaN for this point, and the next, and then,
+      // when we iterate, test for isNullOrNaN again. Why bother?
       var isNextCanvasYNullOrNaN = nextCanvasY === null || nextCanvasY != nextCanvasY;
       isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
       if (drawGapPoints) {
