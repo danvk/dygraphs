@@ -19,6 +19,7 @@
     "strftime/strftime-min.js",
     "rgbcolor/rgbcolor.js",
     "stacktrace.js",
+    "dashed-canvas.js",
     "dygraph-layout.js",
     "dygraph-canvas.js",
     "dygraph.js",
