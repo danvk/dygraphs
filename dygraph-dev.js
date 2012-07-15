@@ -21,6 +21,7 @@
     "stacktrace.js",
     "dygraph-layout.js",
     "dygraph-canvas.js",
+    "dygraph-candlechart.js",
     "dygraph.js",
     "dygraph-utils.js",
     "dygraph-gviz.js",

@@ -30,6 +30,9 @@
 
 
 var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
+  if (dygraph == undefined)
+    return;
+  
   this.dygraph_ = dygraph;
 
   this.layout = layout;

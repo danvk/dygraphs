@@ -221,6 +221,7 @@ Dygraph.DEFAULT_ATTRS = {
   fractions: false,
   wilsonInterval: true,  // only relevant if fractions is true
   customBars: false,
+  renderer : "line",
   fillGraph: false,
   fillAlpha: 0.15,
   connectSeparatedPoints: false,
@@ -2103,11 +2104,18 @@ Dygraph.prototype.predraw_ = function() {
 
   // Create a new plotter.
   if (this.plotter_) this.plotter_.clear();
-  this.plotter_ = new DygraphCanvasRenderer(this,
+  var renderType = this.attr_("renderer");
+  if (renderType == 'line') {
+      this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
                                             this.layout_);
-
+  } else if (renderType == 'candle') {
+      this.plotter_ = new DygraphCandleChartRenderer(this,
+                                            this.hidden_,
+                                            this.hidden_ctx_,
+                                            this.layout_);
+  }
   // The roller sits in the bottom left corner of the chart. We don't know where
   // this will be until the options are available, so it's positioned here.
   this.createRollInterface_();
