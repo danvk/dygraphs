@@ -458,66 +458,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
       this.dygraph_.warn("Can't use fillGraph option with error bars");
     }
 
-    for (i = 0; i < setCount; i++) {
-      setName = setNames[i];
-      axis = this.dygraph_.axisPropertiesForSeries(setName);
-      color = this.colors[setName];
+    this.drawErrorBars_(points);
 
-      var firstIndexInSet = this.layout.setPointsOffsets[i];
-      var setLength = this.layout.setPointsLengths[i];
-
-      var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
-          DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
-
-      // setup graphics context
-      prevX = NaN;
-      prevY = NaN;
-      prevYs = [-1, -1];
-      yscale = axis.yscale;
-      // should be same color as the lines but only 15% opaque.
-      rgb = new RGBColor(color);
-      err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
-                            fillAlpha + ')';
-      ctx.fillStyle = err_color;
-      ctx.beginPath();
-      while (iter.hasNext) {
-        point = iter.next();
-        if (point.name == setName) { // TODO(klausw): this is always true
-          if (!Dygraph.isOK(point.y)) {
-            prevX = NaN;
-            continue;
-          }
-
-          // TODO(danvk): here
-          if (stepPlot) {
-            newYs = [ point.y_bottom, point.y_top ];
-            prevY = point.y;
-          } else {
-            newYs = [ point.y_bottom, point.y_top ];
-          }
-          newYs[0] = this.area.h * newYs[0] + this.area.y;
-          newYs[1] = this.area.h * newYs[1] + this.area.y;
-          if (!isNaN(prevX)) {
-            if (stepPlot) {
-              ctx.moveTo(prevX, newYs[0]);
-            } else {
-              ctx.moveTo(prevX, prevYs[0]);
-            }
-            ctx.lineTo(point.canvasx, newYs[0]);
-            ctx.lineTo(point.canvasx, newYs[1]);
-            if (stepPlot) {
-              ctx.lineTo(prevX, newYs[1]);
-            } else {
-              ctx.lineTo(prevX, prevYs[1]);
-            }
-            ctx.closePath();
-          }
-          prevYs = newYs;
-          prevX = point.canvasx;
-        }
-      }
-      ctx.fill();
-    }
     ctx.restore();
   } else if (fillGraph) {
     ctx.save();
@@ -616,6 +558,77 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // Drawing the lines.
   for (i = 0; i < setCount; i += 1) {
     this._drawLine(ctx, i);
+  }
+};
+
+DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
+  var ctx = this.elementContext;
+  var setNames = this.layout.setNames;
+  var setCount = setNames.length;
+  var fillAlpha = this.attr_('fillAlpha');
+  var stepPlot = this.attr_("stepPlot");
+
+  var newYs;
+
+  for (var i = 0; i < setCount; i++) {
+    var setName = setNames[i];
+    var axis = this.dygraph_.axisPropertiesForSeries(setName);
+    var color = this.colors[setName];
+
+    var firstIndexInSet = this.layout.setPointsOffsets[i];
+    var setLength = this.layout.setPointsLengths[i];
+
+    var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+        DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
+
+    // setup graphics context
+    var prevX = NaN;
+    var prevY = NaN;
+    var prevYs = [-1, -1];
+    var yscale = axis.yscale;
+    // should be same color as the lines but only 15% opaque.
+    var rgb = new RGBColor(color);
+    var err_color =
+        'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
+    ctx.fillStyle = err_color;
+    ctx.beginPath();
+    while (iter.hasNext) {
+      var point = iter.next();
+      if (point.name == setName) { // TODO(klausw): this is always true
+        if (!Dygraph.isOK(point.y)) {
+          prevX = NaN;
+          continue;
+        }
+
+        // TODO(danvk): here
+        if (stepPlot) {
+          newYs = [ point.y_bottom, point.y_top ];
+          prevY = point.y;
+        } else {
+          newYs = [ point.y_bottom, point.y_top ];
+        }
+        newYs[0] = this.area.h * newYs[0] + this.area.y;
+        newYs[1] = this.area.h * newYs[1] + this.area.y;
+        if (!isNaN(prevX)) {
+          if (stepPlot) {
+            ctx.moveTo(prevX, newYs[0]);
+          } else {
+            ctx.moveTo(prevX, prevYs[0]);
+          }
+          ctx.lineTo(point.canvasx, newYs[0]);
+          ctx.lineTo(point.canvasx, newYs[1]);
+          if (stepPlot) {
+            ctx.lineTo(prevX, newYs[1]);
+          } else {
+            ctx.lineTo(prevX, prevYs[1]);
+          }
+          ctx.closePath();
+        }
+        prevYs = newYs;
+        prevX = point.canvasx;
+      }
+    }
+    ctx.fill();
   }
 };
 
