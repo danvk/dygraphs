@@ -419,20 +419,13 @@ DygraphCanvasRenderer.prototype._drawLine = function(ctx, i) {
 
 /**
  * Actually draw the lines chart, including error bars.
- * TODO(danvk): split this into several smaller functions.
  * @private
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function() {
-  // TODO(danvk): use this.attr_ for many of these.
   var ctx = this.elementContext;
-  var fillAlpha = this.attr_('fillAlpha');
   var errorBars = this.attr_("errorBars") || this.attr_("customBars");
   var fillGraph = this.attr_("fillGraph");
-  var stackedGraph = this.attr_("stackedGraph");
-  var stepPlot = this.attr_("stepPlot");
-  var points = this.layout.points;
-  var pointsLength = points.length;
-  var point, i, prevX, prevY, prevYs, color, setName, newYs, err_color, rgb, yscale, axis;
+  var i;
 
   var setNames = this.layout.setNames;
   var setCount = setNames.length;
@@ -445,113 +438,27 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(bhs): this loop is a hot-spot for high-point-count charts. These
   // transformations can be pushed into the canvas via linear transformation
   // matrices.
-  for (i = pointsLength; i--;) {
-    point = points[i];
+  var points = this.layout.points;
+  for (i = points.length; i--;) {
+    var point = points[i];
     point.canvasx = this.area.w * point.x + this.area.x;
     point.canvasy = this.area.h * point.y + this.area.y;
   }
 
-  // create paths
+  // Draw any "fills", i.e. error bars or the filled area under a series.
+  // These must all be drawn before any lines, so that the main lines of a
+  // series are drawn on top.
   if (errorBars) {
-    ctx.save();
     if (fillGraph) {
       this.dygraph_.warn("Can't use fillGraph option with error bars");
     }
 
+    ctx.save();
     this.drawErrorBars_(points);
-
     ctx.restore();
   } else if (fillGraph) {
     ctx.save();
-    var baseline = {};  // for stacked graphs: baseline for filling
-    var currBaseline;
-
-    // process sets in reverse order (needed for stacked graphs)
-    for (i = setCount - 1; i >= 0; i--) {
-      setName = setNames[i];
-      color = this.colors[setName];
-      axis = this.dygraph_.axisPropertiesForSeries(setName);
-      var axisY = 1.0 + axis.minyval * axis.yscale;
-      if (axisY < 0.0) axisY = 0.0;
-      else if (axisY > 1.0) axisY = 1.0;
-      axisY = this.area.h * axisY + this.area.y;
-      var firstIndexInSet = this.layout.setPointsOffsets[i];
-      var setLength = this.layout.setPointsLengths[i];
-
-      var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
-          DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
-
-      // setup graphics context
-      prevX = NaN;
-      prevYs = [-1, -1];
-      yscale = axis.yscale;
-      // should be same color as the lines but only 15% opaque.
-      rgb = new RGBColor(color);
-      err_color = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' +
-                            fillAlpha + ')';
-      ctx.fillStyle = err_color;
-      ctx.beginPath();
-      while(iter.hasNext) {
-        point = iter.next();
-        if (point.name == setName) { // TODO(klausw): this is always true
-          if (!Dygraph.isOK(point.y)) {
-            prevX = NaN;
-            continue;
-          }
-          if (stackedGraph) {
-            currBaseline = baseline[point.canvasx];
-            var lastY;
-            if (currBaseline === undefined) {
-              lastY = axisY;
-            } else {
-              if(stepPlot) {
-                lastY = currBaseline[0];
-              } else {
-                lastY = currBaseline;
-              }
-            }
-            newYs = [ point.canvasy, lastY ];
-
-            if(stepPlot) {
-              // Step plots must keep track of the top and bottom of
-              // the baseline at each point.
-              if(prevYs[0] === -1) {
-                baseline[point.canvasx] = [ point.canvasy, axisY ];
-              } else {
-                baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
-              }
-            } else {
-              baseline[point.canvasx] = point.canvasy;
-            }
-
-          } else {
-            newYs = [ point.canvasy, axisY ];
-          }
-          if (!isNaN(prevX)) {
-            ctx.moveTo(prevX, prevYs[0]);
-
-            if (stepPlot) {
-              ctx.lineTo(point.canvasx, prevYs[0]);
-              if(currBaseline) {
-                // Draw to the bottom of the baseline
-                ctx.lineTo(point.canvasx, currBaseline[1]);
-              } else {
-                ctx.lineTo(point.canvasx, newYs[1]);
-              }
-            } else {
-              ctx.lineTo(point.canvasx, newYs[0]);
-              ctx.lineTo(point.canvasx, newYs[1]);
-            }
-
-            ctx.lineTo(prevX, prevYs[1]);
-            ctx.closePath();
-          }
-          prevYs = newYs;
-          prevX = point.canvasx;
-        }
-      }
-      ctx.fill();
-    }
+    this.drawFillBars_(points);
     ctx.restore();
   }
 
@@ -561,12 +468,19 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   }
 };
 
+/**
+ * Draws the shaded error bars/confidence intervals for each series.
+ * This happens before the center lines are drawn, since the center lines
+ * need to be drawn on top of the error bars for all series.
+ *
+ * @private
+ */
 DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
   var ctx = this.elementContext;
   var setNames = this.layout.setNames;
   var setCount = setNames.length;
   var fillAlpha = this.attr_('fillAlpha');
-  var stepPlot = this.attr_("stepPlot");
+  var stepPlot = this.attr_('stepPlot');
 
   var newYs;
 
@@ -579,7 +493,8 @@ DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
     var setLength = this.layout.setPointsLengths[i];
 
     var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
-        DygraphCanvasRenderer._getIteratorPredicate(this.attr_("connectSeparatedPoints")));
+        DygraphCanvasRenderer._getIteratorPredicate(
+            this.attr_("connectSeparatedPoints")));
 
     // setup graphics context
     var prevX = NaN;
@@ -622,6 +537,113 @@ DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
           } else {
             ctx.lineTo(prevX, prevYs[1]);
           }
+          ctx.closePath();
+        }
+        prevYs = newYs;
+        prevX = point.canvasx;
+      }
+    }
+    ctx.fill();
+  }
+};
+
+/**
+ * Draws the shaded regions when "fillGraph" is set. Not to be confused with
+ * error bars.
+ *
+ * @private
+ */
+DygraphCanvasRenderer.prototype.drawFillBars_ = function(points) {
+  var ctx = this.elementContext;
+  var setNames = this.layout.setNames;
+  var setCount = setNames.length;
+  var fillAlpha = this.attr_('fillAlpha');
+  var stepPlot = this.attr_('stepPlot');
+  var stackedGraph = this.attr_("stackedGraph");
+
+  var baseline = {};  // for stacked graphs: baseline for filling
+  var currBaseline;
+
+  // process sets in reverse order (needed for stacked graphs)
+  for (var i = setCount - 1; i >= 0; i--) {
+    var setName = setNames[i];
+    var color = this.colors[setName];
+    var axis = this.dygraph_.axisPropertiesForSeries(setName);
+    var axisY = 1.0 + axis.minyval * axis.yscale;
+    if (axisY < 0.0) axisY = 0.0;
+    else if (axisY > 1.0) axisY = 1.0;
+    axisY = this.area.h * axisY + this.area.y;
+    var firstIndexInSet = this.layout.setPointsOffsets[i];
+    var setLength = this.layout.setPointsLengths[i];
+
+    var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+        DygraphCanvasRenderer._getIteratorPredicate(
+            this.attr_("connectSeparatedPoints")));
+
+    // setup graphics context
+    var prevX = NaN;
+    var prevYs = [-1, -1];
+    var newYs;
+    var yscale = axis.yscale;
+    // should be same color as the lines but only 15% opaque.
+    var rgb = new RGBColor(color);
+    var err_color =
+        'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
+    ctx.fillStyle = err_color;
+    ctx.beginPath();
+    while(iter.hasNext) {
+      var point = iter.next();
+      if (point.name == setName) { // TODO(klausw): this is always true
+        if (!Dygraph.isOK(point.y)) {
+          prevX = NaN;
+          continue;
+        }
+        if (stackedGraph) {
+          currBaseline = baseline[point.canvasx];
+          var lastY;
+          if (currBaseline === undefined) {
+            lastY = axisY;
+          } else {
+            if(stepPlot) {
+              lastY = currBaseline[0];
+            } else {
+              lastY = currBaseline;
+            }
+          }
+          newYs = [ point.canvasy, lastY ];
+
+          if(stepPlot) {
+            // Step plots must keep track of the top and bottom of
+            // the baseline at each point.
+            if(prevYs[0] === -1) {
+              baseline[point.canvasx] = [ point.canvasy, axisY ];
+            } else {
+              baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
+            }
+          } else {
+            baseline[point.canvasx] = point.canvasy;
+          }
+
+        } else {
+          newYs = [ point.canvasy, axisY ];
+        }
+        if (!isNaN(prevX)) {
+          ctx.moveTo(prevX, prevYs[0]);
+
+          if (stepPlot) {
+            ctx.lineTo(point.canvasx, prevYs[0]);
+            if(currBaseline) {
+              // Draw to the bottom of the baseline
+              ctx.lineTo(point.canvasx, currBaseline[1]);
+            } else {
+              ctx.lineTo(point.canvasx, newYs[1]);
+            }
+          } else {
+            ctx.lineTo(point.canvasx, newYs[0]);
+            ctx.lineTo(point.canvasx, newYs[1]);
+          }
+
+          ctx.lineTo(prevX, prevYs[1]);
           ctx.closePath();
         }
         prevYs = newYs;
