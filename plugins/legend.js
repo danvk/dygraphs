@@ -94,6 +94,7 @@ legend.prototype.activate = function(g) {
   }
 
   this.legend_div_ = div;
+  this.one_em_width_ = 10;  // just a guess, will be updated.
 
   return {
     select: this.select,
@@ -118,16 +119,15 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
-  // Have to do this every time, since styles might have changed.
-  // TODO(danvk): this is not necessary; dashes never used in this case.
-  var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
-
-  var html = generateLegendHTML(e.dygraph, xValue, points, oneEmWidth);
+  var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
   this.legend_div_.innerHTML = html;
 };
 
 legend.prototype.deselect = function(e) {
+  // Have to do this every time, since styles might have changed.
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
+  this.one_em_width_ = oneEmWidth;
+
   var html = generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
   this.legend_div_.innerHTML = html;
 };
