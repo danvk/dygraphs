@@ -257,22 +257,18 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   }
   var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
-  ctx.save();
-
   var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
       DygraphCanvasRenderer._getIteratorPredicate(
           this.attr_("connectSeparatedPoints")));
 
   var stroking = strokePattern && (strokePattern.length >= 2);
 
-  var pointsOnLine;
-  var strategy;
+  ctx.save();
   if (stroking) {
     ctx.installPattern(strokePattern);
   }
 
-  strategy = trivialStrategy(ctx, color, strokeWidth);
-  pointsOnLine = this._drawSeries(ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, strategy);
+  var pointsOnLine = this._drawSeries(ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, color);
   this._drawPointsOnLine(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize);
 
   if (stroking) {
@@ -280,29 +276,6 @@ DygraphCanvasRenderer.prototype._drawStyledLine = function(
   }
 
   ctx.restore();
-};
-
-var trivialStrategy = function(ctx, color, strokeWidth) {
-  return new function() {
-    this.init = function() {
-      ctx.beginPath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = strokeWidth;
-    };
-    this.finish = function() {
-      ctx.stroke(); // should this include closePath?
-    };
-    this.startSegment = function() { };
-    this.endSegment = function() { };
-    this.drawLine = function(x1, y1, x2, y2) {
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-    };
-    // don't skip pixels.
-    this.skipPixel = function() {
-      return false;
-    };
-  };
 };
 
 DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, drawPointCallback, setName, color, pointSize) {
@@ -317,7 +290,7 @@ DygraphCanvasRenderer.prototype._drawPointsOnLine = function(ctx, pointsOnLine, 
 
 DygraphCanvasRenderer.prototype._drawSeries = function(
     ctx, iter, strokeWidth, pointSize, drawPoints, drawGapPoints,
-    stepPlot, strategy) {
+    stepPlot, color) {
 
   var prevCanvasX = null;
   var prevCanvasY = null;
@@ -327,16 +300,17 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
   var pointsOnLine = []; // Array of [canvasx, canvasy] pairs.
   var first = true; // the first cycle through the while loop
 
-  strategy.init();
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = strokeWidth;
 
-  while(iter.hasNext) {
+  while (iter.hasNext) {
     point = iter.next();
     if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
-        strategy.startSegment();
-        strategy.drawLine(prevX, prevY, point.canvasx, prevY);
-        strategy.endSegment();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(point.canvasx, prevY);
       }
       prevCanvasX = prevCanvasY = null;
     } else {
@@ -354,17 +328,14 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
         }
       }
       if (prevCanvasX !== null) {
-        if (strategy.skipPixel(prevCanvasX, prevCanvasY, point.canvasx, point.canvasy)) {
-          continue;
-        }
         if (strokeWidth) {
-          strategy.startSegment();
           if (stepPlot) {
-            strategy.drawLine(prevCanvasX, prevCanvasY, point.canvasx, prevCanvasY);
+            ctx.moveTo(prevCanvasX, prevCanvasY);
+            ctx.lineTo(point.canvasx, prevCanvasY);
             prevCanvasX = point.canvasx;
           }
-          strategy.drawLine(prevCanvasX, prevCanvasY, point.canvasx, point.canvasy);      
-          strategy.endSegment();
+          ctx.moveTo(prevCanvasX, prevCanvasY);
+          ctx.lineTo(point.canvasx, point.canvasy);
         }
       }
       if (drawPoints || isIsolated) {
@@ -375,7 +346,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
     }
     first = false;
   }
-  strategy.finish();
+  ctx.stroke();
   return pointsOnLine;
 };
 
