@@ -554,62 +554,60 @@ DygraphCanvasRenderer.prototype.drawFillBars_ = function(points) {
     ctx.beginPath();
     while(iter.hasNext) {
       var point = iter.next();
-      if (point.name == setName) { // TODO(klausw): this is always true
-        if (!Dygraph.isOK(point.y)) {
-          prevX = NaN;
-          continue;
-        }
-        if (stackedGraph) {
-          currBaseline = baseline[point.canvasx];
-          var lastY;
-          if (currBaseline === undefined) {
-            lastY = axisY;
-          } else {
-            if(stepPlot) {
-              lastY = currBaseline[0];
-            } else {
-              lastY = currBaseline;
-            }
-          }
-          newYs = [ point.canvasy, lastY ];
-
-          if(stepPlot) {
-            // Step plots must keep track of the top and bottom of
-            // the baseline at each point.
-            if(prevYs[0] === -1) {
-              baseline[point.canvasx] = [ point.canvasy, axisY ];
-            } else {
-              baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
-            }
-          } else {
-            baseline[point.canvasx] = point.canvasy;
-          }
-
+      if (!Dygraph.isOK(point.y)) {
+        prevX = NaN;
+        continue;
+      }
+      if (stackedGraph) {
+        currBaseline = baseline[point.canvasx];
+        var lastY;
+        if (currBaseline === undefined) {
+          lastY = axisY;
         } else {
-          newYs = [ point.canvasy, axisY ];
-        }
-        if (!isNaN(prevX)) {
-          ctx.moveTo(prevX, prevYs[0]);
-
-          if (stepPlot) {
-            ctx.lineTo(point.canvasx, prevYs[0]);
-            if(currBaseline) {
-              // Draw to the bottom of the baseline
-              ctx.lineTo(point.canvasx, currBaseline[1]);
-            } else {
-              ctx.lineTo(point.canvasx, newYs[1]);
-            }
+          if(stepPlot) {
+            lastY = currBaseline[0];
           } else {
-            ctx.lineTo(point.canvasx, newYs[0]);
+            lastY = currBaseline;
+          }
+        }
+        newYs = [ point.canvasy, lastY ];
+
+        if(stepPlot) {
+          // Step plots must keep track of the top and bottom of
+          // the baseline at each point.
+          if(prevYs[0] === -1) {
+            baseline[point.canvasx] = [ point.canvasy, axisY ];
+          } else {
+            baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
+          }
+        } else {
+          baseline[point.canvasx] = point.canvasy;
+        }
+
+      } else {
+        newYs = [ point.canvasy, axisY ];
+      }
+      if (!isNaN(prevX)) {
+        ctx.moveTo(prevX, prevYs[0]);
+
+        if (stepPlot) {
+          ctx.lineTo(point.canvasx, prevYs[0]);
+          if(currBaseline) {
+            // Draw to the bottom of the baseline
+            ctx.lineTo(point.canvasx, currBaseline[1]);
+          } else {
             ctx.lineTo(point.canvasx, newYs[1]);
           }
-
-          ctx.lineTo(prevX, prevYs[1]);
-          ctx.closePath();
+        } else {
+          ctx.lineTo(point.canvasx, newYs[0]);
+          ctx.lineTo(point.canvasx, newYs[1]);
         }
-        prevYs = newYs;
-        prevX = point.canvasx;
+
+        ctx.lineTo(prevX, prevYs[1]);
+        ctx.closePath();
       }
+      prevYs = newYs;
+      prevX = point.canvasx;
     }
     ctx.fill();
   }
