@@ -470,39 +470,37 @@ DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
     ctx.beginPath();
     while (iter.hasNext) {
       var point = iter.next();
-      if (point.name == setName) { // TODO(klausw): this is always true
-        if (!Dygraph.isOK(point.y)) {
-          prevX = NaN;
-          continue;
-        }
-
-        // TODO(danvk): here
-        if (stepPlot) {
-          newYs = [ point.y_bottom, point.y_top ];
-          prevY = point.y;
-        } else {
-          newYs = [ point.y_bottom, point.y_top ];
-        }
-        newYs[0] = this.area.h * newYs[0] + this.area.y;
-        newYs[1] = this.area.h * newYs[1] + this.area.y;
-        if (!isNaN(prevX)) {
-          if (stepPlot) {
-            ctx.moveTo(prevX, newYs[0]);
-          } else {
-            ctx.moveTo(prevX, prevYs[0]);
-          }
-          ctx.lineTo(point.canvasx, newYs[0]);
-          ctx.lineTo(point.canvasx, newYs[1]);
-          if (stepPlot) {
-            ctx.lineTo(prevX, newYs[1]);
-          } else {
-            ctx.lineTo(prevX, prevYs[1]);
-          }
-          ctx.closePath();
-        }
-        prevYs = newYs;
-        prevX = point.canvasx;
+      if (!Dygraph.isOK(point.y)) {
+        prevX = NaN;
+        continue;
       }
+
+      // TODO(danvk): here
+      if (stepPlot) {
+        newYs = [ point.y_bottom, point.y_top ];
+        prevY = point.y;
+      } else {
+        newYs = [ point.y_bottom, point.y_top ];
+      }
+      newYs[0] = this.area.h * newYs[0] + this.area.y;
+      newYs[1] = this.area.h * newYs[1] + this.area.y;
+      if (!isNaN(prevX)) {
+        if (stepPlot) {
+          ctx.moveTo(prevX, newYs[0]);
+        } else {
+          ctx.moveTo(prevX, prevYs[0]);
+        }
+        ctx.lineTo(point.canvasx, newYs[0]);
+        ctx.lineTo(point.canvasx, newYs[1]);
+        if (stepPlot) {
+          ctx.lineTo(prevX, newYs[1]);
+        } else {
+          ctx.lineTo(prevX, prevYs[1]);
+        }
+        ctx.closePath();
+      }
+      prevYs = newYs;
+      prevX = point.canvasx;
     }
     ctx.fill();
   }
