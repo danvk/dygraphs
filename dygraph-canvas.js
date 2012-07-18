@@ -306,6 +306,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
   ctx.strokeStyle = color;
   ctx.lineWidth = strokeWidth;
 
+  // NOTE: we break the iterator's encapsulation here for about a 25% speedup.
   var arr = iter.array_;
   var limit = iter.end_;
   var predicate = iter.predicate_;
@@ -354,6 +355,8 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
             ctx.lineTo(point.canvasx, prevCanvasY);
             prevCanvasX = point.canvasx;
           }
+
+          // TODO(danvk): this moveTo is rarely necessary
           ctx.moveTo(prevCanvasX, prevCanvasY);
           ctx.lineTo(point.canvasx, point.canvasy);
         }
@@ -495,7 +498,6 @@ DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
         continue;
       }
 
-      // TODO(danvk): here
       if (stepPlot) {
         newYs = [ point.y_bottom, point.y_top ];
         prevY = point.y;
