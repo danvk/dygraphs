@@ -80,7 +80,7 @@ page.open(url, function(status) {
     for (var test in caseResults) {
       if (caseResults[test] !== true) {
         num_failing++;
-        failures.push(testCase + '.' + test + ' failed');
+        failures.push(testCase + '.' + test);
       } else {
         // console.log(testCase + '.' + test + ' passed');
         num_passing++;

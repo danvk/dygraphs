@@ -686,6 +686,7 @@ Dygraph.Iterator = function(array, start, length, predicate) {
   length = length || array.length;
   this.hasNext = true; // Use to identify if there's another element.
   this.peek = null; // Use for look-ahead
+  this.start_ = start;
   this.array_ = array;
   this.predicate_ = predicate;
   this.end_ = Math.min(array.length, start + length);

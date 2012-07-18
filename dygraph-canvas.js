@@ -235,10 +235,12 @@ DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
   return connectSeparatedPoints
       ? DygraphCanvasRenderer._predicateThatSkipsEmptyPoints
       : null;
-}
+};
 
 DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
-  function(array, idx) { return array[idx].yval !== null; }
+    function(array, idx) {
+  return array[idx].yval !== null;
+};
 
 /**
  *
@@ -304,8 +306,16 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
   ctx.strokeStyle = color;
   ctx.lineWidth = strokeWidth;
 
-  while (iter.hasNext) {
-    point = iter.next();
+  for (var i = iter.start_; i < iter.end_; i++) {
+    // while (iter.hasNext) {
+    point = iter.array_[i];
+    if (iter.predicate_) {
+      while (i < iter.end_ && !iter.predicate_(iter.array_, i)) {
+        i++;
+      }
+      if (i == iter.end_) break;
+    }
+
     if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
@@ -314,19 +324,33 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
       }
       prevCanvasX = prevCanvasY = null;
     } else {
-      nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
-      // TODO: we calculate isNullOrNaN for this point, and the next, and then,
-      // when we iterate, test for isNullOrNaN again. Why bother?
-      var isNextCanvasYNullOrNaN = nextCanvasY === null || nextCanvasY != nextCanvasY;
-      isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
-      if (drawGapPoints) {
-        // Also consider a point to be "isolated" if it's adjacent to a
-        // null point, excluding the graph edges.
-        if ((!first && !prevCanvasX) ||
-            (iter.hasNext && isNextCanvasYNullOrNaN)) {
-          isIsolated = true;
+      isIsolated = false;
+      if (drawGapPoints || !prevCanvasX) {
+        // nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
+        // var next_i = i + 1;
+        // while (next_i < iter.end_ && (!iter.predicate_ || !iter.predicate_(iter.array_, next_i))) {
+        //   next_i++;
+        // }
+        iter.nextIdx_ = i;
+        var peek = iter.next();
+        nextCanvasY = peek ? peek.canvasy : null;
+        // nextCanvasY = next_i < iter.end_ ? iter.array_[next_i].canvasy : null;
+
+        // TODO: we calculate isNullOrNaN for this point, and the next, and then,
+        // when we iterate, test for isNullOrNaN again. Why bother?
+        var isNextCanvasYNullOrNaN = nextCanvasY === null ||
+            nextCanvasY != nextCanvasY;
+        isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
+        if (drawGapPoints) {
+          // Also consider a point to be "isolated" if it's adjacent to a
+          // null point, excluding the graph edges.
+          if ((!first && !prevCanvasX) ||
+              (iter.hasNext && isNextCanvasYNullOrNaN)) {
+            isIsolated = true;
+          }
         }
       }
+
       if (prevCanvasX !== null) {
         if (strokeWidth) {
           if (stepPlot) {
