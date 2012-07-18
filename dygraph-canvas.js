@@ -333,7 +333,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
         // }
         iter.nextIdx_ = i;
         var peek = iter.next();
-        nextCanvasY = peek ? peek.canvasy : null;
+        nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
         // nextCanvasY = next_i < iter.end_ ? iter.array_[next_i].canvasy : null;
 
         // TODO: we calculate isNullOrNaN for this point, and the next, and then,
