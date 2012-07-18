@@ -2168,10 +2168,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     if (!this.visibility()[i - 1]) continue;
 
     // TODO(danvk): is this copy really necessary?
-    var series = [];
-    for (j = 0; j < rolledSeries[i].length; j++) {
-      series.push(rolledSeries[i][j]);
-    }
+    var series = rolledSeries[i];  // [];
+    // for (j = 0; j < rolledSeries[i].length; j++) {
+    //   series.push(rolledSeries[i][j]);
+    // }
 
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
@@ -2634,10 +2634,12 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  *
  * This is where undesirable points (i.e. negative values on log scales and
  * missing values through which we wish to connect lines) are dropped.
+ * TODO(danvk): the "missing values" bit above doesn't seem right.
  * 
  * @private
  */
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
+  // TODO(danvk): pre-allocate series here.
   var series = [];
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
