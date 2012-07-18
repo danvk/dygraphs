@@ -314,6 +314,7 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
         i++;
       }
       if (i == iter.end_) break;
+      point = iter.array_[i];
     }
 
     if (point.canvasy === null || point.canvasy != point.canvasy) {
