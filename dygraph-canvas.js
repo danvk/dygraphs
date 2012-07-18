@@ -306,14 +306,18 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
   ctx.strokeStyle = color;
   ctx.lineWidth = strokeWidth;
 
-  for (var i = iter.start_; i < iter.end_; i++) {
-    point = iter.array_[i];
-    if (iter.predicate_) {
-      while (i < iter.end_ && !iter.predicate_(iter.array_, i)) {
+  var arr = iter.array_;
+  var limit = iter.end_;
+  var predicate = iter.predicate_;
+
+  for (var i = iter.start_; i < limit; i++) {
+    point = arr[i];
+    if (predicate) {
+      while (i < limit && !predicate(arr, i)) {
         i++;
       }
-      if (i == iter.end_) break;
-      point = iter.array_[i];
+      if (i == limit) break;
+      point = arr[i];
     }
 
     if (point.canvasy === null || point.canvasy != point.canvasy) {
