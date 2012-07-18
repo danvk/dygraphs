@@ -422,6 +422,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // TODO(bhs): this loop is a hot-spot for high-point-count charts. These
   // transformations can be pushed into the canvas via linear transformation
   // matrices.
+  // NOTE(danvk): this is trickier than it sounds at first. The transformation
+  // needs to be done before the .moveTo() and .lineTo() calls, but must be
+  // undone before the .stroke() call to ensure that the stroke width is
+  // unaffected.  An alternative is to reduce the stroke width in the
+  // transformed coordinate space, but you can't specify different values for
+  // each dimension (as you can with .scale()). The speedup here is ~12%.
   var points = this.layout.points;
   for (i = points.length; i--;) {
     var point = points[i];
