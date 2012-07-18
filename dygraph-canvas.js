@@ -307,7 +307,6 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
   ctx.lineWidth = strokeWidth;
 
   for (var i = iter.start_; i < iter.end_; i++) {
-    // while (iter.hasNext) {
     point = iter.array_[i];
     if (iter.predicate_) {
       while (i < iter.end_ && !iter.predicate_(iter.array_, i)) {
@@ -327,18 +326,10 @@ DygraphCanvasRenderer.prototype._drawSeries = function(
     } else {
       isIsolated = false;
       if (drawGapPoints || !prevCanvasX) {
-        // nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
-        // var next_i = i + 1;
-        // while (next_i < iter.end_ && (!iter.predicate_ || !iter.predicate_(iter.array_, next_i))) {
-        //   next_i++;
-        // }
         iter.nextIdx_ = i;
         var peek = iter.next();
         nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
-        // nextCanvasY = next_i < iter.end_ ? iter.array_[next_i].canvasy : null;
 
-        // TODO: we calculate isNullOrNaN for this point, and the next, and then,
-        // when we iterate, test for isNullOrNaN again. Why bother?
         var isNextCanvasYNullOrNaN = nextCanvasY === null ||
             nextCanvasY != nextCanvasY;
         isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
