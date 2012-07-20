@@ -475,15 +475,13 @@ DygraphCanvasRenderer.prototype.drawErrorBars_ = function(points) {
 
   var newYs;
 
-  for (var i = 0; i < setCount; i++) {
-    var setName = setNames[i];
+  for (var setIdx = 0; setIdx < setCount; setIdx++) {
+    var setName = setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     var color = this.colors[setName];
 
-    var firstIndexInSet = this.layout.setPointsOffsets[i];
-    var setLength = this.layout.setPointsLengths[i];
-
-    var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+    var points = this.layout.points[setIdx];
+    var iter = Dygraph.createIterator(points, 0, points.length,
         DygraphCanvasRenderer._getIteratorPredicate(
             this.attr_("connectSeparatedPoints")));
 
