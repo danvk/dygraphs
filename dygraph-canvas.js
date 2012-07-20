@@ -247,19 +247,17 @@ DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
  * @private
  */
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
-    ctx, i, setName, color, strokeWidth, strokePattern, drawPoints,
+    ctx, setIdx, setName, color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
   // TODO(konigsberg): Compute attributes outside this method call.
   var stepPlot = this.attr_("stepPlot");
-  var firstIndexInSet = this.layout.setPointsOffsets[i];
-  var setLength = this.layout.setPointsLengths[i];
-  var points = this.layout.points;
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
   var drawGapPoints = this.dygraph_.attr_('drawGapEdgePoints', setName);
 
-  var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+  var points = this.layout.points[setIdx];
+  var iter = Dygraph.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
           this.attr_("connectSeparatedPoints")));
 
@@ -428,11 +426,14 @@ DygraphCanvasRenderer.prototype._renderLineChart = function() {
   // unaffected.  An alternative is to reduce the stroke width in the
   // transformed coordinate space, but you can't specify different values for
   // each dimension (as you can with .scale()). The speedup here is ~12%.
-  var points = this.layout.points;
-  for (i = points.length; i--;) {
-    var point = points[i];
-    point.canvasx = this.area.w * point.x + this.area.x;
-    point.canvasy = this.area.h * point.y + this.area.y;
+  var sets = this.layout.points;
+  for (i = sets.length; i--;) {
+    var points = sets[i];
+    for (var j = points.length; j--;) {
+      var point = points[j];
+      point.canvasx = this.area.w * point.x + this.area.x;
+      point.canvasy = this.area.h * point.y + this.area.y;
+    }
   }
 
   // Draw any "fills", i.e. error bars or the filled area under a series.
