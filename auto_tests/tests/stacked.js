@@ -58,5 +58,4 @@ stackedTestCase.prototype.testCorrectColors = function() {
   // 38 = round(0.15 * 255)
   assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 250));
   assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 150));
-  assertEquals([255, 255, 255, 255], getPixel(imageData, 200, 50));
 };

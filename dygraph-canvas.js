@@ -553,18 +553,17 @@ DygraphCanvasRenderer.prototype.drawFillBars_ = function(points) {
   var currBaseline;
 
   // process sets in reverse order (needed for stacked graphs)
-  for (var i = setCount - 1; i >= 0; i--) {
-    var setName = setNames[i];
+  for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
+    var setName = setNames[setIdx];
     var color = this.colors[setName];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     var axisY = 1.0 + axis.minyval * axis.yscale;
     if (axisY < 0.0) axisY = 0.0;
     else if (axisY > 1.0) axisY = 1.0;
     axisY = this.area.h * axisY + this.area.y;
-    var firstIndexInSet = this.layout.setPointsOffsets[i];
-    var setLength = this.layout.setPointsLengths[i];
 
-    var iter = Dygraph.createIterator(points, firstIndexInSet, setLength,
+    var points = this.layout.points[setIdx];
+    var iter = Dygraph.createIterator(points, 0, points.length,
         DygraphCanvasRenderer._getIteratorPredicate(
             this.attr_("connectSeparatedPoints")));
 
