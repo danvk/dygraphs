@@ -3041,6 +3041,13 @@ Dygraph.prototype.parseArray_ = function(data) {
     for (i = 1; i < data[0].length; i++) {
       this.attrs_.labels.push("Y" + i);
     }
+  } else {
+    var num_labels = this.attr_("labels");
+    if (num_labels.length != data[0].length) {
+      this.error("Mismatch between number of labels (" + num_labels +
+          ") and number of columns in array (" + data[0].length + ")");
+      return null;
+    }
   }
 
   if (Dygraph.isDateLike(data[0][0])) {

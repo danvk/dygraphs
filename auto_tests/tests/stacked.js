@@ -41,8 +41,9 @@ stackedTestCase.prototype.testCorrectColors = function() {
   // y pixel 100 = y1 line (green)
   // y pixels 0-99 = nothing (white)
 
-  var canvas = g.hidden_ctx_;
-  var imageData = canvas.getImageData(0, 0, 400, 300);
+  // TODO(danvk): factor this and getPixel() into a utility usable by all tests.
+  var ctx = g.hidden_ctx_;
+  var imageData = ctx.getImageData(0, 0, 400, 300);
 
   assertEquals(400, imageData.width);
   assertEquals(300, imageData.height);
