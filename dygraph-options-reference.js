@@ -23,7 +23,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "If set, stack series on top of one another rather than drawing them independently."
+    "description": "If set, stack series on top of one another rather than drawing them independently. The first series specified in the input data will wind up on top of the chart and the last will be on bottom."
   },
   "pointSize": {
     "default": "1",
