@@ -27,6 +27,24 @@
  * the drawing context.
  */
 
+/**
+ * Change the stroking style of the canvas drawing context from a solid line to
+ * a pattern (e.g. dashes, dash-dot-dash, etc.)
+ *
+ * Once you've installed the pattern, you can draw with it by using the
+ * beginPath(), moveTo(), lineTo() and stroke() method calls. Note that some
+ * more advanced methods (e.g. quadraticCurveTo() and bezierCurveTo()) are not
+ * supported. See file overview for a working example.
+ *
+ * Side effects of calling this method include adding an "isPatternInstalled"
+ * property and "uninstallPattern" method to this particular canvas context.
+ * You must call uninstallPattern() before calling installPattern() again.
+ *
+ * @param {pattern | Array<Number>} A description of the stroke pattern. Even
+ * indices indicate a draw and odd indices indicate a gap (in pixels). The
+ * array should have a even length as any odd lengthed array could be expressed
+ * as a smaller even length array.
+ */
 CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
   if (typeof(this.isPatternInstalled) !== 'undefined') {
     throw "Must un-install old line pattern before installing a new one.";
