@@ -161,3 +161,13 @@ CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
     segments = [];
   };
 };
+
+/**
+ * Removes the previously-installed pattern.
+ * You must call installPattern() before calling this. You can install at most
+ * one pattern at a time--there is no pattern stack.
+ */
+CanvasRenderingContext2D.prototype.uninstallPattern = function() {
+  // This will be replaced by a non-error version when a pattern is installed.
+  throw "Must install a line pattern before uninstalling it.";
+}
