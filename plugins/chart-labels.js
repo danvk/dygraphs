@@ -5,6 +5,8 @@
  */
 Dygraph.Plugins.ChartLabels = (function() {
 
+"use strict";
+
 // TODO(danvk): move chart label options out of dygraphs and into the plugin.
 // TODO(danvk): only tear down & rebuild the DIVs when it's necessary.
 
@@ -58,7 +60,7 @@ chart_labels.prototype.detachLabels_ = function() {
 
 var createRotatedDiv = function(g, box, axis, classes, html) {
   // TODO(danvk): is this outer div actually necessary?
-  div = document.createElement("div");
+  var div = document.createElement("div");
   div.style.position = 'absolute';
   if (axis == 1) {
     // NOTE: this is cheating. Should be positioned relative to the box.
@@ -100,7 +102,7 @@ var createRotatedDiv = function(g, box, axis, classes, html) {
     inner_div.style.top = '0px';
   }
 
-  class_div = document.createElement("div");
+  var class_div = document.createElement("div");
   class_div.className = classes;
   class_div.innerHTML = html;
 

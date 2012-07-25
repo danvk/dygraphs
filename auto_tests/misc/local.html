@@ -128,7 +128,7 @@
     var summary = { failed: 0, passed: 0 };
     postResults(results, summary);
     resultsDiv.appendChild(document.createElement("hr"));
-    document.getElementById('summary').innerText = "(" + summary.failed + " failed, " + summary.passed + " passed)";
+    document.getElementById('summary').innerHTML = "(" + summary.failed + " failed, " + summary.passed + " passed)";
   }
 
   function createResultsDiv() {
@@ -237,7 +237,7 @@ if (selector != null) { // running a test
   var createLink = function(parent, text, url) {
     var li = createAttached("li", parent);
     var a = createAttached("a", li);
-    a.innerText = text;
+    a.innerHTML = text;
     a.href = url;
   }
   if (tc == null) {

@@ -9,6 +9,8 @@ Dygraph.Plugins.Grid = (function() {
 /*
 
 Current bits of jankiness:
+- Direct layout access
+- Direct area access
 
 */
 

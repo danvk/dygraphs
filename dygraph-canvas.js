@@ -243,7 +243,6 @@ DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
 };
 
 /**
- *
  * @private
  */
 DygraphCanvasRenderer.prototype._drawStyledLine = function(
