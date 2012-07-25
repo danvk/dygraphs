@@ -6,6 +6,8 @@
 
 Dygraph.Plugins.Annotations = (function() {
 
+"use strict";
+
 /**
 Current bits of jankiness:
 - Uses dygraph.layout_ to get the parsed annotations.

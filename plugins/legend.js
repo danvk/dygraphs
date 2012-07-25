@@ -5,7 +5,6 @@
  */
 
 Dygraph.Plugins.Legend = (function() {
-
 /*
 
 Current bits of jankiness:

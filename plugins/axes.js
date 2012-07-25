@@ -6,6 +6,8 @@
 
 Dygraph.Plugins.Axes = (function() {
 
+"use strict";
+
 /*
 
 Bits of jankiness:
