@@ -51,20 +51,24 @@ Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
 Dygraph.log = function(severity, message) {
   var st;
   if (typeof(printStackTrace) != 'undefined') {
-    // Remove uninteresting bits: logging functions and paths.
-    st = printStackTrace({guess:false});
-    while (st[0].indexOf("stacktrace") != -1) {
-      st.splice(0, 1);
-    }
+    try {
+      // Remove uninteresting bits: logging functions and paths.
+      st = printStackTrace({guess:false});
+      while (st[0].indexOf("stacktrace") != -1) {
+        st.splice(0, 1);
+      }
 
-    st.splice(0, 2);
-    for (var i = 0; i < st.length; i++) {
-      st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
-          .replace(/\@.*\/([^\/]*)/, '@$1')
-          .replace('[object Object].', '');
+      st.splice(0, 2);
+      for (var i = 0; i < st.length; i++) {
+        st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
+            .replace(/\@.*\/([^\/]*)/, '@$1')
+            .replace('[object Object].', '');
+      }
+      var top_msg = st.splice(0, 1)[0];
+      message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
+    } catch(e) {
+      // Oh well, it was worth a shot!
     }
-    var top_msg = st.splice(0, 1)[0];
-    message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
   }
 
   if (typeof(console) != 'undefined') {
