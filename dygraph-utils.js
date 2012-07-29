@@ -51,20 +51,24 @@ Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
 Dygraph.log = function(severity, message) {
   var st;
   if (typeof(printStackTrace) != 'undefined') {
-    // Remove uninteresting bits: logging functions and paths.
-    st = printStackTrace({guess:false});
-    while (st[0].indexOf("stacktrace") != -1) {
-      st.splice(0, 1);
-    }
+    try {
+      // Remove uninteresting bits: logging functions and paths.
+      st = printStackTrace({guess:false});
+      while (st[0].indexOf("stacktrace") != -1) {
+        st.splice(0, 1);
+      }
 
-    st.splice(0, 2);
-    for (var i = 0; i < st.length; i++) {
-      st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
-          .replace(/\@.*\/([^\/]*)/, '@$1')
-          .replace('[object Object].', '');
+      st.splice(0, 2);
+      for (var i = 0; i < st.length; i++) {
+        st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
+            .replace(/\@.*\/([^\/]*)/, '@$1')
+            .replace('[object Object].', '');
+      }
+      var top_msg = st.splice(0, 1)[0];
+      message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
+    } catch(e) {
+      // Oh well, it was worth a shot!
     }
-    var top_msg = st.splice(0, 1)[0];
-    message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
   }
 
   if (typeof(console) != 'undefined') {
@@ -684,46 +688,38 @@ Dygraph.isAndroid = function() {
 Dygraph.Iterator = function(array, start, length, predicate) {
   start = start || 0;
   length = length || array.length;
+  this.hasNext = true; // Use to identify if there's another element.
+  this.peek = null; // Use for look-ahead
+  this.start_ = start;
   this.array_ = array;
   this.predicate_ = predicate;
   this.end_ = Math.min(array.length, start + length);
-  this.nextIdx_ = start - 1; // use -1 so initial call to advance works.
-  this.hasNext_ = true;
-  this.peek_ = null;
-  this.advance_();
-}
-
-Dygraph.Iterator.prototype.hasNext = function() {
-  return this.hasNext_;
+  this.nextIdx_ = start - 1; // use -1 so initial advance works.
+  this.next(); // ignoring result.
 }
 
 Dygraph.Iterator.prototype.next = function() {
-  if (this.hasNext_) {
-    var obj = this.peek_;
-    this.advance_();
-    return obj;
+  if (!this.hasNext) {
+    return null;
   }
-  return null;
-}
+  var obj = this.peek;
 
-Dygraph.Iterator.prototype.peek = function() {
-  return this.peek_;
-}
-
-Dygraph.Iterator.prototype.advance_ = function() {
-  var nextIdx = this.nextIdx_;
-  nextIdx++;
-  while(nextIdx < this.end_) {
+  var nextIdx = this.nextIdx_ + 1;
+  var found = false;
+  while (nextIdx < this.end_) {
     if (!this.predicate_ || this.predicate_(this.array_, nextIdx)) {
-      this.peek_ = this.array_[nextIdx];
-      this.nextIdx_ = nextIdx;
-      return;
+      this.peek = this.array_[nextIdx];
+      found = true;
+      break;
     }
     nextIdx++;
   }
   this.nextIdx_ = nextIdx;
-  this.hasNext_ = false;
-  this.peek_ = null;
+  if (!found) {
+    this.hasNext = false;
+    this.peek = null;
+  }
+  return obj;
 }
 
 /**

@@ -42,6 +42,7 @@
   -->
   <script type="text/javascript" src="../tests/to_dom_coords.js"></script>
   <script type="text/javascript" src="../tests/update_while_panning.js"></script>
+  <script type="text/javascript" src="../tests/stacked.js"></script>
   <script type="text/javascript" src="../tests/update_options.js"></script>
   <script type="text/javascript" src="../tests/utils_test.js"></script>
 
@@ -127,7 +128,7 @@
     var summary = { failed: 0, passed: 0 };
     postResults(results, summary);
     resultsDiv.appendChild(document.createElement("hr"));
-    document.getElementById('summary').innerText = "(" + summary.failed + " failed, " + summary.passed + " passed)";
+    document.getElementById('summary').innerHTML = "(" + summary.failed + " failed, " + summary.passed + " passed)";
   }
 
   function createResultsDiv() {
@@ -236,7 +237,7 @@ if (selector != null) { // running a test
   var createLink = function(parent, text, url) {
     var li = createAttached("li", parent);
     var a = createAttached("a", li);
-    a.innerText = text;
+    a.innerHTML = text;
     a.href = url;
   }
   if (tc == null) {

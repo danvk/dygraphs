@@ -89,3 +89,57 @@ errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
+errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
+  // Two constant series with constant error.
+  var data = [
+    [0, [100, 50], [200, 50]],
+    [1, [100, 50], [200, 50]]
+  ];
+
+  var opts = {
+    errorBars: true,
+    sigma: 1.0,
+    fillAlpha: 0.15,
+    colors: ['#00ff00', '#0000ff'],
+    drawXGrid: false,
+    drawYGrid: false,
+    drawXAxis: false,
+    drawYAxis: false,
+    width: 400,
+    height: 300,
+    valueRange: [0, 300],
+    labels: ['X', 'Y1', 'Y2']
+  };
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  // y-pixels (0=top, 299=bottom)
+  //   0- 48: empty (white)
+  //  49- 98: Y2 error bar
+  //  99:     Y2 center line
+  // 100-148: Y2 error bar
+  // 149-198: Y1 error bar
+  // 199:     Y1 center line
+  // 200-248: Y1 error bar
+  // 249-299: empty (white)
+  // TODO(danvk): test the edges of these regions.
+
+  var ctx = g.hidden_.getContext("2d");  // bypass Proxy
+  var imageData = ctx.getImageData(0, 0, 400, 300);
+
+  assertEquals(400, imageData.width);
+  assertEquals(300, imageData.height);
+
+  // returns an (r, g, b, alpha) tuple for the pixel.
+  // values are in [0, 255].
+  var getPixel = function(imageData, x, y) {
+    var i = 4 * (x + imageData.width * y);
+    var d = imageData.data;
+    return [d[i], d[i+1], d[i+2], d[i+3]];
+  };
+
+  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 75));
+  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 125));
+  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 175));
+  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 225));
+}

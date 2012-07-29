@@ -16,7 +16,12 @@ dygraph-range-selector.js \
 dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
+dashed-canvas.js \
 plugins/base.js \
+plugins/annotations.js \
+plugins/axes.js \
+plugins/chart-labels.js \
+plugins/grid.js \
 plugins/legend.js \
 plugins/install.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \

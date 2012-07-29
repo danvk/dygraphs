@@ -35,6 +35,7 @@ var DygraphLayout = function(dygraph) {
   this.setNames = [];
   this.annotations = [];
   this.yAxes_ = null;
+  this.points = null;
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
@@ -63,48 +64,60 @@ DygraphLayout.prototype.computePlotArea_ = function() {
     x: 0,
     y: 0
   };
-  if (this.attr_('drawYAxis')) {
-   area.x = this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize');
-  }
 
   area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
   area.h = this.dygraph_.height_;
-  if (this.attr_('drawXAxis')) {
-    if (this.attr_('xAxisHeight')) {
-      area.h -= this.attr_('xAxisHeight');
-    } else {
-      area.h -= this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+
+  // Let plugins reserve space.
+  var e = {
+    chart_div: this.dygraph_.graphDiv,
+    reserveSpaceLeft: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y,
+        w: px,
+        h: area.h
+      };
+      area.x += px;
+      area.w -= px;
+      return r;
+    },
+    reserveSpaceRight: function(px) {
+      var r = {
+        x: area.x + area.w - px,
+        y: area.y,
+        w: px,
+        h: area.h
+      };
+      area.w -= px;
+      return r;
+    },
+    reserveSpaceTop: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y,
+        w: area.w,
+        h: px
+      };
+      area.y += px;
+      area.h -= px;
+      return r;
+    },
+    reserveSpaceBottom: function(px) {
+      var r = {
+        x: area.x,
+        y: area.y + area.h - px,
+        w: area.w,
+        h: px
+      };
+      area.h -= px;
+      return r;
+    },
+    chartRect: function() {
+      return {x:area.x, y:area.y, w:area.w, h:area.h};
     }
-  }
-
-  // Shrink the drawing area to accomodate additional y-axes.
-  if (this.dygraph_.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    area.w -= (this.attr_('yAxisLabelWidth') + 2 * this.attr_('axisTickSize'));
-  } else if (this.dygraph_.numAxes() > 2) {
-    this.dygraph_.error("Only two y-axes are supported at this time. (Trying " +
-                        "to use " + this.dygraph_.numAxes() + ")");
-  }
-
-  // Add space for chart labels: title, xlabel and ylabel.
-  if (this.attr_('title')) {
-    area.h -= this.attr_('titleHeight');
-    area.y += this.attr_('titleHeight');
-  }
-  if (this.attr_('xlabel')) {
-    area.h -= this.attr_('xLabelHeight');
-  }
-  if (this.attr_('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-  }
-
-  if (this.attr_('y2label')) {
-    // same logic applies here as for ylabel.
-    // TODO(danvk): make yAxisLabelWidth a per-axis property
-  }
+  };
+  this.dygraph_.cascadeEvents_('layout', e);
 
   // Add space for range selector, if needed.
   if (this.attr_('showRangeSelector')) {
@@ -206,34 +219,23 @@ DygraphLayout._calcYNormal = function(axis, value) {
 };
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
-  // An array to keep track of how many points will be drawn for each set.
-  // This will allow for the canvas renderer to not have to check every point
-  // for every data set since the points are added in order of the sets in
-  // datasets.
-  this.setPointsLengths = [];
-  this.setPointsOffsets = [];
-
   var connectSeparated = this.attr_('connectSeparatedPoints');
+
+  // series index -> point index in series -> |point| structure
+  this.points = new Array(this.datasets.length);
+
   // TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
   // on chrome+linux, they are 6 times more expensive than iterating through the
   // points and drawing the lines. The brunt of the cost comes from allocating
   // the |point| structures.
-  var i = 0;
-  var setIdx;
-
-  // Preallocating the size of points reduces reallocations, and therefore,
-  // calls to collect garbage.
-  var totalPoints = 0;
-  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
-    totalPoints += this.datasets[setIdx].length;
-  }
-  this.points = new Array(totalPoints);
-
-  for (setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
-    this.setPointsOffsets.push(i);
+  for (var setIdx = 0; setIdx < this.datasets.length; setIdx++) {
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
+
+    // Preallocating the size of points reduces reallocations, and therefore,
+    // calls to collect garbage.
+    var seriesPoints = new Array(dataset.length);
 
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
@@ -245,20 +247,21 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yNormal = DygraphLayout._calcYNormal(axis, yValue);
 
+      // TODO(danvk): drop the point in this case, don't null it.
+      // The nulls create complexity in DygraphCanvasRenderer._drawSeries.
       if (connectSeparated && item[1] === null) {
         yValue = null;
       }
-      this.points[i] = {
-        // TODO(danvk): here
+      seriesPoints[j] = {
         x: xNormal,
         y: yNormal,
         xval: xValue,
         yval: yValue,
-        name: setName
+        name: setName  // TODO(danvk): is this really necessary?
       };
-      i++;
     }
-    this.setPointsLengths.push(i - this.setPointsOffsets[setIdx]);
+
+    this.points[setIdx] = seriesPoints;
   }
 };
 
@@ -314,6 +317,7 @@ DygraphLayout.prototype.evaluateWithError = function() {
   // Copy over the error terms
   var i = 0;  // index in this.points
   for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
+    var points = this.points[setIdx];
     var j = 0;
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
@@ -323,15 +327,15 @@ DygraphLayout.prototype.evaluateWithError = function() {
       var xv = DygraphLayout.parseFloat_(item[0]);
       var yv = DygraphLayout.parseFloat_(item[1]);
 
-      if (xv == this.points[i].xval &&
-          yv == this.points[i].yval) {
+      if (xv == points[j].xval &&
+          yv == points[j].yval) {
         var errorMinus = DygraphLayout.parseFloat_(item[2]);
         var errorPlus = DygraphLayout.parseFloat_(item[3]);
 
         var yv_minus = yv - errorMinus;
         var yv_plus = yv + errorPlus;
-        this.points[i].y_top = DygraphLayout._calcYNormal(axis, yv_minus);
-        this.points[i].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus);
+        points[j].y_top = DygraphLayout._calcYNormal(axis, yv_minus);
+        points[j].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus);
       }
     }
   }
@@ -355,12 +359,15 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   }
 
   // TODO(antrob): loop through annotations not points.
-  for (i = 0; i < this.points.length; i++) {
-    var p = this.points[i];
-    var k = p.xval + "," + p.name;
-    if (k in annotations) {
-      p.annotation = annotations[k];
-      this.annotated_points.push(p);
+  for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
+    var points = this.points[setIdx];
+    for (i = 0; i < points.length; i++) {
+      var p = points[i];
+      var k = p.xval + "," + p.name;
+      if (k in annotations) {
+        p.annotation = annotations[k];
+        this.annotated_points.push(p);
+      }
     }
   }
 };
@@ -383,8 +390,8 @@ DygraphLayout.prototype.removeAllDatasets = function() {
  * Return a copy of the point at the indicated index, with its yval unstacked.
  * @param int index of point in layout_.points
  */
-DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
-  var point = this.points[idx];
+DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
+  var point = this.points[setIdx][row];
   // If the point is missing, no unstacking is necessary
   if (!point.yval) {
     return point;
@@ -402,9 +409,10 @@ DygraphLayout.prototype.unstackPointAtIndex = function(idx) {
 
   // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
-  for (var i = idx+1; i < this.points.length; i++) {
-    if ((this.points[i].xval == point.xval) && this.points[i].yval) {
-      unstackedPoint.yval -= this.points[i].yval;
+  var points = this.points[setIdx];
+  for (var i = row + 1; i < points.length; i++) {
+    if ((points[i].xval == point.xval) && points[i].yval) {
+      unstackedPoint.yval -= points[i].yval;
       break;
     }
   }
