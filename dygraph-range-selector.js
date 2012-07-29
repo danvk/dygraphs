@@ -80,7 +80,7 @@ DygraphRangeSelector.prototype.resize_ = function() {
   }
 
   var plotArea = this.layout_.getPlotArea();
-  var xAxisLabelHeight = this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize');
+  var xAxisLabelHeight = this.attr_('xAxisHeight') || (this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize'));
   this.canvasRect_ = {
     x: plotArea.x,
     y: plotArea.y + plotArea.h + xAxisLabelHeight + 4,
