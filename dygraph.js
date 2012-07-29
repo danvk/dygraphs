@@ -462,7 +462,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
-  if (!name in this.eventListeners_) return true;
+  if (!this.eventListeners_ || !name in this.eventListeners_) return true;
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
@@ -949,12 +949,12 @@ Dygraph.prototype.createInterface_ = function() {
   }
 
   var dygraph = this;
-  
+
   this.mouseMoveHandler = function(e) {
     dygraph.mouseMove_(e);
   };
   this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
-  
+
   this.mouseOutHandler = function(e) {
     dygraph.mouseOut_(e);
   };
@@ -983,7 +983,7 @@ Dygraph.prototype.destroy = function() {
       node.removeChild(node.firstChild);
     }
   };
- 
+
   for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
     var reg = this.registeredEvents_[idx];
     Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
@@ -2642,7 +2642,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * This is where undesirable points (i.e. negative values on log scales and
  * missing values through which we wish to connect lines) are dropped.
  * TODO(danvk): the "missing values" bit above doesn't seem right.
- * 
+ *
  * @private
  */
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
