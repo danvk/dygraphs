@@ -931,7 +931,6 @@ Dygraph.prototype.createInterface_ = function() {
   if (this.attr_('showRangeSelector')) {
     // The range selector must be created here so that its canvases and contexts get created here.
     // For some reason, if the canvases and contexts don't get created here, things don't work in IE.
-    // The range selector also sets xAxisHeight in order to reserve space.
     this.rangeSelector_ = new DygraphRangeSelector(this);
   }
 
