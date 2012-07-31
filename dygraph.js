@@ -409,6 +409,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.datasetIndex_ = [];
 
   this.registeredEvents_ = [];
+  this.eventListeners_ = {};
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -436,7 +437,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // At this point, plugins can no longer register event handlers.
   // Construct a map from event -> ordered list of [callback, plugin].
-  this.eventListeners_ = {};
   for (var i = 0; i < this.plugins_.length; i++) {
     var plugin_dict = this.plugins_[i];
     for (var eventName in plugin_dict.events) {
@@ -931,7 +931,6 @@ Dygraph.prototype.createInterface_ = function() {
   if (this.attr_('showRangeSelector')) {
     // The range selector must be created here so that its canvases and contexts get created here.
     // For some reason, if the canvases and contexts don't get created here, things don't work in IE.
-    // The range selector also sets xAxisHeight in order to reserve space.
     this.rangeSelector_ = new DygraphRangeSelector(this);
   }
 
@@ -949,12 +948,12 @@ Dygraph.prototype.createInterface_ = function() {
   }
 
   var dygraph = this;
-  
+
   this.mouseMoveHandler = function(e) {
     dygraph.mouseMove_(e);
   };
   this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
-  
+
   this.mouseOutHandler = function(e) {
     dygraph.mouseOut_(e);
   };
@@ -983,7 +982,7 @@ Dygraph.prototype.destroy = function() {
       node.removeChild(node.firstChild);
     }
   };
- 
+
   for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
     var reg = this.registeredEvents_[idx];
     Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
@@ -2642,7 +2641,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * This is where undesirable points (i.e. negative values on log scales and
  * missing values through which we wish to connect lines) are dropped.
  * TODO(danvk): the "missing values" bit above doesn't seem right.
- * 
+ *
  * @private
  */
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
