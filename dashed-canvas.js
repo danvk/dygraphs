@@ -46,6 +46,8 @@
  * as a smaller even length array.
  */
 CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
+  "use strict";
+
   if (typeof(this.isPatternInstalled) !== 'undefined') {
     throw "Must un-install old line pattern before installing a new one.";
   }
@@ -115,10 +117,10 @@ CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
 
         // Set last pattern index we used for this pattern.
         var patternIndex = dashedLineToHistory[0];
-        x = 0;
+        var x = 0;
         while (len > x) {
           // Get the length of the pattern segment we are dealing with.
-          segment = pattern[patternIndex];
+          var segment = pattern[patternIndex];
           // If our last draw didn't complete the pattern segment all the way
           // we will try to finish it. Otherwise we will try to do the whole
           // segment.
