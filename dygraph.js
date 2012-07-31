@@ -1734,7 +1734,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts && !this.lockedSet_) {
+  if (highlightSeriesOpts && !this.isSeriesLocked()) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -2022,6 +2022,14 @@ Dygraph.prototype.getSelection = function() {
  */
 Dygraph.prototype.getHighlightSeries = function() {
   return this.highlightSet_;
+};
+
+/**
+ * Returns true if the currently-highlighted series was locked
+ * via setSelection(..., seriesName, true).
+ */
+Dygraph.prototype.isSeriesLocked = function() {
+  return this.lockedSet_;
 };
 
 /**
