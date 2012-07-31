@@ -462,7 +462,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
-  if (!name in this.eventListeners_) return true;
+  if (!this.eventListeners_ || !name in this.eventListeners_) return true;
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
