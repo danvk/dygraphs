@@ -220,6 +220,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
  */
 Dygraph.Interaction.startZoom = function(event, g, context) {
   context.isZooming = true;
+  context.zoomMoved = false;
 };
 
 /**
@@ -236,6 +237,7 @@ Dygraph.Interaction.startZoom = function(event, g, context) {
  * dragStartX/dragStartY/etc. properties). This function modifies the context.
  */
 Dygraph.Interaction.moveZoom = function(event, g, context) {
+  context.zoomMoved = true;
   context.dragEndX = g.dragGetX_(event, context);
   context.dragEndY = g.dragGetY_(event, context);
 
@@ -335,7 +337,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
                Math.max(context.dragStartY, context.dragEndY));
     context.cancelNextDblclick = true;
   } else {
-    g.clearZoomRect_();
+    if (zoomMoved) g.clearZoomRect_();
   }
   context.dragStartX = null;
   context.dragStartY = null;

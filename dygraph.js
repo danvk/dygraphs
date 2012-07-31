@@ -1735,7 +1735,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts) {
+  if (highlightSeriesOpts && !this.lockedSet_) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -1906,8 +1906,11 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * hover dots on the chart). Set to false to clear any selection.
  * @param { seriesName } optional series name to highlight that series with the
  * the highlightSeriesOpts setting.
+ * @param { locked } optional If true, keep seriesName selected when mousing
+ * over the graph, disabling closest-series highlighting. Call clearSelection()
+ * to unlock it.
  */
-Dygraph.prototype.setSelection = function(row, opt_seriesName) {
+Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   // Extract the points we've selected
   this.selPoints_ = [];
 
@@ -1947,6 +1950,10 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
     this.highlightSet_ = opt_seriesName;
   }
 
+  if (opt_locked !== undefined) {
+    this.lockedSet_ = opt_locked;
+  }
+
   if (changed) {
     this.updateSelection_(undefined);
   }
@@ -1963,7 +1970,7 @@ Dygraph.prototype.mouseOut_ = function(event) {
     this.attr_("unhighlightCallback")(event);
   }
 
-  if (this.attr_("hideOverlayOnMouseOut")) {
+  if (this.attr_("hideOverlayOnMouseOut") && !this.lockedSet_) {
     this.clearSelection();
   }
 };
@@ -1975,6 +1982,7 @@ Dygraph.prototype.mouseOut_ = function(event) {
 Dygraph.prototype.clearSelection = function() {
   this.cascadeEvents_('deselect', {});
 
+  this.lockedSet_ = false;
   // Get rid of the overlay data
   if (this.fadeLevel) {
     this.animateSelection_(-1);
