@@ -180,6 +180,18 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
   }
 };
 
+/**
+ * Standard plotters. These may be used by clients.
+ * Available plotters are:
+ * - Dygraph.Plotters.linePlotter: draws central lines (most common)
+ * - Dygraph.Plotters.errorPlotter: draws error bars
+ * - Dygraph.Plotters.fillPlotter: draws fills under lines (used with fillGraph)
+ *
+ * By default, the plotter is [fillPlotter, errorPlotter, linePlotter].
+ * This causes all the lines to be drawn over all the fills/error bars.
+ */
+Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
+
 
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
@@ -260,6 +272,14 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+
+  // The ordering here ensures that central lines always appear above any
+  // fill bars/error bars.
+  plotter: [
+    Dygraph.Plotters.fillPlotter,
+    Dygraph.Plotters.errorPlotter,
+    Dygraph.Plotters.linePlotter
+  ],
 
   // per-axis options
   axes: {
@@ -1852,8 +1872,10 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
       ctx.fillRect(0, 0, this.width_, this.height_);
     }
-    var setIdx = this.datasetIndexFromSetName_(this.highlightSet_);
-    this.plotter_._drawLine(ctx, setIdx);
+
+    // Redraw only the highlighted series in the interactive canvas (not the
+    // static plot canvas, which is where series are usually drawn).
+    this.plotter_._renderLineChart(this.highlightSet_, ctx);
   } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;

@@ -753,6 +753,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Interactive Elements"],
     "type": "boolean",
     "description": "Set this option to animate the transition between zoom windows. Applies to programmatic and interactive zooms. Note that if you also set a drawCallback, it will be called several times on each zoom. If you set a zoomCallback, it will only be called after the animation is complete."
+  },
+  "plotter": {
+    "default": "[DygraphCanvasRenderer.Plotters.fillPlotter, DygraphCanvasRenderer.Plotters.errorPlotter, DygraphCanvasRenderer.Plotters.linePlotter]",
+    "labels": ["Data Line display"],
+    "type": "array or function",
+    "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
   }
 }
 ;  // </JSON>
