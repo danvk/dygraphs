@@ -337,7 +337,7 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
                Math.max(context.dragStartY, context.dragEndY));
     context.cancelNextDblclick = true;
   } else {
-    if (zoomMoved) g.clearZoomRect_();
+    if (context.zoomMoved) g.clearZoomRect_();
   }
   context.dragStartX = null;
   context.dragStartY = null;
