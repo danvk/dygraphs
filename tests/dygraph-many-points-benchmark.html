@@ -19,10 +19,15 @@
     <div id='parameters'>
       <p>Data to plot:
         <input type="radio" id="sine" name="group1" value="sine"
-          onclick="clickedRadioButton(this);" checked> sinusoid function
+          onclick="setDataType(this);" checked> sinusoid function
         <input type="radio" id="rand" name="group1" value="rand"
-          onclick="clickedRadioButton(this);"> random points <br></p>
-      <p>Number of points (points):
+          onclick="setDataType(this);"> random points <br></p>
+      <p>Timestamps:
+        <input type="radio" id="aligned" name="timestamps" value="aligned"
+          onclick="setTimestampType(this);" checked> aligned
+        <input type="radio" id="unaligned" name="timestamps" value="unaligned"
+          onclick="setTimestampType(this);"> unaligned</p>
+      <p>Number of points per series (points):
          <input type="text" id="points" size="20"></p>
       <p>Number of series (series):
          <input type="text" id="series" size="20"></p>
@@ -43,6 +48,7 @@
       var graph = null;
       var metrics = null;
       var dataType = "sine";
+      var timestamps = "aligned";
 
       var durations = [];
       updatePlot = function() {
@@ -61,6 +67,7 @@
         var xmax = 2.0 * Math.PI;
         var adj = .5;
         var delta = (xmax - xmin) / (numPoints - 1);
+        var unalignmentDelta = delta / numSeries;
 
         for (var i = 0; i < numPoints; ++i) {
           var x = xmin + delta * i;
@@ -74,7 +81,15 @@
             }
             elem.push(y);
           }
-          data[i] = elem;
+          if (timestamps == "aligned") {
+            data[i] = elem;
+          } else {
+            for (var j = 0; j < numSeries; j++) {
+              var elemCopy = elem.slice(0);
+              elemCopy[0] += unalignmentDelta * j;
+              data[i*numSeries + j] = elemCopy;
+            }
+          }
         }
         var labels = [ "x" ];
         for (var j = 0; j < numSeries; j++) {
@@ -128,8 +143,11 @@
         return millisecondss;
       };
       
-      clickedRadioButton = function(radiobutton) {
+      setDataType = function(radiobutton) {
         dataType = radiobutton.value;
+      };
+      setTimestampType = function(radiobutton) {
+        timestamps = radiobutton.value;
       };
 
       var values = {
