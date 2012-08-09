@@ -2384,7 +2384,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
 
   var e = {
     canvas: this.hidden_,
-    drawingContext: this.hidden_ctx_,
+    drawingContext: this.hidden_ctx_
   };
   this.cascadeEvents_('willDrawChart', e);
   this.plotter_.render();
