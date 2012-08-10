@@ -241,9 +241,9 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
  * skip over points with missing yVals.
  */
 DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
-  return connectSeparatedPoints
-      ? DygraphCanvasRenderer._predicateThatSkipsEmptyPoints
-      : null;
+  return connectSeparatedPoints ?
+      DygraphCanvasRenderer._predicateThatSkipsEmptyPoints :
+      null;
 };
 
 DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
@@ -335,8 +335,8 @@ DygraphCanvasRenderer._drawSeries = function(e,
     if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(point.canvasx, prevY);
+        ctx.moveTo(prevCanvasX, prevCanvasY);
+        ctx.lineTo(point.canvasx, prevCanvasY);
       }
       prevCanvasX = prevCanvasY = null;
     } else {
@@ -401,7 +401,7 @@ DygraphCanvasRenderer._drawPointsOnLine = function(
         e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize);
     ctx.restore();
   }
-}
+};
 
 /**
  * Attaches canvas coordinates to the points array.
@@ -452,6 +452,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   var sets = this.layout.points;
   var setNames = this.layout.setNames;
   var setCount = setNames.length;
+  var setName;
 
   this.colors = this.dygraph_.colorsMap_;
 
@@ -464,7 +465,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
   var setPlotters = {};  // series name -> plotter fn.
   for (i = 0; i < setNames.length; i++) {
-    var setName = setNames[i];
+    setName = setNames[i];
     var setPlotter = this.attr_("plotter", setName);
     if (setPlotter == plotter_attr) continue;  // not specialized.
 
@@ -476,7 +477,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
     var is_last = (i == plotters.length - 1);
 
     for (var j = 0; j < sets.length; j++) {
-      var setName = setNames[j];
+      setName = setNames[j];
       if (opt_seriesName && setName != opt_seriesName) continue;
 
       var points = sets[j];
@@ -572,7 +573,7 @@ DygraphCanvasRenderer._linePlotter = function(e) {
       drawPointCallback,
       pointSize
   );
-}
+};
 
 /**
  * Draws the shaded error bars/confidence intervals for each series.
@@ -649,7 +650,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
     prevX = point.canvasx;
   }
   ctx.fill();
-}
+};
 
 /**
  * Draws the shaded regions when "fillGraph" is set. Not to be confused with

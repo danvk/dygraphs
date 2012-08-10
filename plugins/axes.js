@@ -84,7 +84,7 @@ axes.prototype.detachLabels = function() {
 axes.prototype.clearChart = function(e) {
   var g = e.dygraph;
   this.detachLabels();
-}
+};
 
 axes.prototype.willDrawChart = function(e) {
   var g = e.dygraph;
@@ -270,7 +270,7 @@ axes.prototype.willDrawChart = function(e) {
   }
 
   context.restore();
-}
+};
 
 return axes;
 })();

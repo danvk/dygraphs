@@ -16,6 +16,8 @@ Current bits of jankiness:
 
 */
 
+/*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
 
 
@@ -33,6 +35,9 @@ var legend = function() {
 legend.prototype.toString = function() {
   return "Legend Plugin";
 };
+
+// (defined below)
+var generateLegendHTML, generateLegendDashHTML;
 
 /**
  * This is called during the dygraph constructor, after options have been set
@@ -133,7 +138,7 @@ legend.prototype.deselect = function(e) {
 
 legend.prototype.didDrawChart = function(e) {
   this.deselect(e);
-}
+};
 
 // Right edge should be flush with the right edge of the charting area (which
 // may not be the same as the right edge of the div, if we have two y-axes.
@@ -211,8 +216,8 @@ var generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
   html = xvf(x, xOptView, labels[0], g);
-  if(html !== '') {
-  	html += ':';
+  if (html !== '') {
+    html += ':';
   }
 
   var yOptViews = [];

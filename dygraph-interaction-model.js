@@ -485,7 +485,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.endTouch = function(event, g, context) {
-  if (event.touches.length != 0) {
+  if (event.touches.length !== 0) {
     // this is effectively a "reset"
     Dygraph.Interaction.startTouch(event, g, context);
   }

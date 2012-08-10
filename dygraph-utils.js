@@ -696,7 +696,7 @@ Dygraph.Iterator = function(array, start, length, predicate) {
   this.end_ = Math.min(array.length, start + length);
   this.nextIdx_ = start - 1; // use -1 so initial advance works.
   this.next(); // ignoring result.
-}
+};
 
 Dygraph.Iterator.prototype.next = function() {
   if (!this.hasNext) {
@@ -720,7 +720,7 @@ Dygraph.Iterator.prototype.next = function() {
     this.peek = null;
   }
   return obj;
-}
+};
 
 /**
  * @private
@@ -944,7 +944,7 @@ Dygraph.regularShape_ = function(
   }
   ctx.fill();
   ctx.stroke();
-}
+};
 
 Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
   return function(g, name, ctx, cx, cy, color, radius) {
@@ -956,7 +956,7 @@ Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
 
 Dygraph.DrawPolygon_ = function(sides, rotationRadians, ctx, cx, cy, color, radius, delta) {
   new Dygraph.RegularShape_(sides, rotationRadians, delta).draw(ctx, cx, cy, radius);
-}
+};
 
 Dygraph.Circles = {
   DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
