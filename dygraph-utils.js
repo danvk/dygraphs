@@ -177,7 +177,12 @@ Dygraph.removeEvent = function addEvent(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
-    elem.detachEvent('on'+type, elem[type+fn]);
+    try {
+      elem.detachEvent('on'+type, elem[type+fn]);
+    } catch(e) {
+      // We only detach event listeners on a "best effort" basis in IE. See:
+      // http://stackoverflow.com/questions/2553632/detachevent-not-working-with-named-inline-functions
+    }
     elem[type+fn] = null;
   }
 };
