@@ -302,6 +302,27 @@ CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
 }
 
 /**
+ * Closest-point highlighting with locked series.
+ */
+CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
+  var g = runClosestTest(false, 2, 4);
+
+  // Default behavior, 'b' is closest
+  DygraphOps.dispatchMouseMove(g, 11, 4);
+  assertEquals('b', g.getHighlightSeries());
+
+  // Now lock selection to 'c'
+  g.setSelection(false, 'c', true);
+  DygraphOps.dispatchMouseMove(g, 11, 4);
+  assertEquals('c', g.getHighlightSeries());
+
+  // Unlock, should be back to 'b'
+  g.clearSelection();
+  DygraphOps.dispatchMouseMove(g, 11, 4);
+  assertEquals('b', g.getHighlightSeries());
+}
+
+/**
  * This tests that closest point searches work for data containing NaNs.
  *
  * It's intended to catch a regression where a NaN Y value confuses the

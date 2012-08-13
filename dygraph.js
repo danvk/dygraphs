@@ -180,6 +180,18 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
   }
 };
 
+/**
+ * Standard plotters. These may be used by clients.
+ * Available plotters are:
+ * - Dygraph.Plotters.linePlotter: draws central lines (most common)
+ * - Dygraph.Plotters.errorPlotter: draws error bars
+ * - Dygraph.Plotters.fillPlotter: draws fills under lines (used with fillGraph)
+ *
+ * By default, the plotter is [fillPlotter, errorPlotter, linePlotter].
+ * This causes all the lines to be drawn over all the fills/error bars.
+ */
+Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
+
 
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
@@ -260,6 +272,14 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+
+  // The ordering here ensures that central lines always appear above any
+  // fill bars/error bars.
+  plotter: [
+    Dygraph.Plotters.fillPlotter,
+    Dygraph.Plotters.errorPlotter,
+    Dygraph.Plotters.linePlotter
+  ],
 
   // per-axis options
   axes: {
@@ -409,6 +429,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.datasetIndex_ = [];
 
   this.registeredEvents_ = [];
+  this.eventListeners_ = {};
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -416,8 +437,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Activate plugins.
   this.plugins_ = [];
   for (var i = 0; i < Dygraph.PLUGINS.length; i++) {
-    var plugin = Dygraph.PLUGINS[i];
-    var pluginInstance = new plugin();
+    var Plugin = Dygraph.PLUGINS[i];
+    var pluginInstance = new Plugin();
     var pluginDict = {
       plugin: pluginInstance,
       events: {},
@@ -436,7 +457,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // At this point, plugins can no longer register event handlers.
   // Construct a map from event -> ordered list of [callback, plugin].
-  this.eventListeners_ = {};
   for (var i = 0; i < this.plugins_.length; i++) {
     var plugin_dict = this.plugins_[i];
     for (var eventName in plugin_dict.events) {
@@ -462,7 +482,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
-  if (!this.eventListeners_ || !name in this.eventListeners_) return true;
+  if (!(name in this.eventListeners_)) return true;
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
@@ -498,11 +518,13 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
  * Axis is an optional parameter. Can be set to 'x' or 'y'.
  *
  * The zoomed status for an axis is set whenever a user zooms using the mouse
- * or when the dateWindow or valueRange are updated (unless the isZoomedIgnoreProgrammaticZoom
- * option is also specified).
+ * or when the dateWindow or valueRange are updated (unless the
+ * isZoomedIgnoreProgrammaticZoom option is also specified).
  */
 Dygraph.prototype.isZoomed = function(axis) {
-  if (axis == null) return this.zoomed_x_ || this.zoomed_y_;
+  if (axis === null || axis === undefined) {
+    return this.zoomed_x_ || this.zoomed_y_;
+  }
   if (axis === 'x') return this.zoomed_x_;
   if (axis === 'y') return this.zoomed_y_;
   throw "axis parameter is [" + axis + "] must be null, 'x' or 'y'.";
@@ -550,7 +572,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
       }
       if (seriesName === this.highlightSet_ &&
           this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
-        sources.push(this.user_attrs_['highlightSeriesOpts']);
+        sources.push(this.user_attrs_.highlightSeriesOpts);
       }
     }
   }
@@ -1501,7 +1523,8 @@ Dygraph.prototype.doUnzoom_ = function() {
       newValueRanges = [];
       for (i = 0; i < this.axes_.length; i++) {
         var axis = this.axes_[i];
-        newValueRanges.push(axis.valueRange != null ? axis.valueRange : axis.extremeRange);
+        newValueRanges.push(axis.valueRange !== null ?
+                            axis.valueRange : axis.extremeRange);
       }
     }
 
@@ -1703,7 +1726,7 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
       }
     }
     // Stop if the point (domX, py) is above this series' upper edge
-    if (setIdx == 0 || py < domY) {
+    if (setIdx === 0 || py < domY) {
       closestPoint = p1;
       closestSeries = setIdx;
     }
@@ -1734,7 +1757,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts) {
+  if (highlightSeriesOpts && !this.lockedSet_) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -1852,8 +1875,10 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
       ctx.fillRect(0, 0, this.width_, this.height_);
     }
-    var setIdx = this.datasetIndexFromSetName_(this.highlightSet_);
-    this.plotter_._drawLine(ctx, setIdx);
+
+    // Redraw only the highlighted series in the interactive canvas (not the
+    // static plot canvas, which is where series are usually drawn).
+    this.plotter_._renderLineChart(this.highlightSet_, ctx);
   } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
@@ -1905,8 +1930,11 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * hover dots on the chart). Set to false to clear any selection.
  * @param { seriesName } optional series name to highlight that series with the
  * the highlightSeriesOpts setting.
+ * @param { locked } optional If true, keep seriesName selected when mousing
+ * over the graph, disabling closest-series highlighting. Call clearSelection()
+ * to unlock it.
  */
-Dygraph.prototype.setSelection = function(row, opt_seriesName) {
+Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   // Extract the points we've selected
   this.selPoints_ = [];
 
@@ -1927,7 +1955,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
           point = this.layout_.unstackPointAtIndex(setIdx, row);
         }
 
-        if (!(point.yval === null)) this.selPoints_.push(point);
+        if (point.yval !== null) this.selPoints_.push(point);
       }
     }
   } else {
@@ -1946,6 +1974,10 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName) {
     this.highlightSet_ = opt_seriesName;
   }
 
+  if (opt_locked !== undefined) {
+    this.lockedSet_ = opt_locked;
+  }
+
   if (changed) {
     this.updateSelection_(undefined);
   }
@@ -1962,7 +1994,7 @@ Dygraph.prototype.mouseOut_ = function(event) {
     this.attr_("unhighlightCallback")(event);
   }
 
-  if (this.attr_("hideOverlayOnMouseOut")) {
+  if (this.attr_("hideOverlayOnMouseOut") && !this.lockedSet_) {
     this.clearSelection();
   }
 };
@@ -1974,6 +2006,7 @@ Dygraph.prototype.mouseOut_ = function(event) {
 Dygraph.prototype.clearSelection = function() {
   this.cascadeEvents_('deselect', {});
 
+  this.lockedSet_ = false;
   // Get rid of the overlay data
   if (this.fadeLevel) {
     this.animateSelection_(-1);
@@ -2354,7 +2387,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
 
   var e = {
     canvas: this.hidden_,
-    drawingContext: this.hidden_ctx_,
+    drawingContext: this.hidden_ctx_
   };
   this.cascadeEvents_('willDrawChart', e);
   this.plotter_.render();
@@ -3104,7 +3137,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       num = Math.floor((num - 1) / 26);
     }
     return shortText;
-  }
+  };
 
   var cols = data.getNumberOfColumns();
   var rows = data.getNumberOfRows();

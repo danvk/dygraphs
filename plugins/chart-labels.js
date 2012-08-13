@@ -109,7 +109,7 @@ var createRotatedDiv = function(g, box, axis, classes, html) {
   inner_div.appendChild(class_div);
   div.appendChild(inner_div);
   return div;
-}
+};
 
 chart_labels.prototype.layout = function(e) {
   this.detachLabels_();
@@ -191,7 +191,7 @@ chart_labels.prototype.clearChart = function() {
 };
 
 chart_labels.prototype.destroy = function() {
-  detachLabels();
+  this.detachLabels_();
 };
 
 

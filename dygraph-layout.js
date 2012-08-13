@@ -277,7 +277,7 @@ DygraphLayout.parseFloat_ = function(val) {
 
   // Assume it's a number or NaN. If it's something else, I'll be shocked.
   return val;
-}
+};
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
   var i, tick, label, pos;

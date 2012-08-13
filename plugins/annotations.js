@@ -54,7 +54,7 @@ annotations.prototype.didDrawChart = function(e) {
 
   // Early out in the (common) case of zero annotations.
   var points = g.layout_.annotated_points;
-  if (!points || points.length == 0) return;
+  if (!points || points.length === 0) return;
 
   var containerDiv = e.canvas.parentNode;
   var annotationStyle = {

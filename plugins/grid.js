@@ -83,7 +83,7 @@ grid.prototype.willDrawChart = function(e) {
     }
     ctx.restore();
   }
-}
+};
 
 grid.prototype.destroy = function() {
 };

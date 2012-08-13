@@ -221,7 +221,8 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     }
     Dygraph.cancelEvent(e);
     var delX = e.screenX - xLast;
-    if (Math.abs(delX) < 4 || e.screenX == 0) { // First iPad move event seems to have screenX = 0
+    if (Math.abs(delX) < 4 || e.screenX === 0) {
+      // First iPad move event seems to have screenX = 0
       return true;
     }
     xLast = e.screenX;

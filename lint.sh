@@ -1,8 +1,30 @@
 #!/bin/bash
-jsc_opts='maxerr:10000,devel:true,browser:true'
-rhino_opts='maxerr=10000,devel=true,browser=true'
+#
+# Usage:
+#   ./lint.sh [file.js]
+#
+# The zero-argument form lints everything.
 
-files=$(ls dygraph*.js | grep -v combined | grep -v dev.js);
+# See jshint/build/jshint-rhino.js for documentation on these parameters.
+# devel   defines logging globals (i.e. "console.log")
+# browser defines standard web browser globals (i.e. "document")
+# shadow  disables warnings on multiple var definitions in one scope (i.e. two
+#         loops with "var i")
+jsc_opts='maxerr:10000,devel:true,browser:true,shadow:true'
+rhino_opts='maxerr=10000,devel=true,browser=true,shadow=true'
+
+if [ $# -gt 1 ]; then
+  echo "Usage: $0 [file.js]"
+  exit 1
+fi
+
+if [ $# -eq 0 ]; then
+  files=$(ls dygraph*.js plugins/*.js | grep -v combined | grep -v dev.js)
+else
+  files=$1
+fi
+
+jshint_opts="shadow=false"
 
 if [ -e /System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc ]; then
   # use JSC (Safari/JavaScriptCore) to run JSHint -- much faster than Rhino.
