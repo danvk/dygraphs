@@ -618,7 +618,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   ctx.beginPath();
   while (iter.hasNext) {
     var point = iter.next();
-    if (!Dygraph.isOK(point.y)) {
+    if ((!stepPlot && !Dygraph.isOK(point.y)) || (stepPlot && !isNaN(prevY) && !Dygraph.isOK(prevY))) {
       prevX = NaN;
       continue;
     }
@@ -633,17 +633,15 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
     newYs[1] = e.plotArea.h * newYs[1] + e.plotArea.y;
     if (!isNaN(prevX)) {
       if (stepPlot) {
-        ctx.moveTo(prevX, newYs[0]);
+        ctx.moveTo(prevX, prevYs[0]);
+        ctx.lineTo(point.canvasx, prevYs[0]);
+        ctx.lineTo(point.canvasx, prevYs[1]);
       } else {
         ctx.moveTo(prevX, prevYs[0]);
+        ctx.lineTo(point.canvasx, newYs[0]);
+        ctx.lineTo(point.canvasx, newYs[1]);
       }
-      ctx.lineTo(point.canvasx, newYs[0]);
-      ctx.lineTo(point.canvasx, newYs[1]);
-      if (stepPlot) {
-        ctx.lineTo(prevX, newYs[1]);
-      } else {
-        ctx.lineTo(prevX, prevYs[1]);
-      }
+      ctx.lineTo(prevX, prevYs[1]);
       ctx.closePath();
     }
     prevYs = newYs;
