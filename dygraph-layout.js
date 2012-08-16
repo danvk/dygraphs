@@ -409,12 +409,15 @@ DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
 
   // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
-  var points = this.points[setIdx];
-  for (var i = row + 1; i < points.length; i++) {
-    if ((points[i].xval == point.xval) && points[i].yval) {
-      unstackedPoint.yval -= points[i].yval;
-      break;
-    }
+  if (setIdx == this.points.length - 1) {
+    // We're the last series, so no unstacking is necessary.
+    return unstackedPoint;
+  }
+
+  var points = this.points[setIdx + 1];
+  if (points[row].xval == point.xval &&  // should always be true?
+      points[row].yval) {
+    unstackedPoint.yval -= points[row].yval;
   }
 
   return unstackedPoint;
