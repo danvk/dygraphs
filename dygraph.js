@@ -408,6 +408,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     // TODO(nikhilk): Add any other stackedGraph checks here.
   }
 
+  // These two options have a bad interaction. See issue 359.
+  if (attrs.showRangeSelector && attrs.animatedZooms) {
+    this.warn('You should not set animatedZooms=true when using the range selector.');
+    attrs.animatedZooms = false;
+  }
+
   // Dygraphs has many options, some of which interact with one another.
   // To keep track of everything, we maintain two sets of options:
   //
