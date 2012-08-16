@@ -179,6 +179,10 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
   var isPanning = false;
   var dynamic = !this.isMobileDevice_ && !this.isUsingExcanvas_;
 
+  // We cover iframes during mouse interactions. See comments in
+  // dygraph-utils.js for more info on why this is a good idea.
+  var tarp = new Dygraph.IFrameTarp();
+
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
@@ -212,6 +216,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
     self.dygraph_.addEvent(topElem, 'mousemove', onZoom);
     self.dygraph_.addEvent(topElem, 'mouseup', onZoomEnd);
     self.fgcanvas_.style.cursor = 'col-resize';
+    tarp.cover();
     return true;
   };
 
@@ -256,6 +261,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
       return false;
     }
     isZooming = false;
+    tarp.uncover();
     Dygraph.removeEvent(topElem, 'mousemove', onZoom);
     Dygraph.removeEvent(topElem, 'mouseup', onZoomEnd);
     self.fgcanvas_.style.cursor = 'default';

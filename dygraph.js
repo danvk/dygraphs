@@ -1247,6 +1247,10 @@ Dygraph.prototype.createDragInterface_ = function() {
     boundedDates: null, // [minDate, maxDate]
     boundedValues: null, // [[minValue, maxValue] ...]
 
+    // We cover iframes during mouse interactions. See comments in
+    // dygraph-utils.js for more info on why this is a good idea.
+    tarp: new Dygraph.IFrameTarp(),
+
     // contextB is the same thing as this context object but renamed.
     initializeMouseDown: function(event, g, contextB) {
       // prevents mouse drags from selecting page text.
@@ -1262,6 +1266,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       contextB.dragStartX = g.dragGetX_(event, contextB);
       contextB.dragStartY = g.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
+      contextB.tarp.cover();
     }
   };
 
@@ -1301,6 +1306,8 @@ Dygraph.prototype.createDragInterface_ = function() {
         delete self.axes_[i].dragValueRange;
       }
     }
+
+    context.tarp.uncover();
   };
 
   this.addEvent(window, 'mouseup', this.mouseUpHandler_);
