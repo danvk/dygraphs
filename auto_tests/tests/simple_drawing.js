@@ -58,6 +58,27 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
+// See http://code.google.com/p/dygraphs/issues/detail?id=185
+SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
+  var opts = {
+    drawXGrid: false,
+    drawYGrid: false,
+    drawXAxis: false,
+    drawYAxis: false,
+    valueRange: [0,50] }
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
+  var htx = g.hidden_ctx_;
+
+  var lines = CanvasAssertions.getLinesDrawn(htx, {
+    strokeStyle: "#008080",
+    lineWidth: 1
+  });
+  assertEquals(1, lines.length);
+  CanvasAssertions.assertBalancedSaveRestore(htx);
+};
+
 SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY);

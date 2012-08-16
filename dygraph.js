@@ -2361,7 +2361,6 @@ Dygraph.prototype.drawGraph_ = function() {
   }
 
   this.computeYAxisRanges_(extremes);
-  console.log(extremes);
   this.layout_.setYAxes(this.axes_);
 
   this.addXTicks_();
