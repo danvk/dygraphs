@@ -57,3 +57,21 @@ CustomBarsTestCase.prototype.testCustomBarsNoHang = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 };
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=201
+CustomBarsTestCase.prototype.testCustomBarsZero = function() {
+  var opts = {
+    customBars: true
+  };
+  var data = "X,Y1,Y2\n" +
+"1,1;2;3,0;0;0\n" +
+"2,2;3;4,0;0;0\n" +
+"3,1;3;5,0;0;0\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var range = g.yAxisRange();
+  assertTrue('y-axis must include 0', range[0] <= 0);
+  assertTrue('y-axis must include 5', range[1] >= 5);
+};

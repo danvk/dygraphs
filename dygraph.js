@@ -2106,7 +2106,7 @@ Dygraph.prototype.extremeValues_ = function(series) {
     // With custom bars, maxY is the max of the high values.
     for (j = 0; j < series.length; j++) {
       y = series[j][1][0];
-      if (!y) continue;
+      if (y === null || isNaN(y)) continue;
       var low = y - series[j][1][1];
       var high = y + series[j][1][2];
       if (low > y) low = y;    // this can happen with custom bars,
@@ -2355,6 +2355,7 @@ Dygraph.prototype.drawGraph_ = function() {
   }
 
   this.computeYAxisRanges_(extremes);
+  console.log(extremes);
   this.layout_.setYAxes(this.axes_);
 
   this.addXTicks_();
