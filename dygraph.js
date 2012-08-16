@@ -1310,7 +1310,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     context.tarp.uncover();
   };
 
-  this.addEvent(window, 'mouseup', this.mouseUpHandler_);
+  this.addEvent(document, 'mouseup', this.mouseUpHandler_);
 };
 
 /**
