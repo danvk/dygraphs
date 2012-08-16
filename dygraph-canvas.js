@@ -615,9 +615,17 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
   ctx.beginPath();
+
+  var isNullUndefinedOrNaN = function(x) {
+    return (x === null ||
+            x === undefined ||
+            isNaN(x));
+  };
+
   while (iter.hasNext) {
     var point = iter.next();
-    if ((!stepPlot && !Dygraph.isOK(point.y)) || (stepPlot && !isNaN(prevY) && !Dygraph.isOK(prevY))) {
+    if ((!stepPlot && isNullUndefinedOrNaN(point.y)) ||
+        (stepPlot && !isNaN(prevY) && isNullUndefinedOrNaN(prevY))) {
       prevX = NaN;
       continue;
     }
