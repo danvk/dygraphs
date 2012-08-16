@@ -364,13 +364,12 @@ DygraphCanvasRenderer._drawSeries = function(e,
           if (stepPlot) {
             ctx.moveTo(prevCanvasX, prevCanvasY);
             ctx.lineTo(point.canvasx, prevCanvasY);
-            prevCanvasX = point.canvasx;
           }
 
-          // TODO(danvk): this moveTo is rarely necessary
-          ctx.moveTo(prevCanvasX, prevCanvasY);
           ctx.lineTo(point.canvasx, point.canvasy);
         }
+      } else {
+        ctx.moveTo(point.canvasx, point.canvasy);
       }
       if (drawPoints || isIsolated) {
         pointsOnLine.push([point.canvasx, point.canvasy]);
