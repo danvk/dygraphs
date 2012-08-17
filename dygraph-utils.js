@@ -1080,3 +1080,22 @@ Dygraph.IFrameTarp.prototype.uncover = function() {
   }
   this.tarps = [];
 };
+
+/**
+ * Determine whether |data| is delimited by CR, LF or CRLF.
+ * @param {string} data
+ * @return {string|null} the delimiter that was detected.
+ */
+Dygraph.detectLineDelimiter = function(data) {
+  for (var i = 0; i < data.length; i++) {
+    var code = data[i];
+    if (code == '\r') return code;
+    if (code == '\n') {
+      // Might actually be "\n\r".
+      if (i < data.length && data[i + 1] == '\r') return '\n\r';
+      return code;
+    }
+  }
+
+  return null;
+};

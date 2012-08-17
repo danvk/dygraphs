@@ -2936,7 +2936,8 @@ Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
  */
 Dygraph.prototype.parseCSV_ = function(data) {
   var ret = [];
-  var lines = data.split("\n");
+  var line_delimiter = Dygraph.detectLineDelimiter(data);
+  var lines = data.split(line_delimiter || "\n");
   var vals, j;
 
   // Use the default delimiter or fall back to a tab if that makes sense.
@@ -3292,7 +3293,8 @@ Dygraph.prototype.start_ = function() {
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
-    if (data.indexOf('\n') >= 0) {
+    var line_delimiter = Dygraph.detectLineDelimiter(data);
+    if (line_delimiter) {
       this.loadedEvent_(data);
     } else {
       var req = new XMLHttpRequest();
