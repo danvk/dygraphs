@@ -369,3 +369,31 @@ InteractionModelTestCase.prototype.testCorrectAxisValueRangeAfterUnzoom = functi
   assertEquals(1,newYAxisRange[0]);
   assertEquals(50,newYAxisRange[1]);
 };
+
+/**
+ * Ensures pointClickCallback is called when some points along the y-axis don't
+ * exist.
+ */
+InteractionModelTestCase.prototype.testPointClickCallback_missingData = function() {
+
+  // There's a B-value at 2, but no A-value.
+  var data =
+    "X,A,B\n" +
+    "1,,100\n"+
+    "2,,110\n"+
+    "3,140,120\n"+
+    "4,130,110\n"+
+    "";
+
+  var clicked;
+  var g = new Dygraph(document.getElementById("graph"), data, {
+    pointClickCallback : function(event, point) {
+      clicked = point;
+    }
+  });
+
+  InteractionModelTestCase.clickAt(g, 2, 110);
+
+  assertEquals(2, clicked.xval);
+  assertEquals(110, clicked.yval);
+};
