@@ -182,7 +182,7 @@ legend.prototype.destroy = function() {
  * relevant when displaying a legend with no selection (i.e. {legend:
  * 'always'}) and with dashed lines.
  */
-var generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
+generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 
@@ -261,7 +261,7 @@ var generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
  * @param oneEmWidth The width in pixels of 1em in the legend.
  * @private
  */
-var generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
+generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
   // IE 7,8 fail at these divs, so they get boring legend, have not tested 9.
   var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
   if (isIE) return "&mdash;";
