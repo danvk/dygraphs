@@ -27,6 +27,14 @@ var jstestdriver = {
   jQuery : jQuery
 };
 
+if (!console) {
+  var console = {
+    log: function(x) {
+      // ...
+    }
+  };
+}
+
 var jstd = {
   include : function(name) {
     this.sucker("Not including " + name);
