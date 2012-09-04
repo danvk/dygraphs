@@ -13,6 +13,7 @@ dygraph-utils.js \
 dygraph-gviz.js \
 dygraph-interaction-model.js \
 dygraph-range-selector.js \
+dygraph-range-chooser.js \
 dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \

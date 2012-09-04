@@ -759,6 +759,30 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
+  },
+  "showRangeChooser": {
+    "default": "false",
+    "labels": ["Interactive Elements", "Range chooser"],
+    "type": "boolean",
+    "description": "Show the range chooser handles, allowing the user to choose a subset of the displayed date range. See also rangeChooserLabelFormatter and rangeChooserCallback for additional chooser configuration. This option can only be specified at Dygraph creation time."
+  },
+  "rangeChooserLabelFormatter": {
+    "default": "null",
+    "labels": ["Interactive Elements", "Range chooser"],
+    "type": "function(date) -> string",
+    "description": "A function that accepts a date and returns a string to display in the handle tooltip while a handle is being moved. If not provided, the following is used: function(time) { return time.strftime('%H:%M');"
+  },
+  "rangeChooserCallback": {
+    "snippet": "function(source, from_time_millis, to_time_millis){<br>&nbsp;&nbsp;alert(source +' changed, from='+ new Date(from_time_millis) +', to='+ new Date(to_time_millis);<br>}",
+    "default": "null",
+    "labels": ["Callbacks", "Range chooser"],
+    "type": "function(source, from_time_millis, to_time_millis)",
+    "parameters": [
+      [ "source" , "The handle that was changed. Will be either 'from' or 'to'. A value of null is sent upon rendering for initialization purposes." ],
+      [ "from_time_millis" , "The chosen from value as milliseconds since epoch." ],
+      [ "to_time_millis" , "The chosen to value as milliseconds since epoch." ]
+    ],
+    "description": "A function to call when a chooser handle is dropped."
   }
 }
 ;  // </JSON>

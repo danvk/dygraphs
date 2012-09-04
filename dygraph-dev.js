@@ -27,6 +27,7 @@
     "dygraph-gviz.js",
     "dygraph-interaction-model.js",
     "dygraph-range-selector.js",
+    "dygraph-range-chooser.js",
     "dygraph-tickers.js",
     "plugins/base.js",
     "plugins/annotations.js",
