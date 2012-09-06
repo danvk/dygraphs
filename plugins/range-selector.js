@@ -846,8 +846,8 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
  */
 rangeSelector.prototype.getZoomHandleStatus_ = function() {
   var halfHandleWidth = this.leftZoomHandle_.width/2;
-  var leftHandlePos = parseInt(this.leftZoomHandle_.style.left, 10) + halfHandleWidth;
-  var rightHandlePos = parseInt(this.rightZoomHandle_.style.left, 10) + halfHandleWidth;
+  var leftHandlePos = parseFloat(this.leftZoomHandle_.style.left) + halfHandleWidth;
+  var rightHandlePos = parseFloat(this.rightZoomHandle_.style.left) + halfHandleWidth;
   return {
       leftHandlePos: leftHandlePos,
       rightHandlePos: rightHandlePos,
