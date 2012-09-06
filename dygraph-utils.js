@@ -177,7 +177,12 @@ Dygraph.removeEvent = function addEvent(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
-    elem.detachEvent('on'+type, elem[type+fn]);
+    try {
+      elem.detachEvent('on'+type, elem[type+fn]);
+    } catch(e) {
+      // We only detach event listeners on a "best effort" basis in IE. See:
+      // http://stackoverflow.com/questions/2553632/detachevent-not-working-with-named-inline-functions
+    }
     elem[type+fn] = null;
   }
 };
@@ -1009,4 +1014,88 @@ Dygraph.Circles = {
     ctx.closePath();
     ctx.stroke();
   }
+};
+
+/**
+ * To create a "drag" interaction, you typically register a mousedown event
+ * handler on the element where the drag begins. In that handler, you register a
+ * mouseup handler on the window to determine when the mouse is released,
+ * wherever that release happens. This works well, except when the user releases
+ * the mouse over an off-domain iframe. In that case, the mouseup event is
+ * handled by the iframe and never bubbles up to the window handler.
+ *
+ * To deal with this issue, we cover iframes with high z-index divs to make sure
+ * they don't capture mouseup.
+ *
+ * Usage:
+ * element.addEventListener('mousedown', function() {
+ *   var tarper = new Dygraph.IFrameTarp();
+ *   tarper.cover();
+ *   var mouseUpHandler = function() {
+ *     ...
+ *     window.removeEventListener(mouseUpHandler);
+ *     tarper.uncover();
+ *   };
+ *   window.addEventListener('mouseup', mouseUpHandler);
+ * };
+ * 
+ *
+ * @constructor
+ */
+Dygraph.IFrameTarp = function() {
+  this.tarps = [];
+};
+
+/**
+ * Find all the iframes in the document and cover them with high z-index
+ * transparent divs.
+ */
+Dygraph.IFrameTarp.prototype.cover = function() {
+  var iframes = document.getElementsByTagName("iframe");
+  for (var i = 0; i < iframes.length; i++) {
+    var iframe = iframes[i];
+    var x = Dygraph.findPosX(iframe),
+        y = Dygraph.findPosY(iframe),
+        width = iframe.offsetWidth,
+        height = iframe.offsetHeight;
+
+    var div = document.createElement("div");
+    div.style.position = "absolute";
+    div.style.left = x + 'px';
+    div.style.top = y + 'px';
+    div.style.width = width + 'px';
+    div.style.height = height + 'px';
+    div.style.zIndex = 999;
+    document.body.appendChild(div);
+    this.tarps.push(div);
+  }
+};
+
+/**
+ * Remove all the iframe covers. You should call this in a mouseup handler.
+ */
+Dygraph.IFrameTarp.prototype.uncover = function() {
+  for (var i = 0; i < this.tarps.length; i++) {
+    this.tarps[i].parentNode.removeChild(this.tarps[i]);
+  }
+  this.tarps = [];
+};
+
+/**
+ * Determine whether |data| is delimited by CR, LF or CRLF.
+ * @param {string} data
+ * @return {string|null} the delimiter that was detected.
+ */
+Dygraph.detectLineDelimiter = function(data) {
+  for (var i = 0; i < data.length; i++) {
+    var code = data[i];
+    if (code == '\r') return code;
+    if (code == '\n') {
+      // Might actually be "\n\r".
+      if (i < data.length && data[i + 1] == '\r') return '\n\r';
+      return code;
+    }
+  }
+
+  return null;
 };

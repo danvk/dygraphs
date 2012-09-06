@@ -71,6 +71,15 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
+  // This masks some numeric issues in older versions of Firefox,
+  // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
+  var pow = function(base, exp) {
+    if (exp < 0) {
+      return 1.0 / Math.pow(base, -exp);
+    }
+    return Math.pow(base, exp);
+  };
+
   var pixels_per_tick = opts('pixelsPerLabel');
   var ticks = [];
   var i, j, tickV, nTicks;
@@ -138,9 +147,9 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       for (i = -10; i < 50; i++) {
         var base_scale;
         if (kmg2) {
-          base_scale = Math.pow(16, i);
+          base_scale = pow(16, i);
         } else {
-          base_scale = Math.pow(10, i);
+          base_scale = pow(10, i);
         }
         var spacing = 0;
         for (j = 0; j < mults.length; j++) {
@@ -192,7 +201,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     if (k_labels.length > 0) {
       // TODO(danvk): should this be integrated into the axisLabelFormatter?
       // Round up to an appropriate unit.
-      var n = Math.pow(k, k_labels.length);
+      var n = pow(k, k_labels.length);
       for (j = k_labels.length - 1; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
           label = Dygraph.round_(tickV / n, opts('digitsAfterDecimal')) +
@@ -206,7 +215,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3 && tickV.split('e-')[1] <= 24){
         if(tickV.split('e-')[1] % 3 > 0) {
           label = Dygraph.round_(tickV.split('e-')[0] /
-              Math.pow(10,(tickV.split('e-')[1] % 3)),
+              pow(10,(tickV.split('e-')[1] % 3)),
               opts('digitsAfterDecimal'));
         } else {
           label = Number(tickV.split('e-')[0]).toFixed(2);

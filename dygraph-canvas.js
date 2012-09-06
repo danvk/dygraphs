@@ -364,13 +364,12 @@ DygraphCanvasRenderer._drawSeries = function(e,
           if (stepPlot) {
             ctx.moveTo(prevCanvasX, prevCanvasY);
             ctx.lineTo(point.canvasx, prevCanvasY);
-            prevCanvasX = point.canvasx;
           }
 
-          // TODO(danvk): this moveTo is rarely necessary
-          ctx.moveTo(prevCanvasX, prevCanvasY);
           ctx.lineTo(point.canvasx, point.canvasy);
         }
+      } else {
+        ctx.moveTo(point.canvasx, point.canvasy);
       }
       if (drawPoints || isIsolated) {
         pointsOnLine.push([point.canvasx, point.canvasy]);
@@ -583,15 +582,15 @@ DygraphCanvasRenderer._linePlotter = function(e) {
  */
 DygraphCanvasRenderer._errorPlotter = function(e) {
   var g = e.dygraph;
+  var setName = e.setName;
   var errorBars = g.getOption("errorBars") || g.getOption("customBars");
   if (!errorBars) return;
 
-  var fillGraph = g.getOption("fillGraph");
+  var fillGraph = g.getOption("fillGraph", setName);
   if (fillGraph) {
     g.warn("Can't use fillGraph option with error bars");
   }
 
-  var setName = e.setName;
   var ctx = e.drawingContext;
   var color = e.color;
   var fillAlpha = g.getOption('fillAlpha', setName);
@@ -616,9 +615,17 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
   ctx.beginPath();
+
+  var isNullUndefinedOrNaN = function(x) {
+    return (x === null ||
+            x === undefined ||
+            isNaN(x));
+  };
+
   while (iter.hasNext) {
     var point = iter.next();
-    if (!Dygraph.isOK(point.y)) {
+    if ((!stepPlot && isNullUndefinedOrNaN(point.y)) ||
+        (stepPlot && !isNaN(prevY) && isNullUndefinedOrNaN(prevY))) {
       prevX = NaN;
       continue;
     }
@@ -633,17 +640,15 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
     newYs[1] = e.plotArea.h * newYs[1] + e.plotArea.y;
     if (!isNaN(prevX)) {
       if (stepPlot) {
-        ctx.moveTo(prevX, newYs[0]);
+        ctx.moveTo(prevX, prevYs[0]);
+        ctx.lineTo(point.canvasx, prevYs[0]);
+        ctx.lineTo(point.canvasx, prevYs[1]);
       } else {
         ctx.moveTo(prevX, prevYs[0]);
+        ctx.lineTo(point.canvasx, newYs[0]);
+        ctx.lineTo(point.canvasx, newYs[1]);
       }
-      ctx.lineTo(point.canvasx, newYs[0]);
-      ctx.lineTo(point.canvasx, newYs[1]);
-      if (stepPlot) {
-        ctx.lineTo(prevX, newYs[1]);
-      } else {
-        ctx.lineTo(prevX, prevYs[1]);
-      }
+      ctx.lineTo(prevX, prevYs[1]);
       ctx.closePath();
     }
     prevYs = newYs;
@@ -663,24 +668,32 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
  * @private
  */
 DygraphCanvasRenderer._fillPlotter = function(e) {
-  var g = e.dygraph;
-  if (!g.getOption("fillGraph")) return;
-
   // We'll handle all the series at once, not one-by-one.
   if (e.seriesIndex !== 0) return;
 
-  var ctx = e.drawingContext;
-  var area = e.plotArea;
-  var sets = e.allSeriesPoints;
-  var setCount = sets.length;
-
+  var g = e.dygraph;
   var setNames = g.getLabels().slice(1);  // remove x-axis
+
   // getLabels() includes names for invisible series, which are not included in
   // allSeriesPoints. We remove those to make the two match.
   // TODO(danvk): provide a simpler way to get this information.
   for (var i = setNames.length; i >= 0; i--) {
     if (!g.visibility()[i]) setNames.splice(i, 1);
   }
+
+  var anySeriesFilled = (function() {
+    for (var i = 0; i < setNames.length; i++) {
+      if (g.getOption("fillGraph", setNames[i])) return true;
+    }
+    return false;
+  })();
+
+  if (!anySeriesFilled) return;
+
+  var ctx = e.drawingContext;
+  var area = e.plotArea;
+  var sets = e.allSeriesPoints;
+  var setCount = sets.length;
 
   var fillAlpha = g.getOption('fillAlpha');
   var stepPlot = g.getOption('stepPlot');
@@ -693,6 +706,8 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
     var setName = setNames[setIdx];
+    if (!g.getOption('fillGraph', setName)) continue;
+
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
     var axisY = 1.0 + axis.minyval * axis.yscale;

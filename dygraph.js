@@ -408,6 +408,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     // TODO(nikhilk): Add any other stackedGraph checks here.
   }
 
+  // These two options have a bad interaction. See issue 359.
+  if (attrs.showRangeSelector && attrs.animatedZooms) {
+    this.warn('You should not set animatedZooms=true when using the range selector.');
+    attrs.animatedZooms = false;
+  }
+
   // Dygraphs has many options, some of which interact with one another.
   // To keep track of everything, we maintain two sets of options:
   //
@@ -1247,6 +1253,10 @@ Dygraph.prototype.createDragInterface_ = function() {
     boundedDates: null, // [minDate, maxDate]
     boundedValues: null, // [[minValue, maxValue] ...]
 
+    // We cover iframes during mouse interactions. See comments in
+    // dygraph-utils.js for more info on why this is a good idea.
+    tarp: new Dygraph.IFrameTarp(),
+
     // contextB is the same thing as this context object but renamed.
     initializeMouseDown: function(event, g, contextB) {
       // prevents mouse drags from selecting page text.
@@ -1262,6 +1272,7 @@ Dygraph.prototype.createDragInterface_ = function() {
       contextB.dragStartX = g.dragGetX_(event, contextB);
       contextB.dragStartY = g.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
+      contextB.tarp.cover();
     }
   };
 
@@ -1301,6 +1312,8 @@ Dygraph.prototype.createDragInterface_ = function() {
         delete self.axes_[i].dragValueRange;
       }
     }
+
+    context.tarp.uncover();
   };
 
   this.addEvent(document, 'mouseup', this.mouseUpHandler_);
@@ -2099,7 +2112,7 @@ Dygraph.prototype.extremeValues_ = function(series) {
     // With custom bars, maxY is the max of the high values.
     for (j = 0; j < series.length; j++) {
       y = series[j][1][0];
-      if (!y) continue;
+      if (y === null || isNaN(y)) continue;
       var low = y - series[j][1][1];
       var high = y + series[j][1][2];
       if (low > y) low = y;    // this can happen with custom bars,
@@ -2923,7 +2936,8 @@ Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
  */
 Dygraph.prototype.parseCSV_ = function(data) {
   var ret = [];
-  var lines = data.split("\n");
+  var line_delimiter = Dygraph.detectLineDelimiter(data);
+  var lines = data.split(line_delimiter || "\n");
   var vals, j;
 
   // Use the default delimiter or fall back to a tab if that makes sense.
@@ -3279,7 +3293,8 @@ Dygraph.prototype.start_ = function() {
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
-    if (data.indexOf('\n') >= 0) {
+    var line_delimiter = Dygraph.detectLineDelimiter(data);
+    if (line_delimiter) {
       this.loadedEvent_(data);
     } else {
       var req = new XMLHttpRequest();

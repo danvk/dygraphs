@@ -396,7 +396,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Should the area underneath the graph be filled? This option is not compatible with error bars."
+    "description": "Should the area underneath the graph be filled? This option is not compatible with error bars. This may be set on a <a href='per-axis.html'>per-series</a> basis."
   },
   "highlightCircleSize": {
     "default": "3",

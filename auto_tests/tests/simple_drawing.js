@@ -58,6 +58,27 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
+// See http://code.google.com/p/dygraphs/issues/detail?id=185
+SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
+  var opts = {
+    drawXGrid: false,
+    drawYGrid: false,
+    drawXAxis: false,
+    drawYAxis: false,
+    valueRange: [0,50] }
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
+  var htx = g.hidden_ctx_;
+
+  var lines = CanvasAssertions.getLinesDrawn(htx, {
+    strokeStyle: "#008080",
+    lineWidth: 1
+  });
+  assertEquals(1, lines.length);
+  CanvasAssertions.assertBalancedSaveRestore(htx);
+};
+
 SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY);
@@ -86,6 +107,42 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   graph.style.height='320px';
   var g = new Dygraph(graph, [[1, 4], [2, 5], [3, 3], [4, 7], [5, 9]], opts);
   htx = g.hidden_ctx_;
+
+  // TODO(danvk): figure out a good way to restore this test.
+  // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  CanvasAssertions.assertBalancedSaveRestore(htx);
+};
+
+/**
+ * Tests that thick lines are drawn continuously.
+ * Regression test for http://code.google.com/p/dygraphs/issues/detail?id=328
+ */
+SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
+  var opts = {
+    drawXGrid: false,
+    drawYGrid: false,
+    drawXAxis: false,
+    drawYAxis: false,
+    strokeWidth: 15,
+    colors: ['#ff0000']
+  };
+
+  var graph = document.getElementById("graph");
+  // Set the dims so we pass if default changes.
+  graph.style.width='480px';
+  graph.style.height='320px';
+  var g = new Dygraph(graph, [[1, 2], [2, 5], [3, 2], [4, 7], [5, 0]], opts);
+  htx = g.hidden_ctx_;
+
+  // There's a big gap in the line at (2, 5)
+  // If the bug is fixed, then there should be some red going up from here.
+  var xy = g.toDomCoords(2, 5);
+  var x = Math.round(xy[0]), y = Math.round(xy[1]);
+
+  var sampler = new PixelSampler(g);
+  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y));
+  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y - 1));
+  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y - 2));
 
   // TODO(danvk): figure out a good way to restore this test.
   // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));

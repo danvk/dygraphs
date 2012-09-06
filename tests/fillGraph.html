@@ -20,6 +20,9 @@
     <p>Filled, negatives:</p>
     <div id="div_g2" style="width:600px; height:300px;"></div>
 
+    <p>Filled on a per-series basis:</p>
+    <div id="div_g3" style="width:600px; height:300px;"></div>
+
     <script type="text/javascript">
       var g1 = new Dygraph(
         document.getElementById("div_g"),
@@ -44,6 +47,20 @@
           return ret;
         },
         { fillGraph: true }
+      );
+
+      var g3 = new Dygraph(
+        document.getElementById("div_g3"),
+        function() {
+          var ret = "X,Y1,Y2\n";
+          for (var i = 0; i < 100; i++) {
+            ret += i + "," + i + "," + (i * (100-i) * 100/(50*50)) + "\n";
+          }
+          return ret;
+        },
+        {
+          Y1: { fillGraph: true }
+        }
       );
     </script>
   </body>

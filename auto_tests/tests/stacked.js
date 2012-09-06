@@ -60,3 +60,41 @@ stackedTestCase.prototype.testCorrectColors = function() {
   assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 250));
   assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 150));
 };
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=358
+stackedTestCase.prototype.testSelectionValues = function() {
+  var opts = {
+    stackedGraph: true
+  };
+  var data = "X,Y1,Y2\n" +
+      "0,1,1\n" +
+      "1,1,1\n" +
+      "2,1,1\n" +
+      "3,1,1\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  g.setSelection(0);
+
+  var legend = document.getElementsByClassName("dygraph-legend");
+  assertEquals(1, legend.length);
+  legend = legend[0];
+
+  assertEquals("0: Y1:1 Y2:1", legend.textContent);
+
+  // Verify that the behavior is correct with highlightSeriesOpts as well.
+  g.updateOptions({
+    highlightSeriesOpts: {
+      strokeWidth: 10
+    }
+  });
+  // NOTE: calling g.setSelection(0) here makes the test fail, due to an
+  // unrelated bug.
+  g.setSelection(1);
+  assertEquals("1: Y1:1 Y2:1", legend.textContent);
+
+  g.setSelection(0, 'Y2');
+  assertEquals("0: Y1:1 Y2:1", legend.textContent);
+};

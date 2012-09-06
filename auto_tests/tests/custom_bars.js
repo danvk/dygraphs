@@ -57,3 +57,52 @@ CustomBarsTestCase.prototype.testCustomBarsNoHang = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 };
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=201
+CustomBarsTestCase.prototype.testCustomBarsZero = function() {
+  var opts = {
+    customBars: true
+  };
+  var data = "X,Y1,Y2\n" +
+"1,1;2;3,0;0;0\n" +
+"2,2;3;4,0;0;0\n" +
+"3,1;3;5,0;0;0\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var range = g.yAxisRange();
+  assertTrue('y-axis must include 0', range[0] <= 0);
+  assertTrue('y-axis must include 5', range[1] >= 5);
+};
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=229
+CustomBarsTestCase.prototype.testCustomBarsAtTop = function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      [
+        [1, [10, 10, 100]],
+        [1, [10, 10, 100]],
+        [2, [15, 20, 110]],
+        [3, [10, 30, 100]],
+        [4, [15, 40, 110]],
+        [5, [10,120, 100]],
+        [6, [15, 50, 110]],
+        [7, [10, 70, 100]],
+        [8, [15, 90, 110]],
+        [9, [10, 50, 100]]
+      ], {
+        width: 500, height: 350,
+        customBars: true,
+        errorBars: true,
+        drawXGrid: false,
+        drawYGrid: false,
+        drawXAxis: false,
+        drawYAxis: false,
+        valueRange: [0, 120],
+        fillAlpha: 0.15,
+        colors: [ '#00FF00' ]
+      });
+
+  var sampler = new PixelSampler(g);
+  assertEquals([0, 255, 0, 38], sampler.colorAtCoordinate(5, 60));
+};
