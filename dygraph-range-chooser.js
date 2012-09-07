@@ -32,7 +32,7 @@ var DygraphRangeChooser = function(dygraph) {
 
 /**
  * Adds the range choosers to the dygraph.
- * @param {Object} graphDiv The container div for the range selector.
+ * @param {Object} graphDiv The container div for the range chooser.
  * @param {DygraphLayout} layout The DygraphLayout object for this graph.
  */
 DygraphRangeChooser.prototype.addToGraph = function(graphDiv, layout) {
@@ -44,6 +44,10 @@ DygraphRangeChooser.prototype.addToGraph = function(graphDiv, layout) {
   // Quick lookup for tooltip.
   this.setToolTip_(this.leftSliderHandle_);
   this.setToolTip_(this.rightSliderHandle_);
+  
+  // Put the tooltip for the right handle on the left side.
+  this.rightSliderHandle_.tooltip.style.right = this.rightSliderHandle_.tooltip.style.left;
+  this.rightSliderHandle_.tooltip.style.left = null;
 };
 
 DygraphRangeChooser.prototype.setToolTip_ = function(handle) {
@@ -62,14 +66,14 @@ DygraphRangeChooser.prototype.setToolTip_ = function(handle) {
 };
 
 /**
- * Renders the static background portion of the range selector.
+ * Renders the static background portion of the range chooser.
  */
 DygraphRangeChooser.prototype.renderStaticLayer = function() {
   this.resize_();
 };
 
 /**
- * Renders the interactive foreground portion of the range selector.
+ * Renders the interactive foreground portion of the range chooser.
  */
 DygraphRangeChooser.prototype.renderInteractiveLayer = function() {
   var xExtremes = this.dygraph_.xAxisExtremes();
@@ -120,7 +124,7 @@ DygraphRangeChooser.prototype.renderInteractiveLayer = function() {
 
 /**
  * @private
- * Resizes the range selector.
+ * Resizes the range chooser.
  */
 DygraphRangeChooser.prototype.resize_ = function() {
   this.canvasRect_ = this.layout_.getPlotArea();
