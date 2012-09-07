@@ -968,7 +968,9 @@ Dygraph.prototype.createInterface_ = function() {
   }
 
   if (this.attr_('showRangeChooser')) {
-    this.rangeChooser_ = new DygraphRangeChooser(this);
+	// Do not recreate the chooser if it already exists.
+	if (!this.rangeChooser_)
+      this.rangeChooser_ = new DygraphRangeChooser(this);
   }
 
   // The interactive parts of the graph are drawn on top of the chart.
