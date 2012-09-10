@@ -17,7 +17,6 @@ Gallery.register(
     run: function() {
       gs = [];
       var blockRedraw = false;
-      var initialized = false;
       for (var i = 1; i <= 4; i++) {
         gs.push(
           new Dygraph(
