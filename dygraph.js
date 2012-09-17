@@ -1536,7 +1536,8 @@ Dygraph.prototype.doUnzoom_ = function() {
       newValueRanges = [];
       for (i = 0; i < this.axes_.length; i++) {
         var axis = this.axes_[i];
-        newValueRanges.push(axis.valueRange !== null ?
+        newValueRanges.push((axis.valueRange !== null &&
+                             axis.valueRange !== undefined) ?
                             axis.valueRange : axis.extremeRange);
       }
     }
