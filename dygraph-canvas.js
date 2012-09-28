@@ -176,7 +176,7 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
   }
 
   // Determine background color to give clip divs.
-  var backgroundColor = document.bgColor;
+  var backgroundColor = graphDiv.style.bgColor;
   var element = this.dygraph_.graphDiv;
   while (element != document) {
     var bgcolor = element.currentStyle.backgroundColor;
