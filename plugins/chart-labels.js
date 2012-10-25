@@ -123,6 +123,7 @@ chart_labels.prototype.layout = function(e) {
     this.title_div_.style.textAlign = 'center';
     this.title_div_.style.fontSize = (g.getOption('titleHeight') - 8) + 'px';
     this.title_div_.style.fontWeight = 'bold';
+    this.title_div_.style.zIndex = 10;
 
     var class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-title';

@@ -1082,17 +1082,25 @@ Dygraph.IFrameTarp.prototype.uncover = function() {
 };
 
 /**
- * Determine whether |data| is delimited by CR, LF or CRLF.
+ * Determine whether |data| is delimited by CR, CRLF, LF, LFCR.
  * @param {string} data
  * @return {string|null} the delimiter that was detected.
  */
 Dygraph.detectLineDelimiter = function(data) {
   for (var i = 0; i < data.length; i++) {
-    var code = data[i];
-    if (code == '\r') return code;
-    if (code == '\n') {
+    var code = data.charAt(i);
+    if (code === '\r') {
+      // Might actually be "\r\n".
+      if (((i + 1) < data.length) && (data.charAt(i + 1) === '\n')) {
+        return '\r\n';
+      }
+      return code;
+    }
+    if (code === '\n') {
       // Might actually be "\n\r".
-      if (i < data.length && data[i + 1] == '\r') return '\n\r';
+      if (((i + 1) < data.length) && (data.charAt(i + 1) === '\r')) {
+        return '\n\r';
+      }
       return code;
     }
   }
