@@ -23,7 +23,9 @@
       <input type=checkbox id="0" onClick="change(this)">
       <label for="0"> A</label><br/>
       <input type=checkbox id="1" checked onClick="change(this)">
-      <label for="1"> B</label>
+      <label for="1"> B</label><br/>
+      <input type=checkbox id="2" checked onClick="change(this)">
+      <label for="2"> C</label>
     </p>
 
     <p>g.visibility() = <span id="visibility"></span></p>
@@ -32,10 +34,10 @@
     <script type="text/javascript">
       g = new Dygraph(
             document.getElementById("div_g"),
-            NoisyData, {
+            NoisyDataABC, {
               rollPeriod: 7,
               errorBars: true,
-              visibility: [false, true]
+              visibility: [false, true, true]
             }
           );
       setStatus();
