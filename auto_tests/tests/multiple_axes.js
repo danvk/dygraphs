@@ -296,11 +296,14 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
   var data = MultipleAxesTestCase.getData();
 
   var results = { y : {}, y2 : {}};
-  var firstCallback = function(g, seriesName) {
+  var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
     results.y[seriesName] = 1; 
+    Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
+
   };
-  var secondCallback = function(g, seriesName) {
+  var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
     results.y2[seriesName] = 1; 
+    Dygraph.Circles.TRIANGLE(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 
   g = new Dygraph(
@@ -309,6 +312,7 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
     {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       drawPoints : true,
+      pointSize : 3,
       'Y3': {
         axis: {
         }
