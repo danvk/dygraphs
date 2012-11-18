@@ -11,7 +11,7 @@
  * dygraph_ - the graph.
  * global_ - global attributes (common among all graphs, AIUI)
  * user_ - attributes set by the user
- * axes_ - array of axis index to axis-specific options.
+ * axes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
  * series_ - { seriesName -> { idx, yAxis, options }
  * labels_ - used as mapping from index to series name.
  */
@@ -46,7 +46,7 @@ var DygraphOptions = function(dygraph) {
 DygraphOptions.prototype.reparseSeries = function() {
   this.labels = this.find("labels").slice(1);
 
-  this.axes_ = [ {} ]; // Always one axis at least.
+  this.axes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.series_ = {};
 
   var axisId = 0; // 0-offset; there's always one.
@@ -60,8 +60,14 @@ DygraphOptions.prototype.reparseSeries = function() {
     var axis = optionsForSeries["axis"];
     if (typeof(axis) == 'object') {
       yAxis = ++axisId;
-      this.axes_[yAxis] = axis;
+      this.axes_[yAxis] = { series : [ seriesName ], options : axis };
     }
+
+    // Associate series without axis options with axis 0.
+    if (!axis) { // undefined
+      this.axes_[0].series.push(seriesName);
+    }
+
     this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
   }
 
@@ -78,7 +84,9 @@ DygraphOptions.prototype.reparseSeries = function() {
                    "series " + axis + ", which does not define its own axis.");
         return null;
       }
-      this.series_[seriesName].yAxis = this.series_[axis].yAxis;
+      var yAxis = this.series_[axis].yAxis;
+      this.series_[seriesName].yAxis = yAxis;
+      this.axes_[yAxis].series.push(seriesName);
     }
   }
 
@@ -88,12 +96,12 @@ DygraphOptions.prototype.reparseSeries = function() {
     var axis_opts = this.user_.axes;
 
     if (axis_opts.hasOwnProperty("y")) {
-      Dygraph.update(this.axes_[0], axis_opts.y);
+      Dygraph.update(this.axes_[0].options, axis_opts.y);
     }
 
     if (axis_opts.hasOwnProperty("y2")) {
-      this.axes_[1] = this.axes_[1] || {};
-      Dygraph.update(this.axes_[1], axis_opts.y2);
+      this.axes_[1] = this.axes_[1] || {}; // FIX
+      Dygraph.update(this.axes_[1].options, axis_opts.y2);
     }
   }
 };
@@ -111,7 +119,7 @@ DygraphOptions.prototype.find = function(name) {
 DygraphOptions.prototype.findForAxis = function(name, axis) {
   var axisIdx = (axis == "y2" || axis == "y2" || axis == 1) ? 1 : 0;
 
-  var axisOptions = this.axes_[axisIdx];
+  var axisOptions = this.axes_[axisIdx].options;
   if (axisOptions.hasOwnProperty(name)) {
     return axisOptions[name];
   }
@@ -147,4 +155,25 @@ DygraphOptions.prototype.findForSeries = function(name, series) {
  */
 DygraphOptions.prototype.numAxes = function() {
   return this.axes_.length;
+}
+
+/**
+ * Return the y-axis for a given series, specified by name.
+ */
+DygraphOptions.prototype.axisForSeries = function(seriesName) {
+  return this.series_[seriesName].yAxis;
+}
+
+/**
+ * Returns the options for the specified axis.
+ */
+DygraphOptions.prototype.axisOptions = function(yAxis) {
+  return this.axes_[yAxis].options;
+}
+
+/**
+ * Return the series associated with an axis.
+ */
+DygraphOptions.prototype.seriesForAxis = function(yAxis) {
+  return this.axes_[yAxis].series;
 }

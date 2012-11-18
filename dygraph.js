@@ -1132,7 +1132,7 @@ Dygraph.prototype.getPropertiesForSeries = function(series_name) {
     column: idx,
     visible: this.visibility()[idx - 1],
     color: this.colorsMap_[series_name],
-    axis: 1 + this.seriesToAxisMap_[series_name]
+    axis: 1 + this.attributes_.axisForSeries(series_name)
   };
 };
 
@@ -2407,9 +2407,8 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  * currently being displayed. This includes things like the number of axes and
  * the style of the axes. It does not include the range of each axis and its
  * tick marks.
- * This fills in this.axes_ and this.seriesToAxisMap_.
+ * This fills in this.axes_.
  * axes_ = [ { options } ]
- * seriesToAxisMap_ = { seriesName: 0, seriesName2: 1, ... }
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
@@ -2424,7 +2423,6 @@ Dygraph.prototype.computeYAxes_ = function() {
   }
 
   this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
-  this.seriesToAxisMap_ = {};
 
   // Get a list of series names.
   var labels = this.attr_("labels");
@@ -2456,7 +2454,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (!series.hasOwnProperty(seriesName)) continue;
     axis = this.attr_("axis", seriesName);
     if (axis === null) {
-      this.seriesToAxisMap_[seriesName] = 0;
       continue;
     }
     if (typeof(axis) == 'object') {
@@ -2469,23 +2466,6 @@ Dygraph.prototype.computeYAxes_ = function() {
       opts.g = this;
       Dygraph.update(opts, axis);
       this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = yAxisId;
-    }
-  }
-
-  // Go through one more time and assign series to an axis defined by another
-  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-  for (seriesName in series) {
-    if (!series.hasOwnProperty(seriesName)) continue;
-    axis = this.attr_("axis", seriesName);
-    if (typeof(axis) == 'string') {
-      if (!this.seriesToAxisMap_.hasOwnProperty(axis)) {
-        this.error("Series " + seriesName + " wants to share a y-axis with " +
-                   "series " + axis + ", which does not define its own axis.");
-        return null;
-      }
-      var idx = this.seriesToAxisMap_[axis];
-      this.seriesToAxisMap_[seriesName] = idx;
     }
   }
 
@@ -2518,13 +2498,7 @@ Dygraph.prototype.computeYAxes_ = function() {
  * @return {Number} the number of axes.
  */
 Dygraph.prototype.numAxes = function() {
-  var last_axis = 0;
-  for (var series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    if (idx > last_axis) last_axis = idx;
-  }
-  return 1 + last_axis;
+  return this.attributes_.numAxes();
 };
 
 /**
@@ -2536,7 +2510,7 @@ Dygraph.prototype.numAxes = function() {
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.
-  return this.axes_[this.seriesToAxisMap_[series]];
+  return this.axes_[this.attributes_.axisForSeries(series)];
 };
 
 /**
@@ -2547,16 +2521,15 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Build a map from axis number -> [list of series names]
-  var seriesForAxis = [], series;
-  for (series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    while (seriesForAxis.length <= idx) seriesForAxis.push([]);
-    seriesForAxis[idx].push(series);
+  var seriesForAxis = [];
+  var series;
+  var numAxes = this.attributes_.numAxes();
+  for (var yAxis = 0; yAxis < numAxes; yAxis++) {
+    seriesForAxis[yAxis] = this.attributes_.seriesForAxis(yAxis);
   }
 
   // Compute extreme values, a span and tick marks for each axis.
-  for (var i = 0; i < this.axes_.length; i++) {
+  for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
 
     if (!seriesForAxis[i]) {
