@@ -3108,8 +3108,9 @@ Dygraph.prototype.parseArray_ = function(data) {
               "in the options parameter");
     this.attrs_.labels = [ "X" ];
     for (i = 1; i < data[0].length; i++) {
-      this.attrs_.labels.push("Y" + i);
+      this.attrs_.labels.push("Y" + i); // Not user_attrs_.
     }
+    this.attributes_.reparseSeries();
   } else {
     var num_labels = this.attr_("labels");
     if (num_labels.length != data[0].length) {
