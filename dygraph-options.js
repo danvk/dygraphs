@@ -9,11 +9,11 @@
 /*
  * Interesting member variables:
  * dygraph_ - the graph.
- * global - global attributes (common among all graphs, AIUI)
- * user - attributes set by the user
- * axes
- * series - { seriesName -> { idx, yAxis, options }
- * labels - used as mapping from index to series name.
+ * global_ - global attributes (common among all graphs, AIUI)
+ * user_ - attributes set by the user
+ * axes_ - array of axis index to axis-specific options.
+ * series_ - { seriesName -> { idx, yAxis, options }
+ * labels_ - used as mapping from index to series name.
  */
 
 /**
@@ -141,3 +141,10 @@ DygraphOptions.prototype.findForSeries = function(name, series) {
   return this.findForAxis(name, seriesObj["yAxis"]);
 }
 
+/**
+ * Returns the number of y-axes on the chart.
+ * @return {Number} the number of axes.
+ */
+DygraphOptions.prototype.numAxes = function() {
+  return this.axes_.length;
+}
