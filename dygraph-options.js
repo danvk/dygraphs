@@ -33,6 +33,16 @@ var DygraphOptions = function(dygraph) {
   this.global_user = this.dygraph_.user_attrs_ || {};
 
   // Get a list of series names.
+
+  var labels = this.find("labels");
+  if (!labels) {
+    return; // -- can't do more for now, will parse after getting the labels.
+  };
+
+  this.reparseForLabels();
+}
+
+DygraphOptions.prototype.reparseSeries = function() {
   this.labels = this.find("labels").slice(1);
 
   var axisId = 0; // 0-offset; there's always one.
@@ -75,7 +85,7 @@ var DygraphOptions = function(dygraph) {
     this.axes.push(axis_opts["y"] || {}); 
     this.axes.push(axis_opts["y2"] || {}); 
   } else {
-    this.axes.push(axis_opts["y"] || {});  // There has to be at least one axis.
+    this.axes.push({});  // There has to be at least one axis.
   }
 };
 

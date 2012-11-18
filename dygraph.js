@@ -2971,6 +2971,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     // User hasn't explicitly set labels, so they're (presumably) in the CSV.
     start = 1;
     this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+    this.attributes_.reparseSeries();
   }
   var line_no = 0;
 
