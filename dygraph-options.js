@@ -39,7 +39,7 @@ var DygraphOptions = function(dygraph) {
     return; // -- can't do more for now, will parse after getting the labels.
   };
 
-  this.reparseForLabels();
+  this.reparseSeries();
 }
 
 DygraphOptions.prototype.reparseSeries = function() {
@@ -101,7 +101,7 @@ DygraphOptions.prototype.find = function(name) {
 
 DygraphOptions.prototype.findForAxis = function(name, axis) {
 
-  var axisIdx = (axis == "y2" || axis == 1) ? 1 : 0;
+  var axisIdx = (axis == "y2" || axis == "y2" || axis == 1) ? 1 : 0;
 
   var axisOptions = this.axes[axisIdx];
   if (axisOptions.hasOwnProperty(name)) {
