@@ -45,6 +45,9 @@ var DygraphOptions = function(dygraph) {
 DygraphOptions.prototype.reparseSeries = function() {
   this.labels = this.find("labels").slice(1);
 
+  this.axes = [ {} ]; // Always one axis at least.
+  this.series = {};
+
   var axisId = 0; // 0-offset; there's always one.
   // Go through once, add all the series, and for those with {} axis options, add a new axis.
   for (var idx = 0; idx < this.labels.length; idx++) {
@@ -56,6 +59,7 @@ DygraphOptions.prototype.reparseSeries = function() {
     var axis = optionsForSeries["axis"];
     if (typeof(axis) == 'object') {
       yAxis = ++axisId;
+      this.axes[yAxis] = axis;
     }
     this.series[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
   }
@@ -82,10 +86,14 @@ DygraphOptions.prototype.reparseSeries = function() {
   if (this.global_user.hasOwnProperty("axes")) {
     var axis_opts = this.global_user.axes;
 
-    this.axes.push(axis_opts["y"] || {}); 
-    this.axes.push(axis_opts["y2"] || {}); 
-  } else {
-    this.axes.push({});  // There has to be at least one axis.
+    if (axis_opts.hasOwnProperty("y")) {
+      Dygraph.update(this.axes[0], axis_opts.y);
+    }
+
+    if (axis_opts.hasOwnProperty("y2")) {
+      this.axes[1] = this.axes[1] || {};
+      Dygraph.update(this.axes[1], axis_opts.y2);
+    }
   }
 };
 
