@@ -603,13 +603,12 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
   }
 
   var computedValue = seriesName ? this.attributes_.findForSeries(name, seriesName) : this.attributes_.find(name);
-
   if (ret !== computedValue) {
     console.log("Mismatch", name, seriesName, ret, computedValue);
-  } else {
-    console.log("Match", name, seriesName, ret, computedValue);
   }
-  return computedValue;
+
+  var USE_NEW_VALUE = true;
+  return USE_NEW_VALUE ? computedValue : ret;
 };
 
 /**
