@@ -254,6 +254,7 @@ Dygraph.DEFAULT_ATTRS = {
 
   drawXAxis: true,
   drawYAxis: true,
+  fullAxisFrame: false,
   axisLineColor: "black",
   axisLineWidth: 0.3,
   gridLineWidth: 0.3,

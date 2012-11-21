@@ -209,7 +209,7 @@ axes.prototype.willDrawChart = function(e) {
     context.stroke();
 
     // if there's a secondary y-axis, draw a vertical line for that, too.
-    if (g.numAxes() == 2) {
+    if (g.numAxes() == 2 || g.getOption('fullAxisFrame')) {
       context.beginPath();
       context.moveTo(halfDown(area.x + area.w), halfDown(area.y));
       context.lineTo(halfDown(area.x + area.w), halfDown(area.y + area.h));
@@ -267,6 +267,15 @@ axes.prototype.willDrawChart = function(e) {
     context.lineTo(halfUp(area.x + area.w), axisY);
     context.closePath();
     context.stroke();
+    
+    if (g.getOption('fullAxisFrame') && !g.getOption('drawAxesAtZero')) {
+      context.beginPath();
+      context.moveTo(halfUp(area.x), halfUp(area.y));
+      context.lineTo(halfUp(area.x + area.w), halfUp(area.y));
+      context.closePath();
+      context.stroke();
+    }
+
   }
 
   context.restore();
