@@ -40,7 +40,18 @@
         pointSize: 4,
         }
         );
+        
+        
+      var on = true;
+      function toggle() {
+        on = !on;
+        g.updateOptions({fullAxisFrame : on });
+      }
       </script>
+ 
+     <button onClick='toggle(this)'>Toggle Full Axis Frame</button>
+     
+      
     </body>
 </html>
 
