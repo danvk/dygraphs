@@ -437,6 +437,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.registeredEvents_ = [];
   this.eventListeners_ = {};
 
+  this.attributes_ = new DygraphOptions(this);
+
   // Create the containing DIV and other interactive elements
   this.createInterface_();
 
@@ -568,6 +570,12 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
   }
 // </REMOVE_FOR_COMBINED>
 
+  // Building an array which we peruse in backwards order to find the correct value.
+  // Options are checked in this order:
+  // series, axis, user attrs, global attrs.
+  // TODO(konigsberg): Can this be made faster by starting with the series and working outward,
+  // rather than building an array?
+
   var sources = [];
   sources.push(this.attrs_);
   if (this.user_attrs_) {
@@ -576,6 +584,8 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
       if (this.user_attrs_.hasOwnProperty(seriesName)) {
         sources.push(this.user_attrs_[seriesName]);
       }
+
+      // TODO(konigsberg): This special case ought to be documented.
       if (seriesName === this.highlightSet_ &&
           this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
         sources.push(this.user_attrs_.highlightSeriesOpts);
@@ -591,7 +601,14 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
       break;
     }
   }
-  return ret;
+
+  var computedValue = seriesName ? this.attributes_.findForSeries(name, seriesName) : this.attributes_.find(name);
+  if (ret !== computedValue) {
+    console.log("Mismatch", name, seriesName, ret, computedValue);
+  }
+
+  var USE_NEW_VALUE = true;
+  return USE_NEW_VALUE ? computedValue : ret;
 };
 
 /**
@@ -2187,7 +2204,8 @@ Dygraph.prototype.predraw_ = function() {
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
-    var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong
+    // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
+    var logScale = this.attr_('logscale');
     var series = this.extractSeries_(this.rawData_, i, logScale);
     series = this.rollingAverage(series, this.rollPeriod_);
     this.rolledSeries_.push(series);
@@ -2960,6 +2978,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     // User hasn't explicitly set labels, so they're (presumably) in the CSV.
     start = 1;
     this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+    this.attributes_.reparseSeries();
   }
   var line_no = 0;
 
@@ -3096,8 +3115,9 @@ Dygraph.prototype.parseArray_ = function(data) {
               "in the options parameter");
     this.attrs_.labels = [ "X" ];
     for (i = 1; i < data[0].length; i++) {
-      this.attrs_.labels.push("Y" + i);
+      this.attrs_.labels.push("Y" + i); // Not user_attrs_.
     }
+    this.attributes_.reparseSeries();
   } else {
     var num_labels = this.attr_("labels");
     if (num_labels.length != data[0].length) {

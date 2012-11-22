@@ -291,3 +291,46 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
   assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], getYLabelsForAxis("1"));
   assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], getYLabelsForAxis("2"));
 };
+
+MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var results = { y : {}, y2 : {}};
+  var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
+    results.y[seriesName] = 1; 
+    Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
+
+  };
+  var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
+    results.y2[seriesName] = 1; 
+    Dygraph.Circles.TRIANGLE(g, seriesName, ctx, canvasx, canvasy, color, radius);
+  };
+
+  g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      drawPoints : true,
+      pointSize : 3,
+      'Y3': {
+        axis: {
+        }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      axes: {
+        y2: {
+          drawPointCallback: secondCallback
+        }
+      },
+      drawPointCallback: firstCallback
+    }
+  );
+
+  assertEquals(1, results.y["Y1"]);
+  assertEquals(1, results.y["Y2"]);
+  assertEquals(1, results.y2["Y3"]);
+  assertEquals(1, results.y2["Y4"]);
+};
