@@ -763,7 +763,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "series": {
     "default": "null",
     "labels": ["Series"],
-    "type": "Object"
+    "type": "Object",
     "description": "Defines per-series options. Its keys match the y-axis label names, and the values are dictionaries themselves that contain options specific to that series. When this option is missing, it falls back on the old-style of per-series options comingled with global options."
   }
 }
