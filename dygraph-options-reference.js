@@ -658,6 +658,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description" : "Whether to draw the y-axis. Setting this to false also prevents y-axis ticks from being drawn and reclaims the space for the chart grid/lines."
   },
+  "fullAxisFrame": {
+    "default": "false",
+    "labels": ["Full Axis Frame"],
+    "type": "boolean",
+    "description": "If set, draw a full axis frame."
+  },
   "gridLineWidth": {
     "default": "0.3",
     "labels": ["Grid"],
