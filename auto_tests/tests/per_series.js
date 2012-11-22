@@ -3,7 +3,7 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var Tests for per-series options.
+var perSeriesTestCase = TestCase("per-series");
 
 perSeriesTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
@@ -50,7 +50,7 @@ perSeriesTestCase.prototype.testPerSeriesFill = function() {
 
 perSeriesTestCase.prototype.testOldStyleSeries = function() {
   var opts = {
-    pointSize : 5
+    pointSize : 5,
     Y: { pointSize : 4 },
   };
   var data = "X,Y,Z\n1,0,0\n";
