@@ -20,6 +20,7 @@
     "rgbcolor/rgbcolor.js",
     "stacktrace.js",
     "dashed-canvas.js",
+    "dygraph-options.js",
     "dygraph-layout.js",
     "dygraph-canvas.js",
     "dygraph.js",
