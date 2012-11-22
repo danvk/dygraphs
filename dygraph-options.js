@@ -49,12 +49,36 @@ DygraphOptions.prototype.reparseSeries = function() {
   this.axes_ = [ {} ]; // Always one axis at least.
   this.series_ = {};
 
+  // Traditionally, per-series options were specified right up there with the options. For instance
+  // {
+  //   labels: [ "X", "foo", "bar" ],
+  //   pointSize: 3,
+  //   foo : {}, // options for foo
+  //   bar : {} // options for bar
+  // }
+  //
+  // Moving forward, series really should be specified in the series element, separating them.
+  // like so:
+  //
+  // {
+  //   labels: [ "X", "foo", "bar" ],
+  //   pointSize: 3,
+  //   series : {
+  //     foo : {}, // options for foo
+  //     bar : {} // options for bar
+  //   }
+  // }
+  //
+  // So, if series is found, it's expected to contain per-series data, otherwise we fall
+  // back.
+  var allseries = this.user_.hasOwnProperty("series") ? this.user_.series : this.user_;
+
   var axisId = 0; // 0-offset; there's always one.
   // Go through once, add all the series, and for those with {} axis options, add a new axis.
   for (var idx = 0; idx < this.labels.length; idx++) {
     var seriesName = this.labels[idx];
 
-    var optionsForSeries = this.user_[seriesName] || {};
+    var optionsForSeries = allseries[seriesName] || {};
     var yAxis = 0;
 
     var axis = optionsForSeries["axis"];

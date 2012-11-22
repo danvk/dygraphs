@@ -760,6 +760,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
   }
+  "series": {
+    "default": "null",
+    "labels": ["Series"],
+    "type": "Object"
+    "description": "Defines per-series options. Its keys match the y-axis label names, and the values are dictionaries themselves that contain options specific to that series. When this option is missing, it falls back on the old-style of per-series options comingled with global options."
+  }
 }
 ;  // </JSON>
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
