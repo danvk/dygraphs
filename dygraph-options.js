@@ -71,7 +71,7 @@ DygraphOptions.prototype.reparseSeries = function() {
   //
   // So, if series is found, it's expected to contain per-series data, otherwise we fall
   // back.
-  var allseries = this.user_.hasOwnProperty("series") ? this.user_.series : this.user_;
+  var allseries = this.user_["series"] ? this.user_.series : this.user_;
 
   var axisId = 0; // 0-offset; there's always one.
   // Go through once, add all the series, and for those with {} axis options, add a new axis.
@@ -108,7 +108,7 @@ DygraphOptions.prototype.reparseSeries = function() {
 
   // This doesn't support reading from the 'x' axis, only 'y' and 'y2.
   // Read from the global "axes" option.
-  if (this.user_.hasOwnProperty("axes")) {
+  if (this.user_["axes"]) {
     var axis_opts = this.user_.axes;
 
     if (axis_opts.hasOwnProperty("y")) {
