@@ -27,19 +27,6 @@ var getData = function(numSeries, numRows, isStacked) {
   return data;
 };
 
-var makeClickCallback = function(graph) {
-  var isLocked = false;
-  return function(ev) {
-    if (isLocked) {
-      graph.clearSelection();
-      isLocked = false;
-    } else {
-      graph.setSelection(graph.getSelection(), graph.getHighlightSeries(), true);
-      isLocked = true;
-    }
-  };
-};
-
 var makeGraph = function(className, numSeries, numRows, isStacked) {
   var demo = document.getElementById('demo');
   var div = document.createElement('div');
@@ -73,7 +60,14 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
           highlightCircleSize: 5,
         },
       });
-  g.updateOptions({clickCallback: makeClickCallback(g)}, true);
+  var onclick = function(ev) {
+    if (g.isSeriesLocked()) {
+      g.clearSelection();
+    } else {
+      g.setSelection(g.getSelection(), g.getHighlightSeries(), true);
+    }
+  };
+  g.updateOptions({clickCallback: onclick}, true);
   g.setSelection(false, 's005');
   //console.log(g);
 };
