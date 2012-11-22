@@ -355,6 +355,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
+  if (typeof(div) == 'string') {
+    div = document.getElementById(div);
+  }
+
   if (!div) {
     Dygraph.error("Constructing dygraph with a non-existent div!");
     return;
