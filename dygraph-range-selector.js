@@ -506,27 +506,27 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
     var y = ((dataPoint[1] !== null) ? (canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact) : NaN);
     if (isFinite(x) && isFinite(y)) {
       if(prevX === null) {
-  	    ctx.lineTo(x, canvasHeight);
-	    }
-	    else if (stepPlot) {
-		    ctx.lineTo(x, prevY);
-	    }
+        ctx.lineTo(x, canvasHeight);
+      }
+      else if (stepPlot) {
+        ctx.lineTo(x, prevY);
+      }
       ctx.lineTo(x, y);
       prevX = x;
-	    prevY = y;
+      prevY = y;
     }
     else {
-	    if(prevX !== null) {
-		    if (stepPlot) {
-			    ctx.lineTo(x, prevY);
-		      ctx.lineTo(x, canvasHeight);
-		    }
-		    else {
-		      ctx.lineTo(prevX, canvasHeight);
-		    }
-	    }
-	    prevX = prevY = null;
-	  }
+      if(prevX !== null) {
+        if (stepPlot) {
+          ctx.lineTo(x, prevY);
+          ctx.lineTo(x, canvasHeight);
+        }
+        else {
+          ctx.lineTo(prevX, canvasHeight);
+        }
+      }
+      prevX = prevY = null;
+    }
   }
   ctx.lineTo(canvasWidth, canvasHeight);
   ctx.closePath();
