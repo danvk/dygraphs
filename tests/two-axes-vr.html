@@ -42,12 +42,14 @@
           data,
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-            'Y3': {
-              axis: {
+            series : {
+              'Y3': {
+                axis: {
+                }
+              },
+              'Y4': {
+                axis: 'Y3'  // use the same y-axis as series Y3
               }
-            },
-            'Y4': {
-              axis: 'Y3'  // use the same y-axis as series Y3
             },
             valueRange: [40, 70],
             axes: {
@@ -67,12 +69,14 @@
           data,
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-            'Y3': {
-              axis: {
+            series : {
+              'Y3': {
+                axis: {
+                }
+              },
+              'Y4': {
+                axis: 'Y3'  // use the same y-axis as series Y3
               }
-            },
-            'Y4': {
-              axis: 'Y3'  // use the same y-axis as series Y3
             },
             axes: {
               y: {
@@ -94,12 +98,14 @@
           data,
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-            'Y3': {
-              axis: {
+            series : {
+              'Y3': {
+                axis: {
+                }
+              },
+              'Y4': {
+                axis: 'Y3'  // use the same y-axis as series Y3
               }
-            },
-            'Y4': {
-              axis: 'Y3'  // use the same y-axis as series Y3
             },
             axes: {
               y: {

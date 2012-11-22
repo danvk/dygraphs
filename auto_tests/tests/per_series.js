@@ -1,9 +1,9 @@
 /**
- * @fileoverview FILL THIS IN
+ * @fileoverview Tests for per-series options.
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var perSeriesTestCase = TestCase("per-series");
+var Tests for per-series options.
 
 perSeriesTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
@@ -46,5 +46,18 @@ perSeriesTestCase.prototype.testPerSeriesFill = function() {
 
   // Inside of the "Y" bump -- filled in.
   assertEquals([255,0,0,38], sampler.colorAtCoordinate(6.5, 0.5));
+};
+
+perSeriesTestCase.prototype.testOldStyleSeries = function() {
+  var opts = {
+    pointSize : 5
+    Y: { pointSize : 4 },
+  };
+  var data = "X,Y,Z\n1,0,0\n";
+  g = new Dygraph("Graph", data, opts);
+
+  assertEquals(5, g.getOption("pointSize"));
+  assertEquals(4, g.getOption("pointSize", "Y"));
+  assertEquals(5, g.getOption("pointSize", "Z"));
 };
 
