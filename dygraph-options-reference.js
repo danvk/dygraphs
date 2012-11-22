@@ -759,7 +759,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
-  }
+  },
   "series": {
     "default": "null",
     "labels": ["Series"],
