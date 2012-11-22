@@ -44,7 +44,9 @@
  */
 
 /*jshint globalstrict: true */
-/*global DygraphRangeSelector:false, DygraphLayout:false, DygraphCanvasRenderer:false, G_vmlCanvasManager:false */
+/*global DygraphRangeSelector:false, DygraphLayout:false, DygraphCanvasRenderer:false, G_vmlCanvasManager:false,
+    DygraphRangeChooser:false
+ */
 "use strict";
 
 /**
@@ -272,6 +274,9 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+
+  // Range choose options
+  showRangeChooser: false,
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
@@ -962,6 +967,12 @@ Dygraph.prototype.createInterface_ = function() {
     this.rangeSelector_ = new DygraphRangeSelector(this);
   }
 
+  if (this.attr_('showRangeChooser')) {
+	// Do not recreate the chooser if it already exists.
+	if (!this.rangeChooser_)
+      this.rangeChooser_ = new DygraphRangeChooser(this);
+  }
+
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
@@ -973,6 +984,10 @@ Dygraph.prototype.createInterface_ = function() {
   if (this.rangeSelector_) {
     // This needs to happen after the graph canvases are added to the div and the layout object is created.
     this.rangeSelector_.addToGraph(this.graphDiv, this.layout_);
+  }
+  
+  if (this.rangeChooser_) {
+    this.rangeChooser_.addToGraph(this.graphDiv, this.layout_);
   }
 
   var dygraph = this;
@@ -2182,6 +2197,9 @@ Dygraph.prototype.predraw_ = function() {
   if (this.rangeSelector_) {
     this.rangeSelector_.renderStaticLayer();
   }
+  if (this.rangeChooser_) {
+    this.rangeChooser_.renderStaticLayer();
+  }
 
   // Convert the raw data (a 2D array) into the internal format and compute
   // rolling averages.
@@ -2424,6 +2442,9 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
 
   if (this.rangeSelector_) {
     this.rangeSelector_.renderInteractiveLayer();
+  }
+  if (this.rangeChooser_) {
+    this.rangeChooser_.renderInteractiveLayer();
   }
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
