@@ -3387,6 +3387,8 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
   Dygraph.updateDeep(this.user_attrs_, attrs);
 
+  this.attributes_.reparseSeries();
+
   if (file) {
     this.file_ = file;
     if (!block_redraw) this.start_();
