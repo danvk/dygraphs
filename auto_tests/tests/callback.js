@@ -304,7 +304,7 @@ CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
 /**
  * Closest-point highlighting with locked series.
  */
-CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
+CallbackTestCase.prototype.testSetSelectionLocking = function() {
   var g = runClosestTest(false, 2, 4);
 
   // Default behavior, 'b' is closest
