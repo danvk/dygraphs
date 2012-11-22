@@ -48,3 +48,42 @@ pathologicalCasesTestCase.prototype.testNullLegend = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 };
+
+pathologicalCasesTestCase.prototype.testNoWidth = function() {
+  var opts = {
+    height: 300,
+  };
+  var data = "X,Y\n" +
+             "1,2\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  assertEquals(480, g.getOption("width"));
+  assertEquals(300, g.getOption("height"));
+};
+
+
+pathologicalCasesTestCase.prototype.testNoHeight = function() {
+  var opts = {
+    width: 479,
+  };
+  var data = "X,Y\n" +
+             "1,2\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  assertEquals(479, g.getOption("width"));
+  assertEquals(320, g.getOption("height"));
+};
+
+pathologicalCasesTestCase.prototype.testNoWidthOrHeight = function() {
+  var opts = {
+  };
+  var data = "X,Y\n" +
+             "1,2\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  assertEquals(480, g.getOption("width"));
+  assertEquals(320, g.getOption("height"));
+};
