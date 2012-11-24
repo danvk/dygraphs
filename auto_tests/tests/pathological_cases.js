@@ -48,3 +48,10 @@ pathologicalCasesTestCase.prototype.testNullLegend = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 };
+
+pathologicalCasesTestCase.prototype.testDivAsString = function() {
+  var data = "X,Y\n" +
+             "1,2\n";
+
+  var g = new Dygraph('graph', data, {});
+}
