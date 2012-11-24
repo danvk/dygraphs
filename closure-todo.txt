@@ -5,8 +5,8 @@ Core:
 - dygraph-layout.js
 - dygraph-options.js
 - dygraph-range-selector.js
-- dygraph-tickers.js
 - dygraph.js
+x dygraph-tickers.js
 x dygraph-options-reference.js
 x dygraph-utils.js
 x dashed-canvas.js

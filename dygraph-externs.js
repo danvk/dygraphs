@@ -32,3 +32,16 @@ function Dygraph() {}
 
 /** @type {Array.<{elem:Element,type:string,fn:function(!Event):(boolean|undefined|null)}>} */
 Dygraph.prototype.registeredEvents_;
+
+/** @type {Object} */
+Dygraph.DEFAULT_ATTRS;
+
+/**
+ * @typedef {function(
+ *   (number|Date),
+ *   number,
+ *   function(string):*,
+ *   (Dygraph|undefined)
+ * ):string}
+ */
+Dygraph.AxisLabelFormatter;
