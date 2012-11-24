@@ -793,6 +793,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Legend',
    'Overall display',
    'Rolling Averages',
+   'Series',
    'Value display/formatting',
    'Zooming',
    'Debugging',
