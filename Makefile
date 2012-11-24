@@ -4,7 +4,7 @@
 #
 # Dean Wampler <dean@deanwampler.com> March 22, 2010
 
-all: generate-combined
+all: test generate-combined
 
 generate-combined:
 	@echo Generating dygraph-combined.js
@@ -18,3 +18,6 @@ generate-gwt:
 
 test:
 	@./test.sh
+
+lint:
+	@./lint.sh
