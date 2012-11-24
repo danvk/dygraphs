@@ -770,7 +770,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
 // Do a quick sanity check on the options reference.
 (function() {
   "use strict";
-  var warn = function(msg) { if (console) console.warn(msg); };
+  var warn = function(msg) { if (window.console) window.console.warn(msg); };
   var flds = ['type', 'default', 'description'];
   var valid_cats = [
    'Annotations',

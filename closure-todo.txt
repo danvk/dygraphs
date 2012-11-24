@@ -1,0 +1,22 @@
+Core:
+- dygraph-canvas.js
+- dygraph-gviz.js
+- dygraph-interaction-model.js
+- dygraph-layout.js
+- dygraph-options.js
+- dygraph-range-selector.js
+- dygraph-tickers.js
+- dygraph.js
+x dygraph-options-reference.js
+x dygraph-utils.js
+x dashed-canvas.js
+
+Plugins:
+- plugins/annotations.js
+- plugins/axes.js
+- plugins/base.js
+- plugins/chart-labels.js
+- plugins/grid.js
+- plugins/install.js
+- plugins/legend.js
+
