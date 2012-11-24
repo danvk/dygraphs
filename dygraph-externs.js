@@ -23,19 +23,6 @@ G_vmlCanvasManager.initElement = function(canvas) {};
 Element.prototype.detachEvent = function(type, fn) {};
 
 
-// TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js
-
-/**
- * @constructor
- */
-function Dygraph() {}
-
-/** @type {Array.<{elem:Element,type:string,fn:function(!Event):(boolean|undefined|null)}>} */
-Dygraph.prototype.registeredEvents_;
-
-/** @type {Object} */
-Dygraph.DEFAULT_ATTRS;
-
 /**
  * @typedef {function(
  *   (number|Date),
@@ -44,4 +31,54 @@ Dygraph.DEFAULT_ATTRS;
  *   (Dygraph|undefined)
  * ):string}
  */
-Dygraph.AxisLabelFormatter;
+var AxisLabelFormatter;
+
+
+/**
+ * @typedef {function(number,function(string),Dygraph):string}
+ */
+var ValueFormatter;
+
+
+/**
+ * @typedef {Array.<Array.<string|number|Array.<number>>>}
+ */
+var DygraphDataArray;
+
+/**
+ * @constructor
+ */
+function GVizDataTable() {}
+
+// TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js
+/**
+ * @param {!HTMLDivElement|string} div
+ * @param {DygraphDataArray|
+ *     GVizDataTable|
+ *     string|
+ *     function():(DygraphDataArray|GVizDataTable|string)} file
+ * @param {Object} attrs
+ * @constructor
+ */
+function Dygraph(div, file, attrs) {}
+
+/**
+ * @constructor
+ */
+function DygraphLayout() {}
+
+/**
+ * @type {Array}
+ */
+DygraphLayout.prototype.datasets;
+
+/**
+ * @type {DygraphLayout}
+ */
+Dygraph.prototype.layout_;
+
+/** @type {Array.<{elem:Element,type:string,fn:function(!Event):(boolean|undefined|null)}>} */
+Dygraph.prototype.registeredEvents_;
+
+/** @type {Object} */
+Dygraph.DEFAULT_ATTRS;

@@ -17,11 +17,10 @@
  */
 
 /**
- * @constructor
- *
  * This parses attributes into an object that can be easily queried.
  *
  * @param {Dyraph} dygraph The chart to which these options belong.
+ * @constructor
  */
 var DygraphOptions = function(dygraph) {
   this.dygraph_ = dygraph;

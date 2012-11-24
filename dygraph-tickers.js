@@ -207,7 +207,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
   }
 
-  var formatter = /**@type{Dygraph.AxisLabelFormatter}*/(opts('axisLabelFormatter'));
+  var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
 
   // Add labels to the ticks.
   var digitsAfterDecimal = /** @type{number} */(opts('digitsAfterDecimal'));
@@ -379,7 +379,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
  * @return {!Dygraph.TickList}
  */
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
-  var formatter = /** @type{Dygraph.AxisLabelFormatter} */(
+  var formatter = /** @type{AxisLabelFormatter} */(
       opts("axisLabelFormatter"));
   var ticks = [];
   var t;

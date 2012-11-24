@@ -28,10 +28,11 @@ Dygraph.Interaction = {};
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param { Event } event the event object which led to the startPan call.
- * @param { Dygraph} g The dygraph on which to act.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the startPan call.
+ * @param {Dygraph} g The dygraph on which to act.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.startPan = function(event, g, context) {
   var i, axis;
@@ -106,10 +107,11 @@ Dygraph.Interaction.startPan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param { Event } event the event object which led to the movePan call.
- * @param { Dygraph} g The dygraph on which to act.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the movePan call.
+ * @param {Dygraph} g The dygraph on which to act.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.movePan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
@@ -176,10 +178,11 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param { Event } event the event object which led to the endPan call.
- * @param { Dygraph} g The dygraph on which to act.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the endPan call.
+ * @param {Dygraph} g The dygraph on which to act.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.endPan = function(event, g, context) {
   context.dragEndX = g.dragGetX_(event, context);
@@ -213,10 +216,11 @@ Dygraph.Interaction.endPan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param { Event } event the event object which led to the startZoom call.
- * @param { Dygraph} g The dygraph on which to act.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the startZoom call.
+ * @param {Dygraph} g The dygraph on which to act.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.startZoom = function(event, g, context) {
   context.isZooming = true;
@@ -231,10 +235,11 @@ Dygraph.Interaction.startZoom = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param { Event } event the event object which led to the moveZoom call.
- * @param { Dygraph} g The dygraph on which to act.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the moveZoom call.
+ * @param {Dygraph} g The dygraph on which to act.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.zoomMoved = true;
@@ -262,13 +267,19 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.prevDragDirection = context.dragDirection;
 };
 
+/**
+ * @param {Dygraph} g
+ * @param {Event} event
+ * @param {Object} context
+ */
 Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   var clickCallback = g.attr_('clickCallback');
   var pointClickCallback = g.attr_('pointClickCallback');
 
   var selectedPoint = null;
 
-  // Find out if the click occurs on a point. This only matters if there's a pointClickCallback.
+  // Find out if the click occurs on a point. This only matters if there's a
+  // pointClickCallback.
   if (pointClickCallback) {
     var closestIdx = -1;
     var closestDistance = Number.MAX_VALUE;
@@ -311,10 +322,11 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param { Event } event the event object which led to the endZoom call.
- * @param { Dygraph} g The dygraph on which to end the zoom.
- * @param { Object} context The dragging context object (with
- * dragStartX/dragStartY/etc. properties). This function modifies the context.
+ * @param {Event} event the event object which led to the endZoom call.
+ * @param {Dygraph} g The dygraph on which to end the zoom.
+ * @param {Object} context The dragging context object (with
+ *     dragStartX/dragStartY/etc. properties). This function modifies the
+ *     context.
  */
 Dygraph.Interaction.endZoom = function(event, g, context) {
   context.isZooming = false;
