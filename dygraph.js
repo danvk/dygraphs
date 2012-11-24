@@ -574,45 +574,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
   }
 // </REMOVE_FOR_COMBINED>
 
-  // Building an array which we peruse in backwards order to find the correct value.
-  // Options are checked in this order:
-  // series, axis, user attrs, global attrs.
-  // TODO(konigsberg): Can this be made faster by starting with the series and working outward,
-  // rather than building an array?
-
-  var sources = [];
-  sources.push(this.attrs_);
-  if (this.user_attrs_) {
-    sources.push(this.user_attrs_);
-    if (seriesName) {
-      if (this.user_attrs_.hasOwnProperty(seriesName)) {
-        sources.push(this.user_attrs_[seriesName]);
-      }
-
-      // TODO(konigsberg): This special case ought to be documented.
-      if (seriesName === this.highlightSet_ &&
-          this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
-        sources.push(this.user_attrs_.highlightSeriesOpts);
-      }
-    }
-  }
-
-  var ret = null;
-  for (var i = sources.length - 1; i >= 0; --i) {
-    var source = sources[i];
-    if (source.hasOwnProperty(name)) {
-      ret = source[name];
-      break;
-    }
-  }
-
-  var computedValue = seriesName ? this.attributes_.findForSeries(name, seriesName) : this.attributes_.find(name);
-  if (ret !== computedValue) {
-    console.log("Mismatch", name, seriesName, ret, computedValue);
-  }
-
-  var USE_NEW_VALUE = true;
-  return USE_NEW_VALUE ? computedValue : ret;
+  return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
 /**
