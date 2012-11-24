@@ -752,7 +752,7 @@ Dygraph.isAndroid = function() {
  * @param {!Array} array
  * @param {number} start
  * @param {number} length
- * @param {function(!Array,Object):boolean=} predicate
+ * @param {function(!Array,?):boolean=} predicate
  * @constructor
  */
 Dygraph.Iterator = function(array, start, length, predicate) {
@@ -805,7 +805,7 @@ Dygraph.Iterator.prototype.next = function() {
  *     This, along with start, defines a slice of the array, and so length
  *     doesn't imply the number of elements in the iterator when accept doesn't
  *     always accept all values. array.length when absent.
- * @param {function(Object):boolean=} opt_predicate a function that takes
+ * @param {function(?):boolean=} opt_predicate a function that takes
  *     parameters array and idx, which returns true when the element should be
  *     returned.  If omitted, all elements are accepted.
  * @private
@@ -986,15 +986,15 @@ Dygraph.compareArrays = function(array1, array2) {
  * @param {number} radius the radius of the image.
  * @param {number} cx center x coordate
  * @param {number} cy center y coordinate
- * @param {number} rotationRadians the shift of the initial angle, in radians.
- * @param {number} delta the angle shift for each line. If missing, creates a
+ * @param {number=} rotationRadians the shift of the initial angle, in radians.
+ * @param {number=} delta the angle shift for each line. If missing, creates a
  *     regular polygon.
  * @private
  */
 Dygraph.regularShape_ = function(
     ctx, sides, radius, cx, cy, rotationRadians, delta) {
-  rotationRadians = rotationRadians ? rotationRadians : 0;
-  delta = delta ? delta : Math.PI * 2 / sides;
+  rotationRadians = rotationRadians || 0;
+  delta = delta || Math.PI * 2 / sides;
 
   ctx.beginPath();
   var first = true;
@@ -1024,8 +1024,8 @@ Dygraph.regularShape_ = function(
 /**
  * TODO(danvk): be more specific on the return type.
  * @param {number} sides
- * @param {number} rotationRadians
- * @param {number} delta
+ * @param {number=} rotationRadians
+ * @param {number=} delta
  * @return {Function}
  * @private
  */
@@ -1035,21 +1035,6 @@ Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
     ctx.fillStyle = "white";
     Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
   };
-};
-
-/**
- * @param {number} sides the number of sides in the shape.
- * @param {number} rotationRadians the shift of the initial angle, in radians.
- * @param {!CanvasRenderingContext2D} ctx the canvas context
- * @param {number} cx center x coordate
- * @param {number} cy center y coordinate
- * @param {string} color stroke color
- * @param {number} radius the radius of the image.
- * @param {number} delta the angle shift for each line. If missing, creates a
- *     regular polygon.
- */
-Dygraph.DrawPolygon_ = function(sides, rotationRadians, ctx, cx, cy, color, radius, delta) {
-  new Dygraph.RegularShape_(sides, rotationRadians, delta).draw(ctx, cx, cy, radius);
 };
 
 Dygraph.Circles = {
