@@ -40,7 +40,7 @@
  * property and "uninstallPattern" method to this particular canvas context.
  * You must call uninstallPattern() before calling installPattern() again.
  *
- * @param {pattern | Array<Number>} A description of the stroke pattern. Even
+ * @param {Array.<number>} pattern A description of the stroke pattern. Even
  * indices indicate a draw and odd indices indicate a gap (in pixels). The
  * array should have a even length as any odd lengthed array could be expressed
  * as a smaller even length array.
@@ -65,6 +65,7 @@ CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
   var realMoveTo = this.moveTo;
   var realStroke = this.stroke;
 
+  /** @type {function()|undefined} */
   this.uninstallPattern = function() {
     this.beginPath = realBeginPath;
     this.lineTo = realLineTo;

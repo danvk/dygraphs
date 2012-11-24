@@ -355,6 +355,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
+  if (typeof(div) == 'string') {
+    div = document.getElementById(div);
+  }
+
   if (!div) {
     Dygraph.error("Constructing dygraph with a non-existent div!");
     return;
@@ -570,45 +574,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
   }
 // </REMOVE_FOR_COMBINED>
 
-  // Building an array which we peruse in backwards order to find the correct value.
-  // Options are checked in this order:
-  // series, axis, user attrs, global attrs.
-  // TODO(konigsberg): Can this be made faster by starting with the series and working outward,
-  // rather than building an array?
-
-  var sources = [];
-  sources.push(this.attrs_);
-  if (this.user_attrs_) {
-    sources.push(this.user_attrs_);
-    if (seriesName) {
-      if (this.user_attrs_.hasOwnProperty(seriesName)) {
-        sources.push(this.user_attrs_[seriesName]);
-      }
-
-      // TODO(konigsberg): This special case ought to be documented.
-      if (seriesName === this.highlightSet_ &&
-          this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
-        sources.push(this.user_attrs_.highlightSeriesOpts);
-      }
-    }
-  }
-
-  var ret = null;
-  for (var i = sources.length - 1; i >= 0; --i) {
-    var source = sources[i];
-    if (source.hasOwnProperty(name)) {
-      ret = source[name];
-      break;
-    }
-  }
-
-  var computedValue = seriesName ? this.attributes_.findForSeries(name, seriesName) : this.attributes_.find(name);
-  if (ret !== computedValue) {
-    console.log("Mismatch", name, seriesName, ret, computedValue);
-  }
-
-  var USE_NEW_VALUE = true;
-  return USE_NEW_VALUE ? computedValue : ret;
+  return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
 /**
@@ -1687,7 +1653,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
   var minDist = Infinity;
   var idx = -1;
   var dist, dx, dy, point, closestPoint, closestSeries;
-  for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
+  for ( var setIdx = this.layout_.datasets.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       var point = points[i];
@@ -1788,7 +1754,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts && !this.lockedSet_) {
+  if (highlightSeriesOpts && !this.isSeriesLocked()) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -2078,6 +2044,14 @@ Dygraph.prototype.getSelection = function() {
  */
 Dygraph.prototype.getHighlightSeries = function() {
   return this.highlightSet_;
+};
+
+/**
+ * Returns true if the currently-highlighted series was locked
+ * via setSelection(..., seriesName, true).
+ */
+Dygraph.prototype.isSeriesLocked = function() {
+  return this.lockedSet_;
 };
 
 /**
