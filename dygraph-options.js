@@ -10,41 +10,50 @@
  * Interesting member variables:
  * dygraph_ - the graph.
  * global_ - global attributes (common among all graphs, AIUI)
- * user_ - attributes set by the user
+ * user - attributes set by the user
  * axes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
- * series_ - { seriesName -> { idx, yAxis, options }
+ * series_ - { seriesName -> { idx, yAxis, options }}
  * labels_ - used as mapping from index to series name.
  */
 
 /**
- * @constructor
- *
  * This parses attributes into an object that can be easily queried.
  *
+ * It doesn't necessarily mean that all options are available, specifically
+ * if labels are not yet available, since those drive details of the per-series
+ * and per-axis options.
+ *
  * @param {Dyraph} dygraph The chart to which these options belong.
+ * @constructor
  */
 var DygraphOptions = function(dygraph) {
   this.dygraph_ = dygraph;
   this.axes_ = [];
   this.series_ = {};
 
-  // Once these two objects are initialized, you can call find();
+  // Once these two objects are initialized, you can call get();
   this.global_ = this.dygraph_.attrs_;
   this.user_ = this.dygraph_.user_attrs_ || {};
 
-  this.highlightSeries_ = this.find("highlightSeriesOpts") || {};
+  this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
   // Get a list of series names.
 
-  var labels = this.find("labels");
+  var labels = this.get("labels");
   if (!labels) {
     return; // -- can't do more for now, will parse after getting the labels.
-  };
+  }
 
   this.reparseSeries();
-}
+};
 
+/**
+ * Reparses options that are all related to series. This typically occurs when
+ * options are either updated, or source data has been made avaialble.
+ *
+ * TODO(konigsberg): The method name is kind of weak; fix.
+ */
 DygraphOptions.prototype.reparseSeries = function() {
-  this.labels = this.find("labels").slice(1);
+  this.labels = this.get("labels").slice(1);
 
   this.axes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.series_ = {};
@@ -106,7 +115,12 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
 };
 
-DygraphOptions.prototype.find = function(name) {
+/**
+ * Get a global value.
+ *
+ * @param {String} name the name of the option.
+ */
+DygraphOptions.prototype.get = function(name) {
   if (this.user_.hasOwnProperty(name)) {
     return this.user_[name];
   }
@@ -114,19 +128,41 @@ DygraphOptions.prototype.find = function(name) {
     return this.global_[name];
   }
   return null;
-}
+};
 
-DygraphOptions.prototype.findForAxis = function(name, axis) {
-  var axisIdx = (axis == "y2" || axis == "y2" || axis == 1) ? 1 : 0;
+/**
+ * Get a value for a specific axis. If there is no specific value for the axis,
+ * the global value is returned.
+ *
+ * @param {String} name the name of the option.
+ * @param {String|number} axis the axis to search. Can be the string representation
+ * ("y", "y2") or the axis number (0, 1).
+ */
+DygraphOptions.prototype.getForAxis = function(name, axis) {
+  var axisIdx = 0;
+  if (typeof(axis) == 'number') {
+    axisIdx = axis;
+  } else {
+    // TODO(konigsberg): Accept only valid axis strings?
+    axisIdx = (axis == "y2") ? 1 : 0;
+  }
 
   var axisOptions = this.axes_[axisIdx].options;
   if (axisOptions.hasOwnProperty(name)) {
     return axisOptions[name];
   }
-  return this.find(name);
-}
+  return this.get(name);
+};
 
-DygraphOptions.prototype.findForSeries = function(name, series) {
+/**
+ * Get a value for a specific series. If there is no specific value for the series,
+ * the value for the axis is returned (and afterwards, the global value.)
+ *
+ * @param {String} name the name of the option.
+ * @param {String|number} series the series to search. Can be the string representation
+ * or 0-offset series number.
+ */
+DygraphOptions.prototype.getForSeries = function(name, series) {
   // Honors indexes as series.
   var seriesName = (typeof(series) == "number") ? this.labels[series] : series;
 
@@ -146,8 +182,8 @@ DygraphOptions.prototype.findForSeries = function(name, series) {
     return seriesOptions[name];
   }
 
-  return this.findForAxis(name, seriesObj["yAxis"]);
-}
+  return this.getForAxis(name, seriesObj["yAxis"]);
+};
 
 /**
  * Returns the number of y-axes on the chart.

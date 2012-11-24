@@ -62,6 +62,22 @@
 /*global Dygraph:false */
 "use strict";
 
+/** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
+Dygraph.TickList;
+
+/** @typedef {function(
+ *    number,
+ *    number,
+ *    number,
+ *    function(string):*,
+ *    Dygraph=,
+ *    Array.<number>=
+ *  ): Dygraph.TickList}
+ */
+Dygraph.Ticker;
+
+
+/** @type {Dygraph.Ticker} */
 Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
@@ -70,9 +86,11 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   return Dygraph.numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
 };
 
+/** @type {Dygraph.Ticker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   // This masks some numeric issues in older versions of Firefox,
   // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
+  /** @type {function(number,number):number} */
   var pow = function(base, exp) {
     if (exp < 0) {
       return 1.0 / Math.pow(base, -exp);
@@ -80,7 +98,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     return Math.pow(base, exp);
   };
 
-  var pixels_per_tick = opts('pixelsPerLabel');
+  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
   var i, j, tickV, nTicks;
   if (vals) {
@@ -175,7 +193,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   }
 
   // Add formatted labels to the ticks.
-  var k;
+  var k = 1;
   var k_labels = [];
   var m_labels = [];
   if (opts("labelsKMB")) {
@@ -189,9 +207,10 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
   }
 
-  var formatter = opts('axisLabelFormatter');
+  var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
 
   // Add labels to the ticks.
+  var digitsAfterDecimal = /** @type{number} */(opts('digitsAfterDecimal'));
   for (i = 0; i < ticks.length; i++) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     tickV = ticks[i].v;
@@ -204,8 +223,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       var n = pow(k, k_labels.length);
       for (j = k_labels.length - 1; j >= 0; j--, n /= k) {
         if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, opts('digitsAfterDecimal')) +
-              k_labels[j];
+          label = Dygraph.round_(tickV / n, digitsAfterDecimal) + k_labels[j];
           break;
         }
       }
@@ -216,7 +234,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
         if(tickV.split('e-')[1] % 3 > 0) {
           label = Dygraph.round_(tickV.split('e-')[0] /
               pow(10,(tickV.split('e-')[1] % 3)),
-              opts('digitsAfterDecimal'));
+              digitsAfterDecimal);
         } else {
           label = Number(tickV.split('e-')[0]).toFixed(2);
         }
@@ -230,6 +248,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 
+/** @type {Dygraph.Ticker} */
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = Dygraph.pickDateTickGranularity(a, b, pixels, opts);
 
@@ -242,6 +261,7 @@ Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 // Time granularity enumeration
+// TODO(danvk): make this an @enum
 Dygraph.SECONDLY = 0;
 Dygraph.TWO_SECONDLY = 1;
 Dygraph.FIVE_SECONDLY = 2;
@@ -265,6 +285,7 @@ Dygraph.DECADAL = 19;
 Dygraph.CENTENNIAL = 20;
 Dygraph.NUM_GRANULARITIES = 21;
 
+/** @type {Array.<number>} */
 Dygraph.SHORT_SPACINGS = [];
 Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
 Dygraph.SHORT_SPACINGS[Dygraph.TWO_SECONDLY]    = 1000 * 2;
@@ -283,11 +304,11 @@ Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
 /**
- * @private
  * This is a list of human-friendly values at which to show tick marks on a log
  * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
  * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
  * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
+ * @type {Array.<number>}
  */
 Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
@@ -304,15 +325,16 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
 /**
  * Determine the correct granularity of ticks on a date axis.
  *
- * @param {Number} a Left edge of the chart (ms)
- * @param {Number} b Right edge of the chart (ms)
- * @param {Number} pixels Size of the chart in the relevant dimension (width).
- * @param {Function} opts Function mapping from option name -> value.
- * @return {Number} The appropriate axis granularity for this chart. See the
- * enumeration of possible values in dygraph-tickers.js.
+ * @param {number} a Left edge of the chart (ms)
+ * @param {number} b Right edge of the chart (ms)
+ * @param {number} pixels Size of the chart in the relevant dimension (width).
+ * @param {function(string):*} opts Function mapping from option name ->
+ *     value.
+ * @return {number} The appropriate axis granularity for this chart. See the
+ *     enumeration of possible values in dygraph-tickers.js.
  */
 Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
-  var pixels_per_tick = opts('pixelsPerLabel');
+  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   for (var i = 0; i < Dygraph.NUM_GRANULARITIES; i++) {
     var num_ticks = Dygraph.numDateTicks(a, b, i);
     if (pixels / num_ticks >= pixels_per_tick) {
@@ -322,6 +344,12 @@ Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
   return -1;
 };
 
+/**
+ * @param {number} start_time
+ * @param {number} end_time
+ * @param {number} granularity (one of the granularities enumerated above)
+ * @return {number} Number of ticks that would result.
+ */
 Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
@@ -342,8 +370,17 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   }
 };
 
+/**
+ * @param {number} start_time
+ * @param {number} end_time
+ * @param {number} granularity (one of the granularities enumerated above)
+ * @param {function(string):*} opts Function mapping from option name -&gt; value.
+ * @param {Dygraph=} dg
+ * @return {!Dygraph.TickList}
+ */
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
-  var formatter = opts("axisLabelFormatter");
+  var formatter = /** @type{AxisLabelFormatter} */(
+      opts("axisLabelFormatter"));
   var ticks = [];
   var t;
 
@@ -432,6 +469,6 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
 };
 
 // These are set here so that this file can be included after dygraph.js.
-Dygraph.DEFAULT_ATTRS.axes.x.ticker = Dygraph.dateTicker;
-Dygraph.DEFAULT_ATTRS.axes.y.ticker = Dygraph.numericTicks;
-Dygraph.DEFAULT_ATTRS.axes.y2.ticker = Dygraph.numericTicks;
+Dygraph.DEFAULT_ATTRS['axes']['x']['ticker'] = Dygraph.dateTicker;
+Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
+Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
