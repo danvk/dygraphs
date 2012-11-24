@@ -12,7 +12,6 @@ perSeriesTestCase.prototype.setUp = function() {
 perSeriesTestCase.prototype.tearDown = function() {
 };
 
-
 perSeriesTestCase.prototype.testPerSeriesFill = function() {
   var opts = {
     width: 480,
@@ -101,3 +100,43 @@ perSeriesTestCase.prototype.testNewStyleSeriesTrumpsOldStyle = function() {
   assertEquals(5, g.getOption("pointSize", "Y"));
 };
 
+perSeriesTestCase.prototype.testAxisInNewSeries = function() {
+  var opts = {
+    logscale: true,
+    series : {
+      D : { axis : 'y2' },
+      C : { axis : 1 },
+      B : { axis : 0 },
+      E : { axis : 'y' }
+    }
+  };
+  var graph = document.getElementById("graph");
+  var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
+  g = new Dygraph(graph, data, opts);
+
+  assertEquals(5, g.getOption("pointSize"));
+  assertEquals(4, g.getOption("pointSize", "Y"));
+  assertEquals(5, g.getOption("pointSize", "Z"));
+};
+
+perSeriesTestCase.prototype.testAxisInNewSeries_withAxes = function() {
+  var opts = {
+    series : {
+      D : { axis : 'y2' },
+      C : { axis : 1 },
+      B : { axis : 0 },
+      E : { axis : 'y' }
+    },
+    axes : {
+      y : {},
+      y2 : {}
+    }
+  };
+  var graph = document.getElementById("graph");
+  var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
+  g = new Dygraph(graph, data, opts);
+
+  assertEquals(5, g.getOption("pointSize"));
+  assertEquals(4, g.getOption("pointSize", "Y"));
+  assertEquals(5, g.getOption("pointSize", "Z"));
+};

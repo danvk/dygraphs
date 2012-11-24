@@ -46,6 +46,39 @@ var DygraphOptions = function(dygraph) {
   this.reparseSeries();
 };
 
+/*
+ * Not optimal, but does the trick when you're only using two axes.
+ * If we move to more axes, this can just become a function.
+ */
+DygraphOptions.AXIS_STRING_MAPPINGS_ = {
+  'y' : 0,
+  'Y' : 0,
+  'y1' : 0,
+  'Y1' : 0,
+  'y2' : 1,
+  'Y2' : 1
+}
+
+DygraphOptions.axisToIndex_ = function(axis) {
+  if (typeof(axis) == "string") {
+    if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
+      return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
+    }
+    throw "Unknown axis : " + text;
+  }
+  if (typeof(axis) == "number") {
+    if (axis == 0 || axis == 1) {
+      return axis;
+    }
+    throw "Dygraphs only supports two y-axes, indexed from 0-1."
+  }
+  if (axis) {
+    throw "Unknown axis : " + axis;
+  }
+  // No axis specification means axis 0.
+  return 0;
+};
+
 /**
  * Reparses options that are all related to series. This typically occurs when
  * options are either updated, or source data has been made avaialble.
@@ -80,43 +113,63 @@ DygraphOptions.prototype.reparseSeries = function() {
   //
   // So, if series is found, it's expected to contain per-series data, otherwise we fall
   // back.
-  var allseries = this.user_["series"] ? this.user_.series : this.user_;
-
-  var axisId = 0; // 0-offset; there's always one.
-  // Go through once, add all the series, and for those with {} axis options, add a new axis.
-  for (var idx = 0; idx < this.labels.length; idx++) {
-    var seriesName = this.labels[idx];
-
-    var optionsForSeries = allseries[seriesName] || {};
-    var yAxis = 0;
-
-    var axis = optionsForSeries["axis"];
-    if (typeof(axis) == 'object') {
-      yAxis = ++axisId;
-      this.axes_[yAxis] = axis;
-    }
-    this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
-  }
-
-  // Go through one more time and assign series to an axis defined by another
-  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-  for (var idx = 0; idx < this.labels.length; idx++) {
-    var seriesName = this.labels[idx];
-    var optionsForSeries = this.series_[seriesName]["options"]; 
-    var axis = optionsForSeries["axis"];
-
-    if (typeof(axis) == 'string') {
-      if (!this.series_.hasOwnProperty(axis)) {
-        this.dygraph_.error("Series " + seriesName + " wants to share a y-axis with " +
-                   "series " + axis + ", which does not define its own axis.");
-        return null;
+  var oldStyleSeries = !this.user_["series"];
+  
+  if (oldStyleSeries) {
+    var axisId = 0; // 0-offset; there's always one.
+    // Go through once, add all the series, and for those with {} axis options, add a new axis.
+    for (var idx = 0; idx < this.labels.length; idx++) {
+      var seriesName = this.labels[idx];
+  
+      var optionsForSeries = this.user_[seriesName] || {};
+  
+      var yAxis = 0;
+      var axis = optionsForSeries["axis"];
+      if (typeof(axis) == 'object') {
+        yAxis = ++axisId;
+        this.axes_[yAxis] = axis;
       }
-      this.series_[seriesName].yAxis = this.series_[axis].yAxis;
+      this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
+    }
+  
+    // Go through one more time and assign series to an axis defined by another
+    // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
+    for (var idx = 0; idx < this.labels.length; idx++) {
+      var seriesName = this.labels[idx];
+      var optionsForSeries = this.series_[seriesName]["options"]; 
+      var axis = optionsForSeries["axis"];
+  
+      if (typeof(axis) == 'string') {
+        if (!this.series_.hasOwnProperty(axis)) {
+          this.dygraph_.error("Series " + seriesName + " wants to share a y-axis with " +
+                     "series " + axis + ", which does not define its own axis.");
+          return null;
+        }
+        this.series_[seriesName].yAxis = this.series_[axis].yAxis;
+      }
+    }
+  } else {
+    var maxYAxis = 0;
+
+    for (var idx = 0; idx < this.labels.length; idx++) {
+      var seriesName = this.labels[idx];
+      var optionsForSeries = this.user_.series[seriesName] || {};
+      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
+
+      maxYAxis = Math.max(yAxis, maxYAxis);
+
+      this.series_[seriesName] = {
+        idx: idx,
+        yAxis: yAxis,
+        options : optionsForSeries };
+    }
+
+    for (; maxYAxis >= 0; maxYAxis--) {
+      this.axes_[maxYAxis] = {};
     }
   }
 
   // This doesn't support reading from the 'x' axis, only 'y' and 'y2.
-  // Read from the global "axes" option.
   if (this.user_["axes"]) {
     var axis_opts = this.user_.axes;
 
@@ -200,4 +253,3 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
 
   return this.getForAxis(name, seriesObj["yAxis"]);
 };
-
