@@ -355,6 +355,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
+  if (typeof(div) == 'string') {
+    div = document.getElementById(div);
+  }
+
   if (!div) {
     Dygraph.error("Constructing dygraph with a non-existent div!");
     return;
@@ -569,7 +573,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-  return seriesName ? this.attributes_.findForSeries(name, seriesName) : this.attributes_.find(name);
+  return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
 /**
@@ -1648,7 +1652,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
   var minDist = Infinity;
   var idx = -1;
   var dist, dx, dy, point, closestPoint, closestSeries;
-  for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
+  for ( var setIdx = this.layout_.datasets.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       var point = points[i];
@@ -1749,7 +1753,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts && !this.lockedSet_) {
+  if (highlightSeriesOpts && !this.isSeriesLocked()) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -2039,6 +2043,14 @@ Dygraph.prototype.getSelection = function() {
  */
 Dygraph.prototype.getHighlightSeries = function() {
   return this.highlightSet_;
+};
+
+/**
+ * Returns true if the currently-highlighted series was locked
+ * via setSelection(..., seriesName, true).
+ */
+Dygraph.prototype.isSeriesLocked = function() {
+  return this.lockedSet_;
 };
 
 /**
