@@ -418,6 +418,9 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     attrs.animatedZooms = false;
   }
 
+  // DEPRECATION WARNING: All option processing should be moved from
+  // attrs_ and user_attrs_ to options_, which holds all this information.
+  //
   // Dygraphs has many options, some of which interact with one another.
   // To keep track of everything, we maintain two sets of options:
   //
@@ -2453,7 +2456,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  // New axes options
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
       opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
@@ -3329,6 +3331,9 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   };
   var map = function(opt, axis, new_opt) {
     if (typeof(attrs[opt]) != 'undefined') {
+      Dygraph.warn("Option " + opt + " is deprecated. Use the " +
+          new_opt + " option for the " + axis + " axis instead. " +
+          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } }");
       set(axis, new_opt, attrs[opt]);
       delete my_attrs[opt];
     }
