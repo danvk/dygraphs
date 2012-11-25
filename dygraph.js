@@ -2436,40 +2436,12 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
   // data computation as well as options storage.
-  this.axes_ = [];
-  for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
-    this.axes_.push({ yAxisId : i, g : this });
-  }
-
-  // all options which could be applied per-axis:
-  // TODO(konigsberg)
-  var globalAxisOptions = [
-    'includeZero',
-    'valueRange',
-    'labelsKMB',
-    'labelsKMG2',
-    'pixelsPerYLabel',
-    'yAxisLabelWidth',
-    'axisLabelFontSize',
-    'axisTickSize',
-    'logscale'
-  ];
-
-  // Copy global axis options over to the first axis.
-  for (i = 0; i < globalAxisOptions.length; i++) {
-    var k = globalAxisOptions[i];
-    v = this.attr_(k);
-    if (v) this.axes_[0][k] = v;
-  }
-
   // Go through once and add all the axes.
+  this.axes_ = [];
   
-  // This seems to be right - starting at 1. I think this gets simpler now.
-  for (axis = 1; axis < this.attributes_.numAxes(); axis++) {
+  for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
     // Add a new axis, making a copy of its per-axis options.
-    opts = {};
-    Dygraph.update(opts, this.axes_[0]);
-    Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+    opts = { g : this };
     Dygraph.update(opts, this.attributes_.axisOptions(axis));
     this.axes_[axis] = opts;
   }
