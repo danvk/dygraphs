@@ -38,7 +38,7 @@ function getLegend() {
   return legend.textContent;
 }
 
-DeprecatedAxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDeprecatedXAxisTimeLabelFormatter = function() {
   var opts = {
     width: 480,
     height: 320
@@ -67,7 +67,7 @@ DeprecatedAxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() 
   assertEquals('5.1: Y1:1', getLegend());
 };
 
-DeprecatedAxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
@@ -101,7 +101,7 @@ DeprecatedAxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   assertEquals("2: y:4", getLegend());
 };
 
-DeprecatedAxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
@@ -138,7 +138,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () 
 // This test verifies that when a valueFormatter is set (but not an
 // axisLabelFormatter), then the valueFormatter is used to format the axis
 // labels.
-DeprecatedAxisLabelsTestCase.prototype.testValueFormatter = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedValueFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
@@ -175,7 +175,7 @@ DeprecatedAxisLabelsTestCase.prototype.testValueFormatter = function () {
   assertEquals("x2: y:y4", getLegend());
 };
 
-DeprecatedAxisLabelsTestCase.prototype.testDateValueFormatter = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = function () {
   var opts = {
     width: 480,
     height: 320,
@@ -214,7 +214,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDateValueFormatter = function () {
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
 // are specified, the axisLabelFormatter takes precedence.
-DeprecatedAxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterPrecedence = function () {
   var opts = {
     width: 480,
     height: 320,
@@ -248,7 +248,7 @@ DeprecatedAxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = functi
 
 // This is the same as the previous test, except that options are added
 // one-by-one.
-DeprecatedAxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
+DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterIncremental = function () {
   var opts = {
     width: 480,
     height: 320,
