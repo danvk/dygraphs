@@ -573,7 +573,6 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
@@ -1137,7 +1136,7 @@ Dygraph.prototype.getPropertiesForSeries = function(series_name) {
     column: idx,
     visible: this.visibility()[idx - 1],
     color: this.colorsMap_[series_name],
-    axis: 1 + this.seriesToAxisMap_[series_name]
+    axis: 1 + this.attributes_.axisForSeries(series_name)
   };
 };
 
@@ -2420,9 +2419,8 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  * currently being displayed. This includes things like the number of axes and
  * the style of the axes. It does not include the range of each axis and its
  * tick marks.
- * This fills in this.axes_ and this.seriesToAxisMap_.
+ * This fills in this.axes_.
  * axes_ = [ { options } ]
- * seriesToAxisMap_ = { seriesName: 0, seriesName2: 1, ... }
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
@@ -2436,16 +2434,16 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
-  this.seriesToAxisMap_ = {};
-
-  // Get a list of series names.
-  var labels = this.attr_("labels");
-  var series = {};
-  for (i = 1; i < labels.length; i++) series[labels[i]] = (i - 1);
+  // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
+  // data computation as well as options storage.
+  this.axes_ = [];
+  for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
+    this.axes_.push({ yAxisId : i, g : this });
+  }
 
   // all options which could be applied per-axis:
-  var axisOptions = [
+  // TODO(konigsberg)
+  var globalAxisOptions = [
     'includeZero',
     'valueRange',
     'labelsKMB',
@@ -2458,48 +2456,22 @@ Dygraph.prototype.computeYAxes_ = function() {
   ];
 
   // Copy global axis options over to the first axis.
-  for (i = 0; i < axisOptions.length; i++) {
-    var k = axisOptions[i];
+  for (i = 0; i < globalAxisOptions.length; i++) {
+    var k = globalAxisOptions[i];
     v = this.attr_(k);
     if (v) this.axes_[0][k] = v;
   }
 
   // Go through once and add all the axes.
-  for (seriesName in series) {
-    if (!series.hasOwnProperty(seriesName)) continue;
-    axis = this.attr_("axis", seriesName);
-    if (axis === null) {
-      this.seriesToAxisMap_[seriesName] = 0;
-      continue;
-    }
-    if (typeof(axis) == 'object') {
-      // Add a new axis, making a copy of its per-axis options.
-      opts = {};
-      Dygraph.update(opts, this.axes_[0]);
-      Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
-      var yAxisId = this.axes_.length;
-      opts.yAxisId = yAxisId;
-      opts.g = this;
-      Dygraph.update(opts, axis);
-      this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = yAxisId;
-    }
-  }
-
-  // Go through one more time and assign series to an axis defined by another
-  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-  for (seriesName in series) {
-    if (!series.hasOwnProperty(seriesName)) continue;
-    axis = this.attr_("axis", seriesName);
-    if (typeof(axis) == 'string') {
-      if (!this.seriesToAxisMap_.hasOwnProperty(axis)) {
-        this.error("Series " + seriesName + " wants to share a y-axis with " +
-                   "series " + axis + ", which does not define its own axis.");
-        return null;
-      }
-      var idx = this.seriesToAxisMap_[axis];
-      this.seriesToAxisMap_[seriesName] = idx;
-    }
+  
+  // This seems to be right - starting at 1. I think this gets simpler now.
+  for (axis = 1; axis < this.attributes_.numAxes(); axis++) {
+    // Add a new axis, making a copy of its per-axis options.
+    opts = {};
+    Dygraph.update(opts, this.axes_[0]);
+    Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
+    Dygraph.update(opts, this.attributes_.axisOptions(axis));
+    this.axes_[axis] = opts;
   }
 
   if (valueWindows !== undefined) {
@@ -2523,7 +2495,6 @@ Dygraph.prototype.computeYAxes_ = function() {
       }
     }
   }
-
 };
 
 /**
@@ -2531,13 +2502,7 @@ Dygraph.prototype.computeYAxes_ = function() {
  * @return {Number} the number of axes.
  */
 Dygraph.prototype.numAxes = function() {
-  var last_axis = 0;
-  for (var series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    if (idx > last_axis) last_axis = idx;
-  }
-  return 1 + last_axis;
+  return this.attributes_.numAxes();
 };
 
 /**
@@ -2549,7 +2514,7 @@ Dygraph.prototype.numAxes = function() {
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.
-  return this.axes_[this.seriesToAxisMap_[series]];
+  return this.axes_[this.attributes_.axisForSeries(series)];
 };
 
 /**
@@ -2559,25 +2524,20 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
-  // Build a map from axis number -> [list of series names]
-  var seriesForAxis = [], series;
-  for (series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    while (seriesForAxis.length <= idx) seriesForAxis.push([]);
-    seriesForAxis[idx].push(series);
-  }
+  var series;
+  var numAxes = this.attributes_.numAxes();
 
   // Compute extreme values, a span and tick marks for each axis.
-  for (var i = 0; i < this.axes_.length; i++) {
+  for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
 
-    if (!seriesForAxis[i]) {
+    series = this.attributes_.seriesForAxis(i);
+
+    if (series.length == 0) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
     } else {
       // Calculate the extremes of extremes.
-      series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
       var extremeMinY, extremeMaxY;

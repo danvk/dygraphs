@@ -9,11 +9,11 @@
 /*
  * Interesting member variables:
  * dygraph_ - the graph.
- * global - global attributes (common among all graphs, AIUI)
+ * global_ - global attributes (common among all graphs, AIUI)
  * user - attributes set by the user
- * axes - map of options specific to the axis.
- * series - { seriesName -> { idx, yAxis, options }
- * labels - used as mapping from index to series name.
+ * axes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
+ * series_ - { seriesName -> { idx, yAxis, options }}
+ * labels_ - used as mapping from index to series name.
  */
 
 /**
@@ -88,7 +88,7 @@ DygraphOptions.axisToIndex_ = function(axis) {
 DygraphOptions.prototype.reparseSeries = function() {
   this.labels = this.get("labels").slice(1);
 
-  this.axes_ = [ {} ]; // Always one axis at least.
+  this.axes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.series_ = {};
 
   // Traditionally, per-series options were specified right up there with the options. For instance
@@ -127,8 +127,14 @@ DygraphOptions.prototype.reparseSeries = function() {
       var axis = optionsForSeries["axis"];
       if (typeof(axis) == 'object') {
         yAxis = ++axisId;
-        this.axes_[yAxis] = axis;
+        this.axes_[yAxis] = { series : [ seriesName ], options : axis };
       }
+
+      // Associate series without axis options with axis 0.
+      if (!axis) { // undefined
+        this.axes_[0].series.push(seriesName);
+      }
+
       this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
     }
   
@@ -145,7 +151,9 @@ DygraphOptions.prototype.reparseSeries = function() {
                      "series " + axis + ", which does not define its own axis.");
           return null;
         }
-        this.series_[seriesName].yAxis = this.series_[axis].yAxis;
+        var yAxis = this.series_[axis].yAxis;
+        this.series_[seriesName].yAxis = yAxis;
+        this.axes_[yAxis].series.push(seriesName);
       }
     }
   } else {
@@ -162,25 +170,20 @@ DygraphOptions.prototype.reparseSeries = function() {
         idx: idx,
         yAxis: yAxis,
         options : optionsForSeries };
-    }
 
-    for (; maxYAxis >= 0; maxYAxis--) {
-      this.axes_[maxYAxis] = {};
+      if (!this.axes_[yAxis]) {
+        this.axes_[yAxis] =  { series : [ seriesName ], options : {} };
+      } else {
+        this.axes_[yAxis].series.push(seriesName);
+      }
     }
   }
 
   // This doesn't support reading from the 'x' axis, only 'y' and 'y2.
-  if (this.user_["axes"]) {
-    var axis_opts = this.user_.axes;
-
-    if (axis_opts.hasOwnProperty("y")) {
-      Dygraph.update(this.axes_[0], axis_opts.y);
-    }
-
-    if (axis_opts.hasOwnProperty("y2")) {
-      this.axes_[1] = this.axes_[1] || {};
-      Dygraph.update(this.axes_[1], axis_opts.y2);
-    }
+  var axis_opts = this.user_["axes"] || {};
+  Dygraph.update(this.axes_[0].options, axis_opts["y"] || {});
+  if (this.axes_.length > 1) {
+    Dygraph.update(this.axes_[1].options, axis_opts["y2"] || {});   
   }
 };
 
@@ -216,7 +219,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
     axisIdx = (axis == "y2") ? 1 : 0;
   }
 
-  var axisOptions = this.axes_[axisIdx];
+  var axisOptions = this.axes_[axisIdx].options;
   if (axisOptions.hasOwnProperty(name)) {
     return axisOptions[name];
   }
@@ -253,3 +256,48 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
 
   return this.getForAxis(name, seriesObj["yAxis"]);
 };
+
+/**
+ * Returns the number of y-axes on the chart.
+ * @return {Number} the number of axes.
+ */
+DygraphOptions.prototype.numAxes = function() {
+  return this.axes_.length;
+}
+
+/**
+ * Return the y-axis for a given series, specified by name.
+ */
+DygraphOptions.prototype.axisForSeries = function(seriesName) {
+  return this.series_[seriesName].yAxis;
+}
+
+/**
+ * Returns the options for the specified axis.
+ */
+DygraphOptions.prototype.axisOptions = function(yAxis) {
+  return this.axes_[yAxis].options;
+}
+
+/**
+ * Return the series associated with an axis.
+ */
+DygraphOptions.prototype.seriesForAxis = function(yAxis) {
+  return this.axes_[yAxis].series;
+}
+
+/**
+ * Return the list of all series, in their columnar order.
+ */
+DygraphOptions.prototype.seriesNames = function() {
+  return this.labels_;
+}
+
+/* Are we using this? */ 
+/**
+ * Return the index of the specified series.
+ * @param {string} series the series name.
+ */
+DygraphOptions.prototype.indexOfSeries = function(series) {
+  return this.series_[series].idx;
+}

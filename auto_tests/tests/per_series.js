@@ -100,9 +100,9 @@ perSeriesTestCase.prototype.testNewStyleSeriesTrumpsOldStyle = function() {
   assertEquals(5, g.getOption("pointSize", "Y"));
 };
 
+// TODO(konigsberg): move to multiple_axes.js
 perSeriesTestCase.prototype.testAxisInNewSeries = function() {
   var opts = {
-    logscale: true,
     series : {
       D : { axis : 'y2' },
       C : { axis : 1 },
@@ -114,11 +114,11 @@ perSeriesTestCase.prototype.testAxisInNewSeries = function() {
   var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
   g = new Dygraph(graph, data, opts);
 
-  assertEquals(5, g.getOption("pointSize"));
-  assertEquals(4, g.getOption("pointSize", "Y"));
-  assertEquals(5, g.getOption("pointSize", "Z"));
+  assertEquals(["A", "B", "E"], g.attributes_.seriesForAxis(0));
+  assertEquals(["C", "D"], g.attributes_.seriesForAxis(1));
 };
 
+// TODO(konigsberg): move to multiple_axes.js
 perSeriesTestCase.prototype.testAxisInNewSeries_withAxes = function() {
   var opts = {
     series : {
@@ -128,15 +128,21 @@ perSeriesTestCase.prototype.testAxisInNewSeries_withAxes = function() {
       E : { axis : 'y' }
     },
     axes : {
-      y : {},
-      y2 : {}
+      y : { pointSize : 7 },
+      y2 : { pointSize  : 6 }
     }
   };
   var graph = document.getElementById("graph");
   var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
   g = new Dygraph(graph, data, opts);
 
-  assertEquals(5, g.getOption("pointSize"));
-  assertEquals(4, g.getOption("pointSize", "Y"));
-  assertEquals(5, g.getOption("pointSize", "Z"));
+  assertEquals(["A", "B", "E"], g.attributes_.seriesForAxis(0));
+  assertEquals(["C", "D"], g.attributes_.seriesForAxis(1));
+
+  assertEquals(1.5, g.getOption("pointSize"));
+  assertEquals(7, g.getOption("pointSize", "A"));
+  assertEquals(7, g.getOption("pointSize", "B"));
+  assertEquals(6, g.getOption("pointSize", "C"));
+  assertEquals(6, g.getOption("pointSize", "D"));
+  assertEquals(7, g.getOption("pointSize", "E"));
 };
