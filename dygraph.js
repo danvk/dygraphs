@@ -3399,7 +3399,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
     if (typeof(attrs[opt]) != 'undefined') {
       Dygraph.warn("Option " + opt + " is deprecated. Use the " +
           new_opt + " option for the " + axis + " axis instead. " +
-          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } }");
+          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } } " +
+          "(see http://dygraphs.com/per-axis.html for more information.");
       set(axis, new_opt, attrs[opt]);
       delete my_attrs[opt];
     }
