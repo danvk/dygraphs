@@ -76,10 +76,14 @@
                 title: 'Four series on different scales',
                 xlabel: 'Date',
                 ylabel: 'Count',
-                yValueFormatter: function(y, opts, series_name) {
-                  var unscaled = y * scales[series_name];
-                  if (series_name == 'sine wave') return unscaled.toPrecision(4);
-                  return unscaled;
+                axes : {
+                  y : {
+                    valueFormatter: function(y, opts, series_name) {
+                      var unscaled = y * scales[series_name];
+                      if (series_name == 'sine wave') return unscaled.toPrecision(4);
+                      return unscaled;
+                    }
+                  }
                 }
               }
           );
