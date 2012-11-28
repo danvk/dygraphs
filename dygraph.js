@@ -91,7 +91,8 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
-Dygraph.ANIMATION_STEPS = 10;
+// For max 60 Hz. animation:
+Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
@@ -272,6 +273,8 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+
+  xIsEpochDate: false,
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
@@ -1455,6 +1458,10 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   });
 };
 
+Dygraph.prototype.doUnzoom = function() {
+  this.doUnzoom_();
+};
+
 /**
  * Reset the zoom to the original view coordinates. This is the same as
  * double-clicking on the graph.
@@ -2133,6 +2140,10 @@ Dygraph.prototype.extremeValues_ = function(series) {
   }
 
   return [minY, maxY];
+};
+
+Dygraph.prototype.predraw = function() {
+  this.predraw_();
 };
 
 /**
@@ -3095,11 +3106,15 @@ Dygraph.prototype.parseArray_ = function(data) {
     }
   }
 
-  if (Dygraph.isDateLike(data[0][0])) {
+  if (this.attr_("xIsEpochDate") || Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
+
+    if (this.attr_("xIsEpochDate")) {
+      return data;
+    }
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);

@@ -814,19 +814,35 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
   return new Dygraph.Iterator(array, start, length, opt_predicate);
 };
 
+// Shim layer with setTimeout fallback.
+// From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+window.requestAnimFrame = (function(){
+  return window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          window.oRequestAnimationFrame      ||
+          window.msRequestAnimationFrame     ||
+          function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 /**
- * Call a function N times at a given interval, then call a cleanup function
- * once. repeat_fn is called once immediately, then (times - 1) times
- * asynchronously. If times=1, then cleanup_fn() is also called synchronously.
- * @param {function(number)} repeat_fn Called repeatedly -- takes the number of
- *     calls (from 0 to times-1) as an argument.
- * @param {number} times The number of times to call repeat_fn
- * @param {number} every_ms Milliseconds between calls
- * @param {function()} cleanup_fn A function to call after all repeat_fn calls.
+ * @private
+ * Call a function at most N times at an attempted given interval, then call a
+ * cleanup function once. repeat_fn is called once immediately, then (times - 1)
+ * times asynchronously. If times=1, then cleanup_fn() is also called
+ * synchronously.
+ * @param repeat_fn {Function} Called repeatedly -- takes the number of calls
+ * (from 0 to times-1) as an argument.
+ * @param times {number} The number of times max to call repeat_fn
+ * @param every_ms {number} Milliseconds to schedule between calls
+ * @param cleanup_fn {Function} A function to call after all repeat_fn calls.
  * @private
  */
 Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
   var count = 0;
+  var previous_count;
   var start_time = new Date().getTime();
   repeat_fn(count);
   if (times == 1) {
@@ -836,17 +852,24 @@ Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
 
   (function loop() {
     if (count >= times) return;
-    var target_time = start_time + (1 + count) * every_ms;
-    setTimeout(function() {
-      count++;
-      repeat_fn(count);
-      if (count >= times - 1) {
+    window.requestAnimFrame(function(scheduled_epoch_time_ms) {
+      var delay = (scheduled_epoch_time_ms - start_time);
+      previous_count = count;
+      count = Math.floor(delay / every_ms);
+      if ((count - previous_count) > (times / 2)) {
+        count = previous_count + (times / 2);
+      }
+      if (count > times - 1) {
+        // Ensure call at max times.
+        if (previous_count !== (times - 1)) {
+          repeat_fn(times - 1);
+        }
         cleanup_fn();
       } else {
+        repeat_fn(count);
         loop();
       }
-    }, target_time - new Date().getTime());
-    // TODO(danvk): adjust every_ms to produce evenly-timed function calls.
+    });
   })();
 };
 
