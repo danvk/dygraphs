@@ -6,6 +6,9 @@
 
 all: test generate-combined
 
+clean:
+	@cp .dygraph-combined-clean.js dygraph-combined.js
+
 generate-combined:
 	@echo Generating dygraph-combined.js
 	@./generate-combined.sh
