@@ -18,6 +18,8 @@
     <div id="demodiv"></div>
     <h2>Chart with per-series properties with legend.</h2>
     <div id="demodiv2"></div>
+    <h2>First graph, using old-style series specification.</h2>
+    <div id="demodiv3"></div>
     <script type="text/javascript">
       data = function() {
         var zp = function(x) { if (x < 10) return "0"+x; else return x; };
@@ -38,25 +40,27 @@
               data,
               {
                 strokeWidth: 2,
-                'parabola': {
-                  strokeWidth: 0.0,
-                  drawPoints: true,
-                  pointSize: 4,
-                  highlightCircleSize: 6
-                },
-                'line': {
-                  strokeWidth: 1.0,
-                  drawPoints: true,
-                  pointSize: 1.5
-                },
-                'sine wave': {
-                  strokeWidth: 3,
-                  highlightCircleSize: 10
-                },
-                'sine wave2': {
-                  strokePattern: [10, 2, 5, 2],
-                  strokeWidth: 2,
-                  highlightCircleSize: 3
+		series : {
+                  'parabola': {
+                    strokeWidth: 0.0,
+                    drawPoints: true,
+                    pointSize: 4,
+                    highlightCircleSize: 6
+                  },
+                  'line': {
+                    strokeWidth: 1.0,
+                    drawPoints: true,
+                    pointSize: 1.5
+                  },
+                  'sine wave': {
+                    strokeWidth: 3,
+                    highlightCircleSize: 10
+                  },
+                  'sine wave2': {
+                    strokePattern: [10, 2, 5, 2],
+                    strokeWidth: 2,
+                    highlightCircleSize: 3
+                  }
                 }
               }
           );
@@ -88,6 +92,33 @@
                 },
                 'sine wave2': {
                   strokePattern: Dygraph.DOT_DASH_LINE,
+                  strokeWidth: 2,
+                  highlightCircleSize: 3
+                }
+              }
+          );
+      g3 = new Dygraph(
+              document.getElementById("demodiv3"),
+              data,
+              {
+                strokeWidth: 2,
+                'parabola': {
+                  strokeWidth: 0.0,
+                  drawPoints: true,
+                  pointSize: 4,
+                  highlightCircleSize: 6
+                },
+                'line': {
+                  strokeWidth: 1.0,
+                  drawPoints: true,
+                  pointSize: 1.5
+                },
+                'sine wave': {
+                  strokeWidth: 3,
+                  highlightCircleSize: 10
+                },
+                'sine wave2': {
+                  strokePattern: [10, 2, 5, 2],
                   strokeWidth: 2,
                   highlightCircleSize: 3
                 }
