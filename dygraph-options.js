@@ -72,6 +72,10 @@ DygraphOptions.axisToIndex_ = function(axis) {
     }
     throw "Dygraphs only supports two y-axes, indexed from 0-1."
   }
+  if (typeof(axis) == "object") {
+    throw "Using objects for axis specification "
+      + "is not supported inside the 'series' option.";
+  }
   if (axis) {
     throw "Unknown axis : " + axis;
   }
@@ -157,14 +161,10 @@ DygraphOptions.prototype.reparseSeries = function() {
       }
     }
   } else {
-    var maxYAxis = 0;
-
     for (var idx = 0; idx < this.labels.length; idx++) {
       var seriesName = this.labels[idx];
       var optionsForSeries = this.user_.series[seriesName] || {};
       var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
-
-      maxYAxis = Math.max(yAxis, maxYAxis);
 
       this.series_[seriesName] = {
         idx: idx,
