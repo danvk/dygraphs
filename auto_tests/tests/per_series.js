@@ -146,3 +146,21 @@ perSeriesTestCase.prototype.testAxisInNewSeries_withAxes = function() {
   assertEquals(6, g.getOption("pointSize", "D"));
   assertEquals(7, g.getOption("pointSize", "E"));
 };
+
+// TODO(konigsberg): move to multiple_axes.js
+perSeriesTestCase.prototype.testOldAxisSpecInNewSeriesThrows = function() {
+  var opts = {
+    series : {
+      D : { axis : {} },
+    },
+  };
+  var graph = document.getElementById("graph");
+  var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
+  try {
+    new Dygraph(graph, data, opts);
+  } catch(e) {
+    assertEquals(
+        "Using objects for axis specification is not supported inside the 'series' option.",
+        e);
+  }
+}

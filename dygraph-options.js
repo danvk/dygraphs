@@ -72,6 +72,10 @@ DygraphOptions.axisToIndex_ = function(axis) {
     }
     throw "Dygraphs only supports two y-axes, indexed from 0-1."
   }
+  if (typeof(axis) == "object") {
+    throw "Using objects for axis specification "
+      + "is not supported inside the 'series' option.";
+  }
   if (axis) {
     throw "Unknown axis : " + axis;
   }
