@@ -4,38 +4,13 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-var MultipleAxesTestCase = TestCase("multiple-axes-tests");
+var MultipleAxesOldTestCase = TestCase("multiple-axes-old-tests");
 
-MultipleAxesTestCase.prototype.setUp = function() {
+MultipleAxesOldTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-function getYLabelsForAxis(axis_num) {
-  var y_labels = document.getElementsByClassName("dygraph-axis-label-y" + axis_num);
-  var ary = [];
-  for (var i = 0; i < y_labels.length; i++) {
-    ary.push(y_labels[i].innerHTML);
-  }
-  return ary;
-}
-
-function getLegend() {
-  var legend = document.getElementsByClassName("dygraph-legend")[0];
-  return legend.textContent;
-}
-
-// returns all text in tags w/ a given css class, sorted.
-function getClassTexts(css_class) {
-  var texts = [];
-  var els = document.getElementsByClassName(css_class);
-  for (var i = 0; i < els.length; i++) {
-    texts[i] = els[i].textContent;
-  }
-  texts.sort();
-  return texts;
-}
-
-MultipleAxesTestCase.getData = function() {
+MultipleAxesOldTestCase.getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
     var m = "01", d = i;
@@ -53,7 +28,7 @@ MultipleAxesTestCase.getData = function() {
   return data;
 };
 
-MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
+MultipleAxesOldTestCase.prototype.testOldBasicMultipleAxes = function() {
   var data = MultipleAxesTestCase.getData();
 
   var g = new Dygraph(
@@ -79,7 +54,7 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
   assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], getYLabelsForAxis("2"));
 };
 
-MultipleAxesTestCase.prototype.testNewStylePerAxisOptions = function() {
+MultipleAxesOldTestCase.prototype.testOldNewStylePerAxisOptions = function() {
   var data = MultipleAxesTestCase.getData();
 
   var g = new Dygraph(
@@ -107,7 +82,7 @@ MultipleAxesTestCase.prototype.testNewStylePerAxisOptions = function() {
   assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], getYLabelsForAxis("2"));
 };
 
-MultipleAxesTestCase.prototype.testMultiAxisLayout = function() {
+MultipleAxesOldTestCase.prototype.testOldMultiAxisLayout = function() {
   var data = MultipleAxesTestCase.getData();
 
   var el = document.getElementById("graph");
@@ -145,7 +120,7 @@ MultipleAxesTestCase.prototype.testMultiAxisLayout = function() {
   }
 };
 
-MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
+MultipleAxesOldTestCase.prototype.testOldTwoAxisVisibility = function() {
   var data = [];
   data.push([0,0,0]);
   data.push([1,2,2000]);
@@ -181,7 +156,7 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
 
 // verifies that all four chart labels (title, x-, y-, y2-axis label) can be
 // used simultaneously.
-MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
+MultipleAxesOldTestCase.prototype.testOldMultiChartLabels = function() {
   var data = MultipleAxesTestCase.getData();
 
   var el = document.getElementById("graph");
@@ -221,7 +196,7 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
 
 // Check that a chart w/o a secondary y-axis will not get a y2label, even if one
 // is specified.
-MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
+MultipleAxesOldTestCase.prototype.testOldNoY2LabelWithoutSecondaryAxis = function() {
   var g = new Dygraph(
     document.getElementById("graph"),
     MultipleAxesTestCase.getData(),
@@ -244,7 +219,7 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
   assertEquals([], getClassTexts("dygraph-y2label"));
 };
 
-MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
+MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
   var data = MultipleAxesTestCase.getData();
 
   g = new Dygraph(
@@ -292,7 +267,7 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
   assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], getYLabelsForAxis("2"));
 };
 
-MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
+MultipleAxesOldTestCase.prototype.testOldDrawPointCallback = function() {
   var data = MultipleAxesTestCase.getData();
 
   var results = { y : {}, y2 : {}};
