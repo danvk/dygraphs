@@ -157,14 +157,10 @@ DygraphOptions.prototype.reparseSeries = function() {
       }
     }
   } else {
-    var maxYAxis = 0;
-
     for (var idx = 0; idx < this.labels.length; idx++) {
       var seriesName = this.labels[idx];
       var optionsForSeries = this.user_.series[seriesName] || {};
       var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
-
-      maxYAxis = Math.max(yAxis, maxYAxis);
 
       this.series_[seriesName] = {
         idx: idx,
