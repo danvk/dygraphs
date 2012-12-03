@@ -57,20 +57,20 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'Y1' : 0,
   'y2' : 1,
   'Y2' : 1
-}
+};
 
 DygraphOptions.axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
     if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
       return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
     }
-    throw "Unknown axis : " + text;
+    throw "Unknown axis : " + axis;
   }
   if (typeof(axis) == "number") {
-    if (axis == 0 || axis == 1) {
+    if (axis === 0 || axis === 1) {
       return axis;
     }
-    throw "Dygraphs only supports two y-axes, indexed from 0-1."
+    throw "Dygraphs only supports two y-axes, indexed from 0-1.";
   }
   if (typeof(axis) == "object") {
     throw "Using objects for axis specification "
@@ -263,35 +263,35 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
  */
 DygraphOptions.prototype.numAxes = function() {
   return this.axes_.length;
-}
+};
 
 /**
  * Return the y-axis for a given series, specified by name.
  */
 DygraphOptions.prototype.axisForSeries = function(seriesName) {
   return this.series_[seriesName].yAxis;
-}
+};
 
 /**
  * Returns the options for the specified axis.
  */
 DygraphOptions.prototype.axisOptions = function(yAxis) {
   return this.axes_[yAxis].options;
-}
+};
 
 /**
  * Return the series associated with an axis.
  */
 DygraphOptions.prototype.seriesForAxis = function(yAxis) {
   return this.axes_[yAxis].series;
-}
+};
 
 /**
  * Return the list of all series, in their columnar order.
  */
 DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
-}
+};
 
 /* Are we using this? */ 
 /**
@@ -300,4 +300,4 @@ DygraphOptions.prototype.seriesNames = function() {
  */
 DygraphOptions.prototype.indexOfSeries = function(series) {
   return this.series_[series].idx;
-}
+};
