@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+  </head>
+  <body>
+    <h2>Quick'n'dirty parser benchmark</h2>
+    <div id="demodiv" style="display: none;"></div>
+    <p id="json-result"></p>
+    <p id="csv-result"></p>
+    <script type="text/javascript">
+
+(function(g) {
+  // Generate the CSV and JSON strings
+  var zp = function(x) { if (x < 10) return "0"+x; else return x; };
+  var r = "date,parabola,line,another line,sine wave\n";
+  var a = [["data","parabola","line","anoter line","sine wave"]];
+  for (var i=1; i<=10000; i++) {
+    var t = [parseInt("20"+zp(i)), 10*(i*(31-i)), 10*(8*i), 10*(250 - 8*i), 10*(125 + 125 * Math.sin(0.3*i))];
+    r += "" + t[0];
+    r += "," + t[1];
+    r += "," + t[2];
+    r += "," + t[3];
+    r += "," + t[4];
+    r += "\n";
+    a.push(t);
+  }
+  var j = JSON.stringify(a);
+
+
+  // Benchmark!
+  var start;
+  var stop;
+  var runtime1, runtime2;
+  
+  start = new Date().getTime();
+  for (var i = 0; i < 100; i++) {
+    g.parseCSV_(r);
+  }
+  stop = new Date().getTime();
+  runtime1 = stop - start;
+
+
+  start = new Date().getTime();
+  for (var i = 0; i < 100; i++) {
+    g.parseArray_(window.JSON.parse(j));
+  }
+  stop = new Date().getTime();
+  runtime2 = stop - start;
+  
+  // Report
+  document.getElementById("csv-result").innerHTML= "CSV:  "+runtime1 +"ms";
+  document.getElementById("json-result").innerHTML="JSON: "+runtime2 +"ms";
+})(new Dygraph(document.getElementById("demodiv"), [[1,1],[1,1]]));
+
+    </script>
+</body>
+</html>

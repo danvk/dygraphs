@@ -691,6 +691,8 @@ Dygraph.isArrayLike = function(o) {
  * @private
  */
 Dygraph.isDateLike = function (o) {
+  if (typeof(o) == "string")
+    return true;
   if (typeof(o) != "object" || o === null ||
       typeof(o.getTime) != 'function') {
     return false;

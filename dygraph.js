@@ -1385,6 +1385,10 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
   // Convert the call to date ranges of the raw data.
   var minDate = this.toDataXCoord(lowX);
   var maxDate = this.toDataXCoord(highX);
+  if (typeof(this.user_attrs_.refetchOnZoom) !== 'undefined' &&
+      this.user_attrs_.refetchOnZoom && this.fileIsURL_()) {
+    this.getDataFromURL_(minDate, maxDate);
+  }
   this.doZoomXDates_(minDate, maxDate);
 };
 
@@ -1483,6 +1487,11 @@ Dygraph.prototype.doUnzoom_ = function() {
 
     var minDate = this.rawData_[0][0];
     var maxDate = this.rawData_[this.rawData_.length - 1][0];
+
+    if (typeof(this.user_attrs_.refetchOnZoom) !== 'undefined' &&
+        this.user_attrs_.refetchOnZoom && this.fileIsURL_()) {
+      this.getDataFromURL_();
+    }
 
     // With only one frame, don't bother calculating extreme ranges.
     // TODO(danvk): merge this block w/ the code below.
@@ -2061,8 +2070,18 @@ Dygraph.prototype.isSeriesLocked = function() {
  * @param {String} data Raw CSV data to be plotted
  * @private
  */
-Dygraph.prototype.loadedEvent_ = function(data) {
+Dygraph.prototype.loadedEventCSV_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
+  this.predraw_();
+};
+
+/**
+ * Fires when there's data available to be graphed.
+ * @param {String} data Raw JSON data to be plotted
+ * @private
+ */
+Dygraph.prototype.loadedEventJSON_ = function(data) {
+  this.rawData_ = this.parseArray_(window.JSON.parse(data));
   this.predraw_();
 };
 
@@ -3011,11 +3030,17 @@ Dygraph.prototype.parseArray_ = function(data) {
 
   var i;
   if (this.attr_("labels") === null) {
-    this.warn("Using default labels. Set labels explicitly via 'labels' " +
-              "in the options parameter");
-    this.attrs_.labels = [ "X" ];
-    for (i = 1; i < data[0].length; i++) {
-      this.attrs_.labels.push("Y" + i); // Not user_attrs_.
+    if (typeof(data[0][1]) === 'string') {
+      // Assume this is a bunch of labels
+      this.attrs_.labels = data[0];
+      data.shift();
+    } else {
+      this.warn("Using default labels. Set labels explicitly via 'labels' " +
+                "in the options parameter");
+      this.attrs_.labels = [ "X" ];
+      for (i = 1; i < data[0].length; i++) {
+        this.attrs_.labels.push("Y" + i); // Not user_attrs_.
+      }
     }
     this.attributes_.reparseSeries();
   } else {
@@ -3040,13 +3065,18 @@ Dygraph.prototype.parseArray_ = function(data) {
         this.error("Row " + (1 + i) + " of data is empty");
         return null;
       }
-      if (parsedData[i][0] === null ||
-          typeof(parsedData[i][0].getTime) != 'function' ||
-          isNaN(parsedData[i][0].getTime())) {
+      if (!Dygraph.isDateLike(parsedData[i][0])) {
         this.error("x value in row " + (1 + i) + " is not a Date");
         return null;
       }
+      if (typeof(parsedData[i][0]) == "string")
+        parsedData[i][0] = new Date(parsedData[i][0]);
+
       parsedData[i][0] = parsedData[i][0].getTime();
+      if (isNaN(parsedData[i][0])) {
+        this.error("x value in row " + (1 + i) + " is not a Date");
+        return null;
+      }
     }
     return parsedData;
   } else {
@@ -3201,6 +3231,49 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 };
 
 /**
+ * Determine whether this.file_ is a URL or a different type of string,
+ * i.e. raw CSV data.
+ * @private
+ */
+Dygraph.prototype.fileIsURL_ = function() {
+  if (typeof(this.file_) !== 'string')
+    return false;
+  return !(Dygraph.detectLineDelimiter(this.file_));
+};
+
+/**
+ * Retrieve the data from the URL in this.file_. When the data returns,
+ * check the content-type to see whether it's application/json; if so
+ * call the JSON parser, otherwise call the CSV parser.
+ * @private
+ */
+Dygraph.prototype.getDataFromURL_ = function(lower_x, upper_x) {
+  var self = this;
+  var req = new XMLHttpRequest();
+  var query_str = "";
+
+  if (typeof(lower_x) !== 'undefined' && typeof(upper_x) !== 'undefined') {
+    query_str = (this.file_.indexOf("?") == -1) ? "?" : "&";
+    query_str += [ "lower_x=" + lower_x, "upper_x=" + upper_x ].join('&');
+  }
+
+  req.onreadystatechange = function() {
+    if (req.readyState == 4) {
+      if (req.status === 200 ||   // Normal http
+          req.status === 0) {     // Chrome w/ --alow-file-access-from-files
+        var ct = this.getResponseHeader('content-type');
+        if (ct && ct.toLowerCase().indexOf("application/json") != -1)
+          self.loadedEventJSON_(req.responseText);
+        else
+          self.loadedEventCSV_(req.responseText);
+      }
+    }
+  };
+  req.open("GET", this.file_ + query_str, true);
+  req.send(null);
+};
+
+/**
  * Get the CSV data. If it's in a function, call that function. If it's in a
  * file, do an XMLHttpRequest to get it.
  * @private
@@ -3223,23 +3296,10 @@ Dygraph.prototype.start_ = function() {
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
-    var line_delimiter = Dygraph.detectLineDelimiter(data);
-    if (line_delimiter) {
-      this.loadedEvent_(data);
+    if (this.fileIsURL_()) {
+      this.getDataFromURL_();
     } else {
-      var req = new XMLHttpRequest();
-      var caller = this;
-      req.onreadystatechange = function () {
-        if (req.readyState == 4) {
-          if (req.status === 200 ||  // Normal http
-              req.status === 0) {    // Chrome w/ --allow-file-access-from-files
-            caller.loadedEvent_(req.responseText);
-          }
-        }
-      };
-
-      req.open("GET", data, true);
-      req.send(null);
+      this.loadedEventCSV_(data);
     }
   } else {
     this.error("Unknown data format: " + (typeof data));
