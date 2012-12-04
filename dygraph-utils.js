@@ -816,7 +816,7 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
 
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-window.requestAnimFrame = (function(){
+Dygraph.requestAnimFrame = (function(){
   return window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
@@ -828,45 +828,52 @@ window.requestAnimFrame = (function(){
 })();
 
 /**
- * @private
- * Call a function at most N times at an attempted given interval, then call a
- * cleanup function once. repeat_fn is called once immediately, then (times - 1)
- * times asynchronously. If times=1, then cleanup_fn() is also called
- * synchronously.
- * @param repeat_fn {Function} Called repeatedly -- takes the number of calls
- * (from 0 to times-1) as an argument.
- * @param times {number} The number of times max to call repeat_fn
- * @param every_ms {number} Milliseconds to schedule between calls
- * @param cleanup_fn {Function} A function to call after all repeat_fn calls.
+ * Call a function at most maxFrames times at an attempted interval of
+ * framePeriodInMillis, then call a cleanup function once. repeatFn is called
+ * once immediately, then at most (maxFrames - 1) times asynchronously. If
+ * maxFrames==1, then cleanup_fn() is also called synchronously.  This function
+ * is used to sequence animation.
+ * @param {function(number)} repeatFn Called repeatedly -- takes the frame
+ *     number (from 0 to maxFrames-1) as an argument.
+ * @param {number} maxFrames The max number of times to call repeatFn
+ * @param {number} framePeriodInMillis Max requested time between frames.
+ * @param {function()} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
-  var count = 0;
-  var previous_count;
-  var start_time = new Date().getTime();
-  repeat_fn(count);
-  if (times == 1) {
-    cleanup_fn();
+Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
+  cleanupFn) {
+  var frameNumber = 0;
+  var previousFrameNumber;
+  var startTime = new Date().getTime();
+  repeatFn(frameNumber);
+  if (maxFrames == 1) {
+    cleanupFn();
     return;
   }
+  var maxFrameArg = maxFrames - 1;
 
   (function loop() {
-    if (count >= times) return;
-    window.requestAnimFrame(function(scheduled_epoch_time_ms) {
-      var delay = (scheduled_epoch_time_ms - start_time);
-      previous_count = count;
-      count = Math.floor(delay / every_ms);
-      if ((count - previous_count) > (times / 2)) {
-        count = previous_count + (times / 2);
-      }
-      if (count > times - 1) {
-        // Ensure call at max times.
-        if (previous_count !== (times - 1)) {
-          repeat_fn(times - 1);
-        }
-        cleanup_fn();
+    if (frameNumber >= maxFrames) return;
+    Dygraph.requestAnimFrame(function() {
+      // Determine which frame to draw based on the delay so far.  Will skip
+      // frames if necessary.
+      var currentTime = new Date().getTime();
+      var delayInMillis = currentTime - startTime;
+      previousFrameNumber = frameNumber;
+      frameNumber = Math.floor(delayInMillis / framePeriodInMillis);
+      var frameDelta = frameNumber - previousFrameNumber;
+      // If we predict that the subsequent repeatFn call will overshoot our
+      // total frame target, so our last call will cause a stutter, then jump to
+      // the last call immediately.  If we're going to cause a stutter, better
+      // to do it faster than slower.
+      var predictOvershootStutter = (frameNumber + frameDelta) > maxFrameArg;
+      if (predictOvershootStutter || (frameNumber >= maxFrameArg)) {
+        repeatFn(maxFrameArg);  // Ensure final call with maxFrameArg.
+        cleanupFn();
       } else {
-        repeat_fn(count);
+        if (frameDelta != 0) {  // Don't call repeatFn with duplicate frames.
+          repeatFn(frameNumber);
+        }
         loop();
       }
     });

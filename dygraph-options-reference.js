@@ -748,6 +748,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
   },
+  "xIsEpochDate": {
+    "default": "false",
+    "labels": ["CSV parsing"],
+    "type": "boolean",
+    "description": "When set the X axis is interpreted as Unix epoch date values."
+  },
   "animatedZooms": {
     "default": "false",
     "labels": ["Interactive Elements"],

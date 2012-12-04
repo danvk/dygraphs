@@ -1458,10 +1458,6 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   });
 };
 
-Dygraph.prototype.doUnzoom = function() {
-  this.doUnzoom_();
-};
-
 /**
  * Reset the zoom to the original view coordinates. This is the same as
  * double-clicking on the graph.
@@ -2140,10 +2136,6 @@ Dygraph.prototype.extremeValues_ = function(series) {
   }
 
   return [minY, maxY];
-};
-
-Dygraph.prototype.predraw = function() {
-  this.predraw_();
 };
 
 /**
