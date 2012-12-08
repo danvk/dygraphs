@@ -3197,6 +3197,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   if (annotations.length > 0) {
     this.setAnnotations(annotations, true);
   }
+  this.attributes_.reparseSeries();
 };
 
 /**
