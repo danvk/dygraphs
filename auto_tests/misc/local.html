@@ -16,6 +16,7 @@
   <script type="text/javascript" src="../tests/CanvasAssertions.js"></script>
   <script type="text/javascript" src="../tests/DygraphOps.js"></script>
   <script type="text/javascript" src="../tests/PixelSampler.js"></script>
+  <script type="text/javascript" src="../tests/Util.js"></script>
 
   <!-- Scripts for automated tests -->
   <script type="text/javascript" src="../tests/annotations.js"></script>
@@ -28,6 +29,7 @@
   <script type="text/javascript" src="../tests/error_bars.js"></script>
   <script type="text/javascript" src="../tests/formats.js"></script>
   <script type="text/javascript" src="../tests/interaction_model.js"></script>
+  <script type="text/javascript" src="../tests/labels.js"></script>
   <script type="text/javascript" src="../tests/missing_points.js"></script>
   <script type="text/javascript" src="../tests/multi_csv.js"></script>
   <script type="text/javascript" src="../tests/multiple_axes.js"></script>
@@ -68,6 +70,18 @@
   }
 </style>
   <script type="text/javascript">
+
+  // save Dygraph.warn so we can catch warnings.
+  var originalDygraphWarn = Dygraph.warn;
+  Dygraph.warn = function(msg) {
+    if (msg == "Using default labels. Set labels explicitly via 'labels' in the options parameter") {
+      originalDygraphWarn(msg);
+      return;
+    }
+    throw "Warnings not permitted: " + msg;
+  }
+  Dygraph.prototype.warn = Dygraph.warn;
+
   var tc = null; // Selected test case
   var name = null; 
 
