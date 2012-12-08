@@ -478,3 +478,49 @@ AxisLabelsTestCase.prototype.testSeriesOrder = function() {
   // Verify that we get the label list back in the right order
   assertEquals(["x", "00", "01", "10", "11"], g.getLabels());
 };
+
+AxisLabelsTestCase.prototype.testLabelKMB = function() {
+  var data = [];
+  data.push([0,0]);
+  data.push([1,2000]);
+  data.push([2,1000]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  assertEquals(["0", "500", "1K", "1.5K", "2K"], Util.getYLabels());
+};
+
+AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
+  var data = [];
+  data.push([0,0]);
+  data.push([1,2000]);
+  data.push([2,1000]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMG2: true
+        }
+      }
+    }
+  );
+
+  assertEquals(
+      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+      Util.getYLabels());
+};
