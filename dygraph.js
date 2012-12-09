@@ -2670,6 +2670,26 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   if (originalData.length < 2)
     return originalData;
+
+  if (typeof(rollPeriod) == "function") {
+    rollPeriod = rollPeriod(originalData.length);
+  } else if (typeof(rollPeriod) == "object") {
+    // If rollPeriod is an object (a dictionary), the actuall roll period
+    // is chosen based on the contents of the dictionary and the length
+    // of originalData.
+    var len = originalData.length;
+
+    for (var period in rollPeriod) {
+      if (len >= rollPeriod[period].min && len <= rollPeriod[period].max) {
+        rollPeriod = parseInt(period);
+        break;
+      }
+    }
+  }
+
+  if (typeof(rollPeriod) != "number")
+    rollPeriod = 1;
+
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = this.attr_("sigma");
