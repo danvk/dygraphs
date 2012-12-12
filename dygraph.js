@@ -274,8 +274,6 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
 
-  xIsEpochDate: false,
-
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
   plotter: [
@@ -3098,15 +3096,11 @@ Dygraph.prototype.parseArray_ = function(data) {
     }
   }
 
-  if (this.attr_("xIsEpochDate") || Dygraph.isDateLike(data[0][0])) {
+  if (Dygraph.isDateLike(data[0][0]) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-
-    if (this.attr_("xIsEpochDate")) {
-      return data;
-    }
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
