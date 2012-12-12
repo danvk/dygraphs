@@ -3028,7 +3028,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     }
   }
 
-  if (Dygraph.isDateLike(data[0][0]) {
+  if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
