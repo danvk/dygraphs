@@ -524,3 +524,15 @@ AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
       ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
       Util.getYLabels());
 };
+
+/**
+ * Verify that log scale axis range is properly specified.
+ */
+AxisLabelsTestCase.prototype.testLogScale = function() {
+  var g = new Dygraph("graph", [[0, 5], [1, 1000]], { logscale : true });
+  var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assertEquals(["6","10","30","60","100","300","600","1000"], nonEmptyLabels);
+ 
+  g.updateOptions({ logscale : false });
+  assertEquals(['0','200','400','600','800','1000'], Util.getYLabels());
+}
