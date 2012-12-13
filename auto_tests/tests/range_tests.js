@@ -150,3 +150,14 @@ RangeTestCase.prototype.testLogScaleExcludesZero = function() {
   g.updateOptions({ logscale : false });
   assertEquals([0, 1099], g.yAxisRange(0));
 }
+
+/**
+ * Verify that includeZero range is properly specified.
+ */
+RangeTestCase.prototype.testIncludeZeroIncludesZero = function() {
+  var g = new Dygraph("graph", [[0, 500], [500, 1000]], { includeZero : true });
+  assertEquals([0, 1100], g.yAxisRange(0));
+ 
+  g.updateOptions({ includeZero : false });
+  assertEquals([450, 1050], g.yAxisRange(0));
+}

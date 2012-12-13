@@ -536,3 +536,14 @@ AxisLabelsTestCase.prototype.testLogScale = function() {
   g.updateOptions({ logscale : false });
   assertEquals(['0','200','400','600','800','1000'], Util.getYLabels());
 }
+
+/**
+ * Verify that include zero range is properly specified.
+ */
+AxisLabelsTestCase.prototype.testIncludeZero = function() {
+  var g = new Dygraph("graph", [[0, 500], [1, 1000]], { includeZero : true });
+  assertEquals(['0','200','400','600','800','1000'], Util.getYLabels());
+ 
+  g.updateOptions({ includeZero : false });
+  assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
+}
