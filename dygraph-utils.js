@@ -818,7 +818,7 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
-Dygraph.requestAnimFrame = (function(){
+Dygraph.requestAnimFrame = (function() {
   return window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
@@ -843,7 +843,7 @@ Dygraph.requestAnimFrame = (function(){
  * @private
  */
 Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
-  cleanupFn) {
+    cleanupFn) {
   var frameNumber = 0;
   var previousFrameNumber;
   var startTime = new Date().getTime();
