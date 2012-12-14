@@ -814,39 +814,71 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
   return new Dygraph.Iterator(array, start, length, opt_predicate);
 };
 
+// Shim layer with setTimeout fallback.
+// From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// Should be called with the window context:
+//   Dygraph.requestAnimFrame.call(window, function() {})
+Dygraph.requestAnimFrame = (function() {
+  return window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          window.oRequestAnimationFrame      ||
+          window.msRequestAnimationFrame     ||
+          function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 /**
- * Call a function N times at a given interval, then call a cleanup function
- * once. repeat_fn is called once immediately, then (times - 1) times
- * asynchronously. If times=1, then cleanup_fn() is also called synchronously.
- * @param {function(number)} repeat_fn Called repeatedly -- takes the number of
- *     calls (from 0 to times-1) as an argument.
- * @param {number} times The number of times to call repeat_fn
- * @param {number} every_ms Milliseconds between calls
- * @param {function()} cleanup_fn A function to call after all repeat_fn calls.
+ * Call a function at most maxFrames times at an attempted interval of
+ * framePeriodInMillis, then call a cleanup function once. repeatFn is called
+ * once immediately, then at most (maxFrames - 1) times asynchronously. If
+ * maxFrames==1, then cleanup_fn() is also called synchronously.  This function
+ * is used to sequence animation.
+ * @param {function(number)} repeatFn Called repeatedly -- takes the frame
+ *     number (from 0 to maxFrames-1) as an argument.
+ * @param {number} maxFrames The max number of times to call repeatFn
+ * @param {number} framePeriodInMillis Max requested time between frames.
+ * @param {function()} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-Dygraph.repeatAndCleanup = function(repeat_fn, times, every_ms, cleanup_fn) {
-  var count = 0;
-  var start_time = new Date().getTime();
-  repeat_fn(count);
-  if (times == 1) {
-    cleanup_fn();
+Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
+    cleanupFn) {
+  var frameNumber = 0;
+  var previousFrameNumber;
+  var startTime = new Date().getTime();
+  repeatFn(frameNumber);
+  if (maxFrames == 1) {
+    cleanupFn();
     return;
   }
+  var maxFrameArg = maxFrames - 1;
 
   (function loop() {
-    if (count >= times) return;
-    var target_time = start_time + (1 + count) * every_ms;
-    setTimeout(function() {
-      count++;
-      repeat_fn(count);
-      if (count >= times - 1) {
-        cleanup_fn();
+    if (frameNumber >= maxFrames) return;
+    Dygraph.requestAnimFrame.call(window, function() {
+      // Determine which frame to draw based on the delay so far.  Will skip
+      // frames if necessary.
+      var currentTime = new Date().getTime();
+      var delayInMillis = currentTime - startTime;
+      previousFrameNumber = frameNumber;
+      frameNumber = Math.floor(delayInMillis / framePeriodInMillis);
+      var frameDelta = frameNumber - previousFrameNumber;
+      // If we predict that the subsequent repeatFn call will overshoot our
+      // total frame target, so our last call will cause a stutter, then jump to
+      // the last call immediately.  If we're going to cause a stutter, better
+      // to do it faster than slower.
+      var predictOvershootStutter = (frameNumber + frameDelta) > maxFrameArg;
+      if (predictOvershootStutter || (frameNumber >= maxFrameArg)) {
+        repeatFn(maxFrameArg);  // Ensure final call with maxFrameArg.
+        cleanupFn();
       } else {
+        if (frameDelta != 0) {  // Don't call repeatFn with duplicate frames.
+          repeatFn(frameNumber);
+        }
         loop();
       }
-    }, target_time - new Date().getTime());
-    // TODO(danvk): adjust every_ms to produce evenly-timed function calls.
+    });
   })();
 };
 
