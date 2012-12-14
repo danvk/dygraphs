@@ -193,7 +193,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   }
 
   // Add formatted labels to the ticks.
-  var k = 1;
+  var k;
   var k_labels = [];
   var m_labels = [];
   if (opts("labelsKMB")) {
@@ -206,6 +206,8 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
     m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
   }
+
+  k = k || 1; // If neither option is specified.
 
   var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
 

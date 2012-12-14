@@ -10,31 +10,6 @@ MultipleAxesTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-function getYLabelsForAxis(axis_num) {
-  var y_labels = document.getElementsByClassName("dygraph-axis-label-y" + axis_num);
-  var ary = [];
-  for (var i = 0; i < y_labels.length; i++) {
-    ary.push(y_labels[i].innerHTML);
-  }
-  return ary;
-}
-
-function getLegend() {
-  var legend = document.getElementsByClassName("dygraph-legend")[0];
-  return legend.textContent;
-}
-
-// returns all text in tags w/ a given css class, sorted.
-function getClassTexts(css_class) {
-  var texts = [];
-  var els = document.getElementsByClassName(css_class);
-  for (var i = 0; i < els.length; i++) {
-    texts[i] = els[i].textContent;
-  }
-  texts.sort();
-  return texts;
-}
-
 MultipleAxesTestCase.getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
@@ -80,8 +55,8 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
     }
   );
 
-  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], getYLabelsForAxis("1"));
-  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], getYLabelsForAxis("2"));
+  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], Util.getYLabels("1"));
+  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], Util.getYLabels("2"));
 };
 
 MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
@@ -156,11 +131,11 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
   );
 
   assertEquals(["Chart title", "x-axis", "y-axis", "y2-axis"],
-               getClassTexts("dygraph-label"));
-  assertEquals(["Chart title"], getClassTexts("dygraph-title"));
-  assertEquals(["x-axis"], getClassTexts("dygraph-xlabel"));
-  assertEquals(["y-axis"], getClassTexts("dygraph-ylabel"));
-  assertEquals(["y2-axis"], getClassTexts("dygraph-y2label"));
+               Util.getClassTexts("dygraph-label"));
+  assertEquals(["Chart title"], Util.getClassTexts("dygraph-title"));
+  assertEquals(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
+  assertEquals(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
+  assertEquals(["y2-axis"], Util.getClassTexts("dygraph-y2label"));
 
   // TODO(danvk): check relative positioning here: title on top, y left of y2.
 };
@@ -183,11 +158,11 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
   );
 
   assertEquals(["Chart title", "x-axis", "y-axis"],
-               getClassTexts("dygraph-label"));
-  assertEquals(["Chart title"], getClassTexts("dygraph-title"));
-  assertEquals(["x-axis"], getClassTexts("dygraph-xlabel"));
-  assertEquals(["y-axis"], getClassTexts("dygraph-ylabel"));
-  assertEquals([], getClassTexts("dygraph-y2label"));
+               Util.getClassTexts("dygraph-label"));
+  assertEquals(["Chart title"], Util.getClassTexts("dygraph-title"));
+  assertEquals(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
+  assertEquals(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
+  assertEquals([], Util.getClassTexts("dygraph-y2label"));
 };
 
 MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
@@ -220,8 +195,8 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
       yAxisLabelWidth: 60
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65"], getYLabelsForAxis("1"));
-  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], getYLabelsForAxis("2"));
+  assertEquals(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
+  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
   
   g.updateOptions(
     {
@@ -235,8 +210,8 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
      }
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], getYLabelsForAxis("1"));
-  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], getYLabelsForAxis("2"));
+  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], Util.getYLabels("1"));
+  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
 };
 
 MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
