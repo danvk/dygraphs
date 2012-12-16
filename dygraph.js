@@ -91,7 +91,8 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
-Dygraph.ANIMATION_STEPS = 10;
+// For max 60 Hz. animation:
+Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
 // These are defined before DEFAULT_ATTRS so that it can refer to them.

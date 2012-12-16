@@ -4,13 +4,18 @@
  * NOTE: modified by danvk. I removed the "getHelpXML" function to reduce the
  * file size, added "use strict" and a few "var" declarations where needed.
  *
+ * Modifications by adilh:
+ * Original "RGBColor" function name collides with:
+ *   http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-RGBColor
+ * so renamed to "RGBColorParser"
+ *
  * @author Stoyan Stefanov <sstoo@gmail.com>
  * @link   http://www.phpied.com/rgb-color-parser-in-javascript/
  * @license Use it if you like it
  */
 "use strict";
 
-function RGBColor(color_string)
+function RGBColorParser(color_string)
 {
     this.ok = false;
 
