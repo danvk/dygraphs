@@ -2457,7 +2457,6 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   // all options which could be applied per-axis:
   var axisOptions = [
-    'includeZero',
     'valueRange',
     'labelsKMB',
     'labelsKMG2',
@@ -2531,7 +2530,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
-
+    var logscale = this.attributes_.getForAxis("logscale", i);
+    var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
 
     if (series.length == 0) {
@@ -2557,7 +2557,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = Math.max(extremeMaxY, maxY);
         }
       }
-      if (axis.includeZero && minY > 0) minY = 0;
+      if (includeZero && minY > 0) minY = 0;
 
       // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
@@ -2569,7 +2569,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       if (span === 0) { span = maxY; }
 
       var maxAxisY, minAxisY;
-      if (axis.logscale) {
+      if (logscale) {
         maxAxisY = maxY + 0.1 * span;
         minAxisY = minY;
       } else {
