@@ -831,7 +831,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
   var yRange = this.yAxisRange(axis);
 
   var pct;
-  if (!this.axes_[axis].logscale) {
+  var logscale = this.attributes_.getForAxis("logscale", axis);
+  if (!logscale) {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
@@ -2452,8 +2453,7 @@ Dygraph.prototype.computeYAxes_ = function() {
   }
 
   // TODO(konigsberg): REMOVE THIS SILLINESS this should just come from DygraphOptions.
-  // TODO(konigsberg): Add tests for all of these. Currently just tests for
-  // includeZero and logscale.
+  // TODO(konigsberg): Add tests for all of these.
 
   // all options which could be applied per-axis:
   var axisOptions = [
@@ -2463,8 +2463,7 @@ Dygraph.prototype.computeYAxes_ = function() {
     'pixelsPerYLabel',
     'yAxisLabelWidth',
     'axisLabelFontSize',
-    'axisTickSize',
-    'logscale'
+    'axisTickSize'
   ];
 
   // Copy global axis options over to the first axis.
