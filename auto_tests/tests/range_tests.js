@@ -161,3 +161,12 @@ RangeTestCase.prototype.testIncludeZeroIncludesZero = function() {
   g.updateOptions({ includeZero : false });
   assertEquals([450, 1050], g.yAxisRange(0));
 }
+
+/**
+ * Verify that very large Y ranges don't break things.
+ */ 
+RangeTestCase.prototype.testHugeRange = function() {
+  var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], { includeZero : true });
+  assertEqualsDelta(1, -1e229 / g.yAxisRange(0)[0], 0.001);
+  assertEqualsDelta(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
+}
