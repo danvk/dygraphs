@@ -155,30 +155,26 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       // The first spacing greater than pixelsPerYLabel is what we use.
       // TODO(danvk): version that works on a log scale.
       var kmg2 = opts("labelsKMG2");
-      var mults;
+      var mults, base;
       if (kmg2) {
-        mults = [1, 2, 4, 8];
+        mults = [1, 2, 4, 8, 16];
+        base = 16;
       } else {
-        mults = [1, 2, 5];
+        mults = [1, 2, 5, 10];
+        base = 10;
       }
-      var scale, low_val, high_val;
-      for (i = -10; i < 50; i++) {
-        var base_scale;
-        if (kmg2) {
-          base_scale = pow(16, i);
-        } else {
-          base_scale = pow(10, i);
-        }
-        var spacing = 0;
-        for (j = 0; j < mults.length; j++) {
-          scale = base_scale * mults[j];
-          low_val = Math.floor(a / scale) * scale;
-          high_val = Math.ceil(b / scale) * scale;
-          nTicks = Math.abs(high_val - low_val) / scale;
-          spacing = pixels / nTicks;
-          // wish I could break out of both loops at once...
-          if (spacing > pixels_per_tick) break;
-        }
+
+      var wanted_ticks = pixels / pixels_per_tick;
+      var units_per_tick = Math.abs(b - a) / wanted_ticks;
+      var base_power = Math.floor(Math.log(units_per_tick) / Math.log(base));
+      var base_scale = Math.pow(base, base_power);
+      var scale, low_val, high_val, nTicks, spacing;
+      for (j = 0; j < mults.length; j++) {
+        scale = base_scale * mults[j];
+        low_val = Math.floor(a / scale) * scale;
+        high_val = Math.ceil(b / scale) * scale;
+        nTicks = Math.abs(high_val - low_val) / scale;
+        spacing = pixels / nTicks;
         if (spacing > pixels_per_tick) break;
       }
 
