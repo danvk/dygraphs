@@ -91,7 +91,8 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
-Dygraph.ANIMATION_STEPS = 10;
+// For max 60 Hz. animation:
+Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
@@ -2427,6 +2428,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+
   // Preserve valueWindow settings if they exist, and if the user hasn't
   // specified a new valueRange.
   var i, valueWindows, seriesName, axis, index, opts, v;
@@ -2448,6 +2450,31 @@ Dygraph.prototype.computeYAxes_ = function() {
     Dygraph.update(opts, this.attributes_.axisOptions(axis));
     this.axes_[axis] = opts;
   }
+
+  // TODO(konigsberg): REMOVE THIS SILLINESS this should just come from DygraphOptions.
+  // TODO(konigsberg): Add tests for all of these. Currently just tests for
+  // includeZero and logscale.
+
+  // all options which could be applied per-axis:
+  var axisOptions = [
+    'includeZero',
+    'valueRange',
+    'labelsKMB',
+    'labelsKMG2',
+    'pixelsPerYLabel',
+    'yAxisLabelWidth',
+    'axisLabelFontSize',
+    'axisTickSize',
+    'logscale'
+  ];
+
+  // Copy global axis options over to the first axis.
+  for (i = 0; i < axisOptions.length; i++) {
+    var k = axisOptions[i];
+    v = this.attr_(k);
+    if (v) this.axes_[0][k] = v;
+  }
+  // TODO(konigsberg): end of REMOVE THIS SILLINESS
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
@@ -3197,6 +3224,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   if (annotations.length > 0) {
     this.setAnnotations(annotations, true);
   }
+  this.attributes_.reparseSeries();
 };
 
 /**

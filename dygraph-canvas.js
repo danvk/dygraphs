@@ -25,7 +25,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global Dygraph:false,RGBColor:false */
+/*global Dygraph:false,RGBColorParser:false */
 "use strict";
 
 
@@ -610,7 +610,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var prevYs = [-1, -1];
   var yscale = axis.yscale;
   // should be same color as the lines but only 15% opaque.
-  var rgb = new RGBColor(color);
+  var rgb = new RGBColorParser(color);
   var err_color =
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
@@ -726,7 +726,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var newYs;
     var yscale = axis.yscale;
     // should be same color as the lines but only 15% opaque.
-    var rgb = new RGBColor(color);
+    var rgb = new RGBColorParser(color);
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
