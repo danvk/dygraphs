@@ -121,3 +121,23 @@ ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
 
   this.checkForInverses(g);
 }
+
+ToDomCoordsTestCase.prototype.testYAxisLabelWidth = function() {
+  var opts = {
+    yAxisLabelWidth: 100,
+    axisTickSize: 0,
+    rightGap: 0,
+    valueRange: [0, 100],
+    dateWindow: [0, 100],
+    width: 500,
+    height: 500,
+  }
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, [ [0,0], [100,100] ], opts);
+
+  assertEquals([100, 0], g.toDomCoords(0, 100));
+
+  g.updateOptions({ yAxisLabelWidth: 50 });
+  assertEquals([50, 0], g.toDomCoords(0, 100));
+}

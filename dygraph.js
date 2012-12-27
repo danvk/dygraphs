@@ -2459,7 +2459,6 @@ Dygraph.prototype.computeYAxes_ = function() {
   var axisOptions = [
     'valueRange',
     'pixelsPerYLabel',
-    'yAxisLabelWidth',
     'axisLabelFontSize',
     'axisTickSize'
   ];
