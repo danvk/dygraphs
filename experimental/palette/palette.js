@@ -100,9 +100,9 @@ Palette.prototype.create = function(document, parentElement) {
                if (inputValue == null || inputValue.length == 0) {
                  inputValue = opts[opt].type + "{\n\n}";
                }
-	       var textarea = new TextArea();
-	       textarea.show(opt, inputValue);
-	       textarea.okCallback = function(value) {
+        	     var textarea = new TextArea();
+        	     textarea.show(opt, inputValue);
+        	     textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
                    entry.input.textContent = value ? "defined" : "not defined";
