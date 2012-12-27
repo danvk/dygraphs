@@ -2460,7 +2460,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     'valueRange',
     'pixelsPerYLabel',
     'axisLabelFontSize',
-    'axisTickSize'
   ];
 
   // Copy global axis options over to the first axis.
