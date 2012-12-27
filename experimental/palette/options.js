@@ -27,97 +27,284 @@
 "use strict";
 
 var opts = {
-  animatedZooms: { type: "boolean" },
-  annotationClickHandler : {type: "function(annotation, point, dygraph, event)"},
-  annotationDblClickHandler : {type: "function(annotation, point, dygraph, event)"},
-  annotationMouseOutHandler : {type: "function(annotation, point, dygraph, event)"},
-  annotationMouseOverHandler : {type: "function(annotation, point, dygraph, event)"},
-  avoidMinZero: { type: "boolean" },
-  axisLabelColor: { type: "string" },
-  axisLabelFontSize: {type: "int" },
-  axisLabelWidth: {type: "int" },
-  axisLineColor: {type: "string" },
-  axisLineWidth: {type: "int" },
-  axisTickSize: {type: "int" },
-  clickCallback : {type: "function(e, x, points)"},
-  colorSaturation: { type: "float" },
-  colors: { type: "array<string>" },
-  colorValue: { type: "float" },
-  connectSeparatedPoints: { type: "boolean" },
-  customBars: { type: "boolean" },
-  dateWindow: { type: "array<Date>"},
-  delimiter: { type: "string" },
-  digitsAfterDecimal: { type: "int"},
-  displayAnnotations: { type: "boolean" },
-  drawAxesAtZero : { type : "boolean" },
-  drawCallback : {type: "function(dygraph, is_initial)"},
-  drawGapEdgePoints : { type : "boolean" },
-  drawHighlightPointCallback : { type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)" },
-  drawPoints: { type: "boolean" },
-  drawPointCallback : { type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)" },
-  drawXAxis: {type: "boolean" },
-  drawXGrid: {type: "boolean" },
-  drawYAxis: {type: "boolean" },
-  drawYGrid: {type: "boolean" },
-  errorBars: { type: "boolean" },
-  fillAlpha: { type: "float" },
-  fillGraph: { type: "boolean" },
-  fractions: { type: "boolean" },
-  gridLineColor: { type: "string" },
-  gridLineWidth: { type: "int" },
-  height: {type: "int"},
-  hideOverlayOnMouseOut: { type: "boolean" },
-  highlightCallback : {type: "function(event, x, points,row)"},
-  highlightCircleSize: { type: "int" },
-  includeZero: { type: "boolean" },
-  isZoomedIgnoreProgrammaticZoom: {type: "boolean" },
-  labelsDivWidth: {type: "integer"},
-  labels: {type: "array<string>" },
-  labelsKMB: {type: "boolean" },
-  labelsKMG2: {type: "boolean"},
-  labelsSeparateLines: {type: "boolean"},
-  labelsShowZeroValues: {type: "boolean"},
-  legend: {type: "string"},
-  logscale: { type: "boolean" },
-  maxNumberWidth: {type: "int"},
-  panEdgeFraction: { type: "float" },
-  pixelsPerLabel: { type: "int" },
-  pixelsPerXLabel: { type: "int" },
-  pixelsPerYLabel: { type: "int" },
-  pointClickCallback : {type: "function(e, point)"},
-  pointSize: { type: "integer" },
-  rangeSelectorHeight: { type: "int" },
-  rangeSelectorPlotFillColor: { type: "int" },
-  rangeSelectorPlotStrokeColor: { type: "int" },
-  rightGap: {type: "boolean"},
-  rollPeriod: {type: "int"},
-  showLabelsOnHighlight: { type: "boolean" },
-  showRangeSelector: { type: "boolean" },
-  showRoller: {type: "boolean" },
-  sigFigs: {type: "int"},
-  sigma: { type: "float" },
-  stackedGraph: { type: "boolean" },
-  stepPlot: { type: "boolean" },
-  strokeBorderColor: { type: "string" },
-  strokeBorderWidth: { type: "float" },
-  strokePattern: { type: "array<integer>" },
-  strokeWidth: { type: "integer" },
-  timingName: { type: "string" },
-  title: {type: "string"},
-  titleHeight: {type: "integer"},
-  underlayCallback : {type: "function(canvas, area, dygraph)"},
-  unhighlightCallback : {type: "function(event)"},
-  valueRange: {type: "array<float>"},
-  visibility: {type: "array<boolean>"},
-  width: {type: "int"},
-  wilsonInterval: { type: "boolean" },
-  xAxisHeight: {type: "int"},
-  xAxisLabelWidth: {type: "int"},
-  xLabelHeight: {type: "int"},
-  xlabel : {type: "string" },
-  xValueParser : {type: "function(str)"},
-  yAxisLabelWidth: {type: "int"},
-  yLabelWidth: {type: "int"},
-  ylabel : {type: "string" },
-  zoomCallback : {type: "function(minDate, maxDate, yRanges)"},
-};
+  animatedZooms : {
+    type : "boolean"
+  },
+  annotationClickHandler : {
+    type : "function(annotation, point, dygraph, event)"
+  },
+  annotationDblClickHandler : {
+    type : "function(annotation, point, dygraph, event)"
+  },
+  annotationMouseOutHandler : {
+    type : "function(annotation, point, dygraph, event)"
+  },
+  annotationMouseOverHandler : {
+    type : "function(annotation, point, dygraph, event)"
+  },
+  avoidMinZero : {
+    type : "boolean"
+  },
+  axisLabelColor : {
+    type : "string"
+  },
+  axisLabelFontSize : {
+    type : "int"
+  },
+  axisLabelWidth : {
+    type : "int"
+  },
+  axisLineColor : {
+    type : "string"
+  },
+  axisLineWidth : {
+    type : "int"
+  },
+  axisTickSize : {
+    type : "int"
+  },
+  clickCallback : {
+    type : "function(e, x, points)"
+  },
+  colorSaturation : {
+    type : "float"
+  },
+  colors : {
+    type : "array<string>"
+  },
+  colorValue : {
+    type : "float"
+  },
+  connectSeparatedPoints : {
+    type : "boolean"
+  },
+  customBars : {
+    type : "boolean"
+  },
+  dateWindow : {
+    type : "array<Date>"
+  },
+  delimiter : {
+    type : "string"
+  },
+  digitsAfterDecimal : {
+    type : "int"
+  },
+  displayAnnotations : {
+    type : "boolean"
+  },
+  drawAxesAtZero : {
+    type : "boolean"
+  },
+  drawCallback : {
+    type : "function(dygraph, is_initial)"
+  },
+  drawGapEdgePoints : {
+    type : "boolean"
+  },
+  drawHighlightPointCallback : {
+    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)"
+  },
+  drawPoints : {
+    type : "boolean"
+  },
+  drawPointCallback : {
+    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)"
+  },
+  drawXAxis : {
+    type : "boolean"
+  },
+  drawXGrid : {
+    type : "boolean"
+  },
+  drawYAxis : {
+    type : "boolean"
+  },
+  drawYGrid : {
+    type : "boolean"
+  },
+  errorBars : {
+    type : "boolean"
+  },
+  fillAlpha : {
+    type : "float"
+  },
+  fillGraph : {
+    type : "boolean"
+  },
+  fractions : {
+    type : "boolean"
+  },
+  gridLineColor : {
+    type : "string"
+  },
+  gridLineWidth : {
+    type : "int"
+  },
+  height : {
+    type : "int"
+  },
+  hideOverlayOnMouseOut : {
+    type : "boolean"
+  },
+  highlightCallback : {
+    type : "function(event, x, points,row)"
+  },
+  highlightCircleSize : {
+    type : "int"
+  },
+  includeZero : {
+    type : "boolean"
+  },
+  isZoomedIgnoreProgrammaticZoom : {
+    type : "boolean"
+  },
+  labelsDivWidth : {
+    type : "integer"
+  },
+  labels : {
+    type : "array<string>"
+  },
+  labelsKMB : {
+    type : "boolean"
+  },
+  labelsKMG2 : {
+    type : "boolean"
+  },
+  labelsSeparateLines : {
+    type : "boolean"
+  },
+  labelsShowZeroValues : {
+    type : "boolean"
+  },
+  legend : {
+    type : "string"
+  },
+  logscale : {
+    type : "boolean"
+  },
+  maxNumberWidth : {
+    type : "int"
+  },
+  panEdgeFraction : {
+    type : "float"
+  },
+  pixelsPerLabel : {
+    type : "int"
+  },
+  pixelsPerXLabel : {
+    type : "int"
+  },
+  pixelsPerYLabel : {
+    type : "int"
+  },
+  pointClickCallback : {
+    type : "function(e, point)"
+  },
+  pointSize : {
+    type : "integer"
+  },
+  rangeSelectorHeight : {
+    type : "int"
+  },
+  rangeSelectorPlotFillColor : {
+    type : "int"
+  },
+  rangeSelectorPlotStrokeColor : {
+    type : "int"
+  },
+  rightGap : {
+    type : "boolean"
+  },
+  rollPeriod : {
+    type : "int"
+  },
+  showLabelsOnHighlight : {
+    type : "boolean"
+  },
+  showRangeSelector : {
+    type : "boolean"
+  },
+  showRoller : {
+    type : "boolean"
+  },
+  sigFigs : {
+    type : "int"
+  },
+  sigma : {
+    type : "float"
+  },
+  stackedGraph : {
+    type : "boolean"
+  },
+  stepPlot : {
+    type : "boolean"
+  },
+  strokeBorderColor : {
+    type : "string"
+  },
+  strokeBorderWidth : {
+    type : "float"
+  },
+  strokePattern : {
+    type : "array<integer>"
+  },
+  strokeWidth : {
+    type : "integer"
+  },
+  timingName : {
+    type : "string"
+  },
+  title : {
+    type : "string"
+  },
+  titleHeight : {
+    type : "integer"
+  },
+  underlayCallback : {
+    type : "function(canvas, area, dygraph)"
+  },
+  unhighlightCallback : {
+    type : "function(event)"
+  },
+  valueRange : {
+    type : "array<float>"
+  },
+  visibility : {
+    type : "array<boolean>"
+  },
+  width : {
+    type : "int"
+  },
+  wilsonInterval : {
+    type : "boolean"
+  },
+  xAxisHeight : {
+    type : "int"
+  },
+  xAxisLabelWidth : {
+    type : "int"
+  },
+  xLabelHeight : {
+    type : "int"
+  },
+  xlabel : {
+    type : "string"
+  },
+  xValueParser : {
+    type : "function(str)"
+  },
+  yAxisLabelWidth : {
+    type : "int"
+  },
+  yLabelWidth : {
+    type : "int"
+  },
+  ylabel : {
+    type : "string"
+  },
+  zoomCallback : {
+    type : "function(minDate, maxDate, yRanges)"
+  },
+}; 
+
