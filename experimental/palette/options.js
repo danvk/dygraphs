@@ -26,6 +26,16 @@
 
 "use strict";
 
+/**
+ * Options availabile to the palette.
+ *
+ * Each entry is the name of the option, followed by:
+ * type: describes the type of option, which can be:
+ *   boolean|string|float|int|array<boolean>|array<int>|array<float>|array<Date>
+ *   or function(parameter list)
+ * scope: if empty, then available in global scope only. Otherwise,
+ * it's an array with possible values global|series|x|y|y2|highlight.
+ */
 var opts = {
   animatedZooms : {
     type : "boolean"
@@ -46,22 +56,32 @@ var opts = {
     type : "boolean"
   },
   axisLabelColor : {
-    type : "string"
+    type : "string",
+    // scope : [ "x", "y", "y2" ]
   },
   axisLabelFontSize : {
-    type : "int"
+    type : "int",
+    // scope : [ "x", "y", "y2" ]
+  },
+  axisLabelFormatter : {
+    type : "function(numberOrDate, granularity, opts, dygraph)",
+    scope : [ "x", "y", "y2" ]
   },
   axisLabelWidth : {
-    type : "int"
+    type : "int",
+    // scope : [ "x", "y", "y2" ]
   },
   axisLineColor : {
-    type : "string"
+    type : "string",
+    // scope : [ "x", "y", "y2" ]
   },
   axisLineWidth : {
-    type : "int"
+    type : "int",
+    // scope : [ "x", "y", "y2" ]
   },
   axisTickSize : {
-    type : "int"
+    type : "int",
+    // scope : [ "x", "y", "y2" ]
   },
   clickCallback : {
     type : "function(e, x, points)"
@@ -103,13 +123,16 @@ var opts = {
     type : "boolean"
   },
   drawHighlightPointCallback : {
-    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)"
+    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    scope : [ "global", "series", "y", "y2" ]
   },
   drawPoints : {
-    type : "boolean"
+    type : "boolean",
+    scope : [ "global", "series", "y", "y2" ]
   },
   drawPointCallback : {
-    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)"
+    type : "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    scope : [ "global", "series", "y", "y2" ]
   },
   drawXAxis : {
     type : "boolean"
@@ -202,7 +225,8 @@ var opts = {
     type : "function(e, point)"
   },
   pointSize : {
-    type : "integer"
+    type : "integer",
+    scope : [ "global", "series", "y", "y2" ]
   },
   rangeSelectorHeight : {
     type : "int"

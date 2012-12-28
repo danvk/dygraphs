@@ -109,8 +109,8 @@ Index.start = function() {
   selector.selectedIndex = sampleIndex;
 
   // Palette contains the widget that builds options.
-  var palette = new Palette();
-  palette.create(document, document.getElementById("optionsPalette"));
+  var palette = new MultiPalette();
+  palette.create(document.getElementById("optionsPalette"));
   palette.write(sample.options);
   palette.onchange = redraw;
   palette.filterBar.focus();
