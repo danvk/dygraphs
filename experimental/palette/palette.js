@@ -25,10 +25,16 @@
  */
 "use strict";
 
-function Palette() {
+/**
+ * scope is either "global", "series", "x", "y" or "y2".
+ */
+function Palette(scope) {
+  // Contains pair of "input" (the input object) and "row" (the parent row)
   this.model = {};
+  // This is meant to be overridden by a palette host.
   this.onchange = function() {};
-  this.filterBar = null;
+  this.scope = scope;
+  this.root = null;
 }
 
 Palette.createChild = function(type, parentElement, className) {
@@ -40,32 +46,21 @@ Palette.createChild = function(type, parentElement, className) {
   return element;
 };
 
-Palette.prototype.create = function(document, parentElement) {
+Palette.prototype.create = function(parentElement) {
   var palette = this;
 
-  var table = Palette.createChild("div", parentElement, "palette");
+  var table = Palette.createChild("div", parentElement[0], "palette");
+  this.root = table;
   table.width="300px";
 
   this.tooltip = new Tooltip();
 
-  var row = Palette.createChild("div", table, "header");
-  row.style.visibility = "visible";
-
-  Palette.createChild("span", row).textContent = "Filter:";
-  this.filterBar = Palette.createChild("input", Palette.createChild("span", row));
-  this.filterBar.type = "search";
-  this.filterBar.onkeyup = function() {
-    palette.filter(palette.filterBar.value)
-  };
-  this.filterBar.onclick = this.filterBar.onkeyup;
-  var go = Palette.createChild("button", Palette.createChild("span", row));
-  go.textContent = "Redraw"
-  go.onclick = function() {
-    palette.onchange();
-  };
+  // Build the header
+  var header = Palette.createChild("div", table, "header");
+  header.style.visibility = "visible";
 
   // CURRENTLY HIDDEN.
-  var tmp = Palette.createChild("button", Palette.createChild("span", row));
+  var tmp = Palette.createChild("button", Palette.createChild("span", header));
   tmp.textContent = "Copy"
   tmp.onclick = function() {
     var textarea = new TextArea();
@@ -73,15 +68,23 @@ Palette.prototype.create = function(document, parentElement) {
   };
   tmp.style.display = "none";
 
+  // One row per option.
   for (var opt in opts) {
     try {
       if (opts.hasOwnProperty(opt)) {
         var type = opts[opt].type;
+
+        var scope = opts[opt].scope || [ "global" ]; // Scope can be empty, infer "global" only.
+        var valid = scope[0] == "*" || $.inArray(this.scope, scope) >= 0;
+        if (!valid) {
+          continue;
+        }
+
         var isFunction = type.indexOf("function(") == 0;
         var row = Palette.createChild("div", table);
-        row.onmouseover = function(source, title, type, body, e) {
-          return function(e) {
-            palette.tooltip.show(source, e, title, type, body);
+        row.onmouseover = function(source, title, type, body) {
+          return function() {
+            palette.tooltip.show(source, title, type, body);
           };
         } (row, opt, type, Dygraph.OPTIONS_REFERENCE[opt].description);
         row.onmouseout = function() { palette.tooltip.hide(); };
@@ -105,7 +108,7 @@ Palette.prototype.create = function(document, parentElement) {
         	     textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
-                   entry.input.textContent = value ? "defined" : "not defined";
+                   entry.input.textContent = value ? "defined" : "undefined";
                    palette.onchange();
                  }
                }
@@ -206,7 +209,6 @@ Palette.prototype.read = function() {
 Palette.prototype.write = function(hash) {
   var results = {};
   for (var opt in this.model) {
-    //  && hash.hasOwnProperty(opt)
     if (this.model.hasOwnProperty(opt)) {
       var input = this.model[opt].input;
       var type = opts[opt].type;

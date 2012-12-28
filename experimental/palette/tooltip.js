@@ -40,7 +40,7 @@ function Tooltip(parent) {
   this.hide();
 }
 
-Tooltip.prototype.show = function(source, event, title, type, body) {
+Tooltip.prototype.show = function(source, title, type, body) {
   this.title.innerHTML = title;
   this.body.innerHTML = body;
   this.type.textContent = type; // textContent for arrays.

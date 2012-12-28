@@ -36,3 +36,22 @@
   border: 2px inset;
   border-color: #EEE;
 }
+
+.palette a:link {
+  color: #3333FF;
+  text-decoration: none;
+}
+
+.palette a:visited {
+  color: #3333FF;
+  text-decoration: none;
+}
+
+.palette a:hover {
+  color: #3333FF;
+  text-decoration: underline;
+}
+
+.palette a:active {
+  color: #0000FF;
+}
