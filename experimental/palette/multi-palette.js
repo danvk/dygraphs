@@ -33,7 +33,6 @@ function MultiPalette() {
   this.onchange = function() {};
 }
 
-
 MultiPalette.optionSetValues = {
   "global": "global",
   "x": "x axis",
@@ -48,14 +47,14 @@ MultiPalette.prototype.create = function(parentElement) {
   var header = $("<div>").addClass("header").appendTo(this.root);
   // Selector for series and axes.
   var selectorRow = $("<div>").appendTo(header);
-  var optionSelector = $("<select>")
+  this.optionSelector = $("<select>")
       .change(function(x) {
-        self.activate(optionSelector.val());
+        self.activate(self.optionSelector.val());
       });
 
   selectorRow
       .append($("<span>").text("Option Set:"))
-      .append(optionSelector)
+      .append(this.optionSelector)
        .append($("<span>")
           .append($("<a>")
               .addClass("link")
@@ -86,20 +85,38 @@ MultiPalette.prototype.create = function(parentElement) {
               .click(function() { self.onchange(); }))));
 
   $.each(MultiPalette.optionSetValues, function(key, value) {
-     $(optionSelector)
-         .append($("<option></option>")
-         .attr("value", key)
-         .text(value)); 
-      var palette = new Palette(key);
-      palette.create(self.root);
-      palette.root.style.display = "none";
-      palette.onchange = function() {
-        self.onchange();
-      };
-      self.palettes[key] = palette;
+    self.createPalette_(key, key, value);
   });
 
   this.activate("global");
+}
+
+MultiPalette.prototype.createPalette_ = function(key, scope, value) {
+   this.optionSelector
+     .append($("<option></option>")
+     .attr("value", key)
+     .text(value)); 
+  var palette = new Palette(scope);
+  palette.create(this.root);
+  palette.root.style.display = "none";
+  var self = this;
+  palette.onchange = function() {
+    self.onchange();
+  };
+  this.palettes[key] = palette;
+}
+
+MultiPalette.prototype.setSeries = function(labels) {
+  for (var idx = 1; idx < labels.length; idx++) {
+    this.conditionallyAddSingleSeries_(labels[idx]);
+  }
+}
+
+MultiPalette.prototype.conditionallyAddSingleSeries_ = function(series) {
+  var key = "series:" + series;
+  if (!this.palettes.hasOwnProperty(key)) {
+    this.createPalette_(key, "series", series + " (series)");
+  }
 }
 
 MultiPalette.prototype.activate = function(key) {
@@ -138,7 +155,6 @@ MultiPalette.prototype.showHash = function() {
     return val;
   }
   var text = JSON.stringify(hash, replacer, 2);
-  console.log(text);
   while(true) {
     var start = text.indexOf(startMarker);
     var end = text.indexOf(endMarker); 
@@ -165,19 +181,38 @@ MultiPalette.prototype.showHash = function() {
 MultiPalette.prototype.read = function() {
   var results = this.palettes.global.read();
   results.axes = {};
+  results.series = {};
   var clearIfEmpty = function(hash, key) {
     var val = hash[key];
     if ($.isEmptyObject(val)) {
       delete hash[key];
     }
   }
+  var clearEmptyChildren = function(hash) {
+    for (var key in hash) {
+      if (hash.hasOwnProperty(key)) {
+        clearIfEmpty(hash, key);
+      }
+    }
+  }
+
   results.axes.x = this.palettes.x.read();
   results.axes.y = this.palettes.y.read();
   results.axes.y2 = this.palettes.y2.read();
-  clearIfEmpty(results.axes, "x");
-  clearIfEmpty(results.axes, "y");
-  clearIfEmpty(results.axes, "y2");
+
+  clearEmptyChildren(results.axes);
   clearIfEmpty(results, "axes");
+
+  for (var key in this.palettes) {
+    if (key.indexOf("series:") == 0) {
+      var series = key.substring("series:".length);
+      results.series[series] = this.palettes[key].read();
+    }
+  }
+
+  clearEmptyChildren(results.series);
+  clearIfEmpty(results, "series");
+
   return results;
 }
 
@@ -192,4 +227,13 @@ MultiPalette.prototype.write = function(hash) {
     this.palettes.y.write(axes["y"]);
     this.palettes.y2.write(axes["y2"]);
   }
+
+  if (hash.hasOwnProperty("series")) {
+    for (var key in hash.series) {
+      if (hash.series.hasOwnProperty(key)) {
+        this.conditionallyAddSingleSeries_(key);
+        this.palettes["series:" + key].write(hash.series[key]);
+      }
+    }
+  }  
 }

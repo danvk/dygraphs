@@ -50,6 +50,17 @@ Index.splitVariables = function() { // http://www.idealog.us/2006/06/javascript_
 Index.draw = function(element, data, options) {
   element.innerHTML = "";
   element.removeAttribute("style");
+
+  // Replace the drawCallback function with one that also lets us track
+  // all labels (for the palette.)
+  // If the drawCallback option is not specified, use a null function.
+  var originalDraw = options["drawCallback"] || function() {};
+  options.drawCallback = function(g, isInitial) {
+    Index.palette.setSeries(g.getLabels());
+    // Call the original function, too.
+    originalDraw(g, isInitial);
+  };
+
   var g = new Dygraph(
     element,
     data,
@@ -77,7 +88,7 @@ Index.start = function() {
   var sample = Samples.data[sampleIndex];
   var data = sample.data;
   var redraw = function() {
-    Index.draw(document.getElementById("graph"), data, palette.read());
+    Index.draw(document.getElementById("graph"), data, Index.palette.read());
   }
 
   // Selector is the drop-down for selecting a set of data.
@@ -109,11 +120,11 @@ Index.start = function() {
   selector.selectedIndex = sampleIndex;
 
   // Palette contains the widget that builds options.
-  var palette = new MultiPalette();
-  palette.create(document.getElementById("optionsPalette"));
-  palette.write(sample.options);
-  palette.onchange = redraw;
-  palette.filterBar.focus();
+  Index.palette = new MultiPalette();
+  Index.palette.create(document.getElementById("optionsPalette"));
+  Index.palette.write(sample.options);
+  Index.palette.onchange = redraw;
+  Index.palette.filterBar.focus();
 
   redraw();
 
