@@ -37,6 +37,10 @@
  * it's an array with possible values global|series|x|y|y2|highlight.
  */
 var opts = {
+  // These two exist, but are not used by the palette at all.
+  series : { type : null, scope : [] },
+  axes : { type : null, scope : [] },
+
   animatedZooms : {
     type : "boolean"
   },
@@ -174,7 +178,8 @@ var opts = {
     type : "function(event, x, points,row)"
   },
   highlightCircleSize : {
-    type : "int"
+    type : "int",
+    scope : [ "global", "series", "y", "y2" ]
   },
   includeZero : {
     type : "boolean"
@@ -265,16 +270,20 @@ var opts = {
     type : "boolean"
   },
   strokeBorderColor : {
-    type : "string"
+    type : "string",
+    scope : [ "global", "series", "y", "y2" ]
   },
   strokeBorderWidth : {
-    type : "float"
+    type : "float",
+    scope : [ "global", "series", "y", "y2" ]
   },
   strokePattern : {
-    type : "array<integer>"
+    type : "array<integer>",
+    scope : [ "global", "series", "y", "y2" ]
   },
   strokeWidth : {
-    type : "integer"
+    type : "integer",
+    scope : [ "global", "series", "y", "y2" ]
   },
   timingName : {
     type : "string"
@@ -329,6 +338,6 @@ var opts = {
   },
   zoomCallback : {
     type : "function(minDate, maxDate, yRanges)"
-  },
+  }
 }; 
 
