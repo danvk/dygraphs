@@ -30,6 +30,7 @@
  */
 function Palette(scope) {
   // Contains pair of "input" (the input object) and "row" (the parent row)
+  // Also contains functionString.
   this.model = {};
   // This is meant to be overridden by a palette host.
   this.onchange = function() {};
@@ -108,26 +109,34 @@ Palette.prototype.create = function(parentElement) {
         	     textarea.okCallback = function(value) {
                  if (value != inputValue) {
                    entry.functionString = value;
-                   entry.input.textContent = value ? "defined" : "undefined";
+                   entry.input.textContent = value ? "defined" : "not defined";
                    palette.onchange();
                  }
                }
              }
            }(opt, this);
+        } else if (type == "boolean") {
+           var input = Palette.createChild("button", value);
+           input.onclick = function(e) {
+             var btn = e.target;
+             if (btn.value == "none") {
+               Palette.populateBooleanButton(btn, "true");
+             } else if (btn.value == "true") {
+               Palette.populateBooleanButton(btn, "false");
+             } else {
+               Palette.populateBooleanButton(btn, "none");
+             }
+             palette.onchange();
+           };
         } else {
           var input = Palette.createChild("input", value, "textInput");
-          if (type == "boolean") {
-            input.size = "5";
-            input.maxlength = "5";
-          }
+          input.type="text";
           input.onkeypress = function(event) {
             var keycode = event.which;
             if (keycode == 13 || keycode == 8) {
               palette.onchange();
             }
           }
-
-          input.type="text";
         }
         this.model[opt] = { input: input, row: row };
       }
@@ -177,7 +186,13 @@ Palette.prototype.read = function() {
       var value = isFunction ? this.model[opt].functionString : input.value;
       if (value && value.length != 0) {
         if (type == "boolean") {
-          results[opt] = value == "true";
+          if (value == "false") {
+            results[opt] = false;
+          }
+          if (value == "true") {
+            results[opt] = true;
+          }
+          // Ignore value == "none"
         } else if (type == "int") {
           results[opt] = parseInt(value);
         } else if (type == "float") {
@@ -213,7 +228,10 @@ Palette.prototype.write = function(hash) {
       var input = this.model[opt].input;
       var type = opts[opt].type;
       var value = hash[opt];
-      if (type == "array<string>") {
+      if (type == "boolean") {
+        var text = value == true ? "true" : (value == false ? "false" : "none");
+        Palette.populateBooleanButton(input, text);
+      } else if (type == "array<string>") {
         if (value) {
           input.value = value.join("; ");
         }
@@ -231,6 +249,11 @@ Palette.prototype.write = function(hash) {
       }
     }
   }
+}
+
+Palette.populateBooleanButton = function(button, value) {
+  button.innerHTML = value;
+  button.value = value;
 }
 
 Palette.prototype.filter = function(pattern) {
