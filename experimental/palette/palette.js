@@ -60,15 +60,6 @@ Palette.prototype.create = function(parentElement) {
   var header = Palette.createChild("div", table, "header");
   header.style.visibility = "visible";
 
-  // CURRENTLY HIDDEN.
-  var tmp = Palette.createChild("button", Palette.createChild("span", header));
-  tmp.textContent = "Copy"
-  tmp.onclick = function() {
-    var textarea = new TextArea();
-    textarea.show("header", "Now is the time for all good men\nto come to the aid of their country");
-  };
-  tmp.style.display = "none";
-
   // One row per option.
   for (var opt in opts) {
     try {
