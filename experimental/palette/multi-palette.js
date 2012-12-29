@@ -98,7 +98,7 @@ MultiPalette.prototype.createPalette_ = function(key, scope, value) {
      .text(value)); 
   var palette = new Palette(scope);
   palette.create(this.root);
-  palette.root.style.display = "none";
+  palette.root.hide();
   var self = this;
   palette.onchange = function() {
     self.onchange();
@@ -121,10 +121,10 @@ MultiPalette.prototype.conditionallyAddSingleSeries_ = function(series) {
 
 MultiPalette.prototype.activate = function(key) {
   if (this.activePalette) {
-    this.activePalette.root.style.display = "none";
+    this.activePalette.root.hide();
   }
   this.activePalette = this.palettes[key];
-  this.activePalette.root.style.display = "block";
+  this.activePalette.root.show();
 }
 
 MultiPalette.prototype.showHash = function() {

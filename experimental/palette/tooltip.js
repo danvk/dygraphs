@@ -29,16 +29,25 @@ function Tooltip(parent) {
   if (!parent) {
     parent = document.getElementsByTagName("body")[0];
   }
-  this.elem = Palette.createChild("div", parent);
-  this.title = Palette.createChild("div", this.elem);
+  this.elem = Tooltip.createChild("div", parent);
+  this.title = Tooltip.createChild("div", this.elem);
   this.elem.className = "tooltip";
   this.title.className = "title";
-  this.type = Palette.createChild("div", this.elem);
+  this.type = Tooltip.createChild("div", this.elem);
   this.type.className = "type";
-  this.body = Palette.createChild("div", this.elem);
+  this.body = Tooltip.createChild("div", this.elem);
   this.body.className = "body";
   this.hide();
 }
+
+Tooltip.createChild = function(type, parentElement, className) {
+  var element = document.createElement(type);
+  parentElement.appendChild(element);
+  if (className) {
+    element.className = className;
+  }
+  return element;
+};
 
 Tooltip.prototype.show = function(source, title, type, body) {
   this.title.innerHTML = title;
