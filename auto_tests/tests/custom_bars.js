@@ -6,11 +6,16 @@
  */
 var CustomBarsTestCase = TestCase("custom-bars");
 
+var _origFunc = Dygraph.getContext;
 CustomBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
+  Dygraph.getContext = function(canvas) {
+    return new Proxy(_origFunc(canvas));
+  }
 };
 
 CustomBarsTestCase.prototype.tearDown = function() {
+  Dygraph.getContext = _origFunc;
 };
 
 // This test used to reliably produce an infinite loop.
@@ -105,4 +110,44 @@ CustomBarsTestCase.prototype.testCustomBarsAtTop = function() {
 
   var sampler = new PixelSampler(g);
   assertEquals([0, 255, 0, 38], sampler.colorAtCoordinate(5, 60));
+};
+
+// Tests that custom bars work with log scale.
+CustomBarsTestCase.prototype.testCustomBarsLogScale = function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      [
+        [1, [10, 10, 100]],
+        [5, [15,120, 80]],
+        [9, [10, 50, 100]]
+      ], {
+        width: 500, height: 350,
+        customBars: true,
+        errorBars: true,
+        valueRange: [1, 120],
+        drawXGrid: false,
+        drawYGrid: false,
+        drawXAxis: false,
+        drawYAxis: false,
+        fillAlpha: 1.0,
+        logscale: true,
+        colors: [ '#00FF00' ]
+      });
+
+  // The following assertions describe the sides of the custom bars, which are
+  // drawn in two halves.
+  CanvasAssertions.assertConsecutiveLinesDrawn(
+      g.hidden_ctx_,
+      [[0, 13.329014086362069],
+       [247.5, 29.64240889852502],
+       [247.5, 152.02209814465604],
+       [0, 181.66450704318103]],
+      { fillStyle: "#00ff00" });
+
+  CanvasAssertions.assertConsecutiveLinesDrawn(
+      g.hidden_ctx_,
+      [[247.5, 29.64240889852502],
+       [495, 13.329014086362069],
+       [495, 181.66450704318103],
+       [247.5, 152.02209814465604]],
+      { fillStyle: "#00ff00" });
 };

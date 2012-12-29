@@ -525,6 +525,28 @@ AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
       Util.getYLabels());
 };
 
+// Same sa testLabelKMG2 but specifies the option at the
+// top of the option dictionary.
+AxisLabelsTestCase.prototype.testLabelKMG2_top = function() {
+  var data = [];
+  data.push([0,0]);
+  data.push([1,2000]);
+  data.push([2,1000]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      labelsKMG2: true
+    }
+  );
+
+  assertEquals(
+      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+      Util.getYLabels());
+};
+
 /**
  * Verify that log scale axis range is properly specified.
  */
