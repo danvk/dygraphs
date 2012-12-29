@@ -278,11 +278,11 @@ var opts = {
     scope : [ "global", "series", "y", "y2" ]
   },
   strokePattern : {
-    type : "array<integer>",
+    type : "array<int>",
     scope : [ "global", "series", "y", "y2" ]
   },
   strokeWidth : {
-    type : "integer",
+    type : "float",
     scope : [ "global", "series", "y", "y2" ]
   },
   timingName : {

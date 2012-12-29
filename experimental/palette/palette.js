@@ -203,6 +203,8 @@ Palette.prototype.read = function() {
           results[opt] = Palette.parseFloatArray(value);
         } else if (type == "array<boolean>") {
           results[opt] = Palette.parseBooleanArray(value);
+        } else if (type == "array<int>") {
+          results[opt] = Palette.parseIntArray(value);
         } else if (type == "array<Date>") {
           results[opt] = Palette.parseIntArray(value);
         } else if (isFunction) {
@@ -243,7 +245,7 @@ Palette.prototype.write = function(hash) {
         input.textContent = value ? "defined" : "not defined";
         this.model[opt].functionString = value ? value.toString() : null;
       } else {
-        if (value) {
+        if (value != undefined) {
           input.value = value;
         }
       }
