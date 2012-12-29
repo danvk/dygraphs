@@ -12,16 +12,6 @@ AxisLabelsTestCase.prototype.setUp = function() {
 AxisLabelsTestCase.prototype.tearDown = function() {
 };
 
-/**
- * Takes in an array of strings and returns an array of floats.
- */
-function makeNumbers(ary) {
-  var ret = [];
-  for (var i = 0; i < ary.length; i++) {
-    ret.push(parseFloat(ary[i]));
-  }
-  return ret;
-}
 
 AxisLabelsTestCase.prototype.kCloseFloat = 1.0e-10;
 
@@ -78,18 +68,18 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  assertEqualsDelta(makeNumbers(["-0.1","-0.08","-0.06","-0.04","-0.02","0","0.02","0.04","0.06","0.08"]),
-                    makeNumbers(Util.getYLabels()), this.kCloseFloat);
+  assertEqualsDelta([-0.1, -0.08, -0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08],
+                    Util.makeNumbers(Util.getYLabels()), this.kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
-  // TODO(danvk): why '1.00e-2' and not '0.01'?
-  assertEquals(makeNumbers(["-0.05","-0.04","-0.03","-0.02","-0.01","0","1.00e-2","0.02","0.03","0.04"]),
-               makeNumbers(Util.getYLabels()));
+  assertEquals([-0.05, -0.04, -0.03, -0.02, -0.01, 0, 0.01, 0.02, 0.03, 0.04],
+               Util.makeNumbers(Util.getYLabels()));
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assertEquals(makeNumbers(["-0.01","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"]), makeNumbers(Util.getYLabels()));
+  assertEquals([-0.01, -8.00e-3, -6.00e-3, -4.00e-3, -2.00e-3, 0, 2.00e-3, 4.00e-3, 6.00e-3, 8.00e-3],
+               Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
   assertEquals('1: Y:0', Util.getLegend());

@@ -57,3 +57,14 @@ Util.getLegend = function(parent) {
   return legend.textContent;
 }
 
+
+/**
+ * Takes in an array of strings and returns an array of floats.
+ */
+Util.makeNumbers = function(ary) {
+  var ret = [];
+  for (var i = 0; i < ary.length; i++) {
+    ret.push(parseFloat(ary[i]));
+  }
+  return ret;
+}
