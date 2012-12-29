@@ -29,5 +29,14 @@ generate-gwt:
 test:
 	@./test.sh
 
+test-combined: move-combined test clean-combined-test
+
+move-combined: generate-combined
+	mv dygraph-combined.js dygraph-dev.js
+
+clean-combined-test: clean
+	@echo restoring combined
+	git checkout dygraph-dev.js
+
 lint:
 	@./lint.sh
