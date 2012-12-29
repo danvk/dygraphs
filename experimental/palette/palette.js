@@ -115,9 +115,7 @@ Palette.prototype.create = function(parentElement) {
 
       row.mouseover(function(source, title, type, body) {
           return function() {
-            // source[0] is un-jquerying.
-            // TODO(konigsberg): when tooltip is jquery, dump this.
-            palette.tooltip.show(source[0], title, type, body);
+            palette.tooltip.show(source, title, type, body);
           };
         } (row, opt, type, Dygraph.OPTIONS_REFERENCE[opt].description))
         .mouseout(function() { palette.tooltip.hide(); })
