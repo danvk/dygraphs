@@ -37,18 +37,11 @@
   border-color: #EEE;
 }
 
-.palette a:link {
+.palette a {
   color: #3333FF;
-  text-decoration: none;
-}
-
-.palette a:visited {
-  color: #3333FF;
-  text-decoration: none;
 }
 
 .palette a:hover {
-  color: #3333FF;
   text-decoration: underline;
 }
 
