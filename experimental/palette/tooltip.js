@@ -27,45 +27,40 @@
 
 function Tooltip(parent) {
   if (!parent) {
-    parent = document.getElementsByTagName("body")[0];
+    parent = $("body")[0];
   }
-  this.elem = Palette.createChild("div", parent);
-  this.title = Palette.createChild("div", this.elem);
-  this.elem.className = "tooltip";
-  this.title.className = "title";
-  this.type = Palette.createChild("div", this.elem);
-  this.type.className = "type";
-  this.body = Palette.createChild("div", this.elem);
-  this.body.className = "body";
+  this.elem = $("<div>")
+      .attr("class", "tooltip")
+      .appendTo(parent);
+
+  this.title = $("<div>")
+      .attr("class", "title")
+      .appendTo(this.elem);
+
+  this.type = $("<div>")
+      .attr("class", "type")
+      .appendTo(this.elem);
+
+  this.body = $("<div>")
+      .attr("class", "body")
+      .appendTo(this.elem);
+
   this.hide();
 }
 
-Tooltip.prototype.show = function(source, event, title, type, body) {
-  this.title.innerHTML = title;
-  this.body.innerHTML = body;
-  this.type.textContent = type; // textContent for arrays.
+Tooltip.prototype.show = function(source, title, type, body) {
+  this.title.html(title);
+  this.body.html(body);
+  this.type.text(type); // textContent for arrays.
 
-  var getTopLeft = function(element) {
-    var x = element.offsetLeft;
-    var y = element.offsetTop;
-    element = element.offsetParent;
-
-    while(element != null) {
-      x = parseInt(x) + parseInt(element.offsetLeft);
-      y = parseInt(y) + parseInt(element.offsetTop);
-      element = element.offsetParent;
-    }
-    return [y, x];
-  }
-
-  this.elem.style.height = source.style.height;
-  this.elem.style.width = "280";
-  var topLeft = getTopLeft(source);
-  this.elem.style.top = parseInt(topLeft[0] + source.offsetHeight) + 'px';
-  this.elem.style.left = parseInt(topLeft[1] + 10) + 'px';
-  this.elem.style.visibility = "visible";
+  var offset = source.offset();
+  this.elem.css({
+    "width" : "280",
+    "top" : parseInt(offset.top + source[0].offsetHeight) + 'px',
+    "left" : parseInt(offset.left + 10) + 'px',
+    "visibility" : "visible"});
 }
 
 Tooltip.prototype.hide = function() {
-  this.elem.style.visibility = "hidden";
+  this.elem.css("visibility", "hidden");
 }

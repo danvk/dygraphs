@@ -104,7 +104,6 @@ TextArea.prototype.show = function(title, content) {
   var textarea = this;
 
   this.keyDownListener_ = function(event) {
-    console.log(event);
     if(event.keyCode == 13) { // enter / return
       textarea.hide();
     }

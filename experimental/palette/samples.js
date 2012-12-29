@@ -61,9 +61,11 @@ Samples.data = [
       ylabel: 'Count',
       axisLineColor: 'white',
       drawXGrid: false,
+
+// This indentation is intentional; do not fix.
       pointClickCallback: function() {
   alert("p-click!");
-},
+}
     }
   },
   
@@ -134,6 +136,50 @@ Samples.data = [
     options: {
       customBars: true,
       errorBars: true
+    }
+  },
+
+  {
+    id: "perSeries",
+    title: "Per Series Options",
+    data: function() {
+      var zp = function(x) { if (x < 10) return "0"+x; else return x; };
+      var r = "date,parabola,line,another line,sine wave,sine wave2\n";
+      for (var i=1; i<=31; i++) {
+        r += "200610" + zp(i);
+        r += "," + 10*(i*(31-i));
+        r += "," + 10*(8*i);
+        r += "," + 10*(250 - 8*i);
+        r += "," + 10*(125 + 125 * Math.sin(0.3*i));
+        r += "," + 10*(125 + 125 * Math.sin(0.3*i+Math.PI));
+        r += "\n";
+      }
+      return r;
+    },
+    options: {
+      strokeWidth: 2,
+      series : {
+        'parabola': {
+          strokeWidth: 0.0,
+          drawPoints: true,
+          pointSize: 4,
+          highlightCircleSize: 6
+        },
+        'line': {
+          strokeWidth: 1.0,
+          drawPoints: true,
+          pointSize: 1.5
+        },
+        'sine wave': {
+          strokeWidth: 3,
+          highlightCircleSize: 10
+        },
+        'sine wave2': {
+          strokePattern: [10, 2, 5, 2],
+          strokeWidth: 2,
+          highlightCircleSize: 3
+        }
+      }
     }
   }
 ];
