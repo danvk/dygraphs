@@ -7,3 +7,12 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+#toggleInstructions {
+  color: #0000DD;
+}
+
+#toggleInstructions:hover {
+  color: #0000FF;
+  text-decoration: underline;
+}
