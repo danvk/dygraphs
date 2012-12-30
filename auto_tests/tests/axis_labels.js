@@ -12,16 +12,12 @@ AxisLabelsTestCase.prototype.setUp = function() {
 AxisLabelsTestCase.prototype.tearDown = function() {
 };
 
-/**
- * Takes in an array of strings and returns an array of floats.
- */
-function makeNumbers(ary) {
-  var ret = [];
-  for (var i = 0; i < ary.length; i++) {
-    ret.push(parseFloat(ary[i]));
-  }
-  return ret;
-}
+AxisLabelsTestCase.simpleData =
+    "X,Y,Y2\n" +
+    "0,-1,.5\n" +
+    "1,0,.7\n" +
+    "2,1,.4\n" +
+    "3,0,.98\n";
 
 AxisLabelsTestCase.prototype.kCloseFloat = 1.0e-10;
 
@@ -78,18 +74,18 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  assertEqualsDelta(makeNumbers(["-0.1","-0.08","-0.06","-0.04","-0.02","0","0.02","0.04","0.06","0.08"]),
-                    makeNumbers(Util.getYLabels()), this.kCloseFloat);
+  assertEqualsDelta([-0.1, -0.08, -0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08],
+                    Util.makeNumbers(Util.getYLabels()), this.kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
-  // TODO(danvk): why '1.00e-2' and not '0.01'?
-  assertEquals(makeNumbers(["-0.05","-0.04","-0.03","-0.02","-0.01","0","1.00e-2","0.02","0.03","0.04"]),
-               makeNumbers(Util.getYLabels()));
+  assertEquals([-0.05, -0.04, -0.03, -0.02, -0.01, 0, 0.01, 0.02, 0.03, 0.04],
+               Util.makeNumbers(Util.getYLabels()));
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assertEquals(makeNumbers(["-0.01","-8.00e-3","-6.00e-3","-4.00e-3","-2.00e-3","0","2.00e-3","4.00e-3","6.00e-3","8.00e-3"]), makeNumbers(Util.getYLabels()));
+  assertEquals([-0.01, -8.00e-3, -6.00e-3, -4.00e-3, -2.00e-3, 0, 2.00e-3, 4.00e-3, 6.00e-3, 8.00e-3],
+               Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
   assertEquals('1: Y:0', Util.getLegend());
@@ -525,6 +521,28 @@ AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
       Util.getYLabels());
 };
 
+// Same sa testLabelKMG2 but specifies the option at the
+// top of the option dictionary.
+AxisLabelsTestCase.prototype.testLabelKMG2_top = function() {
+  var data = [];
+  data.push([0,0]);
+  data.push([1,2000]);
+  data.push([2,1000]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      labelsKMG2: true
+    }
+  );
+
+  assertEquals(
+      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+      Util.getYLabels());
+};
+
 /**
  * Verify that log scale axis range is properly specified.
  */
@@ -547,3 +565,109 @@ AxisLabelsTestCase.prototype.testIncludeZero = function() {
   g.updateOptions({ includeZero : false });
   assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
 }
+
+AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var assertSize = function(className, size) {
+    var sizePx = size + "px";
+    var labels = graph.getElementsByClassName(className);
+    assertTrue(labels.length > 0);
+ 
+    // window.getComputedStyle is apparently compatible with all browsers
+    // (IE first became compatible with IE9.)
+    // If this test fails on earlier browsers, then enable something like this,
+    // because the font size is set by the parent div.
+    // if (!window.getComputedStyle) {
+    //   fontSize = label.parentElement.style.fontSize;
+    // }
+    for (var idx = 0; idx < labels.length; idx++) {
+      var label = labels[idx];
+      var fontSize = window.getComputedStyle(label).fontSize;
+      assertEquals(sizePx, fontSize);
+    }
+  }
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  assertSize("dygraph-axis-label-x", 14);
+  assertSize("dygraph-axis-label-y", 14);
+
+  g.updateOptions({ axisLabelFontSize : 8});
+  assertSize("dygraph-axis-label-x", 8);
+  assertSize("dygraph-axis-label-y", 8);
+
+/*
+ Enable these tests when https://code.google.com/p/dygraphs/issues/detail?id=126
+ is fixed.
+
+  g.updateOptions({
+    axisLabelFontSize : null,
+    axes : {
+      x : { axisLabelFontSize : 5 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 14);
+
+  g.updateOptions({
+    axisLabelFontSize : null,
+    axes : {
+      y : { axisLabelFontSize : 3 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 3);
+
+  g.updateOptions({
+    series : {
+      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    },
+    axes : {
+      y2 : { axisLabelFontSize : 8 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 3);
+  assertSize("dygraph-axis-label-y2", 8);
+*/
+}
+
+/*
+ * This test will pass when
+ * https://code.google.com/p/dygraphs/issues/detail?id=413
+ * is fixed.
+AxisLabelsTestCase.prototype.testAxisLabelFontSize2 = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+    {axisLabelFontSize: undefined});
+  var assertSize = function(className, size) {
+    var sizePx = size + "px";
+    var labels = graph.getElementsByClassName(className);
+    assertTrue(labels.length > 0);
+ 
+    // window.getComputedStyle is apparently compatible with all browsers
+    // (IE first became compatible with IE9.)
+    // If this test fails on earlier browsers, then enable something like this,
+    // because the font size is set by the parent div.
+    // if (!window.getComputedStyle) {
+    //   fontSize = label.parentElement.style.fontSize;
+    // }
+    for (var idx = 0; idx < labels.length; idx++) {
+      var label = labels[idx];
+      var fontSize = window.getComputedStyle(label).fontSize;
+      assertEquals(sizePx, fontSize);
+    }
+  }
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  assertSize("dygraph-axis-label-x", 14);
+  assertSize("dygraph-axis-label-y", 14);
+}
+*/

@@ -831,7 +831,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
   var yRange = this.yAxisRange(axis);
 
   var pct;
-  if (!this.axes_[axis].logscale) {
+  var logscale = this.attributes_.getForAxis("logscale", axis);
+  if (!logscale) {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
@@ -2451,30 +2452,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     this.axes_[axis] = opts;
   }
 
-  // TODO(konigsberg): REMOVE THIS SILLINESS this should just come from DygraphOptions.
-  // TODO(konigsberg): Add tests for all of these. Currently just tests for
-  // includeZero and logscale.
 
-  // all options which could be applied per-axis:
-  var axisOptions = [
-    'includeZero',
-    'valueRange',
-    'labelsKMB',
-    'labelsKMG2',
-    'pixelsPerYLabel',
-    'yAxisLabelWidth',
-    'axisLabelFontSize',
-    'axisTickSize',
-    'logscale'
-  ];
-
-  // Copy global axis options over to the first axis.
-  for (i = 0; i < axisOptions.length; i++) {
-    var k = axisOptions[i];
-    v = this.attr_(k);
-    if (v) this.axes_[0][k] = v;
-  }
-  // TODO(konigsberg): end of REMOVE THIS SILLINESS
+  // Copy global valueRange option over to the first axis.
+  // NOTE(konigsberg): Are these two statements necessary?
+  // I tried removing it. The automated tests pass, and manually
+  // messing with tests/zoom.html showed no trouble.
+  v = this.attr_('valueRange');
+  if (v) this.axes_[0].valueRange = v;
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
@@ -2531,7 +2515,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
-
+    var logscale = this.attributes_.getForAxis("logscale", i);
+    var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
 
     if (series.length == 0) {
@@ -2557,7 +2542,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = Math.max(extremeMaxY, maxY);
         }
       }
-      if (axis.includeZero && minY > 0) minY = 0;
+      if (includeZero && minY > 0) minY = 0;
 
       // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
@@ -2569,7 +2554,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       if (span === 0) { span = maxY; }
 
       var maxAxisY, minAxisY;
-      if (axis.logscale) {
+      if (logscale) {
         maxAxisY = maxY + 0.1 * span;
         minAxisY = minY;
       } else {
@@ -2821,6 +2806,10 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     isDate = true;
   }
 
+  this.setXAxisOptions_(isDate);
+};
+
+Dygraph.prototype.setXAxisOptions_ = function(isDate) {
   if (isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
@@ -2835,7 +2824,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
-};
+}
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()
@@ -3057,8 +3046,8 @@ Dygraph.prototype.parseArray_ = function(data) {
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3080,8 +3069,8 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     return data;
   }
 };
