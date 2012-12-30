@@ -36,3 +36,15 @@
   border: 2px inset;
   border-color: #EEE;
 }
+
+.palette a {
+  color: #3333FF;
+}
+
+.palette a:hover {
+  text-decoration: underline;
+}
+
+.palette a:active {
+  color: #0000FF;
+}
