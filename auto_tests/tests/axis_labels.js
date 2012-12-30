@@ -12,6 +12,13 @@ AxisLabelsTestCase.prototype.setUp = function() {
 AxisLabelsTestCase.prototype.tearDown = function() {
 };
 
+AxisLabelsTestCase.simpleData =
+    "X,Y,Y2\n" +
+      "0,-1,0.25\n" +
+      "1,0,0.5\n" +
+      "2,1,0.9\n" +
+      "3,0,0.7\n";
+
 /**
  * Takes in an array of strings and returns an array of floats.
  */
@@ -568,4 +575,18 @@ AxisLabelsTestCase.prototype.testIncludeZero = function() {
  
   g.updateOptions({ includeZero : false });
   assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
+}
+
+AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+    {
+      axisLabelFontSize: null
+    });
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 14);
+  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
 }

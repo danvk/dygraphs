@@ -19,7 +19,7 @@ Util.getYLabels = function(axis_num, parent) {
     ary.push(y_labels[i].innerHTML);
   }
   return ary;
-}
+};
 
 /**
  * Get the x-labels for a given axis.
@@ -34,7 +34,7 @@ Util.getXLabels = function(parent) {
     ary.push(x_labels[i].innerHTML);
   }
   return ary;
-}
+};
 
 /**
  * Returns all text in tags w/ a given css class, sorted.
@@ -49,11 +49,33 @@ Util.getClassTexts = function(css_class, parent) {
   }
   texts.sort();
   return texts;
-}
+};
 
 Util.getLegend = function(parent) {
   parent = parent || document;
   var legend = parent.getElementsByClassName("dygraph-legend")[0];
   return legend.textContent;
-}
+};
 
+/**
+ * Assert that all the elements in 'parent' with class 'className' is
+ * the expected font size.
+ */
+Util.assertFontSizes = function(parent, className, expectedSize) {
+  var expectedSizePx = expectedSize + "px";
+  var labels = parent.getElementsByClassName(className);
+  assertTrue(labels.length > 0);
+
+  // window.getComputedStyle is apparently compatible with all browsers
+  // (IE first became compatible with IE9.)
+  // If this test fails on earlier browsers, then enable something like this,
+  // because the font size is set by the parent div.
+  // if (!window.getComputedStyle) {
+  //   fontSize = label.parentElement.style.fontSize;
+  // }
+  for (var idx = 0; idx < labels.length; idx++) {
+    var label = labels[idx];
+    var fontSize = window.getComputedStyle(label).fontSize;
+    assertEquals(expectedSizePx, fontSize);
+  }
+};
