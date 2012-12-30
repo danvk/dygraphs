@@ -12,6 +12,12 @@ AxisLabelsTestCase.prototype.setUp = function() {
 AxisLabelsTestCase.prototype.tearDown = function() {
 };
 
+AxisLabelsTestCase.simpleData =
+    "X,Y,Y2\n" +
+    "0,-1,.5\n" +
+    "1,0,.7\n" +
+    "2,1,.4\n" +
+    "3,0,.98\n";
 
 AxisLabelsTestCase.prototype.kCloseFloat = 1.0e-10;
 
@@ -559,3 +565,109 @@ AxisLabelsTestCase.prototype.testIncludeZero = function() {
   g.updateOptions({ includeZero : false });
   assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
 }
+
+AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var assertSize = function(className, size) {
+    var sizePx = size + "px";
+    var labels = graph.getElementsByClassName(className);
+    assertTrue(labels.length > 0);
+ 
+    // window.getComputedStyle is apparently compatible with all browsers
+    // (IE first became compatible with IE9.)
+    // If this test fails on earlier browsers, then enable something like this,
+    // because the font size is set by the parent div.
+    // if (!window.getComputedStyle) {
+    //   fontSize = label.parentElement.style.fontSize;
+    // }
+    for (var idx = 0; idx < labels.length; idx++) {
+      var label = labels[idx];
+      var fontSize = window.getComputedStyle(label).fontSize;
+      assertEquals(sizePx, fontSize);
+    }
+  }
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  assertSize("dygraph-axis-label-x", 14);
+  assertSize("dygraph-axis-label-y", 14);
+
+  g.updateOptions({ axisLabelFontSize : 8});
+  assertSize("dygraph-axis-label-x", 8);
+  assertSize("dygraph-axis-label-y", 8);
+
+/*
+ Enable these tests when https://code.google.com/p/dygraphs/issues/detail?id=126
+ is fixed.
+
+  g.updateOptions({
+    axisLabelFontSize : null,
+    axes : {
+      x : { axisLabelFontSize : 5 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 14);
+
+  g.updateOptions({
+    axisLabelFontSize : null,
+    axes : {
+      y : { axisLabelFontSize : 3 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 3);
+
+  g.updateOptions({
+    series : {
+      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    },
+    axes : {
+      y2 : { axisLabelFontSize : 8 },
+    }
+  });
+
+  assertSize("dygraph-axis-label-x", 5);
+  assertSize("dygraph-axis-label-y", 3);
+  assertSize("dygraph-axis-label-y2", 8);
+*/
+}
+
+/*
+ * This test will pass when
+ * https://code.google.com/p/dygraphs/issues/detail?id=413
+ * is fixed.
+AxisLabelsTestCase.prototype.testAxisLabelFontSize2 = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+    {axisLabelFontSize: undefined});
+  var assertSize = function(className, size) {
+    var sizePx = size + "px";
+    var labels = graph.getElementsByClassName(className);
+    assertTrue(labels.length > 0);
+ 
+    // window.getComputedStyle is apparently compatible with all browsers
+    // (IE first became compatible with IE9.)
+    // If this test fails on earlier browsers, then enable something like this,
+    // because the font size is set by the parent div.
+    // if (!window.getComputedStyle) {
+    //   fontSize = label.parentElement.style.fontSize;
+    // }
+    for (var idx = 0; idx < labels.length; idx++) {
+      var label = labels[idx];
+      var fontSize = window.getComputedStyle(label).fontSize;
+      assertEquals(sizePx, fontSize);
+    }
+  }
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  assertSize("dygraph-axis-label-x", 14);
+  assertSize("dygraph-axis-label-y", 14);
+}
+*/

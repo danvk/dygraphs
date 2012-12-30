@@ -2453,21 +2453,10 @@ Dygraph.prototype.computeYAxes_ = function() {
   }
 
   // TODO(konigsberg): REMOVE THIS SILLINESS this should just come from DygraphOptions.
-  // TODO(konigsberg): Add tests for all of these.
-
-  // all options which could be applied per-axis:
-  var axisOptions = [
-    'valueRange',
-    'pixelsPerYLabel',
-    'axisLabelFontSize',
-  ];
-
   // Copy global axis options over to the first axis.
-  for (i = 0; i < axisOptions.length; i++) {
-    var k = axisOptions[i];
-    v = this.attr_(k);
-    if (v) this.axes_[0][k] = v;
-  }
+   var k = 'valueRange';
+   v = this.attr_(k);
+   if (v) this.axes_[0][k] = v;
   // TODO(konigsberg): end of REMOVE THIS SILLINESS
 
   if (valueWindows !== undefined) {
