@@ -2452,12 +2452,13 @@ Dygraph.prototype.computeYAxes_ = function() {
     this.axes_[axis] = opts;
   }
 
-  // TODO(konigsberg): REMOVE THIS SILLINESS this should just come from DygraphOptions.
-  // Copy global axis options over to the first axis.
-   var k = 'valueRange';
-   v = this.attr_(k);
-   if (v) this.axes_[0][k] = v;
-  // TODO(konigsberg): end of REMOVE THIS SILLINESS
+
+  // Copy global valueRange option over to the first axis.
+  // NOTE(konigsberg): Are these two statements necessary?
+  // I tried removing it. The automated tests pass, and manually
+  // messing with tests/zoom.html showed no trouble.
+  v = this.attr_('valueRange');
+  if (v) this.axes_[0].valueRange = v;
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
