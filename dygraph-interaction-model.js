@@ -84,7 +84,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
     var yRange = g.yAxisRange(i);
     // TODO(konigsberg): These values should be in |context|.
     // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.
-    if (axis.logscale) {
+    var logscale = g.attributes_.getForAxis("logscale", i);
+    if (logscale) {
       axis_data.initialTopValue = Dygraph.log10(yRange[1]);
       axis_data.dragValueRange = Dygraph.log10(yRange[1]) - Dygraph.log10(yRange[0]);
     } else {
@@ -158,7 +159,8 @@ Dygraph.Interaction.movePan = function(event, g, context) {
           minValue = maxValue - axis_data.dragValueRange;
         }
       }
-      if (axis.logscale) {
+      var logscale = g.attributes_.getForAxis("logscale", i);
+      if (logscale) {
         axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
                              Math.pow(Dygraph.LOG_SCALE, maxValue) ];
       } else {
@@ -479,7 +481,8 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   if (context.touchDirections.y) {
     for (i = 0; i < 1  /*g.axes_.length*/; i++) {
       var axis = g.axes_[i];
-      if (axis.logscale) {
+      var logscale = g.attributes_.getForAxis("logscale", i);
+      if (logscale) {
         // TODO(danvk): implement
       } else {
         axis.valueWindow = [
