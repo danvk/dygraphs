@@ -59,6 +59,10 @@ var opts = {
   avoidMinZero : {
     type : "boolean"
   },
+  axis : {
+    type : "string",
+    scope : [ "series" ]
+  },
   axisLabelColor : {
     type : "string",
     // scope : [ "x", "y", "y2" ]
