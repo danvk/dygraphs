@@ -65,7 +65,7 @@ var opts = {
   },
   axisLabelColor : {
     type : "string",
-    // scope : [ "x", "y", "y2" ]
+    scope : [ "global", "x", "y", "y2" ]
   },
   axisLabelFontSize : {
     type : "int",

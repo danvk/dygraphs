@@ -14,10 +14,10 @@ AxisLabelsTestCase.prototype.tearDown = function() {
 
 AxisLabelsTestCase.simpleData =
     "X,Y,Y2\n" +
-      "0,-1,0.25\n" +
-      "1,0,0.5\n" +
-      "2,1,0.9\n" +
-      "3,0,0.7\n";
+    "0,-1,0.25\n" +
+    "1,0,0.5\n" +
+    "2,1,0.9\n" +
+    "3,0,0.7\n";
 
 /**
  * Takes in an array of strings and returns an array of floats.
@@ -584,12 +584,16 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
   // Be sure we're dealing with a 14-point default.
   assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 14);
-  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
+  var assertFontSize = function(selector, expected) {
+    Util.assertStyleOfChildren(selector, "font-size", expected);
+  }
+  
+  assertFontSize($(".dygraph-axis-label-x"), "14px");
+  assertFontSize($(".dygraph-axis-label-y") , "14px");
 
   g.updateOptions({ axisLabelFontSize : 8});
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 8); 
-  Util.assertFontSizes(graph, "dygraph-axis-label-y", 8); 
+  assertFontSize($(".dygraph-axis-label-x"), "8px"); 
+  assertFontSize($(".dygraph-axis-label-y"), "8px"); 
 
   g.updateOptions({
     axisLabelFontSize : null,
@@ -598,8 +602,8 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
     }   
   }); 
 
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
-  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
+  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize($(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
     axes : { 
@@ -607,8 +611,8 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
     }   
   }); 
 
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
-  Util.assertFontSizes(graph, "dygraph-axis-label-y", 20); 
+  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize($(".dygraph-axis-label-y"), "20px"); 
 
   g.updateOptions({
     series : { 
@@ -619,9 +623,9 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
     }   
   }); 
 
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
-  Util.assertFontSizes(graph, "dygraph-axis-label-y1", 20); 
-  Util.assertFontSizes(graph, "dygraph-axis-label-y2", 12); 
+  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize($(".dygraph-axis-label-y1"), "20px"); 
+  assertFontSize($(".dygraph-axis-label-y2"), "12px"); 
 }
 
 AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
@@ -631,9 +635,82 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
       axisLabelFontSize: null
     });
 
+  var assertFontSize = function(selector, expected) {
+    Util.assertStyleOfChildren(selector, "font-size", expected);
+  }
+
   // Be sure we're dealing with a 14-point default.
   assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  Util.assertFontSizes(graph, "dygraph-axis-label-x", 14);
-  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
+  assertFontSize($(".dygraph-axis-label-x"), "14px");
+  assertFontSize($(".dygraph-axis-label-y"), "14px");
+}
+
+AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+
+  // Be sure we're dealing with a black default.
+  assertEquals("black", Dygraph.DEFAULT_ATTRS.axisLabelColor);
+
+  var assertColor = function(selector, expected) {
+    Util.assertStyleOfChildren(selector, "color", expected);
+  }
+
+  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+
+  g.updateOptions({ axisLabelColor : "red"});
+  assertColor($(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
+  assertColor($(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
+
+  g.updateOptions({
+    axisLabelColor : null,
+    axes : { 
+      x : { axisLabelColor : "blue" },
+    }   
+  }); 
+
+  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+
+  g.updateOptions({
+    axes : { 
+      y : { axisLabelColor : "green" },
+    }   
+  }); 
+
+  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor($(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
+
+  g.updateOptions({
+    series : { 
+      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    },  
+    axes : { 
+      y2 : { axisLabelColor : "yellow" },
+    }   
+  }); 
+
+  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor($(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
+  assertColor($(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
+}
+
+AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+    {
+      axisLabelColor: null
+    });
+
+  var assertColor = function(selector, expected) {
+    Util.assertStyleOfChildren(selector, "color", expected);
+  }
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 }

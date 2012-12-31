@@ -106,7 +106,7 @@ axes.prototype.willDrawChart = function(e) {
       position: "absolute",
       fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + "px",
       zIndex: 10,
-      color: g.getOption('axisLabelColor'),
+      color: g.getOptionForAxis('axisLabelColor', axis),
       width: g.getOption('axisLabelWidth') + "px",
       // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
       lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
