@@ -598,6 +598,9 @@ Dygraph.prototype.getOption = function(name, opt_seriesName) {
   return this.attr_(name, opt_seriesName);
 };
 
+Dygraph.prototype.getOptionForAxis = function(name, axis) {
+  return this.attributes_.getForAxis(name, axis);
+}
 /**
  * @private
  * @param  String} axis The name of the axis (i.e. 'x', 'y' or 'y2')

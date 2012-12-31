@@ -577,6 +577,53 @@ AxisLabelsTestCase.prototype.testIncludeZero = function() {
   assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
 }
 
+AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+
+  // Be sure we're dealing with a 14-point default.
+  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 14);
+  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
+
+  g.updateOptions({ axisLabelFontSize : 8});
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 8); 
+  Util.assertFontSizes(graph, "dygraph-axis-label-y", 8); 
+
+  g.updateOptions({
+    axisLabelFontSize : null,
+    axes : { 
+      x : { axisLabelFontSize : 5 },
+    }   
+  }); 
+
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
+  Util.assertFontSizes(graph, "dygraph-axis-label-y", 14);
+
+  g.updateOptions({
+    axes : { 
+      y : { axisLabelFontSize : 20 },
+    }   
+  }); 
+
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
+  Util.assertFontSizes(graph, "dygraph-axis-label-y", 20); 
+
+  g.updateOptions({
+    series : { 
+      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    },  
+    axes : { 
+      y2 : { axisLabelFontSize : 12 },
+    }   
+  }); 
+
+  Util.assertFontSizes(graph, "dygraph-axis-label-x", 5); 
+  Util.assertFontSizes(graph, "dygraph-axis-label-y1", 20); 
+  Util.assertFontSizes(graph, "dygraph-axis-label-y2", 12); 
+}
+
 AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,

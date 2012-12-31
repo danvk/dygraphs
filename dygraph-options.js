@@ -11,7 +11,8 @@
  * dygraph_ - the graph.
  * global_ - global attributes (common among all graphs, AIUI)
  * user - attributes set by the user
- * axes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
+ * yAxes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
+ * xAxis_ - { options : { axis-specific options. }
  * series_ - { seriesName -> { idx, yAxis, options }}
  * labels_ - used as mapping from index to series name.
  */
@@ -28,7 +29,8 @@
  */
 var DygraphOptions = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.axes_ = [];
+  this.yAxes_ = [];
+  this.xAxis_ = {};
   this.series_ = {};
 
   // Once these two objects are initialized, you can call get();
@@ -92,7 +94,8 @@ DygraphOptions.axisToIndex_ = function(axis) {
 DygraphOptions.prototype.reparseSeries = function() {
   this.labels = this.get("labels").slice(1);
 
-  this.axes_ = [ { series : [], options : {}} ]; // Always one axis at least.
+  this.yAxes_ = [ { series : [], options : {}} ]; // Always one axis at least.
+  this.xAxis_ = { options : {} };
   this.series_ = {};
 
   // Traditionally, per-series options were specified right up there with the options. For instance
@@ -131,12 +134,12 @@ DygraphOptions.prototype.reparseSeries = function() {
       var axis = optionsForSeries["axis"];
       if (typeof(axis) == 'object') {
         yAxis = ++axisId;
-        this.axes_[yAxis] = { series : [ seriesName ], options : axis };
+        this.yAxes_[yAxis] = { series : [ seriesName ], options : axis };
       }
 
       // Associate series without axis options with axis 0.
       if (!axis) { // undefined
-        this.axes_[0].series.push(seriesName);
+        this.yAxes_[0].series.push(seriesName);
       }
 
       this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
@@ -157,7 +160,7 @@ DygraphOptions.prototype.reparseSeries = function() {
         }
         var yAxis = this.series_[axis].yAxis;
         this.series_[seriesName].yAxis = yAxis;
-        this.axes_[yAxis].series.push(seriesName);
+        this.yAxes_[yAxis].series.push(seriesName);
       }
     }
   } else {
@@ -171,20 +174,20 @@ DygraphOptions.prototype.reparseSeries = function() {
         yAxis: yAxis,
         options : optionsForSeries };
 
-      if (!this.axes_[yAxis]) {
-        this.axes_[yAxis] =  { series : [ seriesName ], options : {} };
+      if (!this.yAxes_[yAxis]) {
+        this.yAxes_[yAxis] =  { series : [ seriesName ], options : {} };
       } else {
-        this.axes_[yAxis].series.push(seriesName);
+        this.yAxes_[yAxis].series.push(seriesName);
       }
     }
   }
 
-  // This doesn't support reading from the 'x' axis, only 'y' and 'y2.
   var axis_opts = this.user_["axes"] || {};
-  Dygraph.update(this.axes_[0].options, axis_opts["y"] || {});
-  if (this.axes_.length > 1) {
-    Dygraph.update(this.axes_[1].options, axis_opts["y2"] || {});   
+  Dygraph.update(this.yAxes_[0].options, axis_opts["y"] || {});
+  if (this.yAxes_.length > 1) {
+    Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});   
   }
+  Dygraph.update(this.xAxis_.options, axis_opts["x"] || {});
 };
 
 /**
@@ -223,19 +226,35 @@ DygraphOptions.prototype.getGlobalDefault_ = function(name) {
  *
  * @param {String} name the name of the option.
  * @param {String|number} axis the axis to search. Can be the string representation
- * ("y", "y2") or the axis number (0, 1).
+ * ("x", "y", "y2") or the y-axis number (0, 1). (x-axis can't be specified by number.')
  */
 DygraphOptions.prototype.getForAxis = function(name, axis) {
-  var axisIdx = 0;
+  var axisIdx;
+  var axisString;
+
+  // Since axis can be a number or a string, straighten everything out here.
   if (typeof(axis) == 'number') {
     axisIdx = axis;
+    axisString = axisIdx == 0 ? "y" : "y2";
   } else {
-    // TODO(konigsberg): Accept only valid axis strings?
-    axisIdx = (axis == "y2") ? 1 : 0;
+    if (axis == "y1") { axis = "y"; } // Standardize on 'y'. Is this bad? I think so.
+    if (axis == "y") {
+      axisIdx = 0;
+    } else if (axis == "y2") {
+      axisIdx = 1;
+    } else if (axis == "x") {
+      axisIdx = -1; // simply a placeholder for below.
+    } else {
+      throw "Unknown axis " + axis;
+    }
+    axisString = axis;
   }
+
+  var userAxis = (axisIdx == -1) ? this.xAxis_ : this.yAxes_[axisIdx];
+
   // Search the user-specified axis option first.
-  if (this.axes_[axisIdx]) {
-    var axisOptions = this.axes_[axisIdx].options;
+  if (userAxis) { // This condition could be removed if we always set up this.yAxes_ for y2.
+    var axisOptions = userAxis.options;
     if (axisOptions.hasOwnProperty(name)) {
       return axisOptions[name];
     }
@@ -248,7 +267,6 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   }
 
   // Default axis options third.
-  var axisString = axis == 0 ? "y" : "y2";
   var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {
     return defaultAxisOptions[name];
@@ -294,7 +312,7 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
  * @return {Number} the number of axes.
  */
 DygraphOptions.prototype.numAxes = function() {
-  return this.axes_.length;
+  return this.yAxes_.length;
 };
 
 /**
@@ -307,15 +325,16 @@ DygraphOptions.prototype.axisForSeries = function(seriesName) {
 /**
  * Returns the options for the specified axis.
  */
+// TODO(konigsberg): this is y-axis specific. Support the x axis.
 DygraphOptions.prototype.axisOptions = function(yAxis) {
-  return this.axes_[yAxis].options;
+  return this.yAxes_[yAxis].options;
 };
 
 /**
  * Return the series associated with an axis.
  */
 DygraphOptions.prototype.seriesForAxis = function(yAxis) {
-  return this.axes_[yAxis].series;
+  return this.yAxes_[yAxis].series;
 };
 
 /**

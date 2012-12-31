@@ -69,7 +69,7 @@ var opts = {
   },
   axisLabelFontSize : {
     type : "int",
-    // scope : [ "x", "y", "y2" ]
+    scope : [ "global", "x", "y", "y2" ]
   },
   axisLabelFormatter : {
     type : "function(numberOrDate, granularity, opts, dygraph)",
