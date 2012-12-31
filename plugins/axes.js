@@ -52,7 +52,7 @@ axes.prototype.layout = function(e) {
     if (g.getOption('xAxisHeight')) {
       h = g.getOption('xAxisHeight');
     } else {
-      h = g.getOption('axisLabelFontSize') + 2 * g.getOption('axisTickSize');
+      h = g.getOptionForAxis('axisLabelFontSize', 'x') + 2 * g.getOption('axisTickSize');
     }
     var x_axis_rect = e.reserveSpaceBottom(h);
   }
@@ -101,18 +101,34 @@ axes.prototype.willDrawChart = function(e) {
 
   var label, x, y, tick, i;
 
-  var labelStyle = {
-    position: "absolute",
-    fontSize: g.getOption('axisLabelFontSize') + "px",
-    zIndex: 10,
-    color: g.getOption('axisLabelColor'),
-    width: g.getOption('axisLabelWidth') + "px",
-    // height: this.attr_('axisLabelFontSize') + 2 + "px",
-    lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
-    overflow: "hidden"
+  var makeLabelStyle = function(axis) {
+    return {
+      position: "absolute",
+      fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + "px",
+      zIndex: 10,
+      color: g.getOption('axisLabelColor'),
+      width: g.getOption('axisLabelWidth') + "px",
+      // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
+      lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
+      overflow: "hidden"
+    };
+  }
+
+  var labelStyles = {
+    x : makeLabelStyle('x'),
+    y : makeLabelStyle('y'),
+    y2 : makeLabelStyle('y2'),
   };
+
   var makeDiv = function(txt, axis, prec_axis) {
+    /*
+     * This seems to be called with the following three sets of axis/perc_axis:
+     * x: undefined
+     * y: y1
+     * y: y2
+     */
     var div = document.createElement("div");
+    var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
         div.style[name] = labelStyle[name];
@@ -149,6 +165,7 @@ axes.prototype.willDrawChart = function(e) {
           sgn = -1;
           prec_axis = 'y2';
         }
+        var fontSize = g.getOptionForAxis('axisLabelFontSize', prec_axis);
         y = area.y + tick[1] * area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
@@ -160,10 +177,10 @@ axes.prototype.willDrawChart = function(e) {
         */
 
         label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
-        var top = (y - g.getOption('axisLabelFontSize') / 2);
+        var top = (y - fontSize / 2);
         if (top < 0) top = 0;
 
-        if (top + g.getOption('axisLabelFontSize') + 3 > canvasHeight) {
+        if (top + fontSize + 3 > canvasHeight) {
           label.style.bottom = "0px";
         } else {
           label.style.top = top + "px";
@@ -185,7 +202,8 @@ axes.prototype.willDrawChart = function(e) {
       // tick on the x-axis. Shift the bottom tick up a little bit to
       // compensate if necessary.
       var bottomTick = this.ylabels_[0];
-      var fontSize = g.getOption('axisLabelFontSize');
+      // Interested in the y2 axis also?
+      var fontSize = g.getOptionForAxis('axisLabelFontSize', "y");
       var bottom = parseInt(bottomTick.style.top, 10) + fontSize;
       if (bottom > canvasHeight - fontSize) {
         bottomTick.style.top = (parseInt(bottomTick.style.top, 10) -
