@@ -9,12 +9,20 @@ Dygraph.Plugins.Axes = (function() {
 "use strict";
 
 /*
-
 Bits of jankiness:
 - Direct layout access
 - Direct area access
 - Should include calculation of ticks, not just the drawing.
 
+Options left to make axis-friendly.
+  ('axisTickSize')
+  ('drawAxesAtZero')
+  ('xAxisHeight')
+
+These too. What is the difference between axisLablelWidth and {x,y}AxisLabelWidth?
+  ('axisLabelWidth')
+  ('xAxisLabelWidth')
+  ('yAxisLabelWidth')
 */
 
 /**
@@ -145,8 +153,6 @@ axes.prototype.willDrawChart = function(e) {
 
   // axis lines
   context.save();
-  context.strokeStyle = g.getOption('axisLineColor');
-  context.lineWidth = g.getOption('axisLineWidth');
 
   var layout = g.layout_;
   var area = e.dygraph.plotter_.area;
@@ -220,6 +226,10 @@ axes.prototype.willDrawChart = function(e) {
     } else {
       axisX = halfUp(area.x);
     }
+
+    context.strokeStyle = g.getOptionForAxis('axisLineColor', 'y');
+    context.lineWidth = g.getOptionForAxis('axisLineWidth', 'y');
+
     context.beginPath();
     context.moveTo(axisX, halfDown(area.y));
     context.lineTo(axisX, halfDown(area.y + area.h));
@@ -228,6 +238,8 @@ axes.prototype.willDrawChart = function(e) {
 
     // if there's a secondary y-axis, draw a vertical line for that, too.
     if (g.numAxes() == 2) {
+      context.strokeStyle = g.getOptionForAxis('axisLineColor', 'y2');
+      context.lineWidth = g.getOptionForAxis('axisLineWidth', 'y2');
       context.beginPath();
       context.moveTo(halfDown(area.x + area.w), halfDown(area.y));
       context.lineTo(halfDown(area.x + area.w), halfDown(area.y + area.h));
@@ -272,6 +284,8 @@ axes.prototype.willDrawChart = function(e) {
       }
     }
 
+    context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');
+    context.lineWidth = g.getOptionForAxis('axisLineWidth', 'x');
     context.beginPath();
     var axisY;
     if (g.getOption('drawAxesAtZero')) {
