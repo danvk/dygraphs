@@ -57,6 +57,9 @@ axes.prototype.layout = function(e) {
 
   if (g.getOption('drawXAxis')) {
     var h;
+    // NOTE: I think this is probably broken now, since g.getOption() now
+    // hits the dictionary. (That is, g.getOption('xAxisHeight') now always
+    // has a value.)
     if (g.getOption('xAxisHeight')) {
       h = g.getOption('xAxisHeight');
     } else {
