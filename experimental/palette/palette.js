@@ -215,6 +215,9 @@ Palette.prototype.read = function() {
  * Write to input elements.
  */
 Palette.prototype.write = function(hash) {
+  if (!hash) {
+    return;
+  }
   var results = {};
   for (var opt in this.model) {
     if (this.model.hasOwnProperty(opt)) {

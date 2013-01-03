@@ -9,7 +9,7 @@ all: test generate-combined generate-documentation
 clean:
 	@echo cleaning...
 	@cp .dygraph-combined-clean.js dygraph-combined.js
-	rm docs/options.html
+	rm -f docs/options.html
 
 generate-combined:
 	@echo Generating dygraph-combined.js

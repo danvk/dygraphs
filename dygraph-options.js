@@ -193,7 +193,7 @@ DygraphOptions.prototype.reparseSeries = function() {
 /**
  * Get a global value.
  *
- * @param {String} name the name of the option.
+ * @param {string} name the name of the option.
  */
 DygraphOptions.prototype.get = function(name) {
   var result = this.getGlobalUser_(name);
@@ -224,9 +224,9 @@ DygraphOptions.prototype.getGlobalDefault_ = function(name) {
  * Get a value for a specific axis. If there is no specific value for the axis,
  * the global value is returned.
  *
- * @param {String} name the name of the option.
- * @param {String|number} axis the axis to search. Can be the string representation
- * ("x", "y", "y2") or the y-axis number (0, 1). (x-axis can't be specified by number.)
+ * @param {string} name the name of the option.
+ * @param {string|number} axis the axis to search. Can be the string representation
+ * ("y", "y2") or the axis number (0, 1).
  */
 DygraphOptions.prototype.getForAxis = function(name, axis) {
   var axisIdx;
@@ -280,8 +280,8 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
  * Get a value for a specific series. If there is no specific value for the series,
  * the value for the axis is returned (and afterwards, the global value.)
  *
- * @param {String} name the name of the option.
- * @param {String|number} series the series to search. Can be the string representation
+ * @param {string} name the name of the option.
+ * @param {string|number} series the series to search. Can be the string representation
  * or 0-offset series number.
  */
 DygraphOptions.prototype.getForSeries = function(name, series) {
