@@ -133,7 +133,7 @@ axes.prototype.willDrawChart = function(e) {
 
   var makeDiv = function(txt, axis, prec_axis) {
     /*
-     * This seems to be called with the following three sets of axis/perc_axis:
+     * This seems to be called with the following three sets of axis/prec_axis:
      * x: undefined
      * y: y1
      * y: y2
