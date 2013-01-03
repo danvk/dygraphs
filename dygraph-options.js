@@ -193,14 +193,29 @@ DygraphOptions.prototype.reparseSeries = function() {
  * @param {String} name the name of the option.
  */
 DygraphOptions.prototype.get = function(name) {
+  var result = this.getGlobalUser_(name);
+  if (result != null) {
+    return result;
+  }
+  return this.getGlobalDefault_(name);
+};
+
+DygraphOptions.prototype.getGlobalUser_ = function(name) {
   if (this.user_.hasOwnProperty(name)) {
     return this.user_[name];
   }
+  return null;
+};
+
+DygraphOptions.prototype.getGlobalDefault_ = function(name) {
   if (this.global_.hasOwnProperty(name)) {
     return this.global_[name];
   }
+  if (Dygraph.DEFAULT_ATTRS.hasOwnProperty(name)) {
+    return Dygraph.DEFAULT_ATTRS[name];
+  }
   return null;
-};
+}
 
 /**
  * Get a value for a specific axis. If there is no specific value for the axis,
@@ -218,12 +233,29 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
     // TODO(konigsberg): Accept only valid axis strings?
     axisIdx = (axis == "y2") ? 1 : 0;
   }
-
-  var axisOptions = this.axes_[axisIdx].options;
-  if (axisOptions.hasOwnProperty(name)) {
-    return axisOptions[name];
+  // Search the user-specified axis option first.
+  if (this.axes_[axisIdx]) {
+    var axisOptions = this.axes_[axisIdx].options;
+    if (axisOptions.hasOwnProperty(name)) {
+      return axisOptions[name];
+    }
   }
-  return this.get(name);
+
+  // User-specified global options second.
+  var result = this.getGlobalUser_(name);
+  if (result != null) {
+    return result;
+  }
+
+  // Default axis options third.
+  var axisString = axis == 0 ? "y" : "y2";
+  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
+  if (defaultAxisOptions.hasOwnProperty(name)) {
+    return defaultAxisOptions[name];
+  }
+
+  // Default global options last.
+  return this.getGlobalDefault_(name);
 };
 
 /**
