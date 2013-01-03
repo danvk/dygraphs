@@ -58,26 +58,13 @@ Util.getLegend = function(parent) {
 };
 
 /**
- * Assert that all the elements in 'parent' with class 'className' is
- * the expected font size.
+ * Assert that all elements have a certain style property.
  */
-Util.assertFontSizes = function(parent, className, expectedSize) {
-  var expectedSizePx = expectedSize + "px";
-  var labels = parent.getElementsByClassName(className);
-  assertTrue(labels.length > 0);
-
-  // window.getComputedStyle is apparently compatible with all browsers
-  // (IE first became compatible with IE9.)
-  // If this test fails on earlier browsers, then enable something like this,
-  // because the font size is set by the parent div.
-  // if (!window.getComputedStyle) {
-  //   fontSize = label.parentElement.style.fontSize;
-  // }
-  for (var idx = 0; idx < labels.length; idx++) {
-    var label = labels[idx];
-    var fontSize = window.getComputedStyle(label).fontSize;
-    assertEquals(expectedSizePx, fontSize);
-  }
+Util.assertStyleOfChildren = function(selector, property, expectedValue) {
+  assertTrue(selector.length > 0);
+  $.each(selector, function(idx, child) {
+    assertEquals(expectedValue,  $(child).css(property));
+  });
 };
 
 
