@@ -226,7 +226,7 @@ DygraphOptions.prototype.getGlobalDefault_ = function(name) {
  *
  * @param {String} name the name of the option.
  * @param {String|number} axis the axis to search. Can be the string representation
- * ("x", "y", "y2") or the y-axis number (0, 1). (x-axis can't be specified by number.')
+ * ("x", "y", "y2") or the y-axis number (0, 1). (x-axis can't be specified by number.)
  */
 DygraphOptions.prototype.getForAxis = function(name, axis) {
   var axisIdx;

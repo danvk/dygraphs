@@ -626,7 +626,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
 
   var assertFontSize = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "font-size", expected);
-  }
+  };
 
   // Be sure we're dealing with a 14-point default.
   assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
