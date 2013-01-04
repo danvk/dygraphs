@@ -282,6 +282,8 @@ Dygraph.DEFAULT_ATTRS = {
     Dygraph.Plotters.linePlotter
   ],
 
+  plugins : [ ],
+
   // per-axis options
   axes: {
     x: {
@@ -452,8 +454,9 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // Activate plugins.
   this.plugins_ = [];
-  for (var i = 0; i < Dygraph.PLUGINS.length; i++) {
-    var Plugin = Dygraph.PLUGINS[i];
+  var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
+  for (var i = 0; i < plugins.length; i++) {
+    var Plugin = plugins[i];
     var pluginInstance = new Plugin();
     var pluginDict = {
       plugin: pluginInstance,
