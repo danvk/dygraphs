@@ -35,6 +35,7 @@ Dygraph.Plugins.Unzoom = (function() {
    */
   var unzoom = function() {
     this.button_ = null;
+    this.over_ = false;
   };  
     
   unzoom.prototype.toString = function() {
@@ -51,6 +52,9 @@ Dygraph.Plugins.Unzoom = (function() {
     var g = e.dygraph;
 
     if (this.button_ != null) {
+      if (g.isZoomed() && this.over_) {
+        this.show(true); 
+      }
       return;
     }
 
@@ -69,14 +73,22 @@ Dygraph.Plugins.Unzoom = (function() {
       // TODO(konigsberg): doUnzoom_ is private.
       g.doUnzoom_();
     }
+
     g.addEvent(parent, 'mouseover', function() {
-      self.button_.style.display='block';
+      if (g.isZoomed()) {
+        self.show(true);
+      }
+      self.over_ = true;
     });
 
-    // TODO(konigsberg): Don't show unless the graph is zoomed.
     g.addEvent(parent, 'mouseout', function() {
-      self.button_.style.display='none';
+      self.show(false);
+      self.over_ = false;
     });
+  };
+
+  unzoom.prototype.show = function(enabled) {
+    this.button_.style.display = enabled ? 'block' : 'none';
   };
 
   unzoom.prototype.destroy = function() {
