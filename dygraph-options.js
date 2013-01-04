@@ -281,24 +281,21 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
  * the value for the axis is returned (and afterwards, the global value.)
  *
  * @param {string} name the name of the option.
- * @param {string|number} series the series to search. Can be the string representation
- * or 0-offset series number.
+ * @param {string} series the series to search.
  */
 DygraphOptions.prototype.getForSeries = function(name, series) {
   // Honors indexes as series.
-  var seriesName = (typeof(series) == "number") ? this.labels[series] : series;
-
-  if (seriesName === this.dygraph_.highlightSet_) {
+  if (series === this.dygraph_.highlightSet_) {
     if (this.highlightSeries_.hasOwnProperty(name)) {
       return this.highlightSeries_[name];
     }
   }
 
-  if (!this.series_.hasOwnProperty(seriesName)) {
+  if (!this.series_.hasOwnProperty(series)) {
     throw "Unknown series: " + series;
   }
 
-  var seriesObj = this.series_[seriesName];
+  var seriesObj = this.series_[series];
   var seriesOptions = seriesObj["options"];
   if (seriesOptions.hasOwnProperty(name)) {
     return seriesOptions[name];
@@ -318,8 +315,8 @@ DygraphOptions.prototype.numAxes = function() {
 /**
  * Return the y-axis for a given series, specified by name.
  */
-DygraphOptions.prototype.axisForSeries = function(seriesName) {
-  return this.series_[seriesName].yAxis;
+DygraphOptions.prototype.axisForSeries = function(series) {
+  return this.series_[series].yAxis;
 };
 
 /**
