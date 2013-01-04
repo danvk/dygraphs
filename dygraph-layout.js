@@ -233,7 +233,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     // TODO (konigsberg): use optionsForAxis instead.
-    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setIdx);
+    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
 
     // Preallocating the size of points reduces reallocations, and therefore,
     // calls to collect garbage.
@@ -325,7 +325,7 @@ DygraphLayout.prototype.evaluateWithError = function() {
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     // TODO (konigsberg): use optionsForAxis instead.
-    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setIdx);
+    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
 
     for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
