@@ -79,3 +79,15 @@ Util.assertFontSizes = function(parent, className, expectedSize) {
     assertEquals(expectedSizePx, fontSize);
   }
 };
+
+
+/**
+ * Takes in an array of strings and returns an array of floats.
+ */
+Util.makeNumbers = function(ary) {
+  var ret = [];
+  for (var i = 0; i < ary.length; i++) {
+    ret.push(parseFloat(ary[i]));
+  }
+  return ret;
+};
