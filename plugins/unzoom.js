@@ -29,15 +29,16 @@ Dygraph.Plugins.Unzoom = (function() {
   "use strict";
   
   /**
-   * Draws the unzoom box.
+   * Create a new instance.
    *
    * @constructor
    */
   var unzoom = function() {
+    this.button_ = null;
   };  
     
   unzoom.prototype.toString = function() {
-    return "Unzoom Plugin"; 
+    return 'Unzoom Plugin'; 
   };
 
   unzoom.prototype.activate = function(g) {
@@ -48,41 +49,38 @@ Dygraph.Plugins.Unzoom = (function() {
 
   unzoom.prototype.willDrawChart = function(e) {
     var g = e.dygraph;
-    // API note:
-    // Consider adding a context parameter to activate and willDrawChart
-    // that can be used for storage so I don't have to do things like
-    // use up g.unzoomButton_.
-    if (g.hasOwnProperty("unzoomButton_")) {
+
+    if (this.button_ != null) {
       return;
     }
 
-    var elem = document.createElement("button");
-    elem.innerHTML = "Unzoom";
-    elem.style.display="none";
-    elem.style.position="absolute";
-    elem.style.top = '2px';
-    elem.style.left = '59px';
-    elem.style.zIndex = 1000;
+    this.button_ = document.createElement('button');
+    this.button_.innerHTML = 'Unzoom';
+    this.button_.style.display = 'none';
+    this.button_.style.position = 'absolute';
+    this.button_.style.top = '2px';
+    this.button_.style.left = '59px';
+    this.button_.style.zIndex = 1000;
     var parent = g.graphDiv;
-    parent.insertBefore(elem, parent.firstChild);
-    elem.onclick = function() {
+    parent.insertBefore(this.button_, parent.firstChild);
+
+    var self = this;
+    this.button_.onclick = function() {
       // TODO(konigsberg): doUnzoom_ is private.
       g.doUnzoom_();
     }
-    g.unzoomButton_ = elem;
-    Dygraph.addEvent(parent, "mouseover", function() {
-      g.unzoomButton_.style.display="block";
+    g.addEvent(parent, 'mouseover', function() {
+      self.button_.style.display='block';
     });
 
     // TODO(konigsberg): Don't show unless the graph is zoomed.
-    Dygraph.addEvent(parent, "mouseout", function() {
-      g.unzoomButton_.style.display="none";
+    g.addEvent(parent, 'mouseout', function() {
+      self.button_.style.display='none';
     });
   };
 
   unzoom.prototype.destroy = function() {
-    delete g.unzoomButton_;
-    // TODO(konigsberg): Remove events installed above.
+    this.button_.parentElement.removeChild(this.button_);
   };
 
   return unzoom;

@@ -769,7 +769,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "plugins": {
     "default": "[]",
     "labels": ["Configuration"],
-    "type": "array<plugin>",
+    "type": "Array<plugin>",
     "description": "Defines per-graph plug-ins. Useful for per-graph customization"
   }
 }

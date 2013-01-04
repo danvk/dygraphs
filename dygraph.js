@@ -282,7 +282,7 @@ Dygraph.DEFAULT_ATTRS = {
     Dygraph.Plotters.linePlotter
   ],
 
-  plugins : [ ],
+  plugins: [ ],
 
   // per-axis options
   axes: {
