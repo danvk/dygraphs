@@ -65,7 +65,7 @@ var opts = {
   },
   axisLabelColor : {
     type : "string",
-    // scope : [ "x", "y", "y2" ]
+    scope : [ "global", "x", "y", "y2" ]
   },
   axisLabelFontSize : {
     type : "int",
@@ -77,19 +77,19 @@ var opts = {
   },
   axisLabelWidth : {
     type : "int",
-    // scope : [ "x", "y", "y2" ]
+    // scope : [ "global", "x", "y", "y2" ]
   },
   axisLineColor : {
     type : "string",
-    // scope : [ "x", "y", "y2" ]
+    scope : [ "global", "x", "y", "y2" ]
   },
   axisLineWidth : {
     type : "int",
-    // scope : [ "x", "y", "y2" ]
+    scope : [ "global", "x", "y", "y2" ]
   },
   axisTickSize : {
     type : "int",
-    // scope : [ "x", "y", "y2" ]
+    // scope : [ "global", "x", "y", "y2" ]
   },
   clickCallback : {
     type : "function(e, x, points)"
