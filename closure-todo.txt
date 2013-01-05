@@ -1,0 +1,37 @@
+Many of the functions and methods in the dygraphs source have some form of
+Closure annotations on them ("@param", "@return", "@private", etc.).
+
+These provide some documentation value, but they were largely written by
+developers who had never used the Closure Compiler and so the syntax is
+often not quite correct.
+
+This file tracks which files have been fully "closurized", i.e. compile
+under the Closure Compiler without any errors or warnings.
+
+Core:
+- dygraph-canvas.js
+- dygraph-interaction-model.js
+- dygraph-layout.js
+- dygraph-options.js
+- dygraph-range-selector.js
+- dygraph.js
+x dygraph-gviz.js
+x dygraph-tickers.js
+x dygraph-options-reference.js
+x dygraph-utils.js
+x dashed-canvas.js
+
+Plugins:
+- plugins/annotations.js
+- plugins/axes.js
+- plugins/base.js
+- plugins/chart-labels.js
+- plugins/grid.js
+- plugins/install.js
+- plugins/legend.js
+
+Here's a command that can be used to build dygraphs using the closure
+compiler:
+java -jar ../../closure-compiler-read-only/build/compiler.jar --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-options-reference.js --js=dygraph-tickers.js --js=dygraph-gviz.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js
+
+As each file is closurized, it can be added as a "--js" parameter.

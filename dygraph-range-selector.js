@@ -480,6 +480,8 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
     return;
   }
 
+  var stepPlot = this.attr_('stepPlot');
+
   var combinedSeriesData = this.computeCombinedSeriesAndLimits_();
   var yRange = combinedSeriesData.yMax - combinedSeriesData.yMin;
 
@@ -494,14 +496,36 @@ DygraphRangeSelector.prototype.drawMiniPlot_ = function() {
   var canvasWidth = this.canvasRect_.w - margin;
   var canvasHeight = this.canvasRect_.h - margin;
 
+  var prevX = null, prevY = null;
+
   ctx.beginPath();
   ctx.moveTo(margin, canvasHeight);
   for (var i = 0; i < combinedSeriesData.data.length; i++) {
     var dataPoint = combinedSeriesData.data[i];
-    var x = (dataPoint[0] - xExtremes[0])*xFact;
-    var y = canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact;
+    var x = ((dataPoint[0] !== null) ? ((dataPoint[0] - xExtremes[0])*xFact) : NaN);
+    var y = ((dataPoint[1] !== null) ? (canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact) : NaN);
     if (isFinite(x) && isFinite(y)) {
+      if(prevX === null) {
+        ctx.lineTo(x, canvasHeight);
+      }
+      else if (stepPlot) {
+        ctx.lineTo(x, prevY);
+      }
       ctx.lineTo(x, y);
+      prevX = x;
+      prevY = y;
+    }
+    else {
+      if(prevX !== null) {
+        if (stepPlot) {
+          ctx.lineTo(x, prevY);
+          ctx.lineTo(x, canvasHeight);
+        }
+        else {
+          ctx.lineTo(prevX, canvasHeight);
+        }
+      }
+      prevX = prevY = null;
     }
   }
   ctx.lineTo(canvasWidth, canvasHeight);

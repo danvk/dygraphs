@@ -35,6 +35,9 @@ var ZERO_TO_FIFTY_STEPS = function() {
   }
   return a;
 } ();
+var FIVE_TO_ONE_THOUSAND = [
+    [ 1, 10 ], [ 2, 20 ], [ 3, 30 ], [ 4, 40 ] , [ 5, 50 ], 
+    [ 6, 60 ], [ 7, 70 ], [ 8, 80 ], [ 9, 90 ] , [ 10, 1000 ]];
 
 var RangeTestCase = TestCase("range-tests");
 
@@ -135,4 +138,35 @@ RangeTestCase.prototype.testRestoreOriginalRanges_viaUpdateOptions = function() 
 
   assertEquals([0, 55], g.yAxisRange(0));
   assertEquals([10, 20], g.xAxisRange());
+}
+
+/**
+ * Verify that log scale axis range is properly specified.
+ */
+RangeTestCase.prototype.testLogScaleExcludesZero = function() {
+  var g = new Dygraph("graph", FIVE_TO_ONE_THOUSAND, { logscale : true });
+  assertEquals([10, 1099], g.yAxisRange(0));
+ 
+  g.updateOptions({ logscale : false });
+  assertEquals([0, 1099], g.yAxisRange(0));
+}
+
+/**
+ * Verify that includeZero range is properly specified.
+ */
+RangeTestCase.prototype.testIncludeZeroIncludesZero = function() {
+  var g = new Dygraph("graph", [[0, 500], [500, 1000]], { includeZero : true });
+  assertEquals([0, 1100], g.yAxisRange(0));
+ 
+  g.updateOptions({ includeZero : false });
+  assertEquals([450, 1050], g.yAxisRange(0));
+}
+
+/**
+ * Verify that very large Y ranges don't break things.
+ */ 
+RangeTestCase.prototype.testHugeRange = function() {
+  var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], { includeZero : true });
+  assertEqualsDelta(1, -1e229 / g.yAxisRange(0)[0], 0.001);
+  assertEqualsDelta(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
 }

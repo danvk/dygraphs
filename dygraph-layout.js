@@ -210,8 +210,8 @@ DygraphLayout.prototype._evaluateLimits = function() {
   }
 };
 
-DygraphLayout._calcYNormal = function(axis, value) {
-  if (axis.logscale) {
+DygraphLayout._calcYNormal = function(axis, value, logscale) {
+  if (logscale) {
     return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
   } else {
     return 1.0 - ((value - axis.minyval) * axis.yscale);
@@ -232,6 +232,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
+    // TODO (konigsberg): use optionsForAxis instead.
+    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
 
     // Preallocating the size of points reduces reallocations, and therefore,
     // calls to collect garbage.
@@ -245,7 +247,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents top and 1 represents bottom
-      var yNormal = DygraphLayout._calcYNormal(axis, yValue);
+      var yNormal = DygraphLayout._calcYNormal(axis, yValue, logscale);
 
       // TODO(danvk): drop the point in this case, don't null it.
       // The nulls create complexity in DygraphCanvasRenderer._drawSeries.
@@ -322,6 +324,9 @@ DygraphLayout.prototype.evaluateWithError = function() {
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
+    // TODO (konigsberg): use optionsForAxis instead.
+    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
+
     for (j = 0; j < dataset.length; j++, i++) {
       var item = dataset[j];
       var xv = DygraphLayout.parseFloat_(item[0]);
@@ -334,8 +339,8 @@ DygraphLayout.prototype.evaluateWithError = function() {
 
         var yv_minus = yv - errorMinus;
         var yv_plus = yv + errorPlus;
-        points[j].y_top = DygraphLayout._calcYNormal(axis, yv_minus);
-        points[j].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus);
+        points[j].y_top = DygraphLayout._calcYNormal(axis, yv_minus, logscale);
+        points[j].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus, logscale);
       }
     }
   }

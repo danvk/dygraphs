@@ -58,6 +58,28 @@ FormatsTestCase.prototype.testFunctionDefinesArray = function() {
   this.assertData(g);
 };
 
+FormatsTestCase.prototype.testXValueParser = function() {
+  var data =
+    "X,Y\n" +
+    "d,-1\n" +
+    "e,0\n" +
+    "f,1\n" +
+    "g,0\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, {
+    xValueParser : function(str) {
+      assertEquals(1, str.length);
+      return str.charCodeAt(0) - "a".charCodeAt(0);
+    }
+  });
+
+  assertEquals(3, g.getValue(0, 0));
+  assertEquals(4, g.getValue(1, 0));
+  assertEquals(5, g.getValue(2, 0));
+  assertEquals(6, g.getValue(3, 0));
+};
+
 FormatsTestCase.prototype.assertData = function(g) {
   var expected = this.dataArray;
 

@@ -91,7 +91,8 @@ Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;
 Dygraph.DEFAULT_HEIGHT = 320;
 
-Dygraph.ANIMATION_STEPS = 10;
+// For max 60 Hz. animation:
+Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
@@ -355,6 +356,10 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
+  if (typeof(div) == 'string') {
+    div = document.getElementById(div);
+  }
+
   if (!div) {
     Dygraph.error("Constructing dygraph with a non-existent div!");
     return;
@@ -414,6 +419,9 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     attrs.animatedZooms = false;
   }
 
+  // DEPRECATION WARNING: All option processing should be moved from
+  // attrs_ and user_attrs_ to options_, which holds all this information.
+  //
   // Dygraphs has many options, some of which interact with one another.
   // To keep track of everything, we maintain two sets of options:
   //
@@ -436,6 +444,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.registeredEvents_ = [];
   this.eventListeners_ = {};
+
+  this.attributes_ = new DygraphOptions(this);
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -567,31 +577,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-
-  var sources = [];
-  sources.push(this.attrs_);
-  if (this.user_attrs_) {
-    sources.push(this.user_attrs_);
-    if (seriesName) {
-      if (this.user_attrs_.hasOwnProperty(seriesName)) {
-        sources.push(this.user_attrs_[seriesName]);
-      }
-      if (seriesName === this.highlightSet_ &&
-          this.user_attrs_.hasOwnProperty('highlightSeriesOpts')) {
-        sources.push(this.user_attrs_.highlightSeriesOpts);
-      }
-    }
-  }
-
-  var ret = null;
-  for (var i = sources.length - 1; i >= 0; --i) {
-    var source = sources[i];
-    if (source.hasOwnProperty(name)) {
-      ret = source[name];
-      break;
-    }
-  }
-  return ret;
+  return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
 /**
@@ -612,6 +598,9 @@ Dygraph.prototype.getOption = function(name, opt_seriesName) {
   return this.attr_(name, opt_seriesName);
 };
 
+Dygraph.prototype.getOptionForAxis = function(name, axis) {
+  return this.attributes_.getForAxis(name, axis);
+}
 /**
  * @private
  * @param  String} axis The name of the axis (i.e. 'x', 'y' or 'y2')
@@ -845,7 +834,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
   var yRange = this.yAxisRange(axis);
 
   var pct;
-  if (!this.axes_[axis].logscale) {
+  var logscale = this.attributes_.getForAxis("logscale", axis);
+  if (!logscale) {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
@@ -1154,7 +1144,7 @@ Dygraph.prototype.getPropertiesForSeries = function(series_name) {
     column: idx,
     visible: this.visibility()[idx - 1],
     color: this.colorsMap_[series_name],
-    axis: 1 + this.seriesToAxisMap_[series_name]
+    axis: 1 + this.attributes_.axisForSeries(series_name)
   };
 };
 
@@ -1536,7 +1526,8 @@ Dygraph.prototype.doUnzoom_ = function() {
       newValueRanges = [];
       for (i = 0; i < this.axes_.length; i++) {
         var axis = this.axes_[i];
-        newValueRanges.push(axis.valueRange !== null ?
+        newValueRanges.push((axis.valueRange !== null &&
+                             axis.valueRange !== undefined) ?
                             axis.valueRange : axis.extremeRange);
       }
     }
@@ -1669,7 +1660,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
   var minDist = Infinity;
   var idx = -1;
   var dist, dx, dy, point, closestPoint, closestSeries;
-  for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
+  for ( var setIdx = this.layout_.datasets.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       var point = points[i];
@@ -1770,7 +1761,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var highlightSeriesOpts = this.attr_("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts && !this.lockedSet_) {
+  if (highlightSeriesOpts && !this.isSeriesLocked()) {
     var closest;
     if (this.attr_("stackedGraph")) {
       closest = this.findStackedPoint(canvasx, canvasy);
@@ -2063,6 +2054,14 @@ Dygraph.prototype.getHighlightSeries = function() {
 };
 
 /**
+ * Returns true if the currently-highlighted series was locked
+ * via setSelection(..., seriesName, true).
+ */
+Dygraph.prototype.isSeriesLocked = function() {
+  return this.lockedSet_;
+};
+
+/**
  * Fires when there's data available to be graphed.
  * @param {String} data Raw CSV data to be plotted
  * @private
@@ -2178,7 +2177,8 @@ Dygraph.prototype.predraw_ = function() {
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
-    var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong
+    // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
+    var logScale = this.attr_('logscale');
     var series = this.extractSeries_(this.rawData_, i, logScale);
     series = this.rollingAverage(series, this.rollPeriod_);
     this.rolledSeries_.push(series);
@@ -2427,12 +2427,12 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  * currently being displayed. This includes things like the number of axes and
  * the style of the axes. It does not include the range of each axis and its
  * tick marks.
- * This fills in this.axes_ and this.seriesToAxisMap_.
+ * This fills in this.axes_.
  * axes_ = [ { options } ]
- * seriesToAxisMap_ = { seriesName: 0, seriesName2: 1, ... }
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
+
   // Preserve valueWindow settings if they exist, and if the user hasn't
   // specified a new valueRange.
   var i, valueWindows, seriesName, axis, index, opts, v;
@@ -2443,71 +2443,25 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  this.axes_ = [{ yAxisId : 0, g : this }];  // always have at least one y-axis.
-  this.seriesToAxisMap_ = {};
-
-  // Get a list of series names.
-  var labels = this.attr_("labels");
-  var series = {};
-  for (i = 1; i < labels.length; i++) series[labels[i]] = (i - 1);
-
-  // all options which could be applied per-axis:
-  var axisOptions = [
-    'includeZero',
-    'valueRange',
-    'labelsKMB',
-    'labelsKMG2',
-    'pixelsPerYLabel',
-    'yAxisLabelWidth',
-    'axisLabelFontSize',
-    'axisTickSize',
-    'logscale'
-  ];
-
-  // Copy global axis options over to the first axis.
-  for (i = 0; i < axisOptions.length; i++) {
-    var k = axisOptions[i];
-    v = this.attr_(k);
-    if (v) this.axes_[0][k] = v;
-  }
-
+  // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
+  // data computation as well as options storage.
   // Go through once and add all the axes.
-  for (seriesName in series) {
-    if (!series.hasOwnProperty(seriesName)) continue;
-    axis = this.attr_("axis", seriesName);
-    if (axis === null) {
-      this.seriesToAxisMap_[seriesName] = 0;
-      continue;
-    }
-    if (typeof(axis) == 'object') {
-      // Add a new axis, making a copy of its per-axis options.
-      opts = {};
-      Dygraph.update(opts, this.axes_[0]);
-      Dygraph.update(opts, { valueRange: null });  // shouldn't inherit this.
-      var yAxisId = this.axes_.length;
-      opts.yAxisId = yAxisId;
-      opts.g = this;
-      Dygraph.update(opts, axis);
-      this.axes_.push(opts);
-      this.seriesToAxisMap_[seriesName] = yAxisId;
-    }
+  this.axes_ = [];
+  
+  for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
+    // Add a new axis, making a copy of its per-axis options.
+    opts = { g : this };
+    Dygraph.update(opts, this.attributes_.axisOptions(axis));
+    this.axes_[axis] = opts;
   }
 
-  // Go through one more time and assign series to an axis defined by another
-  // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-  for (seriesName in series) {
-    if (!series.hasOwnProperty(seriesName)) continue;
-    axis = this.attr_("axis", seriesName);
-    if (typeof(axis) == 'string') {
-      if (!this.seriesToAxisMap_.hasOwnProperty(axis)) {
-        this.error("Series " + seriesName + " wants to share a y-axis with " +
-                   "series " + axis + ", which does not define its own axis.");
-        return null;
-      }
-      var idx = this.seriesToAxisMap_[axis];
-      this.seriesToAxisMap_[seriesName] = idx;
-    }
-  }
+
+  // Copy global valueRange option over to the first axis.
+  // NOTE(konigsberg): Are these two statements necessary?
+  // I tried removing it. The automated tests pass, and manually
+  // messing with tests/zoom.html showed no trouble.
+  v = this.attr_('valueRange');
+  if (v) this.axes_[0].valueRange = v;
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
@@ -2516,7 +2470,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     }
   }
 
-  // New axes options
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
       opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
@@ -2530,7 +2483,6 @@ Dygraph.prototype.computeYAxes_ = function() {
       }
     }
   }
-
 };
 
 /**
@@ -2538,13 +2490,7 @@ Dygraph.prototype.computeYAxes_ = function() {
  * @return {Number} the number of axes.
  */
 Dygraph.prototype.numAxes = function() {
-  var last_axis = 0;
-  for (var series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    if (idx > last_axis) last_axis = idx;
-  }
-  return 1 + last_axis;
+  return this.attributes_.numAxes();
 };
 
 /**
@@ -2556,7 +2502,7 @@ Dygraph.prototype.numAxes = function() {
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.
-  return this.axes_[this.seriesToAxisMap_[series]];
+  return this.axes_[this.attributes_.axisForSeries(series)];
 };
 
 /**
@@ -2566,25 +2512,21 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
-  // Build a map from axis number -> [list of series names]
-  var seriesForAxis = [], series;
-  for (series in this.seriesToAxisMap_) {
-    if (!this.seriesToAxisMap_.hasOwnProperty(series)) continue;
-    var idx = this.seriesToAxisMap_[series];
-    while (seriesForAxis.length <= idx) seriesForAxis.push([]);
-    seriesForAxis[idx].push(series);
-  }
+  var series;
+  var numAxes = this.attributes_.numAxes();
 
   // Compute extreme values, a span and tick marks for each axis.
-  for (var i = 0; i < this.axes_.length; i++) {
+  for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
+    var logscale = this.attributes_.getForAxis("logscale", i);
+    var includeZero = this.attributes_.getForAxis("includeZero", i);
+    series = this.attributes_.seriesForAxis(i);
 
-    if (!seriesForAxis[i]) {
+    if (series.length == 0) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
     } else {
       // Calculate the extremes of extremes.
-      series = seriesForAxis[i];
       var minY = Infinity;  // extremes[series[0]][0];
       var maxY = -Infinity;  // extremes[series[0]][1];
       var extremeMinY, extremeMaxY;
@@ -2603,7 +2545,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = Math.max(extremeMaxY, maxY);
         }
       }
-      if (axis.includeZero && minY > 0) minY = 0;
+      if (includeZero && minY > 0) minY = 0;
 
       // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
@@ -2615,7 +2557,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       if (span === 0) { span = maxY; }
 
       var maxAxisY, minAxisY;
-      if (axis.logscale) {
+      if (logscale) {
         maxAxisY = maxY + 0.1 * span;
         minAxisY = minY;
       } else {
@@ -2867,6 +2809,10 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     isDate = true;
   }
 
+  this.setXAxisOptions_(isDate);
+};
+
+Dygraph.prototype.setXAxisOptions_ = function(isDate) {
   if (isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
@@ -2881,7 +2827,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
-};
+}
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()
@@ -2951,6 +2897,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     // User hasn't explicitly set labels, so they're (presumably) in the CSV.
     start = 1;
     this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+    this.attributes_.reparseSeries();
   }
   var line_no = 0;
 
@@ -3087,8 +3034,9 @@ Dygraph.prototype.parseArray_ = function(data) {
               "in the options parameter");
     this.attrs_.labels = [ "X" ];
     for (i = 1; i < data[0].length; i++) {
-      this.attrs_.labels.push("Y" + i);
+      this.attrs_.labels.push("Y" + i); // Not user_attrs_.
     }
+    this.attributes_.reparseSeries();
   } else {
     var num_labels = this.attr_("labels");
     if (num_labels.length != data[0].length) {
@@ -3101,8 +3049,8 @@ Dygraph.prototype.parseArray_ = function(data) {
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3124,8 +3072,8 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     return data;
   }
 };
@@ -3268,6 +3216,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   if (annotations.length > 0) {
     this.setAnnotations(annotations, true);
   }
+  this.attributes_.reparseSeries();
 };
 
 /**
@@ -3366,6 +3315,8 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
   Dygraph.updateDeep(this.user_attrs_, attrs);
 
+  this.attributes_.reparseSeries();
+
   if (file) {
     this.file_ = file;
     if (!block_redraw) this.start_();
@@ -3400,6 +3351,10 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   };
   var map = function(opt, axis, new_opt) {
     if (typeof(attrs[opt]) != 'undefined') {
+      Dygraph.warn("Option " + opt + " is deprecated. Use the " +
+          new_opt + " option for the " + axis + " axis instead. " +
+          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } } " +
+          "(see http://dygraphs.com/per-axis.html for more information.");
       set(axis, new_opt, attrs[opt]);
       delete my_attrs[opt];
     }

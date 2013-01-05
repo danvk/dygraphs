@@ -31,13 +31,15 @@
             drawPoints : true,
             pointSize : 5,
             highlightCircleSize: 8,
-            A : {
-              drawPointCallback : Dygraph.Circles.TRIANGLE,
-              drawHighlightPointCallback : Dygraph.Circles.TRIANGLE
-            },
-            B : {
-              drawPointCallback : Dygraph.Circles.HEXAGON,
-              drawHighlightPointCallback : Dygraph.Circles.HEXAGON
+            series : {
+              A : {
+                drawPointCallback : Dygraph.Circles.TRIANGLE,
+                drawHighlightPointCallback : Dygraph.Circles.TRIANGLE
+              },
+              B : {
+                drawPointCallback : Dygraph.Circles.HEXAGON,
+                drawHighlightPointCallback : Dygraph.Circles.HEXAGON
+              }
             }
         });
 

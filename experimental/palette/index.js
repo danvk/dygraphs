@@ -41,9 +41,26 @@ Index.splitVariables = function() { // http://www.idealog.us/2006/06/javascript_
   return args;
 }
 
+/**
+ * Draw the graph.
+ * @param {Object} element the display element
+ * @param {Object} data the data to be shown
+ * @param {Object} options the options hash.
+ */
 Index.draw = function(element, data, options) {
   element.innerHTML = "";
   element.removeAttribute("style");
+
+  // Replace the drawCallback function with one that also lets us track
+  // all labels (for the palette.)
+  // If the drawCallback option is not specified, use a null function.
+  var originalDraw = options["drawCallback"] || function() {};
+  options.drawCallback = function(g, isInitial) {
+    Index.palette.setSeries(g.getLabels());
+    // Call the original function, too.
+    originalDraw(g, isInitial);
+  };
+
   var g = new Dygraph(
     element,
     data,
@@ -61,19 +78,22 @@ Index.addMessage = function(text) {
   messages.textContent = messages.textContent + text + "\n";
 }
 
+/**
+ * Start up the palette system.
+ */
 Index.start = function() {
   var variables = Index.splitVariables();
-  var sampleName = variables["sample"];
-  if (!(sampleName)) {
-    sampleName = "interestingShapes";
-  }
+  var sampleName = variables["sample"] || "interestingShapes";
   var sampleIndex = Samples.indexOf(sampleName);
   var sample = Samples.data[sampleIndex];
   var data = sample.data;
   var redraw = function() {
-    Index.draw(document.getElementById("graph"), data, palette.read());
+    Index.draw(document.getElementById("graph"), data, Index.palette.read());
   }
 
+  // Selector is the drop-down for selecting a set of data.
+
+  // Popupate the selector with the set of data samples
   var selector = document.getElementById("selector").getElementsByTagName("select")[0];
   for (var idx in Samples.data) {
     var entry = Samples.data[idx];
@@ -98,13 +118,17 @@ Index.start = function() {
     window.location = url;
   }
   selector.selectedIndex = sampleIndex;
-  var palette = new Palette();
-  palette.create(document, document.getElementById("optionsPalette"));
-  palette.write(sample.options);
-  palette.onchange = redraw;
-  palette.filterBar.focus();
+
+  // Palette contains the widget that builds options.
+  Index.palette = new MultiPalette();
+  Index.palette.create(document.getElementById("optionsPalette"));
+  Index.palette.write(sample.options);
+  Index.palette.onchange = redraw;
+  Index.palette.filterBar.focus();
+
   redraw();
 
+  // Find all new options which we don't implement here in the palette.
   for (var opt in Dygraph.OPTIONS_REFERENCE) {
     if (!(opt in opts)) {
       var entry = Dygraph.OPTIONS_REFERENCE[opt];
