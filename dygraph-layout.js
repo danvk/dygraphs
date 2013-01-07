@@ -53,12 +53,12 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
 };
 
 DygraphLayout.prototype.getPlotArea = function() {
-  return this.computePlotArea_();
+  return this.area_;
 };
 
 // Compute the box which the chart should be drawn in. This is the canvas's
 // box, less space needed for axis and chart labels.
-DygraphLayout.prototype.computePlotArea_ = function() {
+DygraphLayout.prototype.computePlotArea = function() {
   var area = {
     // TODO(danvk): per-axis setting.
     x: 0,
@@ -119,12 +119,7 @@ DygraphLayout.prototype.computePlotArea_ = function() {
   };
   this.dygraph_.cascadeEvents_('layout', e);
 
-  // Add space for range selector, if needed.
-  if (this.attr_('showRangeSelector')) {
-    area.h -= this.attr_('rangeSelectorHeight') + 4;
-  }
-
-  return area;
+  this.area_ = area;
 };
 
 DygraphLayout.prototype.setAnnotations = function(ann) {
