@@ -17,7 +17,6 @@ dygraph.js \
 dygraph-utils.js \
 dygraph-gviz.js \
 dygraph-interaction-model.js \
-dygraph-range-selector.js \
 dygraph-tickers.js \
 plugins/base.js \
 plugins/annotations.js \
@@ -25,6 +24,7 @@ plugins/axes.js \
 plugins/chart-labels.js \
 plugins/grid.js \
 plugins/legend.js \
+plugins/range-selector.js \
 plugins/install.js \
 | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,' \
 > /tmp/dygraph.js

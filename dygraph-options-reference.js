@@ -728,7 +728,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Interactive Elements"],
     "type": "boolean",
-    "description": "Show the range selector widget. This option can only be specified at Dygraph creation time."
+    "description": "Show or hide the range selector widget."
   },
   "rangeSelectorHeight": {
     "default": "40",

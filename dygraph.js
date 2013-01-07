@@ -44,7 +44,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global DygraphRangeSelector:false, DygraphLayout:false, DygraphCanvasRenderer:false, G_vmlCanvasManager:false */
+/*global DygraphLayout:false, DygraphCanvasRenderer:false, G_vmlCanvasManager:false */
 "use strict";
 
 /**
@@ -411,12 +411,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   if (attrs.stackedGraph) {
     attrs.fillGraph = true;
     // TODO(nikhilk): Add any other stackedGraph checks here.
-  }
-
-  // These two options have a bad interaction. See issue 359.
-  if (attrs.showRangeSelector && attrs.animatedZooms) {
-    this.warn('You should not set animatedZooms=true when using the range selector.');
-    attrs.animatedZooms = false;
   }
 
   // DEPRECATION WARNING: All option processing should be moved from
@@ -946,12 +940,6 @@ Dygraph.prototype.createInterface_ = function() {
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
 
-  if (this.attr_('showRangeSelector')) {
-    // The range selector must be created here so that its canvases and contexts get created here.
-    // For some reason, if the canvases and contexts don't get created here, things don't work in IE.
-    this.rangeSelector_ = new DygraphRangeSelector(this);
-  }
-
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
@@ -959,11 +947,6 @@ Dygraph.prototype.createInterface_ = function() {
 
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
-
-  if (this.rangeSelector_) {
-    // This needs to happen after the graph canvases are added to the div and the layout object is created.
-    this.rangeSelector_.addToGraph(this.graphDiv, this.layout_);
-  }
 
   var dygraph = this;
 
@@ -2150,6 +2133,8 @@ Dygraph.prototype.extremeValues_ = function(series) {
 Dygraph.prototype.predraw_ = function() {
   var start = new Date();
 
+  this.layout_.computePlotArea();
+
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
@@ -2168,10 +2153,6 @@ Dygraph.prototype.predraw_ = function() {
   this.createRollInterface_();
 
   this.cascadeEvents_('predraw');
-
-  if (this.rangeSelector_) {
-    this.rangeSelector_.renderStaticLayer();
-  }
 
   // Convert the raw data (a 2D array) into the internal format and compute
   // rolling averages.
@@ -2411,11 +2392,6 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
                                           this.canvas_.height);
 
-  // Generate a static legend before any particular point is selected.
-
-  if (this.rangeSelector_) {
-    this.rangeSelector_.renderInteractiveLayer();
-  }
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
@@ -2447,7 +2423,7 @@ Dygraph.prototype.computeYAxes_ = function() {
   // data computation as well as options storage.
   // Go through once and add all the axes.
   this.axes_ = [];
-  
+
   for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
     // Add a new axis, making a copy of its per-axis options.
     opts = { g : this };
