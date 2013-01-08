@@ -482,6 +482,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     }
   }
 
+  this.createDragInterface_();
+
   this.start_();
 };
 
@@ -959,8 +961,6 @@ Dygraph.prototype.createInterface_ = function() {
     dygraph.mouseOut_(e);
   };
   this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
-
-  this.createDragInterface_();
 
   this.resizeHandler = function(e) {
     dygraph.resize();
@@ -3394,6 +3394,7 @@ Dygraph.prototype.resize = function(width, height) {
       // createInterface_ reset the layout, so we need to do this.
       this.layout_.setAnnotations(this.annotations_);
     }
+    this.createDragInterface_();
     this.predraw_();
   }
 
