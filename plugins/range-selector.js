@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2013 Paul Felix (paul.eric.felix@gmail.com)
+ * Copyright 2011 Paul Felix (paul.eric.felix@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
@@ -15,9 +15,10 @@ Dygraph.Plugins.RangeSelector = (function() {
 /*global Dygraph:false */
 "use strict";
 
-var NOT_CREATED = 0;
-var CREATED = 1<<0;
-var ADDED_TO_GRAPH = 1<<1;
+// Range selector status values
+var NOT_CREATED = 0; // Range selector interface has not been created
+var CREATED = 1 << 0; // Range selector interface has been created
+var ADDED_TO_GRAPH = 1 << 1; // Range selector elements have been added to the graph
 
 var rangeSelector = function() {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
@@ -32,9 +33,10 @@ rangeSelector.prototype.toString = function() {
 
 rangeSelector.prototype.activate = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.layout_ = this.dygraph_.layout_;
+  this.layout_ = dygraph.layout_;
+  this.graphDiv_ = dygraph.graphDiv;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
-  if (this.attr_('showRangeSelector')) {
+  if (this.getOption_('showRangeSelector')) {
     this.createInterface_();
   }
   return {
@@ -56,8 +58,12 @@ rangeSelector.prototype.destroy = function() {
 // Private methods
 //------------------------------------------------------------------
 
-rangeSelector.prototype.attr_ = function(name) {
-  return this.dygraph_.attr_(name);
+rangeSelector.prototype.getOption_ = function(name) {
+  return this.dygraph_.getOption(name);
+};
+
+rangeSelector.prototype.setDefaultOption_ = function(name, value) {
+  return this.dygraph_.attrs_[name] = value;
 };
 
 /**
@@ -73,9 +79,9 @@ rangeSelector.prototype.createInterface_ = function() {
   this.initInteraction_();
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
-  if (this.attr_('animatedZooms')) {
-    this.dygraph_.warn('You should not set animatedZooms=true when using the range selector.');
-    this.dygraph_.attrs_.animatedZooms = false;
+  if (this.getOption_('animatedZooms')) {
+    this.dygraph_.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
   this.addToGraph_();
@@ -87,7 +93,7 @@ rangeSelector.prototype.createInterface_ = function() {
  * Adds the range selector to the graph.
  */
 rangeSelector.prototype.addToGraph_ = function() {
-  var graphDiv = this.dygraph_.graphDiv;
+  var graphDiv = this.graphDiv_;
   graphDiv.appendChild(this.bgcanvas_);
   graphDiv.appendChild(this.fgcanvas_);
   graphDiv.appendChild(this.leftZoomHandle_);
@@ -100,7 +106,7 @@ rangeSelector.prototype.addToGraph_ = function() {
  * Removes the range selector from the graph.
  */
 rangeSelector.prototype.removeFromGraph_ = function() {
-  var graphDiv = this.dygraph_.graphDiv;
+  var graphDiv = this.graphDiv_;
   graphDiv.removeChild(this.bgcanvas_);
   graphDiv.removeChild(this.fgcanvas_);
   graphDiv.removeChild(this.leftZoomHandle_);
@@ -113,8 +119,8 @@ rangeSelector.prototype.removeFromGraph_ = function() {
  * Called by Layout to allow range selector to reserve its space.
  */
 rangeSelector.prototype.reserveSpace_ = function(e) {
-  if (this.attr_('showRangeSelector')) {
-    e.reserveSpaceBottom(this.attr_('rangeSelectorHeight') + 4);
+  if (this.getOption_('showRangeSelector')) {
+    e.reserveSpaceBottom(this.getOption_('rangeSelectorHeight') + 4);
   }
 };
 
@@ -123,7 +129,7 @@ rangeSelector.prototype.reserveSpace_ = function(e) {
  * Renders the static portion of the range selector at the predraw stage.
  */
 rangeSelector.prototype.renderStaticLayer_ = function() {
-  if (!this.isEnabled_()) {
+  if (!this.updateInterfaceStatus_()) {
     return;
   }
   this.resize_();
@@ -135,7 +141,7 @@ rangeSelector.prototype.renderStaticLayer_ = function() {
  * Renders the interactive portion of the range selector after the chart has been drawn.
  */
 rangeSelector.prototype.renderInteractiveLayer_ = function() {
-  if (!this.isEnabled_() || this.isChangingRange_) {
+  if (!this.updateInterfaceStatus_() || this.isChangingRange_) {
     return;
   }
   this.placeZoomHandles_();
@@ -144,10 +150,10 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
 
 /**
  * @private
- * Check to see if the range selector is enabled and needs to be created or added to graph.
+ * Check to see if the range selector is enabled/disabled and update interface accordingly.
  */
-rangeSelector.prototype.isEnabled_ = function() {
-  var enabled = this.attr_('showRangeSelector');
+rangeSelector.prototype.updateInterfaceStatus_ = function() {
+  var enabled = this.getOption_('showRangeSelector');
   if (enabled) {
     if (!(this.status_ & CREATED)) {
       this.createInterface_();
@@ -177,12 +183,12 @@ rangeSelector.prototype.resize_ = function() {
   }
 
   var plotArea = this.layout_.getPlotArea();
-  var xAxisLabelHeight = this.attr_('xAxisHeight') || (this.attr_('axisLabelFontSize') + 2 * this.attr_('axisTickSize'));
+  var xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   this.canvasRect_ = {
     x: plotArea.x,
     y: plotArea.y + plotArea.h + xAxisLabelHeight + 4,
     w: plotArea.w,
-    h: this.attr_('rangeSelectorHeight')
+    h: this.getOption_('rangeSelectorHeight')
   };
 
   setElementRect(this.bgcanvas_, this.canvasRect_);
@@ -514,9 +520,8 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  this.dygraph_.attrs_.interactionModel =
-      Dygraph.Interaction.dragIsPanInteractionModel;
-  this.dygraph_.attrs_.panEdgeFraction = 0.0001;
+  this.setDefaultOption_('interactionModel', Dygraph.Interaction.dragIsPanInteractionModel);
+  this.setDefaultOption_('panEdgeFraction', 0.0001);
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
   this.dygraph_.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
@@ -567,13 +572,13 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
  * Draws the mini plot in the background canvas.
  */
 rangeSelector.prototype.drawMiniPlot_ = function() {
-  var fillStyle = this.attr_('rangeSelectorPlotFillColor');
-  var strokeStyle = this.attr_('rangeSelectorPlotStrokeColor');
+  var fillStyle = this.getOption_('rangeSelectorPlotFillColor');
+  var strokeStyle = this.getOption_('rangeSelectorPlotStrokeColor');
   if (!fillStyle && !strokeStyle) {
     return;
   }
 
-  var stepPlot = this.attr_('stepPlot');
+  var stepPlot = this.getOption_('stepPlot');
 
   var combinedSeriesData = this.computeCombinedSeriesAndLimits_();
   var yRange = combinedSeriesData.yMax - combinedSeriesData.yMin;
@@ -646,7 +651,7 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
  */
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var data = this.dygraph_.rawData_;
-  var logscale = this.attr_('logscale');
+  var logscale = this.getOption_('logscale');
 
   // Create a combined series (average of all series values).
   var combinedSeries = [];
