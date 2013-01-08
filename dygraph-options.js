@@ -38,13 +38,6 @@ var DygraphOptions = function(dygraph) {
   this.user_ = this.dygraph_.user_attrs_ || {};
 
   this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
-  // Get a list of series names.
-
-  var labels = this.get("labels");
-  if (!labels) {
-    return; // -- can't do more for now, will parse after getting the labels.
-  }
-
   this.reparseSeries();
 };
 
@@ -92,7 +85,12 @@ DygraphOptions.axisToIndex_ = function(axis) {
  * TODO(konigsberg): The method name is kind of weak; fix.
  */
 DygraphOptions.prototype.reparseSeries = function() {
-  this.labels = this.get("labels").slice(1);
+  var labels = this.get("labels");
+  if (!labels) {
+    return; // -- can't do more for now, will parse after getting the labels.
+  }
+
+  this.labels = labels.slice(1);
 
   this.yAxes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.xAxis_ = { options : {} };
@@ -121,15 +119,15 @@ DygraphOptions.prototype.reparseSeries = function() {
   // So, if series is found, it's expected to contain per-series data, otherwise we fall
   // back.
   var oldStyleSeries = !this.user_["series"];
-  
+
   if (oldStyleSeries) {
     var axisId = 0; // 0-offset; there's always one.
     // Go through once, add all the series, and for those with {} axis options, add a new axis.
     for (var idx = 0; idx < this.labels.length; idx++) {
       var seriesName = this.labels[idx];
-  
+
       var optionsForSeries = this.user_[seriesName] || {};
-  
+
       var yAxis = 0;
       var axis = optionsForSeries["axis"];
       if (typeof(axis) == 'object') {
@@ -144,14 +142,14 @@ DygraphOptions.prototype.reparseSeries = function() {
 
       this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
     }
-  
+
     // Go through one more time and assign series to an axis defined by another
     // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
     for (var idx = 0; idx < this.labels.length; idx++) {
       var seriesName = this.labels[idx];
-      var optionsForSeries = this.series_[seriesName]["options"]; 
+      var optionsForSeries = this.series_[seriesName]["options"];
       var axis = optionsForSeries["axis"];
-  
+
       if (typeof(axis) == 'string') {
         if (!this.series_.hasOwnProperty(axis)) {
           this.dygraph_.error("Series " + seriesName + " wants to share a y-axis with " +
@@ -185,7 +183,7 @@ DygraphOptions.prototype.reparseSeries = function() {
   var axis_opts = this.user_["axes"] || {};
   Dygraph.update(this.yAxes_[0].options, axis_opts["y"] || {});
   if (this.yAxes_.length > 1) {
-    Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});   
+    Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});
   }
   Dygraph.update(this.xAxis_.options, axis_opts["x"] || {});
 };
@@ -341,7 +339,7 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
-/* Are we using this? */ 
+/* Are we using this? */
 /**
  * Return the index of the specified series.
  * @param {string} series the series name.
