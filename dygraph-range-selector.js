@@ -278,7 +278,7 @@ DygraphRangeSelector.prototype.initInteraction_ = function() {
       var zoomHandleStatus = self.getZoomHandleStatus_();
       self.isChangingRange_ = true;
       if (!zoomHandleStatus.isZoomed) {
-        self.dygraph_.doUnzoom_();
+        self.dygraph_.restoreZoom();
       } else {
         var xDataWindow = toXDataWindow(zoomHandleStatus);
         self.dygraph_.doZoomXDates_(xDataWindow[0], xDataWindow[1]);
