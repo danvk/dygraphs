@@ -1463,7 +1463,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
  * Reset the zoom to the original view coordinates. This is the same as
  * double-clicking on the graph.
  */
-Dygraph.prototype.restoreZoom = function() {
+Dygraph.prototype.resetZoom = function() {
   var dirty = false, dirtyX = false, dirtyY = false;
   if (this.dateWindow_ !== null) {
     dirty = true;

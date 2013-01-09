@@ -574,7 +574,7 @@ Dygraph.Interaction.defaultModel = {
     if (event.altKey || event.shiftKey) {
       return;
     }
-    g.restoreZoom();
+    g.resetZoom();
   }
 };
 
