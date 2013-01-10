@@ -129,6 +129,77 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
   this.assertGraphExistence(g, graph);
 };
 
+RangeSelectorTestCase.prototype.testRangeSelectorEnablingAfterCreation = function() {
+  var opts = {
+    width: 480,
+    height: 320
+  };
+  var data = [
+               [1, 10],
+               [2, 15],
+               [3, 10],
+               [4, 15],
+               [5, 10],
+               [6, 15],
+               [7, 10],
+               [8, 15],
+               [9, 10]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.updateOptions({showRangeSelector: true});
+  this.assertGraphExistence(g, graph);
+};
+
+// The animatedZooms option does not work with the range selector. Make sure it gets turned off.
+RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    showRangeSelector: true,
+    animatedZooms: true
+  };
+  var data = [
+               [1, 10],
+               [2, 15],
+               [3, 10],
+               [4, 15],
+               [5, 10],
+               [6, 15],
+               [7, 10],
+               [8, 15],
+               [9, 10]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  this.assertGraphExistence(g, graph);
+  assertFalse(g.getOption('animatedZooms'));
+};
+
+RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption2 = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    animatedZooms: true
+  };
+  var data = [
+               [1, 10],
+               [2, 15],
+               [3, 10],
+               [4, 15],
+               [5, 10],
+               [6, 15],
+               [7, 10],
+               [8, 15],
+               [9, 10]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  g.updateOptions({showRangeSelector: true});
+  this.assertGraphExistence(g, graph);
+  assertFalse(g.getOption('animatedZooms'));
+};
+
 RangeSelectorTestCase.prototype.assertGraphExistence = function(g, graph) {
   assertNotNull(g);
   var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
