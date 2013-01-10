@@ -574,9 +574,7 @@ Dygraph.Interaction.defaultModel = {
     if (event.altKey || event.shiftKey) {
       return;
     }
-    // TODO(konigsberg): replace g.doUnzoom()_ with something that is
-    // friendlier to public use.
-    g.doUnzoom_();
+    g.resetZoom();
   }
 };
 
