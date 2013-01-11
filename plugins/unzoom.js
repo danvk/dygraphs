@@ -63,7 +63,7 @@ Dygraph.Plugins.Unzoom = (function() {
     }
 
     this.button_ = document.createElement('button');
-    this.button_.innerHTML = 'Unzoom';
+    this.button_.innerHTML = 'Reset Zoom';
     this.button_.style.display = 'none';
     this.button_.style.position = 'absolute';
     var area = g.plotter_.area;
@@ -92,7 +92,7 @@ Dygraph.Plugins.Unzoom = (function() {
   };
 
   unzoom.prototype.show = function(enabled) {
-    this.button_.style.display = enabled ? 'block' : '';
+    this.button_.style.display = enabled ? '' : 'none';
   };
 
   unzoom.prototype.destroy = function() {
