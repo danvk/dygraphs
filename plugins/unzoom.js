@@ -35,6 +35,10 @@ Dygraph.Plugins.Unzoom = (function() {
    */
   var unzoom = function() {
     this.button_ = null;
+
+    // True when the mouse is over the canvas. Must be tracked
+    // because the unzoom button state can change even when the
+    // mouse-over state hasn't.
     this.over_ = false;
   };  
     
@@ -52,9 +56,9 @@ Dygraph.Plugins.Unzoom = (function() {
     var g = e.dygraph;
 
     if (this.button_ != null) {
-      if (g.isZoomed() && this.over_) {
-        this.show(true); 
-      }
+      // short-circuit: show the button only when we're moused over, and zoomed in.
+      var showButton = g.isZoomed() && this.over_;
+      this.show(showButton);
       return;
     }
 
@@ -62,16 +66,16 @@ Dygraph.Plugins.Unzoom = (function() {
     this.button_.innerHTML = 'Unzoom';
     this.button_.style.display = 'none';
     this.button_.style.position = 'absolute';
-    this.button_.style.top = '2px';
-    this.button_.style.left = '59px';
-    this.button_.style.zIndex = 1000;
+    var area = g.plotter_.area;
+    this.button_.style.top = (area.y + 4) + 'px';
+    this.button_.style.left = (area.x + 4) + 'px';
+    this.button_.style.zIndex = 11;
     var parent = g.graphDiv;
     parent.insertBefore(this.button_, parent.firstChild);
 
     var self = this;
     this.button_.onclick = function() {
-      // TODO(konigsberg): doUnzoom_ is private.
-      g.doUnzoom_();
+      g.resetZoom();
     }
 
     g.addEvent(parent, 'mouseover', function() {
@@ -88,7 +92,7 @@ Dygraph.Plugins.Unzoom = (function() {
   };
 
   unzoom.prototype.show = function(enabled) {
-    this.button_.style.display = enabled ? 'block' : 'none';
+    this.button_.style.display = enabled ? 'block' : '';
   };
 
   unzoom.prototype.destroy = function() {
