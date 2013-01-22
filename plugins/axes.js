@@ -123,12 +123,12 @@ axes.prototype.willDrawChart = function(e) {
       lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
       overflow: "hidden"
     };
-  }
+  };
 
   var labelStyles = {
     x : makeLabelStyle('x'),
     y : makeLabelStyle('y'),
-    y2 : makeLabelStyle('y2'),
+    y2 : makeLabelStyle('y2')
   };
 
   var makeDiv = function(txt, axis, prec_axis) {

@@ -873,7 +873,7 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
         repeatFn(maxFrameArg);  // Ensure final call with maxFrameArg.
         cleanupFn();
       } else {
-        if (frameDelta != 0) {  // Don't call repeatFn with duplicate frames.
+        if (frameDelta !== 0) {  // Don't call repeatFn with duplicate frames.
           repeatFn(frameNumber);
         }
         loop();

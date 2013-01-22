@@ -44,7 +44,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global DygraphLayout:false, DygraphCanvasRenderer:false, G_vmlCanvasManager:false */
+/*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false */
 "use strict";
 
 /**
@@ -599,7 +599,8 @@ Dygraph.prototype.getOption = function(name, opt_seriesName) {
 
 Dygraph.prototype.getOptionForAxis = function(name, axis) {
   return this.attributes_.getForAxis(name, axis);
-}
+};
+
 /**
  * @private
  * @param  String} axis The name of the axis (i.e. 'x', 'y' or 'y2')
@@ -2499,7 +2500,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
 
-    if (series.length == 0) {
+    if (series.length === 0) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
     } else {
@@ -2804,7 +2805,7 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
-}
+};
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()

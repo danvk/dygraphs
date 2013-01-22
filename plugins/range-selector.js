@@ -166,7 +166,7 @@ rangeSelector.prototype.updateInterfaceStatus_ = function() {
     setTimeout(function() { dygraph.width_ = 0; dygraph.resize(); }, 1);
   }
   return enabled;
-}
+};
 
 /**
  * @private

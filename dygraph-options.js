@@ -4,6 +4,8 @@
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
  */
 
+/*jshint globalstrict:true, sub:true */
+/*global Dygraph:false */
 "use strict";
 
 /*
@@ -68,8 +70,8 @@ DygraphOptions.axisToIndex_ = function(axis) {
     throw "Dygraphs only supports two y-axes, indexed from 0-1.";
   }
   if (typeof(axis) == "object") {
-    throw "Using objects for axis specification "
-      + "is not supported inside the 'series' option.";
+    throw "Using objects for axis specification " +
+        "is not supported inside the 'series' option.";
   }
   if (axis) {
     throw "Unknown axis : " + axis;
@@ -216,7 +218,7 @@ DygraphOptions.prototype.getGlobalDefault_ = function(name) {
     return Dygraph.DEFAULT_ATTRS[name];
   }
   return null;
-}
+};
 
 /**
  * Get a value for a specific axis. If there is no specific value for the axis,

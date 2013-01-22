@@ -58,7 +58,7 @@
  *   middle of the years.
  */
 
-/*jshint globalstrict: true */
+/*jshint globalstrict:true, sub:true */
 /*global Dygraph:false */
 "use strict";
 
