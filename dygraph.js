@@ -1685,7 +1685,6 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
   var row = this.findClosestRow(domX);
   var boundary = this.getLeftBoundary_();
   var rowIdx = row - boundary;
-  var sets = this.layout_.points;
   var closestPoint, closestSeries;
   for (var setIdx = 0; setIdx < this.layout_.datasets.length; ++setIdx) {
     var points = this.layout_.points[setIdx];
@@ -1836,7 +1835,8 @@ Dygraph.prototype.animateSelection_ = function(direction) {
  * @private
  */
 Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
-  var defaultPrevented = this.cascadeEvents_('select', {
+  /*var defaultPrevented = */
+  this.cascadeEvents_('select', {
     selectedX: this.lastx_,
     selectedPoints: this.selPoints_
   });
@@ -2410,10 +2410,9 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-
   // Preserve valueWindow settings if they exist, and if the user hasn't
   // specified a new valueRange.
-  var i, valueWindows, seriesName, axis, index, opts, v;
+  var valueWindows, axis, index, opts, v;
   if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
     valueWindows = [];
     for (index = 0; index < this.axes_.length; index++) {

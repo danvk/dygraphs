@@ -1029,7 +1029,6 @@ Dygraph.regularShape_ = function(
   delta = delta || Math.PI * 2 / sides;
 
   ctx.beginPath();
-  var first = true;
   var initialAngle = rotationRadians;
   var angle = initialAngle;
 

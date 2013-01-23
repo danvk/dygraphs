@@ -3,6 +3,7 @@
  * Copyright 2011 Paul Felix (paul.eric.felix@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
+/*global Dygraph:false,TouchEvent:false */
 
 /**
  * @fileoverview This file contains the RangeSelector plugin used to provide

@@ -3,6 +3,7 @@
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
+/*global Dygraph:false */
 
 Dygraph.Plugins.Legend = (function() {
 /*
@@ -189,7 +190,7 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // If no points are selected, we display a default legend. Traditionally,
   // this has been blank. But a better default would be a conventional legend,
   // which provides essential information for a non-interactive chart.
-  var html, sepLines, i, c, dash, strokePattern;
+  var html, sepLines, i, dash, strokePattern;
   var labels = g.getLabels();
 
   if (typeof(x) === 'undefined') {
