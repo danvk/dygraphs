@@ -4,7 +4,9 @@
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
  */
 
-/*jshint globalstrict:true, sub:true */
+var DygraphOptions = (function() {
+
+/*jshint sub:true */
 /*global Dygraph:false */
 "use strict";
 
@@ -349,3 +351,7 @@ DygraphOptions.prototype.seriesNames = function() {
 DygraphOptions.prototype.indexOfSeries = function(series) {
   return this.series_[series].idx;
 };
+
+return DygraphOptions;
+
+})();
