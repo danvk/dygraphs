@@ -4,6 +4,8 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
+/*global Dygraph:false */
+
 Dygraph.Plugins.Annotations = (function() {
 
 "use strict";

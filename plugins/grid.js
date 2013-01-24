@@ -3,6 +3,7 @@
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
+/*global Dygraph:false */
 
 Dygraph.Plugins.Grid = (function() {
 
