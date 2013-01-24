@@ -4,6 +4,8 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
+/*global Dygraph:false */
+
 Dygraph.Plugins.Axes = (function() {
 
 "use strict";
@@ -52,7 +54,7 @@ axes.prototype.layout = function(e) {
 
   if (g.getOption('drawYAxis')) {
     var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
-    var y_axis_rect = e.reserveSpaceLeft(w);
+    e.reserveSpaceLeft(w);
   }
 
   if (g.getOption('drawXAxis')) {
@@ -65,13 +67,13 @@ axes.prototype.layout = function(e) {
     } else {
       h = g.getOptionForAxis('axisLabelFontSize', 'x') + 2 * g.getOption('axisTickSize');
     }
-    var x_axis_rect = e.reserveSpaceBottom(h);
+    e.reserveSpaceBottom(h);
   }
 
   if (g.numAxes() == 2) {
     // TODO(danvk): per-axis setting.
     var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
-    var y2_axis_rect = e.reserveSpaceRight(w);
+    e.reserveSpaceRight(w);
   } else if (g.numAxes() > 2) {
     g.error("Only two y-axes are supported at this time. (Trying " +
             "to use " + g.numAxes() + ")");
@@ -93,7 +95,6 @@ axes.prototype.detachLabels = function() {
 };
 
 axes.prototype.clearChart = function(e) {
-  var g = e.dygraph;
   this.detachLabels();
 };
 
@@ -123,12 +124,12 @@ axes.prototype.willDrawChart = function(e) {
       lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
       overflow: "hidden"
     };
-  }
+  };
 
   var labelStyles = {
     x : makeLabelStyle('x'),
     y : makeLabelStyle('y'),
-    y2 : makeLabelStyle('y2'),
+    y2 : makeLabelStyle('y2')
   };
 
   var makeDiv = function(txt, axis, prec_axis) {

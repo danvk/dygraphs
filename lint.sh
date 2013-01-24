@@ -24,8 +24,6 @@ else
   files=$1
 fi
 
-jshint_opts="shadow=false"
-
 if [ -e /System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc ]; then
   # use JSC (Safari/JavaScriptCore) to run JSHint -- much faster than Rhino.
   echo 'Running JSHint w/ JavaScriptCore (jsc)...'

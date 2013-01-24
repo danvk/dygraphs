@@ -58,12 +58,12 @@
  *   middle of the years.
  */
 
-/*jshint globalstrict: true */
+/*jshint globalstrict:true, sub:true */
 /*global Dygraph:false */
 "use strict";
 
 /** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
-Dygraph.TickList;
+Dygraph.TickList = undefined;  // the ' = undefined' keeps jshint happy.
 
 /** @typedef {function(
  *    number,
@@ -74,8 +74,7 @@ Dygraph.TickList;
  *    Array.<number>=
  *  ): Dygraph.TickList}
  */
-Dygraph.Ticker;
-
+Dygraph.Ticker = undefined;  // the ' = undefined' keeps jshint happy.
 
 /** @type {Dygraph.Ticker} */
 Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
@@ -182,7 +181,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       // that results in tick marks spaced sufficiently far apart.
       // The "mults" array should cover the range 1 .. base^2 to
       // adjust for rounding and edge effects.
-      var scale, low_val, high_val, nTicks, spacing;
+      var scale, low_val, high_val, spacing;
       for (j = 0; j < mults.length; j++) {
         scale = base_scale * mults[j];
         low_val = Math.floor(a / scale) * scale;

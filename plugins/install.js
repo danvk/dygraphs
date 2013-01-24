@@ -1,3 +1,5 @@
+/*global Dygraph:false */
+
 // This file defines the ordering of the plugins.
 //
 // The ordering is from most-general to most-specific.

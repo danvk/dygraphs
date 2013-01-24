@@ -1,3 +1,5 @@
+/*global Dygraph:false */
+
 // Namespace for plugins.
 Dygraph.Plugins = {};
 

@@ -18,16 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/*global Dygraph:false */
 
-/** 
+/**
  * @fileoverview Plug-in for providing unzoom-on-hover.
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 Dygraph.Plugins.Unzoom = (function() {
-  
+
   "use strict";
-  
+
   /**
    * Create a new instance.
    *
@@ -40,10 +41,10 @@ Dygraph.Plugins.Unzoom = (function() {
     // because the unzoom button state can change even when the
     // mouse-over state hasn't.
     this.over_ = false;
-  };  
-    
+  };
+
   unzoom.prototype.toString = function() {
-    return 'Unzoom Plugin'; 
+    return 'Unzoom Plugin';
   };
 
   unzoom.prototype.activate = function(g) {
@@ -55,7 +56,7 @@ Dygraph.Plugins.Unzoom = (function() {
   unzoom.prototype.willDrawChart = function(e) {
     var g = e.dygraph;
 
-    if (this.button_ != null) {
+    if (this.button_ !== null) {
       // short-circuit: show the button only when we're moused over, and zoomed in.
       var showButton = g.isZoomed() && this.over_;
       this.show(showButton);
@@ -76,7 +77,7 @@ Dygraph.Plugins.Unzoom = (function() {
     var self = this;
     this.button_.onclick = function() {
       g.resetZoom();
-    }
+    };
 
     g.addEvent(parent, 'mouseover', function() {
       if (g.isZoomed()) {
