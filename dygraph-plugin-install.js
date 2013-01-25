@@ -9,7 +9,6 @@
 // This is most relevant for plugins which register a layout event, e.g.
 // Axes, Legend and ChartLabels.
 
-// TODO(danvk): move this into the top-level directory. Only plugins here.
 Dygraph.PLUGINS.push(
   Dygraph.Plugins.Legend,
   Dygraph.Plugins.Axes,
