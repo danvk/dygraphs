@@ -966,6 +966,12 @@ Dygraph.prototype.createInterface_ = function() {
   };
   this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
+ 
+  if (this.resizeHandler) {
+    // remove handler because it's already setup.
+    Dygraph.removeEvent(window, 'resize', this.resizeHandler);
+  }
+
   this.resizeHandler = function(e) {
     dygraph.resize();
   };
