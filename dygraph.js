@@ -966,13 +966,15 @@ Dygraph.prototype.createInterface_ = function() {
   };
   this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
 
-  this.resizeHandler = function(e) {
-    dygraph.resize();
-  };
+  if (!this.resizeHandler_) {
+    this.resizeHandler_ = function(e) {
+      dygraph.resize();
+    };
 
-  // Update when the window is resized.
-  // TODO(danvk): drop frames depending on complexity of the chart.
-  this.addEvent(window, 'resize', this.resizeHandler);
+    // Update when the window is resized.
+    // TODO(danvk): drop frames depending on complexity of the chart.
+    this.addEvent(window, 'resize', this.resizeHandler_);
+  }
 };
 
 /**
@@ -1008,8 +1010,8 @@ Dygraph.prototype.destroy = function() {
     }
   };
   // remove event handlers
-  Dygraph.removeEvent(window,'resize',this.resizeHandler);
-  this.resizeHandler = null;
+  Dygraph.removeEvent(window,'resize',this.resizeHandler_);
+  this.resizeHandler_ = null;
   // These may not all be necessary, but it can't hurt...
   nullOut(this.layout_);
   nullOut(this.plotter_);
