@@ -994,10 +994,13 @@ Dygraph.prototype.destroy = function() {
     }
   };
 
-  for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
-    var reg = this.registeredEvents_[idx];
-    Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+  if (this.registeredEvents_) {
+    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+      var reg = this.registeredEvents_[idx];
+      Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+    }
   }
+
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
