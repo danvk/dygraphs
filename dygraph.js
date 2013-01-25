@@ -2358,9 +2358,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   if (this.attr_("timingName")) {
     var end = new Date();
-    if (console) {
-      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms");
-    }
+    Dygraph.info(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms");
   }
 };
 
