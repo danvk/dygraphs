@@ -421,7 +421,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Axis display"],
     "type": "Array of two numbers",
     "example": "[10, 110]",
-    "description": "Explicitly set the vertical range of the graph to [low, high]. This may be set on a per-axis basis to define each y-axis separately."
+    "description": "Explicitly set the vertical range of the graph to [low, high]. This may be set on a per-axis basis to define each y-axis separately. You can specify only one limit and let other one (replaced by NaN) to be calculated automatically, by exemple [NaN,30]"
   },
   "labelsDivWidth": {
     "default": "250",

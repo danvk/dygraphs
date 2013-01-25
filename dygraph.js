@@ -2570,7 +2570,10 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
-      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+      axis.computedValueRange = [
+         !isNaN(axis.valueRange[0]) ? axis.valueRange[0] : axis.extremeRange[0],
+         !isNaN(axis.valueRange[1]) ? axis.valueRange[1] : axis.extremeRange[1]
+      ];
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
