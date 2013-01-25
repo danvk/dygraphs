@@ -15,14 +15,14 @@ dygraph-tickers.js \
 rgbcolor/rgbcolor.js \
 strftime/strftime-min.js \
 dashed-canvas.js \
-plugins/base.js \
+dygraph-plugin-base.js \
 plugins/annotations.js \
 plugins/axes.js \
 plugins/range-selector.js \
 plugins/chart-labels.js \
 plugins/grid.js \
 plugins/legend.js \
-plugins/install.js \
+dygraph-plugin-install.js \
 ; do
   base_size=$(cat $file | wc -c)
   cat $file \
