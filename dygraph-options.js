@@ -199,7 +199,7 @@ DygraphOptions.prototype.reparseSeries = function() {
  */
 DygraphOptions.prototype.get = function(name) {
   var result = this.getGlobalUser_(name);
-  if (result != null) {
+  if (result !== null) {
     return result;
   }
   return this.getGlobalDefault_(name);
@@ -237,7 +237,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   // Since axis can be a number or a string, straighten everything out here.
   if (typeof(axis) == 'number') {
     axisIdx = axis;
-    axisString = axisIdx == 0 ? "y" : "y2";
+    axisString = axisIdx === 0 ? "y" : "y2";
   } else {
     if (axis == "y1") { axis = "y"; } // Standardize on 'y'. Is this bad? I think so.
     if (axis == "y") {
@@ -264,7 +264,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
 
   // User-specified global options second.
   var result = this.getGlobalUser_(name);
-  if (result != null) {
+  if (result !== null) {
     return result;
   }
 
