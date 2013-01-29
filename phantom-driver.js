@@ -179,8 +179,9 @@ RunAllAutoTests(function(num_failing, num_passing) {
   if (num_failing !== 0) {
     console.log('FAIL');
     phantom.exit();
+  } else {
+    console.log('PASS');
   }
-  console.log('PASS');
   phantom.exit();
 
   // This is not yet reliable enough to be useful:
