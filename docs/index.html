@@ -408,6 +408,13 @@ new Dygraph(el, data, {
 
     <p>Most browsers will ignore the trailing comma, but it will break under IE.</p>
 
+    <p>You may also need to delay instantiating any dygraphs until after the DOM
+    content is ready, as there have been some <a
+      href="https://groups.google.com/d/topic/dygraphs-users/qPX4Syx2kz8/discussion">reports</a>
+    that excanvas won't work until this happens. If you're using jQuery, this
+    means drawing your charts inside of a <code>$(function() { ... })</code>
+    block.</p>
+
     <h2 id="gviz">GViz Data</h2>
 
     <p>The <a
