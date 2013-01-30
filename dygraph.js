@@ -956,19 +956,20 @@ Dygraph.prototype.createInterface_ = function() {
 
   var dygraph = this;
 
-  // Don't recreate and register the handlers on subsequent calls.
+  this.mouseMoveHandler_ = function(e) {
+    dygraph.mouseMove_(e);
+  };
+
+  this.mouseOutHandler_ = function(e) {
+    dygraph.mouseOut_(e);
+  };
+
+  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+
+  // Don't recreate and register the resize handler on subsequent calls.
   // This happens when the graph is resized.
-  if (!this.mouseMoveHandler_) {
-    this.mouseMoveHandler_ = function(e) {
-      dygraph.mouseMove_(e);
-    };
-    this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-
-    this.mouseOutHandler_ = function(e) {
-      dygraph.mouseOut_(e);
-    };
-    this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
-
+  if (!this.resizeHandler_) {
     this.resizeHandler_ = function(e) {
       dygraph.resize();
     };
