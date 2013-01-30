@@ -2498,7 +2498,7 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   
   var isUnspecifiedLimit = function(num) {
-    return isNaN(parseFloat(num, 10));
+    return isNaN(parseFloat(num));
   };
   var series;
   var numAxes = this.attributes_.numAxes();
