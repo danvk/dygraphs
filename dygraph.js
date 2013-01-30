@@ -2496,6 +2496,10 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
+  
+  var isUnspecifiedLimit = function(num) {
+    return isNaN(parseFloat(num, 10));
+  };
   var series;
   var numAxes = this.attributes_.numAxes();
 
@@ -2569,8 +2573,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
       axis.computedValueRange = [
-         !isNaN(axis.valueRange[0]) && axis.valueRange[0] !== null && axis.valueRange[0] !== undefined ? axis.valueRange[0] : axis.extremeRange[0],
-         !isNaN(axis.valueRange[1]) && axis.valueRange[1] !== null && axis.valueRange[1] !== undefined ? axis.valueRange[1] : axis.extremeRange[1]
+         isUnspecifiedLimit(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0],
+         isUnspecifiedLimit(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1]
       ];
     } else {
       axis.computedValueRange = axis.extremeRange;
