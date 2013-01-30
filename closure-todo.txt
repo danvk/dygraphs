@@ -20,14 +20,14 @@ x dygraph-tickers.js
 x dygraph-options-reference.js
 x dygraph-utils.js
 x dashed-canvas.js
+- dygraph-plugin-base.js
+- dygraph-plugin-install.js
 
 Plugins:
 - plugins/annotations.js
 - plugins/axes.js
-- plugins/base.js
 - plugins/chart-labels.js
 - plugins/grid.js
-- plugins/install.js
 - plugins/legend.js
 
 Here's a command that can be used to build dygraphs using the closure

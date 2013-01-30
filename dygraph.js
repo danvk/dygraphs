@@ -956,23 +956,27 @@ Dygraph.prototype.createInterface_ = function() {
 
   var dygraph = this;
 
-  this.mouseMoveHandler = function(e) {
-    dygraph.mouseMove_(e);
-  };
-  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  // Don't recreate and register the handlers on subsequent calls.
+  // This happens when the graph is resized.
+  if (!this.mouseMoveHandler_) {
+    this.mouseMoveHandler_ = function(e) {
+      dygraph.mouseMove_(e);
+    };
+    this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
-  this.mouseOutHandler = function(e) {
-    dygraph.mouseOut_(e);
-  };
-  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
+    this.mouseOutHandler_ = function(e) {
+      dygraph.mouseOut_(e);
+    };
+    this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
 
-  this.resizeHandler = function(e) {
-    dygraph.resize();
-  };
+    this.resizeHandler_ = function(e) {
+      dygraph.resize();
+    };
 
-  // Update when the window is resized.
-  // TODO(danvk): drop frames depending on complexity of the chart.
-  this.addEvent(window, 'resize', this.resizeHandler);
+    // Update when the window is resized.
+    // TODO(danvk): drop frames depending on complexity of the chart.
+    this.addEvent(window, 'resize', this.resizeHandler_);
+  }
 };
 
 /**
@@ -998,9 +1002,14 @@ Dygraph.prototype.destroy = function() {
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
+
+  // remove window handlers
+  Dygraph.removeEvent(window,'resize',this.resizeHandler_);
+  this.resizeHandler_ = null;
+
   removeRecursive(this.maindiv_);
 
   var nullOut = function(obj) {
@@ -1010,9 +1019,6 @@ Dygraph.prototype.destroy = function() {
       }
     }
   };
-  // remove event handlers
-  Dygraph.removeEvent(window,'resize',this.resizeHandler);
-  this.resizeHandler = null;
   // These may not all be necessary, but it can't hurt...
   nullOut(this.layout_);
   nullOut(this.plotter_);
@@ -2361,9 +2367,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   if (this.attr_("timingName")) {
     var end = new Date();
-    if (console) {
-      console.log(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms");
-    }
+    Dygraph.info(this.attr_("timingName") + " - drawGraph: " + (end - start) + "ms");
   }
 };
 
