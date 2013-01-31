@@ -57,9 +57,17 @@
       it.<br/>
       This ensures that we won't inadvertently break your feature in the
       future. To do this, either add to an existing auto_test in
-      auto_tests/tests or run "auto_tests/misc/new-test.sh your-test-name" to
-      create a new one. You can run your auto_test in any browser by visiting
-      auto_tests/misc/local.html.
+      auto_tests/tests or run
+      <code>auto_tests/misc/new-test.sh your-test-name</code> to
+      create a new one. There are two easy ways to run tests:
+      <ul>
+      <li>You can run your auto_test in any browser by visiting
+      <code>auto_tests/misc/local.html</code>. This allows you to debug your
+      test, or test against a specific browser.
+      <li>You can run your auto_test on the command-line by running
+      <code>./test.sh</code>. (It requires installing
+      <a href="http://phantomjs.org">phantomjs</a> on your computer.)
+      </ul>
     </ol>
 
     <h3>Sending a Pull Request</h3>
