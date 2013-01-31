@@ -261,11 +261,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
     drawPointCallback, pointSize) {
   var g = e.dygraph;
   // TODO(konigsberg): Compute attributes outside this method call.
-  var stepPlot = g.getOption("stepPlot");
-  var seriesStepPlot = g.getOption("stepPlot",e.setName);
-  if(seriesStepPlot !== undefined) {
-    stepPlot = seriesStepPlot;
-  }
+  var stepPlot = g.getOption("stepPlot", e.setName);
 
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
@@ -596,7 +592,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var ctx = e.drawingContext;
   var color = e.color;
   var fillAlpha = g.getOption('fillAlpha', setName);
-  var stepPlot = g.getOption('stepPlot');  // TODO(danvk): per-series
+  var stepPlot = g.getOption("stepPlot", setName);
   var points = e.points;
 
   var iter = Dygraph.createIterator(points, 0, points.length,
@@ -696,7 +692,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var setCount = sets.length;
 
   var fillAlpha = g.getOption('fillAlpha');
-  var stepPlot = g.getOption('stepPlot');
+  var stepPlot = g.getOption('stepPlot', e.setName);
   var stackedGraph = g.getOption("stackedGraph");
   var colors = g.getColors();
 
