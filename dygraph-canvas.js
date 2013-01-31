@@ -263,8 +263,8 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
   // TODO(konigsberg): Compute attributes outside this method call.
   var stepPlot = g.getOption("stepPlot");
   var seriesStepPlot = g.getOption("stepPlot",e.setName);
-  if(seriesStepPlot !== undefined){
-	  stepPlot = seriesStepPlot;
+  if(seriesStepPlot !== undefined) {
+    stepPlot = seriesStepPlot;
   }
 
   if (!Dygraph.isArrayLike(strokePattern)) {
