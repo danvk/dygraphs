@@ -993,10 +993,13 @@ Dygraph.prototype.destroy = function() {
     }
   };
 
-  for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
-    var reg = this.registeredEvents_[idx];
-    Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+  if (this.registeredEvents_) {
+    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+      var reg = this.registeredEvents_[idx];
+      Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+    }
   }
+
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
@@ -2500,6 +2503,10 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
+  
+  var isNullUndefinedOrNaN = function(num) {
+    return isNaN(parseFloat(num));
+  };
   var series;
   var numAxes = this.attributes_.numAxes();
 
@@ -2572,7 +2579,10 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
-      axis.computedValueRange = [axis.valueRange[0], axis.valueRange[1]];
+      axis.computedValueRange = [
+         isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0],
+         isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1]
+      ];
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
