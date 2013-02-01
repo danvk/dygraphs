@@ -1282,7 +1282,7 @@ Dygraph.prototype.createDragInterface_ = function() {
   // This happens when the graph is resized.
   if (this.mouseUpHandler_) {
     Dygraph.removeEvent(document, 'mouseup', this.mouseUpHandler_);
-  };
+  }
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
