@@ -61,9 +61,9 @@
         var points = e.points;
         var y_bottom = e.dygraph.toDomYCoord(0);
 
-        // The RGBColor class is provided by rgbcolor.js, which is
+        // The RGBColorParser class is provided by rgbcolor.js, which is
         // packed in with dygraphs.
-        var color = new RGBColor(e.color);
+        var color = new RGBColorParser(e.color);
         color.r = Math.floor((255 + color.r) / 2);
         color.g = Math.floor((255 + color.g) / 2);
         color.b = Math.floor((255 + color.b) / 2);
@@ -274,7 +274,7 @@ var candleData = "Date,Open,Close,High,Low\n" +
       var fillColors = [];
       var strokeColors = g.getColors();
       for (var i = 0; i < strokeColors.length; i++) {
-        var color = new RGBColor(strokeColors[i]);
+        var color = new RGBColorParser(strokeColors[i]);
         color.r = Math.floor((255 + color.r) / 2);
         color.g = Math.floor((255 + color.g) / 2);
         color.b = Math.floor((255 + color.b) / 2);
