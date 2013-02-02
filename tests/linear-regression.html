@@ -104,7 +104,7 @@
           var p1 = g.toDomCoords(x1, y1);
           var p2 = g.toDomCoords(x2, y2);
 
-          var c = new RGBColor(g.getColors()[i - 1]);
+          var c = new RGBColorParser(g.getColors()[i - 1]);
           c.r = Math.floor(255 - 0.5 * (255 - c.r));
           c.g = Math.floor(255 - 0.5 * (255 - c.g));
           c.b = Math.floor(255 - 0.5 * (255 - c.b));
