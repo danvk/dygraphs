@@ -16,16 +16,11 @@ Dygraph.Plugins.RangeSelector = (function() {
 /*global Dygraph:false */
 "use strict";
 
-// Range selector status values
-var NOT_CREATED = 0; // Range selector interface has not been created
-var CREATED = 1 << 0; // Range selector interface has been created
-var ADDED_TO_GRAPH = 1 << 1; // Range selector elements have been added to the graph
-
 var rangeSelector = function() {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
   this.isMobileDevice_ = /mobile|android/gi.test(navigator.appVersion);
-  this.status_ = NOT_CREATED;
+  this.interfaceCreated_ = false;
 };
 
 rangeSelector.prototype.toString = function() {
@@ -34,8 +29,6 @@ rangeSelector.prototype.toString = function() {
 
 rangeSelector.prototype.activate = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.layout_ = dygraph.layout_;
-  this.graphDiv_ = dygraph.graphDiv;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   if (this.getOption_('showRangeSelector')) {
     this.createInterface_();
@@ -85,8 +78,8 @@ rangeSelector.prototype.createInterface_ = function() {
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
+  this.interfaceCreated_ = true;
   this.addToGraph_();
-  this.status_ = CREATED;
 };
 
 /**
@@ -94,12 +87,11 @@ rangeSelector.prototype.createInterface_ = function() {
  * Adds the range selector to the graph.
  */
 rangeSelector.prototype.addToGraph_ = function() {
-  var graphDiv = this.graphDiv_;
+  var graphDiv = this.graphDiv_ = this.dygraph_.graphDiv;
   graphDiv.appendChild(this.bgcanvas_);
   graphDiv.appendChild(this.fgcanvas_);
   graphDiv.appendChild(this.leftZoomHandle_);
   graphDiv.appendChild(this.rightZoomHandle_);
-  this.status_ |= ADDED_TO_GRAPH;
 };
 
 /**
@@ -112,7 +104,7 @@ rangeSelector.prototype.removeFromGraph_ = function() {
   graphDiv.removeChild(this.fgcanvas_);
   graphDiv.removeChild(this.leftZoomHandle_);
   graphDiv.removeChild(this.rightZoomHandle_);
-  this.status_ ^= ADDED_TO_GRAPH;
+  this.graphDiv_ = null;
 };
 
 /**
@@ -130,7 +122,7 @@ rangeSelector.prototype.reserveSpace_ = function(e) {
  * Renders the static portion of the range selector at the predraw stage.
  */
 rangeSelector.prototype.renderStaticLayer_ = function() {
-  if (!this.updateInterfaceStatus_()) {
+  if (!this.updateVisibility_()) {
     return;
   }
   this.resize_();
@@ -142,7 +134,7 @@ rangeSelector.prototype.renderStaticLayer_ = function() {
  * Renders the interactive portion of the range selector after the chart has been drawn.
  */
 rangeSelector.prototype.renderInteractiveLayer_ = function() {
-  if (!this.updateInterfaceStatus_() || this.isChangingRange_) {
+  if (!this.updateVisibility_() || this.isChangingRange_) {
     return;
   }
   this.placeZoomHandles_();
@@ -151,17 +143,17 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
 
 /**
  * @private
- * Check to see if the range selector is enabled/disabled and update interface accordingly.
+ * Check to see if the range selector is enabled/disabled and update visibility accordingly.
  */
-rangeSelector.prototype.updateInterfaceStatus_ = function() {
+rangeSelector.prototype.updateVisibility_ = function() {
   var enabled = this.getOption_('showRangeSelector');
   if (enabled) {
-    if (!(this.status_ & CREATED)) {
+    if (!this.interfaceCreated_) {
       this.createInterface_();
-    } else if (!(this.status_ & ADDED_TO_GRAPH)) {
+    } else if (!this.graphDiv_ || !this.graphDiv_.parentNode) {
       this.addToGraph_();
     }
-  } else if (this.status_ & ADDED_TO_GRAPH) {
+  } else if (this.graphDiv_) {
     this.removeFromGraph_();
     var dygraph = this.dygraph_;
     setTimeout(function() { dygraph.width_ = 0; dygraph.resize(); }, 1);
@@ -183,7 +175,7 @@ rangeSelector.prototype.resize_ = function() {
     canvas.style.height = canvas.height + 'px';  // for IE
   }
 
-  var plotArea = this.layout_.getPlotArea();
+  var plotArea = this.dygraph_.layout_.getPlotArea();
   var xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   this.canvasRect_ = {
     x: plotArea.x,
