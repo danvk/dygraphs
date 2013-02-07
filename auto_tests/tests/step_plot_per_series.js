@@ -3,25 +3,26 @@
  *
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
-var stepTestCase = TestCase("stepPlot_per_series");
+var StepTestCase = TestCase("step_plot_per_series");
 
-stepTestCase.prototype.setUp = function() {
+StepTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-var _origFunc = Dygraph.getContext;
-stepTestCase.prototype.setUp = function() {
+StepTestCase.origFunc = Dygraph.getContext;
+
+StepTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
+    return new Proxy(StepTestCase.origFunc(canvas));
   };
 };
 
-stepTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = _origFunc;
+StepTestCase.prototype.tearDown = function() {
+  Dygraph.getContext = StepTestCase.origFunc;
 };
 
-stepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
+StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
   var opts = {
     width: 480,
     height: 320,
@@ -84,7 +85,7 @@ stepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
   }
 };
 
-stepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
+StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
   var opts = {
     width: 480,
     height: 320,
@@ -238,7 +239,7 @@ stepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
   }
 };
 
-stepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
+StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
   var opts = {
     width: 480,
     height: 320,
@@ -333,7 +334,7 @@ stepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
 
 };
 
-stepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
+StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
   var opts = {
     width: 480,
     height: 320,
