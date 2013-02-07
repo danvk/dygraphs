@@ -131,7 +131,6 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     var y1 = data[i][4];
     var y2 = data[i + 1][4];
 
-
     // Fourth series (step)
     // Test lines
     // Horizontal line
@@ -153,12 +152,11 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     xy1 = xy2;
     xy2 = g.toDomCoords(x1, y1base);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    xy1 = xy2;
-    xy2 = g.toDomCoords(x1, y1);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
     
     y1base = y1;
-    y2base = y2;
+    y2base = y1;
     y1 += data[i][3];
     y2 += data[i + 1][3];
     
@@ -178,9 +176,8 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     xy1 = xy2;
     xy2 = g.toDomCoords(x1, y1base);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    xy1 = xy2;
-    xy2 = g.toDomCoords(x1, y1);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
     
     y1base = y1;
     y2base = y2;
@@ -208,12 +205,11 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     xy1 = xy2;
     xy2 = g.toDomCoords(x1, y1base);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    xy1 = xy2;
-    xy2 = g.toDomCoords(x1, y1);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
     
     y1base = y1;
-    y2base = y2;
+    y2base = y1;
     y1 += data[i][1];
     y2 += data[i + 1][1];
 
@@ -233,9 +229,8 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     xy1 = xy2;
     xy2 = g.toDomCoords(x1, y1base);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    xy1 = xy2;
-    xy2 = g.toDomCoords(x1, y1);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
   }
 };
 
@@ -284,34 +279,32 @@ StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
     var y1_bottom = y1_middle - data[i][1][1];
     var y2_bottom = y2_middle - data[i + 1][1][1];
     // Bottom line
-    // Horizontal line
     var xy1 = g.toDomCoords(x1, y1_bottom);
     var xy2 = g.toDomCoords(x2, y1_bottom);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_bottom);
-    xy2 = g.toDomCoords(x2, y2_bottom);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
 
     // Top line
-    // Horizontal line
     xy1 = g.toDomCoords(x1, y1_top);
     xy2 = g.toDomCoords(x2, y1_top);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_top);
-    xy2 = g.toDomCoords(x2, y2_top);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
 
     // Middle line
-    // Horizontal line
     xy1 = g.toDomCoords(x1, y1_middle);
     xy2 = g.toDomCoords(x2, y1_middle);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_middle);
-    xy2 = g.toDomCoords(x2, y2_middle);
+    
+    // Test edges of error bar areas(also drawn by dygraphs as lines)
+    xy1 = g.toDomCoords(x1, y1_top);
+    xy2 = g.toDomCoords(x2, y1_top);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    xy1 = xy2;
+    xy2 = g.toDomCoords(x2, y1_bottom);
+    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    xy1 = xy2;
+    xy2 = g.toDomCoords(x1, y1_bottom);
+    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
   }
 
   // Test second series (line)  
@@ -380,34 +373,32 @@ StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
     var y2_bottom = data[i + 1][1][0];
     
     // Bottom line
-    // Horizontal line
     var xy1 = g.toDomCoords(x1, y1_bottom);
     var xy2 = g.toDomCoords(x2, y1_bottom);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_middle);
-    xy2 = g.toDomCoords(x2, y2_middle);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
     
     // Top line
-    // Horizontal line
     xy1 = g.toDomCoords(x1, y1_top);
     xy2 = g.toDomCoords(x2, y1_top);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_middle);
-    xy2 = g.toDomCoords(x2, y2_middle);
-    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
     
     // Middle line
-    // Horizontal line
     xy1 = g.toDomCoords(x1, y1_middle);
     xy2 = g.toDomCoords(x2, y1_middle);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    // Vertical line
-    xy1 = g.toDomCoords(x2, y1_middle);
-    xy2 = g.toDomCoords(x2, y2_middle);
+    
+    // Test edges of custom bar areas(also drawn by dygraphs as lines)
+    xy1 = g.toDomCoords(x1, y1_top);
+    xy2 = g.toDomCoords(x2, y1_top);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    xy1 = xy2;
+    xy2 = g.toDomCoords(x2, y1_bottom);
+    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    xy1 = xy2;
+    xy2 = g.toDomCoords(x1, y1_bottom);
+    CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+    // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
+    // But a rectangle is completely tested with three of its four edges.
   }
   
   // Test second series (line)
