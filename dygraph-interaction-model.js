@@ -362,6 +362,11 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
  */
 Dygraph.Interaction.startTouch = function(event, g, context) {
   event.preventDefault();  // touch browsers are all nice.
+  if (event.touches.length > 1) {
+    // If the user ever puts two fingers down, it's not a double tap.
+    context.startTimeForDoubleTapMs = null;
+  }
+
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -419,6 +424,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.moveTouch = function(event, g, context) {
+  // If the tap moves, then it's definitely not part of a double-tap.
+  context.startTimeForDoubleTapMs = null;
+
   var i, touches = [];
   for (i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -512,6 +520,22 @@ Dygraph.Interaction.endTouch = function(event, g, context) {
   if (event.touches.length !== 0) {
     // this is effectively a "reset"
     Dygraph.Interaction.startTouch(event, g, context);
+  } else if (event.changedTouches.length == 1) {
+    // Could be part of a "double tap"
+    // The heuristic here is that it's a double-tap if the two touchend events
+    // occur within 500ms and within a 50x50 pixel box.
+    var now = new Date().getTime();
+    var t = event.changedTouches[0];
+    if (context.startTimeForDoubleTapMs &&
+        now - context.startTimeForDoubleTapMs < 500 &&
+        context.doubleTapX && Math.abs(context.doubleTapX - t.screenX) < 50 &&
+        context.doubleTapY && Math.abs(context.doubleTapY - t.screenY) < 50) {
+      g.resetZoom();
+    } else {
+      context.startTimeForDoubleTapMs = now;
+      context.doubleTapX = t.screenX;
+      context.doubleTapY = t.screenY;
+    }
   }
 };
 
