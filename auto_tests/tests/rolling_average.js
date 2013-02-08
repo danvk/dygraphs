@@ -81,3 +81,22 @@ rollingAverageTestCase.prototype.testRollBoxDoesntDisapper = function() {
   assertEquals("1", roll_box[0].value);
 };
 
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=426
+rollingAverageTestCase.prototype.testRollShortFractions = function() {
+  var opts = {
+    customBars: true,
+    labels: ['x', 'A']
+  };
+  var data1 = [ [1, [1, 10, 20]] ];
+  var data2 = [ [1, [1, 10, 20]],
+                [2, [1, 20, 30]],
+              ];
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data1, opts);
+
+  var rolled1 = g.rollingAverage(data1, 1);
+  var rolled2 = g.rollingAverage(data2, 1);
+
+  assertEquals(rolled1[0], rolled2[0]);
+};

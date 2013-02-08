@@ -2664,8 +2664,6 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
  *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
-  if (originalData.length < 2)
-    return originalData;
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = this.attr_("sigma");
