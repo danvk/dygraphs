@@ -930,6 +930,8 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv = document.createElement("div");
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
+  // TODO(danvk): any other styles that are useful to set here?
+  this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
