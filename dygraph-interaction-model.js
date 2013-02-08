@@ -471,11 +471,13 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   xScale = Math.min(8, Math.max(0.125, xScale));
   yScale = Math.min(8, Math.max(0.125, yScale));
 
+  var didZoom = false;
   if (context.touchDirections.x) {
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
+    didZoom = true;
   }
   
   if (context.touchDirections.y) {
@@ -489,11 +491,18 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
           c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
+        didZoom = true;
       }
     }
   }
 
   g.drawGraph_(false);
+
+  // We only call zoomCallback on zooms, not pans, to mirror desktop behavior.
+  if (didZoom && touches.length > 1 && g.attr_('zoomCallback')) {
+    var viewWindow = g.xAxisRange();
+    g.attr_("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
+  }
 };
 
 /**
