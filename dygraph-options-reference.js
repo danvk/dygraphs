@@ -469,7 +469,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "When set, display the graph as a step plot instead of a line plot."
+    "description": "When set, display the graph as a step plot instead of a line plot. This option may either be set for the whole graph or for single series."
   },
   "labelsKMB": {
     "default": "false",

@@ -261,7 +261,8 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
     drawPointCallback, pointSize) {
   var g = e.dygraph;
   // TODO(konigsberg): Compute attributes outside this method call.
-  var stepPlot = g.getOption("stepPlot");  // TODO(danvk): per-series
+  var stepPlot = g.getOption("stepPlot", e.setName);
+
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
@@ -591,7 +592,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var ctx = e.drawingContext;
   var color = e.color;
   var fillAlpha = g.getOption('fillAlpha', setName);
-  var stepPlot = g.getOption('stepPlot');  // TODO(danvk): per-series
+  var stepPlot = g.getOption("stepPlot", setName);
   var points = e.points;
 
   var iter = Dygraph.createIterator(points, 0, points.length,
@@ -691,18 +692,19 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var setCount = sets.length;
 
   var fillAlpha = g.getOption('fillAlpha');
-  var stepPlot = g.getOption('stepPlot');
   var stackedGraph = g.getOption("stackedGraph");
   var colors = g.getColors();
 
   var baseline = {};  // for stacked graphs: baseline for filling
   var currBaseline;
+  var prevStepPlot;  // for different line drawing modes (line/step) per series
 
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
     var setName = setNames[setIdx];
     if (!g.getOption('fillGraph', setName)) continue;
-
+    
+    var stepPlot = g.getOption('stepPlot', setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
     var axisY = 1.0 + axis.minyval * axis.yscale;
@@ -737,7 +739,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         if (currBaseline === undefined) {
           lastY = axisY;
         } else {
-          if(stepPlot) {
+          if(prevStepPlot) {
             lastY = currBaseline[0];
           } else {
             lastY = currBaseline;
@@ -762,17 +764,18 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
       }
       if (!isNaN(prevX)) {
         ctx.moveTo(prevX, prevYs[0]);
-
+        
+        // Move to top fill point
         if (stepPlot) {
           ctx.lineTo(point.canvasx, prevYs[0]);
-          if(currBaseline) {
-            // Draw to the bottom of the baseline
-            ctx.lineTo(point.canvasx, currBaseline[1]);
-          } else {
-            ctx.lineTo(point.canvasx, newYs[1]);
-          }
         } else {
           ctx.lineTo(point.canvasx, newYs[0]);
+        }
+        // Move to bottom fill point
+        if (prevStepPlot && currBaseline) {
+          // Draw to the bottom of the baseline
+          ctx.lineTo(point.canvasx, currBaseline[1]);
+        } else {
           ctx.lineTo(point.canvasx, newYs[1]);
         }
 
@@ -782,6 +785,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
       prevYs = newYs;
       prevX = point.canvasx;
     }
+    prevStepPlot = stepPlot;
     ctx.fill();
   }
 };
