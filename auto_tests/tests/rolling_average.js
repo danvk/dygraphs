@@ -12,10 +12,6 @@ rollingAverageTestCase.prototype.setUp = function() {
 rollingAverageTestCase.prototype.tearDown = function() {
 };
 
-rollingAverageTestCase.prototype.getLegend = function() {
-  return document.getElementsByClassName("dygraph-legend")[0].textContent;
-};
-
 rollingAverageTestCase.prototype.testRollingAverage = function() {
   var opts = {
     width: 480,
@@ -33,31 +29,31 @@ rollingAverageTestCase.prototype.testRollingAverage = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  g.setSelection(0); assertEquals("0: Y:0", this.getLegend());
-  g.setSelection(1); assertEquals("1: Y:1", this.getLegend());
-  g.setSelection(2); assertEquals("2: Y:2", this.getLegend());
-  g.setSelection(3); assertEquals("3: Y:3", this.getLegend());
+  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assertEquals("1: Y: 1", Util.getLegend());
+  g.setSelection(2); assertEquals("2: Y: 2", Util.getLegend());
+  g.setSelection(3); assertEquals("3: Y: 3", Util.getLegend());
   assertEquals(1, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 2});
-  g.setSelection(0); assertEquals("0: Y:0", this.getLegend());
-  g.setSelection(1); assertEquals("1: Y:0.5", this.getLegend());
-  g.setSelection(2); assertEquals("2: Y:1.5", this.getLegend());
-  g.setSelection(3); assertEquals("3: Y:2.5", this.getLegend());
+  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assertEquals("2: Y: 1.5", Util.getLegend());
+  g.setSelection(3); assertEquals("3: Y: 2.5", Util.getLegend());
   assertEquals(2, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 3});
-  g.setSelection(0); assertEquals("0: Y:0", this.getLegend());
-  g.setSelection(1); assertEquals("1: Y:0.5", this.getLegend());
-  g.setSelection(2); assertEquals("2: Y:1", this.getLegend());
-  g.setSelection(3); assertEquals("3: Y:2", this.getLegend());
+  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assertEquals("2: Y: 1", Util.getLegend());
+  g.setSelection(3); assertEquals("3: Y: 2", Util.getLegend());
   assertEquals(3, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 4});
-  g.setSelection(0); assertEquals("0: Y:0", this.getLegend());
-  g.setSelection(1); assertEquals("1: Y:0.5", this.getLegend());
-  g.setSelection(2); assertEquals("2: Y:1", this.getLegend());
-  g.setSelection(3); assertEquals("3: Y:1.5", this.getLegend());
+  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assertEquals("2: Y: 1", Util.getLegend());
+  g.setSelection(3); assertEquals("3: Y: 1.5", Util.getLegend());
   assertEquals(4, g.rollPeriod());
 };
 

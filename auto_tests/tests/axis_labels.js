@@ -55,7 +55,7 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   assertEquals(['0','20','40','60','80','100'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals('0: Y:-1', Util.getLegend());
+  assertEquals('0: Y: -1', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
@@ -88,7 +88,7 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
                Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
-  assertEquals('1: Y:0', Util.getLegend());
+  assertEquals('1: Y: 0', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
@@ -119,7 +119,7 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
   assertEquals(["10","10","10","10","10","10","10","10","10","10"], Util.getYLabels());
 
   g.setSelection(1);
-  assertEquals('1: Y:0', Util.getLegend());
+  assertEquals('1: Y: 0', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
@@ -152,7 +152,7 @@ AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
 
   // The legend does not use the axisLabelFormatter:
   g.setSelection(1);
-  assertEquals('5.1: Y1:1', Util.getLegend());
+  assertEquals('5.1: Y1: 1', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
@@ -192,7 +192,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(2);
-  assertEquals("2: y:4", Util.getLegend());
+  assertEquals("2: y: 4", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
@@ -232,7 +232,7 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals("2011/01/01: y:2", Util.getLegend());
+  assertEquals("2011/01/01: y: 2", Util.getLegend());
 };
 
 // This test verifies that when a valueFormatter is set (but not an
@@ -278,7 +278,7 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
 
   // they do affect the legend, however.
   g.setSelection(2);
-  assertEquals("x2: y:y4", Util.getLegend());
+  assertEquals("x2: y: y4", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
@@ -321,7 +321,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
-  assertEquals('x2011/01/03: y:y6', Util.getLegend());
+  assertEquals('x2011/01/03: y: y6', Util.getLegend());
 };
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
@@ -361,7 +361,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };
 
 // This is the same as the previous test, except that options are added
@@ -419,7 +419,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
@@ -445,7 +445,7 @@ AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
   assertEquals(['alf0','alf2','alf4','alf6','alf8','alf10','alf12','alf14','alf16','alf18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("vf9: y:vf18", Util.getLegend());
+  assertEquals("vf9: y: vf18", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSeriesOrder = function() {
@@ -464,7 +464,7 @@ AxisLabelsTestCase.prototype.testSeriesOrder = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(2);
-  assertEquals('2: 00:103 01:203 10:303 11:403', Util.getLegend());
+  assertEquals('2: 00: 103 01: 203 10: 303 11: 403', Util.getLegend());
 
   // Sanity checks for indexFromSetName
   assertEquals(0, g.indexFromSetName("x"));
