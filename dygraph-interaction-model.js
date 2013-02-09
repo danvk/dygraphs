@@ -385,8 +385,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     // This is just a swipe.
     context.initialPinchCenter = touches[0];
     context.touchDirections = { x: true, y: true };
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     // It's become a pinch!
+    // In case there are 3+ touches, we ignore all but the "first" two.
 
     // only screen coordinates can be averaged (data coords could be log scale).
     context.initialPinchCenter = {
@@ -467,7 +468,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   if (touches.length == 1) {
     xScale = 1.0;
     yScale = 1.0;
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
 
