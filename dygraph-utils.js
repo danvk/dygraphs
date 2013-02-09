@@ -291,6 +291,8 @@ Dygraph.findPosX = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      var borderLeft = getComputedStyle(copyObj).borderLeft || "0";
+      curleft += parseInt(borderLeft, 10) ;
       curleft += copyObj.offsetLeft;
       if(!copyObj.offsetParent) {
         break;
@@ -322,6 +324,8 @@ Dygraph.findPosY = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      var borderTop = getComputedStyle(copyObj).borderTop || "0";
+      curtop += parseInt(borderTop, 10) ;
       curtop += copyObj.offsetTop;
       if(!copyObj.offsetParent) {
         break;
