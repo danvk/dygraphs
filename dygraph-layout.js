@@ -131,7 +131,6 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && ann[i].x === undefined) {
-      console.log(ann[i]);
       this.dygraph_.error("Annotations must have an 'x' property");
       return;
     }
