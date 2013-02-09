@@ -161,3 +161,5 @@ a {
 #workarea #highlighted-series .few .dygraph-legend > span.highlight { border: 1px solid grey; }
 #workarea #highlighted-series .many .dygraph-legend > span { display: none; }
 #workarea #highlighted-series .many .dygraph-legend > span.highlight { display: inline; }
+
+#workarea #edge-padding fieldset { display: inline-block; vertical-align: top; }
