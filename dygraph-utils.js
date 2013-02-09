@@ -1212,3 +1212,20 @@ Dygraph.detectLineDelimiter = function(data) {
 
   return null;
 };
+
+/**
+ * Is one element contained by another?
+ * @param {Element} containee The contained element.
+ * @param {Element} container The container element.
+ * @return {boolean} Whether containee is inside (or equal to) container.
+ * @private
+ */
+Dygraph.isElementContainedBy = function(containee, container) {
+  if (container === null || containee === null) {
+    return false;
+  }
+  while (containee && containee !== container) {
+    containee = containee.parentNode;
+  }
+  return (containee === container);
+};

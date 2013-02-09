@@ -963,11 +963,19 @@ Dygraph.prototype.createInterface_ = function() {
   };
 
   this.mouseOutHandler_ = function(e) {
-    dygraph.mouseOut_(e);
+    // The mouse has left the chart if:
+    // 1. e.target is inside the chart
+    // 2. e.relatedTarget is outside the chart
+    var target = e.target || e.fromElement;
+    var relatedTarget = e.relatedTarget || e.toElement;
+    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
+      dygraph.mouseOut_(e);
+    }
   };
 
+  this.addEvent(window, 'mouseout', this.mouseOutHandler_);
   this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
 
   // Don't recreate and register the resize handler on subsequent calls.
   // This happens when the graph is resized.
@@ -1005,9 +1013,9 @@ Dygraph.prototype.destroy = function() {
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+  Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseup', this.mouseUpHandler_);
 
   // remove window handlers
   Dygraph.removeEvent(window,'resize',this.resizeHandler_);
