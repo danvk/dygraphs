@@ -703,3 +703,50 @@ AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
   assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
   assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 }
+
+/*
+ * This test shows that labelsKMB will override the label formatter when the values
+ * go above 1000.
+ */
+AxisLabelsTestCase.prototype.testLabelsKMBOverridesLabelFormatter = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "X,a,b\n" +
+      "1,0,2000\n" +
+      "2,500,1500\n" +
+      "3,1000,1000\n" +
+      "4,2000,0\n", {
+        labelsKMB: true,
+        axisLabelFormatter: function (v) {
+          return v + ":X";
+        }
+      });
+  assertEquals(["0:X","500:X","1K","1.5K","2K"], Util.getYLabels());
+}
+
+/*
+ * This test shows that you can override labelsKMB on the axis level.
+ */
+AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
+  g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "1,0,2000\n" +
+      "2,500,1500\n" +
+      "3,1000,1000\n" +
+      "4,2000,0\n", {
+        labelsKMB: true,
+        axes: {
+          y2: {
+            labelsKMB: false
+          }
+        },
+        series: {
+          b: {
+            axis: "y2"
+          },
+        }
+      });
+  assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(1));
+  assertEquals(["0","500","1000","1500","2000"], Util.getYLabels(2));
+}

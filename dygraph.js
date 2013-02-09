@@ -610,7 +610,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
   return function(opt) {
     var axis_opts = self.user_attrs_.axes;
-    if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
+    if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
     // user-specified attributes always trump defaults, even if they're less
