@@ -8,12 +8,14 @@ var CallbackTestCase = TestCase("callback");
 
 CallbackTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div><div id='selection'></div>";
+  this.xhr = XMLHttpRequest;
   this.styleSheet = document.createElement("style");
   this.styleSheet.type = "text/css";
   document.getElementsByTagName("head")[0].appendChild(this.styleSheet);
 };
 
 CallbackTestCase.prototype.tearDown = function() {
+  XMLHttpRequest = this.xhr;
 };
 
 var data = "X,a\,b,c\n" +
@@ -486,4 +488,36 @@ CallbackTestCase.prototype.testGapHighlight = function() {
   assertEquals(1, h_pts.length);
   assertEquals(8, h_pts[0].yval);
   assertEquals('A', h_pts[0].name);
+};
+
+CallbackTestCase.prototype.testFailedResponse = function() {
+
+  // Fake out the XMLHttpRequest so it doesn't do anything.
+  XMLHttpRequest = function () {};
+  XMLHttpRequest.prototype.open = function () {};
+  XMLHttpRequest.prototype.send = function () {};
+
+  var highlightCallback = function(e, x, pts, row) {
+    fail("should not reach here");
+  };
+
+  var graph = document.getElementById("graph");
+  graph.style.border = "2px solid black";
+  var g = new Dygraph(graph, "data.csv", { // fake name
+     width: 400,
+     height: 300,
+     highlightCallback : highlightCallback
+  });
+
+  DygraphOps.dispatchMouseOver_Point(g, 800, 800);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 800, 800);
+
+  var oldOnerror = window.onerror;
+  var failed = false;
+  window.onerror = function() { failed = true; return false; }
+
+  DygraphOps.dispatchMouseOut_Point(g, 800, 800); // This call should not throw an exception.
+
+  assertFalse("exception thrown during mouseout", failed);
 };
