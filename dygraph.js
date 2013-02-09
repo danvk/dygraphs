@@ -1621,9 +1621,13 @@ Dygraph.prototype.getArea = function() {
  * Returns a two-element array: [X, Y].
  */
 Dygraph.prototype.eventToDomCoords = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
-  var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
-  return [canvasx, canvasy];
+  if (event.offsetX && event.offsetY) {
+    return [ event.offsetX, event.offsetY ];
+  } else {
+    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
+    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
+    return [canvasx, canvasy];
+  }
 };
 
 /**
