@@ -475,7 +475,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
     for (var j = 0; j < sets.length; j++) {
       setName = setNames[j];
-      if (opt_seriesName && setName != opt_seriesName) continue;
+      if (opt_seriesName && !(is_last && setName == opt_seriesName)) continue;
 
       var points = sets[j];
 
