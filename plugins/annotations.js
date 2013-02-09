@@ -118,7 +118,7 @@ annotations.prototype.didDrawChart = function(e) {
     }
     div.style.left = (p.canvasx - width / 2) + "px";
     if (a.attachAtBottom) {
-      div.style.top = (area.h - height - tick_height) + "px";
+      div.style.top = (area.y + area.h - height - tick_height) + "px";
     } else {
       div.style.top = (p.canvasy - height - tick_height) + "px";
     }
