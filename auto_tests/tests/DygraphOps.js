@@ -86,14 +86,14 @@ DygraphOps.createEvent = function(command, custom) {
     e.button,
     e.relatedTarget);
   return event;
-}
+};
 
 /**
  * Dispatch an event onto the graph's canvas.
  */
 DygraphOps.dispatchCanvasEvent = function(g, event) {
   g.canvas_.dispatchEvent(event);
-}
+};
 
 DygraphOps.dispatchDoubleClick = function(g, custom) {
   var opts = {
@@ -104,51 +104,50 @@ DygraphOps.dispatchDoubleClick = function(g, custom) {
   DygraphOps.dispatchCanvasEvent(g, event);
 };
 
-DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
+/*
+ * Create an 'opts' argument which can be passed to createEvent that contains
+ * type, screenX, screenY, clientX, clientY.
+ */
+DygraphOps.createOptsForPoint_ = function(g, type, x, y) {
   var pageX = Dygraph.findPosX(g.canvas_) + x;
   var pageY = Dygraph.findPosY(g.canvas_) + y;
 
-  var opts = {
-    type : 'mousedown',
-    detail : 1,
+  return {
+    type : type,
     screenX : pageX,
     screenY : pageY,
     clientX : pageX,
     clientY : pageY,
   };
+};
 
+DygraphOps.dispatchMouseDown_Point = function(g, x, y, custom) {
+  var opts = DygraphOps.createOptsForPoint_(g, 'mousedown', x, y);
+  opts.detail = 1;
   var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
-}
+};
 
 DygraphOps.dispatchMouseMove_Point = function(g, x, y, custom) {
-  var pageX = Dygraph.findPosX(g.canvas_) + x;
-  var pageY = Dygraph.findPosY(g.canvas_) + y;
-
-  var opts = {
-    type : 'mousemove',
-    screenX : pageX,
-    screenY : pageY,
-    clientX : pageX,
-    clientY : pageY,
-  };
-
+  var opts = DygraphOps.createOptsForPoint_(g, 'mousemove', x, y);
   var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 };
 
 DygraphOps.dispatchMouseUp_Point = function(g, x, y, custom) {
-  var pageX = Dygraph.findPosX(g.canvas_) + x;
-  var pageY = Dygraph.findPosY(g.canvas_) + y;
+  var opts = DygraphOps.createOptsForPoint_(g, 'mouseup', x, y);
+  var event = DygraphOps.createEvent(opts, custom);
+  DygraphOps.dispatchCanvasEvent(g, event);
+};
 
-  var opts = {
-    type : 'mouseup',
-    screenX : pageX,
-    screenY : pageY,
-    clientX : pageX,
-    clientY : pageY,
-  };
+DygraphOps.dispatchMouseOver_Point = function(g, x, y, custom) {
+  var opts = DygraphOps.createOptsForPoint_(g, 'mouseover', x, y);
+  var event = DygraphOps.createEvent(opts, custom);
+  DygraphOps.dispatchCanvasEvent(g, event);
+};
 
+DygraphOps.dispatchMouseOut_Point = function(g, x, y, custom) {
+  var opts = DygraphOps.createOptsForPoint_(g, 'mouseout', x, y);
   var event = DygraphOps.createEvent(opts, custom);
   DygraphOps.dispatchCanvasEvent(g, event);
 };
@@ -183,6 +182,30 @@ DygraphOps.dispatchMouseMove = function(g, x, y, custom) {
  */
 DygraphOps.dispatchMouseUp = function(g, x, y, custom) {
   DygraphOps.dispatchMouseUp_Point(
+      g,
+      g.toDomXCoord(x),
+      g.toDomYCoord(y),
+      custom);
+};
+
+/**
+ * Dispatches a mouse over using the graph's data coordinate system.
+ * (The y value mapped to the first axis.)
+ */
+DygraphOps.dispatchMouseOver = function(g, x, y, custom) {
+  DygraphOps.dispatchMouseOver_Point(
+      g,
+      g.toDomXCoord(x),
+      g.toDomYCoord(y),
+      custom);
+};
+
+/**
+ * Dispatches a mouse out using the graph's data coordinate system.
+ * (The y value mapped to the first axis.)
+ */
+DygraphOps.dispatchMouseOut = function(g, x, y, custom) {
+  DygraphOps.dispatchMouseOut_Point(
       g,
       g.toDomXCoord(x),
       g.toDomYCoord(y),

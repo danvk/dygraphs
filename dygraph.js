@@ -3506,9 +3506,12 @@ Dygraph.prototype.annotations = function() {
 /**
  * Get the list of label names for this graph. The first column is the
  * x-axis, so the data series names start at index 1.
+ *
+ * Returns null when labels have not yet been defined.
  */
 Dygraph.prototype.getLabels = function() {
-  return this.attr_("labels").slice();
+  var labels = this.attr_("labels");
+  return labels ? labels.slice() : null;
 };
 
 /**
