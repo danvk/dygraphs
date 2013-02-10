@@ -1,35 +1,30 @@
-// Copyright (c) 2013 Google, Inc.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 /*global Dygraph:false */
 
 /**
  * @fileoverview Plug-in for providing horizontal guidelines.
  *
  * @author konigsberg@google.com (Robert Konigsberg)
- */
-
-/*
- * values is an array of numbers, or a function that returns an array of numbers, evaluated at draw time.
- * color is a string, or array of strings (1:1 value map) or a function that takes a value and returns a string, or null.
- * styler is a function that takes a context and value, and styles the context. Or null.
+ *
+ * Usage:
+ * 
+ * g = new Dygraph(div, data, {
+ *   plugins : [
+ *     Dygraph.Plugins.Guidelines(
+ *        [ 500, 1000, 1500, 2000, 2500 ],
+ *        [ "black", "blue", "red", "green", "orange" ],
+ *        function(ctx, g, value, idx) {
+ *          ctx.lineWidth = idx / 2;
+ *        })
+ *   ]};
+ *
+ * The object takes three parameters:
+ *
+ * values: either an array of numbers, or a function that returns an array
+ *    of numbers, evaluated at draw time.
+ * color (optional): can be a string (e.g. "blue"), an array of strings
+ *    (1:1 mapping to values) or a function(g, value idx) that returns a string.
+ * styler (optional): function(ctx, g, value, idx) that can be used to style
+ *    drawing context.
  */
 Dygraph.Plugins.Guidelines = (function(values, color, styler) {
 
@@ -85,13 +80,9 @@ Dygraph.Plugins.Guidelines = (function(values, color, styler) {
 
       ctx.beginPath();
       var y = g.toDomYCoord(value);
-      // It sure would be easier to use (0 to canvas width) but that
-      // only works when the canvas is clipped.
-      var x0 = g.toDomXCoord(g.xAxisRange()[0]);
-      ctx.moveTo(x0, y);
-      ctx.lineTo(ctx.canvas.width, y); // TODO(konigsberg): when a y-axis is
-                                       // shown on the RHS this probably
-                                       // breaks. Use xAxisRange[1]?
+      var a = g.getArea();
+      ctx.moveTo(a.x, y);
+      ctx.lineTo(a.x + a.w, y);
       ctx.closePath();
       ctx.stroke();
  
