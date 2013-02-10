@@ -97,4 +97,4 @@ Dygraph.Plugins.Guidelines = (function(values, color, styler) {
 
   return guidelines;
 
-})    ; // ();
+});
