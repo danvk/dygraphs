@@ -68,8 +68,8 @@ Dygraph.Plugins.Guidelines = (function(values, color, styler) {
       var value = values[idx];
 
       ctx.save();
-      var colorType = typeof(this.color);
-      if (colorType !== null) {
+      if (this.color !== null) {
+        var colorType = typeof(this.color);
         if (colorType === "string") {
           ctx.strokeStyle = this.color;
         } else if (Array.isArray(this.color)) {
@@ -85,9 +85,13 @@ Dygraph.Plugins.Guidelines = (function(values, color, styler) {
 
       ctx.beginPath();
       var y = g.toDomYCoord(value);
+      // It sure would be easier to use (0 to canvas width) but that
+      // only works when the canvas is clipped.
       var x0 = g.toDomXCoord(g.xAxisRange()[0]);
       ctx.moveTo(x0, y);
-      ctx.lineTo(ctx.canvas.width, y);
+      ctx.lineTo(ctx.canvas.width, y); // TODO(konigsberg): when a y-axis is
+                                       // shown on the RHS this probably
+                                       // breaks. Use xAxisRange[1]?
       ctx.closePath();
       ctx.stroke();
  
