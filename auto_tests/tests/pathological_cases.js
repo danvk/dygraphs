@@ -68,8 +68,8 @@ pathologicalCasesTestCase.prototype.testCombinations = function() {
     padded: {
       includeZero: true,
       drawAxesAtZero: true,
-      xRangePad: 0.02,
-      yRangePad: 0.04
+      xRangePad: 2,
+      yRangePad: 4
     }
   };
 

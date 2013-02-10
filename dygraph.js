@@ -660,7 +660,7 @@ Dygraph.prototype.xAxisRange = function() {
  */
 Dygraph.prototype.xAxisExtremes = function() {
   var pad = this.attr_('xRangePad') / this.plotter_.area.w;
-  if (!this.numRows() > 0) {
+  if (this.numRows() == 0) {
     return [0 - pad, 1 + pad];
   }
   var left = this.rawData_[0][0];
@@ -897,17 +897,6 @@ Dygraph.prototype.numColumns = function() {
 Dygraph.prototype.numRows = function() {
   if (!this.rawData_) return 0;
   return this.rawData_.length;
-};
-
-/**
- * Returns the full range of the x-axis, as determined by the most extreme
- * values in the data set. Not affected by zooming, visibility, etc.
- * TODO(danvk): merge w/ xAxisExtremes
- * @return { Array<Number> } A [low, high] pair
- * @private
- */
-Dygraph.prototype.fullXRange_ = function() {
-  return this.xAxisExtremes();
 };
 
 /**
@@ -2092,7 +2081,7 @@ Dygraph.prototype.addXTicks_ = function() {
   if (this.dateWindow_) {
     range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    range = this.fullXRange_();
+    range = this.xAxisExtremes();
   }
 
   var xAxisOptionsView = this.optionsViewForAxis_('x');

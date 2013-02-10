@@ -368,3 +368,38 @@ RangeTestCase.prototype.testLogscalePad = function() {
     [[-10, 10], [10, 10], [30, 1000]],
     [-10, 30], [5.01691, 1993.25801]);
 };
+
+/**
+ * Verify scrolling all-zero region, traditional.
+ */
+RangeTestCase.prototype.testZeroScroll = function() {
+  g = new Dygraph(
+      document.getElementById("graph"),
+      "X,Y\n" +
+      "1,0\n" +
+      "8,0\n" +
+      "9,0.1\n",
+      {
+        drawAxesAtZero: true,
+        animatedZooms: true,
+        avoidMinZero: true
+      });
+};
+
+/**
+ * Verify scrolling all-zero region, new-style.
+ */
+RangeTestCase.prototype.testZeroScroll2 = function() {
+  g = new Dygraph(
+      document.getElementById("graph"),
+      "X,Y\n" +
+      "1,0\n" +
+      "8,0\n" +
+      "9,0.1\n",
+      {
+        animatedZooms: true,
+        drawAxesAtZero: true,
+        xRangePad: 4,
+        yRangePad: 4
+      });
+};
