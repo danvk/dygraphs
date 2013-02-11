@@ -183,7 +183,7 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+Dygraph.prototype.addEvent = function(elem, type, fn) {
   Dygraph.addEvent(elem, type, fn);
   this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
@@ -197,7 +197,7 @@ Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.removeEvent = function addEvent(elem, type, fn) {
+Dygraph.removeEvent = function(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
