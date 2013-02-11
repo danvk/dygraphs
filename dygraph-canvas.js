@@ -130,7 +130,7 @@ DygraphCanvasRenderer.prototype.clear = function() {
 DygraphCanvasRenderer.prototype.onDoneDrawing = function() {
   // balances the save called in the constructor.
   this.elementContext.restore();
-}
+};
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
