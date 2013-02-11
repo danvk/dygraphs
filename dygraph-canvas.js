@@ -482,7 +482,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
     for (var j = 0; j < sets.length; j++) {
       setName = setNames[j];
-      if (opt_seriesName && !(is_last && setName == opt_seriesName)) continue;
+      if (opt_seriesName && setName != opt_seriesName) continue;
 
       var points = sets[j];
 
@@ -514,6 +514,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
         plotArea: this.area,
         seriesIndex: j,
         seriesCount: sets.length,
+        onlySeries: opt_seriesName,
         allSeriesPoints: sets
       });
       ctx.restore();
@@ -673,6 +674,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 DygraphCanvasRenderer._fillPlotter = function(e) {
   // We'll handle all the series at once, not one-by-one.
   if (e.seriesIndex !== 0) return;
+  if (e.onlySeries) return;
 
   var g = e.dygraph;
   var setNames = g.getLabels().slice(1);  // remove x-axis
