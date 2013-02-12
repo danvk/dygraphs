@@ -514,7 +514,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
         plotArea: this.area,
         seriesIndex: j,
         seriesCount: sets.length,
-        onlySeries: opt_seriesName,
+        singleSeriesName: opt_seriesName,
         allSeriesPoints: sets
       });
       ctx.restore();
@@ -672,9 +672,11 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
  * @private
  */
 DygraphCanvasRenderer._fillPlotter = function(e) {
+  // Skip if we're drawing a single series for interactive highlight overlay.
+  if (e.singleSeriesName) return;
+
   // We'll handle all the series at once, not one-by-one.
   if (e.seriesIndex !== 0) return;
-  if (e.onlySeries) return;
 
   var g = e.dygraph;
   var setNames = g.getLabels().slice(1);  // remove x-axis
