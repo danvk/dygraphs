@@ -309,6 +309,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     pageXLast = getCursorPageX(e);
     handle = e.target ? e.target : e.srcElement;
     if (e.type === 'mousedown' || e.type === 'dragstart') {
+      // These events are removed manually.
       Dygraph.addEvent(topElem, 'mousemove', onZoom);
       Dygraph.addEvent(topElem, 'mouseup', onZoomEnd);
     }
@@ -403,6 +404,7 @@ rangeSelector.prototype.initInteraction_ = function() {
       isPanning = true;
       pageXLast = getCursorPageX(e);
       if (e.type === 'mousedown') {
+        // These events are removed manually.
         Dygraph.addEvent(topElem, 'mousemove', onPan);
         Dygraph.addEvent(topElem, 'mouseup', onPanEnd);
       }
@@ -516,7 +518,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   addTouchEvents = function(elem, fn) {
     var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
     for (var i = 0; i < types.length; i++) {
-      Dygraph.addEvent(elem, types[i], fn);
+      self.dygraph_.addEvent(elem, types[i], fn);
     }
   };
 
@@ -524,14 +526,14 @@ rangeSelector.prototype.initInteraction_ = function() {
   this.setDefaultOption_('panEdgeFraction', 0.0001);
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
-  Dygraph.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
-  Dygraph.addEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
+  this.dygraph_.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
+  this.dygraph_.addEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
 
   if (this.isUsingExcanvas_) {
-    Dygraph.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
+    this.dygraph_.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
   } else {
-    Dygraph.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
-    Dygraph.addEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
+    this.dygraph_.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
+    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
   }
 
   // Touch events
