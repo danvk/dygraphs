@@ -6,16 +6,16 @@
 
 var ToDomCoordsTestCase = TestCase("to-dom-coords");
 
-var _origFunc = Dygraph.getContext;
+ToDomCoordsTestCase._origFunc = Dygraph.getContext;
 ToDomCoordsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
+    return new Proxy(ToDomCoordsTestCase._origFunc(canvas));
   }
 };
 
 ToDomCoordsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = _origFunc;
+  Dygraph.getContext = ToDomCoordsTestCase._origFunc;
 };
 
 // Checks that toDomCoords and toDataCoords are inverses of one another.

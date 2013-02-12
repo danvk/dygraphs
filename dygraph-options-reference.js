@@ -269,10 +269,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "underlayCallback": {
     "default": "null",
     "labels": ["Callbacks"],
-    "type": "function(canvas, area, dygraph)",
+    "type": "function(context, area, dygraph)",
     "parameters": [
-      [ "canvas" , "the canvas to draw on" ],
-      [ "area" , "" ],
+      [ "context" , "the canvas drawing context on which to draw" ],
+      [ "area" , "An object with {x,y,w,h} properties describing the drawing area." ],
       [ "dygraph" , "the reference graph" ]
     ],
     "description": "When set, this callback gets called before the chart is drawn. It details on how to use this."
@@ -469,7 +469,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "When set, display the graph as a step plot instead of a line plot."
+    "description": "When set, display the graph as a step plot instead of a line plot. This option may either be set for the whole graph or for single series."
   },
   "labelsKMB": {
     "default": "false",

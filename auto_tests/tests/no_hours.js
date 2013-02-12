@@ -14,11 +14,6 @@ noHoursTestCase.prototype.setUp = function() {
 noHoursTestCase.prototype.tearDown = function() {
 };
 
-function getLegend() {
-  var legend = document.getElementsByClassName("dygraph-legend")[0];
-  return legend.textContent;
-}
-
 noHoursTestCase.prototype.testNoHours = function() {
   var opts = {
     width: 480,
@@ -35,16 +30,16 @@ noHoursTestCase.prototype.testNoHours = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("2012/03/13: Y:-1", getLegend());
+  assertEquals("2012/03/13: Y: -1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("2012/03/14: Y:0", getLegend());
+  assertEquals("2012/03/14: Y: 0", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2012/03/15: Y:1", getLegend());
+  assertEquals("2012/03/15: Y: 1", Util.getLegend());
 
   g.setSelection(3);
-  assertEquals("2012/03/16: Y:0", getLegend());
+  assertEquals("2012/03/16: Y: 0", Util.getLegend());
 };
 
 noHoursTestCase.prototype.testNoHoursDashed = function() {
@@ -63,15 +58,15 @@ noHoursTestCase.prototype.testNoHoursDashed = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("2012/03/13: Y:-1", getLegend());
+  assertEquals("2012/03/13: Y: -1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("2012/03/14: Y:0", getLegend());
+  assertEquals("2012/03/14: Y: 0", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2012/03/15: Y:1", getLegend());
+  assertEquals("2012/03/15: Y: 1", Util.getLegend());
 
   g.setSelection(3);
-  assertEquals("2012/03/16: Y:0", getLegend());
+  assertEquals("2012/03/16: Y: 0", Util.getLegend());
 };
 

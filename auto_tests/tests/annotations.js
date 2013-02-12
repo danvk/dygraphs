@@ -205,3 +205,38 @@ AnnotationsTestCase.prototype.testAnnotationsDrawnInDrawCallback = function() {
 
   assertEquals([true, false], calls);
 };
+
+
+// Test that annotations on the same point are stacked.
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=256
+AnnotationsTestCase.prototype.testAnnotationsStacked = function() {
+  var data = 'X,Y1,Y2\n' +
+      '0,1,2\n' +
+      '1,2,3\n';
+  var graph = document.getElementById("graph");
+  var annotations = [
+    {
+      series: 'Y1',
+      x: 0,
+      shortText: '1',
+      attachAtBottom: true
+    },
+    {
+      series: 'Y2',
+      x: 0,
+      shortText: '2',
+      attachAtBottom: true
+    }
+  ];
+  var g = new Dygraph(graph, data, {
+    width: 480,
+    height: 320
+  });
+  g.setAnnotations(annotations);
+
+  var annEls = document.getElementsByClassName('dygraphDefaultAnnotation');
+  assertEquals(2, annEls.length);
+
+  assertEquals(annEls[0].offsetLeft, annEls[1].offsetLeft);
+  assert(annEls[1].offsetTop < annEls[0].offsetTop - 10);
+};

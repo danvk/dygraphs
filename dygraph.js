@@ -930,6 +930,8 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv = document.createElement("div");
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
+  // TODO(danvk): any other styles that are useful to set here?
+  this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
@@ -961,11 +963,19 @@ Dygraph.prototype.createInterface_ = function() {
   };
 
   this.mouseOutHandler_ = function(e) {
-    dygraph.mouseOut_(e);
+    // The mouse has left the chart if:
+    // 1. e.target is inside the chart
+    // 2. e.relatedTarget is outside the chart
+    var target = e.target || e.fromElement;
+    var relatedTarget = e.relatedTarget || e.toElement;
+    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
+      dygraph.mouseOut_(e);
+    }
   };
 
+  this.addEvent(window, 'mouseout', this.mouseOutHandler_);
   this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
 
   // Don't recreate and register the resize handler on subsequent calls.
   // This happens when the graph is resized.
@@ -1003,9 +1013,9 @@ Dygraph.prototype.destroy = function() {
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+  Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseup', this.mouseUpHandler_);
 
   // remove window handlers
   Dygraph.removeEvent(window,'resize',this.resizeHandler_);
@@ -1611,9 +1621,13 @@ Dygraph.prototype.getArea = function() {
  * Returns a two-element array: [X, Y].
  */
 Dygraph.prototype.eventToDomCoords = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
-  var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
-  return [canvasx, canvasy];
+  if (event.offsetX && event.offsetY) {
+    return [ event.offsetX, event.offsetY ];
+  } else {
+    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
+    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
+    return [canvasx, canvasy];
+  }
 };
 
 /**
@@ -2186,6 +2200,8 @@ Dygraph.prototype.predraw_ = function() {
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
 
+  this.plotter_.onDoneDrawing();
+
   // This is used to determine whether to do various animations.
   var end = new Date();
   this.drawingTimeMs_ = (end - start);
@@ -2662,8 +2678,6 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
  *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
-  if (originalData.length < 2)
-    return originalData;
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = this.attr_("sigma");
@@ -3498,9 +3512,12 @@ Dygraph.prototype.annotations = function() {
 /**
  * Get the list of label names for this graph. The first column is the
  * x-axis, so the data series names start at index 1.
+ *
+ * Returns null when labels have not yet been defined.
  */
 Dygraph.prototype.getLabels = function() {
-  return this.attr_("labels").slice();
+  var labels = this.attr_("labels");
+  return labels ? labels.slice() : null;
 };
 
 /**

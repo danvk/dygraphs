@@ -54,7 +54,8 @@ Util.getClassTexts = function(css_class, parent) {
 Util.getLegend = function(parent) {
   parent = parent || document;
   var legend = parent.getElementsByClassName("dygraph-legend")[0];
-  return legend.textContent;
+  var re = new RegExp(String.fromCharCode(160), 'g');
+  return legend.textContent.replace(re, ' ');
 };
 
 /**

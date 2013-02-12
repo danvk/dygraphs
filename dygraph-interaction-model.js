@@ -362,6 +362,11 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
  */
 Dygraph.Interaction.startTouch = function(event, g, context) {
   event.preventDefault();  // touch browsers are all nice.
+  if (event.touches.length > 1) {
+    // If the user ever puts two fingers down, it's not a double tap.
+    context.startTimeForDoubleTapMs = null;
+  }
+
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -380,8 +385,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     // This is just a swipe.
     context.initialPinchCenter = touches[0];
     context.touchDirections = { x: true, y: true };
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     // It's become a pinch!
+    // In case there are 3+ touches, we ignore all but the "first" two.
 
     // only screen coordinates can be averaged (data coords could be log scale).
     context.initialPinchCenter = {
@@ -419,6 +425,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.moveTouch = function(event, g, context) {
+  // If the tap moves, then it's definitely not part of a double-tap.
+  context.startTimeForDoubleTapMs = null;
+
   var i, touches = [];
   for (i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -459,7 +468,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   if (touches.length == 1) {
     xScale = 1.0;
     yScale = 1.0;
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
 
@@ -471,11 +480,13 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   xScale = Math.min(8, Math.max(0.125, xScale));
   yScale = Math.min(8, Math.max(0.125, yScale));
 
+  var didZoom = false;
   if (context.touchDirections.x) {
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
+    didZoom = true;
   }
   
   if (context.touchDirections.y) {
@@ -489,11 +500,18 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
           c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
+        didZoom = true;
       }
     }
   }
 
   g.drawGraph_(false);
+
+  // We only call zoomCallback on zooms, not pans, to mirror desktop behavior.
+  if (didZoom && touches.length > 1 && g.attr_('zoomCallback')) {
+    var viewWindow = g.xAxisRange();
+    g.attr_("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
+  }
 };
 
 /**
@@ -503,6 +521,22 @@ Dygraph.Interaction.endTouch = function(event, g, context) {
   if (event.touches.length !== 0) {
     // this is effectively a "reset"
     Dygraph.Interaction.startTouch(event, g, context);
+  } else if (event.changedTouches.length == 1) {
+    // Could be part of a "double tap"
+    // The heuristic here is that it's a double-tap if the two touchend events
+    // occur within 500ms and within a 50x50 pixel box.
+    var now = new Date().getTime();
+    var t = event.changedTouches[0];
+    if (context.startTimeForDoubleTapMs &&
+        now - context.startTimeForDoubleTapMs < 500 &&
+        context.doubleTapX && Math.abs(context.doubleTapX - t.screenX) < 50 &&
+        context.doubleTapY && Math.abs(context.doubleTapY - t.screenY) < 50) {
+      g.resetZoom();
+    } else {
+      context.startTimeForDoubleTapMs = now;
+      context.doubleTapX = t.screenX;
+      context.doubleTapY = t.screenY;
+    }
   }
 };
 

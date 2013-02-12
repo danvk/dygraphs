@@ -78,11 +78,7 @@ stackedTestCase.prototype.testSelectionValues = function() {
 
   g.setSelection(0);
 
-  var legend = document.getElementsByClassName("dygraph-legend");
-  assertEquals(1, legend.length);
-  legend = legend[0];
-
-  assertEquals("0: Y1:1 Y2:1", legend.textContent);
+  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
 
   // Verify that the behavior is correct with highlightSeriesOpts as well.
   g.updateOptions({
@@ -93,8 +89,8 @@ stackedTestCase.prototype.testSelectionValues = function() {
   // NOTE: calling g.setSelection(0) here makes the test fail, due to an
   // unrelated bug.
   g.setSelection(1);
-  assertEquals("1: Y1:1 Y2:1", legend.textContent);
+  assertEquals("1: Y1: 1 Y2: 1", Util.getLegend());
 
   g.setSelection(0, 'Y2');
-  assertEquals("0: Y1:1 Y2:1", legend.textContent);
+  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
 };

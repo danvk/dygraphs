@@ -27,16 +27,16 @@ var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 var SimpleDrawingTestCase = TestCase("simple-drawing");
 
-var _origFunc = Dygraph.getContext;
+SimpleDrawingTestCase._origFunc = Dygraph.getContext;
 SimpleDrawingTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
+    return new Proxy(SimpleDrawingTestCase._origFunc(canvas));
   }
 };
 
 SimpleDrawingTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = _origFunc;
+  Dygraph.getContext = SimpleDrawingTestCase._origFunc;
 };
 
 SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {

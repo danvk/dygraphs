@@ -93,6 +93,12 @@
           document.getElementById("events").innerHTML += "special handler<br/>";
         }
       } );
+      annotations.push( {
+        series: 'parabola',
+        x: '20061012',
+        shortText: 'P',
+        text: 'Parabola Annotation at same x-coord'
+      } );
       g.setAnnotations(annotations);
 
       function add() {

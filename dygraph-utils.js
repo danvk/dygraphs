@@ -183,7 +183,7 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+Dygraph.prototype.addEvent = function(elem, type, fn) {
   Dygraph.addEvent(elem, type, fn);
   this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
@@ -197,7 +197,7 @@ Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.removeEvent = function addEvent(elem, type, fn) {
+Dygraph.removeEvent = function(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
@@ -291,6 +291,8 @@ Dygraph.findPosX = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      var borderLeft = getComputedStyle(copyObj).borderLeft || "0";
+      curleft += parseInt(borderLeft, 10) ;
       curleft += copyObj.offsetLeft;
       if(!copyObj.offsetParent) {
         break;
@@ -322,6 +324,8 @@ Dygraph.findPosY = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      var borderTop = getComputedStyle(copyObj).borderTop || "0";
+      curtop += parseInt(borderTop, 10) ;
       curtop += copyObj.offsetTop;
       if(!copyObj.offsetParent) {
         break;
@@ -1211,4 +1215,21 @@ Dygraph.detectLineDelimiter = function(data) {
   }
 
   return null;
+};
+
+/**
+ * Is one element contained by another?
+ * @param {Element} containee The contained element.
+ * @param {Element} container The container element.
+ * @return {boolean} Whether containee is inside (or equal to) container.
+ * @private
+ */
+Dygraph.isElementContainedBy = function(containee, container) {
+  if (container === null || containee === null) {
+    return false;
+  }
+  while (containee && containee !== container) {
+    containee = containee.parentNode;
+  }
+  return (containee === container);
 };

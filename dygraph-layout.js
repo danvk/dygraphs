@@ -130,7 +130,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   var parse = this.attr_('xValueParser') || function(x) { return x; };
   for (var i = 0; i < ann.length; i++) {
     var a = {};
-    if (!ann[i].xval && !ann[i].x) {
+    if (!ann[i].xval && ann[i].x === undefined) {
       this.dygraph_.error("Annotations must have an 'x' property");
       return;
     }

@@ -79,6 +79,10 @@ annotations.prototype.didDrawChart = function(e) {
 
   // Add the annotations one-by-one.
   var area = e.dygraph.plotter_.area;
+
+  // x-coord to sum of previous annotation's heights (used for stacking).
+  var xToUsedHeight = {};
+
   for (var i = 0; i < points.length; i++) {
     var p = points[i];
     if (p.canvasx < area.x || p.canvasx > area.x + area.w ||
@@ -116,12 +120,22 @@ annotations.prototype.didDrawChart = function(e) {
     } else if (p.annotation.hasOwnProperty('shortText')) {
       div.appendChild(document.createTextNode(p.annotation.shortText));
     }
-    div.style.left = (p.canvasx - width / 2) + "px";
+    var left = p.canvasx - width / 2;
+    div.style.left = left + "px";
+    var divTop = 0;
     if (a.attachAtBottom) {
-      div.style.top = (area.h - height - tick_height) + "px";
+      var y = (area.y + area.h - height - tick_height);
+      if (xToUsedHeight[left]) {
+        y -= xToUsedHeight[left];
+      } else {
+        xToUsedHeight[left] = 0;
+      }
+      xToUsedHeight[left] += (tick_height + height);
+      divTop = y;
     } else {
-      div.style.top = (p.canvasy - height - tick_height) + "px";
+      divTop = p.canvasy - height - tick_height;
     }
+    div.style.top = divTop + "px";
     div.style.width = width + "px";
     div.style.height = height + "px";
     div.title = p.annotation.text;
@@ -149,8 +163,9 @@ annotations.prototype.didDrawChart = function(e) {
       ctx.moveTo(p.canvasx, p.canvasy);
       ctx.lineTo(p.canvasx, p.canvasy - 2 - tick_height);
     } else {
-      ctx.moveTo(p.canvasx, area.h);
-      ctx.lineTo(p.canvasx, area.h - 2 - tick_height);
+      var y = divTop + height;
+      ctx.moveTo(p.canvasx, y);
+      ctx.lineTo(p.canvasx, y + tick_height);
     }
     ctx.closePath();
     ctx.stroke();
