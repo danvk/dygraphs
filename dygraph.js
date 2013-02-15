@@ -2200,8 +2200,6 @@ Dygraph.prototype.predraw_ = function() {
   // If the data or options have changed, then we'd better redraw.
   this.drawGraph_();
 
-  this.plotter_.onDoneDrawing();
-
   // This is used to determine whether to do various animations.
   var end = new Date();
   this.drawingTimeMs_ = (end - start);

@@ -57,8 +57,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.height = this.element.height;
   this.width = this.element.width;
 
-  this.elementContext.save();
-
   // --- check whether everything is ok before we return
   if (!this.isIE && !(DygraphCanvasRenderer.isSupported(this.element)))
       throw "Canvas is not supported.";
@@ -125,11 +123,6 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
-};
-
-DygraphCanvasRenderer.prototype.onDoneDrawing = function() {
-  // balances the save called in the constructor.
-  this.elementContext.restore();
 };
 
 /**
