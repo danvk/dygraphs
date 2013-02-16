@@ -485,15 +485,27 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "avoidMinZero": {
     "default": "false",
-    "labels": ["Axis display"],
+    "labels": ["Deprecated"],
     "type": "boolean",
-    "description": "When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
+    "description": "Deprecated, please use yRangePad instead. When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
   },
   "drawAxesAtZero": {
     "default": "false",
     "labels": ["Axis display"],
     "type": "boolean",
     "description": "When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph's visible area. Otherwise, draw the axes at the bottom or left graph edge as usual."
+  },
+  "xRangePad": {
+    "default": "0",
+    "labels": ["Axis display"],
+    "type": "float",
+    "description": "Add the specified amount of extra space (in pixels) around the X-axis value range to ensure points at the edges remain visible."
+  },
+  "yRangePad": {
+    "default": "null",
+    "labels": ["Axis display"],
+    "type": "float",
+    "description": "If set, add the specified amount of extra space (in pixels) around the Y-axis value range to ensure points at the edges remain visible. If unset, use the traditional Y padding algorithm."
   },
   "xAxisLabelFormatter": {
     "default": "",

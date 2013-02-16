@@ -246,6 +246,8 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+  xRangePad: 0,
+  yRangePad: null,
   drawAxesAtZero: false,
 
   // Sizes of the various chart labels.
@@ -657,8 +659,18 @@ Dygraph.prototype.xAxisRange = function() {
  * data set.
  */
 Dygraph.prototype.xAxisExtremes = function() {
+  var pad = this.attr_('xRangePad') / this.plotter_.area.w;
+  if (this.numRows() == 0) {
+    return [0 - pad, 1 + pad];
+  }
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
+  if (pad) {
+    // Must keep this in sync with dygraph-layout _evaluateLimits()
+    var range = right - left;
+    left -= range * pad;
+    right += range * pad;
+  }
   return [left, right];
 };
 
@@ -874,6 +886,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
  * @return { Integer } The number of columns.
  */
 Dygraph.prototype.numColumns = function() {
+  if (!this.rawData_) return 0;
   return this.rawData_[0] ? this.rawData_[0].length : this.attr_("labels").length;
 };
 
@@ -882,22 +895,8 @@ Dygraph.prototype.numColumns = function() {
  * @return { Integer } The number of rows, less any header.
  */
 Dygraph.prototype.numRows = function() {
+  if (!this.rawData_) return 0;
   return this.rawData_.length;
-};
-
-/**
- * Returns the full range of the x-axis, as determined by the most extreme
- * values in the data set. Not affected by zooming, visibility, etc.
- * TODO(danvk): merge w/ xAxisExtremes
- * @return { Array<Number> } A [low, high] pair
- * @private
- */
-Dygraph.prototype.fullXRange_ = function() {
-  if (this.numRows() > 0) {
-    return [this.rawData_[0][0], this.rawData_[this.numRows() - 1][0]];
-  } else {
-    return [0, 1];
-  }
 };
 
 /**
@@ -2096,7 +2095,7 @@ Dygraph.prototype.addXTicks_ = function() {
   if (this.dateWindow_) {
     range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    range = this.fullXRange_();
+    range = this.xAxisExtremes();
   }
 
   var xAxisOptionsView = this.optionsViewForAxis_('x');
@@ -2554,34 +2553,70 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = Math.max(extremeMaxY, maxY);
         }
       }
-      if (includeZero && minY > 0) minY = 0;
+
+      // Include zero if requested by the user.
+      if (includeZero && !logscale) {
+        if (minY > 0) minY = 0;
+        if (maxY < 0) maxY = 0;
+      }
 
       // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
       if (maxY == -Infinity) maxY = 1;
 
-      // Add some padding and round up to an integer to be human-friendly.
       var span = maxY - minY;
-      // special case: if we have no sense of scale, use +/-10% of the sole value.
-      if (span === 0) { span = maxY; }
+      // special case: if we have no sense of scale, center on the sole value.
+      if (span === 0) {
+        if (maxY !== 0) {
+          span = Math.abs(maxY);
+        } else {
+          // ... and if the sole value is zero, use range 0-1.
+          maxY = 1;
+          span = 1;
+        }
+      }
+
+      // Add some padding. This supports two Y padding operation modes:
+      //
+      // - backwards compatible (yRangePad not set):
+      //   10% padding for automatic Y ranges, but not for user-supplied
+      //   ranges, and move a close-to-zero edge to zero except if
+      //   avoidMinZero is set, since drawing at the edge results in
+      //   invisible lines. Unfortunately lines drawn at the edge of a
+      //   user-supplied range will still be invisible. If logscale is
+      //   set, add a variable amount of padding at the top but
+      //   none at the bottom.
+      //
+      // - new-style (yRangePad set by the user):
+      //   always add the specified Y padding.
+      //
+      var ypadCompat = true;
+      var ypad = 0.1; // add 10%
+      if (this.attr_('yRangePad') !== null) {
+        ypadCompat = false;
+        // Convert pixel padding to ratio
+        ypad = this.attr_('yRangePad') / this.plotter_.area.h;
+      }
 
       var maxAxisY, minAxisY;
       if (logscale) {
-        maxAxisY = maxY + 0.1 * span;
-        minAxisY = minY;
+        if (ypadCompat) {
+          maxAxisY = maxY + ypad * span;
+          minAxisY = minY;
+        } else {
+          var logpad = Math.exp(Math.log(span) * ypad);
+          maxAxisY = maxY * logpad;
+          minAxisY = minY / logpad;
+        }
       } else {
-        maxAxisY = maxY + 0.1 * span;
-        minAxisY = minY - 0.1 * span;
+        maxAxisY = maxY + ypad * span;
+        minAxisY = minY - ypad * span;
 
-        // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-        if (!this.attr_("avoidMinZero")) {
+        // Backwards-compatible behavior: Move the span to start or end at zero if it's
+        // close to zero, but not if avoidMinZero is set.
+        if (ypadCompat && !this.attr_("avoidMinZero")) {
           if (minAxisY < 0 && minY >= 0) minAxisY = 0;
           if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-        }
-
-        if (this.attr_("includeZero")) {
-          if (maxY < 0) maxAxisY = 0;
-          if (minY > 0) minAxisY = 0;
         }
       }
       axis.extremeRange = [minAxisY, maxAxisY];
@@ -2593,10 +2628,20 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
-      axis.computedValueRange = [
-         isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0],
-         isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1]
-      ];
+      var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
+      var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
+      if (!ypadCompat) {
+        if (axis.logscale) {
+          var logpad = Math.exp(Math.log(span) * ypad);
+          y0 *= logpad;
+          y1 /= logpad;
+        } else {
+          var span = y1 - y0;
+          y0 -= span * ypad;
+          y1 += span * ypad;
+        }
+      }
+      axis.computedValueRange = [y0, y1];
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
