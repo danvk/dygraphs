@@ -134,4 +134,28 @@ pathologicalCasesTestCase.prototype.testDivAsString = function() {
              "1,2\n";
 
   var g = new Dygraph('graph', data, {});
-}
+};
+
+
+pathologicalCasesTestCase.prototype.testConstantSeriesNegative = function() {
+  var data = "X,Y\n" +
+             "1,-1\n" +
+             "2,-1\n";
+
+  g = new Dygraph('graph', data, {});
+  // This check could be loosened to
+  // g.yAxisRange()[0] < g.yAxisRange()[1] if it breaks in the future.
+  assertEquals([-1.1, -0.9], g.yAxisRange());
+};
+
+
+pathologicalCasesTestCase.prototype.testConstantSeriesNegativeIncludeZero = function() {
+  var data = "X,Y\n" +
+             "1,-1\n" +
+             "2,-1\n";
+
+  g = new Dygraph('graph', data, {includeZero: true});
+  // This check could be loosened to
+  // g.yAxisRange()[0] < g.yAxisRange()[1] if it breaks in the future.
+  assertEquals([-1.1, 0], g.yAxisRange());
+};
