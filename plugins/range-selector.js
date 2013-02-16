@@ -265,7 +265,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
   var topElem = this.isIE_ ? document : window;
-  var xLast = 0;
+  var pageXLast = 0;
   var handle = null;
   var isZooming = false;
   var isPanning = false;
@@ -278,7 +278,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
-      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove, applyBrowserZoomLevel;
+      onPanStart, onPan, onPanEnd, doPan, onCanvasHover, getCursorPageX;
 
   // Touch event functions
   var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
@@ -291,22 +291,28 @@ rangeSelector.prototype.initInteraction_ = function() {
     return [xDataMin, xDataMax];
   };
 
-  applyBrowserZoomLevel = function(delX) {
-    var zoom = window.outerWidth/document.documentElement.clientWidth;
-    if (!isNaN(zoom)) {
-      return delX/zoom;
+  getCursorPageX = function(e) {
+    if (e.pageX !== null) {
+      return e.pageX;
     } else {
-      return delX;
+      // Taken from jQuery.
+      var target = e.target || e.srcElement || document;
+      var eventDoc = target.ownerDocument || target.document || document;
+      var doc = eventDoc.documentElement, body = eventDoc.body;
+      return e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
     }
   };
 
   onZoomStart = function(e) {
     Dygraph.cancelEvent(e);
     isZooming = true;
-    xLast = e.screenX;
+    pageXLast = getCursorPageX(e);
     handle = e.target ? e.target : e.srcElement;
-    self.dygraph_.addEvent(topElem, 'mousemove', onZoom);
-    self.dygraph_.addEvent(topElem, 'mouseup', onZoomEnd);
+    if (e.type === 'mousedown' || e.type === 'dragstart') {
+      // These events are removed manually.
+      Dygraph.addEvent(topElem, 'mousemove', onZoom);
+      Dygraph.addEvent(topElem, 'mouseup', onZoomEnd);
+    }
     self.fgcanvas_.style.cursor = 'col-resize';
     tarp.cover();
     return true;
@@ -317,23 +323,23 @@ rangeSelector.prototype.initInteraction_ = function() {
       return false;
     }
     Dygraph.cancelEvent(e);
-    var delX = e.screenX - xLast;
-    if (Math.abs(delX) < 4 || e.screenX === 0) {
-      // First iPad move event seems to have screenX = 0
+
+    var pageX = getCursorPageX(e);
+    var delX = pageX - pageXLast;
+    if (Math.abs(delX) < 4) {
       return true;
     }
-    xLast = e.screenX;
-    delX = applyBrowserZoomLevel(delX);
+    pageXLast = pageX;
 
     // Move handle.
     var zoomHandleStatus = self.getZoomHandleStatus_();
     var newPos;
     if (handle == self.leftZoomHandle_) {
-      newPos = zoomHandleStatus.leftHandlePos + delX;
+      newPos = pageX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
       newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
-      newPos = zoomHandleStatus.rightHandlePos + delX;
+      newPos = pageX;
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
@@ -396,9 +402,12 @@ rangeSelector.prototype.initInteraction_ = function() {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
       Dygraph.cancelEvent(e);
       isPanning = true;
-      xLast = e.screenX;
-      self.dygraph_.addEvent(topElem, 'mousemove', onPan);
-      self.dygraph_.addEvent(topElem, 'mouseup', onPanEnd);
+      pageXLast = getCursorPageX(e);
+      if (e.type === 'mousedown') {
+        // These events are removed manually.
+        Dygraph.addEvent(topElem, 'mousemove', onPan);
+        Dygraph.addEvent(topElem, 'mouseup', onPanEnd);
+      }
       return true;
     }
     return false;
@@ -410,12 +419,12 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
     Dygraph.cancelEvent(e);
 
-    var delX = e.screenX - xLast;
+    var pageX = getCursorPageX(e);
+    var delX = pageX - pageXLast;
     if (Math.abs(delX) < 4) {
       return true;
     }
-    xLast = e.screenX;
-    delX = applyBrowserZoomLevel(delX);
+    pageXLast = pageX;
 
     // Move range view
     var zoomHandleStatus = self.getZoomHandleStatus_();
@@ -468,7 +477,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  onCanvasMouseMove = function(e) {
+  onCanvasHover = function(e) {
     if (isZooming || isPanning) {
       return;
     }
@@ -524,7 +533,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     this.dygraph_.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
   } else {
     this.dygraph_.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
-    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
   }
 
   // Touch events
