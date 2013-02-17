@@ -731,13 +731,21 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
     ctx.beginPath();
-    while(iter.hasNext) {
+    var last_x, is_first = true;
+    while (iter.hasNext) {
       var point = iter.next();
       if (!Dygraph.isOK(point.y)) {
         prevX = NaN;
         continue;
       }
       if (stackedGraph) {
+        if (!is_first && last_x == point.xval) {
+          continue;
+        } else {
+          is_first = false;
+          last_x = point.xval;
+        }
+
         currBaseline = baseline[point.canvasx];
         var lastY;
         if (currBaseline === undefined) {

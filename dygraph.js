@@ -2279,9 +2279,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
                      series[j][1][2]];
       }
     } else if (this.attr_("stackedGraph")) {
-      var l = series.length;
-      var actual_y;
-      for (j = 0; j < l; j++) {
+      var actual_y, last_x;
+      for (j = 0; j < series.length; j++) {
         // If one data set has a NaN, let all subsequent stacked
         // sets inherit the NaN -- only start at 0 for the first set.
         var x = series[j][0];
@@ -2295,7 +2294,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           continue;
         }
 
-        cumulative_y[x] += actual_y;
+        if (j === 0 || last_x != x) {
+          cumulative_y[x] += actual_y;
+          // If an x-value is repeated, we ignore the duplicates.
+        }
+        last_x = x;
 
         series[j] = [x, cumulative_y[x]];
 

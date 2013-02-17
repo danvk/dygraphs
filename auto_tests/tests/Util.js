@@ -79,3 +79,19 @@ Util.makeNumbers = function(ary) {
   }
   return ret;
 };
+
+
+/**
+ * Sample a pixel from the canvas.
+ * Returns an [r, g, b, a] tuple where each values is in [0, 255].
+ */
+Util.samplePixel = function(canvas, x, y) {
+  var ctx = canvas.getContext("2d");  // bypasses Proxy if applied.
+
+  // TODO(danvk): Any performance issues with this?
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  var i = 4 * (x + imageData.width * y);
+  var d = imageData.data;
+  return [d[i], d[i+1], d[i+2], d[i+3]];
+};

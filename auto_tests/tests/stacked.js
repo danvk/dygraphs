@@ -94,3 +94,29 @@ stackedTestCase.prototype.testSelectionValues = function() {
   g.setSelection(0, 'Y2');
   assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
 };
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=176
+stackedTestCase.prototype.testDuplicatedXValue = function() {
+  var opts = {
+    stackedGraph: true,
+    fillAlpha: 0.15,
+    colors: ['#00ff00'],
+    width: 400,
+    height: 300
+  };
+  var data = "X,Y1\n" +
+      "0,1\n" +
+      "1,1\n" +
+      "2,1\n" +
+      "2,1\n" +  // duplicate x-value!
+      "3,1\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  assert(g.yAxisRange()[1] < 2);
+
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 250));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 317, 250));
+}
