@@ -23,6 +23,10 @@
     <p>The tick marks should all be on day boundaries or nice hours (6, 12, 18),
     rather than on odd time boundaries like 5, 11, 17 and 23.</p>
 
+    <hr/>
+    <div id="chart2"></div>
+    <p>This chart shows a continuous line going across the "fall back" EST/EDT event. You may need to switch your computer's time zone to Eastern to see this. The x-axis tick marks go from 01:00 &rarr; 01:55 and then back to 01:00.</p>
+
     <script type="text/javascript">
       g = new Dygraph(
               document.getElementById("demodiv"),
@@ -33,6 +37,19 @@
 "2010-11-08 00:00:00,165587\n" +
 "2010-11-09 00:00:00,164380\n",
           { width: 1024 }
+          );
+
+      // Generate data which crosses the EST/EDT boundary.
+      var dst_data = [];
+      var base_ms = 1383454200000;
+      for (var x = base_ms; x < base_ms + 1000 * 60 * 80; x += 1000) {
+        dst_data.push([new Date(x), x]);
+      }
+
+      g = new Dygraph(
+              document.getElementById("chart2"),
+              dst_data,
+          { width: 1024, labels: ['Date', 'Value'] }
           );
     </script>
 </body>
