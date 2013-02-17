@@ -2472,6 +2472,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('willDrawChart', e);
   this.plotter_.render();
   this.cascadeEvents_('didDrawChart', e);
+  this.lastRow_ = -1;  // because plugins/legend.js clears the legend
 
   // TODO(danvk): is this a performance bottleneck when panning?
   // The interaction canvas should already be empty in that situation.

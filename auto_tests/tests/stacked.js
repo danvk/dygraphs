@@ -86,8 +86,9 @@ stackedTestCase.prototype.testSelectionValues = function() {
       strokeWidth: 10
     }
   });
-  // NOTE: calling g.setSelection(0) here makes the test fail, due to an
-  // unrelated bug.
+  g.setSelection(0);
+  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
+
   g.setSelection(1);
   assertEquals("1: Y1: 1 Y2: 1", Util.getLegend());
 
