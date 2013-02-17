@@ -87,16 +87,6 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 
 /** @type {Dygraph.Ticker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
-  // This masks some numeric issues in older versions of Firefox,
-  // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
-  /** @type {function(number,number):number} */
-  var pow = function(base, exp) {
-    if (exp < 0) {
-      return 1.0 / Math.pow(base, -exp);
-    }
-    return Math.pow(base, exp);
-  };
-
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
   var i, j, tickV, nTicks;
@@ -201,58 +191,13 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     }
   }
 
-  // Add formatted labels to the ticks.
-  var k;
-  var k_labels = [];
-  var m_labels = [];
-  if (opts("labelsKMB")) {
-    k = 1000;
-    k_labels = [ "K", "M", "B", "T", "Q" ];
-  }
-  if (opts("labelsKMG2")) {
-    if (k) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
-    k = 1024;
-    k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
-    m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
-  }
-
-  k = k || 1; // If neither option is specified.
-
   var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
 
   // Add labels to the ticks.
-  var digitsAfterDecimal = /** @type{number} */(opts('digitsAfterDecimal'));
   for (i = 0; i < ticks.length; i++) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
-    tickV = ticks[i].v;
-    var absTickV = Math.abs(tickV);
     // TODO(danvk): set granularity to something appropriate here.
-    var label = formatter(tickV, 0, opts, dygraph);
-    if (k_labels.length > 0) {
-      // TODO(danvk): should this be integrated into the axisLabelFormatter?
-      // Round up to an appropriate unit.
-      var n = pow(k, k_labels.length);
-      for (j = k_labels.length - 1; j >= 0; j--, n /= k) {
-        if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, digitsAfterDecimal) + k_labels[j];
-          break;
-        }
-      }
-    }
-    if(opts("labelsKMG2")){
-      tickV = String(tickV.toExponential());
-      if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3 && tickV.split('e-')[1] <= 24){
-        if(tickV.split('e-')[1] % 3 > 0) {
-          label = Dygraph.round_(tickV.split('e-')[0] /
-              pow(10,(tickV.split('e-')[1] % 3)),
-              digitsAfterDecimal);
-        } else {
-          label = Number(tickV.split('e-')[0]).toFixed(2);
-        }
-        label += m_labels[Math.floor(tickV.split('e-')[1] / 3) - 1];
-      }
-    }
-    ticks[i].label = label;
+    ticks[i].label = formatter(ticks[i].v, 0, opts, dygraph);
   }
 
   return ticks;

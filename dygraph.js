@@ -95,6 +95,10 @@ Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
+Dygraph.KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
+Dygraph.KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+Dygraph.KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
 /**
  * @private
@@ -116,14 +120,60 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
   var digits = opts('digitsAfterDecimal');
   var maxNumberWidth = opts('maxNumberWidth');
 
+  var kmb = opts('labelsKMB');
+  var kmg2 = opts('labelsKMG2');
+
+  var label;
+
   // switch to scientific notation if we underflow or overflow fixed display.
   if (x !== 0.0 &&
       (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
        Math.abs(x) < Math.pow(10, -digits))) {
-    return x.toExponential(digits);
+    label = x.toExponential(digits);
   } else {
-    return '' + Dygraph.round_(x, digits);
+    label = '' + Dygraph.round_(x, digits);
   }
+
+  if (kmb || kmg2) {
+    var k;
+    var k_labels = [];
+    var m_labels = [];
+    if (kmb) {
+      k = 1000;
+      k_labels = [ "K", "M", "B", "T", "Q" ];
+    }
+    if (kmg2) {
+      if (kmb) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
+      k = 1024;
+      k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
+      m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
+    }
+
+    var absx = Math.abs(x);
+    var n = Dygraph.pow(k, k_labels.length);
+    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
+      if (absx >= n) {
+        label = Dygraph.round_(x / n, digits) + k_labels[j];
+        break;
+      }
+    }
+    if (kmg2) {
+      // TODO(danvk): clean up this logic. Why so different than kmb?
+      var x_parts = String(x.toExponential()).split('e-');
+      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
+        if (x_parts[1] % 3 > 0) {
+          label = Dygraph.round_(x_parts[0] /
+              Dygraph.pow(10, (x_parts[1] % 3)),
+              digits);
+        } else {
+          label = Number(x_parts[0]).toFixed(2);
+        }
+        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
+      }
+    }
+  }
+
+  return label;
 };
 
 /**
@@ -612,7 +662,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
   return function(opt) {
     var axis_opts = self.user_attrs_.axes;
-    if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
+    if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
     // user-specified attributes always trump defaults, even if they're less
@@ -622,7 +672,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     }
 
     axis_opts = self.attrs_.axes;
-    if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
+    if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
     // check old-style axis options

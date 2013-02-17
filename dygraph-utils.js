@@ -1233,3 +1233,15 @@ Dygraph.isElementContainedBy = function(containee, container) {
   }
   return (containee === container);
 };
+
+
+// This masks some numeric issues in older versions of Firefox,
+// where 1.0/Math.pow(10,2) != Math.pow(10,-2).
+/** @type {function(number,number):number} */
+Dygraph.pow = function(base, exp) {
+  if (exp < 0) {
+    return 1.0 / Math.pow(base, -exp);
+  }
+  return Math.pow(base, exp);
+};
+
