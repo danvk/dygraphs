@@ -710,7 +710,7 @@ Dygraph.prototype.xAxisRange = function() {
  */
 Dygraph.prototype.xAxisExtremes = function() {
   var pad = this.attr_('xRangePad') / this.plotter_.area.w;
-  if (this.numRows() == 0) {
+  if (this.numRows() === 0) {
     return [0 - pad, 1 + pad];
   }
   var left = this.rawData_[0][0];
@@ -2569,12 +2569,11 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
-  
   var isNullUndefinedOrNaN = function(num) {
     return isNaN(parseFloat(num));
   };
-  var series;
   var numAxes = this.attributes_.numAxes();
+  var ypadCompat, span, series, ypad;
 
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < numAxes; i++) {
@@ -2617,7 +2616,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       if (minY == Infinity) minY = 0;
       if (maxY == -Infinity) maxY = 1;
 
-      var span = maxY - minY;
+      span = maxY - minY;
       // special case: if we have no sense of scale, center on the sole value.
       if (span === 0) {
         if (maxY !== 0) {
@@ -2643,8 +2642,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       // - new-style (yRangePad set by the user):
       //   always add the specified Y padding.
       //
-      var ypadCompat = true;
-      var ypad = 0.1; // add 10%
+      ypadCompat = true;
+      ypad = 0.1; // add 10%
       if (this.attr_('yRangePad') !== null) {
         ypadCompat = false;
         // Convert pixel padding to ratio
@@ -2689,7 +2688,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           y0 *= logpad;
           y1 /= logpad;
         } else {
-          var span = y1 - y0;
+          span = y1 - y0;
           y0 -= span * ypad;
           y1 += span * ypad;
         }
