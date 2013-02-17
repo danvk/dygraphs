@@ -1839,7 +1839,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var callback = this.attr_("highlightCallback");
   if (callback && selectionChanged) {
-    callback(event, this.lastx_, this.selPoints_, this.lastRow_, this.highlightSet_);
+    callback(event,
+        this.lastx_,
+        this.selPoints_,
+        this.lastRow_ + this.getLeftBoundary_(),
+        this.highlightSet_);
   }
 };
 
