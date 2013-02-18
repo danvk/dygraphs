@@ -827,3 +827,63 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
     '01:00', '01:05'  // 1 AM number two!
   ], Util.getXLabels());
 };
+
+
+// Tests data which crosses a "spring forward" at a low frequency.
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433
+AxisLabelsTestCase.prototype.testLabelsCrossSpringForward = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "Date/Time,Purchases\n" +
+      "2011-03-11 00:00:00,167082\n" +
+      "2011-03-12 00:00:00,168571\n" +
+      "2011-03-13 00:00:00,177796\n" +
+      "2011-03-14 00:00:00,165587\n" +
+      "2011-03-15 00:00:00,164380\n",
+      {
+        width: 1024,
+        dateWindow: [1299989043119.4365, 1300080693627.4866]
+      });
+
+  var okLabels = {
+    '13Mar': true,
+    // '02:00': true,  // not a real time!
+    '04:00': true,
+    '06:00': true,
+    '08:00': true,
+    '10:00': true,
+    '12:00': true,
+    '14:00': true,
+    '16:00': true,
+    '18:00': true,
+    '20:00': true,
+    '22:00': true,
+    '14Mar': true
+  };
+
+  var xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
+};
+
+AxisLabelsTestCase.prototype.testLabelsCrossSpringForwardHighFreq = function() {
+  var base_ms_spring = 1299999000000;
+  var dst_data_spring = [];
+  for (var x = base_ms_spring; x < base_ms_spring + 1000 * 60 * 80; x += 1000) {
+    dst_data_spring.push([new Date(x), x]);
+  }
+
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      dst_data_spring,
+      { width: 1024, labels: ['Date', 'Value'] }
+  );
+
+  assertEquals([
+    '01:50', '01:55',
+    '03:00', '03:05', '03:10', '03:15', '03:20', '03:25',
+    '03:30', '03:35', '03:40', '03:45', '03:50', '03:55',
+    '04:00', '04:05'
+  ], Util.getXLabels());
+};

@@ -392,9 +392,21 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       // daylight savings transitions. Without this, the ticks could get off
       // by an hour. See tests/daylight-savings.html or issue 147.
       if (check_dst && d.getTimezoneOffset() != start_offset_min) {
-        t += (d.getTimezoneOffset() - start_offset_min) * 60 * 1000;
+        var delta_min = d.getTimezoneOffset() - start_offset_min;
+        t += delta_min * 60 * 1000;
         d = new Date(t);
         start_offset_min = d.getTimezoneOffset();
+
+        // Check whether we've backed into the previous timezone again.
+        // This can happen during a "spring forward" transition. In this case,
+        // it's best to skip this tick altogether (we may be shooting for a
+        // non-existent time like the 2AM that's skipped) and go to the next
+        // one.
+        if (new Date(t + spacing).getTimezoneOffset() != start_offset_min) {
+          t += spacing;
+          d = new Date(t);
+          start_offset_min = d.getTimezoneOffset();
+        }
       }
 
       ticks.push({ v:t,
