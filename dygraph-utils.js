@@ -1245,3 +1245,33 @@ Dygraph.pow = function(base, exp) {
   return Math.pow(base, exp);
 };
 
+// For Dygraph.setDateSameTZ, below.
+Dygraph.dateSetters = {
+  ms: Date.prototype.setMilliseconds,
+  s: Date.prototype.setSeconds,
+  m: Date.prototype.setMinutes,
+  h: Date.prototype.setHours
+};
+
+/**
+ * This is like calling d.setSeconds(), d.setMinutes(), etc, except that it
+ * adjusts for time zone changes to keep the date/time parts consistent.
+ *
+ * For example, d.getSeconds(), d.getMinutes() and d.getHours() will all be
+ * the same before/after you call setDateSameTZ(d, {ms: 0}). The same is not
+ * true if you call d.setMilliseconds(0).
+ *
+ * @type {function(!Date, Object.<number>)}
+ */
+Dygraph.setDateSameTZ = function(d, parts) {
+  var tz = d.getTimezoneOffset();
+  for (var k in parts) {
+    if (!parts.hasOwnProperty(k)) continue;
+    var setter = Dygraph.dateSetters[k];
+    if (!setter) throw "Invalid setter: " + k;
+    setter.call(d, parts[k]);
+    if (d.getTimezoneOffset() != tz) {
+      d.setTime(d.getTime() + (tz - d.getTimezoneOffset()) * 60 * 1000);
+    }
+  }
+};

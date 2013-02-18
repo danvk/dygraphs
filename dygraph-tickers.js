@@ -340,25 +340,6 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var ticks = [];
   var t;
 
-  var setters = {
-    ms: Date.prototype.setMilliseconds,
-    s: Date.prototype.setSeconds,
-    m: Date.prototype.setMinutes,
-    h: Date.prototype.setHours
-  };
-  var safeSet = function(d, parts) {
-    var tz = d.getTimezoneOffset();
-    for (var k in parts) {
-      if (!parts.hasOwnProperty(k)) continue;
-      var setter = setters[k];
-      if (!setter) throw "Invalid setter: " + k;
-      setter.call(d, parts[k]);
-      if (d.getTimezoneOffset() != tz) {
-        d.setTime(d.getTime() + (tz - d.getTimezoneOffset()) * 60 * 1000);
-      }
-    }
-  };
-
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
@@ -367,20 +348,20 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // for this granularity.
     var g = spacing / 1000;
     var d = new Date(start_time);
-    safeSet(d, {ms: 0});
+    Dygraph.setDateSameTZ(d, {ms: 0});
 
     var x;
     if (g <= 60) {  // seconds
       x = d.getSeconds();
-      safeSet(d, {s: x - x % g});
+      Dygraph.setDateSameTZ(d, {s: x - x % g});
     } else {
-      safeSet(d, {s: 0});
+      Dygraph.setDateSameTZ(d, {s: 0});
       g /= 60;
       if (g <= 60) {  // minutes
         x = d.getMinutes();
-        safeSet(d, {m: x - x % g});
+        Dygraph.setDateSameTZ(d, {m: x - x % g});
       } else {
-        safeSet(d, {m: 0});
+        Dygraph.setDateSameTZ(d, {m: 0});
         g /= 60;
 
         if (g <= 24) {  // days
@@ -398,6 +379,9 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
     start_time = d.getTime();
 
+    // For spacings coarser than two-hourly, we want to ignore daylight
+    // savings transitions to get consistent ticks. For finer-grained ticks,
+    // it's essential to show the DST transition in all its messiness.
     var start_offset_min = new Date(start_time).getTimezoneOffset();
     var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
 
