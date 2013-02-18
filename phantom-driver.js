@@ -178,11 +178,11 @@ for (var i = 0; i < tasks.length; i++) {
 RunAllAutoTests(function(num_failing, num_passing) {
   if (num_failing !== 0) {
     console.log('FAIL');
-    phantom.exit();
+    phantom.exit(1);
   } else {
     console.log('PASS');
+    phantom.exit(0);
   }
-  phantom.exit();
 
   // This is not yet reliable enough to be useful:
   /*
