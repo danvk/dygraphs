@@ -349,14 +349,20 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
     var left = Math.min(context.dragStartX, context.dragEndX),
         right = Math.max(context.dragStartX, context.dragEndX);
-    g.doZoomX_(Math.max(left, plotArea.x),
-               Math.min(right, plotArea.x + plotArea.w));
+    left = Math.max(left, plotArea.x);
+    right = Math.min(right, plotArea.x + plotArea.w);
+    if (left < right) {
+      g.doZoomX_(left, right);
+    }
     context.cancelNextDblclick = true;
   } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
     var top = Math.min(context.dragStartY, context.dragEndY),
         bottom = Math.max(context.dragStartY, context.dragEndY);
-    g.doZoomY_(Math.max(top, plotArea.y),
-               Math.min(bottom, plotArea.y + plotArea.h));
+    top = Math.max(top, plotArea.y);
+    bottom = Math.min(bottom, plotArea.y + plotArea.h);
+    if (top < bottom) {
+      g.doZoomY_(top, bottom);
+    }
     context.cancelNextDblclick = true;
   } else {
     if (context.zoomMoved) g.clearZoomRect_();
