@@ -728,7 +728,7 @@ AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
  * This test shows that you can override labelsKMB on the axis level.
  */
 AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
-  g = new Dygraph(
+  var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
       "1,0,2000\n" +
@@ -749,4 +749,37 @@ AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
       });
   assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(1));
   assertEquals(["0","500","1000","1500","2000"], Util.getYLabels(2));
+};
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
+// Checks that axis labels stay sane across a DST change.
+AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
+  // (From tests/daylight-savings.html)
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "Date/Time,Purchases\n" +
+      "2010-11-05 00:00:00,167082\n" +
+      "2010-11-06 00:00:00,168571\n" +
+      "2010-11-07 00:00:00,177796\n" +
+      "2010-11-08 00:00:00,165587\n" +
+      "2010-11-09 00:00:00,164380\n",
+      { width: 1024 }
+      );
+
+  // Dates and "nice" hours: 6AM/PM and noon, not 5AM/11AM/...
+  var okLabels = {
+    '05Nov': true,
+    '06Nov': true,
+    '07Nov': true,
+    '08Nov': true,
+    '09Nov': true,
+    '06:00': true,
+    '12:00': true,
+    '18:00': true
+  };
+
+  var xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
 };

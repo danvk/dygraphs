@@ -375,9 +375,21 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
     start_time = d.getTime();
 
+    var start_offset_min = new Date(start_time).getTimezoneOffset();
     for (t = start_time; t <= end_time; t += spacing) {
+      var d = new Date(t);
+
+      // This ensures that we stay on the same hourly "rhythm" across
+      // daylight savings transitions. Without this, the ticks could get off
+      // by an hour. See tests/daylight-savings.html or issue 147.
+      if (d.getTimezoneOffset() != start_offset_min) {
+        t += (d.getTimezoneOffset() - start_offset_min) * 60 * 1000;
+        d = new Date(t);
+        start_offset_min = d.getTimezoneOffset();
+      }
+
       ticks.push({ v:t,
-                   label: formatter(new Date(t), granularity, opts, dg)
+                   label: formatter(d, granularity, opts, dg)
                  });
     }
   } else {
