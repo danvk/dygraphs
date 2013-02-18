@@ -76,18 +76,28 @@ Dygraph.log = function(severity, message) {
   }
 
   if (typeof(window.console) != 'undefined') {
+    // In older versions of Firefox, only console.log is defined.
+    var console = window.console;
+    var log = function(console, method, msg) {
+      if (method) {
+        method.call(console, msg);
+      } else {
+        console.log(msg);
+      }
+    };
+
     switch (severity) {
       case Dygraph.DEBUG:
-        window.console.debug('dygraphs: ' + message);
+        log(console, console.debug, 'dygraphs: ' + message);
         break;
       case Dygraph.INFO:
-        window.console.info('dygraphs: ' + message);
+        log(console, console.info, 'dygraphs: ' + message);
         break;
       case Dygraph.WARNING:
-        window.console.warn('dygraphs: ' + message);
+        log(console, console.warn, 'dygraphs: ' + message);
         break;
       case Dygraph.ERROR:
-        window.console.error('dygraphs: ' + message);
+        log(console, console.error, 'dygraphs: ' + message);
         break;
     }
   }
@@ -291,7 +301,7 @@ Dygraph.findPosX = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
-      var borderLeft = getComputedStyle(copyObj).borderLeft || "0";
+      var borderLeft = getComputedStyle(copyObj, null).borderLeft || "0";
       curleft += parseInt(borderLeft, 10) ;
       curleft += copyObj.offsetLeft;
       if(!copyObj.offsetParent) {
@@ -324,7 +334,7 @@ Dygraph.findPosY = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
-      var borderTop = getComputedStyle(copyObj).borderTop || "0";
+      var borderTop = getComputedStyle(copyObj, null).borderTop || "0";
       curtop += parseInt(borderTop, 10) ;
       curtop += copyObj.offsetTop;
       if(!copyObj.offsetParent) {
