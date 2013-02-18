@@ -90,7 +90,7 @@ page.open(url, function(status) {
 
   console.log('Ran ' + (num_passing + num_failing) + ' tests in ' + elapsed + 's.');
   console.log(num_passing + ' test(s) passed');
-  console.log(num_failing + ' test(s) failed:');
+  console.log(num_failing + ' test(s) failed');
   for (var i = 0; i < failures.length; i++) {
     // TODO(danvk): print an auto_test/misc/local URL that runs this test.
     console.log('  ' + failures[i] + ' failed.');
