@@ -124,22 +124,8 @@ errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
   // 249-299: empty (white)
   // TODO(danvk): test the edges of these regions.
 
-  var ctx = g.hidden_.getContext("2d");  // bypass Proxy
-  var imageData = ctx.getImageData(0, 0, 400, 300);
-
-  assertEquals(400, imageData.width);
-  assertEquals(300, imageData.height);
-
-  // returns an (r, g, b, alpha) tuple for the pixel.
-  // values are in [0, 255].
-  var getPixel = function(imageData, x, y) {
-    var i = 4 * (x + imageData.width * y);
-    var d = imageData.data;
-    return [d[i], d[i+1], d[i+2], d[i+3]];
-  };
-
-  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 75));
-  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 125));
-  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 175));
-  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 225));
+  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 75));
+  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 125));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 175));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 225));
 }

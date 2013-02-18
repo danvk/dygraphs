@@ -342,13 +342,21 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
     Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
+  // The zoom rectangle is visibly clipped to the plot area, so its behavior
+  // should be as well.
+  // See http://code.google.com/p/dygraphs/issues/detail?id=280
+  var plotArea = g.getArea();
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
-    g.doZoomX_(Math.min(context.dragStartX, context.dragEndX),
-               Math.max(context.dragStartX, context.dragEndX));
+    var left = Math.min(context.dragStartX, context.dragEndX),
+        right = Math.max(context.dragStartX, context.dragEndX);
+    g.doZoomX_(Math.max(left, plotArea.x),
+               Math.min(right, plotArea.x + plotArea.w));
     context.cancelNextDblclick = true;
   } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
-    g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
-               Math.max(context.dragStartY, context.dragEndY));
+    var top = Math.min(context.dragStartY, context.dragEndY),
+        bottom = Math.max(context.dragStartY, context.dragEndY);
+    g.doZoomY_(Math.max(top, plotArea.y),
+               Math.min(bottom, plotArea.y + plotArea.h));
     context.cancelNextDblclick = true;
   } else {
     if (context.zoomMoved) g.clearZoomRect_();
@@ -596,6 +604,7 @@ Dygraph.Interaction.defaultModel = {
     if (context.isZooming) {
       context.dragEndX = null;
       context.dragEndY = null;
+      g.clearZoomRect_();
     }
   },
 

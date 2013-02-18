@@ -168,24 +168,11 @@ DygraphLayout.prototype.evaluate = function() {
 };
 
 DygraphLayout.prototype._evaluateLimits = function() {
-  this.minxval = this.maxxval = null;
-  if (this.dateWindow_) {
-    this.minxval = this.dateWindow_[0];
-    this.maxxval = this.dateWindow_[1];
-  } else {
-    for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
-      var series = this.datasets[setIdx];
-      if (series.length > 1) {
-        var x1 = series[0][0];
-        if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-
-        var x2 = series[series.length - 1][0];
-        if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
-      }
-    }
-  }
-  this.xrange = this.maxxval - this.minxval;
-  this.xscale = (this.xrange !== 0 ? 1/this.xrange : 1.0);
+  var xlimits = this.dygraph_.xAxisRange();
+  this.minxval = xlimits[0];
+  this.maxxval = xlimits[1];
+  var xrange = xlimits[1] - xlimits[0];
+  this.xscale = (xrange !== 0 ? 1 / xrange : 1.0);
 
   for (var i = 0; i < this.yAxes_.length; i++) {
     var axis = this.yAxes_[i];

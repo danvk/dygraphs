@@ -225,7 +225,7 @@ axes.prototype.willDrawChart = function(e) {
     var axisX;
     if (g.getOption('drawAxesAtZero')) {
       var r = g.toPercentXCoord(0);
-      if (r > 1 || r < 0) r = 0;
+      if (r > 1 || r < 0 || isNaN(r)) r = 0;
       axisX = halfUp(area.x + r * area.w);
     } else {
       axisX = halfUp(area.x);

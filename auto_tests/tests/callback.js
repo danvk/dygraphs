@@ -521,3 +521,47 @@ CallbackTestCase.prototype.testFailedResponse = function() {
 
   assertFalse("exception thrown during mouseout", failed);
 };
+
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355 
+CallbackTestCase.prototype.testHighlightCallbackRow = function() {
+  var highlightRow;
+  var highlightCallback = function(e, x, pts, row) {
+    highlightRow = row;
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph,
+    "X,Y,Z\n" +
+    "0,1,2\n" +  // 0
+    "1,2,3\n" +  // 100
+    "2,3,4\n" +  // 200
+    "3,4,5\n" +  // 300
+    "4,5,6\n",   // 400
+    { // fake name
+       width: 400,
+       height: 300,
+       highlightCallback : highlightCallback
+    });
+
+  // Mouse over each of the points
+  DygraphOps.dispatchMouseOver_Point(g, 0, 0);
+  DygraphOps.dispatchMouseMove_Point(g, 0, 0);
+  assertEquals(0, highlightRow);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 0);
+  assertEquals(1, highlightRow);
+  DygraphOps.dispatchMouseMove_Point(g, 200, 0);
+  assertEquals(2, highlightRow);
+  DygraphOps.dispatchMouseMove_Point(g, 300, 0);
+  assertEquals(3, highlightRow);
+  DygraphOps.dispatchMouseMove_Point(g, 400, 0);
+  assertEquals(4, highlightRow);
+
+  // Now zoom and verify that the row numbers still refer to rows in the data
+  // array.
+  g.updateOptions({dateWindow: [2, 4]});
+  DygraphOps.dispatchMouseOver_Point(g, 0, 0);
+  DygraphOps.dispatchMouseMove_Point(g, 0, 0);
+  assertEquals(2, highlightRow);
+  assertEquals('2: Y: 3 Z: 4', Util.getLegend());
+};

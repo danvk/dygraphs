@@ -76,18 +76,28 @@ Dygraph.log = function(severity, message) {
   }
 
   if (typeof(window.console) != 'undefined') {
+    // In older versions of Firefox, only console.log is defined.
+    var console = window.console;
+    var log = function(console, method, msg) {
+      if (method) {
+        method.call(console, msg);
+      } else {
+        console.log(msg);
+      }
+    };
+
     switch (severity) {
       case Dygraph.DEBUG:
-        window.console.debug('dygraphs: ' + message);
+        log(console, console.debug, 'dygraphs: ' + message);
         break;
       case Dygraph.INFO:
-        window.console.info('dygraphs: ' + message);
+        log(console, console.info, 'dygraphs: ' + message);
         break;
       case Dygraph.WARNING:
-        window.console.warn('dygraphs: ' + message);
+        log(console, console.warn, 'dygraphs: ' + message);
         break;
       case Dygraph.ERROR:
-        window.console.error('dygraphs: ' + message);
+        log(console, console.error, 'dygraphs: ' + message);
         break;
     }
   }
@@ -183,7 +193,7 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
+Dygraph.prototype.addEvent = function(elem, type, fn) {
   Dygraph.addEvent(elem, type, fn);
   this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
@@ -197,7 +207,7 @@ Dygraph.prototype.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.removeEvent = function addEvent(elem, type, fn) {
+Dygraph.removeEvent = function(elem, type, fn) {
   if (elem.removeEventListener) {
     elem.removeEventListener(type, fn, false);
   } else {
@@ -291,7 +301,7 @@ Dygraph.findPosX = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
-      var borderLeft = getComputedStyle(copyObj).borderLeft || "0";
+      var borderLeft = getComputedStyle(copyObj, null).borderLeft || "0";
       curleft += parseInt(borderLeft, 10) ;
       curleft += copyObj.offsetLeft;
       if(!copyObj.offsetParent) {
@@ -324,7 +334,7 @@ Dygraph.findPosY = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
-      var borderTop = getComputedStyle(copyObj).borderTop || "0";
+      var borderTop = getComputedStyle(copyObj, null).borderTop || "0";
       curtop += parseInt(borderTop, 10) ;
       curtop += copyObj.offsetTop;
       if(!copyObj.offsetParent) {
@@ -1232,4 +1242,46 @@ Dygraph.isElementContainedBy = function(containee, container) {
     containee = containee.parentNode;
   }
   return (containee === container);
+};
+
+
+// This masks some numeric issues in older versions of Firefox,
+// where 1.0/Math.pow(10,2) != Math.pow(10,-2).
+/** @type {function(number,number):number} */
+Dygraph.pow = function(base, exp) {
+  if (exp < 0) {
+    return 1.0 / Math.pow(base, -exp);
+  }
+  return Math.pow(base, exp);
+};
+
+// For Dygraph.setDateSameTZ, below.
+Dygraph.dateSetters = {
+  ms: Date.prototype.setMilliseconds,
+  s: Date.prototype.setSeconds,
+  m: Date.prototype.setMinutes,
+  h: Date.prototype.setHours
+};
+
+/**
+ * This is like calling d.setSeconds(), d.setMinutes(), etc, except that it
+ * adjusts for time zone changes to keep the date/time parts consistent.
+ *
+ * For example, d.getSeconds(), d.getMinutes() and d.getHours() will all be
+ * the same before/after you call setDateSameTZ(d, {ms: 0}). The same is not
+ * true if you call d.setMilliseconds(0).
+ *
+ * @type {function(!Date, Object.<number>)}
+ */
+Dygraph.setDateSameTZ = function(d, parts) {
+  var tz = d.getTimezoneOffset();
+  for (var k in parts) {
+    if (!parts.hasOwnProperty(k)) continue;
+    var setter = Dygraph.dateSetters[k];
+    if (!setter) throw "Invalid setter: " + k;
+    setter.call(d, parts[k]);
+    if (d.getTimezoneOffset() != tz) {
+      d.setTime(d.getTime() + (tz - d.getTimezoneOffset()) * 60 * 1000);
+    }
+  }
 };

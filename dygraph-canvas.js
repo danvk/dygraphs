@@ -57,8 +57,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.height = this.element.height;
   this.width = this.element.width;
 
-  this.elementContext.save();
-
   // --- check whether everything is ok before we return
   if (!this.isIE && !(DygraphCanvasRenderer.isSupported(this.element)))
       throw "Canvas is not supported.";
@@ -126,11 +124,6 @@ DygraphCanvasRenderer.prototype.clear = function() {
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
 };
-
-DygraphCanvasRenderer.prototype.onDoneDrawing = function() {
-  // balances the save called in the constructor.
-  this.elementContext.restore();
-}
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
@@ -482,7 +475,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
     for (var j = 0; j < sets.length; j++) {
       setName = setNames[j];
-      if (opt_seriesName && !(is_last && setName == opt_seriesName)) continue;
+      if (opt_seriesName && setName != opt_seriesName) continue;
 
       var points = sets[j];
 
@@ -514,6 +507,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
         plotArea: this.area,
         seriesIndex: j,
         seriesCount: sets.length,
+        singleSeriesName: opt_seriesName,
         allSeriesPoints: sets
       });
       ctx.restore();
@@ -671,6 +665,9 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
  * @private
  */
 DygraphCanvasRenderer._fillPlotter = function(e) {
+  // Skip if we're drawing a single series for interactive highlight overlay.
+  if (e.singleSeriesName) return;
+
   // We'll handle all the series at once, not one-by-one.
   if (e.seriesIndex !== 0) return;
 
@@ -734,13 +731,21 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
     ctx.beginPath();
-    while(iter.hasNext) {
+    var last_x, is_first = true;
+    while (iter.hasNext) {
       var point = iter.next();
       if (!Dygraph.isOK(point.y)) {
         prevX = NaN;
         continue;
       }
       if (stackedGraph) {
+        if (!is_first && last_x == point.xval) {
+          continue;
+        } else {
+          is_first = false;
+          last_x = point.xval;
+        }
+
         currBaseline = baseline[point.canvasx];
         var lastY;
         if (currBaseline === undefined) {

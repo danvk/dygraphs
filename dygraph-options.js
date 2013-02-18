@@ -84,7 +84,7 @@ DygraphOptions.axisToIndex_ = function(axis) {
 
 /**
  * Reparses options that are all related to series. This typically occurs when
- * options are either updated, or source data has been made avaialble.
+ * options are either updated, or source data has been made available.
  *
  * TODO(konigsberg): The method name is kind of weak; fix.
  */
