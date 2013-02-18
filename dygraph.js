@@ -95,6 +95,8 @@ Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
+// Label constants for the labelsKMB and labelsKMG2 options.
+// (i.e. '100000' -> '100K')
 Dygraph.KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
 Dygraph.KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
 Dygraph.KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
@@ -140,13 +142,13 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
     var m_labels = [];
     if (kmb) {
       k = 1000;
-      k_labels = [ "K", "M", "B", "T", "Q" ];
+      k_labels = Dygraph.KMB_LABELS;
     }
     if (kmg2) {
       if (kmb) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
-      k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
-      m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
+      k_labels = Dygraph.KMG2_BIG_LABELS;
+      m_labels = Dygraph.KMG2_SMALL_LABELS;
     }
 
     var absx = Math.abs(x);
