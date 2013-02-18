@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION=$1
 if [ "${VERSION}" == "" ] ; then
@@ -12,14 +12,17 @@ function fail() {
 }
 
 TMP=/tmp
-TMPDIR_BASE=${TMP}/dygraphs-build.$$
+TMPDIR_BASE=$(mktemp -d ${TMP}/dygraph-build.XXXXXX)
 LOCALDIR=dygraphs-${VERSION}
 TMPDIR=${TMPDIR_BASE}/${LOCALDIR}
 ZIPFILE=${TMPDIR}/dygraphs-${VERSION}.zip
 LOG_FILE=${TMPDIR}/build.log
 
+# Build the release to $ZIPFILE, output going to stdout and stderr, to be logged
+# by the caller.
+#
 function do_release() {
-  echo Starting to build Dygraphs
+  echo Starting to build dygraphs
   echo ==============
   echo Release ${VERSION}
   echo in ${TMPDIR}
