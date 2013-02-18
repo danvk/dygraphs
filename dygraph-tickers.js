@@ -340,6 +340,25 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var ticks = [];
   var t;
 
+  var setters = {
+    ms: Date.prototype.setMilliseconds,
+    s: Date.prototype.setSeconds,
+    m: Date.prototype.setMinutes,
+    h: Date.prototype.setHours
+  };
+  var safeSet = function(d, parts) {
+    var tz = d.getTimezoneOffset();
+    for (var k in parts) {
+      if (!parts.hasOwnProperty(k)) continue;
+      var setter = setters[k];
+      if (!setter) throw "Invalid setter: " + k;
+      setter.call(d, parts[k]);
+      if (d.getTimezoneOffset() != tz) {
+        d.setTime(d.getTime() + (tz - d.getTimezoneOffset()) * 60 * 1000);
+      }
+    }
+  };
+
   if (granularity < Dygraph.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
@@ -348,21 +367,25 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // for this granularity.
     var g = spacing / 1000;
     var d = new Date(start_time);
-    d.setMilliseconds(0);
+    safeSet(d, {ms: 0});
+
     var x;
     if (g <= 60) {  // seconds
-      x = d.getSeconds(); d.setSeconds(x - x % g);
+      x = d.getSeconds();
+      safeSet(d, {s: x - x % g});
     } else {
-      d.setSeconds(0);
+      safeSet(d, {s: 0});
       g /= 60;
       if (g <= 60) {  // minutes
-        x = d.getMinutes(); d.setMinutes(x - x % g);
+        x = d.getMinutes();
+        safeSet(d, {m: x - x % g});
       } else {
-        d.setMinutes(0);
+        safeSet(d, {m: 0});
         g /= 60;
 
         if (g <= 24) {  // days
-          x = d.getHours(); d.setHours(x - x % g);
+          x = d.getHours();
+          d.setHours(x - x % g);
         } else {
           d.setHours(0);
           g /= 24;
@@ -376,13 +399,15 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     start_time = d.getTime();
 
     var start_offset_min = new Date(start_time).getTimezoneOffset();
+    var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
+
     for (t = start_time; t <= end_time; t += spacing) {
       var d = new Date(t);
 
       // This ensures that we stay on the same hourly "rhythm" across
       // daylight savings transitions. Without this, the ticks could get off
       // by an hour. See tests/daylight-savings.html or issue 147.
-      if (d.getTimezoneOffset() != start_offset_min) {
+      if (check_dst && d.getTimezoneOffset() != start_offset_min) {
         t += (d.getTimezoneOffset() - start_offset_min) * 60 * 1000;
         d = new Date(t);
         start_offset_min = d.getTimezoneOffset();

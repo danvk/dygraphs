@@ -782,4 +782,48 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
   for (var i = 0; i < xLabels.length; i++) {
     assertTrue(okLabels[xLabels[i]]);
   }
+
+  // This range had issues of its own on tests/daylight-savings.html.
+  g.updateOptions({
+    dateWindow: [1289109997722.8127, 1289261208937.7659]
+  });
+  xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
+};
+
+
+// Tests data which crosses a "fall back" at a high enough frequency that you
+// can see both 1:00 A.M.s.
+AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
+  // Generate data which crosses the EST/EDT boundary.
+  var dst_data = [];
+  var base_ms = 1383454200000;
+  for (var x = base_ms; x < base_ms + 1000 * 60 * 80; x += 1000) {
+    dst_data.push([new Date(x), x]);
+  }
+
+  var g = new Dygraph(
+          document.getElementById("graph"),
+          dst_data,
+      { width: 1024, labels: ['Date', 'Value'] }
+      );
+
+  assertEquals([
+    '00:50', '00:55',
+    '01:00', '01:05', '01:10', '01:15', '01:20', '01:25',
+    '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
+    '01:00', '01:05'  // 1 AM number two!
+  ], Util.getXLabels());
+
+  // Now zoom past the initial 1 AM. This used to cause trouble.
+  g.updateOptions({
+    dateWindow: [1383454200000 + 15*60*1000, g.xAxisExtremes()[1]]}
+  );
+  assertEquals([
+    '01:05', '01:10', '01:15', '01:20', '01:25',
+    '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
+    '01:00', '01:05'  // 1 AM number two!
+  ], Util.getXLabels());
 };
