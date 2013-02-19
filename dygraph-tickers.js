@@ -459,11 +459,13 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
 
 // These are set here so that this file can be included after dygraph.js
 // or independently.
-Dygraph.DEFAULT_ATTRS = Dygraph.DEFAULT_ATTRS || {};
-Dygraph.DEFAULT_ATTRS['axes'] = Dygraph.DEFAULT_ATTRS['axes'] || {};
-Dygraph.DEFAULT_ATTRS['axes']['x'] = Dygraph.DEFAULT_ATTRS['axes']['x'] || {};
-Dygraph.DEFAULT_ATTRS['axes']['y'] = Dygraph.DEFAULT_ATTRS['axes']['y'] || {};
-Dygraph.DEFAULT_ATTRS['axes']['y2'] = Dygraph.DEFAULT_ATTRS['axes']['y2'] || {};
-Dygraph.DEFAULT_ATTRS['axes']['x']['ticker'] = Dygraph.dateTicker;
-Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
-Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
+if (Dygraph &&
+    Dygraph.DEFAULT_ATTRS &&
+    Dygraph.DEFAULT_ATTRS['axes'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['x'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['y'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['y2']) {
+  Dygraph.DEFAULT_ATTRS['axes']['x']['ticker'] = Dygraph.dateTicker;
+  Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
+  Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
+}
