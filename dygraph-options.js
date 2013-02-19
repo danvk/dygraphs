@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
+/**
  * @fileoverview DygraphOptions is responsible for parsing and returning information about options.
  *
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
