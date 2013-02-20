@@ -3598,6 +3598,13 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
   Dygraph.addAnnotationRule();
   this.annotations_ = ann;
+  if (!this.layout_) {
+    this.warn("Tried to setAnnotations before dygraph was ready. " +
+              "Try setting them in a drawCallback. See " +
+              "dygraphs.com/tests/annotation.html");
+    return;
+  }
+
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
     this.predraw_();
