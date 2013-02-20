@@ -2896,7 +2896,10 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           rollingData[i] = [originalData[i][0],
                             [sum / num_ok, sigma * stddev, sigma * stddev]];
         } else {
-          rollingData[i] = [originalData[i][0], [null, null, null]];
+          // This explicitly preserves NaNs to aid with "independent series".
+          // See testRollingAveragePreservesNaNs.
+          var v = (rollPeriod == 1) ? originalData[i][1][0] : null;
+          rollingData[i] = [originalData[i][0], [v, v, v]];
         }
       }
     }
