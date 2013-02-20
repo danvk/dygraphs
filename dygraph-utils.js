@@ -301,6 +301,7 @@ Dygraph.findPosX = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      // NOTE: the if statement here is for IE8.
       var borderLeft = "0";
       if (window.getComputedStyle) {
         borderLeft = window.getComputedStyle(copyObj, null).borderLeft || "0";
@@ -337,6 +338,7 @@ Dygraph.findPosY = function(obj) {
   if(obj.offsetParent) {
     var copyObj = obj;
     while(1) {
+      // NOTE: the if statement here is for IE8.
       var borderTop = "0";
       if (window.getComputedStyle) {
         borderTop = window.getComputedStyle(copyObj, null).borderTop || "0";
