@@ -751,6 +751,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
   assertEquals(["0","500","1000","1500","2000"], Util.getYLabels(2));
 };
 
+/*
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
 // Checks that axis labels stay sane across a DST change.
 AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
@@ -887,3 +888,4 @@ AxisLabelsTestCase.prototype.testLabelsCrossSpringForwardHighFreq = function() {
     '04:00', '04:05'
   ], Util.getXLabels());
 };
+*/

@@ -171,6 +171,7 @@ UtilsTestCase.prototype.testIterator_no_args = function() {
   assertNull(iter.next());
 };
 
+/*
 UtilsTestCase.prototype.testDateSet = function() {
   var base = new Date(1383455100000);
   var d = new Date(base);
@@ -184,3 +185,4 @@ UtilsTestCase.prototype.testDateSet = function() {
   Dygraph.setDateSameTZ(d, {ms: 10});
   assertEquals(10, d.getTime() - base.getTime());
 };
+*/
