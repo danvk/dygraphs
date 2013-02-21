@@ -2529,7 +2529,12 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
-    for (index = 0; index < valueWindows.length; index++) {
+
+    // When going from two axes back to one, we only restore
+    // one axis.
+    var idxCount = Math.min(valueWindows.length, this.axes_.length);
+
+    for (index = 0; index < idxCount; index++) {
       this.axes_[index].valueWindow = valueWindows[index];
     }
   }

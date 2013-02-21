@@ -257,3 +257,27 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
   assertEquals(1, results.y2["Y3"]);
   assertEquals(1, results.y2["Y4"]);
 };
+
+// Test for http://code.google.com/p/dygraphs/issues/detail?id=436
+MultipleAxesTestCase.prototype.testRemovingSecondAxis = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var results = { y : {}, y2 : {}};
+
+  g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      drawPoints : true,
+      pointSize : 3,
+      series : {
+        'Y4': {
+          axis: 'y2'
+        }
+      },
+    }
+  );
+
+ g.updateOptions({ series : { Y4 : { axis : 'y' } } });
+};
