@@ -2596,6 +2596,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
     if (series.length === 0) {
       // If no series are defined or visible then use a reasonable default
+      ypadCompat = true;
       axis.extremeRange = [0, 1];
     } else {
       // Calculate the extremes of extremes.
