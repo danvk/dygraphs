@@ -381,7 +381,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
 DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
   var point = this.points[setIdx][row];
   // If the point is missing, no unstacking is necessary
-  if (!point.yval) {
+  if (!Dygraph.isValidPoint(point)) {
     return point;
   }
 
@@ -397,15 +397,15 @@ DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
 
   // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
-  if (setIdx == this.points.length - 1) {
-    // We're the last series, so no unstacking is necessary.
-    return unstackedPoint;
-  }
-
-  var points = this.points[setIdx + 1];
-  if (points[row].xval == point.xval &&  // should always be true?
-      points[row].yval) {
-    unstackedPoint.yval -= points[row].yval;
+  // We need to iterate over setIdx just in case some series have invalid values
+  // at current row
+  for(setIdx++; setIdx < this.points.length; setIdx++) {
+    var nextPoint = this.points[setIdx][row];
+    if (nextPoint.xval == point.xval &&  // should always be true?
+        Dygraph.isValidPoint(nextPoint)) {
+      unstackedPoint.yval -= nextPoint.yval;
+      break; // stop at first valid point
+    }
   }
 
   return unstackedPoint;
