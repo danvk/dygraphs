@@ -1,0 +1,152 @@
+body {
+	font-family: helvetica;
+	
+}
+
+#div1,#div2,#div3,#div4,#div5,#div6,#div7 {
+	width:200px;
+	height:25px;
+	padding: 5px;
+	margin-right:8px;
+    margin-bottom:8px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+	font-size: 20px;
+	float: left;
+	border: 1px solid black;
+}
+
+#div2 {
+	background-color:#85B2E7;
+	border: 1px solid #4572A7;
+}
+
+#div3 {
+	background-color:#EA8683;
+	border: 1px solid #AA4643;
+}
+
+#div4 {
+	background-color:#C9E58E;
+	border: 1px solid #89A54E;
+}
+
+#div5 {
+	background-color:#C0A9DB;
+	border: 1px solid #80699B;
+}
+
+#div1v,#div2v,#div3v,#div4v,#div5v,#div6v,#div7v {
+	float: right;
+}
+
+#blaat {
+	height: 46px;
+}
+
+#container, #container2, #container3,#div_g1 {
+	border: 2px solid black;
+	height: 300px;
+	width: 860px;
+	padding: 5px;
+    margin-bottom:8px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+	float:left;
+	clear:both;
+}
+
+#div_g {
+	//border: 1px solid red;
+	height: 290px;
+	width:740px;
+	float:left;
+	margin:5px;
+}
+
+#legend {
+	margin-left:5px;
+	//border: 1px solid blue;
+	width:100px;
+	float:left;
+}
+
+#highlight {
+	-moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+	position: absolute;
+	border: 2px solid blue;
+	//width:10px;
+	//height:100px;
+	pointer-events: none;
+	padding: 5px;
+	background-color: white; 
+}
+
+.hlitem {
+	//float: left;
+	//padding-right:10px;
+	font-size: 12px;
+}
+
+.hlvalue {
+	//float: right;
+	text-align: right;
+	font-size:12px;
+	padding-left: 5px;
+}
+
+#highlight li {
+   //list-style: none;
+}
+
+#zoombuttons input {
+	width: 100px;
+}
+
+#itoggle {
+	border: 1px solid blue;
+	width: 405px;
+	padding: 5px;
+	float: left;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	margin-right: 8px;
+}
+#itoggle h1 {
+	margin-top: 0px;
+	font-family: helvetica;
+	font-weight: normal;
+	text-align: center;
+}
+
+#bel, #extremes {
+	border: 1px solid blue;	
+	width: 405px;
+	padding: 5px;
+	float: left;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+}
+
+#min2, #max2 {
+	float: right;
+}
+
+#button_buiten_aan, #button_binnen_aan, #button_garage_aan, #button_buiten_uit, #button_binnen_uit, #button_garage_uit {
+	width: 100px;
+}
+
+#rowdiv {
+	//border: 1px solid black;
+	//margin-right:8px;
+    //margin-bottom:8px;
+	float:left;
+	clear:both;
+
+}
