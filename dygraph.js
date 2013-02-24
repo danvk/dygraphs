@@ -2284,7 +2284,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var num_series = rolledSeries.length - 1;
   for (i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
-
+    
     // Note: this copy _is_ necessary at the moment.
     // If you remove it, it breaks zooming with error bars on.
     // TODO(danvk): investigate further & write a test for this.
@@ -2368,7 +2368,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     var seriesName = this.attr_("labels")[i];
-    extremes[seriesName] = seriesExtremes;
+    if (!this.noExtremes()[i - 1]) 
+      extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
 
@@ -3571,6 +3572,22 @@ Dygraph.prototype.visibility = function() {
     this.attrs_.visibility.push(true);
   }
   return this.attr_("visibility");
+};
+
+/**
+ * Returns a boolean array of noExtremes statuses.
+ */
+Dygraph.prototype.noExtremes = function() {
+  // Do lazy-initialization, so that this happens after we know the number of
+  // data series.
+  if (!this.attr_("noExtremes")) {
+    this.attrs_.noExtremes = [];
+  }
+  // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
+  while (this.attr_("noExtremes").length < this.numColumns() - 1) {
+    this.attrs_.noExtremes.push(true);
+  }
+  return this.attr_("noExtremes");
 };
 
 /**

@@ -416,6 +416,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "Array of booleans",
     "description": "Which series should initially be visible? Once the Dygraph has been constructed, you can access and modify the visibility of each series using the <code>visibility</code> and <code>setVisibility</code> methods."
   },
+  "noExtremes": {
+    "default": "[false, false, ...]",
+    "labels": ["Data Line display"],
+    "type": "Array of booleans",
+    "description": "Which series should be included in the extremes calculation? Once the Dygraph has been constructed, you can access and modify the noExtremes of each series using the <code>noExtremes</code> and <code>setNoExtremes</code> methods."
+  },
   "valueRange": {
     "default": "Full range of the input is shown",
     "labels": ["Axis display"],
