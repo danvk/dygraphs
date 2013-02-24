@@ -121,3 +121,37 @@ stackedTestCase.prototype.testDuplicatedXValue = function() {
   assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 250));
   assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 317, 250));
 }
+
+// Validates regression when null values in stacked graphs show up
+// incorrectly in the legend.
+stackedTestCase.prototype.testNullValues = function() {
+  var opts = {
+    stackedGraph: true,
+    stepPlot:true
+  };
+  var data = "X,Y1,Y2,Y3\n" +
+      "0,-5,-1,1\n" +
+      "1,1,,1\n" +
+      "2,1,2,3\n" +
+      "3,3,,4\n" +
+      "4,3,2,3\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  g.setSelection(0);
+  assertEquals("0: Y1: -5 Y2: -1 Y3: 1", Util.getLegend());
+
+  g.setSelection(1);
+  assertEquals("1: Y1: 1 Y3: 1", Util.getLegend());
+
+  g.setSelection(2);
+  assertEquals("2: Y1: 1 Y2: 2 Y3: 3", Util.getLegend());
+
+  g.setSelection(3);
+  assertEquals("3: Y1: 3 Y3: 4", Util.getLegend());
+
+  g.setSelection(4);
+  assertEquals("4: Y1: 3 Y2: 2 Y3: 3", Util.getLegend());
+};
