@@ -3585,7 +3585,7 @@ Dygraph.prototype.noExtremes = function() {
   }
   // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
   while (this.attr_("noExtremes").length < this.numColumns() - 1) {
-    this.attrs_.noExtremes.push(true);
+    this.attrs_.noExtremes.push(false);
   }
   return this.attr_("noExtremes");
 };
