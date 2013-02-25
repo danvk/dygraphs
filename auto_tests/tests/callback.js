@@ -577,7 +577,7 @@ CallbackTestCase.prototype.underlayCallback_noSeries = function() {
   var callback = function(canvas, area, g) {
     called = true;
     yMin = g.yAxisRange(0)[0];
-    yMax = g.yAxisRange(0)[0];
+    yMax = g.yAxisRange(0)[1];
   };
 
   var graph = document.getElementById("graph");
