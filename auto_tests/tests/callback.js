@@ -565,3 +565,27 @@ CallbackTestCase.prototype.testHighlightCallbackRow = function() {
   assertEquals(2, highlightRow);
   assertEquals('2: Y: 3 Z: 4', Util.getLegend());
 };
+
+/**
+ * Test that underlay callback is called even when there are no series,
+ * and that the y axis ranges are not NaN.
+ */
+CallbackTestCase.prototype.underlayCallback_noSeries = function() {
+  var called = false;
+  var yMin, yMax;
+
+  var callback = function(canvas, area, g) {
+    called = true;
+    yMin = g.yAxisRange(0)[0];
+    yMax = g.yAxisRange(0)[0];
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, "\n", {
+      underlayCallback: callback
+    });
+
+  assertTrue(called);
+  assertFalse(isNaN(yMin));
+  assertFalse(isNaN(yMax));
+};
