@@ -119,10 +119,11 @@ axes.prototype.willDrawChart = function(e) {
       fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + "px",
       zIndex: 10,
       color: g.getOptionForAxis('axisLabelColor', axis),
-      width: g.getOption('axisLabelWidth') + "px",
+      // width: g.getOption('axisLabelWidth') + "px",
       // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
       lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
-      overflow: "hidden"
+      overflow: "visible", // Always fully show label values, to avoid showing 100 while the actual value is 10000.
+      backgroundColor: g.getOptionForAxis('axisLabelBackgroundColor', axis)
     };
   };
 
@@ -203,7 +204,7 @@ axes.prototype.willDrawChart = function(e) {
                               g.getOption('axisTickSize')) + "px";
           label.style.textAlign = "left";
         }
-        label.style.width = g.getOption('yAxisLabelWidth') + "px";
+        // label.style.width = g.getOption('yAxisLabelWidth') + "px";
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
       }
