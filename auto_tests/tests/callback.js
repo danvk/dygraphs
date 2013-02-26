@@ -608,6 +608,6 @@ CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
       underlayCallback: callback
     });
 
-  assertEquals(0, yMin));
-  assertEquals(10, yMax));
+  assertEquals(0, yMin);
+  assertEquals(10, yMax);
 };
