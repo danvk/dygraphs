@@ -589,3 +589,25 @@ CallbackTestCase.prototype.underlayCallback_noSeries = function() {
   assertFalse(isNaN(yMin));
   assertFalse(isNaN(yMax));
 };
+
+/**
+ * Test that underlay callback receives the correct y-axis range.
+ */
+CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
+  var called = false;
+  var yMin, yMax;
+
+  var callback = function(canvas, area, g) {
+    yMin = g.yAxisRange(0)[0];
+    yMax = g.yAxisRange(0)[1];
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, "\n", {
+      valueRange: [0,10],
+      underlayCallback: callback
+    });
+
+  assertEquals(0, yMin));
+  assertEquals(10, yMax));
+};
