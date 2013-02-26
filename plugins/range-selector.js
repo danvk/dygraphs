@@ -265,7 +265,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
   var topElem = this.isIE_ ? document : window;
-  var pageXLast = 0;
+  var clientXLast = 0;
   var handle = null;
   var isZooming = false;
   var isPanning = false;
@@ -278,7 +278,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
-      onPanStart, onPan, onPanEnd, doPan, onCanvasHover, getCursorPageX;
+      onPanStart, onPan, onPanEnd, doPan, onCanvasHover;
 
   // Touch event functions
   var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
@@ -291,22 +291,10 @@ rangeSelector.prototype.initInteraction_ = function() {
     return [xDataMin, xDataMax];
   };
 
-  getCursorPageX = function(e) {
-    if (e.pageX !== null) {
-      return e.pageX;
-    } else {
-      // Taken from jQuery.
-      var target = e.target || e.srcElement || document;
-      var eventDoc = target.ownerDocument || target.document || document;
-      var doc = eventDoc.documentElement, body = eventDoc.body;
-      return e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-    }
-  };
-
   onZoomStart = function(e) {
     Dygraph.cancelEvent(e);
     isZooming = true;
-    pageXLast = getCursorPageX(e);
+    clientXLast = e.clientX;
     handle = e.target ? e.target : e.srcElement;
     if (e.type === 'mousedown' || e.type === 'dragstart') {
       // These events are removed manually.
@@ -324,22 +312,21 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
     Dygraph.cancelEvent(e);
 
-    var pageX = getCursorPageX(e);
-    var delX = pageX - pageXLast;
+    var delX = e.clientX - clientXLast;
     if (Math.abs(delX) < 4) {
       return true;
     }
-    pageXLast = pageX;
+    clientXLast = e.clientX;
 
     // Move handle.
     var zoomHandleStatus = self.getZoomHandleStatus_();
     var newPos;
     if (handle == self.leftZoomHandle_) {
-      newPos = pageX;
+      newPos = zoomHandleStatus.leftHandlePos + delX;
       newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
       newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
-      newPos = pageX;
+      newPos = zoomHandleStatus.rightHandlePos + delX;
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
       newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
@@ -402,7 +389,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
       Dygraph.cancelEvent(e);
       isPanning = true;
-      pageXLast = getCursorPageX(e);
+      clientXLast = e.clientX;
       if (e.type === 'mousedown') {
         // These events are removed manually.
         Dygraph.addEvent(topElem, 'mousemove', onPan);
@@ -419,12 +406,11 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
     Dygraph.cancelEvent(e);
 
-    var pageX = getCursorPageX(e);
-    var delX = pageX - pageXLast;
+    var delX = e.clientX - clientXLast;
     if (Math.abs(delX) < 4) {
       return true;
     }
-    pageXLast = pageX;
+    clientXLast = e.clientX;
 
     // Move range view
     var zoomHandleStatus = self.getZoomHandleStatus_();
