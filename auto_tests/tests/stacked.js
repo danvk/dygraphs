@@ -155,3 +155,27 @@ stackedTestCase.prototype.testNullValues = function() {
   g.setSelection(4);
   assertEquals("4: Y1: 3 Y2: 2 Y3: 3", Util.getLegend());
 };
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=438
+stackedTestCase.prototype.testMissingValueAtZero = function() {
+  var opts = {
+    stackedGraph: true
+  };
+  var data = "X,Y1,Y2\n" +
+      "0,,1\n" +
+      "1,1,2\n" +
+      "2,,3\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  g.setSelection(0);
+  assertEquals("0: Y2: 1", Util.getLegend());
+
+  g.setSelection(1);
+  assertEquals("1: Y1: 1 Y2: 2", Util.getLegend());
+
+  g.setSelection(2);
+  assertEquals("2: Y2: 3", Util.getLegend());
+};
