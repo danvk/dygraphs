@@ -416,12 +416,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "Array of booleans",
     "description": "Which series should initially be visible? Once the Dygraph has been constructed, you can access and modify the visibility of each series using the <code>visibility</code> and <code>setVisibility</code> methods."
   },
-  "noExtremes": {
-    "default": "[false, false, ...]",
-    "labels": ["Data Line display"],
-    "type": "Array of booleans",
-    "description": "Which series should be included in the extremes calculation? Once the Dygraph has been constructed, you can access and modify the noExtremes of each series using the <code>noExtremes</code> and <code>setNoExtremes</code> methods."
-  },
   "valueRange": {
     "default": "Full range of the input is shown",
     "labels": ["Axis display"],
@@ -777,6 +771,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
+  },
+  "includeOnScaling": {
+    "default": "true",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Which series should be included in the axis scaling? Once the Dygraph has been constructed, you can access and modify the includeOnScaling of each series using the <code>includeOnScaling</code> and <code>setIncludeOnScaling</code> methods."
   },
   "series": {
     "default": "null",

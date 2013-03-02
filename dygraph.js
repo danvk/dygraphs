@@ -2284,7 +2284,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var num_series = rolledSeries.length - 1;
   for (i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
-    
+
     // Note: this copy _is_ necessary at the moment.
     // If you remove it, it breaks zooming with error bars on.
     // TODO(danvk): investigate further & write a test for this.
@@ -2368,7 +2368,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     var seriesName = this.attr_("labels")[i];
-    if (!this.noExtremes()[i - 1]) 
+    if (this.includeOnScaling()[i - 1]) 
       extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
@@ -2595,6 +2595,28 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
 
+    // Add some padding. This supports two Y padding operation modes:
+    //
+    // - backwards compatible (yRangePad not set):
+    //   10% padding for automatic Y ranges, but not for user-supplied
+    //   ranges, and move a close-to-zero edge to zero except if
+    //   avoidMinZero is set, since drawing at the edge results in
+    //   invisible lines. Unfortunately lines drawn at the edge of a
+    //   user-supplied range will still be invisible. If logscale is
+    //   set, add a variable amount of padding at the top but
+    //   none at the bottom.
+    //
+    // - new-style (yRangePad set by the user):
+    //   always add the specified Y padding.
+    //
+    ypadCompat = true;
+    ypad = 0.1; // add 10%
+    if (this.attr_('yRangePad') !== null) {
+      ypadCompat = false;
+      // Convert pixel padding to ratio
+      ypad = this.attr_('yRangePad') / this.plotter_.area.h;
+    }
+
     if (series.length === 0) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
@@ -2639,28 +2661,6 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = 1;
           span = 1;
         }
-      }
-
-      // Add some padding. This supports two Y padding operation modes:
-      //
-      // - backwards compatible (yRangePad not set):
-      //   10% padding for automatic Y ranges, but not for user-supplied
-      //   ranges, and move a close-to-zero edge to zero except if
-      //   avoidMinZero is set, since drawing at the edge results in
-      //   invisible lines. Unfortunately lines drawn at the edge of a
-      //   user-supplied range will still be invisible. If logscale is
-      //   set, add a variable amount of padding at the top but
-      //   none at the bottom.
-      //
-      // - new-style (yRangePad set by the user):
-      //   always add the specified Y padding.
-      //
-      ypadCompat = true;
-      ypad = 0.1; // add 10%
-      if (this.attr_('yRangePad') !== null) {
-        ypadCompat = false;
-        // Convert pixel padding to ratio
-        ypad = this.attr_('yRangePad') / this.plotter_.area.h;
       }
 
       var maxAxisY, minAxisY;
@@ -3575,22 +3575,6 @@ Dygraph.prototype.visibility = function() {
 };
 
 /**
- * Returns a boolean array of noExtremes statuses.
- */
-Dygraph.prototype.noExtremes = function() {
-  // Do lazy-initialization, so that this happens after we know the number of
-  // data series.
-  if (!this.attr_("noExtremes")) {
-    this.attrs_.noExtremes = [];
-  }
-  // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
-  while (this.attr_("noExtremes").length < this.numColumns() - 1) {
-    this.attrs_.noExtremes.push(false);
-  }
-  return this.attr_("noExtremes");
-};
-
-/**
  * Changes the visiblity of a series.
  */
 Dygraph.prototype.setVisibility = function(num, value) {
@@ -3601,6 +3585,22 @@ Dygraph.prototype.setVisibility = function(num, value) {
     x[num] = value;
     this.predraw_();
   }
+};
+
+/**
+ * Returns a boolean array of includeOnScaling statuses.
+ */
+Dygraph.prototype.includeOnScaling = function() {
+  // Do lazy-initialization, so that this happens after we know the number of
+  // data series.
+  if (!this.attr_("includeOnScaling")) {
+    this.attrs_.includeOnScaling = [];
+  }
+  // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
+  while (this.attr_("includeOnScaling").length < this.numColumns() - 1) {
+    this.attrs_.includeOnScaling.push(true);
+  }
+  return this.attr_("includeOnScaling");
 };
 
 /**
