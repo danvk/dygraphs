@@ -3592,22 +3592,6 @@ Dygraph.prototype.setVisibility = function(num, value) {
 };
 
 /**
- * Returns a boolean array of includeInScaling statuses.
- */
-Dygraph.prototype.includeInScaling = function() {
-  // Do lazy-initialization, so that this happens after we know the number of
-  // data series.
-  if (!this.attr_("includeInScaling")) {
-    this.attrs_.includeInScaling = [];
-  }
-  // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
-  while (this.attr_("includeInScaling").length < this.numColumns() - 1) {
-    this.attrs_.includeInScaling.push(true);
-  }
-  return this.attr_("includeInScaling");
-};
-
-/**
  * How large of an area will the dygraph render itself in?
  * This is used for testing.
  * @return A {width: w, height: h} object.

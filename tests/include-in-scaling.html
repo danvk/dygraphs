@@ -21,7 +21,7 @@
         var ctx = e.drawingContext;
         var points = e.points;
         var range = e.dygraph.yAxisRange();
-		var y_bottom = e.dygraph.toDomYCoord(0);
+        var y_bottom = e.dygraph.toDomYCoord(0);
         var y_top = e.dygraph.toDomYCoord(range[1]);
         // This should really be based on the minimum gap
         var bar_width = points[1].canvasx - points[0].canvasx;
