@@ -328,6 +328,9 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
 
+  // Group this where it belongs. I don't know where.
+  includeInScaling : true,
+
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
   plotter: [
@@ -2368,7 +2371,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     var seriesName = this.attr_("labels")[i];
-    if (this.includeOnScaling()[i - 1]) 
+    var include = this.attributes_.getForSeries("includeInScaling", seriesName);
+    if (include) 
       extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
@@ -3588,19 +3592,19 @@ Dygraph.prototype.setVisibility = function(num, value) {
 };
 
 /**
- * Returns a boolean array of includeOnScaling statuses.
+ * Returns a boolean array of includeInScaling statuses.
  */
-Dygraph.prototype.includeOnScaling = function() {
+Dygraph.prototype.includeInScaling = function() {
   // Do lazy-initialization, so that this happens after we know the number of
   // data series.
-  if (!this.attr_("includeOnScaling")) {
-    this.attrs_.includeOnScaling = [];
+  if (!this.attr_("includeInScaling")) {
+    this.attrs_.includeInScaling = [];
   }
   // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
-  while (this.attr_("includeOnScaling").length < this.numColumns() - 1) {
-    this.attrs_.includeOnScaling.push(true);
+  while (this.attr_("includeInScaling").length < this.numColumns() - 1) {
+    this.attrs_.includeInScaling.push(true);
   }
-  return this.attr_("includeOnScaling");
+  return this.attr_("includeInScaling");
 };
 
 /**

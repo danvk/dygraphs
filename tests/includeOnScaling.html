@@ -40,12 +40,14 @@
 
       var data = [[0,0,12],[1,0,11],[2,1,10],[3,1,11],[4,1,12],[5,1,13],[6,1,14],[7,1,15]];
       var g = new Dygraph(document.getElementById("graphdiv"), data, {
-          "heater": {
-            plotter: binaryChartPlotter,
+          series: {
+            heater: {
+              plotter: binaryChartPlotter,
               highlightCircleSize: 0,
-//              includeInScaling: false
+              includeInScaling: false
+            }
           },  
-          includeInScaling: [false,true],
+          //includeInScaling: [false,true],
           showLabelsOnHighlight: false,
           ylabel: 'temperature',                          
           showRoller: false,
