@@ -135,7 +135,6 @@ Dygraph.prototype.warn = Dygraph.warn;
 
 /**
  * @param {string} message
- * @private
  */
 Dygraph.error = function(message) {
   Dygraph.log(Dygraph.ERROR, message);
@@ -634,7 +633,6 @@ Dygraph.dateStrToMillis = function(str) {
  * @param {!Object} self
  * @param {!Object} o
  * @return {!Object}
- * @private
  */
 Dygraph.update = function(self, o) {
   if (typeof(o) != 'undefined' && o !== null) {
