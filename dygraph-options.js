@@ -34,13 +34,17 @@ var DygraphOptions = (function() {
  * if labels are not yet available, since those drive details of the per-series
  * and per-axis options.
  *
- * @param {Dyraph} dygraph The chart to which these options belong.
+ * @param {Dygraph} dygraph The chart to which these options belong.
  * @constructor
  */
 var DygraphOptions = function(dygraph) {
   this.dygraph_ = dygraph;
+
+  /** @type {Array.<{options: Object, series: string}>} @private */
   this.yAxes_ = [];
-  this.xAxis_ = {};
+  /** @type {{options: Object}} @private */
+  this.xAxis_ = {options: {}};
+  /** @type {Object} @private */
   this.series_ = {};
 
   // Once these two objects are initialized, you can call get();
@@ -64,6 +68,10 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'Y2' : 1
 };
 
+/**
+ * @param {string|number} axis
+ * @private
+ */
 DygraphOptions.axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
     if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
@@ -76,10 +84,6 @@ DygraphOptions.axisToIndex_ = function(axis) {
       return axis;
     }
     throw "Dygraphs only supports two y-axes, indexed from 0-1.";
-  }
-  if (typeof(axis) == "object") {
-    throw "Using objects for axis specification " +
-        "is not supported inside the 'series' option.";
   }
   if (axis) {
     throw "Unknown axis : " + axis;
@@ -293,7 +297,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
  */
 DygraphOptions.prototype.getForSeries = function(name, series) {
   // Honors indexes as series.
-  if (series === this.dygraph_.highlightSet_) {
+  if (series === this.dygraph_.getHighlightSeries()) {
     if (this.highlightSeries_.hasOwnProperty(name)) {
       return this.highlightSeries_[name];
     }
@@ -314,7 +318,7 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
 
 /**
  * Returns the number of y-axes on the chart.
- * @return {Number} the number of axes.
+ * @return {number} the number of axes.
  */
 DygraphOptions.prototype.numAxes = function() {
   return this.yAxes_.length;
