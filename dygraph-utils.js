@@ -79,7 +79,7 @@ Dygraph.log = function(severity, message) {
     // In older versions of Firefox, only console.log is defined.
     var console = window.console;
     var log = function(console, method, msg) {
-      if (method) {
+      if (method && typeof(method) == 'function') {
         method.call(console, msg);
       } else {
         console.log(msg);
