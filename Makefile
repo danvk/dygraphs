@@ -27,6 +27,7 @@ generate-gwt:
 	@./generate-jar.sh
 
 test:
+	@echo Running tests
 	@./test.sh
 
 test-combined: move-combined test clean-combined-test
