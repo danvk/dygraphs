@@ -2335,7 +2335,9 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
                      series[j][1][2]];
       }
     } else if (this.attr_("stackedGraph")) {
-      var actual_y, last_x;
+      // Need to clear last_x explicitly as javascript's locals are
+      // local to function, not to a block of statements
+      var actual_y, last_x = null;
       for (j = 0; j < series.length; j++) {
         // If one data set has a NaN, let all subsequent stacked
         // sets inherit the NaN -- only start at 0 for the first set.
@@ -2350,7 +2352,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           continue;
         }
 
-        if (j === 0 || last_x != x) {
+        if (last_x != x) {
           cumulative_y[x] += actual_y;
           // If an x-value is repeated, we ignore the duplicates.
         }
@@ -2594,6 +2596,28 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
 
+    // Add some padding. This supports two Y padding operation modes:
+    //
+    // - backwards compatible (yRangePad not set):
+    //   10% padding for automatic Y ranges, but not for user-supplied
+    //   ranges, and move a close-to-zero edge to zero except if
+    //   avoidMinZero is set, since drawing at the edge results in
+    //   invisible lines. Unfortunately lines drawn at the edge of a
+    //   user-supplied range will still be invisible. If logscale is
+    //   set, add a variable amount of padding at the top but
+    //   none at the bottom.
+    //
+    // - new-style (yRangePad set by the user):
+    //   always add the specified Y padding.
+    //
+    ypadCompat = true;
+    ypad = 0.1; // add 10%
+    if (this.attr_('yRangePad') !== null) {
+      ypadCompat = false;
+      // Convert pixel padding to ratio
+      ypad = this.attr_('yRangePad') / this.plotter_.area.h;
+    }
+
     if (series.length === 0) {
       // If no series are defined or visible then use a reasonable default
       axis.extremeRange = [0, 1];
@@ -2639,28 +2663,6 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = 1;
           span = 1;
         }
-      }
-
-      // Add some padding. This supports two Y padding operation modes:
-      //
-      // - backwards compatible (yRangePad not set):
-      //   10% padding for automatic Y ranges, but not for user-supplied
-      //   ranges, and move a close-to-zero edge to zero except if
-      //   avoidMinZero is set, since drawing at the edge results in
-      //   invisible lines. Unfortunately lines drawn at the edge of a
-      //   user-supplied range will still be invisible. If logscale is
-      //   set, add a variable amount of padding at the top but
-      //   none at the bottom.
-      //
-      // - new-style (yRangePad set by the user):
-      //   always add the specified Y padding.
-      //
-      ypadCompat = true;
-      ypad = 0.1; // add 10%
-      if (this.attr_('yRangePad') !== null) {
-        ypadCompat = false;
-        // Convert pixel padding to ratio
-        ypad = this.attr_('yRangePad') / this.plotter_.area.h;
       }
 
       var maxAxisY, minAxisY;

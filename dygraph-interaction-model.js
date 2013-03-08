@@ -63,8 +63,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
       var boundedTopY = g.toDomYCoord(yExtremes[0], i) + maxYPixelsToDraw;
       var boundedBottomY = g.toDomYCoord(yExtremes[1], i) - maxYPixelsToDraw;
 
-      var boundedTopValue = g.toDataYCoord(boundedTopY);
-      var boundedBottomValue = g.toDataYCoord(boundedBottomY);
+      var boundedTopValue = g.toDataYCoord(boundedTopY, i);
+      var boundedBottomValue = g.toDataYCoord(boundedBottomY, i);
 
       boundedValues[i] = [boundedTopValue, boundedBottomValue];
     }
@@ -136,12 +136,13 @@ Dygraph.Interaction.movePan = function(event, g, context) {
 
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
+
+    var pixelsDragged = context.dragEndY - context.dragStartY;
+
     // Adjust each axis appropriately.
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
       var axis_data = context.axes[i];
-
-      var pixelsDragged = context.dragEndY - context.dragStartY;
       var unitsDragged = pixelsDragged * axis_data.unitsPerPixel;
 
       var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
