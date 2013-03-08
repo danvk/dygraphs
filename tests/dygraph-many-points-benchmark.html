@@ -86,6 +86,11 @@
           } else {
             for (var j = 0; j < numSeries; j++) {
               var elemCopy = elem.slice(0);
+              for (var k = 0; k < numSeries; k++) {
+                if (k != j) {
+                  elemCopy[k+1] = null;
+                }
+              }
               elemCopy[0] += unalignmentDelta * j;
               data[i*numSeries + j] = elemCopy;
             }
@@ -97,7 +102,7 @@
         }
         var rollPeriod = parseInt(
             document.getElementById('rollPeriod').value);
-        var opts = {labels: labels, rollPeriod: rollPeriod, timingName: "x"};
+        var opts = {labels: labels, rollPeriod: rollPeriod, timingName: "x", connectSeparatedPoints: true};
         var millisecondss = [];
         for (var i = 0; i < repetitions; i++) {
           if (graph != null) {
