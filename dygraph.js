@@ -2758,13 +2758,23 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
+  var bars = this.attr_("errorBars") || this.attr_("customBars");
+  
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
     if (logScale) {
       // On the log scale, points less than zero do not exist.
       // This will create a gap in the chart.
-      if (point <= 0) {
+      if (bars) {
+        for (var k = 0; k < point.length; k++) {
+          if (point[k] <= 0) {
+            point = [];
+            break;
+          }
+        }
+      }
+      else if (point <= 0) {
         point = null;
       }
     }
