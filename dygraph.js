@@ -2773,8 +2773,7 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
             break;
           }
         }
-      }
-      else if (point <= 0) {
+      } else if (point <= 0) {
         point = null;
       }
     }
