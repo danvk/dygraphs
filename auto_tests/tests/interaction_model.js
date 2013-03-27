@@ -253,9 +253,9 @@ InteractionModelTestCase.prototype.testIsZoomed_none = function() {
 InteractionModelTestCase.prototype.testIsZoomed_x = function() {
   var g = new Dygraph(document.getElementById("graph"), data2, {});
 
-  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
-  DygraphOps.dispatchMouseMove_Point(g, 30, 10);
-  DygraphOps.dispatchMouseUp_Point(g, 30, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 130, 100);
+  DygraphOps.dispatchMouseUp_Point(g, 130, 100);
 
   assertTrue(g.isZoomed());
   assertTrue(g.isZoomed("x"));
@@ -278,14 +278,14 @@ InteractionModelTestCase.prototype.testIsZoomed_both = function() {
   var g = new Dygraph(document.getElementById("graph"), data2, {});
 
   // Zoom x axis
-  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
-  DygraphOps.dispatchMouseMove_Point(g, 30, 10);
-  DygraphOps.dispatchMouseUp_Point(g, 30, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 130, 100);
+  DygraphOps.dispatchMouseUp_Point(g, 130, 100);
 
   // Now zoom y axis
-  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
-  DygraphOps.dispatchMouseMove_Point(g, 10, 30);
-  DygraphOps.dispatchMouseUp_Point(g, 10, 30);
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 130);
+  DygraphOps.dispatchMouseUp_Point(g, 100, 130);
 
 
   assertTrue(g.isZoomed());
@@ -334,25 +334,30 @@ InteractionModelTestCase.prototype.testIsZoomed_updateOptions_both = function() 
 
 
 InteractionModelTestCase.prototype.testCorrectAxisValueRangeAfterUnzoom = function() {
-  var g = new Dygraph(document.getElementById("graph"), data2, {valueRange:[1,50],dateRange:[1,9],animatedZooms:false});
+  var g = new Dygraph(document.getElementById("graph"),
+      data2, {
+        valueRange: [1, 50],
+        dateWindow: [1, 9],
+        animatedZooms:false
+      });
   
   // Zoom x axis
-  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
-  DygraphOps.dispatchMouseMove_Point(g, 30, 10);
-  DygraphOps.dispatchMouseUp_Point(g, 30, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 130, 100);
+  DygraphOps.dispatchMouseUp_Point(g, 130, 100);
 
   // Zoom y axis
-  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
-  DygraphOps.dispatchMouseMove_Point(g, 10, 30);
-  DygraphOps.dispatchMouseUp_Point(g, 10, 30);
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 130);
+  DygraphOps.dispatchMouseUp_Point(g, 100, 130);
   currentYAxisRange = g.yAxisRange();
   currentXAxisRange = g.xAxisRange();
   
   //check that the range for the axis has changed
-  assertNotEquals(1,currentXAxisRange[0]);
-  assertNotEquals(10,currentXAxisRange[1]);
-  assertNotEquals(1,currentYAxisRange[0]);
-  assertNotEquals(50,currentYAxisRange[1]);
+  assertNotEquals(1, currentXAxisRange[0]);
+  assertNotEquals(10, currentXAxisRange[1]);
+  assertNotEquals(1, currentYAxisRange[0]);
+  assertNotEquals(50, currentYAxisRange[1]);
   
   // unzoom by doubleclick.  This is really the order in which a browser
   // generates events, and we depend on it.
@@ -366,8 +371,8 @@ InteractionModelTestCase.prototype.testCorrectAxisValueRangeAfterUnzoom = functi
   // TODO check if range for x-axis is correct. 
   // Currently not possible because dateRange is set to null and extremes are returned
   newYAxisRange = g.yAxisRange();
-  assertEquals(1,newYAxisRange[0]);
-  assertEquals(50,newYAxisRange[1]);
+  assertEquals(1, newYAxisRange[0]);
+  assertEquals(50, newYAxisRange[1]);
 };
 
 /**

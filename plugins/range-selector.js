@@ -16,16 +16,11 @@ Dygraph.Plugins.RangeSelector = (function() {
 /*global Dygraph:false */
 "use strict";
 
-// Range selector status values
-var NOT_CREATED = 0; // Range selector interface has not been created
-var CREATED = 1 << 0; // Range selector interface has been created
-var ADDED_TO_GRAPH = 1 << 1; // Range selector elements have been added to the graph
-
 var rangeSelector = function() {
   this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
   this.isMobileDevice_ = /mobile|android/gi.test(navigator.appVersion);
-  this.status_ = NOT_CREATED;
+  this.interfaceCreated_ = false;
 };
 
 rangeSelector.prototype.toString = function() {
@@ -34,8 +29,6 @@ rangeSelector.prototype.toString = function() {
 
 rangeSelector.prototype.activate = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.layout_ = dygraph.layout_;
-  this.graphDiv_ = dygraph.graphDiv;
   this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   if (this.getOption_('showRangeSelector')) {
     this.createInterface_();
@@ -85,8 +78,8 @@ rangeSelector.prototype.createInterface_ = function() {
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
+  this.interfaceCreated_ = true;
   this.addToGraph_();
-  this.status_ = CREATED;
 };
 
 /**
@@ -94,12 +87,11 @@ rangeSelector.prototype.createInterface_ = function() {
  * Adds the range selector to the graph.
  */
 rangeSelector.prototype.addToGraph_ = function() {
-  var graphDiv = this.graphDiv_;
+  var graphDiv = this.graphDiv_ = this.dygraph_.graphDiv;
   graphDiv.appendChild(this.bgcanvas_);
   graphDiv.appendChild(this.fgcanvas_);
   graphDiv.appendChild(this.leftZoomHandle_);
   graphDiv.appendChild(this.rightZoomHandle_);
-  this.status_ |= ADDED_TO_GRAPH;
 };
 
 /**
@@ -112,7 +104,7 @@ rangeSelector.prototype.removeFromGraph_ = function() {
   graphDiv.removeChild(this.fgcanvas_);
   graphDiv.removeChild(this.leftZoomHandle_);
   graphDiv.removeChild(this.rightZoomHandle_);
-  this.status_ ^= ADDED_TO_GRAPH;
+  this.graphDiv_ = null;
 };
 
 /**
@@ -130,7 +122,7 @@ rangeSelector.prototype.reserveSpace_ = function(e) {
  * Renders the static portion of the range selector at the predraw stage.
  */
 rangeSelector.prototype.renderStaticLayer_ = function() {
-  if (!this.updateInterfaceStatus_()) {
+  if (!this.updateVisibility_()) {
     return;
   }
   this.resize_();
@@ -142,7 +134,7 @@ rangeSelector.prototype.renderStaticLayer_ = function() {
  * Renders the interactive portion of the range selector after the chart has been drawn.
  */
 rangeSelector.prototype.renderInteractiveLayer_ = function() {
-  if (!this.updateInterfaceStatus_() || this.isChangingRange_) {
+  if (!this.updateVisibility_() || this.isChangingRange_) {
     return;
   }
   this.placeZoomHandles_();
@@ -151,17 +143,17 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
 
 /**
  * @private
- * Check to see if the range selector is enabled/disabled and update interface accordingly.
+ * Check to see if the range selector is enabled/disabled and update visibility accordingly.
  */
-rangeSelector.prototype.updateInterfaceStatus_ = function() {
+rangeSelector.prototype.updateVisibility_ = function() {
   var enabled = this.getOption_('showRangeSelector');
   if (enabled) {
-    if (!(this.status_ & CREATED)) {
+    if (!this.interfaceCreated_) {
       this.createInterface_();
-    } else if (!(this.status_ & ADDED_TO_GRAPH)) {
+    } else if (!this.graphDiv_ || !this.graphDiv_.parentNode) {
       this.addToGraph_();
     }
-  } else if (this.status_ & ADDED_TO_GRAPH) {
+  } else if (this.graphDiv_) {
     this.removeFromGraph_();
     var dygraph = this.dygraph_;
     setTimeout(function() { dygraph.width_ = 0; dygraph.resize(); }, 1);
@@ -183,7 +175,7 @@ rangeSelector.prototype.resize_ = function() {
     canvas.style.height = canvas.height + 'px';  // for IE
   }
 
-  var plotArea = this.layout_.getPlotArea();
+  var plotArea = this.dygraph_.layout_.getPlotArea();
   var xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   this.canvasRect_ = {
     x: plotArea.x,
@@ -273,7 +265,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
   var topElem = this.isIE_ ? document : window;
-  var xLast = 0;
+  var clientXLast = 0;
   var handle = null;
   var isZooming = false;
   var isPanning = false;
@@ -286,7 +278,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
-      onPanStart, onPan, onPanEnd, doPan, onCanvasMouseMove, applyBrowserZoomLevel;
+      onPanStart, onPan, onPanEnd, doPan, onCanvasHover;
 
   // Touch event functions
   var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
@@ -299,22 +291,16 @@ rangeSelector.prototype.initInteraction_ = function() {
     return [xDataMin, xDataMax];
   };
 
-  applyBrowserZoomLevel = function(delX) {
-    var zoom = window.outerWidth/document.documentElement.clientWidth;
-    if (!isNaN(zoom)) {
-      return delX/zoom;
-    } else {
-      return delX;
-    }
-  };
-
   onZoomStart = function(e) {
     Dygraph.cancelEvent(e);
     isZooming = true;
-    xLast = e.screenX;
+    clientXLast = e.clientX;
     handle = e.target ? e.target : e.srcElement;
-    self.dygraph_.addEvent(topElem, 'mousemove', onZoom);
-    self.dygraph_.addEvent(topElem, 'mouseup', onZoomEnd);
+    if (e.type === 'mousedown' || e.type === 'dragstart') {
+      // These events are removed manually.
+      Dygraph.addEvent(topElem, 'mousemove', onZoom);
+      Dygraph.addEvent(topElem, 'mouseup', onZoomEnd);
+    }
     self.fgcanvas_.style.cursor = 'col-resize';
     tarp.cover();
     return true;
@@ -325,13 +311,12 @@ rangeSelector.prototype.initInteraction_ = function() {
       return false;
     }
     Dygraph.cancelEvent(e);
-    var delX = e.screenX - xLast;
-    if (Math.abs(delX) < 4 || e.screenX === 0) {
-      // First iPad move event seems to have screenX = 0
+
+    var delX = e.clientX - clientXLast;
+    if (Math.abs(delX) < 4) {
       return true;
     }
-    xLast = e.screenX;
-    delX = applyBrowserZoomLevel(delX);
+    clientXLast = e.clientX;
 
     // Move handle.
     var zoomHandleStatus = self.getZoomHandleStatus_();
@@ -404,9 +389,12 @@ rangeSelector.prototype.initInteraction_ = function() {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
       Dygraph.cancelEvent(e);
       isPanning = true;
-      xLast = e.screenX;
-      self.dygraph_.addEvent(topElem, 'mousemove', onPan);
-      self.dygraph_.addEvent(topElem, 'mouseup', onPanEnd);
+      clientXLast = e.clientX;
+      if (e.type === 'mousedown') {
+        // These events are removed manually.
+        Dygraph.addEvent(topElem, 'mousemove', onPan);
+        Dygraph.addEvent(topElem, 'mouseup', onPanEnd);
+      }
       return true;
     }
     return false;
@@ -418,12 +406,11 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
     Dygraph.cancelEvent(e);
 
-    var delX = e.screenX - xLast;
+    var delX = e.clientX - clientXLast;
     if (Math.abs(delX) < 4) {
       return true;
     }
-    xLast = e.screenX;
-    delX = applyBrowserZoomLevel(delX);
+    clientXLast = e.clientX;
 
     // Move range view
     var zoomHandleStatus = self.getZoomHandleStatus_();
@@ -476,7 +463,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  onCanvasMouseMove = function(e) {
+  onCanvasHover = function(e) {
     if (isZooming || isPanning) {
       return;
     }
@@ -532,7 +519,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     this.dygraph_.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
   } else {
     this.dygraph_.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
-    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasMouseMove);
+    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
   }
 
   // Touch events

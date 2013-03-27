@@ -63,8 +63,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
       var boundedTopY = g.toDomYCoord(yExtremes[0], i) + maxYPixelsToDraw;
       var boundedBottomY = g.toDomYCoord(yExtremes[1], i) - maxYPixelsToDraw;
 
-      var boundedTopValue = g.toDataYCoord(boundedTopY);
-      var boundedBottomValue = g.toDataYCoord(boundedBottomY);
+      var boundedTopValue = g.toDataYCoord(boundedTopY, i);
+      var boundedBottomValue = g.toDataYCoord(boundedBottomY, i);
 
       boundedValues[i] = [boundedTopValue, boundedBottomValue];
     }
@@ -136,12 +136,13 @@ Dygraph.Interaction.movePan = function(event, g, context) {
 
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
+
+    var pixelsDragged = context.dragEndY - context.dragStartY;
+
     // Adjust each axis appropriately.
     for (var i = 0; i < g.axes_.length; i++) {
       var axis = g.axes_[i];
       var axis_data = context.axes[i];
-
-      var pixelsDragged = context.dragEndY - context.dragStartY;
       var unitsDragged = pixelsDragged * axis_data.unitsPerPixel;
 
       var boundedValue = context.boundedValues ? context.boundedValues[i] : null;
@@ -342,13 +343,27 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
     Dygraph.Interaction.treatMouseOpAsClick(g, event, context);
   }
 
+  // The zoom rectangle is visibly clipped to the plot area, so its behavior
+  // should be as well.
+  // See http://code.google.com/p/dygraphs/issues/detail?id=280
+  var plotArea = g.getArea();
   if (regionWidth >= 10 && context.dragDirection == Dygraph.HORIZONTAL) {
-    g.doZoomX_(Math.min(context.dragStartX, context.dragEndX),
-               Math.max(context.dragStartX, context.dragEndX));
+    var left = Math.min(context.dragStartX, context.dragEndX),
+        right = Math.max(context.dragStartX, context.dragEndX);
+    left = Math.max(left, plotArea.x);
+    right = Math.min(right, plotArea.x + plotArea.w);
+    if (left < right) {
+      g.doZoomX_(left, right);
+    }
     context.cancelNextDblclick = true;
   } else if (regionHeight >= 10 && context.dragDirection == Dygraph.VERTICAL) {
-    g.doZoomY_(Math.min(context.dragStartY, context.dragEndY),
-               Math.max(context.dragStartY, context.dragEndY));
+    var top = Math.min(context.dragStartY, context.dragEndY),
+        bottom = Math.max(context.dragStartY, context.dragEndY);
+    top = Math.max(top, plotArea.y);
+    bottom = Math.min(bottom, plotArea.y + plotArea.h);
+    if (top < bottom) {
+      g.doZoomY_(top, bottom);
+    }
     context.cancelNextDblclick = true;
   } else {
     if (context.zoomMoved) g.clearZoomRect_();
@@ -362,6 +377,11 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
  */
 Dygraph.Interaction.startTouch = function(event, g, context) {
   event.preventDefault();  // touch browsers are all nice.
+  if (event.touches.length > 1) {
+    // If the user ever puts two fingers down, it's not a double tap.
+    context.startTimeForDoubleTapMs = null;
+  }
+
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -380,8 +400,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     // This is just a swipe.
     context.initialPinchCenter = touches[0];
     context.touchDirections = { x: true, y: true };
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     // It's become a pinch!
+    // In case there are 3+ touches, we ignore all but the "first" two.
 
     // only screen coordinates can be averaged (data coords could be log scale).
     context.initialPinchCenter = {
@@ -419,6 +440,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
  * @private
  */
 Dygraph.Interaction.moveTouch = function(event, g, context) {
+  // If the tap moves, then it's definitely not part of a double-tap.
+  context.startTimeForDoubleTapMs = null;
+
   var i, touches = [];
   for (i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -459,7 +483,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   if (touches.length == 1) {
     xScale = 1.0;
     yScale = 1.0;
-  } else if (touches.length == 2) {
+  } else if (touches.length >= 2) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
 
@@ -471,11 +495,13 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   xScale = Math.min(8, Math.max(0.125, xScale));
   yScale = Math.min(8, Math.max(0.125, yScale));
 
+  var didZoom = false;
   if (context.touchDirections.x) {
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
+    didZoom = true;
   }
   
   if (context.touchDirections.y) {
@@ -489,11 +515,18 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
           c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
+        didZoom = true;
       }
     }
   }
 
   g.drawGraph_(false);
+
+  // We only call zoomCallback on zooms, not pans, to mirror desktop behavior.
+  if (didZoom && touches.length > 1 && g.attr_('zoomCallback')) {
+    var viewWindow = g.xAxisRange();
+    g.attr_("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
+  }
 };
 
 /**
@@ -503,6 +536,22 @@ Dygraph.Interaction.endTouch = function(event, g, context) {
   if (event.touches.length !== 0) {
     // this is effectively a "reset"
     Dygraph.Interaction.startTouch(event, g, context);
+  } else if (event.changedTouches.length == 1) {
+    // Could be part of a "double tap"
+    // The heuristic here is that it's a double-tap if the two touchend events
+    // occur within 500ms and within a 50x50 pixel box.
+    var now = new Date().getTime();
+    var t = event.changedTouches[0];
+    if (context.startTimeForDoubleTapMs &&
+        now - context.startTimeForDoubleTapMs < 500 &&
+        context.doubleTapX && Math.abs(context.doubleTapX - t.screenX) < 50 &&
+        context.doubleTapY && Math.abs(context.doubleTapY - t.screenY) < 50) {
+      g.resetZoom();
+    } else {
+      context.startTimeForDoubleTapMs = now;
+      context.doubleTapX = t.screenX;
+      context.doubleTapY = t.screenY;
+    }
   }
 };
 
@@ -562,6 +611,7 @@ Dygraph.Interaction.defaultModel = {
     if (context.isZooming) {
       context.dragEndX = null;
       context.dragEndY = null;
+      g.clearZoomRect_();
     }
   },
 

@@ -87,16 +87,6 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 
 /** @type {Dygraph.Ticker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
-  // This masks some numeric issues in older versions of Firefox,
-  // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
-  /** @type {function(number,number):number} */
-  var pow = function(base, exp) {
-    if (exp < 0) {
-      return 1.0 / Math.pow(base, -exp);
-    }
-    return Math.pow(base, exp);
-  };
-
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
   var i, j, tickV, nTicks;
@@ -201,58 +191,13 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     }
   }
 
-  // Add formatted labels to the ticks.
-  var k;
-  var k_labels = [];
-  var m_labels = [];
-  if (opts("labelsKMB")) {
-    k = 1000;
-    k_labels = [ "K", "M", "B", "T", "Q" ];
-  }
-  if (opts("labelsKMG2")) {
-    if (k) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
-    k = 1024;
-    k_labels = [ "k", "M", "G", "T", "P", "E", "Z", "Y" ];
-    m_labels = [ "m", "u", "n", "p", "f", "a", "z", "y" ];
-  }
-
-  k = k || 1; // If neither option is specified.
-
   var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
 
   // Add labels to the ticks.
-  var digitsAfterDecimal = /** @type{number} */(opts('digitsAfterDecimal'));
   for (i = 0; i < ticks.length; i++) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
-    tickV = ticks[i].v;
-    var absTickV = Math.abs(tickV);
     // TODO(danvk): set granularity to something appropriate here.
-    var label = formatter(tickV, 0, opts, dygraph);
-    if (k_labels.length > 0) {
-      // TODO(danvk): should this be integrated into the axisLabelFormatter?
-      // Round up to an appropriate unit.
-      var n = pow(k, k_labels.length);
-      for (j = k_labels.length - 1; j >= 0; j--, n /= k) {
-        if (absTickV >= n) {
-          label = Dygraph.round_(tickV / n, digitsAfterDecimal) + k_labels[j];
-          break;
-        }
-      }
-    }
-    if(opts("labelsKMG2")){
-      tickV = String(tickV.toExponential());
-      if(tickV.split('e-').length === 2 && tickV.split('e-')[1] >= 3 && tickV.split('e-')[1] <= 24){
-        if(tickV.split('e-')[1] % 3 > 0) {
-          label = Dygraph.round_(tickV.split('e-')[0] /
-              pow(10,(tickV.split('e-')[1] % 3)),
-              digitsAfterDecimal);
-        } else {
-          label = Number(tickV.split('e-')[0]).toFixed(2);
-        }
-        label += m_labels[Math.floor(tickV.split('e-')[1] / 3) - 1];
-      }
-    }
-    ticks[i].label = label;
+    ticks[i].label = formatter(ticks[i].v, 0, opts, dygraph);
   }
 
   return ticks;
@@ -403,21 +348,25 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // for this granularity.
     var g = spacing / 1000;
     var d = new Date(start_time);
-    d.setMilliseconds(0);
+    Dygraph.setDateSameTZ(d, {ms: 0});
+
     var x;
     if (g <= 60) {  // seconds
-      x = d.getSeconds(); d.setSeconds(x - x % g);
+      x = d.getSeconds();
+      Dygraph.setDateSameTZ(d, {s: x - x % g});
     } else {
-      d.setSeconds(0);
+      Dygraph.setDateSameTZ(d, {s: 0});
       g /= 60;
       if (g <= 60) {  // minutes
-        x = d.getMinutes(); d.setMinutes(x - x % g);
+        x = d.getMinutes();
+        Dygraph.setDateSameTZ(d, {m: x - x % g});
       } else {
-        d.setMinutes(0);
+        Dygraph.setDateSameTZ(d, {m: 0});
         g /= 60;
 
         if (g <= 24) {  // days
-          x = d.getHours(); d.setHours(x - x % g);
+          x = d.getHours();
+          d.setHours(x - x % g);
         } else {
           d.setHours(0);
           g /= 24;
@@ -430,9 +379,38 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
     start_time = d.getTime();
 
+    // For spacings coarser than two-hourly, we want to ignore daylight
+    // savings transitions to get consistent ticks. For finer-grained ticks,
+    // it's essential to show the DST transition in all its messiness.
+    var start_offset_min = new Date(start_time).getTimezoneOffset();
+    var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
+
     for (t = start_time; t <= end_time; t += spacing) {
+      var d = new Date(t);
+
+      // This ensures that we stay on the same hourly "rhythm" across
+      // daylight savings transitions. Without this, the ticks could get off
+      // by an hour. See tests/daylight-savings.html or issue 147.
+      if (check_dst && d.getTimezoneOffset() != start_offset_min) {
+        var delta_min = d.getTimezoneOffset() - start_offset_min;
+        t += delta_min * 60 * 1000;
+        d = new Date(t);
+        start_offset_min = d.getTimezoneOffset();
+
+        // Check whether we've backed into the previous timezone again.
+        // This can happen during a "spring forward" transition. In this case,
+        // it's best to skip this tick altogether (we may be shooting for a
+        // non-existent time like the 2AM that's skipped) and go to the next
+        // one.
+        if (new Date(t + spacing).getTimezoneOffset() != start_offset_min) {
+          t += spacing;
+          d = new Date(t);
+          start_offset_min = d.getTimezoneOffset();
+        }
+      }
+
       ticks.push({ v:t,
-                   label: formatter(new Date(t), granularity, opts, dg)
+                   label: formatter(d, granularity, opts, dg)
                  });
     }
   } else {
@@ -479,7 +457,15 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   return ticks;
 };
 
-// These are set here so that this file can be included after dygraph.js.
-Dygraph.DEFAULT_ATTRS['axes']['x']['ticker'] = Dygraph.dateTicker;
-Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
-Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
+// These are set here so that this file can be included after dygraph.js
+// or independently.
+if (Dygraph &&
+    Dygraph.DEFAULT_ATTRS &&
+    Dygraph.DEFAULT_ATTRS['axes'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['x'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['y'] &&
+    Dygraph.DEFAULT_ATTRS['axes']['y2']) {
+  Dygraph.DEFAULT_ATTRS['axes']['x']['ticker'] = Dygraph.dateTicker;
+  Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
+  Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
+}

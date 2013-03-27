@@ -95,7 +95,7 @@ UtilsTestCase.prototype.testIterator_nopredicate = function() {
   assertEquals('e', iter.next());
 
   assertFalse(iter.hasNext);
-}
+};
 
 UtilsTestCase.prototype.testIterator_predicate = function() {
   var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -119,7 +119,7 @@ UtilsTestCase.prototype.testIterator_empty = function() {
   var array = [];
   var iter = Dygraph.createIterator([], 0, 0);
   assertFalse(iter.hasNext);
-}
+};
 
 UtilsTestCase.prototype.testIterator_outOfRange = function() {
   var array = ['a', 'b', 'c'];
@@ -134,7 +134,7 @@ UtilsTestCase.prototype.testIterator_outOfRange = function() {
   assertEquals('c', iter.next());
 
   assertFalse(iter.hasNext);
-}
+};
 
 // Makes sure full array is tested, and that the predicate isn't called
 // with invalid boundaries.
@@ -156,7 +156,7 @@ UtilsTestCase.prototype.testIterator_whole_array = function() {
   assertEquals('c', iter.next());
   assertFalse(iter.hasNext);
   assertNull(iter.next());
-}
+};
 
 UtilsTestCase.prototype.testIterator_no_args = function() {
   var array = ['a', 'b', 'c'];
@@ -169,4 +169,20 @@ UtilsTestCase.prototype.testIterator_no_args = function() {
   assertEquals('c', iter.next());
   assertFalse(iter.hasNext);
   assertNull(iter.next());
-}
+};
+
+/*
+UtilsTestCase.prototype.testDateSet = function() {
+  var base = new Date(1383455100000);
+  var d = new Date(base);
+
+  // A one hour shift -- this is surprising behavior!
+  d.setMilliseconds(10);
+  assertEquals(3600010, d.getTime() - base.getTime());
+
+  // setDateSameTZ compensates for this surprise.
+  d = new Date(base);
+  Dygraph.setDateSameTZ(d, {ms: 10});
+  assertEquals(10, d.getTime() - base.getTime());
+};
+*/

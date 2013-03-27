@@ -100,7 +100,7 @@
             // Darken the series by 50% to generate its regression.
             var label = labels[i] + " Regression";
             new_labels.push(label);
-            var c = new RGBColor(orig_colors[i - 1]);
+            var c = new RGBColorParser(orig_colors[i - 1]);
             c.r = Math.floor(255 - 0.5 * (255 - c.r));
             c.g = Math.floor(255 - 0.5 * (255 - c.g));
             c.b = Math.floor(255 - 0.5 * (255 - c.b));

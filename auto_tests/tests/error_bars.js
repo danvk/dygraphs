@@ -9,16 +9,16 @@ errorBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-var _origFunc = Dygraph.getContext;
+errorBarsTestCase._origFunc = Dygraph.getContext;
 errorBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
+    return new Proxy(errorBarsTestCase._origFunc(canvas));
   }
 };
 
 errorBarsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = _origFunc;
+  Dygraph.getContext = errorBarsTestCase._origFunc;
 };
 
 errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
@@ -124,22 +124,55 @@ errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
   // 249-299: empty (white)
   // TODO(danvk): test the edges of these regions.
 
-  var ctx = g.hidden_.getContext("2d");  // bypass Proxy
-  var imageData = ctx.getImageData(0, 0, 400, 300);
+  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 75));
+  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 125));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 175));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 225));
+};
 
-  assertEquals(400, imageData.width);
-  assertEquals(300, imageData.height);
 
-  // returns an (r, g, b, alpha) tuple for the pixel.
-  // values are in [0, 255].
-  var getPixel = function(imageData, x, y) {
-    var i = 4 * (x + imageData.width * y);
-    var d = imageData.data;
-    return [d[i], d[i+1], d[i+2], d[i+3]];
-  };
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=392
+errorBarsTestCase.prototype.testRollingAveragePreservesNaNs = function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph,
+  [
+      [1, [null, null], [3,1]],
+      [2, [2, 1], [null, null]],
+      [3, [null, null], [5,1]],
+      [4, [4, 0.5], [null, null]],
+      [5, [null, null], [7,1]],
+      [6, [NaN, NaN], [null, null]],
+      [8, [8, 1], [null, null]],
+      [10, [10, 1], [null, null]]
+     ]
+        , {
+          labels: ['x', 'A', 'B' ],
+          connectSeparatedPoints: true,
+          drawPoints: true,
+          errorBars: true
+        }
+      );
 
-  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 75));
-  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 125));
-  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 175));
-  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 225));
-}
+  var in_series = [
+    [1, [null, null]],
+    [2, [2, 1]],
+    [3, [null, null]],
+    [4, [4, 0.5]],
+    [5, [null, null]],
+    [6, [NaN, NaN]],
+    [8, [8, 1]],
+    [10, [10, 1]]
+  ];
+  assertEquals(null, in_series[4][1][0]);
+  assertEquals(null, in_series[4][1][1]);
+  assertNaN(in_series[5][1][0]);
+  assertNaN(in_series[5][1][1]);
+
+  var out_series = g.rollingAverage(in_series, 1);
+  assertNaN(out_series[5][1][0]);
+  assertNaN(out_series[5][1][1]);
+  assertNaN(out_series[5][1][2]);
+  assertEquals(null, out_series[4][1][0]);
+  assertEquals(null, out_series[4][1][1]);
+  assertEquals(null, out_series[4][1][1]);
+};

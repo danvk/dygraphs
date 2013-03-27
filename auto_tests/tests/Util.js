@@ -54,7 +54,8 @@ Util.getClassTexts = function(css_class, parent) {
 Util.getLegend = function(parent) {
   parent = parent || document;
   var legend = parent.getElementsByClassName("dygraph-legend")[0];
-  return legend.textContent;
+  var re = new RegExp(String.fromCharCode(160), 'g');
+  return legend.textContent.replace(re, ' ');
 };
 
 /**
@@ -77,4 +78,20 @@ Util.makeNumbers = function(ary) {
     ret.push(parseFloat(ary[i]));
   }
   return ret;
+};
+
+
+/**
+ * Sample a pixel from the canvas.
+ * Returns an [r, g, b, a] tuple where each values is in [0, 255].
+ */
+Util.samplePixel = function(canvas, x, y) {
+  var ctx = canvas.getContext("2d");  // bypasses Proxy if applied.
+
+  // TODO(danvk): Any performance issues with this?
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  var i = 4 * (x + imageData.width * y);
+  var d = imageData.data;
+  return [d[i], d[i+1], d[i+2], d[i+3]];
 };

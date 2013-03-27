@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
+/**
  * @fileoverview DygraphOptions is responsible for parsing and returning information about options.
  *
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
@@ -84,7 +90,7 @@ DygraphOptions.axisToIndex_ = function(axis) {
 
 /**
  * Reparses options that are all related to series. This typically occurs when
- * options are either updated, or source data has been made avaialble.
+ * options are either updated, or source data has been made available.
  *
  * TODO(konigsberg): The method name is kind of weak; fix.
  */

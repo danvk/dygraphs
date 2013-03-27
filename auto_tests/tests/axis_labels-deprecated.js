@@ -39,7 +39,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDeprecatedXAxisTimeLabelFor
 
   // The legend does not use the xAxisLabelFormatter:
   g.setSelection(1);
-  assertEquals('5.1: Y1:1', Util.getLegend());
+  assertEquals('5.1: Y1: 1', Util.getLegend());
 };
 
 DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = function () {
@@ -73,7 +73,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = functi
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(2);
-  assertEquals("2: y:4", Util.getLegend());
+  assertEquals("2: y: 4", Util.getLegend());
 };
 
 DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = function () {
@@ -107,7 +107,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals("2011/01/01: y:2", Util.getLegend());
+  assertEquals("2011/01/01: y: 2", Util.getLegend());
 };
 
 // This test verifies that when a valueFormatter is set (but not an
@@ -147,7 +147,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedValueFormatter = function (
 
   // they do affect the legend, however.
   g.setSelection(2);
-  assertEquals("x2: y:y4", Util.getLegend());
+  assertEquals("x2: y: y4", Util.getLegend());
 };
 
 DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = function () {
@@ -184,7 +184,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
-  assertEquals('x2011/01/03: y:y6', Util.getLegend());
+  assertEquals('x2011/01/03: y: y6', Util.getLegend());
 };
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
@@ -218,7 +218,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterPrecedenc
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };
 
 // This is the same as the previous test, except that options are added
@@ -260,5 +260,5 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterIncrement
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };

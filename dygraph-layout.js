@@ -130,7 +130,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   var parse = this.attr_('xValueParser') || function(x) { return x; };
   for (var i = 0; i < ann.length; i++) {
     var a = {};
-    if (!ann[i].xval && !ann[i].x) {
+    if (!ann[i].xval && ann[i].x === undefined) {
       this.dygraph_.error("Annotations must have an 'x' property");
       return;
     }
@@ -168,24 +168,11 @@ DygraphLayout.prototype.evaluate = function() {
 };
 
 DygraphLayout.prototype._evaluateLimits = function() {
-  this.minxval = this.maxxval = null;
-  if (this.dateWindow_) {
-    this.minxval = this.dateWindow_[0];
-    this.maxxval = this.dateWindow_[1];
-  } else {
-    for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
-      var series = this.datasets[setIdx];
-      if (series.length > 1) {
-        var x1 = series[0][0];
-        if (!this.minxval || x1 < this.minxval) this.minxval = x1;
-
-        var x2 = series[series.length - 1][0];
-        if (!this.maxxval || x2 > this.maxxval) this.maxxval = x2;
-      }
-    }
-  }
-  this.xrange = this.maxxval - this.minxval;
-  this.xscale = (this.xrange !== 0 ? 1/this.xrange : 1.0);
+  var xlimits = this.dygraph_.xAxisRange();
+  this.minxval = xlimits[0];
+  this.maxxval = xlimits[1];
+  var xrange = xlimits[1] - xlimits[0];
+  this.xscale = (xrange !== 0 ? 1 / xrange : 1.0);
 
   for (var i = 0; i < this.yAxes_.length; i++) {
     var axis = this.yAxes_[i];
@@ -394,7 +381,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
 DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
   var point = this.points[setIdx][row];
   // If the point is missing, no unstacking is necessary
-  if (!point.yval) {
+  if (!Dygraph.isValidPoint(point)) {
     return point;
   }
 
@@ -410,15 +397,15 @@ DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
 
   // The unstacked yval is equal to the current yval minus the yval of the
   // next point at the same xval.
-  if (setIdx == this.points.length - 1) {
-    // We're the last series, so no unstacking is necessary.
-    return unstackedPoint;
-  }
-
-  var points = this.points[setIdx + 1];
-  if (points[row].xval == point.xval &&  // should always be true?
-      points[row].yval) {
-    unstackedPoint.yval -= points[row].yval;
+  // We need to iterate over setIdx just in case some series have invalid values
+  // at current row
+  for(setIdx++; setIdx < this.points.length; setIdx++) {
+    var nextPoint = this.points[setIdx][row];
+    if (nextPoint.xval == point.xval &&  // should always be true?
+        Dygraph.isValidPoint(nextPoint)) {
+      unstackedPoint.yval -= nextPoint.yval;
+      break; // stop at first valid point
+    }
   }
 
   return unstackedPoint;

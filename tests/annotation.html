@@ -35,6 +35,9 @@
         return "(" + ann.series + ", " + ann.x + ")";
       }
 
+      annotations = [];
+      var graph_initialized = false;
+
       g = new Dygraph(
               document.getElementById("g_div"),
               function() {
@@ -55,7 +58,14 @@
                 showRoller: true,
                 width: 480,
                 height: 320,
-                drawCallback: function(g) {
+                drawCallback: function(g, is_initial) {
+                  if (is_initial) {
+                    graph_initialized = true;
+                    if (annotations.length > 0) {
+                      g.setAnnotations(annotations);
+                    }
+                  }
+
                   var ann = g.annotations();
                   var html = "";
                   for (var i = 0; i < ann.length; i++) {
@@ -70,7 +80,6 @@
           );
 
       var last_ann = 0;
-      annotations = [];
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
@@ -93,7 +102,16 @@
           document.getElementById("events").innerHTML += "special handler<br/>";
         }
       } );
-      g.setAnnotations(annotations);
+      annotations.push( {
+        series: 'parabola',
+        x: '20061012',
+        shortText: 'P',
+        text: 'Parabola Annotation at same x-coord'
+      } );
+
+      if (graph_initialized) {
+        g.setAnnotations(annotations);
+      }
 
       function add() {
         var x = last_ann + 2;

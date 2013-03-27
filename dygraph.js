@@ -95,6 +95,12 @@ Dygraph.DEFAULT_HEIGHT = 320;
 Dygraph.ANIMATION_STEPS = 12;
 Dygraph.ANIMATION_DURATION = 200;
 
+// Label constants for the labelsKMB and labelsKMG2 options.
+// (i.e. '100000' -> '100K')
+Dygraph.KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
+Dygraph.KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+Dygraph.KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
 /**
  * @private
@@ -116,14 +122,60 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
   var digits = opts('digitsAfterDecimal');
   var maxNumberWidth = opts('maxNumberWidth');
 
+  var kmb = opts('labelsKMB');
+  var kmg2 = opts('labelsKMG2');
+
+  var label;
+
   // switch to scientific notation if we underflow or overflow fixed display.
   if (x !== 0.0 &&
       (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
        Math.abs(x) < Math.pow(10, -digits))) {
-    return x.toExponential(digits);
+    label = x.toExponential(digits);
   } else {
-    return '' + Dygraph.round_(x, digits);
+    label = '' + Dygraph.round_(x, digits);
   }
+
+  if (kmb || kmg2) {
+    var k;
+    var k_labels = [];
+    var m_labels = [];
+    if (kmb) {
+      k = 1000;
+      k_labels = Dygraph.KMB_LABELS;
+    }
+    if (kmg2) {
+      if (kmb) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
+      k = 1024;
+      k_labels = Dygraph.KMG2_BIG_LABELS;
+      m_labels = Dygraph.KMG2_SMALL_LABELS;
+    }
+
+    var absx = Math.abs(x);
+    var n = Dygraph.pow(k, k_labels.length);
+    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
+      if (absx >= n) {
+        label = Dygraph.round_(x / n, digits) + k_labels[j];
+        break;
+      }
+    }
+    if (kmg2) {
+      // TODO(danvk): clean up this logic. Why so different than kmb?
+      var x_parts = String(x.toExponential()).split('e-');
+      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
+        if (x_parts[1] % 3 > 0) {
+          label = Dygraph.round_(x_parts[0] /
+              Dygraph.pow(10, (x_parts[1] % 3)),
+              digits);
+        } else {
+          label = Number(x_parts[0]).toFixed(2);
+        }
+        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
+      }
+    }
+  }
+
+  return label;
 };
 
 /**
@@ -246,6 +298,8 @@ Dygraph.DEFAULT_ATTRS = {
 
   stepPlot: false,
   avoidMinZero: false,
+  xRangePad: 0,
+  yRangePad: null,
   drawAxesAtZero: false,
 
   // Sizes of the various chart labels.
@@ -610,7 +664,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
   return function(opt) {
     var axis_opts = self.user_attrs_.axes;
-    if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
+    if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
     // user-specified attributes always trump defaults, even if they're less
@@ -620,7 +674,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     }
 
     axis_opts = self.attrs_.axes;
-    if (axis_opts && axis_opts[axis] && axis_opts[axis][opt]) {
+    if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
     // check old-style axis options
@@ -657,8 +711,18 @@ Dygraph.prototype.xAxisRange = function() {
  * data set.
  */
 Dygraph.prototype.xAxisExtremes = function() {
+  var pad = this.attr_('xRangePad') / this.plotter_.area.w;
+  if (this.numRows() === 0) {
+    return [0 - pad, 1 + pad];
+  }
   var left = this.rawData_[0][0];
   var right = this.rawData_[this.rawData_.length - 1][0];
+  if (pad) {
+    // Must keep this in sync with dygraph-layout _evaluateLimits()
+    var range = right - left;
+    left -= range * pad;
+    right += range * pad;
+  }
   return [left, right];
 };
 
@@ -874,6 +938,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
  * @return { Integer } The number of columns.
  */
 Dygraph.prototype.numColumns = function() {
+  if (!this.rawData_) return 0;
   return this.rawData_[0] ? this.rawData_[0].length : this.attr_("labels").length;
 };
 
@@ -882,22 +947,8 @@ Dygraph.prototype.numColumns = function() {
  * @return { Integer } The number of rows, less any header.
  */
 Dygraph.prototype.numRows = function() {
+  if (!this.rawData_) return 0;
   return this.rawData_.length;
-};
-
-/**
- * Returns the full range of the x-axis, as determined by the most extreme
- * values in the data set. Not affected by zooming, visibility, etc.
- * TODO(danvk): merge w/ xAxisExtremes
- * @return { Array<Number> } A [low, high] pair
- * @private
- */
-Dygraph.prototype.fullXRange_ = function() {
-  if (this.numRows() > 0) {
-    return [this.rawData_[0][0], this.rawData_[this.numRows() - 1][0]];
-  } else {
-    return [0, 1];
-  }
 };
 
 /**
@@ -930,6 +981,8 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv = document.createElement("div");
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
+  // TODO(danvk): any other styles that are useful to set here?
+  this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
@@ -956,19 +1009,28 @@ Dygraph.prototype.createInterface_ = function() {
 
   var dygraph = this;
 
-  // Don't recreate and register the handlers on subsequent calls.
-  // This happens when the graph is resized.
-  if (!this.mouseMoveHandler_) {
-    this.mouseMoveHandler_ = function(e) {
-      dygraph.mouseMove_(e);
-    };
-    this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+  this.mouseMoveHandler_ = function(e) {
+    dygraph.mouseMove_(e);
+  };
 
-    this.mouseOutHandler_ = function(e) {
+  this.mouseOutHandler_ = function(e) {
+    // The mouse has left the chart if:
+    // 1. e.target is inside the chart
+    // 2. e.relatedTarget is outside the chart
+    var target = e.target || e.fromElement;
+    var relatedTarget = e.relatedTarget || e.toElement;
+    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
       dygraph.mouseOut_(e);
-    };
-    this.addEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+    }
+  };
 
+  this.addEvent(window, 'mouseout', this.mouseOutHandler_);
+  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+
+  // Don't recreate and register the resize handler on subsequent calls.
+  // This happens when the graph is resized.
+  if (!this.resizeHandler_) {
     this.resizeHandler_ = function(e) {
       dygraph.resize();
     };
@@ -1002,9 +1064,9 @@ Dygraph.prototype.destroy = function() {
   this.registeredEvents_ = [];
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(this.mouseEventElement_, 'mouseout', this.mouseOutHandler_);
+  Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseUpHandler_);
+  Dygraph.removeEvent(this.mouseEventElement_, 'mouseup', this.mouseUpHandler_);
 
   // remove window handlers
   Dygraph.removeEvent(window,'resize',this.resizeHandler_);
@@ -1278,6 +1340,12 @@ Dygraph.prototype.createDragInterface_ = function() {
     if (!interactionModel.hasOwnProperty(eventName)) continue;
     this.addEvent(this.mouseEventElement_, eventName,
         bindHandler(interactionModel[eventName]));
+  }
+
+  // unregister the handler on subsequent calls.
+  // This happens when the graph is resized.
+  if (this.mouseUpHandler_) {
+    Dygraph.removeEvent(document, 'mouseup', this.mouseUpHandler_);
   }
 
   // If the user releases the mouse button during a drag, but not over the
@@ -1604,9 +1672,13 @@ Dygraph.prototype.getArea = function() {
  * Returns a two-element array: [X, Y].
  */
 Dygraph.prototype.eventToDomCoords = function(event) {
-  var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
-  var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
-  return [canvasx, canvasy];
+  if (event.offsetX && event.offsetY) {
+    return [ event.offsetX, event.offsetY ];
+  } else {
+    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
+    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
+    return [canvasx, canvasy];
+  }
 };
 
 /**
@@ -1769,7 +1841,11 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var callback = this.attr_("highlightCallback");
   if (callback && selectionChanged) {
-    callback(event, this.lastx_, this.selPoints_, this.lastRow_, this.highlightSet_);
+    callback(event,
+        this.lastx_,
+        this.selPoints_,
+        this.lastRow_ + this.getLeftBoundary_(),
+        this.highlightSet_);
   }
 };
 
@@ -2075,7 +2151,7 @@ Dygraph.prototype.addXTicks_ = function() {
   if (this.dateWindow_) {
     range = [this.dateWindow_[0], this.dateWindow_[1]];
   } else {
-    range = this.fullXRange_();
+    range = this.xAxisExtremes();
   }
 
   var xAxisOptionsView = this.optionsViewForAxis_('x');
@@ -2259,9 +2335,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
                      series[j][1][2]];
       }
     } else if (this.attr_("stackedGraph")) {
-      var l = series.length;
-      var actual_y;
-      for (j = 0; j < l; j++) {
+      // Need to clear last_x explicitly as javascript's locals are
+      // local to function, not to a block of statements
+      var actual_y, last_x = null;
+      for (j = 0; j < series.length; j++) {
         // If one data set has a NaN, let all subsequent stacked
         // sets inherit the NaN -- only start at 0 for the first set.
         var x = series[j][0];
@@ -2275,7 +2352,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           continue;
         }
 
-        cumulative_y[x] += actual_y;
+        if (last_x != x) {
+          cumulative_y[x] += actual_y;
+          // If an x-value is repeated, we ignore the duplicates.
+        }
+        last_x = x;
 
         series[j] = [x, cumulative_y[x]];
 
@@ -2395,6 +2476,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('willDrawChart', e);
   this.plotter_.render();
   this.cascadeEvents_('didDrawChart', e);
+  this.lastRow_ = -1;  // because plugins/legend.js clears the legend
 
   // TODO(danvk): is this a performance bottleneck when panning?
   // The interaction canvas should already be empty in that situation.
@@ -2449,7 +2531,12 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
-    for (index = 0; index < valueWindows.length; index++) {
+
+    // When going from two axes back to one, we only restore
+    // one axis.
+    var idxCount = Math.min(valueWindows.length, this.axes_.length);
+
+    for (index = 0; index < idxCount; index++) {
       this.axes_[index].valueWindow = valueWindows[index];
     }
   }
@@ -2496,12 +2583,11 @@ Dygraph.prototype.axisPropertiesForSeries = function(series) {
  * This fills in the valueRange and ticks fields in each entry of this.axes_.
  */
 Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
-  
   var isNullUndefinedOrNaN = function(num) {
     return isNaN(parseFloat(num));
   };
-  var series;
   var numAxes = this.attributes_.numAxes();
+  var ypadCompat, span, series, ypad;
 
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < numAxes; i++) {
@@ -2509,6 +2595,28 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var logscale = this.attributes_.getForAxis("logscale", i);
     var includeZero = this.attributes_.getForAxis("includeZero", i);
     series = this.attributes_.seriesForAxis(i);
+
+    // Add some padding. This supports two Y padding operation modes:
+    //
+    // - backwards compatible (yRangePad not set):
+    //   10% padding for automatic Y ranges, but not for user-supplied
+    //   ranges, and move a close-to-zero edge to zero except if
+    //   avoidMinZero is set, since drawing at the edge results in
+    //   invisible lines. Unfortunately lines drawn at the edge of a
+    //   user-supplied range will still be invisible. If logscale is
+    //   set, add a variable amount of padding at the top but
+    //   none at the bottom.
+    //
+    // - new-style (yRangePad set by the user):
+    //   always add the specified Y padding.
+    //
+    ypadCompat = true;
+    ypad = 0.1; // add 10%
+    if (this.attr_('yRangePad') !== null) {
+      ypadCompat = false;
+      // Convert pixel padding to ratio
+      ypad = this.attr_('yRangePad') / this.plotter_.area.h;
+    }
 
     if (series.length === 0) {
       // If no series are defined or visible then use a reasonable default
@@ -2533,34 +2641,48 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           maxY = Math.max(extremeMaxY, maxY);
         }
       }
-      if (includeZero && minY > 0) minY = 0;
+
+      // Include zero if requested by the user.
+      if (includeZero && !logscale) {
+        if (minY > 0) minY = 0;
+        if (maxY < 0) maxY = 0;
+      }
 
       // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
       if (minY == Infinity) minY = 0;
       if (maxY == -Infinity) maxY = 1;
 
-      // Add some padding and round up to an integer to be human-friendly.
-      var span = maxY - minY;
-      // special case: if we have no sense of scale, use +/-10% of the sole value.
-      if (span === 0) { span = maxY; }
+      span = maxY - minY;
+      // special case: if we have no sense of scale, center on the sole value.
+      if (span === 0) {
+        if (maxY !== 0) {
+          span = Math.abs(maxY);
+        } else {
+          // ... and if the sole value is zero, use range 0-1.
+          maxY = 1;
+          span = 1;
+        }
+      }
 
       var maxAxisY, minAxisY;
       if (logscale) {
-        maxAxisY = maxY + 0.1 * span;
-        minAxisY = minY;
+        if (ypadCompat) {
+          maxAxisY = maxY + ypad * span;
+          minAxisY = minY;
+        } else {
+          var logpad = Math.exp(Math.log(span) * ypad);
+          maxAxisY = maxY * logpad;
+          minAxisY = minY / logpad;
+        }
       } else {
-        maxAxisY = maxY + 0.1 * span;
-        minAxisY = minY - 0.1 * span;
+        maxAxisY = maxY + ypad * span;
+        minAxisY = minY - ypad * span;
 
-        // Try to include zero and make it minAxisY (or maxAxisY) if it makes sense.
-        if (!this.attr_("avoidMinZero")) {
+        // Backwards-compatible behavior: Move the span to start or end at zero if it's
+        // close to zero, but not if avoidMinZero is set.
+        if (ypadCompat && !this.attr_("avoidMinZero")) {
           if (minAxisY < 0 && minY >= 0) minAxisY = 0;
           if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-        }
-
-        if (this.attr_("includeZero")) {
-          if (maxY < 0) maxAxisY = 0;
-          if (minY > 0) minAxisY = 0;
         }
       }
       axis.extremeRange = [minAxisY, maxAxisY];
@@ -2572,10 +2694,20 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
     } else if (axis.valueRange) {
       // This is a user-set value range for this axis.
-      axis.computedValueRange = [
-         isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0],
-         isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1]
-      ];
+      var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
+      var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
+      if (!ypadCompat) {
+        if (axis.logscale) {
+          var logpad = Math.exp(Math.log(span) * ypad);
+          y0 *= logpad;
+          y1 /= logpad;
+        } else {
+          span = y1 - y0;
+          y0 -= span * ypad;
+          y1 += span * ypad;
+        }
+      }
+      axis.computedValueRange = [y0, y1];
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
@@ -2655,8 +2787,6 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
  *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
-  if (originalData.length < 2)
-    return originalData;
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = this.attr_("sigma");
@@ -2773,7 +2903,10 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
           rollingData[i] = [originalData[i][0],
                             [sum / num_ok, sigma * stddev, sigma * stddev]];
         } else {
-          rollingData[i] = [originalData[i][0], [null, null, null]];
+          // This explicitly preserves NaNs to aid with "independent series".
+          // See testRollingAveragePreservesNaNs.
+          var v = (rollPeriod == 1) ? originalData[i][1][0] : null;
+          rollingData[i] = [originalData[i][0], [v, v, v]];
         }
       }
     }
@@ -3475,6 +3608,13 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
   Dygraph.addAnnotationRule();
   this.annotations_ = ann;
+  if (!this.layout_) {
+    this.warn("Tried to setAnnotations before dygraph was ready. " +
+              "Try setting them in a drawCallback. See " +
+              "dygraphs.com/tests/annotation.html");
+    return;
+  }
+
   this.layout_.setAnnotations(this.annotations_);
   if (!suppressDraw) {
     this.predraw_();
@@ -3491,9 +3631,12 @@ Dygraph.prototype.annotations = function() {
 /**
  * Get the list of label names for this graph. The first column is the
  * x-axis, so the data series names start at index 1.
+ *
+ * Returns null when labels have not yet been defined.
  */
 Dygraph.prototype.getLabels = function() {
-  return this.attr_("labels").slice();
+  var labels = this.attr_("labels");
+  return labels ? labels.slice() : null;
 };
 
 /**

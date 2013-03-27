@@ -55,7 +55,7 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   assertEquals(['0','20','40','60','80','100'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals('0: Y:-1', Util.getLegend());
+  assertEquals('0: Y: -1', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
@@ -88,7 +88,7 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
                Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
-  assertEquals('1: Y:0', Util.getLegend());
+  assertEquals('1: Y: 0', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
@@ -119,7 +119,7 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
   assertEquals(["10","10","10","10","10","10","10","10","10","10"], Util.getYLabels());
 
   g.setSelection(1);
-  assertEquals('1: Y:0', Util.getLegend());
+  assertEquals('1: Y: 0', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
@@ -152,7 +152,7 @@ AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
 
   // The legend does not use the axisLabelFormatter:
   g.setSelection(1);
-  assertEquals('5.1: Y1:1', Util.getLegend());
+  assertEquals('5.1: Y1: 1', Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
@@ -192,7 +192,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(2);
-  assertEquals("2: y:4", Util.getLegend());
+  assertEquals("2: y: 4", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
@@ -232,7 +232,7 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals("2011/01/01: y:2", Util.getLegend());
+  assertEquals("2011/01/01: y: 2", Util.getLegend());
 };
 
 // This test verifies that when a valueFormatter is set (but not an
@@ -278,7 +278,7 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
 
   // they do affect the legend, however.
   g.setSelection(2);
-  assertEquals("x2: y:y4", Util.getLegend());
+  assertEquals("x2: y: y4", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
@@ -321,7 +321,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
-  assertEquals('x2011/01/03: y:y6', Util.getLegend());
+  assertEquals('x2011/01/03: y: y6', Util.getLegend());
 };
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
@@ -361,7 +361,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };
 
 // This is the same as the previous test, except that options are added
@@ -419,7 +419,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
   assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y:yvf18", Util.getLegend());
+  assertEquals("xvf9: y: yvf18", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
@@ -445,7 +445,7 @@ AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
   assertEquals(['alf0','alf2','alf4','alf6','alf8','alf10','alf12','alf14','alf16','alf18'], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("vf9: y:vf18", Util.getLegend());
+  assertEquals("vf9: y: vf18", Util.getLegend());
 };
 
 AxisLabelsTestCase.prototype.testSeriesOrder = function() {
@@ -464,7 +464,7 @@ AxisLabelsTestCase.prototype.testSeriesOrder = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(2);
-  assertEquals('2: 00:103 01:203 10:303 11:403', Util.getLegend());
+  assertEquals('2: 00: 103 01: 203 10: 303 11: 403', Util.getLegend());
 
   // Sanity checks for indexFromSetName
   assertEquals(0, g.indexFromSetName("x"));
@@ -703,3 +703,189 @@ AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
   assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
   assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 }
+
+/*
+ * This test shows that the label formatter overrides labelsKMB for all values.
+ */
+AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "X,a,b\n" +
+      "1,0,2000\n" +
+      "2,500,1500\n" +
+      "3,1000,1000\n" +
+      "4,2000,0\n", {
+        labelsKMB: true,
+        axisLabelFormatter: function (v) {
+          return v + ":X";
+        }
+      });
+  assertEquals(["0:X","500:X","1000:X","1500:X","2000:X"], Util.getYLabels());
+  assertEquals(["1:X","1.5:X","2:X","2.5:X","3:X","3.5:X"], Util.getXLabels());
+}
+
+/*
+ * This test shows that you can override labelsKMB on the axis level.
+ */
+AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "1,0,2000\n" +
+      "2,500,1500\n" +
+      "3,1000,1000\n" +
+      "4,2000,0\n", {
+        labelsKMB: true,
+        axes: {
+          y2: {
+            labelsKMB: false
+          }
+        },
+        series: {
+          b: {
+            axis: "y2"
+          },
+        }
+      });
+  assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(1));
+  assertEquals(["0","500","1000","1500","2000"], Util.getYLabels(2));
+};
+
+/*
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
+// Checks that axis labels stay sane across a DST change.
+AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
+  // (From tests/daylight-savings.html)
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "Date/Time,Purchases\n" +
+      "2010-11-05 00:00:00,167082\n" +
+      "2010-11-06 00:00:00,168571\n" +
+      "2010-11-07 00:00:00,177796\n" +
+      "2010-11-08 00:00:00,165587\n" +
+      "2010-11-09 00:00:00,164380\n",
+      { width: 1024 }
+      );
+
+  // Dates and "nice" hours: 6AM/PM and noon, not 5AM/11AM/...
+  var okLabels = {
+    '05Nov': true,
+    '06Nov': true,
+    '07Nov': true,
+    '08Nov': true,
+    '09Nov': true,
+    '06:00': true,
+    '12:00': true,
+    '18:00': true
+  };
+
+  var xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
+
+  // This range had issues of its own on tests/daylight-savings.html.
+  g.updateOptions({
+    dateWindow: [1289109997722.8127, 1289261208937.7659]
+  });
+  xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
+};
+
+
+// Tests data which crosses a "fall back" at a high enough frequency that you
+// can see both 1:00 A.M.s.
+AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
+  // Generate data which crosses the EST/EDT boundary.
+  var dst_data = [];
+  var base_ms = 1383454200000;
+  for (var x = base_ms; x < base_ms + 1000 * 60 * 80; x += 1000) {
+    dst_data.push([new Date(x), x]);
+  }
+
+  var g = new Dygraph(
+          document.getElementById("graph"),
+          dst_data,
+      { width: 1024, labels: ['Date', 'Value'] }
+      );
+
+  assertEquals([
+    '00:50', '00:55',
+    '01:00', '01:05', '01:10', '01:15', '01:20', '01:25',
+    '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
+    '01:00', '01:05'  // 1 AM number two!
+  ], Util.getXLabels());
+
+  // Now zoom past the initial 1 AM. This used to cause trouble.
+  g.updateOptions({
+    dateWindow: [1383454200000 + 15*60*1000, g.xAxisExtremes()[1]]}
+  );
+  assertEquals([
+    '01:05', '01:10', '01:15', '01:20', '01:25',
+    '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
+    '01:00', '01:05'  // 1 AM number two!
+  ], Util.getXLabels());
+};
+
+
+// Tests data which crosses a "spring forward" at a low frequency.
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433
+AxisLabelsTestCase.prototype.testLabelsCrossSpringForward = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "Date/Time,Purchases\n" +
+      "2011-03-11 00:00:00,167082\n" +
+      "2011-03-12 00:00:00,168571\n" +
+      "2011-03-13 00:00:00,177796\n" +
+      "2011-03-14 00:00:00,165587\n" +
+      "2011-03-15 00:00:00,164380\n",
+      {
+        width: 1024,
+        dateWindow: [1299989043119.4365, 1300080693627.4866]
+      });
+
+  var okLabels = {
+    '13Mar': true,
+    // '02:00': true,  // not a real time!
+    '04:00': true,
+    '06:00': true,
+    '08:00': true,
+    '10:00': true,
+    '12:00': true,
+    '14:00': true,
+    '16:00': true,
+    '18:00': true,
+    '20:00': true,
+    '22:00': true,
+    '14Mar': true
+  };
+
+  var xLabels = Util.getXLabels();
+  for (var i = 0; i < xLabels.length; i++) {
+    assertTrue(okLabels[xLabels[i]]);
+  }
+};
+
+AxisLabelsTestCase.prototype.testLabelsCrossSpringForwardHighFreq = function() {
+  var base_ms_spring = 1299999000000;
+  var dst_data_spring = [];
+  for (var x = base_ms_spring; x < base_ms_spring + 1000 * 60 * 80; x += 1000) {
+    dst_data_spring.push([new Date(x), x]);
+  }
+
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      dst_data_spring,
+      { width: 1024, labels: ['Date', 'Value'] }
+  );
+
+  assertEquals([
+    '01:50', '01:55',
+    '03:00', '03:05', '03:10', '03:15', '03:20', '03:25',
+    '03:30', '03:35', '03:40', '03:45', '03:50', '03:55',
+    '04:00', '04:05'
+  ], Util.getXLabels());
+};
+*/

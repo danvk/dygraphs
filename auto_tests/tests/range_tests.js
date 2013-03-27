@@ -45,12 +45,15 @@ RangeTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-RangeTestCase.prototype.createGraph = function(opts) {
+RangeTestCase.prototype.createGraph = function(opts, data, expectRangeX, expectRangeY) {
+  if (data === undefined) data = ZERO_TO_FIFTY_STEPS;
+  if (expectRangeX === undefined) expectRangeX = [10, 20];
+  if (expectRangeY === undefined) expectRangeY = [0, 55];
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, ZERO_TO_FIFTY_STEPS, opts);
+  var g = new Dygraph(graph, data, opts);
 
-  assertEquals([10, 20], g.xAxisRange());
-  assertEquals([0, 55], g.yAxisRange(0));
+  assertEqualsDelta(expectRangeX, g.xAxisRange(), 0.01);
+  assertEqualsDelta(expectRangeY, g.yAxisRange(0), 0.01);
 
   return g;
 };
@@ -272,3 +275,131 @@ RangeTestCase.prototype.testHugeRange = function() {
   assertEqualsDelta(1, -1e229 / g.yAxisRange(0)[0], 0.001);
   assertEqualsDelta(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
 }
+
+/**
+ * Verify old-style avoidMinZero option.
+ */
+RangeTestCase.prototype.testAvoidMinZero = function() {
+  var g = this.createGraph({
+      avoidMinZero: true,
+    }, ZERO_TO_FIFTY_STEPS, [10, 20], [-5, 55]);
+};
+
+/**
+ * Verify ranges with user-specified padding, implicit avoidMinZero.
+ */
+RangeTestCase.prototype.testPaddingAuto = function() {
+  var g = this.createGraph({
+      xRangePad: 42,
+      yRangePad: 30
+    }, ZERO_TO_FIFTY_STEPS, [9, 21], [-5, 55]);
+};
+
+/**
+ * Verify auto range with drawAxesAtZero.
+ */
+RangeTestCase.prototype.testPaddingAutoAxisAtZero = function() {
+  var g = this.createGraph({
+      drawAxesAtZero: true,
+    }, ZERO_TO_FIFTY_STEPS, [10, 20], [0, 55]);
+};
+
+/**
+ * Verify user-specified range with padding and drawAxesAtZero options.
+ * Try explicit range matching the auto range, should have identical results.
+ */
+RangeTestCase.prototype.testPaddingRange1 = function() {
+  var g = this.createGraph({
+      valueRange: [0, 50],
+      xRangePad: 42,
+      yRangePad: 30,
+      drawAxesAtZero: true
+    }, ZERO_TO_FIFTY_STEPS, [9, 21], [-5, 55]);
+};
+
+/**
+ * Verify user-specified range with padding and drawAxesAtZero options.
+ * User-supplied range differs from the auto range.
+ */
+RangeTestCase.prototype.testPaddingRange2 = function() {
+  var g = this.createGraph({
+      valueRange: [10, 60],
+      xRangePad: 42,
+      yRangePad: 30,
+      drawAxesAtZero: true,
+    }, ZERO_TO_FIFTY_STEPS, [9, 21], [5, 65]);
+};
+
+/**
+ * Verify drawAxesAtZero and includeZero.
+ */
+RangeTestCase.prototype.testPaddingYAtZero = function() {
+  var g = this.createGraph({
+      includeZero: true,
+      xRangePad: 42,
+      yRangePad: 30,
+      drawAxesAtZero: true,
+    }, [
+      [-10, 10],
+      [10, 20],
+      [30, 50]
+    ], [-14, 34], [-5, 55]);
+};
+
+/**
+ * Verify logscale, compat mode.
+ */
+RangeTestCase.prototype.testLogscaleCompat = function() {
+  var g = this.createGraph({
+      logscale: true
+    },
+    [[-10, 10], [10, 10], [30, 1000]],
+    [-10, 30], [10, 1099]);
+};
+
+/**
+ * Verify logscale, new mode.
+ */
+RangeTestCase.prototype.testLogscalePad = function() {
+  var g = this.createGraph({
+      logscale: true,
+      yRangePad: 30
+    },
+    [[-10, 10], [10, 10], [30, 1000]],
+    [-10, 30], [5.01691, 1993.25801]);
+};
+
+/**
+ * Verify scrolling all-zero region, traditional.
+ */
+RangeTestCase.prototype.testZeroScroll = function() {
+  g = new Dygraph(
+      document.getElementById("graph"),
+      "X,Y\n" +
+      "1,0\n" +
+      "8,0\n" +
+      "9,0.1\n",
+      {
+        drawAxesAtZero: true,
+        animatedZooms: true,
+        avoidMinZero: true
+      });
+};
+
+/**
+ * Verify scrolling all-zero region, new-style.
+ */
+RangeTestCase.prototype.testZeroScroll2 = function() {
+  g = new Dygraph(
+      document.getElementById("graph"),
+      "X,Y\n" +
+      "1,0\n" +
+      "8,0\n" +
+      "9,0.1\n",
+      {
+        animatedZooms: true,
+        drawAxesAtZero: true,
+        xRangePad: 4,
+        yRangePad: 4
+      });
+};
