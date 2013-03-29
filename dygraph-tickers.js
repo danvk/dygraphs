@@ -386,7 +386,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
 
     for (t = start_time; t <= end_time; t += spacing) {
-      var d = new Date(t);
+      d = new Date(t);
 
       // This ensures that we stay on the same hourly "rhythm" across
       // daylight savings transitions. Without this, the ticks could get off
