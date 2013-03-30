@@ -9,12 +9,21 @@
  *   http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-RGBColor
  * so renamed to "RGBColorParser"
  *
+ * Modifications by konigsberg:
+ * Make Closure-compatible.
+ *
  * @author Stoyan Stefanov <sstoo@gmail.com>
  * @link   http://www.phpied.com/rgb-color-parser-in-javascript/
  * @license Use it if you like it
  */
 "use strict";
 
+/**
+ * Create a new instance.
+ *
+ * @param {string} color_string the string to be parsed.
+ * @constructor
+ */
 function RGBColorParser(color_string)
 {
     this.ok = false;
@@ -188,9 +197,9 @@ function RGBColorParser(color_string)
             example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
             process: function (bits){
                 return [
-                    parseInt(bits[1]),
-                    parseInt(bits[2]),
-                    parseInt(bits[3])
+                    parseInt(bits[1], 10),
+                    parseInt(bits[2], 10),
+                    parseInt(bits[3], 10)
                 ];
             }
         },
