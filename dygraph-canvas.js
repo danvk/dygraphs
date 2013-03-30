@@ -39,7 +39,7 @@
  * The chart canvas has already been created by the Dygraph object. The
  * renderer simply gets a drawing context.
  *
- * @param {Dyraph} dygraph The chart to which this renderer belongs.
+ * @param {Dygraph} dygraph The chart to which this renderer belongs.
  * @param {Canvas} element The &lt;canvas&gt; DOM element on which to draw.
  * @param {CanvasRenderingContext2D} elementContext The drawing context.
  * @param {DygraphLayout} layout The chart's DygraphLayout object.
