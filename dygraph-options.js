@@ -17,14 +17,10 @@ var DygraphOptions = (function() {
 "use strict";
 
 /*
- * Interesting member variables:
- * dygraph_ - the graph.
+ * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
  * global_ - global attributes (common among all graphs, AIUI)
  * user - attributes set by the user
- * yAxes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
- * xAxis_ - { options : { axis-specific options. }
  * series_ - { seriesName -> { idx, yAxis, options }}
- * labels_ - used as mapping from index to series name.
  */
 
 /**
@@ -34,12 +30,26 @@ var DygraphOptions = (function() {
  * if labels are not yet available, since those drive details of the per-series
  * and per-axis options.
  *
- * @param {Dyraph} dygraph The chart to which these options belong.
+ * @param {Dygraph} dygraph The chart to which these options belong.
  * @constructor
  */
 var DygraphOptions = function(dygraph) {
+  /**
+   * The dygraph.
+   * @type {Dygraph}
+   */
   this.dygraph_ = dygraph;
+
+  /**
+   * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
+   * @type {Array.<{series : Array.<string>, options : Object}>}
+   */
   this.yAxes_ = [];
+
+  /**
+   * { options : { axis-specific options. }
+   * @type {Object}
+   */
   this.xAxis_ = {};
   this.series_ = {};
 
@@ -47,13 +57,22 @@ var DygraphOptions = function(dygraph) {
   this.global_ = this.dygraph_.attrs_;
   this.user_ = this.dygraph_.user_attrs_ || {};
 
+  /**
+   * A list of series in columnar order.
+   * @type {Array.<string>}
+   */
+  this.labels_ = [];
+
   this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
   this.reparseSeries();
 };
 
-/*
+/**
  * Not optimal, but does the trick when you're only using two axes.
  * If we move to more axes, this can just become a function.
+ *
+ * @type {Object.<string, number>}
+ * @private
  */
 DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'y' : 0,
@@ -100,7 +119,7 @@ DygraphOptions.prototype.reparseSeries = function() {
     return; // -- can't do more for now, will parse after getting the labels.
   }
 
-  this.labels = labels.slice(1);
+  this.labels_ = labels.slice(1);
 
   this.yAxes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.xAxis_ = { options : {} };
@@ -133,8 +152,8 @@ DygraphOptions.prototype.reparseSeries = function() {
   if (oldStyleSeries) {
     var axisId = 0; // 0-offset; there's always one.
     // Go through once, add all the series, and for those with {} axis options, add a new axis.
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
 
       var optionsForSeries = this.user_[seriesName] || {};
 
@@ -155,8 +174,8 @@ DygraphOptions.prototype.reparseSeries = function() {
 
     // Go through one more time and assign series to an axis defined by another
     // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
       var optionsForSeries = this.series_[seriesName]["options"];
       var axis = optionsForSeries["axis"];
 
@@ -172,8 +191,8 @@ DygraphOptions.prototype.reparseSeries = function() {
       }
     }
   } else {
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
       var optionsForSeries = this.user_.series[seriesName] || {};
       var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
 
@@ -314,7 +333,7 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
 
 /**
  * Returns the number of y-axes on the chart.
- * @return {Number} the number of axes.
+ * @return {number} the number of axes.
  */
 DygraphOptions.prototype.numAxes = function() {
   return this.yAxes_.length;
