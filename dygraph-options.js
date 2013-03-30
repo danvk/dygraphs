@@ -100,7 +100,7 @@ DygraphOptions.prototype.reparseSeries = function() {
     return; // -- can't do more for now, will parse after getting the labels.
   }
 
-  this.labels = labels.slice(1);
+  this.labels_ = labels.slice(1);
 
   this.yAxes_ = [ { series : [], options : {}} ]; // Always one axis at least.
   this.xAxis_ = { options : {} };
@@ -133,8 +133,8 @@ DygraphOptions.prototype.reparseSeries = function() {
   if (oldStyleSeries) {
     var axisId = 0; // 0-offset; there's always one.
     // Go through once, add all the series, and for those with {} axis options, add a new axis.
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
 
       var optionsForSeries = this.user_[seriesName] || {};
 
@@ -155,8 +155,8 @@ DygraphOptions.prototype.reparseSeries = function() {
 
     // Go through one more time and assign series to an axis defined by another
     // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
       var optionsForSeries = this.series_[seriesName]["options"];
       var axis = optionsForSeries["axis"];
 
@@ -172,8 +172,8 @@ DygraphOptions.prototype.reparseSeries = function() {
       }
     }
   } else {
-    for (var idx = 0; idx < this.labels.length; idx++) {
-      var seriesName = this.labels[idx];
+    for (var idx = 0; idx < this.labels_.length; idx++) {
+      var seriesName = this.labels_[idx];
       var optionsForSeries = this.user_.series[seriesName] || {};
       var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
 
