@@ -40,7 +40,7 @@
  * renderer simply gets a drawing context.
  *
  * @param {Dygraph} dygraph The chart to which this renderer belongs.
- * @param {Canvas} element The &lt;canvas&gt; DOM element on which to draw.
+ * @param {HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
  * @param {CanvasRenderingContext2D} elementContext The drawing context.
  * @param {DygraphLayout} layout The chart's DygraphLayout object.
  *
@@ -58,6 +58,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.width = this.element.width;
 
   // --- check whether everything is ok before we return
+  // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
   if (!this.isIE && !(DygraphCanvasRenderer.isSupported(this.element)))
       throw "Canvas is not supported.";
 
@@ -433,14 +434,15 @@ DygraphCanvasRenderer.prototype._updatePoints = function() {
 
 /**
  * Add canvas Actually draw the lines chart, including error bars.
- * If opt_seriesName is specified, only that series will be drawn.
- * (This is used for expedited redrawing with highlightSeriesOpts)
- * Lines are typically drawn in the non-interactive dygraph canvas. If opt_ctx
- * is specified, they can be drawn elsewhere.
  *
  * This function can only be called if DygraphLayout's points array has been
  * updated with canvas{x,y} attributes, i.e. by
  * DygraphCanvasRenderer._updatePoints.
+ *
+ * @param {string=} opt_seriesName when specified, only that series will
+ * be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
+ * @param {CanvasRenderingContext2D} opt_ctx when specified, the drawing context.
+ * However, lines are typically drawn on the object's elementContext.
  * @private
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_ctx) {
