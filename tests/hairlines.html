@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Hairlines demo</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <!-- Include the Javascript for the plug-in -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+    <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css' />
+
+    <script type="text/javascript" src="../extras/hairlines.js"></script>
+
+    <style>
+      #demodiv {
+        position: absolute;
+        left: 10px;
+        right: 200px;
+        height: 400px;
+        display: inline-block;
+      }
+      #status {
+        position: absolute;
+        right: 10px;
+        width: 180px;
+        height: 400px;
+        display: inline-block;
+      }
+      /*
+      .dygraph-hairline {
+        border-right-style: dotted !important;
+      }
+      */
+    </style>
+  </head>
+  <body>
+    <h2>Hairlines Demo</h2>
+
+    <div id="demodiv"></div>
+    <div id="status"></div>
+
+    <script type="text/javascript">
+      var last_t = 0;
+      var data = [];
+      var fn = function(t) {
+        return Math.sin(Math.PI/180 * t * 4);
+      };
+      for (; last_t < 200; last_t++) {
+        data.push([last_t, fn(last_t)]);
+      }
+
+      g = new Dygraph(
+              document.getElementById("demodiv"),
+              data,
+              {
+                labelsDiv: document.getElementById('status'),
+                labelsSeparateLines: true,
+                legend: 'always',
+                labels: [ 'Time', 'Value' ],
+                title: 'Interesting Shapes',
+
+                // Set the plug-ins in the options.
+                plugins : [
+                  Dygraph.Plugins.Hairlines
+                ]
+              }
+          );
+
+      var update = function() {
+        data.push([last_t, fn(last_t)]);
+        last_t++;
+        data.splice(0, 1);
+        g.updateOptions({file: data});
+      };
+      window.setInterval(update, 1000);
+    </script>
+</body>
+</html>
