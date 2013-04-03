@@ -373,7 +373,7 @@ DygraphCanvasRenderer._drawSeries = function(e,
         ctx.moveTo(point.canvasx, point.canvasy);
       }
       if (drawPoints || isIsolated) {
-        pointsOnLine.push([point.canvasx, point.canvasy]);
+        pointsOnLine.push([point.canvasx, point.canvasy, point.idx]);
       }
       prevCanvasX = point.canvasx;
       prevCanvasY = point.canvasy;
@@ -398,7 +398,7 @@ DygraphCanvasRenderer._drawPointsOnLine = function(
     var cb = pointsOnLine[idx];
     ctx.save();
     drawPointCallback(
-        e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize);
+        e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize,cb[2]);
     ctx.restore();
   }
 };

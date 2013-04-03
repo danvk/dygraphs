@@ -242,7 +242,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         y: yNormal,
         xval: xValue,
         yval: yValue,
-        name: setName  // TODO(danvk): is this really necessary?
+        name: setName,  // TODO(danvk): is this really necessary?
+        idx: j + this.dygraph_.boundaryIds_[setIdx][0]
       };
     }
 
