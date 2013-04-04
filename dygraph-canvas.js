@@ -398,7 +398,7 @@ DygraphCanvasRenderer._drawPointsOnLine = function(
     var cb = pointsOnLine[idx];
     ctx.save();
     drawPointCallback(
-        e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize,cb[2]);
+        e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize, cb[2]);
     ctx.restore();
   }
 };
