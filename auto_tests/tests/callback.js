@@ -638,8 +638,7 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
     // Test that correct idx for isolated points are passed to the callback.
     g = new Dygraph(graph, testdata, graphOpts);
     assertEquals(2, indices.length);
-    assertEquals(3, indices[0]);
-    assertEquals(5, indices[1]);
+    assertEquals([3, 5],indices);
 
     // Test that correct indices for isolated points + gap points are passed to the callback when
     // drawGapEdgePoints is set.  This should add one point at the right
@@ -648,9 +647,7 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
     graphOpts.drawGapEdgePoints = true;
     g = new Dygraph(graph, testdata, graphOpts);
     assertEquals(3, indices.length);
-    assertEquals(1, indices[0]);
-    assertEquals(3, indices[1]);
-    assertEquals(5, indices[2]);
+    assertEquals([1, 3, 5],indices);
 
 
     //Test that correct indices are passed to the callback when zoomed in.
@@ -660,15 +657,12 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
     testdata = [[10, 2], [11, 3], [12, 4], [13, 2], [14, 5], [15, 3]];
     g = new Dygraph(graph, testdata, graphOpts);
     assertEquals(3, indices.length);
-    assertEquals(2, indices[0]);
-    assertEquals(3, indices[1]);
-    assertEquals(4, indices[2]);
+    assertEquals([2, 3, 4],indices);
 };
 
 /**
  * Test that the correct idx is returned for the point in the onHiglightCallback.
- *
- */
+  */
 CallbackTestCase.prototype.testDrawHighlightPointCallback_idx = function() {
     var idxToCheck = null;
 
