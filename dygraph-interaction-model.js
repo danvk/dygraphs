@@ -271,6 +271,7 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
 };
 
 /**
+ * TODO(danvk): move this logic into dygraph.js
  * @param {Dygraph} g
  * @param {Event} event
  * @param {Object} context
@@ -310,9 +311,17 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
     pointClickCallback(event, selectedPoint);
   }
 
-  // TODO(danvk): pass along more info about the points, e.g. 'x'
-  if (clickCallback) {
-    clickCallback(event, g.lastx_, g.selPoints_);
+  var e = {
+    xval: g.lastx_,  // closest point by x value
+    pts: g.selPoints_,
+    canvasx: context.dragEndX,
+    canvasy: context.dragEndY
+  };
+  if (!g.cascadeEvents_('click', e)) {
+    if (clickCallback) {
+      // TODO(danvk): pass along more info about the points, e.g. 'x'
+      clickCallback(event, g.lastx_, g.selPoints_);
+    }
   }
 };
 
@@ -621,6 +630,16 @@ Dygraph.Interaction.defaultModel = {
       context.cancelNextDblclick = false;
       return;
     }
+
+    // Give plugins a chance to grab this event.
+    var e = {
+      canvasx: context.dragEndX,
+      canvasy: context.dragEndY
+    };
+    if (g.cascadeEvents_('dblclick', e)) {
+      return;
+    }
+
     if (event.altKey || event.shiftKey) {
       return;
     }

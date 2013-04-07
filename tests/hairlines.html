@@ -30,18 +30,52 @@
         height: 400px;
         display: inline-block;
       }
-      /*
-      .dygraph-hairline {
-        border-right-style: dotted !important;
+      #controls {
+        position: absolute;
+        left: 10px;
+        top: 490px;
       }
-      */
+
+      .hairline-info {
+        border: 1px solid black;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+
+        display: table;  /* shrink to fit */
+        min-width: 100px;
+
+        z-index: 10;  /* should appear on top of the chart */
+        padding: 3px;
+        background: white;
+        font-size: 14px;
+        cursor: move;
+      }
+
+      .dygraph-hairline {
+        /* border-right-style: dotted !important; */
+      }
     </style>
   </head>
   <body>
     <h2>Hairlines Demo</h2>
 
+    <!--
+    The "info box" for each hairline is based on this template.
+    Customize it as you wish. The .hairline-legend element will be populated
+    with data about the current points and the .hairline-kill-button element
+    will remove the hairline when clicked. Everything else will be untouched.
+    -->
+    <div id="hairline-template" class="hairline-info" style="display:none">
+      <button class='hairline-kill-button'>Kill</button>
+      <div class='hairline-legend'></div>
+    </div>
+
     <div id="demodiv"></div>
     <div id="status"></div>
+
+    <div id="controls">
+      <input type="checkbox" id="update" checked=true><label for="update"> Update</label>
+    </div>
 
     <script type="text/javascript">
       var last_t = 0;
@@ -61,7 +95,18 @@
                 labelsSeparateLines: true,
                 legend: 'always',
                 labels: [ 'Time', 'Value' ],
-                title: 'Interesting Shapes',
+                title: 'Hairlines Demo',
+
+                axes: {
+                  x: {
+                    valueFormatter: function(val) {
+                      return val.toFixed(2);
+                    }
+                  },
+                  y: {
+                    pixelsPerLabel: 50
+                  }
+                },
 
                 // Set the plug-ins in the options.
                 plugins : [
@@ -70,13 +115,19 @@
               }
           );
 
+      var shouldUpdate = true;
       var update = function() {
+        if (!shouldUpdate) return;
         data.push([last_t, fn(last_t)]);
         last_t++;
         data.splice(0, 1);
         g.updateOptions({file: data});
       };
       window.setInterval(update, 1000);
+
+      $('#update').on('change', function() {
+        shouldUpdate = $(this).is(':checked');
+      });
     </script>
 </body>
 </html>
