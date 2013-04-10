@@ -410,7 +410,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "rgb(128,128,128)",
     "labels": ["Grid"],
     "type": "red, blue",
-    "description": "The color of the gridlines."
+    "description": "The color of the gridlines. This may be set on a per-axis basis to define each axis' grid separately."
   },
   "visibility": {
     "default": "[true, true, ...]",
@@ -652,13 +652,25 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "true",
     "labels": ["Grid"],
     "type": "boolean",
-    "description" : "Whether to display vertical gridlines under the chart."
+    "description" : "Depricated: Use the per-axis option drawGrid instead. Whether to display vertical gridlines under the chart."
   },
   "drawYGrid": {
     "default": "true",
     "labels": ["Grid"],
     "type": "boolean",
-    "description" : "Whether to display horizontal gridlines under the chart."
+    "description" : "Depricated: Use the per-axis option drawGrid instead. Whether to display horizontal gridlines under the chart."
+  },
+  "drawGrid": {
+	    "default": "true for x and y, false for y2",
+	    "labels": ["Grid"],
+	    "type": "boolean",
+	    "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis' grid separately."
+  },
+  "independentTicks": {
+	    "default": "true for x and y, false for y2",
+	    "labels": ["Grid, Axis display"],
+	    "type": "boolean",
+	    "description" : "By default, the y2 axis inherits the tick positions of the primary (y) axis. However, if an axis is specifically marked as having independent ticks, then that is permissible as well. This MUST be set on a per-axis basis to define the position of each axis' grid and labels separately."
   },
   "drawXAxis": {
     "default": "true",
@@ -676,7 +688,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "0.3",
     "labels": ["Grid"],
     "type": "float",
-    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawXGrid and drawYGrid options."
+    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawXGrid and drawYGrid options. This may be set on a per-axis basis to define each axis' grid separately."
   },
   "axisLineWidth": {
     "default": "0.3",
