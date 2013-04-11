@@ -2731,7 +2731,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
               this.height_,  // TODO(danvk): should be area.height
               opts,
               this);
-      // Define the first indepentant axis as primary axis.
+      // Define the first independent axis as primary axis.
       if(!p_axis)
         p_axis = axis;
     }

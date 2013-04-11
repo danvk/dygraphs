@@ -650,15 +650,15 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "drawXGrid": {
     "default": "true",
-    "labels": ["Grid"],
+    "labels": ["Grid","Deprecated"],
     "type": "boolean",
-    "description" : "Depricated: Use the per-axis option drawGrid instead. Whether to display vertical gridlines under the chart."
+    "description" : "Use the per-axis option drawGrid instead. Whether to display vertical gridlines under the chart."
   },
   "drawYGrid": {
     "default": "true",
-    "labels": ["Grid"],
+    "labels": ["Grid","Deprecated"],
     "type": "boolean",
-    "description" : "Depricated: Use the per-axis option drawGrid instead. Whether to display horizontal gridlines under the chart."
+    "description" : "Use the per-axis option drawGrid instead. Whether to display horizontal gridlines under the chart."
   },
   "drawGrid": {
     "default": "true for x and y, false for y2",
@@ -667,10 +667,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis' grid separately."
   },
   "independentTicks": {
-    "default": "true for x and y, false for y2",
+    "default": "true for y, false for y2",
     "labels": ["Axis display", "Grid"],
     "type": "boolean",
-    "description" : "By default, the y2 axis inherits the tick positions of the primary (y) axis. However, if an axis is specifically marked as having independent ticks, then that is permissible as well. This MUST be set on a per-axis basis to define the position of each axis' grid and labels separately."
+    "description" : "Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: 1.) y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) 2.) y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) 3.) y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) 4.) y=false, y2=false: Invalid configuration causes an error."
   },
   "drawXAxis": {
     "default": "true",
