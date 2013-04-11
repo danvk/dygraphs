@@ -135,7 +135,6 @@ Dygraph.prototype.warn = Dygraph.warn;
 
 /**
  * @param {string} message
- * @private
  */
 Dygraph.error = function(message) {
   Dygraph.log(Dygraph.ERROR, message);
@@ -634,7 +633,6 @@ Dygraph.dateStrToMillis = function(str) {
  * @param {!Object} self
  * @param {!Object} o
  * @return {!Object}
- * @private
  */
 Dygraph.update = function(self, o) {
   if (typeof(o) != 'undefined' && o !== null) {
@@ -818,7 +816,7 @@ Dygraph.Iterator.prototype.next = function() {
 };
 
 /**
- * Returns a new iterator over array, between indexes start and 
+ * Returns a new iterator over array, between indexes start and
  * start + length, and only returns entries that pass the accept function
  *
  * @param {!Array} array the array to iterate over.
@@ -908,7 +906,7 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
  * This function will scan the option list and determine if they
  * require us to recalculate the pixel positions of each point.
  * @param {!Array.<string>} labels a list of options to check.
- * @param {!Object} attrs 
+ * @param {!Object} attrs
  * @return {boolean} true if the graph needs new points else false.
  * @private
  */
@@ -1012,7 +1010,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
 
 /**
  * Compares two arrays to see if they are equal. If either parameter is not an
- * array it will return false. Does a shallow compare 
+ * array it will return false. Does a shallow compare
  * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
  * @param {!Array.<T>} array1 first array
  * @param {!Array.<T>} array2 second array
@@ -1057,7 +1055,7 @@ Dygraph.regularShape_ = function(
   var computeCoordinates = function() {
     var x = cx + (Math.sin(angle) * radius);
     var y = cy + (-Math.cos(angle) * radius);
-    return [x, y]; 
+    return [x, y];
   };
 
   var initialCoordinates = computeCoordinates();
@@ -1165,7 +1163,7 @@ Dygraph.Circles = {
  *   };
  *   window.addEventListener('mouseup', mouseUpHandler);
  * };
- * 
+ *
  * @constructor
  */
 Dygraph.IFrameTarp = function() {
@@ -1236,13 +1234,13 @@ Dygraph.detectLineDelimiter = function(data) {
 };
 
 /**
- * Is one element contained by another?
- * @param {Element} containee The contained element.
- * @param {Element} container The container element.
+ * Is one node contained by another?
+ * @param {Node} containee The contained node.
+ * @param {Node} container The container node.
  * @return {boolean} Whether containee is inside (or equal to) container.
  * @private
  */
-Dygraph.isElementContainedBy = function(containee, container) {
+Dygraph.isNodeContainedBy = function(containee, container) {
   if (container === null || containee === null) {
     return false;
   }
