@@ -60,7 +60,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "cx" , "center x coordinate" ],
       [ "cy" , "center y coordinate" ],
       [ "color" , "series color" ],
-      [ "pointSize" , "the radius of the image." ]
+      [ "pointSize" , "the radius of the image." ],
       [ "idx" , "the row-index of the point in the data."]
     ],
     "description": "Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy).  Also see <a href='#drawHighlightPointCallback'>drawHighlightPointCallback</a>"
@@ -130,7 +130,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "cx" , "center x coordinate" ],
       [ "cy" , "center y coordinate" ],
       [ "color" , "series color" ],
-      [ "pointSize" , "the radius of the image." ]
+      [ "pointSize" , "the radius of the image." ],
       [ "idx" , "the row-index of the point in the data."]
     ],
     "description": "Draw a custom item when a point is highlighted.  Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy) Also see <a href='#drawPointCallback'>drawPointCallback</a>"
@@ -661,16 +661,16 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description" : "Depricated: Use the per-axis option drawGrid instead. Whether to display horizontal gridlines under the chart."
   },
   "drawGrid": {
-	    "default": "true for x and y, false for y2",
-	    "labels": ["Grid"],
-	    "type": "boolean",
-	    "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis' grid separately."
+    "default": "true for x and y, false for y2",
+    "labels": ["Grid"],
+    "type": "boolean",
+    "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis' grid separately."
   },
   "independentTicks": {
-	    "default": "true for x and y, false for y2",
-	    "labels": ["Grid, Axis display"],
-	    "type": "boolean",
-	    "description" : "By default, the y2 axis inherits the tick positions of the primary (y) axis. However, if an axis is specifically marked as having independent ticks, then that is permissible as well. This MUST be set on a per-axis basis to define the position of each axis' grid and labels separately."
+    "default": "true for x and y, false for y2",
+    "labels": ["Axis display", "Grid"],
+    "type": "boolean",
+    "description" : "By default, the y2 axis inherits the tick positions of the primary (y) axis. However, if an axis is specifically marked as having independent ticks, then that is permissible as well. This MUST be set on a per-axis basis to define the position of each axis' grid and labels separately."
   },
   "drawXAxis": {
     "default": "true",

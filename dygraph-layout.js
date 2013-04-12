@@ -213,7 +213,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // the |point| structures.
   var boundaryIdStart = 0;
   if (this.dygraph_.boundaryIds_.length > 0) {
-    boundaryIdStart = this.dygraph_.boundaryIds_[this.dygraph_.boundaryIds_.length-1][0]
+    boundaryIdStart = this.dygraph_.boundaryIds_[this.dygraph_.boundaryIds_.length-1][0];
   }
   for (var setIdx = 0; setIdx < this.datasets.length; setIdx++) {
     var dataset = this.datasets[setIdx];

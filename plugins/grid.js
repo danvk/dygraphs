@@ -84,7 +84,7 @@ grid.prototype.willDrawChart = function(e) {
         if (stroking[axis]) {
           ctx.uninstallPattern();
         }
-	  }
+      }
     }
     ctx.restore();
   }

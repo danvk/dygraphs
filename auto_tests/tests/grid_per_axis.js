@@ -1,30 +1,29 @@
 /**
- * @fileoverview Test cases for the option "stepPlot" especially for the
- *               scenario where the option is not set for the whole graph but
- *               for single series.
+ * @fileoverview Test cases for the per-axis grid options, including the new
+ *               option "gridLinePattern".
  * 
  * @author david.eberlein@ch.sauter-bc.com (Fr. Sauter AG)
  */
-var StepTestCase = TestCase("grid_per_axis");
+var GridPerAxisTestCase = TestCase("grid-per-axis");
 
-StepTestCase.prototype.setUp = function() {
+GridPerAxisTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-StepTestCase.origFunc = Dygraph.getContext;
+GridPerAxisTestCase.origFunc = Dygraph.getContext;
 
-StepTestCase.prototype.setUp = function() {
+GridPerAxisTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(StepTestCase.origFunc(canvas));
+    return new Proxy(GridPerAxisTestCase.origFunc(canvas));
   };
 };
 
-StepTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = StepTestCase.origFunc;
+GridPerAxisTestCase.prototype.tearDown = function() {
+  Dygraph.getContext = GridPerAxisTestCase.origFunc;
 };
 
-StepTestCase.prototype.testIndependantGrids = function() {
+GridPerAxisTestCase.prototype.testIndependentGrids = function() {
   var opts = {
     width : 480,
     height : 320,
@@ -84,7 +83,7 @@ StepTestCase.prototype.testIndependantGrids = function() {
   }
 };
 
-StepTestCase.prototype.testPerAxisGridColors = function() {
+GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
   var opts = {
     width : 480,
     height : 320,
@@ -142,7 +141,7 @@ StepTestCase.prototype.testPerAxisGridColors = function() {
     }
   }
 };
-StepTestCase.prototype.testPerAxisGridWidth = function() {
+GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   var opts = {
     width : 480,
     height : 320,
@@ -247,7 +246,7 @@ StepTestCase.prototype.testPerAxisGridWidth = function() {
         0, 0, 0, 0 ], Util.samplePixel(g.hidden_, x + 2, y));
   }
 };
-StepTestCase.prototype.testGridLinePattern = function() {
+GridPerAxisTestCase.prototype.testGridLinePattern = function() {
   var opts = {
     width : 480,
     height : 320,
