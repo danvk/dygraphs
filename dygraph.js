@@ -2313,13 +2313,30 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         }
       }
       if (firstIdx === null) firstIdx = 0;
-      if (firstIdx > 0) firstIdx--;
-      if (lastIdx === null) lastIdx = series.length - 1;
-      if (lastIdx < series.length - 1) lastIdx++;
-      boundaryIds[i-1] = [firstIdx, lastIdx];
-      for (k = firstIdx; k <= lastIdx; k++) {
-        pruned.push(series[k]);
+      var correctedFirstIdx = firstIdx;
+      if (correctedFirstIdx > 0) correctedFirstIdx--;
+      while(series[correctedFirstIdx][1] === null && correctedFirstIdx > 0){
+        correctedFirstIdx--;
       }
+      
+      
+      if (lastIdx === null) lastIdx = series.length - 1;
+      var correctedLastIdx = lastIdx;
+      if (correctedLastIdx < series.length - 1) correctedLastIdx++;
+      while(series[correctedLastIdx][1] === null && correctedLastIdx < series.length - 1){
+        correctedLastIdx++;
+      }
+      
+      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
+      
+      if(correctedFirstIdx!==firstIdx)
+        pruned.push(series[correctedFirstIdx]);
+      for (k = firstIdx; k <= lastIdx; k++) {
+          pruned.push(series[k]);
+      }
+      if(correctedLastIdx !== lastIdx)
+        pruned.push(series[correctedLastIdx]);
+      
       series = pruned;
     } else {
       boundaryIds[i-1] = [0, series.length-1];
