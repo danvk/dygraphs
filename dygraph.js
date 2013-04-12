@@ -2768,7 +2768,14 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
         point = null;
       }
     }
-    series.push([x, point]);
+    // Fix null points to fit the display type standard.
+    if(point === null && this.attr_("errorBars")){
+      series.push([x, [null,null]]);
+    }else if(point === null && this.attr_("customBars")){
+      series.push([x, [null,null,null]]);
+    } else {
+      series.push([x, point]);
+    }
   }
   return series;
 };
