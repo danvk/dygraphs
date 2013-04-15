@@ -2296,7 +2296,9 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
-    var bars = this.attr_("errorBars") || this.attr_("customBars");
+    var errorBars = this.attr_("errorBars");
+    var customBars = this.attr_("customBars");
+    var bars = errorBars || customBars;
     if (dateWindow) {
       var low = dateWindow[0];
       var high = dateWindow[1];
@@ -2314,17 +2316,37 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       }
       if (firstIdx === null) firstIdx = 0;
       var correctedFirstIdx = firstIdx;
-      if (correctedFirstIdx > 0) correctedFirstIdx--;
-      while(series[correctedFirstIdx][1] === null && correctedFirstIdx > 0){
+   
+      var isInvalidValue = true;
+      while(isInvalidValue && correctedFirstIdx > 0){
         correctedFirstIdx--;
+        
+        if(bars){
+          if(customBars){
+            isInvalidValue = series[correctedFirstIdx][1][1] === null;
+          } else if(errorBars){
+            isInvalidValue = series[correctedFirstIdx][1][0] === null;
+          }
+        } else{
+          isInvalidValue = series[correctedFirstIdx][1] === null;
+        }
       }
-      
       
       if (lastIdx === null) lastIdx = series.length - 1;
       var correctedLastIdx = lastIdx;
-      if (correctedLastIdx < series.length - 1) correctedLastIdx++;
-      while(series[correctedLastIdx][1] === null && correctedLastIdx < series.length - 1){
+      isInvalidValue = true;
+      while(isInvalidValue && correctedLastIdx < series.length - 1){
         correctedLastIdx++;
+        
+        if(bars){
+          if(customBars){
+            isInvalidValue = series[correctedLastIdx][1][1] === null;
+          } else if(errorBars){
+            isInvalidValue = series[correctedLastIdx][1][0] === null;
+          }
+        } else{
+          isInvalidValue = series[correctedLastIdx][1] === null;
+        }
       }
       
       boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
