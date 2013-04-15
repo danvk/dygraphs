@@ -290,12 +290,11 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
     return Math.round(y) - 1;
   }
   var x, y;
-  x = halfUp(g.plotter_.area.x);
   // Step through all gridlines of the axis
   for ( var i = 0; i < yGridlines.length; i++) {
     y = halfDown(g.toDomYCoord(yGridlines[i], 0));
     // Step through the pixels of the line and test the pattern.
-    for (x; x < g.plotter_.area.w; x++) {
+    for (x = halfUp(g.plotter_.area.x); x < g.plotter_.area.w; x++) {
       // Ignore alpha
       var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0,3);
       var pattern = (Math.floor((x) / 4)) % 2;
