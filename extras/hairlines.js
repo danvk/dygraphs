@@ -71,6 +71,7 @@ hairlines.prototype.detachLabels = function() {
 hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
   var area = this.dygraph_.getArea();
   h.xFraction = (ui.position.left - area.x) / area.w;
+  this.moveHairlineToTop(h);
   this.updateHairlineDivPositions();
   this.updateHairlineInfo();
 };
@@ -81,21 +82,32 @@ hairlines.prototype.createHairline = function(xFraction) {
   var h;
   var self = this;
 
-  var $lineDiv = $('<div/>').css({
-      'border-right': '1px solid black',
-      'width': '0px',
+  var $lineContainerDiv = $('<div/>').css({
+      'width': '6px',
+      'margin-left': '-3px',
       'position': 'absolute',
       'z-index': '10'
     })
     .addClass('dygraph-hairline');
 
+  var $lineDiv = $('<div/>').css({
+    'width': '1px',
+    'position': 'relative',
+    'left': '3px',
+    'background': 'black',
+    'height': '100%'
+  });
+  $lineDiv.appendTo($lineContainerDiv);
+
   var $infoDiv = $('#hairline-template').clone().removeAttr('id').css({
       'position': 'absolute'
     })
-    .show()
+    .show();
+
+  // Surely there's a more jQuery-ish way to do this!
+  $([$infoDiv.get(0), $lineContainerDiv.get(0)])
     .draggable({
       'axis': 'x',
-      'containment': 'parent',
       'drag': function(event, ui) {
         self.hairlineWasDragged(h, event, ui);
       }
@@ -105,7 +117,7 @@ hairlines.prototype.createHairline = function(xFraction) {
   h = {
     xFraction: xFraction,
     interpolated: true,
-    lineDiv: $lineDiv.get(0),
+    lineDiv: $lineContainerDiv.get(0),
     infoDiv: $infoDiv.get(0)
   };
 
@@ -117,20 +129,37 @@ hairlines.prototype.createHairline = function(xFraction) {
   return h;
 };
 
+// Moves a hairline's divs to the top of the z-ordering.
+hairlines.prototype.moveHairlineToTop = function(h) {
+  var div = this.dygraph_.graphDiv;
+  $(h.infoDiv).appendTo(div);
+  $(h.lineDiv).appendTo(div);
+
+  var idx = this.hairlines_.indexOf(h);
+  this.hairlines_.splice(idx, 1);
+  this.hairlines_.push(h);
+};
+
 // Positions existing hairline divs.
 hairlines.prototype.updateHairlineDivPositions = function() {
   var layout = this.dygraph_.getArea();
+  var div = this.dygraph_.graphDiv;
+  var box = [layout.x + Dygraph.findPosX(div),
+             layout.y + Dygraph.findPosY(div)];
+  box.push(box[0] + layout.w);
+  box.push(box[1] + layout.h);
+
   $.each(this.hairlines_, function(idx, h) {
     var left = layout.x + h.xFraction * layout.w;
     $(h.lineDiv).css({
       'left': left + 'px',
       'top': layout.y + 'px',
       'height': layout.h + 'px'
-    });
+    });  // .draggable("option", "containment", box);
     $(h.infoDiv).css({
       'left': left + 'px',
       'top': layout.y + 'px',
-    });
+    }).draggable("option", "containment", box);
   });
 };
 
