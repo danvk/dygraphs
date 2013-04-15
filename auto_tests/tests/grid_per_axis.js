@@ -181,6 +181,8 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   var y2Gridlines = [ 50, 100, 150, 200, 250, 350 ];
   var gridlines = [ yGridlines, y2Gridlines ];
   var xGridlines = [ 2, 3, 4 ];
+  var gridColor = [ 255, 0, 0 ];
+  var emptyColor = [ 0, 0, 0 ];
 
   function halfUp(x) {
     return Math.round(x) + 1;
@@ -195,32 +197,33 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
     // Step through all gridlines of the axis
     for ( var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
-      var drawnPixeldown2 = Util.samplePixel(g.hidden_, x, y - 2);
-      var drawnPixeldown1 = Util.samplePixel(g.hidden_, x, y - 1);
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y);
-      var drawnPixelup1 = Util.samplePixel(g.hidden_, x, y + 1);
-      var drawnPixelup2 = Util.samplePixel(g.hidden_, x, y + 2);
+      // Ignore the alpha value
+      var drawnPixeldown2 = Util.samplePixel(g.hidden_, x, y - 2).slice(0, 3);
+      var drawnPixeldown1 = Util.samplePixel(g.hidden_, x, y - 1).slice(0, 3);
+      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);
+      var drawnPixelup1 = Util.samplePixel(g.hidden_, x, y + 1).slice(0, 3);
+      var drawnPixelup2 = Util.samplePixel(g.hidden_, x, y + 2).slice(0, 3);
       // Check the grid width.
       switch (axis) {
       case 0: // y with 2 pixels width
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 0, 0 ], drawnPixeldown2);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 255, 0, 0, 127 ], drawnPixeldown1);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 255, 0, 0, 255 ], drawnPixel);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 255, 0, 0, 128 ], drawnPixelup1);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 0, 0 ], drawnPixelup2);
+        assertEquals("Unexpected y-grid color found at pixel: x: " + x + "y: "
+            + y, emptyColor, drawnPixeldown2);
+        assertEquals("Unexpected y-grid color found at pixel: x: " + x + "y: "
+            + y, gridColor, drawnPixeldown1);
+        assertEquals("Unexpected y-grid color found at pixel: x: " + x + "y: "
+            + y, gridColor, drawnPixel);
+        assertEquals("Unexpected y-grid color found at pixel: x: " + x + "y: "
+            + y, gridColor, drawnPixelup1);
+        assertEquals("Unexpected y-grid color found at pixel: x: " + x + "y: "
+            + y, emptyColor, drawnPixelup2);
         break;
       case 1: // y2 with 1 pixel width
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 0, 0 ], drawnPixeldown1);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 255, 0, 0, 255 ], drawnPixel);
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 0, 0 ], drawnPixelup1);
+        assertEquals("Unexpected y2-grid color found at pixel: x: " + x + "y: "
+            + y, emptyColor, drawnPixeldown1);
+        assertEquals("Unexpected y2-grid color found at pixel: x: " + x + "y: "
+            + y, gridColor, drawnPixel);
+        assertEquals("Unexpected y2-grid color found at pixel: x: " + x + "y: "
+            + y, emptyColor, drawnPixelup1);
         break;
       }
     }
@@ -230,20 +233,20 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   y = halfDown(g.plotter_.area.y) + 10;
   for ( var i = 0; i < xGridlines.length; i++) {
     x = halfUp(g.toDomXCoord(xGridlines[i]));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        0, 0, 0, 0 ], Util.samplePixel(g.hidden_, x - 4, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        255, 0, 0, 128 ], Util.samplePixel(g.hidden_, x - 3, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        255, 0, 0, 255 ], Util.samplePixel(g.hidden_, x - 2, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        255, 0, 0, 255 ], Util.samplePixel(g.hidden_, x - 1, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        255, 0, 0, 255 ], Util.samplePixel(g.hidden_, x, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        255, 0, 0, 128 ], Util.samplePixel(g.hidden_, x + 1, y));
-    assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y, [
-        0, 0, 0, 0 ], Util.samplePixel(g.hidden_, x + 2, y));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        gridColor, Util.samplePixel(g.hidden_, x - 3, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        gridColor, Util.samplePixel(g.hidden_, x - 2, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        gridColor, Util.samplePixel(g.hidden_, x - 1, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        gridColor, Util.samplePixel(g.hidden_, x, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        gridColor, Util.samplePixel(g.hidden_, x + 1, y).slice(0, 3));
+    assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
+        emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3));
   }
 };
 GridPerAxisTestCase.prototype.testGridLinePattern = function() {
@@ -293,16 +296,17 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
     y = halfDown(g.toDomYCoord(yGridlines[i], 0));
     // Step through the pixels of the line and test the pattern.
     for (x; x < g.plotter_.area.w; x++) {
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y);
+      // Ignore alpha
+      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0,3);
       var pattern = (Math.floor((x) / 4)) % 2;
       switch (pattern) {
       case 0: // fill
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 255, 77 ], drawnPixel);
+        assertEquals("Unexpected filled grid-pattern color found at pixel: x: " + x + "y: "
+            + y, [ 0, 0, 255 ], drawnPixel);
         break;
       case 1: // no fill
-        assertEquals("Unexpected grid color found at pixel: x: " + x + "y: "
-            + y, [ 0, 0, 0, 0 ], drawnPixel);
+        assertEquals("Unexpected empty grid-pattern color found at pixel: x: " + x + "y: "
+            + y, [ 0, 0, 0 ], drawnPixel);
         break;
       }
     }
