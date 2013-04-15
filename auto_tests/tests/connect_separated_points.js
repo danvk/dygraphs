@@ -41,7 +41,7 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsSimple = function() {
               [6,2.5,-2.5,7],
               [7,3,-3,null],
               [8,4,null,null],
-              [9,4,-10,null],
+              [9,4,-10,null]
              ];
 
   var graph = document.getElementById("graph");
