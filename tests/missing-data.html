@@ -64,7 +64,7 @@
         [2, [12, 2], [20, 3]],
         [3, [ 8, 2], [20, 3]],
         [4, [null, 2], [20, 3]],
-        [5, [null, 2], [null, 3]],
+        [5, [null, 2], null],
         [6, [ 9, 2], [20, 3]],
         [7, [10, 2], [20, 3]]
       ],
@@ -80,8 +80,8 @@
         [1, [10, 2], [20, 3]],
         [2, [12, 2], [20, 3]],
         [3, [ 8, 2], [20, 3]],
-        [4, [null, 2], [20, 3]],
-        [5, [null, 2], [null, 3]],
+        [4, null, [20, 3]],
+        [5, null, [null, 3]],
         [6, [ 9, 2], [20, 3]],
         [7, [10, 2], [20, 3]]
       ],
@@ -105,6 +105,7 @@
         ],
         {
           errorBars: true,
+          connectSeparatedPoints: false,
           labels: [ "X", "Series1", "Series2" ]
         }
     );
@@ -112,16 +113,17 @@
     g6 = new Dygraph(
         document.getElementById("graph6"),
         [
-          [1, [8, 10,12]],
-          [2, [3, 5,7]],
-          [3, null],
-          [4, [ 9,null, 2]],
-          [5, [null,2, null]],
-          [6, [2,3, 6]]
+          [1, [8, 10,12],null],
+          [2, [3, 5,7],[4,6,7]],
+          [3, null,[1,2,4]],
+          [4, [ 9,null, 2],[3,4,8]],
+          [5, [null,2, null],[6,8,9]],
+          [6, [2,3, 6],[2,3,5]]
         ],
         {
           customBars: true,
-          labels: [ "X", "Series1"]
+          connectSeparatedPoints: false,
+          labels: [ "X", "Series1", "Series2"]
         }
     );
     </script>
