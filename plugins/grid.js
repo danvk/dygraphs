@@ -52,9 +52,9 @@ grid.prototype.willDrawChart = function(e) {
   if (g.getOption('drawYGrid')) {
     var axes = ["y","y2"];
     var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern =[];
-    for(var index in axes){
+    for(var index in axes) {
       drawGrid[index] = g.getOptionForAxis("drawGrid",axes[index]);
-      if(drawGrid[index]){
+      if(drawGrid[index]) {
         strokeStyles[index] = g.getOptionForAxis('gridLineColor',axes[index]);
         lineWidths[index] = g.getOptionForAxis('gridLineWidth',axes[index]);
         strokePattern[index] = g.getOptionForAxis('gridLinePattern',axes[index]);
@@ -66,7 +66,7 @@ grid.prototype.willDrawChart = function(e) {
     // draw grids for the differen axes
     for (i = 0; i < ticks.length; i++) {
       var axis = ticks[i][0];
-      if(drawGrid[axis]){
+      if(drawGrid[axis]) {
         if (stroking[axis]) {
           ctx.installPattern(strokePattern[axis]);
         }
@@ -109,7 +109,7 @@ grid.prototype.willDrawChart = function(e) {
       ctx.stroke();
     }
     if (stroking) {
-        ctx.uninstallPattern();
+      ctx.uninstallPattern();
     }
     ctx.restore();
   }

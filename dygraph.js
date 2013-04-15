@@ -2722,7 +2722,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     }
     
     
-    if(independentTicks){
+    if(independentTicks) {
       axis.independentTicks = independentTicks;
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');
@@ -2764,7 +2764,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
                           this,
                           tick_values);
     }
-  }  
+  }
 };
 
 /**
