@@ -2736,7 +2736,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         p_axis = axis;
     }
   }
-  if(p_axis == undefined)
+  if(p_axis === undefined)
     throw ("Configuration Error: At least one axis has to have the \"independentTicks\" option activated.");
   // Add ticks. By default, all axes inherit the tick positions of the
   // primary axis. However, if an axis is specifically marked as having
