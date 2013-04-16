@@ -47,8 +47,10 @@ var DygraphOptions = function(dygraph) {
   this.yAxes_ = [];
 
   /**
-   * { options : { axis-specific options. } }
-   * @type {Object} @private
+   * Contains x-axis specific options, which are stored in the options key.
+   * This matches the yAxes_ object structure (by being a dictionary with an
+   * options element) allowing for shared code.
+   * @type {options: Object} @private
    */
   this.xAxis_ = {};
   this.series_ = {};

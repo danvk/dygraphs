@@ -56,7 +56,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
  * Returns the box which the chart should be drawn in. This is the canvas's
  * box, less space needed for the axis and chart labels.
  *
- * @return {{ x : numer, y : number, w : number, h : number }}
+ * @return {{x: number, y: number, w: number, h: number}}
  */
 DygraphLayout.prototype.getPlotArea = function() {
   return this.area_;
