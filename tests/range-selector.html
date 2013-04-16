@@ -29,6 +29,10 @@
       Roll period of 14 timesteps, custom range selector height and plot color.
     </p>
     <div id="roll14" style="width:800px; height:320px;"></div>
+    <p>
+      Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
+    </p>
+    <div id="nochart" style="width:800px; height:30px;"></div>
     <script type="text/javascript">
       g1 = new Dygraph(
           document.getElementById("noroll"),
@@ -58,6 +62,16 @@
             rangeSelectorHeight: 30,
             rangeSelectorPlotStrokeColor: 'yellow',
             rangeSelectorPlotFillColor: 'lightyellow'
+          }
+      );
+      g3 = new Dygraph(
+          document.getElementById("nochart"),
+          [[0,1],[10,1]],
+          {
+            xAxisHeight: 30,
+            drawXAxis: false,
+            showRangeSelector: true,
+            rangeSelectorHeight: 30,
           }
       );
     </script>
