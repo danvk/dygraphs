@@ -2771,9 +2771,9 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
       }
     }
     // Fix null points to fit the display type standard.
-    if(point === null && errorBars){
+    if(point === null && errorBars) {
       series.push([x, [null,null]]);
-    }else if(point === null && customBars){
+    } else if(point === null && customBars) {
       series.push([x, [null,null,null]]);
     } else {
       series.push([x, point]);
