@@ -336,7 +336,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
   var g = new Dygraph(graph, data, opts);
   
   //assert, that the range selector is at top position 70 since the 30px of the
-  // xAxis shouldn't be resevered since it isn't drawn.
+  // xAxis shouldn't be reserved since it isn't drawn.
   this.assertGraphExistence(g, graph);
   var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas')[0];
   assertEquals("Range selector is not at the expected position.","70px", bgcanvas.style.top);
