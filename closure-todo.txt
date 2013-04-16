@@ -12,7 +12,7 @@ Core:
 - dygraph-canvas.js
 - dygraph-interaction-model.js
 - dygraph-layout.js
-- dygraph-options.js
+x dygraph-options.js
 - dygraph-range-selector.js
 - dygraph.js
 x dygraph-gviz.js
@@ -35,6 +35,6 @@ x rgbcolor/rgbcolor.js
 
 Here's a command that can be used to build dygraphs using the closure
 compiler:
-java -jar ../../closure-compiler-read-only/build/compiler.jar --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-options-reference.js --js=dygraph-tickers.js --js=dygraph-gviz.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js
+java -jar ../../closure-compiler-read-only/build/compiler.jar --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-options-reference.js --js=dygraph-tickers.js --js=dygraph-gviz.js --js=dygraph-options.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js
 
 As each file is closurized, it can be added as a "--js" parameter.

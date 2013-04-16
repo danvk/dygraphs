@@ -1019,8 +1019,8 @@ Dygraph.prototype.createInterface_ = function() {
     // 2. e.relatedTarget is outside the chart
     var target = e.target || e.fromElement;
     var relatedTarget = e.relatedTarget || e.toElement;
-    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
-        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
+    if (Dygraph.isNodeContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
       dygraph.mouseOut_(e);
     }
   };
@@ -1988,7 +1988,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
-          color, circleSize);
+          color, circleSize, pt.idx);
     }
     ctx.restore();
 

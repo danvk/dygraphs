@@ -217,6 +217,10 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   // on chrome+linux, they are 6 times more expensive than iterating through the
   // points and drawing the lines. The brunt of the cost comes from allocating
   // the |point| structures.
+  var boundaryIdStart = 0;
+  if (this.dygraph_.boundaryIds_.length > 0) {
+    boundaryIdStart = this.dygraph_.boundaryIds_[this.dygraph_.boundaryIds_.length-1][0]
+  }
   for (var setIdx = 0; setIdx < this.datasets.length; setIdx++) {
     var dataset = this.datasets[setIdx];
     var setName = this.setNames[setIdx];
@@ -248,7 +252,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         y: yNormal,
         xval: xValue,
         yval: yValue,
-        name: setName  // TODO(danvk): is this really necessary?
+        name: setName,  // TODO(danvk): is this really necessary?
+        idx: j + boundaryIdStart
       };
     }
 

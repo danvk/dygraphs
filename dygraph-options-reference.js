@@ -61,6 +61,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "cy" , "center y coordinate" ],
       [ "color" , "series color" ],
       [ "pointSize" , "the radius of the image." ]
+      [ "idx" , "the row-index of the point in the data."]
     ],
     "description": "Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy).  Also see <a href='#drawHighlightPointCallback'>drawHighlightPointCallback</a>"
   },
@@ -130,6 +131,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "cy" , "center y coordinate" ],
       [ "color" , "series color" ],
       [ "pointSize" , "the radius of the image." ]
+      [ "idx" , "the row-index of the point in the data."]
     ],
     "description": "Draw a custom item when a point is highlighted.  Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy) Also see <a href='#drawPointCallback'>drawPointCallback</a>"
   },

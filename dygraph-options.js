@@ -42,13 +42,13 @@ var DygraphOptions = function(dygraph) {
 
   /**
    * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
-   * @type {Array.<{series : Array.<string>, options : Object}>}
+   * @type {Array.<{series : Array.<string>, options : Object}>} @private
    */
   this.yAxes_ = [];
 
   /**
-   * { options : { axis-specific options. }
-   * @type {Object}
+   * { options : { axis-specific options. } }
+   * @type {Object} @private
    */
   this.xAxis_ = {};
   this.series_ = {};
@@ -83,6 +83,10 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'Y2' : 1
 };
 
+/**
+ * @param {string|number} axis
+ * @private
+ */
 DygraphOptions.axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
     if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
@@ -95,10 +99,6 @@ DygraphOptions.axisToIndex_ = function(axis) {
       return axis;
     }
     throw "Dygraphs only supports two y-axes, indexed from 0-1.";
-  }
-  if (typeof(axis) == "object") {
-    throw "Using objects for axis specification " +
-        "is not supported inside the 'series' option.";
   }
   if (axis) {
     throw "Unknown axis : " + axis;
@@ -181,9 +181,9 @@ DygraphOptions.prototype.reparseSeries = function() {
 
       if (typeof(axis) == 'string') {
         if (!this.series_.hasOwnProperty(axis)) {
-          this.dygraph_.error("Series " + seriesName + " wants to share a y-axis with " +
+          Dygraph.error("Series " + seriesName + " wants to share a y-axis with " +
                      "series " + axis + ", which does not define its own axis.");
-          return null;
+          return;
         }
         var yAxis = this.series_[axis].yAxis;
         this.series_[seriesName].yAxis = yAxis;
@@ -312,7 +312,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
  */
 DygraphOptions.prototype.getForSeries = function(name, series) {
   // Honors indexes as series.
-  if (series === this.dygraph_.highlightSet_) {
+  if (series === this.dygraph_.getHighlightSeries()) {
     if (this.highlightSeries_.hasOwnProperty(name)) {
       return this.highlightSeries_[name];
     }
