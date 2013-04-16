@@ -50,7 +50,7 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw = function() {
   var htx = g.hidden_ctx_;
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
   assertEquals(0, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-}
+};
 
 MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded = function() {
   var graph = document.getElementById("graph");
@@ -69,7 +69,7 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded = function(
       { strokeStyle: '#0000ff', });
   CanvasAssertions.assertLineDrawn(htx, [370, 87], [475, 25],
       { strokeStyle: '#0000ff', });
-}
+};
 
 MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded_connected = function() {
   var graph = document.getElementById("graph");
@@ -88,7 +88,7 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded_connected =
   CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
       [[56, 275], [161, 212], [370, 87], [475, 25]],
       { strokeStyle: '#0000ff' });
-}
+};
 
 /**
  * At the time of writing this test, the blue series is only points, and not lines.
@@ -122,7 +122,7 @@ MissingPointsTestCase.prototype.testConnectSeparatedPoints = function() {
   CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
       [[140, 275], [307, 125], [475, 225]],
       { strokeStyle: '#ff0000' });
-}
+};
 
 /**
  * At the time of writing this test, the blue series is only points, and not lines.
@@ -158,7 +158,7 @@ MissingPointsTestCase.prototype.testConnectSeparatedPointsWithNan = function() {
   CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
       [[56, 244], [149, 181], [242, 118]],
       { strokeStyle: '#0000ff' });
-}
+};
 
 /* These lines contain awesome powa!  
   var lines = CanvasAssertions.getLinesDrawn(htx, {strokeStyle: "#0000ff"});
@@ -167,3 +167,130 @@ MissingPointsTestCase.prototype.testConnectSeparatedPointsWithNan = function() {
     console.log(line[0].args, line[1].args, line[0].properties.strokeStyle);
   }
 */
+
+MissingPointsTestCase.prototype.testErrorBarsWithMissingPoints = function() {
+  var data = [
+              [1, [2,1]],
+              [2, [3,1]],
+              [3, null],
+              [4, [5,1]],
+              [5, [4,1]],
+              [6, [null,null]],
+             ];
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      errorBars: true,
+      colors: ['red']
+    }
+  );
+
+  var htx = g.hidden_ctx_;
+
+  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+
+  var p0 = g.toDomCoords(data[0][0], data[0][1][0]);
+  var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
+  var p2 = g.toDomCoords(data[3][0], data[3][1][0]);
+  var p3 = g.toDomCoords(data[4][0], data[4][1][0]);
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p0, p1], { strokeStyle: '#ff0000' });
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p2, p3], { strokeStyle: '#ff0000' });
+};
+
+MissingPointsTestCase.prototype.testErrorBarsWithMissingPointsConnected = function() {
+  var data = [
+              [1, [null,1]],
+              [2, [2,1]],
+              [3, null],
+              [4, [5,1]],
+              [5, [null,null]],
+              [6, [3,1]]
+             ];
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      connectSeparatedPoints: true,
+      drawPoints: true,
+      errorBars: true,
+      colors: ['red']
+    }
+  );
+
+  var htx = g.hidden_ctx_;
+  
+  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+
+  var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
+  var p2 = g.toDomCoords(data[3][0], data[3][1][0]);
+  var p3 = g.toDomCoords(data[5][0], data[5][1][0]);
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p1, p2, p3],
+      { strokeStyle: '#ff0000' });
+};
+MissingPointsTestCase.prototype.testCustomBarsWithMissingPoints = function() {
+  var data = [
+              [1, [1,2,3]],
+              [2, [2,3,4]],
+              [3, null],
+              [4, [4,5,6]],
+              [5, [3,4,5]],
+              [6, [null,null,null]],
+             ];
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      customBars: true,
+      colors: ['red']
+    }
+  );
+
+  var htx = g.hidden_ctx_;
+
+  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+
+  var p0 = g.toDomCoords(data[0][0], data[0][1][1]);
+  var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
+  var p2 = g.toDomCoords(data[3][0], data[3][1][1]);
+  var p3 = g.toDomCoords(data[4][0], data[4][1][1]);
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p0, p1], { strokeStyle: '#ff0000' });
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p2, p3], { strokeStyle: '#ff0000' });
+};
+
+MissingPointsTestCase.prototype.testCustomBarsWithMissingPointsConnected = function() {
+  var data = [
+              [1, [1,null,1]],
+              [2, [1,2,3]],
+              [3, null],
+              [4, [4,5,6]],
+              [5, [null,null,null]],
+              [6, [2,3,4]]
+             ];
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      connectSeparatedPoints: true,
+      drawPoints: true,
+      customBars: true,
+      colors: ['red']
+    }
+  );
+
+  var htx = g.hidden_ctx_;
+  
+  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+
+  var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
+  var p2 = g.toDomCoords(data[3][0], data[3][1][1]);
+  var p3 = g.toDomCoords(data[5][0], data[5][1][1]);
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+      [p1, p2, p3],
+      { strokeStyle: '#ff0000' });
+};
