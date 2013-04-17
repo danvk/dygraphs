@@ -318,6 +318,32 @@ RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
   assert(newXRange[1]+'<'+xRange[1], newXRange[1] < xRange[1]);
 };
 
+
+RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = function() {
+  var opts = {
+    width: 480,
+    height: 100,
+    xAxisHeight: 30,
+    drawXAxis: false,
+    showRangeSelector: true,
+    rangeSelectorHeight: 30
+  };
+  var data = [
+               [0, 1],
+               [10, 1]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  
+  //assert, that the range selector is at top position 70 since the 30px of the
+  // xAxis shouldn't be reserved since it isn't drawn.
+  this.assertGraphExistence(g, graph);
+  var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas')[0];
+  assertEquals("Range selector is not at the expected position.","70px", bgcanvas.style.top);
+  var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0];
+  assertEquals("Range selector is not at the expected position.","70px", fgcanvas.style.top);
+};
+
 RangeSelectorTestCase.prototype.assertGraphExistence = function(g, graph) {
   assertNotNull(g);
   var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
