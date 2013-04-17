@@ -259,7 +259,13 @@ Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
-/** @type {Array.<Object>} */
+/** 
+ * A collection of objects specifying where it is acceptable to place tick
+ * marks for granularities larger than WEEKLY.  
+ * 'months' is an array of month indexes on which to place tick marks.
+ * 'year_mod' ticks are placed when year % year_mod = 0.
+ * @type {Array.<Object>} 
+ */
 Dygraph.LONG_TICK_PLACEMENTS = [];
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.MONTHLY] = {
   months : [0,1,2,3,4,5,6,7,8,9,10,11], 
