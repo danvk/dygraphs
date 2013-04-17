@@ -314,7 +314,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
   } else {
     var year_mod = 1;  // e.g. to only print one point every 10 years.
     var num_months = 12;
-    if (granularity == Dygraph.QUARTERLY) num_months = 3;
+    if (granularity == Dygraph.QUARTERLY) num_months = 4;
     if (granularity == Dygraph.BIANNUAL) num_months = 2;
     if (granularity == Dygraph.ANNUAL) num_months = 1;
     if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
