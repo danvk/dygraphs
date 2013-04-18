@@ -1244,10 +1244,11 @@ Dygraph.isNodeContainedBy = function(containee, container) {
   if (container === null || containee === null) {
     return false;
   }
-  while (containee && containee !== container) {
-    containee = containee.parentNode;
+  var containeeNode = /** @type {Node} */ (containee);
+  while (containeeNode && containeeNode !== container) {
+    containeeNode = containeeNode.parentNode;
   }
-  return (containee === container);
+  return (containeeNode === container);
 };
 
 
