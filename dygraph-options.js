@@ -36,7 +36,7 @@ var DygraphOptions = (function() {
 var DygraphOptions = function(dygraph) {
   /**
    * The dygraph.
-   * @type {Dygraph}
+   * @type {!Dygraph}
    */
   this.dygraph_ = dygraph;
 
@@ -73,7 +73,7 @@ var DygraphOptions = function(dygraph) {
  * Not optimal, but does the trick when you're only using two axes.
  * If we move to more axes, this can just become a function.
  *
- * @type {Object.<string, number>}
+ * @type {Object.<number>}
  * @private
  */
 DygraphOptions.AXIS_STRING_MAPPINGS_ = {

@@ -440,9 +440,10 @@ DygraphCanvasRenderer.prototype._updatePoints = function() {
  * DygraphCanvasRenderer._updatePoints.
  *
  * @param {string=} opt_seriesName when specified, only that series will
- * be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
- * @param {CanvasRenderingContext2D} opt_ctx when specified, the drawing context.
- * However, lines are typically drawn on the object's elementContext.
+ *     be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
+ * @param {CanvasRenderingContext2D} opt_ctx when specified, the drawing
+ *     context.  However, lines are typically drawn on the object's
+ *     elementContext.
  * @private
  */
 DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_ctx) {
