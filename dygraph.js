@@ -2177,13 +2177,6 @@ Dygraph.prototype.extremeValues_ = function(series) {
   var minY = null, maxY = null, j, y;
 
   var bars = this.attr_("errorBars") || this.attr_("customBars");
-  
-  //XXX: SAUTER: add support for custom datatypes
-  if (this.attr_("customData")){
-      return this.attr_("customData").getExtremeYValues(series);
-  } 
-  else
-  //XXX: SAUTER END
   if (bars) {
     // With custom bars, maxY is the max of the high values.
     for (j = 0; j < series.length; j++) {
@@ -2339,10 +2332,17 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     } else {
       boundaryIds[i-1] = [0, series.length-1];
     }
+    
+    //XXX: SAUTER: add support for custom datatypes
+    var seriesExtremes;
+    if (this.attr_("customData")){
+      seriesExtremes = this.attr_("customData").getExtremeYValues(series,dateWindow,this.attr_("labels")[i]);
+    } 
+    else
+      seriesExtremes = this.extremeValues_(series);
+    //XXX: SAUTER END
 
-    var seriesExtremes = this.extremeValues_(series);
-
-	//XXX: SAUTER: add support for custom datatypes
+    //XXX: SAUTER: add support for custom datatypes
     if (this.attr_("customData")){
       series = this.attr_("customData").formatSeries(series);
     }
