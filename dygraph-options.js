@@ -17,14 +17,10 @@ var DygraphOptions = (function() {
 "use strict";
 
 /*
- * Interesting member variables:
- * dygraph_ - the graph.
+ * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
  * global_ - global attributes (common among all graphs, AIUI)
  * user - attributes set by the user
- * yAxes_ - array of axis index to { series : [ series names ] , options : { axis-specific options. }
- * xAxis_ - { options : { axis-specific options. }
  * series_ - { seriesName -> { idx, yAxis, options }}
- * labels_ - used as mapping from index to series name.
  */
 
 /**
@@ -38,26 +34,47 @@ var DygraphOptions = (function() {
  * @constructor
  */
 var DygraphOptions = function(dygraph) {
+  /**
+   * The dygraph.
+   * @type {!Dygraph}
+   */
   this.dygraph_ = dygraph;
 
-  /** @type {Array.<{options: Object, series: string}>} @private */
+  /**
+   * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
+   * @type {Array.<{series : Array.<string>, options : Object}>} @private
+   */
   this.yAxes_ = [];
-  /** @type {{options: Object}} @private */
-  this.xAxis_ = {options: {}};
-  /** @type {Object} @private */
+
+  /**
+   * Contains x-axis specific options, which are stored in the options key.
+   * This matches the yAxes_ object structure (by being a dictionary with an
+   * options element) allowing for shared code.
+   * @type {options: Object} @private
+   */
+  this.xAxis_ = {};
   this.series_ = {};
 
   // Once these two objects are initialized, you can call get();
   this.global_ = this.dygraph_.attrs_;
   this.user_ = this.dygraph_.user_attrs_ || {};
 
+  /**
+   * A list of series in columnar order.
+   * @type {Array.<string>}
+   */
+  this.labels_ = [];
+
   this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
   this.reparseSeries();
 };
 
-/*
+/**
  * Not optimal, but does the trick when you're only using two axes.
  * If we move to more axes, this can just become a function.
+ *
+ * @type {Object.<number>}
+ * @private
  */
 DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'y' : 0,
