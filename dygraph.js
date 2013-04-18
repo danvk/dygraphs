@@ -2177,6 +2177,13 @@ Dygraph.prototype.extremeValues_ = function(series) {
   var minY = null, maxY = null, j, y;
 
   var bars = this.attr_("errorBars") || this.attr_("customBars");
+  
+  //XXX: SAUTER: add support for custom datatypes
+  if (this.attr_("customData")){
+      return this.attr_("customData").getExtremeYValues(series);
+  } 
+  else
+  //XXX: SAUTER END
   if (bars) {
     // With custom bars, maxY is the max of the high values.
     for (j = 0; j < series.length; j++) {
@@ -2248,7 +2255,15 @@ Dygraph.prototype.predraw_ = function() {
     // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
     var logScale = this.attr_('logscale');
     var series = this.extractSeries_(this.rawData_, i, logScale);
-    series = this.rollingAverage(series, this.rollPeriod_);
+    
+    //XXX: SAUTER: add support for custom datatypes
+    if (this.attr_("customData")){
+      series = this.attr_("customData").rollingAverage(series, this.rollPeriod_);
+    }
+    //XXX: SAUTER END
+    else{
+      series = this.rollingAverage(series, this.rollPeriod_);
+    }
     this.rolledSeries_.push(series);
   }
 
@@ -2327,6 +2342,12 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
     var seriesExtremes = this.extremeValues_(series);
 
+	//XXX: SAUTER: add support for custom datatypes
+    if (this.attr_("customData")){
+      series = this.attr_("customData").formatSeries(series);
+    }
+    else 
+    //XXX: SAUTER END 
     if (bars) {
       for (j=0; j<series.length; j++) {
         series[j] = [series[j][0],

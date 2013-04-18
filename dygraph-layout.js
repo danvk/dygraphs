@@ -229,13 +229,21 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var xValue = DygraphLayout.parseFloat_(item[0]);
-      var yValue = DygraphLayout.parseFloat_(item[1]);
-
+      //XXX: SAUTER: add support for custom datatypes
+      var yValue = item[1];
+      var yValueParsed;
+      if (this.attr_("customData")){
+        yValueParsed = this.attr_("customData").getYFloatValue(item[1]);
+      } else{
+        yValueParsed = yValue = DygraphLayout.parseFloat_(item[1]);
+      }
+      //XXX: END
+      
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents top and 1 represents bottom
-      var yNormal = DygraphLayout._calcYNormal(axis, yValue, logscale);
-
+      var yNormal = DygraphLayout._calcYNormal(axis, yValueParsed, logscale);
+      
       // TODO(danvk): drop the point in this case, don't null it.
       // The nulls create complexity in DygraphCanvasRenderer._drawSeries.
       if (connectSeparated && item[1] === null) {
@@ -249,6 +257,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         name: setName,  // TODO(danvk): is this really necessary?
         idx: j + boundaryIdStart
       };
+      //XXX: SAUTER: add support for custom datatypes
+      if (this.attr_("customData")){
+        this.attr_("customData").onPointCreated(seriesPoints[j], yValue, this.dygraph_);
+      }
+      //XXX: END
     }
 
     this.points[setIdx] = seriesPoints;
