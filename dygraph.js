@@ -2758,6 +2758,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
+  var errorBars = this.attr_("errorBars");
+  var customBars =  this.attr_("customBars");
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
@@ -2768,7 +2770,12 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
         point = null;
       }
     }
-    series.push([x, point]);
+    // Fix null points to fit the display type standard.
+    if(point !== null) {
+      series.push([x, point]);
+    } else {
+      series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
+    }
   }
   return series;
 };
