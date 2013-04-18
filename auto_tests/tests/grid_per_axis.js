@@ -270,7 +270,7 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
     axes : {
       y : {
         gridLineColor : "#0000ff",
-        gridLinePattern : [ 4, 4 ]
+        gridLinePattern : [ 10, 10 ]
       }
     }
   };
@@ -295,9 +295,13 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
     y = halfDown(g.toDomYCoord(yGridlines[i], 0));
     // Step through the pixels of the line and test the pattern.
     for (x = halfUp(g.plotter_.area.x); x < g.plotter_.area.w; x++) {
+      // avoid checking the edge pixels since they differ depending on the OS.
+      var pixelpos = x % 10;
+      if(pixelpos < 1 || pixelpos > 8) continue;
+      
       // Ignore alpha
       var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0,3);
-      var pattern = (Math.floor((x) / 4)) % 2;
+      var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill
         assertEquals("Unexpected filled grid-pattern color found at pixel: x: " + x + "y: "
