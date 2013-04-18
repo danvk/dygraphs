@@ -239,6 +239,12 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPoints = function() {
               [4, [4,5,6]],
               [5, [3,4,5]],
               [6, [null,null,null]],
+              [7, [2,3,4]],
+              [8, [1,2,3]],
+              [9, NaN],
+              [10, [2,3,4]],
+              [11, [3,4,5]],
+              [12, [NaN,NaN,NaN]]
              ];
   var g = new Dygraph(
     document.getElementById("graph"),
@@ -251,16 +257,23 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPoints = function() {
 
   var htx = g.hidden_ctx_;
 
-  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(16, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p0 = g.toDomCoords(data[0][0], data[0][1][1]);
   var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
-  var p2 = g.toDomCoords(data[3][0], data[3][1][1]);
-  var p3 = g.toDomCoords(data[4][0], data[4][1][1]);
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
-      [p0, p1], { strokeStyle: '#ff0000' });
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
-      [p2, p3], { strokeStyle: '#ff0000' });
+  CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });
+  
+  p0 = g.toDomCoords(data[3][0], data[3][1][1]);
+  p1 = g.toDomCoords(data[4][0], data[4][1][1]);
+  CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });
+
+  p0 = g.toDomCoords(data[6][0], data[6][1][1]);
+  p1 = g.toDomCoords(data[7][0], data[7][1][1]);
+  CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });;
+
+  p0 = g.toDomCoords(data[9][0], data[9][1][1]);
+  p1 = g.toDomCoords(data[10][0], data[10][1][1]);
+  CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });
 };
 
 MissingPointsTestCase.prototype.testCustomBarsWithMissingPointsConnected = function() {
