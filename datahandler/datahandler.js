@@ -73,5 +73,41 @@ Dygraph.DataHandler = function DataHandler(){
    * @param {} dygraphs the dygraphs instance.
    */
   handler.prototype.onPointCreated = function(seriesPoint, yValue, dygraphs){};
+  
+  handler.prototype.computeYIntersection = function(pointLeft, pointRight, xValue){
+    var leftY = this.getYFloatValue(pointLeft[1]);
+    var rightY = this.getYFloatValue(pointRight[1]);
+    if (!isNaN(leftY) && !isNaN(rightY)) {
+      var deltaY = rightY - leftY;
+      var deltaX = pointRight[0] - pointLeft[0];
+      var gradient = deltaY / deltaX;
+      var growth = (xValue - pointLeft[0]) * gradient;
+      return pointLeft[1] + growth;
+    }
+    return null;
+  };
+  
+  handler.prototype.getIndexesInWindow = function(series, dateWindow){
+    var firstIdx = 0, lastIdx = series.length - 1;
+    
+    if (dateWindow) {
+      var idx = 0;
+      var low = dateWindow[0];
+      var high = dateWindow[1];
+      
+      // Start from each side of the array to minimize the performance needed.
+      while (idx < series.length-1 && series[idx][0] < low) {
+        firstIdx++;
+        idx++;
+      }    
+      idx = series.length - 1;
+      while (idx > 0 && series[idx][0] > high) {
+        lastIdx--;
+        idx--;
+      }
+    }
+    return [firstIdx,lastIdx];
+  };
+  
   return handler;
 };

@@ -7,106 +7,74 @@ BarsHandler.prototype.formatSeries = function(series) {
   }
   return series;
 };
-BarsHandler.prototype.getExtremeYValues = function(series, dateWindow,
-    stepPlot) {
+BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
   var minY = null, maxY = null, y;
 
   var firstIdx = 0;
   var lastIdx = series.length - 1;
   if (dateWindow) {
-    var idx = 0;
-    var low = dateWindow[0];
-    var high = dateWindow[1];
-    // Start from each side of the array to minimize the performance
-    // needed.
-    while (idx < series.length && series[idx][0] < low) {
-      firstIdx++;
-      idx++;
-    }
-    idx = series.length - 1;
+    var x1, x2, y1, y2, intersectionY;
+    var indexes = this.getIndexesInWindow(series, dateWindow);
+    firstIdx = indexes[0];
+    lastIdx = indexes[1];
 
-    while (idx > 0 && series[idx][0] > high) {
-      lastIdx--;
-      idx--;
-    }
     if (firstIdx != 0) {
       if (stepPlot) {
         firstIdx--;
       } else {
         // compute axis point of intersection
-        var priorPoint = series[firstIdx - 1];
-        var firstPoint = series[firstIdx];
-        if (priorPoint[1] !== null && priorPoint[1][0] !== null
-            && !isNaN(priorPoint[1][0]) && firstPoint[1] !== null
-            && firstPoint[1][0] !== null && !isNaN(firstPoint[1][0])) {
-
-          // Calculating the avg point of intersection
-          var deltaY = firstPoint[1][0] - priorPoint[1][0];
-          var deltaX = firstPoint[0] - priorPoint[0];
-          var gradient = deltaY / deltaX;
-          var intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueAvg = priorPoint[1][0] + intersection;
+        x1 = series[firstIdx - 1][0];
+        x2 = series[firstIdx][0];
+        y1 = series[firstIdx - 1][1];
+        y2 = series[firstIdx][1];
+        if (y1 != null && y1[0] != null && !isNaN(y1[0]) && y2 != null && y2[0]
+            && !isNaN(y2)) {
+          intersectionY = this.computeYIntersection([ x1, y1[0] ],
+              [ x2, y2[0] ], dateWindow[0]);
+          minY = intersectionY;
+          maxY = intersectionY;
 
           // Calculating the min point of intersection
-          deltaY = firstPoint[1][1] - priorPoint[1][1];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueMin = priorPoint[1][1] + intersection;
-          if (intersectionValueMin > intersectionValueAvg)
-            intersectionValueMin = intersectionValueAvg;
+          intersectionY = this.computeYIntersection([ x1, y1[1] ],
+              [ x2, y2[1] ], dateWindow[0]);
+          if (intersectionY < minY)
+            minY = intersectionY;
 
           // Calculating the max point of intersection
-          deltaY = firstPoint[1][2] - priorPoint[1][2];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueMax = priorPoint[1][2] + intersection;
-          if (intersectionValueMax < intersectionValueAvg)
-            intersectionValueMax = intersectionValueAvg;
-
-          minY = intersectionValueMin;
-          maxY = intersectionValueMax;
+          intersectionY = this.computeYIntersection([ x1, y1[2] ],
+              [ x2, y2[2] ], dateWindow[0]);
+          if (intersectionY > maxY)
+            maxY = intersectionY;
         }
       }
     }
     if (lastIdx != series.length - 1) {
       if (!stepPlot) {
         // compute axis point of intersection
-        var lastPoint = series[lastIdx];
-        var nextPoint = series[lastIdx + 1];
-
-        if (nextPoint[1] !== null && nextPoint[1][0] !== null
-            && !isNaN(nextPoint[1][0]) && lastPoint[1] !== null
-            && lastPoint[1][0] !== null && !isNaN(lastPoint[1][0])) {
-
-          // Calculating the avg point of intersection
-          var deltaY = nextPoint[1][0] - lastPoint[1][0];
-          var deltaX = nextPoint[0] - lastPoint[0];
-          var gradient = (deltaY) / (deltaX);
-          var intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueAvg = lastPoint[1][0] + intersection;
+        x1 = series[lastIdx][0];
+        x2 = series[lastIdx + 1][0];
+        y1 = series[lastIdx][1];
+        y2 = series[lastIdx + 1][1];
+        if (y1 != null && y1[0] != null && !isNaN(y1[0]) && y2 != null && y2[0]
+            && !isNaN(y2)) {
+          intersectionY = this.computeYIntersection([ x1, y1[0] ],
+              [ x2, y2[0] ], dateWindow[0]);
+          if (minY == 0 || intersectionY < minY)
+            minY = intersectionY;
+          if (maxY == 0 || intersectionY > maxY)
+            maxY = intersectionY;
 
           // Calculating the min point of intersection
-          deltaY = nextPoint[1][1] - lastPoint[1][1];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueMin = lastPoint[1][1] + intersection;
-          if (intersectionValueMin > intersectionValueAvg)
-            intersectionValueMin = intersectionValueAvg;
+          intersectionY = this.computeYIntersection([ x1, y1[1] ],
+              [ x2, y2[1] ], dateWindow[0]);
+          if (intersectionY < minY)
+            minY = intersectionY;
 
           // Calculating the max point of intersection
-          deltaY = nextPoint[1][2] - lastPoint[1][2];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueMax = lastPoint[1][2] + intersection;
-          if (intersectionValueMax < intersectionValueAvg)
-            intersectionValueMax = intersectionValueAvg;
-
-          if (minY === null || intersectionValueMin < minY) {
-            minY = intersectionValueMin;
-          }
-          if (maxY === null || intersectionValueMax > maxY) {
-            maxY = intersectionValueMax;
-          }
+          intersectionY = this.computeYIntersection([ x1, y1[2] ],
+              [ x2, y2[2] ], dateWindow[0]);
+          if (intersectionY > maxY)
+            maxY = intersectionY;
         }
       }
     }
@@ -135,7 +103,8 @@ BarsHandler.prototype.getExtremeYValues = function(series, dateWindow,
 BarsHandler.prototype.getYFloatValue = function(value) {
   return DygraphLayout.parseFloat_(value);
 };
-BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygraphs) {
+BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
+    dygraphs) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = dygraphs.attr_("sigma");
@@ -143,7 +112,7 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
   var low, high, i, j, y, sum, num_ok, stddev;
   if (dygraphs.fractions_) {
     var num = 0;
-    var den = 0;  // numerator/denominator
+    var den = 0; // numerator/denominator
     var mult = 100.0;
     for (i = 0; i < originalData.length; i++) {
       num += originalData[i][1][0];
@@ -160,18 +129,19 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
         // http://en.wikipedia.org/wiki/Binomial_confidence_interval
         if (den) {
           var p = value < 0 ? 0 : value, n = den;
-          var pm = sigma * Math.sqrt(p*(1-p)/n + sigma*sigma/(4*n*n));
+          var pm = sigma
+              * Math.sqrt(p * (1 - p) / n + sigma * sigma / (4 * n * n));
           var denom = 1 + sigma * sigma / den;
-          low  = (p + sigma * sigma / (2 * den) - pm) / denom;
+          low = (p + sigma * sigma / (2 * den) - pm) / denom;
           high = (p + sigma * sigma / (2 * den) + pm) / denom;
-          rollingData[i] = [date,
-                            [p * mult, (p - low) * mult, (high - p) * mult]];
+          rollingData[i] = [ date,
+              [ p * mult, (p - low) * mult, (high - p) * mult ] ];
         } else {
-          rollingData[i] = [date, [0, 0, 0]];
+          rollingData[i] = [ date, [ 0, 0, 0 ] ];
         }
       } else {
         stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
-        rollingData[i] = [date, [mult * value, mult * stddev, mult * stddev]];
+        rollingData[i] = [ date, [ mult * value, mult * stddev, mult * stddev ] ];
       }
     }
   } else if (dygraphs.attr_("customBars")) {
@@ -182,7 +152,7 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
     for (i = 0; i < originalData.length; i++) {
       var data = originalData[i][1];
       y = data[1];
-      rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
+      rollingData[i] = [ originalData[i][0], [ y, y - data[0], data[2] - y ] ];
 
       if (y !== null && !isNaN(y)) {
         low += data[0];
@@ -200,15 +170,17 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
         }
       }
       if (count) {
-        rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
-                                                1.0 * (mid - low) / count,
-                                                1.0 * (high - mid) / count ]];
+        rollingData[i] = [
+            originalData[i][0],
+            [ 1.0 * mid / count, 1.0 * (mid - low) / count,
+                1.0 * (high - mid) / count ] ];
       } else {
-        rollingData[i] = [originalData[i][0], [null, null, null]];
+        rollingData[i] = [ originalData[i][0], [ null, null, null ] ];
       }
     }
   } else {
-    // Calculate the rolling average for the first rollPeriod - 1 points where
+    // Calculate the rolling average for the first rollPeriod - 1 points
+    // where
     // there is not enough data to roll over the full number of points
     for (i = 0; i < originalData.length; i++) {
       sum = 0;
@@ -216,24 +188,26 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
       num_ok = 0;
       for (j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
         y = originalData[j][1][0];
-        if (y === null || isNaN(y)) continue;
+        if (y === null || isNaN(y))
+          continue;
         num_ok++;
         sum += originalData[j][1][0];
         variance += Math.pow(originalData[j][1][1], 2);
       }
       if (num_ok) {
         stddev = Math.sqrt(variance) / num_ok;
-        rollingData[i] = [originalData[i][0],
-                          [sum / num_ok, sigma * stddev, sigma * stddev]];
+        rollingData[i] = [ originalData[i][0],
+            [ sum / num_ok, sigma * stddev, sigma * stddev ] ];
       } else {
-        // This explicitly preserves NaNs to aid with "independent series".
+        // This explicitly preserves NaNs to aid with "independent
+        // series".
         // See testRollingAveragePreservesNaNs.
         var v = (rollPeriod == 1) ? originalData[i][1][0] : null;
-        rollingData[i] = [originalData[i][0], [v, v, v]];
+        rollingData[i] = [ originalData[i][0], [ v, v, v ] ];
       }
     }
   }
-  
+
   return rollingData;
 };
 BarsHandler.prototype.onPointCreated = function(point, value, dygraphs) {

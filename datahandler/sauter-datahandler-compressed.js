@@ -1,5 +1,5 @@
 var CompressedHandler = Dygraph.DataHandler();
-Dygraph.DataHandlers.registerHandler("sauter-compressed",CompressedHandler);
+Dygraph.DataHandlers.registerHandler("sauter-compressed", CompressedHandler);
 CompressedHandler.prototype.formatSeries = function(series) {
   return series;
 };
@@ -7,108 +7,72 @@ CompressedHandler.prototype.getExtremeYValues = function(series, dateWindow,
     stepPlot) {
   var minY = null, maxY = null, avgY = null, y;
 
-  // XXX datewindow is always defined
-  // TODO compare dateWindow times with total times (start and end of
-  // the log)
-  var firstIdx = 0;
-  var lastIdx = series.length - 1;
+  var firstIdx = 0, lastIdx = series.length - 1;
   if (dateWindow) {
-    var idx = 0;
-    var low = dateWindow[0];
-    var high = dateWindow[1];
-    // Start from each side of the array to minimize the performance
-    // needed.
-    while (idx < series.length && series[idx][0] < low) {
-      firstIdx++;
-      idx++;
-    }
-    idx = series.length - 1;
+    var x1, x2, y1, y2, intersectionY;
+    var indexes = this.getIndexesInWindow(series, dateWindow);
+    firstIdx = indexes[0];
+    lastIdx = indexes[1];
 
-    while (idx > 0 && series[idx][0] > high) {
-      lastIdx--;
-      idx--;
-    }
     if (firstIdx != 0) {
       if (stepPlot) {
         firstIdx--;
       } else {
         // compute axis point of intersection
-        var priorPoint = series[firstIdx - 1];
-        var firstPoint = series[firstIdx];
-        if (priorPoint[1] !== null && priorPoint[1].value !== null
-            && priorPoint[1].value[0] !== null
-            && !isNaN(priorPoint[1].value[0]) && firstPoint[1] !== null
-            && firstPoint[1].value !== null && firstPoint[1].value[0] !== null
-            && !isNaN(firstPoint[1].value[0])) {
-
-          // Calculating the avg point of intersection
-          var deltaY = firstPoint[1].value[0] - priorPoint[1].value[0];
-          var deltaX = firstPoint[0] - priorPoint[0];
-          var gradient = deltaY / deltaX;
-          var intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueAvg = priorPoint[1].value[0] + intersection;
+        x1 = series[firstIdx - 1][0];
+        x2 = series[firstIdx][0];
+        y1 = series[firstIdx - 1][1];
+        y2 = series[firstIdx][1];
+        if (y1 != null && y1.value != null && y1.value[0] != null
+            && !isNaN(y1.value[0]) && y2 != null && y2.value != null
+            && y2.value[0] && !isNaN(y2.value)) {
+          intersectionY = this.computeYIntersection([ x1, y1.value[0] ], [ x2,
+              y2.value[0] ], dateWindow[0]);
+          minY = intersectionY;
+          maxY = intersectionY;
 
           // Calculating the min point of intersection
-          deltaY = firstPoint[1].value[1] - priorPoint[1].value[1];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueMin = priorPoint[1].value[1] + intersection;
-          if (intersectionValueMin > intersectionValueAvg)
-            intersectionValueMin = intersectionValueAvg;
+          intersectionY = this.computeYIntersection([ x1, y1.value[1] ], [ x2,
+              y2.value[1] ], dateWindow[0]);
+          if (intersectionY < minY)
+            minY = intersectionY;
 
           // Calculating the max point of intersection
-          deltaY = firstPoint[1].value[2] - priorPoint[1].value[2];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[0] - priorPoint[0]) * gradient;
-          var intersectionValueMax = priorPoint[1].value[2] + intersection;
-          if (intersectionValueMax < intersectionValueAvg)
-            intersectionValueMax = intersectionValueAvg;
-
-          minY = intersectionValueMin;
-          maxY = intersectionValueMax;
+          intersectionY = this.computeYIntersection([ x1, y1.value[2] ], [ x2,
+              y2.value[2] ], dateWindow[0]);
+          if (intersectionY > maxY)
+            maxY = intersectionY;
         }
       }
     }
     if (lastIdx != series.length - 1) {
       if (!stepPlot) {
         // compute axis point of intersection
-        var lastPoint = series[lastIdx];
-        var nextPoint = series[lastIdx + 1];
-
-        if (nextPoint[1] !== null && nextPoint[1].value !== null
-            && nextPoint[1].value[0] !== null && !isNaN(nextPoint[1].value[0])
-            && lastPoint[1] !== null && lastPoint[1].value !== null
-            && lastPoint[1].value[0] !== null && !isNaN(lastPoint[1].value[0])) {
-
-          // Calculating the avg point of intersection
-          var deltaY = nextPoint[1].value[0] - lastPoint[1].value[0];
-          var deltaX = nextPoint[0] - lastPoint[0];
-          var gradient = (deltaY) / (deltaX);
-          var intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueAvg = lastPoint[1].value[0] + intersection;
+        x1 = series[lastIdx][0];
+        x2 = series[lastIdx + 1][0];
+        y1 = series[lastIdx][1];
+        y2 = series[lastIdx + 1][1];
+        if (y1 != null && y1.value != null && y1.value[0] != null
+            && !isNaN(y1.value[0]) && y2 != null && y2.value != null
+            && y2.value[0] && !isNaN(y2.value)) {
+          intersectionY = this.computeYIntersection([ x1, y1.value[0] ], [ x2,
+              y2.value[0] ], dateWindow[0]);
+          if (minY == 0 || intersectionY < minY)
+            minY = intersectionY;
+          if (maxY == 0 || intersectionY > maxY)
+            maxY = intersectionY;
 
           // Calculating the min point of intersection
-          deltaY = nextPoint[1].value[1] - lastPoint[1].value[1];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueMin = lastPoint[1].value[1] + intersection;
-          if (intersectionValueMin > intersectionValueAvg)
-            intersectionValueMin = intersectionValueAvg;
+          intersectionY = this.computeYIntersection([ x1, y1.value[1] ], [ x2,
+              y2.value[1] ], dateWindow[0]);
+          if (intersectionY < minY)
+            minY = intersectionY;
 
           // Calculating the max point of intersection
-          deltaY = nextPoint[1].value[2] - lastPoint[1].value[2];
-          gradient = deltaY / deltaX;
-          intersection = (dateWindow[1] - lastPoint[0]) * gradient;
-          var intersectionValueMax = lastPoint[1].value[2] + intersection;
-          if (intersectionValueMax < intersectionValueAvg)
-            intersectionValueMax = intersectionValueAvg;
-
-          if (minY === null || intersectionValueMin < minY) {
-            minY = intersectionValueMin;
-          }
-          if (maxY === null || intersectionValueMax > maxY) {
-            maxY = intersectionValueMax;
-          }
+          intersectionY = this.computeYIntersection([ x1, y1.value[2] ], [ x2,
+              y2.value[2] ], dateWindow[0]);
+          if (intersectionY > maxY)
+            maxY = intersectionY;
         }
       }
     }
