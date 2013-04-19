@@ -237,11 +237,5 @@ BarsHandler.prototype.rollingAverage = function(originalData, rollPeriod, dygrap
   return rollingData;
 };
 BarsHandler.prototype.onPointCreated = function(point, value, dygraphs) {
-  if (value === null || value === undefined) {
-    return;
-  } else {
-    var axis = dygraphs.axisPropertiesForSeries(point.name);
-    point.y_top = DygraphLayout._calcYNormal(axis, value[1]);
-    point.y_bottom = DygraphLayout._calcYNormal(axis, value[2]);
-  }
+  // Nothing to do
 };
