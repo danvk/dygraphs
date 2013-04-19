@@ -158,5 +158,4 @@ CompressedHandler.prototype.onPointCreated = function(point, value, dygraphs) {
     point.y_top = DygraphLayout._calcYNormal(axis, value.value[1]);
     point.y_bottom = DygraphLayout._calcYNormal(axis, value.value[2]);
   }
-
 };

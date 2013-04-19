@@ -2168,49 +2168,6 @@ Dygraph.prototype.addXTicks_ = function() {
 
 /**
  * @private
- * Computes the range of the data series (including confidence intervals).
- * @param { [Array] } series either [ [x1, y1], [x2, y2], ... ] or
- * [ [x1, [y1, dev_low, dev_high]], [x2, [y2, dev_low, dev_high]], ...
- * @return [low, high]
- */
-Dygraph.prototype.extremeValues_ = function(series) {
-  var minY = null, maxY = null, j, y;
-
-  var bars = this.attr_("errorBars") || this.attr_("customBars");
-  if (bars) {
-    // With custom bars, maxY is the max of the high values.
-    for (j = 0; j < series.length; j++) {
-      y = series[j][1][0];
-      if (y === null || isNaN(y)) continue;
-      var low = y - series[j][1][1];
-      var high = y + series[j][1][2];
-      if (low > y) low = y;    // this can happen with custom bars,
-      if (high < y) high = y;  // e.g. in tests/custom-bars.html
-      if (maxY === null || high > maxY) {
-        maxY = high;
-      }
-      if (minY === null || low < minY) {
-        minY = low;
-      }
-    }
-  } else {
-    for (j = 0; j < series.length; j++) {
-      y = series[j][1];
-      if (y === null || isNaN(y)) continue;
-      if (maxY === null || y > maxY) {
-        maxY = y;
-      }
-      if (minY === null || y < minY) {
-        minY = y;
-      }
-    }
-  }
-
-  return [minY, maxY];
-};
-
-/**
- * @private
  * This function is called once when the chart's data is changed or the options
  * dictionary is updated. It is _not_ called when the user pans or zooms. The
  * idea is that values derived from the chart's data can be computed here,
@@ -2219,6 +2176,15 @@ Dygraph.prototype.extremeValues_ = function(series) {
  */
 Dygraph.prototype.predraw_ = function() {
   var start = new Date();
+  
+  // Determine the correct dataHandler
+  if(this.attr_("dataHandler")){
+    this.dataHandler_ = Dygraph.DataHandlers.DataHandlers.getHandler(this.attr_("dataHandler"));
+  }else if(this.attr_("customBars") || this.attr_("errorBars")){
+    this.dataHandler_ = Dygraph.DataHandlers.getHandler("bars");
+  }else {
+    this.dataHandler_ = Dygraph.DataHandlers.getHandler("default");
+  }
 
   this.layout_.computePlotArea();
 
@@ -2249,14 +2215,8 @@ Dygraph.prototype.predraw_ = function() {
     var logScale = this.attr_('logscale');
     var series = this.extractSeries_(this.rawData_, i, logScale);
     
-    //XXX: SAUTER: add support for custom datatypes
-    if (this.attr_("customData")){
-      series = this.attr_("customData").rollingAverage(series, this.rollPeriod_);
-    }
-    //XXX: SAUTER END
-    else{
-      series = this.rollingAverage(series, this.rollPeriod_);
-    }
+    series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this);
+    
     this.rolledSeries_.push(series);
   }
 
@@ -2333,29 +2293,14 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       boundaryIds[i-1] = [0, series.length-1];
     }
     
-    //XXX: SAUTER: add support for custom datatypes
-    var seriesExtremes;
-    if (this.attr_("customData")){
-      seriesExtremes = this.attr_("customData").getExtremeYValues(series,dateWindow,this.attr_("labels")[i]);
-    } 
-    else
-      seriesExtremes = this.extremeValues_(series);
-    //XXX: SAUTER END
 
-    //XXX: SAUTER: add support for custom datatypes
-    if (this.attr_("customData")){
-      series = this.attr_("customData").formatSeries(series);
-    }
-    else 
-    //XXX: SAUTER END 
-    if (bars) {
-      for (j=0; j<series.length; j++) {
-        series[j] = [series[j][0],
-                     series[j][1][0],
-                     series[j][1][1],
-                     series[j][1][2]];
-      }
-    } else if (this.attr_("stackedGraph")) {
+    var seriesName = this.attr_("labels")[i];
+    var seriesExtremes = this.dataHandler_.getExtremeYValues(series,dateWindow,this.attr_("stepPlot",seriesName));
+
+
+    series = this.dataHandler_.formatSeries(series);
+    
+    if (this.attr_("stackedGraph")) {
       // Need to clear last_x explicitly as javascript's locals are
       // local to function, not to a block of statements
       var actual_y, last_x = null;
@@ -2390,7 +2335,6 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       }
     }
 
-    var seriesName = this.attr_("labels")[i];
     extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
@@ -2792,148 +2736,6 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
     series.push([x, point]);
   }
   return series;
-};
-
-/**
- * @private
- * Calculates the rolling average of a data set.
- * If originalData is [label, val], rolls the average of those.
- * If originalData is [label, [, it's interpreted as [value, stddev]
- *   and the roll is returned in the same form, with appropriately reduced
- *   stddev for each value.
- * Note that this is where fractional input (i.e. '5/10') is converted into
- *   decimal values.
- * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of points over which to average the
- *                            data
- */
-Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
-  rollPeriod = Math.min(rollPeriod, originalData.length);
-  var rollingData = [];
-  var sigma = this.attr_("sigma");
-
-  var low, high, i, j, y, sum, num_ok, stddev;
-  if (this.fractions_) {
-    var num = 0;
-    var den = 0;  // numerator/denominator
-    var mult = 100.0;
-    for (i = 0; i < originalData.length; i++) {
-      num += originalData[i][1][0];
-      den += originalData[i][1][1];
-      if (i - rollPeriod >= 0) {
-        num -= originalData[i - rollPeriod][1][0];
-        den -= originalData[i - rollPeriod][1][1];
-      }
-
-      var date = originalData[i][0];
-      var value = den ? num / den : 0.0;
-      if (this.attr_("errorBars")) {
-        if (this.attr_("wilsonInterval")) {
-          // For more details on this confidence interval, see:
-          // http://en.wikipedia.org/wiki/Binomial_confidence_interval
-          if (den) {
-            var p = value < 0 ? 0 : value, n = den;
-            var pm = sigma * Math.sqrt(p*(1-p)/n + sigma*sigma/(4*n*n));
-            var denom = 1 + sigma * sigma / den;
-            low  = (p + sigma * sigma / (2 * den) - pm) / denom;
-            high = (p + sigma * sigma / (2 * den) + pm) / denom;
-            rollingData[i] = [date,
-                              [p * mult, (p - low) * mult, (high - p) * mult]];
-          } else {
-            rollingData[i] = [date, [0, 0, 0]];
-          }
-        } else {
-          stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
-          rollingData[i] = [date, [mult * value, mult * stddev, mult * stddev]];
-        }
-      } else {
-        rollingData[i] = [date, mult * value];
-      }
-    }
-  } else if (this.attr_("customBars")) {
-    low = 0;
-    var mid = 0;
-    high = 0;
-    var count = 0;
-    for (i = 0; i < originalData.length; i++) {
-      var data = originalData[i][1];
-      y = data[1];
-      rollingData[i] = [originalData[i][0], [y, y - data[0], data[2] - y]];
-
-      if (y !== null && !isNaN(y)) {
-        low += data[0];
-        mid += y;
-        high += data[2];
-        count += 1;
-      }
-      if (i - rollPeriod >= 0) {
-        var prev = originalData[i - rollPeriod];
-        if (prev[1][1] !== null && !isNaN(prev[1][1])) {
-          low -= prev[1][0];
-          mid -= prev[1][1];
-          high -= prev[1][2];
-          count -= 1;
-        }
-      }
-      if (count) {
-        rollingData[i] = [originalData[i][0], [ 1.0 * mid / count,
-                                                1.0 * (mid - low) / count,
-                                                1.0 * (high - mid) / count ]];
-      } else {
-        rollingData[i] = [originalData[i][0], [null, null, null]];
-      }
-    }
-  } else {
-    // Calculate the rolling average for the first rollPeriod - 1 points where
-    // there is not enough data to roll over the full number of points
-    if (!this.attr_("errorBars")){
-      if (rollPeriod == 1) {
-        return originalData;
-      }
-
-      for (i = 0; i < originalData.length; i++) {
-        sum = 0;
-        num_ok = 0;
-        for (j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
-          y = originalData[j][1];
-          if (y === null || isNaN(y)) continue;
-          num_ok++;
-          sum += originalData[j][1];
-        }
-        if (num_ok) {
-          rollingData[i] = [originalData[i][0], sum / num_ok];
-        } else {
-          rollingData[i] = [originalData[i][0], null];
-        }
-      }
-
-    } else {
-      for (i = 0; i < originalData.length; i++) {
-        sum = 0;
-        var variance = 0;
-        num_ok = 0;
-        for (j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
-          y = originalData[j][1][0];
-          if (y === null || isNaN(y)) continue;
-          num_ok++;
-          sum += originalData[j][1][0];
-          variance += Math.pow(originalData[j][1][1], 2);
-        }
-        if (num_ok) {
-          stddev = Math.sqrt(variance) / num_ok;
-          rollingData[i] = [originalData[i][0],
-                            [sum / num_ok, sigma * stddev, sigma * stddev]];
-        } else {
-          // This explicitly preserves NaNs to aid with "independent series".
-          // See testRollingAveragePreservesNaNs.
-          var v = (rollPeriod == 1) ? originalData[i][1][0] : null;
-          rollingData[i] = [originalData[i][0], [v, v, v]];
-        }
-      }
-    }
-  }
-
-  return rollingData;
 };
 
 /**

@@ -37,9 +37,11 @@
     "plugins/range-selector.js",
     "dygraph-plugin-install.js",
     "dygraph-options-reference.js",  // Shouldn't be included in generate-combined.sh
-    "sauter/datahandler/datahandler.js",
-    "sauter/datahandler/datahandler-compressed.js",
-    "sauter/datahandler/datahandler-raw.js"
+    "datahandler/datahandler.js",
+    "datahandler/datahandler-default.js",
+    "datahandler/datahandler-bars.js",
+    "datahandler/sauter-datahandler-raw.js",
+    "datahandler/sauter-datahandler-compressed.js"
   ];
 
   for (var i = 0; i < source_files.length; i++) {
