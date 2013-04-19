@@ -249,11 +249,8 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         name: setName,  // TODO(danvk): is this really necessary?
         idx: j + boundaryIdStart
       };
-      //XXX: SAUTER: add support for custom datatypes
-      if (this.attr_("customData")){
-        this.attr_("customData").onPointCreated(seriesPoints[j], item[1], this.dygraph_);
-      }
-      //XXX: END
+      
+      this.dygraph_.dataHandler_.onPointCreated(seriesPoints[j], item[1], this.dygraph_);
     }
 
     this.points[setIdx] = seriesPoints;
