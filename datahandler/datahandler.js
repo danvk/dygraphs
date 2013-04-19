@@ -35,7 +35,7 @@ Dygraph.DataHandler = function DataHandler(){
    * @param { [Array] } series the data returned by the rollingAverage method,
    *   either [ [x1, y1], [x2, y2], ... ] or [ [x1, [y1, dev_low, dev_high]],
    *   [x2, [y2, dev_low, dev_high]], ...
-   * @param [Array] dateWindow, optional window that should be regarded
+   * @param [min,max] dateWindow, optional window that should be regarded
    *   for the extremes computation.
    * @param boolean Whether or not this series is a step plot. Which has influence
    *   on the computation of the left and right edges.
@@ -74,40 +74,57 @@ Dygraph.DataHandler = function DataHandler(){
    */
   handler.prototype.onPointCreated = function(seriesPoint, yValue, dygraphs){};
   
-  handler.prototype.computeYIntersection = function(pointLeft, pointRight, xValue){
-    var leftY = this.getYFloatValue(pointLeft[1]);
-    var rightY = this.getYFloatValue(pointRight[1]);
-    if (!isNaN(leftY) && !isNaN(rightY)) {
-      var deltaY = rightY - leftY;
-      var deltaX = pointRight[0] - pointLeft[0];
-      var gradient = deltaY / deltaX;
-      var growth = (xValue - pointLeft[0]) * gradient;
-      return pointLeft[1] + growth;
-    }
-    return null;
+  /**
+   * @private
+   * Helper method that computes the y value of a line defined 
+   *   by the points p1 and p2 and a given x value.
+   * @param [x,y] p1 left point.
+   * @param [x,y] p2 right point.
+   * @param {} dygraphs the dygraphs instance.
+   * @return number corresponding y value to x on the line defined by p1 and p2.
+   */
+  handler.prototype.computeYIntersection = function(p1, p2, xValue) {
+    var deltaY = p2[1] - p1[1];
+    var deltaX = p2[0] - p1[0];
+    var gradient = deltaY / deltaX;
+    var growth = (xValue - p1[0]) * gradient;
+    return p1[1] + growth;
   };
   
-  handler.prototype.getIndexesInWindow = function(series, dateWindow){
+  /**
+   * @private
+   * Helper method that returns the first and the last index of the given
+   *   series that lie inside the given dateWindow.
+   * @param { [Array] } series the data returned by the rollingAverage method,
+   *   either [ [x1, y1], [x2, y2], ... ] or [ [x1, [y1, dev_low, dev_high]],
+   *   [x2, [y2, dev_low, dev_high]], ...
+   * @param [min,max] dateWindow window defining the min and max x values.
+   * @return [firstIndex, lastIndex] first and last indexes lying in the date window.
+   */
+  handler.prototype.getIndexesInWindow = function(series, dateWindow) {
     var firstIdx = 0, lastIdx = series.length - 1;
-    
     if (dateWindow) {
       var idx = 0;
       var low = dateWindow[0];
       var high = dateWindow[1];
-      
-      // Start from each side of the array to minimize the performance needed.
-      while (idx < series.length-1 && series[idx][0] < low) {
+
+      // Start from each side of the array to minimize the performance
+      // needed.
+      while (idx < series.length - 1 && series[idx][0] < low) {
         firstIdx++;
         idx++;
-      }    
+      }
       idx = series.length - 1;
       while (idx > 0 && series[idx][0] > high) {
         lastIdx--;
         idx--;
       }
     }
-    return [firstIdx,lastIdx];
+    if(firstIdx < lastIdx)
+      return [ firstIdx, lastIdx ];
+    else
+      return [0,0];
   };
-  
+
   return handler;
 };
