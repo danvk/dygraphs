@@ -1,13 +1,54 @@
 var DefaultHandler = Dygraph.DataHandler();
 Dygraph.DataHandlers.registerHandler("default", DefaultHandler);
-DefaultHandler.prototype.formatSeries = function(series) {
-  return series;
-};
+DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
+    dygraphs) {
+  rollPeriod = Math.min(rollPeriod, originalData.length);
+  var rollingData = [];
 
-DefaultHandler.prototype.formatSeries = function(series) {
-  return series;
-};
+  var i, j, y, sum, num_ok;
+  if (dygraphs.fractions_) {
+    var num = 0;
+    var den = 0; // numerator/denominator
+    var mult = 100.0;
+    for (i = 0; i < originalData.length; i++) {
+      num += originalData[i][1][0];
+      den += originalData[i][1][1];
+      if (i - rollPeriod >= 0) {
+        num -= originalData[i - rollPeriod][1][0];
+        den -= originalData[i - rollPeriod][1][1];
+      }
 
+      var date = originalData[i][0];
+      var value = den ? num / den : 0.0;
+      rollingData[i] = [ date, mult * value ];
+    }
+  } else {
+    // Calculate the rolling average for the first rollPeriod - 1 points
+    // where
+    // there is not enough data to roll over the full number of points
+    if (rollPeriod == 1) {
+      return originalData;
+    }
+    for (i = 0; i < originalData.length; i++) {
+      sum = 0;
+      num_ok = 0;
+      for (j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
+        y = originalData[j][1];
+        if (y === null || isNaN(y))
+          continue;
+        num_ok++;
+        sum += originalData[j][1];
+      }
+      if (num_ok) {
+        rollingData[i] = [ originalData[i][0], sum / num_ok ];
+      } else {
+        rollingData[i] = [ originalData[i][0], null ];
+      }
+    }
+  }
+
+  return rollingData;
+};
 DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
     stepPlot) {
   var minY = null, maxY = null, y;
@@ -70,59 +111,11 @@ DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
   }
   return [ minY, maxY ];
 };
-
+DefaultHandler.prototype.formatSeries = function(series) {
+  return series;
+};
 DefaultHandler.prototype.getYFloatValue = function(value) {
   return DygraphLayout.parseFloat_(value);
-};
-
-DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    dygraphs) {
-  rollPeriod = Math.min(rollPeriod, originalData.length);
-  var rollingData = [];
-
-  var i, j, y, sum, num_ok;
-  if (dygraphs.fractions_) {
-    var num = 0;
-    var den = 0; // numerator/denominator
-    var mult = 100.0;
-    for (i = 0; i < originalData.length; i++) {
-      num += originalData[i][1][0];
-      den += originalData[i][1][1];
-      if (i - rollPeriod >= 0) {
-        num -= originalData[i - rollPeriod][1][0];
-        den -= originalData[i - rollPeriod][1][1];
-      }
-
-      var date = originalData[i][0];
-      var value = den ? num / den : 0.0;
-      rollingData[i] = [ date, mult * value ];
-    }
-  } else {
-    // Calculate the rolling average for the first rollPeriod - 1 points
-    // where
-    // there is not enough data to roll over the full number of points
-    if (rollPeriod == 1) {
-      return originalData;
-    }
-    for (i = 0; i < originalData.length; i++) {
-      sum = 0;
-      num_ok = 0;
-      for (j = Math.max(0, i - rollPeriod + 1); j < i + 1; j++) {
-        y = originalData[j][1];
-        if (y === null || isNaN(y))
-          continue;
-        num_ok++;
-        sum += originalData[j][1];
-      }
-      if (num_ok) {
-        rollingData[i] = [ originalData[i][0], sum / num_ok ];
-      } else {
-        rollingData[i] = [ originalData[i][0], null ];
-      }
-    }
-  }
-
-  return rollingData;
 };
 
 DefaultHandler.prototype.onPointCreated = function(point, value) {

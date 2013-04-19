@@ -1,13 +1,8 @@
 var RawHandler = Dygraph.DataHandler();
 Dygraph.DataHandlers.registerHandler("sauter-raw", RawHandler);
-RawHandler.prototype.formatSeries = function(series) {
-  return series;
+RawHandler.prototype.rollingAverage = function(originalData, rollPeriod) {
+  return originalData;
 };
-
-RawHandler.prototype.formatSeries = function(series) {
-  return series;
-};
-
 RawHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
   var minY = null, maxY = null, y;
   var firstIdx = 0, lastIdx = series.length - 1;
@@ -75,7 +70,9 @@ RawHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) 
   }
   return [ minY, maxY ];
 };
-
+RawHandler.prototype.formatSeries = function(series) {
+  return series;
+};
 RawHandler.prototype.getYFloatValue = function(value) {
   if (value === null || value === undefined) {
     return NaN;
@@ -83,11 +80,6 @@ RawHandler.prototype.getYFloatValue = function(value) {
     return DygraphLayout.parseFloat_(value.value);
   }
 };
-
-RawHandler.prototype.rollingAverage = function(originalData, rollPeriod) {
-  return originalData;
-};
-
 RawHandler.prototype.onPointCreated = function(point, value) {
-
+  // Nothing to do
 };

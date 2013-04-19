@@ -1,7 +1,8 @@
 var CompressedHandler = Dygraph.DataHandler();
 Dygraph.DataHandlers.registerHandler("sauter-compressed", CompressedHandler);
-CompressedHandler.prototype.formatSeries = function(series) {
-  return series;
+
+CompressedHandler.prototype.rollingAverage = function(originalData, rollPeriod) {
+  return originalData;
 };
 CompressedHandler.prototype.getExtremeYValues = function(series, dateWindow,
     stepPlot) {
@@ -103,6 +104,9 @@ CompressedHandler.prototype.getExtremeYValues = function(series, dateWindow,
 
   return [ minY, maxY ];
 };
+CompressedHandler.prototype.formatSeries = function(series) {
+  return series;
+};
 CompressedHandler.prototype.getYFloatValue = function(value) {
 
   if (value === null || value === undefined) {
@@ -110,9 +114,6 @@ CompressedHandler.prototype.getYFloatValue = function(value) {
   }
   return DygraphLayout.parseFloat_(value.value[0]);
 
-};
-CompressedHandler.prototype.rollingAverage = function(originalData, rollPeriod) {
-  return originalData;
 };
 CompressedHandler.prototype.onPointCreated = function(point, value, dygraphs) {
   if (value === null || value === undefined) {
