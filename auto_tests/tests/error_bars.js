@@ -168,7 +168,7 @@ errorBarsTestCase.prototype.testRollingAveragePreservesNaNs = function() {
   assertNaN(in_series[5][1][0]);
   assertNaN(in_series[5][1][1]);
 
-  var out_series = g.rollingAverage(in_series, 1);
+  var out_series = g.dataHandler_.rollingAverage(in_series, 1, g);
   assertNaN(out_series[5][1][0]);
   assertNaN(out_series[5][1][1]);
   assertNaN(out_series[5][1][2]);

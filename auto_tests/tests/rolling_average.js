@@ -95,8 +95,8 @@ rollingAverageTestCase.prototype.testRollShortFractions = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data1, opts);
 
-  var rolled1 = g.rollingAverage(data1, 1);
-  var rolled2 = g.rollingAverage(data2, 1);
+  var rolled1 = g.dataHandler_.rollingAverage(data1, 1, g);
+  var rolled2 = g.dataHandler_.rollingAverage(data2, 1, g);
 
   assertEquals(rolled1[0], rolled2[0]);
 };
