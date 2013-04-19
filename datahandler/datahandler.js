@@ -69,10 +69,10 @@ Dygraph.DataHandler = function DataHandler(){
    * Here any data may be added to the seriesPoint which is needed to plot 
    *   the graph.
    * @param {} seriesPoint The point passed to the plotter.
-   * @param {} yValue the actual y value from which the float value was extracted.
+   * @param {} sample the actual sample for the point.
    * @param {} dygraphs the dygraphs instance.
    */
-  handler.prototype.onPointCreated = function(seriesPoint, yValue, dygraphs){};
+  handler.prototype.onPointCreated = function(seriesPoint, sample, dygraphs){};
   
   /**
    * @private

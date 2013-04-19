@@ -115,12 +115,12 @@ CompressedHandler.prototype.getYFloatValue = function(value) {
   return DygraphLayout.parseFloat_(value.value[0]);
 
 };
-CompressedHandler.prototype.onPointCreated = function(point, value, dygraphs) {
-  if (value === null || value === undefined) {
+CompressedHandler.prototype.onPointCreated = function(point, sample, dygraphs) {
+  if (sample[1] == null || sample[1].value === null) {
     return;
   } else {
     var axis = dygraphs.axisPropertiesForSeries(point.name);
-    point.y_top = DygraphLayout._calcYNormal(axis, value.value[1]);
-    point.y_bottom = DygraphLayout._calcYNormal(axis, value.value[2]);
+    point.y_top = DygraphLayout._calcYNormal(axis, sample[1].value[1]);
+    point.y_bottom = DygraphLayout._calcYNormal(axis, sample[1].value[2]);
   }
 };

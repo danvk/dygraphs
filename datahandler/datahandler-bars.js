@@ -210,15 +210,15 @@ BarsHandler.prototype.formatSeries = function(series) {
   }
   return series;
 };
-BarsHandler.prototype.onPointCreated = function(point, value, dygraphs) {
+BarsHandler.prototype.onPointCreated = function(point, sample, dygraphs) {
   // Copy over the error terms
-    var axis = dygraphs.axisPropertiesForSeries(point.name);
-    // TODO (konigsberg): use optionsForAxis instead.
-    var logscale = dygraphs.attributes_.getForSeries("logscale", point.name);
-    var errorMinus = DygraphLayout.parseFloat_(item[2]);
-    var errorPlus = DygraphLayout.parseFloat_(item[3]);
-    var yv_minus = point.y - errorMinus;
-    var yv_plus = point.y + errorPlus;
-    point.y_top = DygraphLayout._calcYNormal(axis, yv_minus, logscale);
-    point.y_bottom = DygraphLayout._calcYNormal(axis, yv_plus, logscale);
+  var axis = dygraphs.axisPropertiesForSeries(point.name);
+  // TODO (konigsberg): use optionsForAxis instead.
+  var logscale = dygraphs.attributes_.getForSeries("logscale", point.name);
+  var errorMinus = DygraphLayout.parseFloat_(sample[2]);
+  var errorPlus = DygraphLayout.parseFloat_(sample[3]);
+  var yv_minus = point.yval - errorMinus;
+  var yv_plus = point.yval + errorPlus;
+  point.y_top = DygraphLayout._calcYNormal(axis, yv_minus, logscale);
+  point.y_bottom = DygraphLayout._calcYNormal(axis, yv_plus, logscale);
 };

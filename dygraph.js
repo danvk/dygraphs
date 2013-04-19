@@ -2408,7 +2408,7 @@ Dygraph.prototype.drawGraph_ = function() {
   // Tell PlotKit to use this new data and render itself
   this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
-  this.layout_.evaluateWithError();
+  this.layout_.evaluate();
   this.renderGraph_(is_initial_draw);
 
   if (this.attr_("timingName")) {

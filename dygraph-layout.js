@@ -250,7 +250,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         idx: j + boundaryIdStart
       };
       
-      this.dygraph_.dataHandler_.onPointCreated(seriesPoints[j], item[1], this.dygraph_);
+      this.dygraph_.dataHandler_.onPointCreated(seriesPoints[j], item, this.dygraph_);
     }
 
     this.points[setIdx] = seriesPoints;
@@ -292,45 +292,6 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
       pos = this.dygraph_.toPercentYCoord(tick.v, i);
       if ((pos >= 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
-      }
-    }
-  }
-};
-
-
-/**
- * Behaves the same way as PlotKit.Layout, but also copies the errors
- * @private
- */
-DygraphLayout.prototype.evaluateWithError = function() {
-  this.evaluate();
-  if (!(this.attr_('errorBars') || this.attr_('customBars'))) return;
-
-  // Copy over the error terms
-  var i = 0;  // index in this.points
-  for (var setIdx = 0; setIdx < this.datasets.length; ++setIdx) {
-    var points = this.points[setIdx];
-    var j = 0;
-    var dataset = this.datasets[setIdx];
-    var setName = this.setNames[setIdx];
-    var axis = this.dygraph_.axisPropertiesForSeries(setName);
-    // TODO (konigsberg): use optionsForAxis instead.
-    var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
-
-    for (j = 0; j < dataset.length; j++, i++) {
-      var item = dataset[j];
-      var xv = DygraphLayout.parseFloat_(item[0]);
-      var yv = DygraphLayout.parseFloat_(item[1]);
-
-      if (xv == points[j].xval &&
-          yv == points[j].yval) {
-        var errorMinus = DygraphLayout.parseFloat_(item[2]);
-        var errorPlus = DygraphLayout.parseFloat_(item[3]);
-
-        var yv_minus = yv - errorMinus;
-        var yv_plus = yv + errorPlus;
-        points[j].y_top = DygraphLayout._calcYNormal(axis, yv_minus, logscale);
-        points[j].y_bottom = DygraphLayout._calcYNormal(axis, yv_plus, logscale);
       }
     }
   }
