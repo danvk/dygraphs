@@ -50,20 +50,20 @@ grid.prototype.willDrawChart = function(e) {
 
   var x, y, i, ticks;
   if (g.getOption('drawYGrid')) {
-    var axes = ["y","y2"];
-    var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern =[];
-    for(var index in axes) {
-      drawGrid[index] = g.getOptionForAxis("drawGrid",axes[index]);
-      if(drawGrid[index]) {
-        strokeStyles[index] = g.getOptionForAxis('gridLineColor',axes[index]);
-        lineWidths[index] = g.getOptionForAxis('gridLineWidth',axes[index]);
-        strokePattern[index] = g.getOptionForAxis('gridLinePattern',axes[index]);
-        stroking[index] = strokePattern[index] && (strokePattern[index].length >= 2);
+    var axes = ["y", "y2"];
+    var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern = [];
+    for (var i = 0; i < axes.length; i++) {
+      drawGrid[i] = g.getOptionForAxis("drawGrid", axes[i]);
+      if (drawGrid[i]) {
+        strokeStyles[i] = g.getOptionForAxis('gridLineColor', axes[i]);
+        lineWidths[i] = g.getOptionForAxis('gridLineWidth', axes[i]);
+        strokePattern[i] = g.getOptionForAxis('gridLinePattern', axes[i]);
+        stroking[i] = strokePattern[i] && (strokePattern[i].length >= 2);
       }
     }
     ticks = layout.yticks;
     ctx.save();
-    // draw grids for the differen axes
+    // draw grids for the different y axes
     for (i = 0; i < ticks.length; i++) {
       var axis = ticks[i][0];
       if(drawGrid[axis]) {
@@ -89,16 +89,17 @@ grid.prototype.willDrawChart = function(e) {
     ctx.restore();
   }
 
-  if (g.getOption('drawXGrid') && g.getOptionForAxis("drawGrid",'x')) {
+  // draw grid for x axis
+  if (g.getOption('drawXGrid') && g.getOptionForAxis("drawGrid", 'x')) {
     ticks = layout.xticks;
     ctx.save();
-    var strokePattern = g.getOptionForAxis('gridLinePattern','x');
+    var strokePattern = g.getOptionForAxis('gridLinePattern', 'x');
     var stroking = strokePattern && (strokePattern.length >= 2);
     if (stroking) {
       ctx.installPattern(strokePattern);
     }
-    ctx.strokeStyle = g.getOptionForAxis('gridLineColor','x');
-    ctx.lineWidth = g.getOptionForAxis('gridLineWidth','x');
+    ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
+    ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
     for (i = 0; i < ticks.length; i++) {
       x = halfUp(area.x + ticks[i][0] * area.w);
       y = halfDown(area.y + area.h);
