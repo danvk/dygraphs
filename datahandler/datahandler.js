@@ -7,12 +7,32 @@ Dygraph.DataHandlers.registerHandler = function(name,handler){
 };
 
 Dygraph.DataHandlers.getHandler = function(name){
-  return new this.handlers_[name]();
+  return  Dygraph.DataHandlers.handlers_[name];
+};
+
+Dygraph.DataHandlers.createHandler = function(name){
+  return new Dygraph.DataHandlers.handlers_[name]();
 };
 
 Dygraph.DataHandler = function DataHandler(){
   var handler = function(){return this;};
-
+  //Uniform Data Format Constants
+  handler.prototype.X = 0;
+  handler.prototype.Y = 1;
+  handler.prototype.EXTRAS = 2;
+  
+  /**
+   * Extracts one series from the raw data (a 2D array) into an array of (date,
+   * value) tuples.
+   *
+   * This is where undesirable points (i.e. negative values on log scales and
+   * missing values through which we wish to connect lines) are dropped.
+   * TODO(danvk): the "missing values" bit above doesn't seem right.
+   *
+   * @private
+   */
+  handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs){};
+  
   /**
    * @private
    * Calculates the rolling average of a data set.
@@ -42,26 +62,6 @@ Dygraph.DataHandler = function DataHandler(){
    * @return [low, high]
    */
   handler.prototype.getExtremeYValues = function(series,dateWindow,stepPlot){};
-  
-  /**
-   * @private
-   * Formats the series data so that the x value is found at series[n][0] 
-   *   and the primary y value is found at series[n][1]. Additional data
-   *   may be stored at any other index of the series.
-   * @param { [Array] } series the data returned by the rollingAverage method,
-   *   either [ [x1, y1], [x2, y2], ... ] or [ [x1, [y1, dev_low, dev_high]],
-   *   [x2, [y2, dev_low, dev_high]], ...
-   * @return { [Array] } the formatted series.
-   */
-  handler.prototype.formatSeries = function(){};
-
-  /**
-   * @private
-   * Extracts the float y value from the series value.
-   * @param the y value placed in series[n][0] by the formatSeries function.
-   * @return A float value or null if no float value can be extracted.
-   */
-  handler.prototype.getYFloatValue = function(value){};
   
   /**
    * @private

@@ -2178,13 +2178,23 @@ Dygraph.prototype.predraw_ = function() {
   var start = new Date();
   
   // Determine the correct dataHandler
-  if(this.attr_("dataHandler")){
-    this.dataHandler_ = Dygraph.DataHandlers.DataHandlers.getHandler(this.attr_("dataHandler"));
-  }else if(this.attr_("customBars") || this.attr_("errorBars")){
-    this.dataHandler_ = Dygraph.DataHandlers.getHandler("bars");
-  }else {
-    this.dataHandler_ = Dygraph.DataHandlers.getHandler("default");
+  var handlerConstructor;
+  if (this.attr_("dataHandler")) {
+    handlerConstructor =  Dygraph.DataHandlers.DataHandlers.getHandler(this.attr_("dataHandler"));
+  } else if (this.fractions_){
+    if (this.attr_("errorBars")) {
+      handlerConstructor = Dygraph.DataHandlers.getHandler("bars-fractions");
+    } else {
+      handlerConstructor = Dygraph.DataHandlers.getHandler("default-fractions");
+    }
+  } else if (this.attr_("customBars")) {
+    handlerConstructor = Dygraph.DataHandlers.getHandler("bars-custom");
+  } else if (this.attr_("errorBars")) {
+    handlerConstructor = Dygraph.DataHandlers.getHandler("bars-error");
+  } else {
+    handlerConstructor = Dygraph.DataHandlers.getHandler("default");
   }
+  this.dataHandler_ = new handlerConstructor();
 
   this.layout_.computePlotArea();
 
@@ -2213,9 +2223,10 @@ Dygraph.prototype.predraw_ = function() {
   for (var i = 1; i < this.numColumns(); i++) {
     // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
     var logScale = this.attr_('logscale');
-    var series = this.extractSeries_(this.rawData_, i, logScale);
-    
-    series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this);
+    var series = this.dataHandler_.extractSeries(this.rawData_, i, logScale, this);
+    if (this.rollPeriod_ > 1) {
+      series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this);
+    }
     
     this.rolledSeries_.push(series);
   }
@@ -2297,9 +2308,6 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     var seriesName = this.attr_("labels")[i];
     var seriesExtremes = this.dataHandler_.getExtremeYValues(series,dateWindow,this.attr_("stepPlot",seriesName));
 
-
-    series = this.dataHandler_.formatSeries(series);
-    
     if (this.attr_("stackedGraph")) {
       // Need to clear last_x explicitly as javascript's locals are
       // local to function, not to a block of statements

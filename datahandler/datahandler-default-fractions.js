@@ -1,0 +1,62 @@
+var DefaultFractionHandler = Dygraph.DataHandler();
+DefaultFractionHandler.prototype = Dygraph.DataHandlers.createHandler("default");
+Dygraph.DataHandlers.registerHandler("default-fractions", DefaultFractionHandler);
+
+DefaultFractionHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  // TODO(danvk): pre-allocate series here.
+  var series = [];
+  var x, y, point, num, den, value;
+  var mult = 100.0;
+  for ( var j = 0; j < rawData.length; j++) {
+    x = rawData[j][0];
+    point = rawData[j][i];
+    if (logScale) {
+      // On the log scale, points less than zero do not exist.
+      // This will create a gap in the chart.
+      if (point <= 0) {
+        point = null;
+      }
+    }
+    // Extract to the unified data format.
+    if (point !== null) {
+      num = point[0];
+      den = point[1];
+      if (num !== null && !isNaN(num)) {
+        value = den ? num / den : 0.0;
+        y = mult * value;
+        // preserve original values in extras for further filtering
+        series.push([ x, y, [ num, den ] ]);
+      } else {
+        series.push([ x, num, [ num, den ] ]);
+      }
+    } else {
+      series.push([ x, null, [ null, null ] ]);
+    }
+  }
+  return series;
+};
+
+DefaultFractionHandler.prototype.rollingAverage = function(originalData, rollPeriod,
+    dygraphs) {
+  rollPeriod = Math.min(rollPeriod, originalData.length);
+  var rollingData = [];
+
+  var i;
+  var num = 0;
+  var den = 0; // numerator/denominator
+  var mult = 100.0;
+  for (i = 0; i < originalData.length; i++) {
+    num += originalData[i][2][0];
+    den += originalData[i][2][1];
+    if (i - rollPeriod >= 0) {
+      num -= originalData[i - rollPeriod][2][0];
+      den -= originalData[i - rollPeriod][2][1];
+    }
+
+    var date = originalData[i][0];
+    var value = den ? num / den : 0.0;
+    rollingData[i] = [ date, mult * value ];
+  }
+
+  return rollingData;
+};

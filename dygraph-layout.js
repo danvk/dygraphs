@@ -235,7 +235,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     for (var j = 0; j < dataset.length; j++) {
       var item = dataset[j];
       var xValue = DygraphLayout.parseFloat_(item[0]);
-      var yValue = this.dygraph_.dataHandler_.getYFloatValue(item[1]);
+      var yValue = DygraphLayout.parseFloat_(item[1]);
       
       // Range from 0-1 where 0 represents left and 1 represents right.
       var xNormal = (xValue - this.minxval) * this.xscale;

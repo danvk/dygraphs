@@ -1,5 +1,24 @@
 var DefaultHandler = Dygraph.DataHandler();
 Dygraph.DataHandlers.registerHandler("default", DefaultHandler);
+
+DefaultHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  // TODO(danvk): pre-allocate series here.
+  var series = [];
+  for (var j = 0; j < rawData.length; j++) {
+    var x = rawData[j][0];
+    var point = rawData[j][i];
+    if (logScale) {
+      // On the log scale, points less than zero do not exist.
+      // This will create a gap in the chart.
+      if (point <= 0) {
+        point = null;
+      }
+    }
+    series.push([x, point]);
+  }
+  return series;
+};
+
 DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
     dygraphs) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
@@ -110,12 +129,6 @@ DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
     }
   }
   return [ minY, maxY ];
-};
-DefaultHandler.prototype.formatSeries = function(series) {
-  return series;
-};
-DefaultHandler.prototype.getYFloatValue = function(value) {
-  return DygraphLayout.parseFloat_(value);
 };
 
 DefaultHandler.prototype.onPointCreated = function(point, value) {
