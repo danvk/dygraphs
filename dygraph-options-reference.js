@@ -365,7 +365,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "float",
     "example": "0.5, 2.0",
-    "description": "The width of the lines connecting data points. This can be used to increase the contrast or some graphs."
+    "description": "The width of the lines connecting data points. This can be used to increase the contrast of some graphs, or to disable the display of lines and get a scatter plot (strokeWidth: 0)."
   },
   "strokePattern": {
     "default": "null",
