@@ -405,10 +405,8 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     // This will allow selection of the closest point using a touch device on a single touch
     // It does not invoke the highlight callback like the usual Dygraph.prototype.mouseMove_
     // Tested against ipad1, ipad2, Android 4.03 VM, Android 2.3.3 VM.
-    var closestTouchP = g.findClosestPoint(touches[0].pageX,touches[0].pageY);
-	  if(closestTouchP) {
-		  var selectionChanged = g.setSelection(closestTouchP.row, closestTouchP.seriesName);
-  	}
+       g.mouseMove_(event);
+       
   } else if (touches.length >= 2) {
     // It's become a pinch!
     // In case there are 3+ touches, we ignore all but the "first" two.
