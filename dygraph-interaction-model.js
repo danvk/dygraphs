@@ -400,6 +400,13 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     // This is just a swipe.
     context.initialPinchCenter = touches[0];
     context.touchDirections = { x: true, y: true };
+    // The initial call to event.preventDefault(); disables ipad 1 and ipad 2 and potentially other
+    // touch devices from ever selecting data points using the default interaction model.
+    // This will allow selection of the closest point using a touch device on a single touch
+    // It does not invoke the highlight callback like the usual Dygraph.prototype.mouseMove_
+    // Tested against ipad1, ipad2, Android 4.03 VM, Android 2.3.3 VM.
+       g.mouseMove_(event);
+       
   } else if (touches.length >= 2) {
     // It's become a pinch!
     // In case there are 3+ touches, we ignore all but the "first" two.
