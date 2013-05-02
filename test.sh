@@ -9,4 +9,11 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
+# Don't run tests if the documentation doesn't parse.
+./generate-documentation.py > /dev/null
+if [ $? != 0 ]; then
+  echo Failed to generate documentation. Fix this before running tests.
+  exit 1
+fi
+
 phantomjs phantom-driver.js

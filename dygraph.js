@@ -1019,8 +1019,8 @@ Dygraph.prototype.createInterface_ = function() {
     // 2. e.relatedTarget is outside the chart
     var target = e.target || e.fromElement;
     var relatedTarget = e.relatedTarget || e.toElement;
-    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
-        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
+    if (Dygraph.isNodeContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
       dygraph.mouseOut_(e);
     }
   };
@@ -2797,6 +2797,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
+  var errorBars = this.attr_("errorBars");
+  var customBars =  this.attr_("customBars");
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
@@ -2807,7 +2809,12 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
         point = null;
       }
     }
-    series.push([x, point]);
+    // Fix null points to fit the display type standard.
+    if(point !== null) {
+      series.push([x, point]);
+    } else {
+      series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
+    }
   }
   return series;
 };
