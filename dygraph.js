@@ -2303,6 +2303,15 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       var low = dateWindow[0];
       var high = dateWindow[1];
       var pruned = [];
+      var isValueNull = function(sample) {
+        if (!bars) {
+          return sample[1] === null;
+        } else {
+          return customBars ? sample[1][1] === null : 
+            errorBars ? sample[1][0] === null : false;
+        }
+      };
+
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
       var firstIdx = null, lastIdx = null;
@@ -2314,51 +2323,36 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           lastIdx = k;
         }
       }
+
       if (firstIdx === null) firstIdx = 0;
       var correctedFirstIdx = firstIdx;
-   
       var isInvalidValue = true;
-      while(isInvalidValue && correctedFirstIdx > 0){
+      while (isInvalidValue && correctedFirstIdx > 0) {
         correctedFirstIdx--;
-        
-        if(bars){
-          if(customBars){
-            isInvalidValue = series[correctedFirstIdx][1][1] === null;
-          } else if(errorBars){
-            isInvalidValue = series[correctedFirstIdx][1][0] === null;
-          }
-        } else{
-          isInvalidValue = series[correctedFirstIdx][1] === null;
-        }
+        isInvalidValue = isValueNull(series[correctedFirstIdx]);
       }
-      
+
       if (lastIdx === null) lastIdx = series.length - 1;
       var correctedLastIdx = lastIdx;
       isInvalidValue = true;
-      while(isInvalidValue && correctedLastIdx < series.length - 1){
+      while (isInvalidValue && correctedLastIdx < series.length - 1) {
         correctedLastIdx++;
-        
-        if(bars){
-          if(customBars){
-            isInvalidValue = series[correctedLastIdx][1][1] === null;
-          } else if(errorBars){
-            isInvalidValue = series[correctedLastIdx][1][0] === null;
-          }
-        } else{
-          isInvalidValue = series[correctedLastIdx][1] === null;
-        }
+        isInvalidValue = isValueNull(series[correctedLastIdx]);
       }
-      
-      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
-      
-      if(correctedFirstIdx!==firstIdx)
+
+      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, 
+          (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
+
+      if (correctedFirstIdx!==firstIdx) {
         pruned.push(series[correctedFirstIdx]);
-      for (k = firstIdx; k <= lastIdx; k++) {
-          pruned.push(series[k]);
       }
-      if(correctedLastIdx !== lastIdx)
+      for (k = firstIdx; k <= lastIdx; k++) {
+        pruned.push(series[k]);
+      }
+      if (correctedLastIdx !== lastIdx) {
         pruned.push(series[correctedLastIdx]);
-      
+      }
+
       series = pruned;
     } else {
       boundaryIds[i-1] = [0, series.length-1];
