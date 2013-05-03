@@ -2278,6 +2278,17 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var datasets = [];
   var extremes = {};  // series name -> [low, high]
   var i, j, k;
+  var errorBars = this.attr_("errorBars");
+  var customBars = this.attr_("customBars");
+  var bars = errorBars || customBars;
+  var isValueNull = function(sample) {
+    if (!bars) {
+      return sample[1] === null;
+    } else {
+      return customBars ? sample[1][1] === null : 
+        errorBars ? sample[1][0] === null : false;
+    }
+  };
 
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
@@ -2296,11 +2307,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
-    var bars = this.attr_("errorBars") || this.attr_("customBars");
     if (dateWindow) {
       var low = dateWindow[0];
       var high = dateWindow[1];
       var pruned = [];
+
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
       var firstIdx = null, lastIdx = null;
@@ -2312,14 +2323,36 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           lastIdx = k;
         }
       }
+
       if (firstIdx === null) firstIdx = 0;
-      if (firstIdx > 0) firstIdx--;
+      var correctedFirstIdx = firstIdx;
+      var isInvalidValue = true;
+      while (isInvalidValue && correctedFirstIdx > 0) {
+        correctedFirstIdx--;
+        isInvalidValue = isValueNull(series[correctedFirstIdx]);
+      }
+
       if (lastIdx === null) lastIdx = series.length - 1;
-      if (lastIdx < series.length - 1) lastIdx++;
-      boundaryIds[i-1] = [firstIdx, lastIdx];
+      var correctedLastIdx = lastIdx;
+      isInvalidValue = true;
+      while (isInvalidValue && correctedLastIdx < series.length - 1) {
+        correctedLastIdx++;
+        isInvalidValue = isValueNull(series[correctedLastIdx]);
+      }
+
+      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, 
+          (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
+
+      if (correctedFirstIdx!==firstIdx) {
+        pruned.push(series[correctedFirstIdx]);
+      }
       for (k = firstIdx; k <= lastIdx; k++) {
         pruned.push(series[k]);
       }
+      if (correctedLastIdx !== lastIdx) {
+        pruned.push(series[correctedLastIdx]);
+      }
+
       series = pruned;
     } else {
       boundaryIds[i-1] = [0, series.length-1];

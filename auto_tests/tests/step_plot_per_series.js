@@ -3,7 +3,7 @@
  *
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
-var StepTestCase = TestCase("step_plot_per_series");
+var StepTestCase = TestCase("step-plot-per-series");
 
 StepTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
