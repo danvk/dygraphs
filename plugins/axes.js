@@ -71,9 +71,12 @@ axes.prototype.layout = function(e) {
   }
 
   if (g.numAxes() == 2) {
-    // TODO(danvk): per-axis setting.
-    var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
-    e.reserveSpaceRight(w);
+    // TODO(danvk): introduce a 'drawAxis' per-axis property.
+    if (g.getOption('drawYAxis')) {
+      // TODO(danvk): per-axis setting.
+      var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
+      e.reserveSpaceRight(w);
+    }
   } else if (g.numAxes() > 2) {
     g.error("Only two y-axes are supported at this time. (Trying " +
             "to use " + g.numAxes() + ")");
