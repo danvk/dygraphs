@@ -2278,6 +2278,17 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var datasets = [];
   var extremes = {};  // series name -> [low, high]
   var i, j, k;
+  var errorBars = this.attr_("errorBars");
+  var customBars = this.attr_("customBars");
+  var bars = errorBars || customBars;
+  var isValueNull = function(sample) {
+    if (!bars) {
+      return sample[1] === null;
+    } else {
+      return customBars ? sample[1][1] === null : 
+        errorBars ? sample[1][0] === null : false;
+    }
+  };
 
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
@@ -2296,21 +2307,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
-    var errorBars = this.attr_("errorBars");
-    var customBars = this.attr_("customBars");
-    var bars = errorBars || customBars;
     if (dateWindow) {
       var low = dateWindow[0];
       var high = dateWindow[1];
       var pruned = [];
-      var isValueNull = function(sample) {
-        if (!bars) {
-          return sample[1] === null;
-        } else {
-          return customBars ? sample[1][1] === null : 
-            errorBars ? sample[1][0] === null : false;
-        }
-      };
 
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
