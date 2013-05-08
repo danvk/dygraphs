@@ -50,29 +50,56 @@ grid.prototype.willDrawChart = function(e) {
 
   var x, y, i, ticks;
   if (g.getOption('drawYGrid')) {
+    var axes = ["y", "y2"];
+    var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern = [];
+    for (var i = 0; i < axes.length; i++) {
+      drawGrid[i] = g.getOptionForAxis("drawGrid", axes[i]);
+      if (drawGrid[i]) {
+        strokeStyles[i] = g.getOptionForAxis('gridLineColor', axes[i]);
+        lineWidths[i] = g.getOptionForAxis('gridLineWidth', axes[i]);
+        strokePattern[i] = g.getOptionForAxis('gridLinePattern', axes[i]);
+        stroking[i] = strokePattern[i] && (strokePattern[i].length >= 2);
+      }
+    }
     ticks = layout.yticks;
     ctx.save();
-    ctx.strokeStyle = g.getOption('gridLineColor');
-    ctx.lineWidth = g.getOption('gridLineWidth');
+    // draw grids for the different y axes
     for (i = 0; i < ticks.length; i++) {
-      // TODO(danvk): allow secondary axes to draw a grid, too.
-      if (ticks[i][0] !== 0) continue;
-      x = halfUp(area.x);
-      y = halfDown(area.y + ticks[i][1] * area.h);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + area.w, y);
-      ctx.closePath();
-      ctx.stroke();
+      var axis = ticks[i][0];
+      if(drawGrid[axis]) {
+        if (stroking[axis]) {
+          ctx.installPattern(strokePattern[axis]);
+        }
+        ctx.strokeStyle = strokeStyles[axis];
+        ctx.lineWidth = lineWidths[axis];
+
+        x = halfUp(area.x);
+        y = halfDown(area.y + ticks[i][1] * area.h);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + area.w, y);
+        ctx.closePath();
+        ctx.stroke();
+
+        if (stroking[axis]) {
+          ctx.uninstallPattern();
+        }
+      }
     }
     ctx.restore();
   }
 
-  if (g.getOption('drawXGrid')) {
+  // draw grid for x axis
+  if (g.getOption('drawXGrid') && g.getOptionForAxis("drawGrid", 'x')) {
     ticks = layout.xticks;
     ctx.save();
-    ctx.strokeStyle = g.getOption('gridLineColor');
-    ctx.lineWidth = g.getOption('gridLineWidth');
+    var strokePattern = g.getOptionForAxis('gridLinePattern', 'x');
+    var stroking = strokePattern && (strokePattern.length >= 2);
+    if (stroking) {
+      ctx.installPattern(strokePattern);
+    }
+    ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
+    ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
     for (i = 0; i < ticks.length; i++) {
       x = halfUp(area.x + ticks[i][0] * area.w);
       y = halfDown(area.y + area.h);
@@ -81,6 +108,9 @@ grid.prototype.willDrawChart = function(e) {
       ctx.lineTo(x, area.y);
       ctx.closePath();
       ctx.stroke();
+    }
+    if (stroking) {
+      ctx.uninstallPattern();
     }
     ctx.restore();
   }
