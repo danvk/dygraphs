@@ -259,6 +259,39 @@ Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
+/** 
+ * A collection of objects specifying where it is acceptable to place tick
+ * marks for granularities larger than WEEKLY.  
+ * 'months' is an array of month indexes on which to place tick marks.
+ * 'year_mod' ticks are placed when year % year_mod = 0.
+ * @type {Array.<Object>} 
+ */
+Dygraph.LONG_TICK_PLACEMENTS = [];
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.MONTHLY] = {
+  months : [0,1,2,3,4,5,6,7,8,9,10,11], 
+  year_mod : 1
+};
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.QUARTERLY] = {
+  months: [0,3,6,9], 
+  year_mod: 1
+};
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.BIANNUAL] = {
+  months: [0,6], 
+  year_mod: 1
+};
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.ANNUAL] = {
+  months: [0], 
+  year_mod: 1
+};
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.DECADAL] = {
+  months: [0], 
+  year_mod: 10
+};
+Dygraph.LONG_TICK_PLACEMENTS[Dygraph.CENTENNIAL] = {
+  months: [0], 
+  year_mod: 100
+};
+
 /**
  * This is a list of human-friendly values at which to show tick marks on a log
  * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
@@ -312,17 +345,11 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
     var spacing = Dygraph.SHORT_SPACINGS[granularity];
     return Math.floor(0.5 + 1.0 * (end_time - start_time) / spacing);
   } else {
-    var year_mod = 1;  // e.g. to only print one point every 10 years.
-    var num_months = 12;
-    if (granularity == Dygraph.QUARTERLY) num_months = 3;
-    if (granularity == Dygraph.BIANNUAL) num_months = 2;
-    if (granularity == Dygraph.ANNUAL) num_months = 1;
-    if (granularity == Dygraph.DECADAL) { num_months = 1; year_mod = 10; }
-    if (granularity == Dygraph.CENTENNIAL) { num_months = 1; year_mod = 100; }
+    var tickPlacement = Dygraph.LONG_TICK_PLACEMENTS[granularity];
 
     var msInYear = 365.2524 * 24 * 3600 * 1000;
     var num_years = 1.0 * (end_time - start_time) / msInYear;
-    return Math.floor(0.5 + 1.0 * num_years * num_months / year_mod);
+    return Math.floor(0.5 + 1.0 * num_years * tickPlacement.months.length / tickPlacement.year_mod);
   }
 };
 
@@ -386,7 +413,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
 
     for (t = start_time; t <= end_time; t += spacing) {
-      var d = new Date(t);
+      d = new Date(t);
 
       // This ensures that we stay on the same hourly "rhythm" across
       // daylight savings transitions. Without this, the ticks could get off
@@ -420,20 +447,9 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var months;
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
-    if (granularity == Dygraph.MONTHLY) {
-      months = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];
-    } else if (granularity == Dygraph.QUARTERLY) {
-      months = [ 0, 3, 6, 9 ];
-    } else if (granularity == Dygraph.BIANNUAL) {
-      months = [ 0, 6 ];
-    } else if (granularity == Dygraph.ANNUAL) {
-      months = [ 0 ];
-    } else if (granularity == Dygraph.DECADAL) {
-      months = [ 0 ];
-      year_mod = 10;
-    } else if (granularity == Dygraph.CENTENNIAL) {
-      months = [ 0 ];
-      year_mod = 100;
+    if (granularity < Dygraph.NUM_GRANULARITIES) {
+      months = Dygraph.LONG_TICK_PLACEMENTS[granularity].months;
+      year_mod = Dygraph.LONG_TICK_PLACEMENTS[granularity].year_mod;
     } else {
       Dygraph.warn("Span of dates is too long");
     }

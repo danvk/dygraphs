@@ -611,3 +611,78 @@ CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
   assertEquals(0, yMin);
   assertEquals(10, yMax);
 };
+
+/**
+ * Test that drawPointCallback is called for isolated points and correct idx for the point is returned.
+ */
+CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
+    var indices = [];
+
+    var g;
+    var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
+        indices.push(idx);
+        Dygraph.Circles.DEFAULT.apply(this, arguments);
+    };
+
+    var graph = document.getElementById("graph");
+
+    var testdata = [[10, 2], [11, 3], [12, NaN], [13, 2], [14, NaN], [15, 3]];
+    var graphOpts = {
+        labels: ['X', 'Y'],
+        valueRange: [0, 4],
+        drawPoints : false,
+        drawPointCallback : callback,
+        pointSize : 8
+    };
+
+    // Test that correct idx for isolated points are passed to the callback.
+    g = new Dygraph(graph, testdata, graphOpts);
+    assertEquals(2, indices.length);
+    assertEquals([3, 5],indices);
+
+    // Test that correct indices for isolated points + gap points are passed to the callback when
+    // drawGapEdgePoints is set.  This should add one point at the right
+    // edge of the segment at x=11, but not at the graph edge at x=10.
+    indices = []; // Reset for new test
+    graphOpts.drawGapEdgePoints = true;
+    g = new Dygraph(graph, testdata, graphOpts);
+    assertEquals(3, indices.length);
+    assertEquals([1, 3, 5],indices);
+
+
+    //Test that correct indices are passed to the callback when zoomed in.
+    indices = []; // Reset for new test
+    graphOpts.dateWindow = [12.5,13.5]
+    graphOpts.drawPoints = true;
+    testdata = [[10, 2], [11, 3], [12, 4], [13, 2], [14, 5], [15, 3]];
+    g = new Dygraph(graph, testdata, graphOpts);
+    assertEquals(3, indices.length);
+    assertEquals([2, 3, 4],indices);
+};
+
+/**
+ * Test that the correct idx is returned for the point in the onHiglightCallback.
+  */
+CallbackTestCase.prototype.testDrawHighlightPointCallback_idx = function() {
+    var idxToCheck = null;
+
+    var drawHighlightPointCallback  = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
+        idxToCheck = idx;
+    };
+    var testdata = [[1, 2], [2, 3], [3, NaN], [4, 2], [5, NaN], [6, 3]];
+    var graph = document.getElementById("graph");
+    var g = new Dygraph(graph, testdata,
+        {
+            drawHighlightPointCallback : drawHighlightPointCallback
+        });
+
+    assertNull(idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 3, 0);
+    // check that NaN point is not highlighted
+    assertNull(idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 1, 2);
+    // check that correct index is returned
+    assertEquals(0,idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 6, 3);
+    assertEquals(5,idxToCheck);
+};
