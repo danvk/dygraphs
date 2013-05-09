@@ -49,7 +49,7 @@ hairlines.prototype.toString = function() {
 
 hairlines.prototype.activate = function(g) {
   this.dygraph_ = g;
-  this.hairlines_ = [this.createHairline(0.55)];
+  this.hairlines_ = [];
 
   return {
     didDrawChart: this.didDrawChart,
@@ -70,10 +70,16 @@ hairlines.prototype.detachLabels = function() {
 
 hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
   var area = this.dygraph_.getArea();
+  var oldFrac = h.xFraction;
   h.xFraction = (ui.position.left - area.x) / area.w;
   this.moveHairlineToTop(h);
   this.updateHairlineDivPositions();
   this.updateHairlineInfo();
+  $(this).triggerHandler('hairlineMoved', {
+    oldXFraction: oldFrac,
+    newXFraction: h.xFraction
+  });
+  $(this).triggerHandler('hairlinesChanged', {});
 };
 
 // This creates the hairline object and returns it.
@@ -124,6 +130,10 @@ hairlines.prototype.createHairline = function(xFraction) {
   var that = this;
   $infoDiv.on('click', '.hairline-kill-button', function() {
     that.removeHairline(h);
+    $(that).triggerHandler('hairlineDeleted', {
+      xFraction: h.xFraction
+    });
+    $(that).triggerHandler('hairlinesChanged', {});
   });
 
   return h;
@@ -258,6 +268,11 @@ hairlines.prototype.click = function(e) {
     that.updateHairlineDivPositions();
     that.updateHairlineInfo();
     that.attachHairlinesToChart_();
+
+    $(that).triggerHandler('hairlineCreated', {
+      xFraction: xFraction
+    });
+    $(that).triggerHandler('hairlinesChanged', {});
   }, CLICK_DELAY_MS);
 };
 
@@ -270,6 +285,74 @@ hairlines.prototype.dblclick = function(e) {
 
 hairlines.prototype.destroy = function() {
   this.detachLabels();
+};
+
+
+// Public API
+
+/**
+ * This is a restricted view of this.hairlines_ which doesn't expose
+ * implementation details like the handle divs.
+ *
+ * @typedef {
+ *   xFraction: number,   // invariant across resize
+ *   interpolated: bool   // alternative is to snap to closest
+ * } PublicHairline
+ */
+
+/**
+ * @return {!Array.<!PublicHairline>} The current set of hairlines, ordered
+ *     from back to front.
+ */
+hairlines.prototype.get = function() {
+  var result = [];
+  for (var i = 0; i < this.hairlines_.length; i++) {
+    var h = this.hairlines_[i];
+    result.push({
+      xFraction: h.xFraction,
+      interpolated: h.interpolated
+    });
+  }
+  return result;
+};
+
+/**
+ * Calling this will result in a hairlinesChanged event being triggered, no
+ * matter whether it consists of additions, deletions, moves or no changes at
+ * all.
+ *
+ * @param {!Array.<!PublicHairline>} hairlines The new set of hairlines,
+ *     ordered from back to front.
+ */
+hairlines.prototype.set = function(hairlines) {
+  // Re-use divs from the old hairlines array so far as we can.
+  // They're already correctly z-ordered.
+  var anyCreated = false;
+  for (var i = 0; i < hairlines.length; i++) {
+    var h = hairlines[i];
+
+    if (this.hairlines_.length > i) {
+      this.hairlines_[i].xFraction = h.xFraction;
+      this.hairlines_[i].interpolated = h.interpolated;
+    } else {
+      // TODO(danvk): pass in |interpolated| value.
+      this.hairlines_.push(this.createHairline(h.xFraction));
+      anyCreated = true;
+    }
+  }
+
+  // If there are any remaining hairlines, destroy them.
+  while (hairlines.length < this.hairlines_.length) {
+    this.removeHairline(this.hairlines_[hairlines.length]);
+  }
+
+  this.updateHairlineDivPositions();
+  this.updateHairlineInfo();
+  if (anyCreated) {
+    this.attachHairlinesToChart_();
+  }
+
+  $(this).triggerHandler('hairlinesChanged', {});
 };
 
 return hairlines;

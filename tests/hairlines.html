@@ -76,6 +76,10 @@
 
     <div id="controls">
       <input type="checkbox" id="update" checked=true><label for="update"> Update</label>
+
+      <button id="add-button">Add a Hairline</button>
+      <button id="remove-button">Remove a Hairline</button>
+      <button id="reset-button">Reset Hairlines</button>
     </div>
 
     <script type="text/javascript">
@@ -88,6 +92,7 @@
         data.push([last_t, fn(last_t)]);
       }
 
+      hairlines = new Dygraph.Plugins.Hairlines();
       g = new Dygraph(
               document.getElementById("demodiv"),
               data,
@@ -111,7 +116,7 @@
 
                 // Set the plug-ins in the options.
                 plugins : [
-                  Dygraph.Plugins.Hairlines
+                  hairlines
                 ]
               }
           );
@@ -126,8 +131,59 @@
       };
       window.setInterval(update, 1000);
 
+      // Control handlers
       $('#update').on('change', function() {
         shouldUpdate = $(this).is(':checked');
+      });
+
+      $('#add-button').on('click', function(e) {
+        var h = hairlines.get();
+        h.push({xFraction: 0.75});
+        hairlines.set(h);
+      });
+      $('#remove-button').on('click', function(e) {
+        var h = hairlines.get();
+        if (h.length > 0) {
+          var idx = Math.floor(h.length / 2);
+          h.splice(idx, 1);
+        }
+        hairlines.set(h);
+      });
+      $('#reset-button').on('click', function(e) {
+        setDefaultHairlines();
+      });
+
+      // Hairline persistence
+      function loadFromStorage() {
+        hairlines.set(JSON.parse(localStorage.getItem('hairlines')));
+      }
+      function storeHairlines() {
+        localStorage.setItem('hairlines', JSON.stringify(hairlines.get()));
+      }
+      $(hairlines).on('hairlinesChanged', function(e) {
+        storeHairlines();
+      });
+      function setDefaultHairlines() {
+        // triggers 'hairlinesChanged' event, above.
+        hairlines.set([{xFraction: 0.55}]);
+      }
+
+      if (!localStorage.getItem('hairlines')) {
+        setDefaultHairlines();
+      } else {
+        loadFromStorage();
+      }
+
+
+      // Demonstration of how to use various other event listeners
+      $(hairlines).on('hairlineMoved', function(e, data) {
+        // console.log('hairline moved from', data.oldXFraction, ' to ', data.newXFraction);
+      });
+      $(hairlines).on('hairlineCreated', function(e, data) {
+        console.log('hairline created at ', data.xFraction);
+      });
+      $(hairlines).on('hairlineDeleted', function(e, data) {
+        console.log('hairline deleted at ', data.xFraction);
       });
     </script>
 </body>
