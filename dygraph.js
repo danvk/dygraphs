@@ -2186,7 +2186,7 @@ Dygraph.prototype.predraw_ = function() {
   // Determine the correct dataHandler
   var handlerConstructor;
   if (this.attr_("dataHandler")) {
-    handlerConstructor =  Dygraph.DataHandlers.DataHandlers.getHandler(this.attr_("dataHandler"));
+    handlerConstructor =  Dygraph.DataHandlers.getHandler(this.attr_("dataHandler"));
   } else if (this.fractions_){
     if (this.attr_("errorBars")) {
       handlerConstructor = Dygraph.DataHandlers.getHandler("bars-fractions");
@@ -2273,6 +2273,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Note: this copy _is_ necessary at the moment.
     // If you remove it, it breaks zooming with error bars on.
     // TODO(danvk): investigate further & write a test for this.
+    // XXX(eberldav): the unified data format may have fixed this, check it.
     var series = [];
     for (j = 0; j < rolledSeries[i].length; j++) {
       series.push(rolledSeries[i][j]);
