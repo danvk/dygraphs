@@ -2263,18 +2263,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var datasets = [];
   var extremes = {};  // series name -> [low, high]
   var i, j, k;
-  var errorBars = this.attr_("errorBars");
-  var customBars = this.attr_("customBars");
-  var bars = errorBars || customBars;
-  var isValueNull = function(sample) {
-    if (!bars) {
-      return sample[1] === null;
-    } else {
-      return customBars ? sample[1][1] === null : 
-        errorBars ? sample[1][0] === null : false;
-    }
-  };
-
+  
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
   var num_series = rolledSeries.length - 1;
@@ -2314,7 +2303,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       var isInvalidValue = true;
       while (isInvalidValue && correctedFirstIdx > 0) {
         correctedFirstIdx--;
-        isInvalidValue = isValueNull(series[correctedFirstIdx]);
+        // check if the y value is null.
+        isInvalidValue = series[correctedFirstIdx][1] === null;
       }
 
       if (lastIdx === null) lastIdx = series.length - 1;
