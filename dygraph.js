@@ -2312,7 +2312,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       isInvalidValue = true;
       while (isInvalidValue && correctedLastIdx < series.length - 1) {
         correctedLastIdx++;
-        isInvalidValue = series[correctedFirstIdx][1] === null;
+        isInvalidValue = series[correctedLastIdx][1] === null;
       }
 
       boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, 
