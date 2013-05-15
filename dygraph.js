@@ -2270,14 +2270,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   for (i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
-    // Note: this copy _is_ necessary at the moment.
-    // If you remove it, it breaks zooming with error bars on.
-    // TODO(danvk): investigate further & write a test for this.
-    // XXX(eberldav): the unified data format may have fixed this, check it.
-    var series = [];
-    for (j = 0; j < rolledSeries[i].length; j++) {
-      series.push(rolledSeries[i][j]);
-    }
+    var series = rolledSeries[i];
 
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
