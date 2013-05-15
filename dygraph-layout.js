@@ -252,8 +252,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         name: setName,  // TODO(danvk): is this really necessary?
         idx: j + boundaryIdStart
       };
-      
-      this.dygraph_.dataHandler_.onPointCreated(seriesPoints[j], item, this.dygraph_);
+      if(this.dygraph_.dataHandler_.onPointCreated !== undefined) {
+        this.dygraph_.dataHandler_.onPointCreated(seriesPoints[j], item, this.dygraph_);
+      }
     }
 
     this.points[setIdx] = seriesPoints;

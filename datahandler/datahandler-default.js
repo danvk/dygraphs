@@ -113,6 +113,4 @@ DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
   return [ minY, maxY ];
 };
 
-DefaultHandler.prototype.onPointCreated = function(point, value) {
-  // Nothing to do
-};
+DefaultHandler.prototype.onPointCreated = undefined;

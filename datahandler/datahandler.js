@@ -67,7 +67,8 @@ Dygraph.DataHandler = function DataHandler(){
    * @private
    * Callback after the series point used to plot the series is generated.
    * Here any data may be added to the seriesPoint which is needed to plot 
-   *   the graph.
+   *   the graph.<br>
+   * Note: Set the callback to undefined if it is not used for better performance.
    * @param {} seriesPoint The point passed to the plotter.
    * @param {} sample the actual sample for the point.
    * @param {} dygraphs the dygraphs instance.
