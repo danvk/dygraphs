@@ -20,7 +20,7 @@ Dygraph.DataHandler = function DataHandler(){
   handler.prototype.X = 0;
   handler.prototype.Y = 1;
   handler.prototype.EXTRAS = 2;
-  
+
   /**
    * Extracts one series from the raw data (a 2D array) into an array of (date,
    * value) tuples.
@@ -32,7 +32,7 @@ Dygraph.DataHandler = function DataHandler(){
    * @private
    */
   handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs){};
-  
+
   /**
    * @private
    * Calculates the rolling average of a data set.
@@ -49,6 +49,7 @@ Dygraph.DataHandler = function DataHandler(){
    * @return the rolled series.
    */
   handler.prototype.rollingAverage = function(originalData, rollPeriod, dygraphs){};
+
   /**
    * @private
    * Computes the range of the data series (including confidence intervals).
@@ -62,19 +63,22 @@ Dygraph.DataHandler = function DataHandler(){
    * @return [low, high]
    */
   handler.prototype.getExtremeYValues = function(series,dateWindow,stepPlot){};
-  
+
   /**
    * @private
-   * Callback after the series point used to plot the series is generated.
-   * Here any data may be added to the seriesPoint which is needed to plot 
-   *   the graph.<br>
+   * Callback called for each series after the series points have been generated 
+   * which will later be used by the plotters to draw the graph.
+   * Here data may be added to the seriesPoints which is needed by the plotters.<br>
+   * The indexes of seriesPoints and dataset are in sync meaning the original
+   * data sample for seriesPoints[i] is dataset[i].
    * Note: Set the callback to undefined if it is not used for better performance.
-   * @param {} seriesPoint The point passed to the plotter.
-   * @param {} sample the actual sample for the point.
+   * @param {Array} seriesPoints The points passed to the plotter.
+   * @param {Array} dataSet The corresponding data samples of the series.
+   * @param {String} Name of the series.
    * @param {} dygraphs the dygraphs instance.
    */
-  handler.prototype.onPointCreated = function(seriesPoint, sample, dygraphs){};
-  
+  handler.prototype.onLineEvaluated = function(seriesPoints, dataset, setName, dygraphs){};
+
   /**
    * @private
    * Helper method that computes the y value of a line defined 
@@ -91,7 +95,7 @@ Dygraph.DataHandler = function DataHandler(){
     var growth = (xValue - p1[0]) * gradient;
     return p1[1] + growth;
   };
-  
+
   /**
    * @private
    * Helper method that returns the first and the last index of the given
@@ -121,10 +125,10 @@ Dygraph.DataHandler = function DataHandler(){
         idx--;
       }
     }
-    if(firstIdx < lastIdx)
+    if(firstIdx <= lastIdx)
       return [ firstIdx, lastIdx ];
     else
-      return [0,0];
+      return [0,series.length - 1];
   };
 
   return handler;
