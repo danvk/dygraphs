@@ -282,33 +282,43 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
 
   var selectedPoint = null;
 
-  // Find out if the click occurs on a point. This only matters if there's a
-  // pointClickCallback.
-  if (pointClickCallback) {
-    var closestIdx = -1;
-    var closestDistance = Number.MAX_VALUE;
+  // Find out if the click occurs on a point.
+  var closestIdx = -1;
+  var closestDistance = Number.MAX_VALUE;
 
-    // check if the click was on a particular point.
-    for (var i = 0; i < g.selPoints_.length; i++) {
-      var p = g.selPoints_[i];
-      var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
-                     Math.pow(p.canvasy - context.dragEndY, 2);
-      if (!isNaN(distance) &&
-          (closestIdx == -1 || distance < closestDistance)) {
-        closestDistance = distance;
-        closestIdx = i;
-      }
-    }
-
-    // Allow any click within two pixels of the dot.
-    var radius = g.attr_('highlightCircleSize') + 2;
-    if (closestDistance <= radius * radius) {
-      selectedPoint = g.selPoints_[closestIdx];
+  // check if the click was on a particular point.
+  for (var i = 0; i < g.selPoints_.length; i++) {
+    var p = g.selPoints_[i];
+    var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
+                   Math.pow(p.canvasy - context.dragEndY, 2);
+    if (!isNaN(distance) &&
+        (closestIdx == -1 || distance < closestDistance)) {
+      closestDistance = distance;
+      closestIdx = i;
     }
   }
 
+  // Allow any click within two pixels of the dot.
+  var radius = g.attr_('highlightCircleSize') + 2;
+  if (closestDistance <= radius * radius) {
+    selectedPoint = g.selPoints_[closestIdx];
+  }
+
   if (selectedPoint) {
-    pointClickCallback(event, selectedPoint);
+    var e = {
+      cancelable: true,
+      point: selectedPoint,
+      canvasx: context.dragEndX,
+      canvasy: context.dragEndY
+    };
+    var defaultPrevented = g.cascadeEvents_('pointClick', e);
+    if (defaultPrevented) {
+      // Note: this also prevents click / clickCallback from firing.
+      return;
+    }
+    if (pointClickCallback) {
+      pointClickCallback(event, selectedPoint);
+    }
   }
 
   var e = {

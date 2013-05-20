@@ -9,11 +9,18 @@
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
     <!-- Include the Javascript for the plug-in -->
+    <!--
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+    -->
+
+    <script src="jquery-1.6.2.min.js"></script>
+    <script src="jquery-ui-1.8.14.custom.min.js"></script>
+
     <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css' />
 
     <script type="text/javascript" src="../extras/hairlines.js"></script>
+    <script type="text/javascript" src="../extras/super-annotations.js"></script>
 
     <style>
       #demodiv {
@@ -57,6 +64,14 @@
         /* border-right-style: dotted !important; */
         cursor: move;
       }
+
+      .annotation-info {
+        background: white;
+        border-width: 1px;
+        border-style: solid;
+        padding: 4px;
+        display: table;  /* shrink to fit */
+      }
     </style>
   </head>
   <body>
@@ -74,6 +89,31 @@
       <button class='hairline-kill-button'>Kill</button>
       <div class='hairline-legend'></div>
     </div>
+    <div id="annotation-template" class="annotation-info" style="display:none">
+      <div>{{text}}</div>
+      <div>{{x}}, {{series}}: {{y}}</div>
+    </div>
+    <div id="annotation-editable-template" class="annotation-info" style="display:none">
+      <button class='annotation-kill-button'>Delete</button>
+      <button class='annotation-update'>Change</button>
+      <button class='annotation-cancel'>Cancel</button><br/>
+      <input dg-ann-field='text' type='text' size=30 value='{{text}}' />
+      <div>{{x}}, {{series}}: {{y}}</div>
+    </div>
+    <script type="text/javascript">
+    $(document).delegate('.annotation-info input', 'keyup', function(e) {
+      var $annotationDiv = $(this).parent('.annotation-info');
+      if (e.keyCode == 13 || e.keyCode == 10) {  // enter
+        $annotationDiv.find('.annotation-update').click();
+      } else if (e.keyCode == 27) {  // escape
+        $annotationDiv.find('.annotation-cancel').click();
+      }
+    })
+    .delegate('.annotation-info', 'dblclick', function(e) {
+      if (e.target.tagName == 'INPUT') return;
+      $(this).find('.annotation-cancel').click();
+    });
+    </script>
 
     <div id="demodiv"></div>
     <div id="status"></div>
@@ -97,6 +137,11 @@
       }
 
       hairlines = new Dygraph.Plugins.Hairlines();
+      annotations = new Dygraph.Plugins.SuperAnnotations({
+        defaultAnnotationProperties: {
+          'text': 'Annotation Description'
+        }
+      });
       g = new Dygraph(
               document.getElementById("demodiv"),
               data,
@@ -119,12 +164,13 @@
 
                 // Set the plug-ins in the options.
                 plugins : [
-                  hairlines
+                  hairlines,
+                  annotations
                 ]
               }
           );
 
-      var shouldUpdate = true;
+      var shouldUpdate = false;  // true;
       var update = function() {
         if (!shouldUpdate) return;
         data.push([last_t, fn(last_t)]);
@@ -189,5 +235,25 @@
         console.log('hairline deleted at ', data.xFraction);
       });
     </script>
+
+    <!--
+
+    Some ways to do annotations:
+    1. Completely independent of existing annotations plugin.
+    2. As a subclass of existing annotations plugin.
+    3. As a modification to the existing annotations plugin.
+
+    1. Most flexibility, most duplication of code.
+       Miss out on features like support for stacked charts.
+       Least controversial.
+       API is least constrained.
+
+    2. Would require a few modifications to the existing annotations plugin
+       (e.g. a method to create the DOM element).
+       Would also require a way for a plugin to disable another plugin.
+
+    3.
+
+    -->
 </body>
 </html>

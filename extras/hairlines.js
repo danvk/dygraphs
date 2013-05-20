@@ -8,8 +8,6 @@
 
 /*global Dygraph:false */
 
-var allHairlines = [];
-
 Dygraph.Plugins.Hairlines = (function() {
 
 "use strict";
@@ -231,8 +229,6 @@ hairlines.prototype.removeHairline = function(h) {
 
 hairlines.prototype.didDrawChart = function(e) {
   var g = e.dygraph;
-
-  allHairlines = this.hairlines_;
 
   // Early out in the (common) case of zero hairlines.
   if (this.hairlines_.length === 0) return;
