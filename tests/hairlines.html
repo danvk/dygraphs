@@ -14,7 +14,10 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
     -->
 
+    <!--
     <script src="jquery-1.6.2.min.js"></script>
+    -->
+    <script src="jquery-1.8.3.min.js"></script>
     <script src="jquery-ui-1.8.14.custom.min.js"></script>
 
     <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css' />
@@ -170,7 +173,7 @@
               }
           );
 
-      var shouldUpdate = false;  // true;
+      var shouldUpdate = true;
       var update = function() {
         if (!shouldUpdate) return;
         data.push([last_t, fn(last_t)]);
@@ -202,38 +205,75 @@
         setDefaultHairlines();
       });
 
-      // Hairline persistence
+      // Persistence
       function loadFromStorage() {
         hairlines.set(JSON.parse(localStorage.getItem('hairlines')));
-      }
-      function storeHairlines() {
-        localStorage.setItem('hairlines', JSON.stringify(hairlines.get()));
+        annotations.set(JSON.parse(localStorage.getItem('annotations')));
       }
       $(hairlines).on('hairlinesChanged', function(e) {
-        storeHairlines();
+        localStorage.setItem('hairlines', JSON.stringify(hairlines.get()));
       });
-      function setDefaultHairlines() {
-        // triggers 'hairlinesChanged' event, above.
+      $(annotations).on('annotationsChanged', function(e) {
+        localStorage.setItem('annotations', JSON.stringify(annotations.get()));
+      });
+      function setDefaultState() {
+        // triggers 'hairlinesChanged' and 'annotationsChanged' events, above.
         hairlines.set([{xFraction: 0.55}]);
+        hairlines.set([{xFraction: 0.55}]);
+        annotations.set([{
+          xval: 67,
+          series: 'Value',
+          text: 'Bottom'
+        },
+        {
+          xval: 137,
+          series: 'Value',
+          text: 'Fast Change'
+        }]);
       }
 
-      if (!localStorage.getItem('hairlines')) {
-        setDefaultHairlines();
+      if (!localStorage.getItem('hairlines') ||
+          !localStorage.getItem('annotations')) {
+        setDefaultState();
       } else {
         loadFromStorage();
       }
 
 
       // Demonstration of how to use various other event listeners
-      $(hairlines).on('hairlineMoved', function(e, data) {
-        // console.log('hairline moved from', data.oldXFraction, ' to ', data.newXFraction);
+      $(hairlines).on({
+        'hairlineMoved': function(e, data) {
+          // console.log('hairline moved from', data.oldXFraction, ' to ', data.newXFraction);
+        },
+        'hairlineCreated': function(e, data) {
+          console.log('hairline created at ', data.xFraction);
+        },
+        'hairlineDeleted': function(e, data) {
+          console.log('hairline deleted at ', data.xFraction);
+        }
       });
-      $(hairlines).on('hairlineCreated', function(e, data) {
-        console.log('hairline created at ', data.xFraction);
+      $(annotations).on({
+        'annotationCreated': function(e, data) {
+          console.log('annotation created at ', data.series, data.xval);
+        },
+        'annotationMoved': function(e, data) {
+          console.log('annotation moved from ', data.oldXVal, ' to ', data.newXVal);
+        },
+        'annotationDeleted': function(e, data) {
+          console.log('annotation deleted at ', data.series, data.xval);
+        },
+        'beganEditAnnotation': function(e, data) {
+          console.log('began editing annotation at ', data.series, data.xval);
+        },
+        'annotationEdited': function(e, data) {
+          console.log('edited annotation at ', data.series, data.xval);
+        },
+        'cancelEditAnnotation': function(e, data) {
+          console.log('edit canceled on annotation at ', data.series, data.xval);
+        }
       });
-      $(hairlines).on('hairlineDeleted', function(e, data) {
-        console.log('hairline deleted at ', data.xFraction);
-      });
+
+      // TODO(danvk): demonstrate other annotations API methods.
     </script>
 
     <!--

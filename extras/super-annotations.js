@@ -67,28 +67,30 @@ annotations.prototype.annotationWasDragged = function(a, event, ui) {
   var area = g.getArea();
   var oldXVal = a.xval;
 
-  // TODO(danvk): find closest point
-  // - area.x  ?
   var row = g.findClosestRow(ui.position.left);
+  var newXVval = g.getValue(row, 0);
+  if (newXVval == oldXVal) return;
+
   a.xval = g.getValue(row, 0);
   g.setSelection(row, a.series);
 
   this.moveAnnotationToTop(a);
   this.updateAnnotationDivPositions();
   this.updateAnnotationInfo();
-  // $(this).triggerHandler('hairlineMoved', {
-  //   // TODO(danvk): fill in
-  // });
-  // $(this).triggerHandler('annotationsChanged', {});
+  $(this).triggerHandler('annotationMoved', {
+    annotation: a,
+    oldXVal: oldXVal,
+    newXVal: a.xval
+  });
+  $(this).triggerHandler('annotationsChanged', {});
 };
 
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
-annotations.prototype.createAnnotation = function(series, xval) {
-  var a;
+annotations.prototype.createAnnotation = function(a) {
   var self = this;
 
-  var color = this.getColorForSeries_(series);
+  var color = this.getColorForSeries_(a.series);
 
   var $lineDiv = $('<div/>').css({
     'width': '1px',
@@ -106,13 +108,10 @@ annotations.prototype.createAnnotation = function(series, xval) {
     })
     .show();
 
-  a = {
-    xval: xval,
-    series: series,
+  $.extend(a, {
     lineDiv: $lineDiv.get(0),
     infoDiv: $infoDiv.get(0)
-  };
-  $.extend(a, this.defaultAnnotationProperties_);
+  });
 
   var that = this;
 
@@ -129,7 +128,7 @@ annotations.prototype.createAnnotation = function(series, xval) {
     }
   });
 
-  // TODO(danvk): use 'on' instead of 
+  // TODO(danvk): use 'on' instead of delegate/dblclick
   $infoDiv.delegate('.annotation-kill-button', 'click', function() {
     that.removeAnnotation(a);
     $(that).triggerHandler('annotationDeleted', a);
@@ -138,17 +137,26 @@ annotations.prototype.createAnnotation = function(series, xval) {
 
   $infoDiv.dblclick(function() {
     if (a.editable == true) return;
+    self.moveAnnotationToTop(a);
+
+    // Note: we have to fill out the HTML ourselves because
+    // updateAnnotationInfo() won't touch editable annotations.
     a.editable = true;
-    self.updateAnnotationInfo();
+    var editableTemplateDiv = $('#annotation-editable-template').get(0);
+    a.infoDiv.innerHTML = self.getTemplateHTML(editableTemplateDiv, a);
+    $(that).triggerHandler('beganEditAnnotation', a);
   });
   $infoDiv.delegate('.annotation-update', 'click', function() {
     self.extractUpdatedProperties_($infoDiv.get(0), a);
     a.editable = false;
     self.updateAnnotationInfo();
+    $(that).triggerHandler('annotationEdited', a);
+    $(that).triggerHandler('annotationsChanged', {});
   });
   $infoDiv.delegate('.annotation-cancel', 'click', function() {
     a.editable = false;
     self.updateAnnotationInfo();
+    $(that).triggerHandler('cancelEditAnnotation', a);
   });
 
   return a;
@@ -209,12 +217,18 @@ annotations.prototype.updateAnnotationDivPositions = function() {
 
   var that = this;
   $.each(this.annotations_, function(idx, a) {
-    // TODO(danvk): cache this information for each annotation
     var row_col = that.findPointIndex_(a.series, a.xval);
+    if (row_col == null) {
+      $([a.lineDiv, a.infoDiv]).hide();
+      return;
+    } else {
+      // TODO(danvk): only do this if they're invisible?
+      $([a.lineDiv, a.infoDiv]).show();
+    }
     var xy = g.toDomCoords(a.xval, g.getValue(row_col[0], row_col[1]));
     var x = xy[0], y = xy[1];
 
-    var lineHeight = 6;
+    var lineHeight = 6;  // TODO(danvk): option?
 
     $(a.lineDiv).css({
       'left': x + 'px',
@@ -234,11 +248,23 @@ annotations.prototype.updateAnnotationInfo = function() {
 
   var that = this;
   var templateDiv = $('#annotation-template').get(0);
-  var editableTemplateDiv = $('#annotation-editable-template').get(0);
   $.each(this.annotations_, function(idx, a) {
-    var div = a.editable ? editableTemplateDiv : templateDiv;
-    a.infoDiv.innerHTML = that.getTemplateHTML(div, a);
+    // We should never update an editable div -- doing so may kill unsaved
+    // edits to an annotation.
+    if (a.editable) return;
+    a.infoDiv.innerHTML = that.getTemplateHTML(templateDiv, a);
   });
+};
+
+/**
+ * @param {!Annotation} a Internal annotation
+ * @return {!PublicAnnotation} a view of the annotation for the public API.
+ */
+annotations.prototype.createPublicAnnotation_ = function(a, opt_props) {
+  var displayAnnotation = $.extend({}, a, opt_props);
+  delete displayAnnotation['infoDiv'];
+  delete displayAnnotation['lineDiv'];
+  return displayAnnotation;
 };
 
 // Fill out a div using the values in the annotation object.
@@ -246,6 +272,7 @@ annotations.prototype.updateAnnotationInfo = function() {
 annotations.prototype.getTemplateHTML = function(div, a) {
   var g = this.dygraph_;
   var row_col = this.findPointIndex_(a.series, a.xval);
+  if (row_col == null) return;  // perhaps it's no longer a real point?
   var row = row_col[0];
   var col = row_col[1];
 
@@ -255,11 +282,8 @@ annotations.prototype.getTemplateHTML = function(div, a) {
   var x = xvf(a.xval);
   var y = g.getOption('valueFormatter', a.series)(
       g.getValue(row, col), yOptView);
-  var displayAnnotation = $.extend({}, a, {
-    x: x,
-    y: y
-  });
 
+  var displayAnnotation = this.createPublicAnnotation_(a, {x:x, y:y});
   var html = div.innerHTML;
   for (var k in displayAnnotation) {
     var v = displayAnnotation[k];
@@ -285,6 +309,10 @@ annotations.prototype.extractUpdatedProperties_ = function(div, a) {
 annotations.prototype.attachAnnotationsToChart_ = function() {
   var div = this.dygraph_.graphDiv;
   $.each(this.annotations_, function(idx, a) {
+    // Re-attaching an editable div to the DOM can clear its focus.
+    // This makes typing really difficult!
+    if (a.editable) return;
+
     $([a.lineDiv, a.infoDiv]).appendTo(div);
   });
 };
@@ -315,16 +343,17 @@ annotations.prototype.pointClick = function(e) {
   // Prevent any other behavior based on this click, e.g. creation of a hairline.
   e.preventDefault();
 
-  this.annotations_.push(this.createAnnotation(e.point.name, e.point.xval));
+  var a = $.extend({}, this.defaultAnnotationProperties_, {
+    series: e.point.name,
+    xval: e.point.xval
+  });
+  this.annotations_.push(this.createAnnotation(a));
 
   this.updateAnnotationDivPositions();
   this.updateAnnotationInfo();
   this.attachAnnotationsToChart_();
 
-  $(this).triggerHandler('hairlineCreated', {
-    // TODO
-    // xFraction: xFraction
-  });
+  $(this).triggerHandler('annotationCreated', a);
   $(this).triggerHandler('annotationsChanged', {});
 };
 
@@ -337,11 +366,11 @@ annotations.prototype.destroy = function() {
 
 /**
  * This is a restricted view of this.annotations_ which doesn't expose
- * implementation details like the handle divs.
+ * implementation details like the line / info divs.
  *
  * @typedef {
- *   xFraction: number,   // invariant across resize
- *   interpolated: bool   // alternative is to snap to closest
+ *   xval:  number,      // x-value (i.e. millis or a raw number)
+ *   series: string,     // series name
  * } PublicAnnotation
  */
 
@@ -352,17 +381,13 @@ annotations.prototype.destroy = function() {
 annotations.prototype.get = function() {
   var result = [];
   for (var i = 0; i < this.annotations_.length; i++) {
-    var h = this.annotations_[i];
-    result.push({
-      xFraction: h.xFraction,
-      interpolated: h.interpolated
-    });
+    result.push(this.createPublicAnnotation_(this.annotations_[i]));
   }
   return result;
 };
 
 /**
- * Calling this will result in a annotationsChanged event being triggered, no
+ * Calling this will result in an annotationsChanged event being triggered, no
  * matter whether it consists of additions, deletions, moves or no changes at
  * all.
  *
@@ -374,14 +399,17 @@ annotations.prototype.set = function(annotations) {
   // They're already correctly z-ordered.
   var anyCreated = false;
   for (var i = 0; i < annotations.length; i++) {
-    var h = annotations[i];
+    var a = annotations[i];
 
     if (this.annotations_.length > i) {
-      this.annotations_[i].xFraction = h.xFraction;
-      this.annotations_[i].interpolated = h.interpolated;
+      // Only the divs need to be preserved.
+      var oldA = this.annotations_[i];
+      this.annotations_[i] = $.extend({
+        infoDiv: oldA.infoDiv,
+        lineDiv: oldA.lineDiv
+      }, a);
     } else {
-      // TODO(danvk): pass in |interpolated| value.
-      this.annotations_.push(this.createAnnotation(h.xFraction));
+      this.annotations_.push(this.createAnnotation(a));
       anyCreated = true;
     }
   }
