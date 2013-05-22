@@ -420,17 +420,23 @@ CallbackTestCase.prototype.testNaNDataStack = function() {
   assertEquals(1, res.row);
   assertEquals('c', res.seriesName);
 
-  // First gap, no data due to NaN contagion.
+  // All-NaN area at left, should get no points.
+  dom = g.toDomCoords(9.1, 0.9);
+  res = g.findStackedPoint(dom[0], dom[1]);
+  assertEquals(0, res.row);
+  assertEquals(undefined, res.seriesName);
+
+  // First gap, get 'c' since it's non-NaN.
   dom = g.toDomCoords(12.1, 0.9);
   res = g.findStackedPoint(dom[0], dom[1]);
   assertEquals(3, res.row);
-  assertEquals(undefined, res.seriesName);
+  assertEquals('c', res.seriesName);
 
-  // Second gap, no data due to NaN contagion.
+  // Second gap, get 'b' since 'c' is NaN.
   dom = g.toDomCoords(15.1, 0.9);
   res = g.findStackedPoint(dom[0], dom[1]);
   assertEquals(6, res.row);
-  assertEquals(undefined, res.seriesName);
+  assertEquals('b', res.seriesName);
 
   // Isolated points should work, finding series b in this case.
   dom = g.toDomCoords(15.9, 3.1);

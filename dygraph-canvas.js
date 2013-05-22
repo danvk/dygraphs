@@ -733,12 +733,16 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
+    ctx.strokeStyle = '#000000'; // For CanvasAssertions, path isn't stroked.
     ctx.beginPath();
     var last_x, is_first = true;
     while (iter.hasNext) {
       var point = iter.next();
       if (!Dygraph.isOK(point.y)) {
         prevX = NaN;
+        if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
+          baseline[point.canvasx] = area.h * point.y_stacked + area.y;
+        }
         continue;
       }
       if (stackedGraph) {

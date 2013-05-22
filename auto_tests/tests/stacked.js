@@ -5,11 +5,17 @@
  */
 var stackedTestCase = TestCase("stacked");
 
+stackedTestCase._origGetContext = Dygraph.getContext;
+
 stackedTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
+  Dygraph.getContext = function(canvas) {
+    return new Proxy(stackedTestCase._origGetContext(canvas));
+  }
 };
 
 stackedTestCase.prototype.tearDown = function() {
+  Dygraph.getContext = stackedTestCase._origGetContext;
 };
 
 stackedTestCase.prototype.testCorrectColors = function() {
@@ -178,4 +184,58 @@ stackedTestCase.prototype.testMissingValueAtZero = function() {
 
   g.setSelection(2);
   assertEquals("2: Y2: 3", Util.getLegend());
+};
+
+stackedTestCase.prototype.testInterpolation = function() {
+  var opts = {
+    colors: ['#ff0000', '#00ff00', '#0000ff'],
+    stackedGraph: true
+  };
+
+  var data = [
+    [100, 1, 2, 1],
+    [101, 1, 2, 2],
+    [102, 1, 2, NaN],
+    [103, 1, 2, 4],
+    [104, NaN, NaN, NaN],
+    [105, 1, 2, 6],
+    [106, 1, 2, 7],
+    [107, 1, 2, 8],
+    [108, 1, 2, NaN],
+    [109, 1, NaN, 10]];
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  var htx = g.hidden_ctx_;
+  var attrs = {};
+
+  // Check that lines are drawn at the expected positions, using
+  // interpolated values for missing data.
+  var xy1 = g.toDomCoords(102, 6);
+  var xy2 = g.toDomCoords(103, 7);
+  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+  var xy1 = g.toDomCoords(102, 5);
+  var xy2 = g.toDomCoords(103, 6);
+  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+  var xy1 = g.toDomCoords(108, 12);
+  var xy2 = g.toDomCoords(109, 13);
+  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+
+  // Check that the expected number of line segments gets drawn
+  // for each series. Gaps don't get a line.
+  assertEquals(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(6, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
+  assertEquals(3, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+
+  // Check that the selection returns the original (non-stacked)
+  // values and skips gaps.
+  g.setSelection(1);
+  assertEquals("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
+
+  g.setSelection(8);
+  assertEquals("108: Y1: 1 Y2: 2", Util.getLegend());
+
+  g.setSelection(9);
+  assertEquals("109: Y1: 1 Y3: 10", Util.getLegend());
 };
