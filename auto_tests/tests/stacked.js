@@ -192,17 +192,20 @@ stackedTestCase.prototype.testInterpolation = function() {
     stackedGraph: true
   };
 
+  // The last series is all-NaN, it ought to be treated as all zero
+  // for stacking purposes.
+  var N = NaN;
   var data = [
-    [100, 1, 2, 1],
-    [101, 1, 2, 2],
-    [102, 1, 2, NaN],
-    [103, 1, 2, 4],
-    [104, NaN, NaN, NaN],
-    [105, 1, 2, 6],
-    [106, 1, 2, 7],
-    [107, 1, 2, 8],
-    [108, 1, 2, NaN],
-    [109, 1, NaN, 10]];
+    [100, 1, 2, N, N],
+    [101, 1, 2, 2, N],
+    [102, 1, N, N, N],
+    [103, 1, 2, 4, N],
+    [104, N, N, N, N],
+    [105, 1, 2, N, N],
+    [106, 1, 2, 7, N],
+    [107, 1, 2, 8, N],
+    [108, 1, 2, 9, N],
+    [109, 1, N, N, N]];
 
   var graph = document.getElementById("graph");
   g = new Dygraph(graph, data, opts);
@@ -212,21 +215,20 @@ stackedTestCase.prototype.testInterpolation = function() {
 
   // Check that lines are drawn at the expected positions, using
   // interpolated values for missing data.
-  var xy1 = g.toDomCoords(102, 6);
-  var xy2 = g.toDomCoords(103, 7);
-  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-  var xy1 = g.toDomCoords(102, 5);
-  var xy2 = g.toDomCoords(103, 6);
-  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-  var xy1 = g.toDomCoords(108, 12);
-  var xy2 = g.toDomCoords(109, 13);
-  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(100, 4), g.toDomCoords(101, 4), {strokeStyle: '#00ff00'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(102, 6), g.toDomCoords(103, 7), {strokeStyle: '#ff0000'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(107, 8), g.toDomCoords(108, 9), {strokeStyle: '#0000ff'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(108, 12), g.toDomCoords(109, 12), {strokeStyle: '#ff0000'});
 
   // Check that the expected number of line segments gets drawn
   // for each series. Gaps don't get a line.
   assertEquals(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
-  assertEquals(6, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
-  assertEquals(3, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  assertEquals(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
 
   // Check that the selection returns the original (non-stacked)
   // values and skips gaps.
@@ -234,8 +236,8 @@ stackedTestCase.prototype.testInterpolation = function() {
   assertEquals("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
 
   g.setSelection(8);
-  assertEquals("108: Y1: 1 Y2: 2", Util.getLegend());
+  assertEquals("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
 
   g.setSelection(9);
-  assertEquals("109: Y1: 1 Y3: 10", Util.getLegend());
+  assertEquals("109: Y1: 1", Util.getLegend());
 };

@@ -2295,8 +2295,10 @@ Dygraph.stackPoints_ = function(points, cumulative_y, seriesExtremes) {
   var nextPointIdx = -1;
 
   function updateNextPoint(idx) {
+    // Find the next stackable point starting from the given index.
     if (nextPointIdx >= idx) return;
     for (var j = idx; j < points.length; ++j) {
+      nextPoint = null;
       if (isStackableVal(points[j].yval)) {
         nextPointIdx = j;
         nextPoint = points[j];
@@ -2322,6 +2324,8 @@ Dygraph.stackPoints_ = function(points, cumulative_y, seriesExtremes) {
         actual_y = prevPoint.yval;
       } else if (nextPoint) {
         actual_y = nextPoint.yval;
+      } else {
+        actual_y = 0;
       }
     } else {
       prevPoint = point;
