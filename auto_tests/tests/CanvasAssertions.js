@@ -194,7 +194,7 @@ CanvasAssertions.match = function(predicate, call) {
     return predicate(call);
   } else {
     for (var attr in predicate) {
-      if (attr in predicate && (
+      if (predicate.hasOwnProperty(attr) && (
           !call.properties || predicate[attr] != call.properties[attr])) {
         return false;
       }
