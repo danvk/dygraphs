@@ -4,6 +4,9 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  *
  * Note: This plugin requires jQuery and jQuery UI Draggable.
+ *
+ * See high-level documentation at
+ * https://docs.google.com/document/d/1OHNE8BNNmMtFlRQ969DACIYIJ9VVJ7w3dSPRJDEeIew/edit#
  */
 
 /*global Dygraph:false */
