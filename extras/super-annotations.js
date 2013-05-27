@@ -85,6 +85,18 @@ annotations.prototype.annotationWasDragged = function(a, event, ui) {
   $(this).triggerHandler('annotationsChanged', {});
 };
 
+annotations.prototype.makeAnnotationEditable = function(a) {
+  if (a.editable == true) return;
+  this.moveAnnotationToTop(a);
+
+  // Note: we have to fill out the HTML ourselves because
+  // updateAnnotationInfo() won't touch editable annotations.
+  a.editable = true;
+  var editableTemplateDiv = $('#annotation-editable-template').get(0);
+  a.infoDiv.innerHTML = this.getTemplateHTML(editableTemplateDiv, a);
+  $(this).triggerHandler('beganEditAnnotation', a);
+};
+
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
 annotations.prototype.createAnnotation = function(a) {
@@ -99,12 +111,14 @@ annotations.prototype.createAnnotation = function(a) {
     'height': '100%',
     'position': 'absolute',
     // TODO(danvk): use border-color here for consistency?
-    'background-color': color
-  });
+    'background-color': color,
+    'z-index': 10
+  }).addClass('dygraph-annotation-line');
 
   var $infoDiv = $('#annotation-template').clone().removeAttr('id').css({
       'position': 'absolute',
-      'border-color': color
+      'border-color': color,
+      'z-index': 10
     })
     .show();
 
@@ -118,42 +132,36 @@ annotations.prototype.createAnnotation = function(a) {
   $infoDiv.draggable({
     'start': function(event, ui) {
       $(this).css({'bottom': ''});
+      a.isDragging = true;
     },
     'drag': function(event, ui) {
       self.annotationWasDragged(a, event, ui);
     },
     'stop': function(event, ui) {
       $(this).css({'top': ''});
+      a.isDragging = false;
       self.updateAnnotationDivPositions();
     }
   });
 
   // TODO(danvk): use 'on' instead of delegate/dblclick
-  $infoDiv.delegate('.annotation-kill-button', 'click', function() {
+  $infoDiv.on('click', '.annotation-kill-button', function() {
     that.removeAnnotation(a);
     $(that).triggerHandler('annotationDeleted', a);
     $(that).triggerHandler('annotationsChanged', {});
   });
 
-  $infoDiv.dblclick(function() {
-    if (a.editable == true) return;
-    self.moveAnnotationToTop(a);
-
-    // Note: we have to fill out the HTML ourselves because
-    // updateAnnotationInfo() won't touch editable annotations.
-    a.editable = true;
-    var editableTemplateDiv = $('#annotation-editable-template').get(0);
-    a.infoDiv.innerHTML = self.getTemplateHTML(editableTemplateDiv, a);
-    $(that).triggerHandler('beganEditAnnotation', a);
+  $infoDiv.on('dblclick', function() {
+    that.makeAnnotationEditable(a);
   });
-  $infoDiv.delegate('.annotation-update', 'click', function() {
+  $infoDiv.on('click', '.annotation-update', function() {
     self.extractUpdatedProperties_($infoDiv.get(0), a);
     a.editable = false;
     self.updateAnnotationInfo();
     $(that).triggerHandler('annotationEdited', a);
     $(that).triggerHandler('annotationsChanged', {});
   });
-  $infoDiv.delegate('.annotation-cancel', 'click', function() {
+  $infoDiv.on('click', '.annotation-cancel', function() {
     a.editable = false;
     self.updateAnnotationInfo();
     $(that).triggerHandler('cancelEditAnnotation', a);
@@ -237,8 +245,15 @@ annotations.prototype.updateAnnotationDivPositions = function() {
     });
     $(a.infoDiv).css({
       'left': x + 'px',
-      'bottom': (div.offsetHeight - (y - lineHeight)) + 'px'
-    })  //.draggable("option", "containment", box);
+    });
+    if (!a.isDragging) {
+      // jQuery UI draggable likes to set 'top', whereas superannotations sets
+      // 'bottom'. Setting both will make the annotation grow and contract as
+      // the user drags it, which looks bad.
+      $(a.infoDiv).css({
+        'bottom': (div.offsetHeight - (y - lineHeight)) + 'px'
+      })  //.draggable("option", "containment", box);
+    }
   });
 };
 
@@ -264,6 +279,8 @@ annotations.prototype.createPublicAnnotation_ = function(a, opt_props) {
   var displayAnnotation = $.extend({}, a, opt_props);
   delete displayAnnotation['infoDiv'];
   delete displayAnnotation['lineDiv'];
+  delete displayAnnotation['isDragging'];
+  delete displayAnnotation['editable'];
   return displayAnnotation;
 };
 
@@ -355,6 +372,9 @@ annotations.prototype.pointClick = function(e) {
 
   $(this).triggerHandler('annotationCreated', a);
   $(this).triggerHandler('annotationsChanged', {});
+
+  // Annotations should begin life editable.
+  this.makeAnnotationEditable(a);
 };
 
 annotations.prototype.destroy = function() {
