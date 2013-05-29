@@ -20,7 +20,7 @@ CatSources () {
 }
 
 Shim () {
-  echo 'Dygraph.prototype=Dygraph.prototype||{};'
+  echo 'this.Dygraph=this.Dygraph||{};Dygraph.prototype=Dygraph.prototype||{};'
 }
 
 Copyright () {
