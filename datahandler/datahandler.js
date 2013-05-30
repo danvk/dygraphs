@@ -1,21 +1,22 @@
 Dygraph.DataHandlers = {};
 Dygraph.DataHandlers.handlers_ = {};
-Dygraph.DataHandlers.registerHandler = function(name,handler){
-  if(!handler instanceof Dygraph.DataHandler)
+Dygraph.DataHandlers.registerHandler = function(name,handler) {
+  if (!handler instanceof Dygraph.DataHandler) {
     throw("the handler must be a prototype of Dygraph.DataHandler");
+  }
   Dygraph.DataHandlers.handlers_[name] = handler;
 };
 
-Dygraph.DataHandlers.getHandler = function(name){
+Dygraph.DataHandlers.getHandler = function(name) {
   return  Dygraph.DataHandlers.handlers_[name];
 };
 
-Dygraph.DataHandlers.createHandler = function(name){
+Dygraph.DataHandlers.createHandler = function(name) {
   return new Dygraph.DataHandlers.handlers_[name]();
 };
 
-Dygraph.DataHandler = function DataHandler(){
-  var handler = function(){return this;};
+Dygraph.DataHandler = function DataHandler() {
+  var handler = function() {return this;};
   //Uniform Data Format Constants
   handler.prototype.X = 0;
   handler.prototype.Y = 1;
@@ -31,7 +32,7 @@ Dygraph.DataHandler = function DataHandler(){
    *
    * @private
    */
-  handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs){};
+  handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {};
 
   /**
    * @private
@@ -48,7 +49,7 @@ Dygraph.DataHandler = function DataHandler(){
    * @param {} dygraphs the dygraphs instance.
    * @return the rolled series.
    */
-  handler.prototype.rollingAverage = function(originalData, rollPeriod, dygraphs){};
+  handler.prototype.rollingAverage = function(originalData, rollPeriod, dygraphs) {};
 
   /**
    * @private
@@ -62,7 +63,7 @@ Dygraph.DataHandler = function DataHandler(){
    *   on the computation of the left and right edges.
    * @return [low, high]
    */
-  handler.prototype.getExtremeYValues = function(series,dateWindow,stepPlot){};
+  handler.prototype.getExtremeYValues = function(series,dateWindow,stepPlot) {};
 
   /**
    * @private
@@ -77,7 +78,7 @@ Dygraph.DataHandler = function DataHandler(){
    * @param {String} Name of the series.
    * @param {} dygraphs the dygraphs instance.
    */
-  handler.prototype.onLineEvaluated = function(seriesPoints, dataset, setName, dygraphs){};
+  handler.prototype.onLineEvaluated = function(seriesPoints, dataset, setName, dygraphs) {};
 
   /**
    * @private
@@ -125,10 +126,11 @@ Dygraph.DataHandler = function DataHandler(){
         idx--;
       }
     }
-    if(firstIdx <= lastIdx)
+    if (firstIdx <= lastIdx) {
       return [ firstIdx, lastIdx ];
-    else
+    } else {
       return [0,series.length - 1];
+    }
   };
 
   return handler;

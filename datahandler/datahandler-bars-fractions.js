@@ -64,8 +64,7 @@ FractionsBarsHandler.prototype.rollingAverage = function(originalData, rollPerio
       // http://en.wikipedia.org/wiki/Binomial_confidence_interval
       if (den) {
         var p = value < 0 ? 0 : value, n = den;
-        var pm = sigma
-            * Math.sqrt(p * (1 - p) / n + sigma * sigma / (4 * n * n));
+        var pm = sigma * Math.sqrt(p * (1 - p) / n + sigma * sigma / (4 * n * n));
         var denom = 1 + sigma * sigma / den;
         low = (p + sigma * sigma / (2 * den) - pm) / denom;
         high = (p + sigma * sigma / (2 * den) + pm) / denom;

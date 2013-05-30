@@ -2184,23 +2184,23 @@ Dygraph.prototype.predraw_ = function() {
   var start = new Date();
   
   // Determine the correct dataHandler
-  var handlerConstructor;
+  var HandlerConstructor;
   if (this.attr_("dataHandler")) {
-    handlerConstructor =  Dygraph.DataHandlers.getHandler(this.attr_("dataHandler"));
+    HandlerConstructor =  Dygraph.DataHandlers.getHandler(this.attr_("dataHandler"));
   } else if (this.fractions_){
     if (this.attr_("errorBars")) {
-      handlerConstructor = Dygraph.DataHandlers.getHandler("bars-fractions");
+      HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-fractions");
     } else {
-      handlerConstructor = Dygraph.DataHandlers.getHandler("default-fractions");
+      HandlerConstructor = Dygraph.DataHandlers.getHandler("default-fractions");
     }
   } else if (this.attr_("customBars")) {
-    handlerConstructor = Dygraph.DataHandlers.getHandler("bars-custom");
+    HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-custom");
   } else if (this.attr_("errorBars")) {
-    handlerConstructor = Dygraph.DataHandlers.getHandler("bars-error");
+    HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-error");
   } else {
-    handlerConstructor = Dygraph.DataHandlers.getHandler("default");
+    HandlerConstructor = Dygraph.DataHandlers.getHandler("default");
   }
-  this.dataHandler_ = new handlerConstructor();
+  this.dataHandler_ = new HandlerConstructor();
 
   this.layout_.computePlotArea();
 

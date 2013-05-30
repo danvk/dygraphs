@@ -75,7 +75,7 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
 
   g.updateOptions({ valueRange: [10, NaN] });
   assertEquals([12, 18], g.xAxisRange());
-  assertEquals([10, 43], g.yAxisRange(0));
+  assertEquals([10,44.2], g.yAxisRange(0));
 
   g.updateOptions({ valueRange: [10, 40] });
   assertEquals([12, 18], g.xAxisRange());
@@ -83,7 +83,7 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
 
   g.updateOptions({ valueRange: [10, null] });
   assertEquals([12, 18], g.xAxisRange());
-  assertEquals([10, 43], g.yAxisRange(0));
+  assertEquals([10,44.2], g.yAxisRange(0));
 
   g.updateOptions({ valueRange: [10, 40] });
   assertEquals([12, 18], g.xAxisRange());
@@ -91,7 +91,7 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
 
   g.updateOptions({ valueRange: [10, undefined] });
   assertEquals([12, 18], g.xAxisRange());
-  assertEquals([10, 43], g.yAxisRange(0));
+  assertEquals([10,44.2], g.yAxisRange(0));
 
   g.updateOptions({ valueRange: [10, 40] });
   assertEquals([12, 18], g.xAxisRange());
