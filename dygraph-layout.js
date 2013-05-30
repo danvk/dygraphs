@@ -63,7 +63,7 @@ DygraphLayout.prototype.getPlotArea = function() {
 };
 
 // Compute the box which the chart should be drawn in. This is the canvas's
-// box, less space needed for axis and chart labels.
+// box, less space needed for axis, chart labels, and other plug-ins.
 // NOTE: This should only be called by Dygraph.predraw_().
 DygraphLayout.prototype.computePlotArea = function() {
   var area = {
@@ -160,10 +160,6 @@ DygraphLayout.prototype.setXTicks = function(xTicks) {
 // TODO(danvk): add this to the Dygraph object's API or move it into Layout.
 DygraphLayout.prototype.setYAxes = function (yAxes) {
   this.yAxes_ = yAxes;
-};
-
-DygraphLayout.prototype.setDateWindow = function(dateWindow) {
-  this.dateWindow_ = dateWindow;
 };
 
 DygraphLayout.prototype.evaluate = function() {
