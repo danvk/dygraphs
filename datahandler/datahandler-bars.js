@@ -15,64 +15,6 @@ BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot)
 
   var firstIdx = 0;
   var lastIdx = series.length - 1;
-  if (dateWindow) {
-    var x1, x2, y1, y2, extra1, extra2;
-    var handler = this;
-    var computeIntersectionExtremes = function(x1,y1,x2,y2,extremes1,extremes2, intersectionX){
-      if (y1 != null && !isNaN(y1) && y2 != null && !isNaN(y2)) {
-        var intersectionY;
-        intersectionY = handler.computeYIntersection([ x1, y1 ], [ x2, y2 ]
-        , intersectionX);
-        if (minY === null || intersectionY < minY) minY = intersectionY;
-        if (minY === null || intersectionY > maxY) maxY = intersectionY;
-
-        // Calculating the min point of intersection
-        intersectionY = handler.computeYIntersection([ x1, extremes1[0] ],
-            [ x2, extremes2[0] ], intersectionX);
-        if (intersectionY < minY) minY = intersectionY;
-
-        // Calculating the max point of intersection
-        intersectionY = handler.computeYIntersection([ x1, extremes1[1] ],
-            [ x2, extremes2[1] ], intersectionX);
-        if (intersectionY > maxY) maxY = intersectionY;
-      }
-    };
-
-    var indexes = this.getIndexesInWindow(series, dateWindow);
-    firstIdx = indexes[0];
-    lastIdx = indexes[1];
-
-    //XXX EBD: Fix bug not computing extremes if firstIdx 
-    // or firstIdx -1 has an invalid (null or NaN) value.
-    if (firstIdx != 0) {
-      if (stepPlot) {
-        firstIdx--;
-      } else {
-        // compute axis point of intersection
-        x1 = series[firstIdx - 1][0];
-        x2 = series[firstIdx][0];
-        y1 = series[firstIdx - 1][1];
-        y2 = series[firstIdx][1];
-        extra1 = series[firstIdx - 1][2];
-        extra2 = series[firstIdx][2];
-        computeIntersectionExtremes(x1,y1,x2,y2,extra1,extra2,dateWindow[0]);
-      }
-    }
-    //XXX EBD: Fix bug not computing extremes if lastIdx 
-    // or lastIdx -1 has an invalid (null or NaN) value.
-    if (lastIdx != series.length - 1) {
-      if (!stepPlot) {
-        // compute axis point of intersection
-        x1 = series[lastIdx][0];
-        x2 = series[lastIdx + 1][0];
-        y1 = series[lastIdx][1];
-        y2 = series[lastIdx + 1][1];
-        extra1 = series[lastIdx][2];
-        extra2 = series[lastIdx + 1][2];
-        computeIntersectionExtremes(x1,y1,x2,y2,extra1,extra2,dateWindow[1]);
-      }
-    }
-  }
 
   for ( var j = firstIdx; j <= lastIdx; j++) {
     y = series[j][1];
