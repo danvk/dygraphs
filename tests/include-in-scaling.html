@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>dygraph</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+  </head>
+  <body>
+    <p>Example of using the includeOnScaling option in cobination with a custom binary data plotter:</p>
+    <div id="graphdiv"></div>
+    <script type="text/javascript">
+      function binaryChartPlotter(e) {
+        var ctx = e.drawingContext;
+        var points = e.points;
+        var range = e.dygraph.yAxisRange();
+        var y_bottom = e.dygraph.toDomYCoord(0);
+        var y_top = e.dygraph.toDomYCoord(range[1]);
+        // This should really be based on the minimum gap
+        var bar_width = points[1].canvasx - points[0].canvasx;
+        ctx.fillStyle = e.color;
+        // Do the actual plotting.
+        for (var i = 0; i < points.length; i++) {
+          var p = points[i];
+          var center_x = p.canvasx;  // center of the bar
+
+          if (p.yval > 0) {    
+            ctx.fillRect(center_x - bar_width / 2, y_top,bar_width, y_bottom);
+            ctx.strokeRect(center_x - bar_width / 2, y_top, bar_width, y_bottom);
+          }
+        }
+      }
+
+      var data = [[0,0,12],[1,0,11],[2,1,10],[3,1,11],[4,1,12],[5,1,13],[6,1,14],[7,1,15]];
+      var g = new Dygraph(document.getElementById("graphdiv"), data, {
+          series: {
+            heater: {
+              plotter: binaryChartPlotter,
+              highlightCircleSize: 0,
+              includeInScaling: false
+            }
+          },  
+          //includeInScaling: [false,true],
+          showLabelsOnHighlight: false,
+          ylabel: 'temperature',                          
+          showRoller: false,
+          labels: ['', 'heater', 'temperature'],
+        });
+    </script>
+  </body>
+</html>

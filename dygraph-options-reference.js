@@ -786,6 +786,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
   },
+  "includeInScaling": {
+    "default": "true",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "Controls if a series is included in the y-axis scaling."
+  },
   "series": {
     "default": "null",
     "labels": ["Series"],

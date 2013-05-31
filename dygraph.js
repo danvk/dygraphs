@@ -328,6 +328,9 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
 
+  // Group this where it belongs. I don't know where.
+  includeInScaling : true,
+
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
   plotter: [
@@ -2409,7 +2412,9 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     var seriesName = this.attr_("labels")[i];
-    extremes[seriesName] = seriesExtremes;
+    var include = this.attributes_.getForSeries("includeInScaling", seriesName);
+    if (include) 
+      extremes[seriesName] = seriesExtremes;
     datasets[i] = series;
   }
 
