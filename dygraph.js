@@ -2821,12 +2821,20 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
     if (logScale) {
       // On the log scale, points less than zero do not exist.
       // This will create a gap in the chart.
-      if (point <= 0) {
+      if (errorBars || customBars) {
+        for (var k = 0; k < point.length; k++) {
+          if (point[k] <= 0) {
+            point = null;
+            break;
+          }
+        }
+      }
+      else if (point <= 0) {
         point = null;
       }
     }
     // Fix null points to fit the display type standard.
-    if(point !== null) {
+    if (point !== null) {
       series.push([x, point]);
     } else {
       series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
