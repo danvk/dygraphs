@@ -2823,6 +2823,7 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
       // This will create a gap in the chart.
       if (errorBars || customBars) {
         for (var k = 0; k < point.length; k++) {
+          // point.length is either 2 (errorBars) or 3 (customBars)
           if (point[k] <= 0) {
             point = null;
             break;
