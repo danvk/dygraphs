@@ -2822,8 +2822,8 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
       // On the log scale, points less than zero do not exist.
       // This will create a gap in the chart.
       if (errorBars || customBars) {
+        // point.length is either 2 (errorBars) or 3 (customBars)
         for (var k = 0; k < point.length; k++) {
-          // point.length is either 2 (errorBars) or 3 (customBars)
           if (point[k] <= 0) {
             point = null;
             break;
