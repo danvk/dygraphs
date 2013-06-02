@@ -139,16 +139,27 @@ DygraphsLocalTester.prototype.createResultsDiv = function() {
 }
 
 DygraphsLocalTester.prototype.postResults = function() {
+  var table = document.createElement("table");
+  this.resultsDiv.appendChild(table);
   for (var idx = 0; idx < this.results.length; idx++) {
     var result = this.results[idx];
-    var elem = document.createElement("div");
-    elem.setAttribute("class", result.result ? 'pass' : 'fail');
+    var tr = document.createElement("tr");
+    tr.setAttribute("class", result.result ? 'pass' : 'fail');
 
-    elem.innerHTML = result.name + ': <span class=\'outcome\'>' +
-      (result.result ? 'pass' : 'fail') +
-      '</span>' +
-      ' (' + result.duration + ' ms)';
-    this.resultsDiv.appendChild(elem);
+    var tdResult = document.createElement("td");
+    tdResult.setAttribute("class", "outcome");
+    tdResult.innerText = result.result ? 'pass' : 'fail';
+    tr.appendChild(tdResult);
+
+    var tdName = document.createElement("td");
+    tdName.innerText = result.name;
+    tr.appendChild(tdName);
+
+    var tdDuration = document.createElement("td");
+    tdDuration.innerText = result.duration;
+    tr.appendChild(tdDuration);
+
+    table.appendChild(tr);
   }
 }
 
