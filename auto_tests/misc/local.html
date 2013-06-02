@@ -94,9 +94,10 @@
   <p/>
 </body>
 <script type="text/javascript">
-  overrideWarn();
-  processVariables();
+  var tester = new DygraphsLocalTester();
+  // tester.overrideWarn(); // uncomment if you want warnings to be errors.
+  tester.processVariables();
   addGlobalTestSymbols();
-  run();
+  tester.run();
 </script>
 </html>

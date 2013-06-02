@@ -1,24 +1,29 @@
-var overrideWarn = function() {
-  // save Dygraph.warn so we can catch warnings.
-  if (false) { // Set true if you want warnings to cause failures.
-    var originalDygraphWarn = Dygraph.warn;
-    Dygraph.warn = function(msg) {
-      if (msg == "Using default labels. Set labels explicitly via 'labels' in the options parameter") {
-        originalDygraphWarn(msg);
-        return;
-      }
-      throw "Warnings not permitted: " + msg;
-    }
-    Dygraph.prototype.warn = Dygraph.warn;
-  }
+var DygraphsLocalTester = function() {
+  this.tc = null; // Selected test case
+  this.name = null; 
+  this.resultDiv = null;
 };
 
-var tc = null; // Selected test case
-var name = null; 
+/**
+ * Call this to replace Dygraphs.warn so it throws an error.
+ *
+ * In some cases we will still allow warnings to be warnings, however.
+ */
+DygraphsLocalTester.prototype.overrideWarn = function() {
+  // save Dygraph.warn so we can catch warnings.
+  var originalDygraphWarn = Dygraph.warn;
+  Dygraph.warn = function(msg) {
+    // This warning is still
+    if (msg == "Using default labels. Set labels explicitly via 'labels' in the options parameter") {
+      originalDygraphWarn(msg);
+      return;
+    }
+    throw "Warnings not permitted: " + msg;
+  }
+  Dygraph.prototype.warn = Dygraph.warn;
+};
 
-var resultDiv = null;
-
-function processVariables() {
+DygraphsLocalTester.prototype.processVariables = function() {
   var splitVariables = function() { // http://www.idealog.us/2006/06/javascript_to_p.html
     var query = window.location.search.substring(1); 
     var args = {};
@@ -55,13 +60,13 @@ function processVariables() {
 
   var results = null;
   // If the test class is defined.
-  if (tc != null) {
+  if (this.tc != null) {
     if (args.command == "runAllTests") {
       console.log("Running all tests for " + args.testCase);
-      results = tc.runAllTests();
+      results = this.tc.runAllTests();
     } else if (args.command == "runTest") {
       console.log("Running test " + args.testCase + "." + args.test);
-      results = tc.runTest(args.test);
+      results = this.tc.runTest(args.test);
     }
   } else {
     if (args.command == "runAllTests") {
@@ -71,19 +76,19 @@ function processVariables() {
       for (var idx in testCases) {
         var entry = testCases[idx];
         var prototype = entry.testCase;
-        tc = new entry.testCase();
-        results[entry.name] = tc.runAllTests();
+        this.tc = new entry.testCase();
+        results[entry.name] = this.tc.runAllTests();
       }
     }
   }
-  resultsDiv = createResultsDiv();
+  this.resultsDiv = this.createResultsDiv();
   var summary = { failed: 0, passed: 0 };
-  postResults(results, summary);
-  resultsDiv.appendChild(document.createElement("hr"));
+  this.postResults(results, summary);
+  this.resultsDiv.appendChild(document.createElement("hr"));
   document.getElementById('summary').innerHTML = "(" + summary.failed + " failed, " + summary.passed + " passed)";
 }
 
-function createResultsDiv() {
+DygraphsLocalTester.prototype.createResultsDiv = function() {
   var body = document.getElementsByTagName("body")[0];
   div = document.createElement("div");
   div.id='results';
@@ -122,14 +127,14 @@ function createResultsDiv() {
   return div;
 }
 
-function postResults(results, summary, title) {
+DygraphsLocalTester.prototype.postResults = function(results, summary, title) {
   if (typeof(results) == "boolean") {
     var elem = document.createElement("div");
     elem.setAttribute("class", results ? 'pass' : 'fail');
 
     var prefix = title ? (title + ": ") : "";
     elem.innerHTML = prefix + '<span class=\'outcome\'>' + (results ? 'pass' : 'fail') + '</span>';
-    resultsDiv.appendChild(elem);
+    this.resultsDiv.appendChild(elem);
     if (results) {
       summary.passed++;
     } else {
@@ -142,16 +147,16 @@ function postResults(results, summary, title) {
       if (results.hasOwnProperty(key)) {
         var elem = results[key];
         if (typeof(elem) == "boolean" && title) {
-          postResults(results[key], summary, title + "." + key);
+          this.postResults(results[key], summary, title + "." + key);
         } else {
-          postResults(results[key], summary, key);
+          this.postResults(results[key], summary, key);
         }
       }
     }
   }
 }
 
-var run = function() {
+DygraphsLocalTester.prototype.run = function() {
   var selector = document.getElementById("selector");
 
   if (selector != null) { // running a test
@@ -170,7 +175,7 @@ var run = function() {
       a.innerHTML = text;
       a.href = url;
     }
-    if (tc == null) {
+    if (this.tc == null) {
       description.innerHTML = "Test cases:";
       var testCases = getAllTestCases();
       createLink(list, "(run all tests)", document.URL + "?command=runAllTests");
