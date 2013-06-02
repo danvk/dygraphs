@@ -1,7 +1,19 @@
 var DygraphsLocalTester = function() {
   this.tc = null; // Selected test case
   this.name = null; 
-  this.resultDiv = null;
+  this.resultsDiv = null;
+  this.results = [];
+  this.summary = { failed: 0, passed: 0 };
+
+  var self = this;
+  jstestdriver.attachListener({
+    start : function(tc) {
+      self.start_(tc);
+    },
+    finish : function(tc, name, result, e) {
+      self.finish_(tc, name, result, e);
+    }
+  });
 };
 
 /**
@@ -49,50 +61,49 @@ DygraphsLocalTester.prototype.processVariables = function() {
       var entry = testCases[idx];
       if (entry.name == args.testCaseName) {
         var prototype = entry.testCase;
-        tc = new entry.testCase();
+        this.tc = new entry.testCase();
         break;
       }
     }
   } else if (args.testCase) { // The class name of the test.
     name = args.testCase;
-    eval("tc = new " + args.testCase + "()");
+    eval("tc__= new " + args.testCase + "()");
+    this.tc = tc_;
   }
 
-  var results = null;
   // If the test class is defined.
   if (this.tc != null) {
     if (args.command == "runAllTests") {
       console.log("Running all tests for " + args.testCase);
-      results = this.tc.runAllTests();
+      this.tc.runAllTests();
     } else if (args.command == "runTest") {
       console.log("Running test " + args.testCase + "." + args.test);
-      results = this.tc.runTest(args.test);
+      this.tc.runTest(args.test);
     }
   } else {
     if (args.command == "runAllTests") {
       console.log("Running all tests for all test cases");
       var testCases = getAllTestCases();
-      results = {};
       for (var idx in testCases) {
         var entry = testCases[idx];
         var prototype = entry.testCase;
         this.tc = new entry.testCase();
-        results[entry.name] = this.tc.runAllTests();
+        this.tc.runAllTests();
       }
     }
   }
   this.resultsDiv = this.createResultsDiv();
-  var summary = { failed: 0, passed: 0 };
-  this.postResults(results, summary);
+  this.postResults();
   this.resultsDiv.appendChild(document.createElement("hr"));
-  document.getElementById('summary').innerHTML = "(" + summary.failed + " failed, " + summary.passed + " passed)";
+  document.getElementById('summary').innerHTML = "(" + this.summary.failed + " failed, " + this.summary.passed + " passed)";
 }
 
 DygraphsLocalTester.prototype.createResultsDiv = function() {
-  var body = document.getElementsByTagName("body")[0];
   div = document.createElement("div");
   div.id='results';
   div.innerHTML = "Test results: <span id='summary'></span> <a href='#' id='passed'>passed</a> <a href='#' id='failed'>failed</a> <a href='#' id='all'>all</a><br/>";
+
+  var body = document.getElementsByTagName("body")[0];
   body.insertBefore(div, body.firstChild);
 
   var setByClassName = function(name, displayStyle) {
@@ -127,32 +138,17 @@ DygraphsLocalTester.prototype.createResultsDiv = function() {
   return div;
 }
 
-DygraphsLocalTester.prototype.postResults = function(results, summary, title) {
-  if (typeof(results) == "boolean") {
+DygraphsLocalTester.prototype.postResults = function() {
+  for (var idx = 0; idx < this.results.length; idx++) {
+    var result = this.results[idx];
     var elem = document.createElement("div");
-    elem.setAttribute("class", results ? 'pass' : 'fail');
+    elem.setAttribute("class", result.result ? 'pass' : 'fail');
 
-    var prefix = title ? (title + ": ") : "";
-    elem.innerHTML = prefix + '<span class=\'outcome\'>' + (results ? 'pass' : 'fail') + '</span>';
+    elem.innerHTML = result.name + ': <span class=\'outcome\'>' +
+      (result.result ? 'pass' : 'fail') +
+      '</span>' +
+      ' (' + result.duration + ' ms)';
     this.resultsDiv.appendChild(elem);
-    if (results) {
-      summary.passed++;
-    } else {
-      summary.failed++;
-    }
-  } else { // hash
-    var failed = 0;
-    var html = "";
-    for (var key in results) {
-      if (results.hasOwnProperty(key)) {
-        var elem = results[key];
-        if (typeof(elem) == "boolean" && title) {
-          this.postResults(results[key], summary, title + "." + key);
-        } else {
-          this.postResults(results[key], summary, key);
-        }
-      }
-    }
   }
 }
 
@@ -185,7 +181,7 @@ DygraphsLocalTester.prototype.run = function() {
       }
     } else {
       description.innerHTML = "Tests for " + name;
-      var names = tc.getTestNames();
+      var names = this.tc.getTestNames();
       createLink(list, "Run All Tests", document.URL + "&command=runAllTests");
       for (var idx in names) {
         var name = names[idx];
@@ -193,4 +189,19 @@ DygraphsLocalTester.prototype.run = function() {
       }
     }
   }
+}
+
+DygraphsLocalTester.prototype.start_ = function(tc) {
+  this.startms_ = new Date().getTime();
+}
+
+DygraphsLocalTester.prototype.finish_ = function(tc, name, result, e) {
+  var endms_ = new Date().getTime();
+  this.results.push({
+    name : tc.name + "." + name,
+    result : result,
+    duration : endms_ - this.startms_
+  });
+  this.summary.passed += result ? 1 : 0;
+  this.summary.failed += result ? 0 : 1;
 }
