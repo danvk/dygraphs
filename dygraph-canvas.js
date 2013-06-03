@@ -702,7 +702,14 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var stackedGraph = g.getOption("stackedGraph");
   var colors = g.getColors();
 
-  var baseline = {};  // for stacked graphs: baseline for filling
+  // For stacked graphs, track the baseline for filling.
+  //
+  // The filled areas below graph lines are trapezoids with two
+  // vertical edges. The top edge is the line segment being drawn, and
+  // the baseline is the bottom edge. Each baseline corresponds to the
+  // top line segment from the previous stacked line. In the case of
+  // step plots, the trapezoids are rectangles.
+  var baseline = {};
   var currBaseline;
   var prevStepPlot;  // for different line drawing modes (line/step) per series
 
