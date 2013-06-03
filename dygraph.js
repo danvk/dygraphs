@@ -985,8 +985,7 @@ Dygraph.prototype.createInterface_ = function() {
   var enclosing = this.maindiv_;
 
   this.graphDiv = document.createElement("div");
-  this.graphDiv.style.width = this.width_ + "px";
-  this.graphDiv.style.height = this.height_ + "px";
+
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
   enclosing.appendChild(this.graphDiv);
@@ -994,10 +993,8 @@ Dygraph.prototype.createInterface_ = function() {
   // Create the canvas for interactive parts of the chart.
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
-  this.canvas_.style.width = this.width_ + "px";    // for IE
-  this.canvas_.style.height = this.height_ + "px";  // for IE
+
+  this.resizeElements_();
 
   this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
 
@@ -1031,8 +1028,8 @@ Dygraph.prototype.createInterface_ = function() {
     }
   };
 
-  this.addEvent(window, 'mouseout', this.mouseOutHandler_);
-  this.addEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+  this.addAndTrackEvent(window, 'mouseout', this.mouseOutHandler_);
+  this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // Don't recreate and register the resize handler on subsequent calls.
   // This happens when the graph is resized.
@@ -1043,9 +1040,18 @@ Dygraph.prototype.createInterface_ = function() {
 
     // Update when the window is resized.
     // TODO(danvk): drop frames depending on complexity of the chart.
-    this.addEvent(window, 'resize', this.resizeHandler_);
+    this.addAndTrackEvent(window, 'resize', this.resizeHandler_);
   }
 };
+
+Dygraph.prototype.resizeElements_ = function() {
+  this.graphDiv.style.width = this.width_ + "px";
+  this.graphDiv.style.height = this.height_ + "px";
+  this.canvas_.width = this.width_;
+  this.canvas_.height = this.height_;
+  this.canvas_.style.width = this.width_ + "px";    // for IE
+  this.canvas_.style.height = this.height_ + "px";  // for IE
+}
 
 /**
  * Detach DOM elements in the dygraph and null out all data references.
@@ -1053,6 +1059,9 @@ Dygraph.prototype.createInterface_ = function() {
  * usage. See, e.g., the tests/perf.html example.
  */
 Dygraph.prototype.destroy = function() {
+  this.canvas_ctx_.restore();
+  this.hidden_ctx_.restore();
+
   var removeRecursive = function(node) {
     while (node.hasChildNodes()) {
       removeRecursive(node.firstChild);
@@ -1060,19 +1069,11 @@ Dygraph.prototype.destroy = function() {
     }
   };
 
-  if (this.registeredEvents_) {
-    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
-      var reg = this.registeredEvents_[idx];
-      Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
-    }
-  }
-
-  this.registeredEvents_ = [];
+  this.removeTrackedEvents_();
 
   // remove mouse event handlers (This may not be necessary anymore)
   Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mouseup', this.mouseUpHandler_);
 
   // remove window handlers
   Dygraph.removeEvent(window,'resize',this.resizeHandler_);
@@ -1344,19 +1345,13 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   for (var eventName in interactionModel) {
     if (!interactionModel.hasOwnProperty(eventName)) continue;
-    this.addEvent(this.mouseEventElement_, eventName,
+    this.addAndTrackEvent(this.mouseEventElement_, eventName,
         bindHandler(interactionModel[eventName]));
-  }
-
-  // unregister the handler on subsequent calls.
-  // This happens when the graph is resized.
-  if (this.mouseUpHandler_) {
-    Dygraph.removeEvent(document, 'mouseup', this.mouseUpHandler_);
   }
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  this.mouseUpHandler_ = function(event) {
+  var mouseUpHandler = function(event) {
     if (context.isZooming || context.isPanning) {
       context.isZooming = false;
       context.dragStartX = null;
@@ -1376,7 +1371,7 @@ Dygraph.prototype.createDragInterface_ = function() {
     context.tarp.uncover();
   };
 
-  this.addEvent(document, 'mouseup', this.mouseUpHandler_);
+  this.addAndTrackEvent(document, 'mouseup', this.mouseUpHandler);
 };
 
 /**
@@ -2236,6 +2231,15 @@ Dygraph.prototype.predraw_ = function() {
     this.cascadeEvents_('clearChart');
     this.plotter_.clear();
   }
+
+  if(!this.is_initial_draw_) {
+    this.canvas_ctx_.restore();
+    this.hidden_ctx_.restore();
+  }
+
+  this.canvas_ctx_.save();
+  this.hidden_ctx_.save();
+
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
@@ -3594,17 +3598,9 @@ Dygraph.prototype.resize = function(width, height) {
     this.height_ = this.maindiv_.clientHeight;
   }
 
+  this.resizeElements_();
+
   if (old_width != this.width_ || old_height != this.height_) {
-    // TODO(danvk): there should be a clear() method.
-    this.maindiv_.innerHTML = "";
-    this.roller_ = null;
-    this.attrs_.labelsDiv = null;
-    this.createInterface_();
-    if (this.annotations_.length) {
-      // createInterface_ reset the layout, so we need to do this.
-      this.layout_.setAnnotations(this.annotations_);
-    }
-    this.createDragInterface_();
     this.predraw_();
   }
 
