@@ -36,7 +36,7 @@ var CanvasAssertions = {};
  * @private
  * @param {Array.<Object>} List of operations.
  */
-CanvasAssertions.fixPathAttrs_ = function(calls) {
+CanvasAssertions.cleanPathAttrs_ = function(calls) {
   var isStroked = true;
   for (var i = calls.length - 1; i >= 0; --i) {
     var call = calls[i];
@@ -70,7 +70,7 @@ CanvasAssertions.fixPathAttrs_ = function(calls) {
  * or a function that accepts the current call.
  */
 CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
-  CanvasAssertions.fixPathAttrs_(proxy.calls__);
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   // found = 1 when prior loop found p1.
   // found = 2 when prior loop found p2.
   var priorFound = 0;
@@ -132,7 +132,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
  * color and stroke width.
  */
 CanvasAssertions.getLinesDrawn = function(proxy, predicate) {
-  CanvasAssertions.fixPathAttrs_(proxy.calls__);
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   var lastCall;
   var lines = [];
   for (var i = 0; i < proxy.calls__.length; i++) {
@@ -181,7 +181,7 @@ CanvasAssertions.assertBalancedSaveRestore = function(proxy) {
 // common case. Possibly allow predicate to be function, hash, or
 // string representing color?
 CanvasAssertions.numLinesDrawn = function(proxy, color) {
-  CanvasAssertions.fixPathAttrs_(proxy.calls__);
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   var num_lines = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
     var call = proxy.calls__[i];
