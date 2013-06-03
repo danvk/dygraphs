@@ -55,6 +55,7 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
     strokeStyle: "#008080",
     lineWidth: 1
   });
+  g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
@@ -76,6 +77,7 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
     lineWidth: 1
   });
   assertEquals(1, lines.length);
+  g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
@@ -84,6 +86,7 @@ SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
   var g = new Dygraph(graph, ZERO_TO_FIFTY);
 
   var htx = g.hidden_ctx_;
+  g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
@@ -110,6 +113,7 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
 
   // TODO(danvk): figure out a good way to restore this test.
   // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
 
@@ -146,5 +150,6 @@ SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
 
   // TODO(danvk): figure out a good way to restore this test.
   // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
 };
