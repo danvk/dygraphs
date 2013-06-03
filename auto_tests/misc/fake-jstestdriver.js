@@ -91,6 +91,7 @@ function TestCase(name) {
       ex = e;
     }
     jstestdriver.announce_("finish", [this, name, result, ex]);
+    return result; // TODO(konigsberg): Remove this, and return value from runAllTests.
   }
 
   testCase.prototype.runTest_ = function(func) {
