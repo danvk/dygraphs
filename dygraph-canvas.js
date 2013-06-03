@@ -733,7 +733,6 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
-    ctx.strokeStyle = '#000000'; // For CanvasAssertions, path isn't stroked.
     ctx.beginPath();
     var last_x, is_first = true;
     while (iter.hasNext) {

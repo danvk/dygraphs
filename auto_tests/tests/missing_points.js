@@ -188,7 +188,7 @@ MissingPointsTestCase.prototype.testErrorBarsWithMissingPoints = function() {
 
   var htx = g.hidden_ctx_;
 
-  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p0 = g.toDomCoords(data[0][0], data[0][1][0]);
   var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
@@ -222,7 +222,7 @@ MissingPointsTestCase.prototype.testErrorBarsWithMissingPointsConnected = functi
 
   var htx = g.hidden_ctx_;
   
-  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
   var p2 = g.toDomCoords(data[3][0], data[3][1][0]);
@@ -257,7 +257,7 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPoints = function() {
 
   var htx = g.hidden_ctx_;
 
-  assertEquals(16, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(4, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p0 = g.toDomCoords(data[0][0], data[0][1][1]);
   var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
@@ -298,7 +298,7 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPointsConnected = funct
 
   var htx = g.hidden_ctx_;
   
-  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
   var p2 = g.toDomCoords(data[3][0], data[3][1][1]);
