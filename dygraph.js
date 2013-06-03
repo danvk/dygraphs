@@ -2524,7 +2524,7 @@ Dygraph.prototype.drawGraph_ = function() {
   for (var i = 1; i < points.length; i++) {
     this.setIndexByName_[labels[i]] = i;
     if (!this.visibility()[i - 1]) continue;
-    this.layout_.addPoints(labels[i], points[i]);
+    this.layout_.addDataset(labels[i], points[i]);
     this.datasetIndex_[i] = dataIdx++;
   }
 

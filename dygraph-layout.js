@@ -57,7 +57,13 @@ DygraphLayout.prototype.attr_ = function(name) {
   return this.dygraph_.attr_(name);
 };
 
-DygraphLayout.prototype.addPoints = function(setname, set_xy) {
+/**
+ * Add points for a single series.
+ *
+ * @param {string} setname Name of the series.
+ * @param {Array.<Dygraph.PointType>} set_xy Points for the series.
+ */
+DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.points.push(set_xy);
   this.setNames.push(setname);
 };
