@@ -291,6 +291,7 @@ Dygraph.DEFAULT_ATTRS = {
   connectSeparatedPoints: false,
 
   stackedGraph: false,
+  stackedGraphNaNFill: 'all',
   hideOverlayOnMouseOut: true,
 
   // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
@@ -2313,7 +2314,23 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
 };
 
 
-Dygraph.stackPoints_ = function(points, cumulative_y, seriesExtremes) {
+/**
+ * Calculates point stacking for stackedGraph=true.
+ *
+ * For stacking purposes, interpolate or extend neighboring data across
+ * NaN values based on stackedGraphNaNFill settings. This is for display
+ * only, the underlying data value as shown in the legend remains NaN.
+ *
+ * @param {Array.<Dygraph.PointType>} points Point array for a single series.
+ * @param {Array.<number>} cumulative_y Accumulated top-of-graph stacked Y
+ *     values for the series seen so far. Index is the row number.
+ * @param {Array.<number>} seriesExtremes Min and max values, updated
+ *     to reflect the stacked values.
+ * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
+ *     'none'.
+ */
+Dygraph.stackPoints_ = function(
+    points, cumulative_y, seriesExtremes, fillMethod) {
   var isStackableVal = function(val) {
     return !isNaN(val) && val !== null;
   };
@@ -2345,13 +2362,14 @@ Dygraph.stackPoints_ = function(points, cumulative_y, seriesExtremes) {
 
     var actual_y = point.yval;
     if (isNaN(actual_y) || actual_y === null) {
-      // Interpolate if possible.
+      // Interpolate/extend for stacking purposes if possible.
       updateNextPoint(i);
-      if (prevPoint && nextPoint) {
-        actual_y = prevPoint.yval + (nextPoint.yval - prevPoint.yval) * ((x - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
-      } else if (prevPoint) {
+      if (prevPoint && nextPoint && fillMethod != 'none') {
+        actual_y = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
+            ((x - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
+      } else if (prevPoint && fillMethod == 'all') {
         actual_y = prevPoint.yval;
-      } else if (nextPoint) {
+      } else if (nextPoint && fillMethod == 'all') {
         actual_y = nextPoint.yval;
       } else {
         actual_y = 0;
@@ -2482,7 +2500,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         series, bars, seriesName, boundaryIds[i-1][0]);
 
     if (this.attr_("stackedGraph")) {
-      Dygraph.stackPoints_(seriesPoints, cumulative_y, seriesExtremes);
+      Dygraph.stackPoints_(seriesPoints, cumulative_y, seriesExtremes,
+                           this.attr_("stackedGraphNaNFill"));
     }
 
     extremes[seriesName] = seriesExtremes;

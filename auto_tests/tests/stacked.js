@@ -241,3 +241,41 @@ stackedTestCase.prototype.testInterpolation = function() {
   g.setSelection(9);
   assertEquals("109: Y1: 1", Util.getLegend());
 };
+
+stackedTestCase.prototype.testInterpolationOptions = function() {
+  var opts = {
+    colors: ['#ff0000', '#00ff00', '#0000ff'],
+    stackedGraph: true
+  };
+
+  var data = [
+    [100, 1, NaN, 3],
+    [101, 1, 2, 3],
+    [102, 1, NaN, 3],
+    [103, 1, 2, 3],
+    [104, 1, NaN, 3]];
+
+  var choices = ['all', 'inside', 'none'];
+  var stackedY = [
+    [6, 6, 6, 6, 6],
+    [4, 6, 6, 6, 4],
+    [4, 6, 4, 6, 4]];
+
+  for (var i = 0; i < choices.length; ++i) {
+    var graph = document.getElementById("graph");
+    opts['stackedGraphNaNFill'] = choices[i];
+    g = new Dygraph(graph, data, opts);
+
+    var htx = g.hidden_ctx_;
+    var attrs = {};
+
+    // Check top lines get drawn at the expected positions.
+    for (var j = 0; j < stackedY[i].length - 1; ++j) {
+      CanvasAssertions.assertLineDrawn(
+          htx,
+          g.toDomCoords(100 + j, stackedY[i][j]),
+          g.toDomCoords(101 + j, stackedY[i][j + 1]),
+          {strokeStyle: '#ff0000'});
+    }
+  }
+};
