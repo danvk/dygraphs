@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script generates the combined JS file, pushes all content to a web site
-# and then reverts the combined file.
+# This script generates the combined JS files, pushes all content to a web site
+# and then reverts the combined files.
 
 if [ "$1" == "" ] ; then
   echo "usage: $0 destination"
@@ -12,6 +12,8 @@ site=$1
 
 # Produce dygraph-combined.js.
 ./generate-combined.sh
+# Produce dygraph-tickers-combined.js.
+./generate-tickers-combined.sh
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
@@ -31,6 +33,6 @@ else
   echo "generate-documentation.py failed"
 fi
 
-# Revert changes to dygraph-combined.js and docs/options.html
-git checkout dygraph-combined.js
+# Revert changes to dygraph-combined.js, dygraph-tickers-combined.js and docs/options.html
+git checkout dygraph-combined.js dygraph-tickers-combined.js
 rm docs/options.html

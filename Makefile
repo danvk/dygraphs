@@ -4,16 +4,21 @@
 #
 # Dean Wampler <dean@deanwampler.com> March 22, 2010
 
-all: test generate-combined generate-documentation
+all: test generate-combined generate-tickers-combined generate-documentation
 
 clean:
 	@echo cleaning...
 	@cp .dygraph-combined-clean.js dygraph-combined.js
+	@cp .dygraph-tickers-combined-clean.js dygraph-tickers-combined.js
 	rm -f docs/options.html
 
 generate-combined:
 	@echo Generating dygraph-combined.js
 	@./generate-combined.sh
+
+generate-tickers-combined:
+	@echo Generating dygraph-tickers-combined.js
+	@./generate-tickers-combined.sh
 
 generate-documentation:
 	@echo Generating docs/options.html
