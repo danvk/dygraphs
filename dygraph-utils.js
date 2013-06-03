@@ -229,7 +229,7 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
   }
 
   this.registeredEvents_ = [];
-}
+};
 
 /**
  * Cancels further processing of an event. This is useful to prevent default
