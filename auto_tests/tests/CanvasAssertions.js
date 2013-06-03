@@ -62,7 +62,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
           }
         }
         if (priorFound == 2 && matchp1) {
-          if (CanvasAssertions.match(predicate, call.properties)) {
+          if (CanvasAssertions.match(predicate, call)) {
             return;
           }
         }
@@ -194,8 +194,7 @@ CanvasAssertions.match = function(predicate, call) {
     return predicate(call);
   } else {
     for (var attr in predicate) {
-      if (predicate.hasOwnProperty(attr) && (
-          !call.properties || predicate[attr] != call.properties[attr])) {
+      if (predicate.hasOwnProperty(attr) && predicate[attr] != call.properties[attr]) {
         return false;
       }
     }
