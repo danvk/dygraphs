@@ -22,10 +22,16 @@ page.open(url, function(status) {
   }
 
   var testCase, test;
-  if (phantom.args.length == 1) {
-    var parts = phantom.args[0].split('.');
+  var verbose = false;
+  var optIdx = 0;
+  if (phantom.args.length > 0 && phantom.args[0] === "--verbose") {
+  verbose = true;
+  optIdx = 1;
+  }
+  if (phantom.args.length == optIdx + 1) {
+    var parts = phantom.args[optIdx].split('.');
     if (2 != parts.length) {
-      console.warn('Usage: phantomjs phantom-driver.js [testCase.test]');
+      console.warn('Usage: phantomjs phantom-driver.js [--verbose] [testCase.test]');
       phantom.exit();
     }
     testCase = parts[0];
@@ -39,7 +45,7 @@ page.open(url, function(status) {
     } else if (msg.substr(0, 'Running'.length) == 'Running') {
       loggingOn = false;
     }
-    if (loggingOn) console.log(msg);
+    if (verbose || loggingOn) console.log(msg);
   };
 
   page.onError = function (msg, trace) {
