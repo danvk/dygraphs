@@ -152,12 +152,41 @@ DygraphsLocalTester.prototype.postResults = function() {
     tr.appendChild(tdResult);
 
     var tdName = document.createElement("td");
-    tdName.innerText = result.name;
+    var div = document.createElement("div");
+    div.innerText = result.name;
+    div.onclick = function(name) {
+      return function() {
+        var s = name.split(".");
+        var testCase = s[0];
+        var testName = s[1];
+        url = window.location.pathname +
+            "?testCaseName=" + testCase +
+            "&test=" + testName +
+            "&command=runTest";
+        window.location.href = url;
+      };
+    }(result.name);
+    div.setAttribute("class", "anchor");
+    tdName.appendChild(div);
     tr.appendChild(tdName);
 
     var tdDuration = document.createElement("td");
     tdDuration.innerText = result.duration;
     tr.appendChild(tdDuration);
+
+    if (result.e) {
+      var tdDetails = document.createElement("td");
+      div = document.createElement("div");
+      div.innerText = "more...";
+      div.setAttribute("class", "anchor");
+      div.onclick = function(e) {
+        return function() {
+          alert(e + "\n" + e.stack);
+        };
+      }(result.e);
+      tdDetails.appendChild(div);
+      tr.appendChild(tdDetails);
+    }
 
     table.appendChild(tr);
   }
@@ -211,7 +240,8 @@ DygraphsLocalTester.prototype.finish_ = function(tc, name, result, e) {
   this.results.push({
     name : tc.name + "." + name,
     result : result,
-    duration : endms_ - this.startms_
+    duration : endms_ - this.startms_,
+    e : e
   });
   this.summary.passed += result ? 1 : 0;
   this.summary.failed += result ? 0 : 1;
