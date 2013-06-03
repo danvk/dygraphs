@@ -24,7 +24,19 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 var jstestdriver = {
-  jQuery : jQuery
+  jQuery : jQuery,
+  listeners_ : [],
+  announce_ : function(name, args) {
+    for (var idx = 0; idx < jstestdriver.listeners_.length; idx++) {
+      var listener = jstestdriver.listeners_[idx];
+      if (listener[name]) {
+        listener[name].apply(null, args);
+      }
+    }
+  },
+  attachListener: function(listener) {
+    jstestdriver.listeners_.push(listener);
+  }
 };
 
 if (!console) {
@@ -55,6 +67,7 @@ function TestCase(name) {
 
   testCase.prototype.setUp = function() { };
   testCase.prototype.tearDown = function() { };
+  testCase.prototype.name = name;
   /**
    * name can be a string, which is looked up in this object, or it can be a
    * function, in which case it's run.
@@ -68,29 +81,34 @@ function TestCase(name) {
    * Chrome's console completion.
    */
   testCase.prototype.runTest = function(func) {
+    var result = false;
+    var ex = null;
+    var name = typeof(func) == "string" ? func : "(anonymous function)";
+    jstestdriver.announce_("start", [this, name]);
     try {
-      this.setUp();
-
-      var fn = null;
-      var parameterType = typeof(func);
-      if (typeof(func) == "function") {
-        fn = func;
-      } else if (typeof(func) == "string") {
-        fn = this[func];
-      } else {
-        fail("can't supply " + typeof(func) + " to runTest");
-      }
-
-      fn.apply(this, []);
-      this.tearDown();
-      return true;
+      result = this.runTest_(func);
     } catch (e) {
-      console.log(e);
-      if (e.stack) {
-        console.log(e.stack);
-      }
-      return false;
+      ex = e;
     }
+    jstestdriver.announce_("finish", [this, name, result, ex]);
+  }
+
+  testCase.prototype.runTest_ = function(func) {
+    this.setUp();
+
+    var fn = null;
+    var parameterType = typeof(func);
+    if (typeof(func) == "function") {
+      fn = func;
+    } else if (typeof(func) == "string") {
+      fn = this[func];
+    } else {
+      fail("can't supply " + typeof(func) + " to runTest");
+    }
+
+    fn.apply(this, []);
+    this.tearDown();
+    return true;
   };
 
   testCase.prototype.runAllTests = function() {
@@ -152,3 +170,15 @@ function addGlobalTestSymbols() {
 function getAllTestCases() {
   return testCaseList;
 }
+
+jstestdriver.attachListener({
+  finish : function(tc, name, result, e) {
+    if (e) {
+      console.log(e);
+      if (e.stack) {
+        console.log(e.stack);
+      }
+    }
+  }
+});
+

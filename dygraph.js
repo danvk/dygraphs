@@ -344,18 +344,24 @@ Dygraph.DEFAULT_ATTRS = {
       pixelsPerLabel: 60,
       axisLabelFormatter: Dygraph.dateAxisFormatter,
       valueFormatter: Dygraph.dateString_,
+      drawGrid: true,
+      independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
+      drawGrid: true,
+      independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
+      drawGrid: false,
+      independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
     }
   }
@@ -1016,8 +1022,8 @@ Dygraph.prototype.createInterface_ = function() {
     // 2. e.relatedTarget is outside the chart
     var target = e.target || e.fromElement;
     var relatedTarget = e.relatedTarget || e.toElement;
-    if (Dygraph.isElementContainedBy(target, dygraph.graphDiv) &&
-        !Dygraph.isElementContainedBy(relatedTarget, dygraph.graphDiv)) {
+    if (Dygraph.isNodeContainedBy(target, dygraph.graphDiv) &&
+        !Dygraph.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
       dygraph.mouseOut_(e);
     }
   };
@@ -1983,7 +1989,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
-          color, circleSize);
+          color, circleSize, pt.idx);
     }
     ctx.restore();
 
@@ -2282,6 +2288,17 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var datasets = [];
   var extremes = {};  // series name -> [low, high]
   var i, j, k;
+  var errorBars = this.attr_("errorBars");
+  var customBars = this.attr_("customBars");
+  var bars = errorBars || customBars;
+  var isValueNull = function(sample) {
+    if (!bars) {
+      return sample[1] === null;
+    } else {
+      return customBars ? sample[1][1] === null : 
+        errorBars ? sample[1][0] === null : false;
+    }
+  };
 
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
@@ -2300,11 +2317,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
-    var bars = this.attr_("errorBars") || this.attr_("customBars");
     if (dateWindow) {
       var low = dateWindow[0];
       var high = dateWindow[1];
       var pruned = [];
+
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
       var firstIdx = null, lastIdx = null;
@@ -2316,14 +2333,36 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
           lastIdx = k;
         }
       }
+
       if (firstIdx === null) firstIdx = 0;
-      if (firstIdx > 0) firstIdx--;
+      var correctedFirstIdx = firstIdx;
+      var isInvalidValue = true;
+      while (isInvalidValue && correctedFirstIdx > 0) {
+        correctedFirstIdx--;
+        isInvalidValue = isValueNull(series[correctedFirstIdx]);
+      }
+
       if (lastIdx === null) lastIdx = series.length - 1;
-      if (lastIdx < series.length - 1) lastIdx++;
-      boundaryIds[i-1] = [firstIdx, lastIdx];
+      var correctedLastIdx = lastIdx;
+      isInvalidValue = true;
+      while (isInvalidValue && correctedLastIdx < series.length - 1) {
+        correctedLastIdx++;
+        isInvalidValue = isValueNull(series[correctedLastIdx]);
+      }
+
+      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx, 
+          (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
+
+      if (correctedFirstIdx!==firstIdx) {
+        pruned.push(series[correctedFirstIdx]);
+      }
       for (k = firstIdx; k <= lastIdx; k++) {
         pruned.push(series[k]);
       }
+      if (correctedLastIdx !== lastIdx) {
+        pruned.push(series[correctedLastIdx]);
+      }
+
       series = pruned;
     } else {
       boundaryIds[i-1] = [0, series.length-1];
@@ -2592,12 +2631,15 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   };
   var numAxes = this.attributes_.numAxes();
   var ypadCompat, span, series, ypad;
+  
+  var p_axis;
 
   // Compute extreme values, a span and tick marks for each axis.
   for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
     var logscale = this.attributes_.getForAxis("logscale", i);
     var includeZero = this.attributes_.getForAxis("includeZero", i);
+    var independentTicks = this.attributes_.getForAxis("independentTicks", i);
     series = this.attributes_.seriesForAxis(i);
 
     // Add some padding. This supports two Y padding operation modes:
@@ -2715,20 +2757,33 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
-
-    // Add ticks. By default, all axes inherit the tick positions of the
-    // primary axis. However, if an axis is specifically marked as having
-    // independent ticks, then that is permissible as well.
-    var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
-    var ticker = opts('ticker');
-    if (i === 0 || axis.independentTicks) {
+    
+    
+    if(independentTicks) {
+      axis.independentTicks = independentTicks;
+      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
-                          axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.height
-                          opts,
-                          this);
-    } else {
-      var p_axis = this.axes_[0];
+              axis.computedValueRange[1],
+              this.height_,  // TODO(danvk): should be area.height
+              opts,
+              this);
+      // Define the first independent axis as primary axis.
+      if (!p_axis) p_axis = axis;
+    }
+  }
+  if (p_axis === undefined) {
+    throw ("Configuration Error: At least one axis has to have the \"independentTicks\" option activated.");
+  }
+  // Add ticks. By default, all axes inherit the tick positions of the
+  // primary axis. However, if an axis is specifically marked as having
+  // independent ticks, then that is permissible as well.
+  for (var i = 0; i < numAxes; i++) {
+    var axis = this.axes_[i];
+    
+    if (!axis.independentTicks) {
+      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var ticker = opts('ticker');
       var p_ticks = p_axis.ticks;
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
       var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
@@ -2762,6 +2817,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
+  var errorBars = this.attr_("errorBars");
+  var customBars =  this.attr_("customBars");
   for (var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
@@ -2772,7 +2829,12 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
         point = null;
       }
     }
-    series.push([x, point]);
+    // Fix null points to fit the display type standard.
+    if(point !== null) {
+      series.push([x, point]);
+    } else {
+      series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
+    }
   }
   return series;
 };

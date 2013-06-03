@@ -156,11 +156,12 @@ perSeriesTestCase.prototype.testOldAxisSpecInNewSeriesThrows = function() {
   };
   var graph = document.getElementById("graph");
   var data = "X,A,B,C,D,E\n0,1,2,3,4,5\n";
+  var threw = false;
   try {
     new Dygraph(graph, data, opts);
   } catch(e) {
-    assertEquals(
-        "Using objects for axis specification is not supported inside the 'series' option.",
-        e);
+    threw = true;
   }
+
+  assertTrue(threw);
 }

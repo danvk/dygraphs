@@ -176,7 +176,11 @@ rangeSelector.prototype.resize_ = function() {
   }
 
   var plotArea = this.dygraph_.layout_.getPlotArea();
-  var xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
+  
+  var xAxisLabelHeight = 0;
+  if(this.getOption_('drawXAxis')){
+    xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
+  }
   this.canvasRect_ = {
     x: plotArea.x,
     y: plotArea.y + plotArea.h + xAxisLabelHeight + 4,

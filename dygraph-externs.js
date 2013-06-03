@@ -72,13 +72,22 @@ function DygraphLayout() {}
  */
 DygraphLayout.prototype.datasets;
 
+// TODO: DygraphOptions should not reach inside Dygraph private data like this.
+/** @type {Object} */
+Dygraph.prototype.attrs_;
+/** @type {Object} */
+Dygraph.prototype.user_attrs_;
+
 /**
  * @type {DygraphLayout}
  */
 Dygraph.prototype.layout_;
 
+/** @type {function(): string} */
+Dygraph.prototype.getHighlightSeries;
+
 /** @type {Array.<{elem:Element,type:string,fn:function(!Event):(boolean|undefined|null)}>} */
 Dygraph.prototype.registeredEvents_;
 
-/** @type {Object} */
+/** @type {{axes: Object}} */
 Dygraph.DEFAULT_ATTRS;
