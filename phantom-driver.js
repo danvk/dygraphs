@@ -25,8 +25,8 @@ page.open(url, function(status) {
   var verbose = false;
   var optIdx = 0;
   if (phantom.args.length > 0 && phantom.args[0] === "--verbose") {
-  verbose = true;
-  optIdx = 1;
+    verbose = true;
+    optIdx = 1;
   }
   if (phantom.args.length == optIdx + 1) {
     var parts = phantom.args[optIdx].split('.');
@@ -39,6 +39,7 @@ page.open(url, function(status) {
   }
 
   var loggingOn = false;
+
   page.onConsoleMessage = function (msg) {
     if (msg == 'Running ' + test) {
       loggingOn = true;
@@ -60,49 +61,50 @@ page.open(url, function(status) {
   // Run all tests.
   var start = new Date().getTime();
   results = page.evaluate(function() {
+    var num_passing = 0, num_failing = 0;
+    var failures = [];
     // Phantom doesn't like stacktrace.js using the "arguments" object
     // in stacktrace.js, which it interprets in strict mode.
     printStackTrace = undefined;
 
+    jstestdriver.attachListener({
+      finish : function(tc, name, result, e) {
+        console.log("Result:", tc.name, name, result, e);
+        if (result) {
+          // console.log(testCase + '.' + test + ' passed');
+          num_passing++;
+        } else {
+          num_failing++;
+          failures.push(tc.name + '.' + name);
+        }
+      }
+    });
     var testCases = getAllTestCases();
-    var results = {};
     for (var idx in testCases) {
       var entry = testCases[idx];
 
       var prototype = entry.testCase;
       var tc = new entry.testCase();
       var result = tc.runAllTests();
-      results[entry.name] = result;
     }
-    return results;
+    return {
+      num_passing : num_passing,
+      num_failing : num_failing,
+      failures : failures
+    };
   });
   var end = new Date().getTime();
   var elapsed = (end - start) / 1000;
 
-  var num_passing = 0, num_failing = 0;
-  var failures = [];
-  for (var testCase in results) {
-    var caseResults = results[testCase];
-    for (var test in caseResults) {
-      if (caseResults[test] !== true) {
-        num_failing++;
-        failures.push(testCase + '.' + test);
-      } else {
-        // console.log(testCase + '.' + test + ' passed');
-        num_passing++;
-      }
-    }
-  }
-
-  console.log('Ran ' + (num_passing + num_failing) + ' tests in ' + elapsed + 's.');
-  console.log(num_passing + ' test(s) passed');
-  console.log(num_failing + ' test(s) failed:');
-  for (var i = 0; i < failures.length; i++) {
+  console.log('Ran ' + (results.num_passing + results.num_failing) + ' tests in ' + elapsed + 's.');
+  console.log(results.num_passing + ' test(s) passed');
+  console.log(results.num_failing + ' test(s) failed:');
+  for (var i = 0; i < results.failures.length; i++) {
     // TODO(danvk): print an auto_test/misc/local URL that runs this test.
-    console.log('  ' + failures[i] + ' failed.');
+    console.log('  ' + results.failures[i] + ' failed.');
   }
 
-  done_callback(num_failing, num_passing);
+  done_callback(results.num_failing, results.num_passing);
 });
 
 };
