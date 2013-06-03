@@ -2257,17 +2257,24 @@ Dygraph.prototype.predraw_ = function() {
 /**
  * Point structure.
  *
+ * xval_* and yval_* are the original unscaled data values,
+ * while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
+ * yval_stacked is the cumulative Y value used for stacking graphs,
+ * and bottom/top/minus/plus are used for error bar graphs.
+ *
  * @typedef {{
- *     x: ?number,
- *     y: ?number,
- *     xval: ?number,
- *     yval: ?number,
- *     name: string,
  *     idx: number,
- *     y_top: ?number,
+ *     name: string,
+ *     x: ?number,
+ *     xval: ?number,
  *     y_bottom: ?number,
+ *     y: ?number,
+ *     y_stacked: ?number,
+ *     y_top: ?number,
  *     yval_minus: ?number,
- *     yval_plus: ?number
+ *     yval: ?number,
+ *     yval_plus: ?number,
+ *     yval_stacked
  * }}
  */
 Dygraph.PointType;
@@ -2322,30 +2329,35 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
  * only, the underlying data value as shown in the legend remains NaN.
  *
  * @param {Array.<Dygraph.PointType>} points Point array for a single series.
- * @param {Array.<number>} cumulative_y Accumulated top-of-graph stacked Y
- *     values for the series seen so far. Index is the row number.
+ *     Updates each Point's yval_stacked property.
+ * @param {Array.<number>} cumulativeYval Accumulated top-of-graph stacked Y
+ *     values for the series seen so far. Index is the row number. Updated
+ *     based on the current series's values.
  * @param {Array.<number>} seriesExtremes Min and max values, updated
  *     to reflect the stacked values.
  * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
  *     'none'.
  */
 Dygraph.stackPoints_ = function(
-    points, cumulative_y, seriesExtremes, fillMethod) {
-  var isStackableVal = function(val) {
-    return !isNaN(val) && val !== null;
-  };
-
-  var last_x = null;
+    points, cumulativeYval, seriesExtremes, fillMethod) {
+  var lastXval = null;
   var prevPoint = null;
   var nextPoint = null;
   var nextPointIdx = -1;
 
+  // Find the next stackable point starting from the given index.
   function updateNextPoint(idx) {
-    // Find the next stackable point starting from the given index.
+    // If we've previously found a non-NaN point and haven't gone past it yet,
+    // just use that.
     if (nextPointIdx >= idx) return;
+
+    // We haven't found a non-NaN point yet or have moved past it,
+    // look towards the right to find a non-NaN point.
     for (var j = idx; j < points.length; ++j) {
+      // Clear out a previously-found point (if any) since it's no longer
+      // valid, we shouldn't use it for interpolation anymore.
       nextPoint = null;
-      if (isStackableVal(points[j].yval)) {
+      if (!isNaN(points[j].yval) && points[j].yval !== null) {
         nextPointIdx = j;
         nextPoint = points[j];
         break;
@@ -2355,44 +2367,45 @@ Dygraph.stackPoints_ = function(
 
   for (var i = 0; i < points.length; ++i) {
     var point = points[i];
-    var x = point.xval;
-    if (cumulative_y[x] === undefined) {
-      cumulative_y[x] = 0;
+    var xval = point.xval;
+    if (cumulativeYval[xval] === undefined) {
+      cumulativeYval[xval] = 0;
     }
 
-    var actual_y = point.yval;
-    if (isNaN(actual_y) || actual_y === null) {
+    var actualYval = point.yval;
+    if (isNaN(actualYval) || actualYval === null) {
       // Interpolate/extend for stacking purposes if possible.
       updateNextPoint(i);
       if (prevPoint && nextPoint && fillMethod != 'none') {
-        actual_y = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
-            ((x - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
+        // Use linear interpolation between prevPoint and nextPoint.
+        actualYval = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
+            ((xval - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
       } else if (prevPoint && fillMethod == 'all') {
-        actual_y = prevPoint.yval;
+        actualYval = prevPoint.yval;
       } else if (nextPoint && fillMethod == 'all') {
-        actual_y = nextPoint.yval;
+        actualYval = nextPoint.yval;
       } else {
-        actual_y = 0;
+        actualYval = 0;
       }
     } else {
       prevPoint = point;
     }
 
-    var stacked_y = cumulative_y[x];
-    if (last_x != x) {
+    var stackedYval = cumulativeYval[xval];
+    if (lastXval != xval) {
       // If an x-value is repeated, we ignore the duplicates.
-      stacked_y += actual_y;
-      cumulative_y[x] = stacked_y;
+      stackedYval += actualYval;
+      cumulativeYval[xval] = stackedYval;
     }
-    last_x = x;
+    lastXval = xval;
 
-    point.yval_stacked = stacked_y;
+    point.yval_stacked = stackedYval;
 
-    if (stacked_y > seriesExtremes[1]) {
-      seriesExtremes[1] = stacked_y;
+    if (stackedYval > seriesExtremes[1]) {
+      seriesExtremes[1] = stackedYval;
     }
-    if (stacked_y < seriesExtremes[0]) {
-      seriesExtremes[0] = stacked_y;
+    if (stackedYval < seriesExtremes[0]) {
+      seriesExtremes[0] = stackedYval;
     }
   }
 };
@@ -2420,7 +2433,7 @@ Dygraph.stackPoints_ = function(
 Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var boundaryIds = [];
   var points = [];
-  var cumulative_y = [];  // For stacked series.
+  var cumulativeYval = [];  // For stacked series.
   var extremes = {};  // series name -> [low, high]
   var i, j, k;
   var errorBars = this.attr_("errorBars");
@@ -2500,7 +2513,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         series, bars, seriesName, boundaryIds[i-1][0]);
 
     if (this.attr_("stackedGraph")) {
-      Dygraph.stackPoints_(seriesPoints, cumulative_y, seriesExtremes,
+      Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
                            this.attr_("stackedGraphNaNFill"));
     }
 
