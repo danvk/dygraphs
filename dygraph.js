@@ -1583,7 +1583,7 @@ Dygraph.prototype.resetZoom = function() {
       oldValueRanges = this.yAxisRanges();
       // TODO(danvk): this is pretty inefficient
       var packed = this.gatherDatasets_(this.rolledSeries_, null);
-      var extremes = packed[1];
+      var extremes = packed.extremes;
 
       // this has the side-effect of modifying this.axes_.
       // this doesn't make much sense in this context, but it's convenient (we
@@ -2253,10 +2253,39 @@ Dygraph.prototype.predraw_ = function() {
   this.drawingTimeMs_ = (end - start);
 };
 
+/**
+ * Point structure.
+ *
+ * @typedef {{
+ *     x: ?number,
+ *     y: ?number,
+ *     xval: ?number,
+ *     yval: ?number,
+ *     name: string,
+ *     idx: number,
+ *     y_top: ?number,
+ *     y_bottom: ?number,
+ *     yval_minus: ?number,
+ *     yval_plus: ?number
+ * }}
+ */
+Dygraph.PointType;
+
 // TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
 // on chrome+linux, they are 6 times more expensive than iterating through the
 // points and drawing the lines. The brunt of the cost comes from allocating
 // the |point| structures.
+/**
+ * Converts a series to a Point array.
+ *
+ * @param {Array.<Array.<(?number|Array<?number>)>} series Array where
+ *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
+ * @param {boolean} bars True if error bars or custom bars are being drawn.
+ * @param {string} setName Name of the series.
+ * @param {number} boundaryIdStart Index offset of the first point, equal to
+ *     the number of skipped points left of the date window minimum (if any).
+ * @return {Array.<Dygraph.PointType>} List of points for this series.
+ */
 Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
   var points = [];
   for (var i = 0; i < series.length; ++i) {
@@ -2359,8 +2388,15 @@ Dygraph.stackPoints_ = function(points, cumulative_y, seriesExtremes) {
  * extreme values "speculatively", i.e. without actually setting state on the
  * dygraph.
  *
- * TODO(danvk): make this more of a true function
- * @return [ points, seriesExtremes, boundaryIds ]
+ * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
+ *     rolledSeries[seriesIndex][row] = raw point, where
+ *     seriesIndex is the column number starting with 1, and
+ *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
+ * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
+ * @return {{
+ *     points: Array.<Array.<Dygraph.PointType>>,
+ *     seriesExtremes: Array.<Array.<number>>,
+ *     boundaryIds: Array.<number>}}
  * @private
  */
 Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
@@ -2386,7 +2422,6 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var num_series = rolledSeries.length - 1;
   for (i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
-
 
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
@@ -2454,7 +2489,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     points[i] = seriesPoints;
   }
 
-  return [ points, extremes, boundaryIds ];
+  return { points: points, extremes: extremes, boundaryIds: boundaryIds };
 };
 
 /**
@@ -2476,9 +2511,9 @@ Dygraph.prototype.drawGraph_ = function() {
   this.attrs_.pointSize = 0.5 * this.attr_('highlightCircleSize');
 
   var packed = this.gatherDatasets_(this.rolledSeries_, this.dateWindow_);
-  var points = packed[0];
-  var extremes = packed[1];
-  this.boundaryIds_ = packed[2];
+  var points = packed.points;
+  var extremes = packed.extremes;
+  this.boundaryIds_ = packed.boundaryIds;
 
   this.setIndexByName_ = {};
   var labels = this.attr_("labels");
@@ -2830,6 +2865,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * TODO(danvk): the "missing values" bit above doesn't seem right.
  *
  * @private
+ * @param {Array.<Array.<(number|Array<Number>)>>} rawData Input data. Rectangular
+ *     grid of points, where rawData[row][0] is the X value for the row,
+ *     and rawData[row][i] is the Y data for series #i.
+ * @param {number} i Series index, starting from 1.
+ * @param {boolean} logScale True if using logarithmic Y scale.
+ * @return {Array.<Array.<(?number|Array<?number>)>} Series array, where
+ *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
  */
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
   // TODO(danvk): pre-allocate series here.

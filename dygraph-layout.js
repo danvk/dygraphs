@@ -31,10 +31,17 @@
  */
 var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
-  // [series index][point index in series] = |point| structure,
-  // where series index refers to visible series only, and the
-  // point index is for the reduced set of points in the current
-  // zoom region.
+  /**
+   * Array of points for each series.
+   *
+   * [series index][row index in series] = |Point| structure,
+   * where series index refers to visible series only, and the
+   * point index is for the reduced set of points for the current
+   * zoom region (including one point just outside the window).
+   * All points in the same row index share the same X value.
+   *
+   * @type {Array.<Array.<Dygraph.PointType>>}
+   */
   this.points = [];
   this.setNames = [];
   this.annotations = [];
