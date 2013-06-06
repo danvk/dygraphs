@@ -2484,7 +2484,6 @@ Dygraph.prototype.drawGraph_ = function() {
   // Save the X axis zoomed status as the updateOptions call will tend to set it erroneously
   var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
-  this.layout_.setDateWindow(this.dateWindow_);
   this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluateWithError();
   this.renderGraph_(is_initial_draw);
@@ -2825,12 +2824,20 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
     if (logScale) {
       // On the log scale, points less than zero do not exist.
       // This will create a gap in the chart.
-      if (point <= 0) {
+      if (errorBars || customBars) {
+        // point.length is either 2 (errorBars) or 3 (customBars)
+        for (var k = 0; k < point.length; k++) {
+          if (point[k] <= 0) {
+            point = null;
+            break;
+          }
+        }
+      } else if (point <= 0) {
         point = null;
       }
     }
     // Fix null points to fit the display type standard.
-    if(point !== null) {
+    if (point !== null) {
       series.push([x, point]);
     } else {
       series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
