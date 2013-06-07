@@ -2281,7 +2281,7 @@ Dygraph.prototype.predraw_ = function() {
  *     yval_stacked
  * }}
  */
-Dygraph.PointType;
+Dygraph.PointType = undefined;
 
 // TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
 // on chrome+linux, they are 6 times more expensive than iterating through the
@@ -2314,8 +2314,8 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
     };
 
     if (bars) {
-      point.y_top = NaN,
-      point.y_bottom = NaN,
+      point.y_top = NaN;
+      point.y_bottom = NaN;
       point.yval_minus = DygraphLayout.parseFloat_(item[1][1]);
       point.yval_plus = DygraphLayout.parseFloat_(item[1][2]);
     }
@@ -2350,7 +2350,7 @@ Dygraph.stackPoints_ = function(
   var nextPointIdx = -1;
 
   // Find the next stackable point starting from the given index.
-  function updateNextPoint(idx) {
+  var updateNextPoint = function(idx) {
     // If we've previously found a non-NaN point and haven't gone past it yet,
     // just use that.
     if (nextPointIdx >= idx) return;
@@ -2439,7 +2439,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var points = [];
   var cumulativeYval = [];  // For stacked series.
   var extremes = {};  // series name -> [low, high]
-  var i, j, k;
+  var i, k;
   var errorBars = this.attr_("errorBars");
   var customBars = this.attr_("customBars");
   var bars = errorBars || customBars;
@@ -2455,6 +2455,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
   var num_series = rolledSeries.length - 1;
+  var series;
   for (i = num_series; i >= 1; i--) {
     if (!this.visibility()[i - 1]) continue;
 
@@ -2462,7 +2463,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
     if (dateWindow) {
-      var series = rolledSeries[i];
+      series = rolledSeries[i];
       var low = dateWindow[0];
       var high = dateWindow[1];
 

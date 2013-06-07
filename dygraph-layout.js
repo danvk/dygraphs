@@ -224,7 +224,6 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   var isStacked = this.attr_("stackedGraph");
   var hasBars = this.attr_('errorBars') || this.attr_('customBars');
 
-  var boundaryIdStart = this.dygraph_.getLeftBoundary_();
   for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
     var points = this.points[setIdx];
     var setName = this.setNames[setIdx];
