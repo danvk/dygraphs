@@ -22,6 +22,7 @@ Dygraph.Plugins.SuperAnnotations = (function() {
  * @typedef {
  *   xval:  number,      // x-value (i.e. millis or a raw number)
  *   series: string,     // series name
+ *   yFrac: ?number,     // y-positioning. Default is a few px above the point.
  *   lineDiv: !Element   // vertical div connecting point to info div.
  *   infoDiv: !Element   // div containing info about the annotation.
  * } Annotation
