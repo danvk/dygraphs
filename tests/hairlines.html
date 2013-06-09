@@ -194,7 +194,7 @@
 
       $('#add-button').on('click', function(e) {
         var h = hairlines.get();
-        h.push({xFraction: 0.75});
+        h.push({xval: 137});
         hairlines.set(h);
       });
       $('#remove-button').on('click', function(e) {
@@ -246,13 +246,13 @@
       // Demonstration of how to use various other event listeners
       $(hairlines).on({
         'hairlineMoved': function(e, data) {
-          // console.log('hairline moved from', data.oldXFraction, ' to ', data.newXFraction);
+          // console.log('hairline moved from', data.oldXVal, ' to ', data.newXVal);
         },
         'hairlineCreated': function(e, data) {
-          console.log('hairline created at ', data.xFraction);
+          console.log('hairline created at ', data.xval);
         },
         'hairlineDeleted': function(e, data) {
-          console.log('hairline deleted at ', data.xFraction);
+          console.log('hairline deleted at ', data.xval);
         }
       });
       $(annotations).on({
@@ -260,7 +260,7 @@
           console.log('annotation created at ', data.series, data.xval);
         },
         'annotationMoved': function(e, data) {
-          console.log('annotation moved from ', data.oldXVal, ' to ', data.newXVal);
+          console.log('annotation moved from ', data.oldYFrac, ' to ', data.newYFrac);
         },
         'annotationDeleted': function(e, data) {
           console.log('annotation deleted at ', data.series, data.xval);

@@ -52,7 +52,7 @@ hairlines.prototype.activate = function(g) {
     didDrawChart: this.didDrawChart,
     click: this.click,
     dblclick: this.dblclick,
-    dataWillUpdate: this.dataWillUpdate
+    dataDidUpdate: this.dataDidUpdate
   };
 };
 
@@ -160,6 +160,7 @@ hairlines.prototype.updateHairlineDivPositions = function() {
 
   $.each(this.hairlines_, function(idx, h) {
     var left = g.toDomXCoord(h.xval);
+    h.domX = left;  // See comments in this.dataDidUpdate
     $(h.lineDiv).css({
       'left': left + 'px',
       'top': layout.y + 'px',
@@ -232,29 +233,20 @@ hairlines.prototype.didDrawChart = function(e) {
   // Early out in the (common) case of zero hairlines.
   if (this.hairlines_.length === 0) return;
 
-  // See comments in this.dataWillUpdate for an explanation of this block.
-  $.each(this.hairlines_, function(idx, h) {
-    if (h.hasOwnProperty('domX')) {
-      h.xval = g.toDataXCoord(h.domX);
-      delete h.domX;
-      console.log('h.xval: ', h.xval);
-    }
-  });
-
   this.updateHairlineDivPositions();
   this.attachHairlinesToChart_();
   this.updateHairlineInfo();
 };
 
-hairlines.prototype.dataWillUpdate = function(e) {
+hairlines.prototype.dataDidUpdate = function(e) {
   // When the data in the chart updates, the hairlines should stay in the same
-  // position on the screen. To do this, we add a 'domX' parameter to each
-  // hairline when the data updates. This will get translated back into an
-  // x-value on the next call to didDrawChart.
+  // position on the screen. didDrawChart stores a domX parameter for each
+  // hairline. We use that to reposition them on data updates.
   var g = this.dygraph_;
   $.each(this.hairlines_, function(idx, h) {
-    h.domX = g.toDomXCoord(h.xval);
-    console.log('h.domX = ', h.domX, 'h.xval = ', h.xval);
+    if (h.hasOwnProperty('domX')) {
+      h.xval = g.toDataXCoord(h.domX);
+    }
   });
 };
 
