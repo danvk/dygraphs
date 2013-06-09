@@ -2152,6 +2152,7 @@ Dygraph.prototype.isSeriesLocked = function() {
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
+  this.cascadeDataDidUpdateEvent_();
   this.predraw_();
 };
 
@@ -3414,6 +3415,17 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 };
 
 /**
+ * Signals to plugins that the chart data has updated.
+ * This happens after the data has updated but before the chart has redrawn.
+ */
+Dygraph.prototype.cascadeDataDidUpdateEvent_ = function() {
+  // TODO(danvk): there are some issues checking xAxisRange() and using
+  // toDomCoords from handlers of this event. The visible range should be set
+  // when the chart is drawn, not derived from the data.
+  this.cascadeEvents_('dataDidUpdate', {});
+};
+
+/**
  * Get the CSV data. If it's in a function, call that function. If it's in a
  * file, do an XMLHttpRequest to get it.
  * @private
@@ -3428,11 +3440,13 @@ Dygraph.prototype.start_ = function() {
 
   if (Dygraph.isArrayLike(data)) {
     this.rawData_ = this.parseArray_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'object' &&
              typeof data.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
@@ -3512,6 +3526,10 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   this.attributes_.reparseSeries();
 
   if (file) {
+    // This event indicates that the data is about to change, but hasn't yet.
+    // TODO(danvk): support cancelation of the update via this event.
+    this.cascadeEvents_('dataWillUpdate', {});
+
     this.file_ = file;
     if (!block_redraw) this.start_();
   } else {

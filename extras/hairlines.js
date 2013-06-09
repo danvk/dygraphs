@@ -16,12 +16,8 @@ Dygraph.Plugins.Hairlines = (function() {
 "use strict";
 
 /**
- * xFraction is the position of the hairline on the chart, where 0.0=left edge
- * of the chart area and 1.0=right edge. Unlike 'canvas' coordinates, it does
- * not include the y-axis labels.
- *
  * @typedef {
- *   xFraction: number,   // invariant across resize
+ *   xval:  number,      // x-value (i.e. millis or a raw number)
  *   interpolated: bool,  // alternative is to snap to closest
  *   lineDiv: !Element    // vertical hairline div
  *   infoDiv: !Element    // div containing info about the nearest points
@@ -55,7 +51,8 @@ hairlines.prototype.activate = function(g) {
   return {
     didDrawChart: this.didDrawChart,
     click: this.click,
-    dblclick: this.dblclick
+    dblclick: this.dblclick,
+    dataWillUpdate: this.dataWillUpdate
   };
 };
 
@@ -71,21 +68,21 @@ hairlines.prototype.detachLabels = function() {
 
 hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
   var area = this.dygraph_.getArea();
-  var oldFrac = h.xFraction;
-  h.xFraction = (ui.position.left - area.x) / area.w;
+  var oldXVal = h.xval;
+  h.xval = this.dygraph_.toDataXCoord(ui.position.left);
   this.moveHairlineToTop(h);
   this.updateHairlineDivPositions();
   this.updateHairlineInfo();
   $(this).triggerHandler('hairlineMoved', {
-    oldXFraction: oldFrac,
-    newXFraction: h.xFraction
+    oldXVal: oldXVal,
+    newXVal: h.xval
   });
   $(this).triggerHandler('hairlinesChanged', {});
 };
 
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
-hairlines.prototype.createHairline = function(xFraction) {
+hairlines.prototype.createHairline = function(xval) {
   var h;
   var self = this;
 
@@ -122,7 +119,7 @@ hairlines.prototype.createHairline = function(xFraction) {
     });
 
   h = {
-    xFraction: xFraction,
+    xval: xval,
     interpolated: true,
     lineDiv: $lineContainerDiv.get(0),
     infoDiv: $infoDiv.get(0)
@@ -132,7 +129,7 @@ hairlines.prototype.createHairline = function(xFraction) {
   $infoDiv.on('click', '.hairline-kill-button', function() {
     that.removeHairline(h);
     $(that).triggerHandler('hairlineDeleted', {
-      xFraction: h.xFraction
+      xval: h.xval
     });
     $(that).triggerHandler('hairlinesChanged', {});
   });
@@ -153,6 +150,7 @@ hairlines.prototype.moveHairlineToTop = function(h) {
 
 // Positions existing hairline divs.
 hairlines.prototype.updateHairlineDivPositions = function() {
+  var g = this.dygraph_;
   var layout = this.dygraph_.getArea();
   var div = this.dygraph_.graphDiv;
   var box = [layout.x + Dygraph.findPosX(div),
@@ -161,7 +159,7 @@ hairlines.prototype.updateHairlineDivPositions = function() {
   box.push(box[1] + layout.h);
 
   $.each(this.hairlines_, function(idx, h) {
-    var left = layout.x + h.xFraction * layout.w;
+    var left = g.toDomXCoord(h.xval);
     $(h.lineDiv).css({
       'left': left + 'px',
       'top': layout.y + 'px',
@@ -181,12 +179,10 @@ hairlines.prototype.updateHairlineInfo = function() {
   var g = this.dygraph_;
   var xRange = g.xAxisRange();
   $.each(this.hairlines_, function(idx, h) {
-    var xValue = h.xFraction * (xRange[1] - xRange[0]) + xRange[0];
-
     var row = null;
     if (mode == 'closest') {
       // TODO(danvk): make this dygraphs method public
-      row = g.findClosestRow(g.toDomXCoord(xValue));
+      row = g.findClosestRow(g.toDomXCoord(h.xval));
     } else if (mode == 'interpolate') {
       // ...
     }
@@ -199,13 +195,13 @@ hairlines.prototype.updateHairlineInfo = function() {
       selPoints.push({
         canvasx: 1,
         canvasy: 1,
-        xval: xValue,
+        xval: h.xval,
         yval: g.getValue(row, i),
         name: labels[i]
       });
     }
 
-    var html = Dygraph.Plugins.Legend.generateLegendHTML(g, xValue, selPoints, 10);
+    var html = Dygraph.Plugins.Legend.generateLegendHTML(g, h.xval, selPoints, 10);
     $('.hairline-legend', h.infoDiv).html(html);
   });
 };
@@ -236,18 +232,30 @@ hairlines.prototype.didDrawChart = function(e) {
   // Early out in the (common) case of zero hairlines.
   if (this.hairlines_.length === 0) return;
 
-  // TODO(danvk): recreate the hairline divs when the chart resizes.
-  var containerDiv = e.canvas.parentNode;
-  var width = containerDiv.offsetWidth;
-  var height = containerDiv.offsetHeight;
-  if (width !== this.lastWidth_ || height !== this.lastHeight_) {
-    this.lastWidth_ = width;
-    this.lastHeight_ = height;
-    this.updateHairlineDivPositions();
-    this.attachHairlinesToChart_();
-  }
+  // See comments in this.dataWillUpdate for an explanation of this block.
+  $.each(this.hairlines_, function(idx, h) {
+    if (h.hasOwnProperty('domX')) {
+      h.xval = g.toDataXCoord(h.domX);
+      delete h.domX;
+      console.log('h.xval: ', h.xval);
+    }
+  });
 
+  this.updateHairlineDivPositions();
+  this.attachHairlinesToChart_();
   this.updateHairlineInfo();
+};
+
+hairlines.prototype.dataWillUpdate = function(e) {
+  // When the data in the chart updates, the hairlines should stay in the same
+  // position on the screen. To do this, we add a 'domX' parameter to each
+  // hairline when the data updates. This will get translated back into an
+  // x-value on the next call to didDrawChart.
+  var g = this.dygraph_;
+  $.each(this.hairlines_, function(idx, h) {
+    h.domX = g.toDomXCoord(h.xval);
+    console.log('h.domX = ', h.domX, 'h.xval = ', h.xval);
+  });
 };
 
 hairlines.prototype.click = function(e) {
@@ -257,19 +265,19 @@ hairlines.prototype.click = function(e) {
   }
 
   var area = e.dygraph.getArea();
-  var xFraction = (e.canvasx - area.x) / area.w;
+  var xval = this.dygraph_.toDataXCoord(e.canvasx);
 
   var that = this;
   this.addTimer_ = setTimeout(function() {
     that.addTimer_ = null;
-    that.hairlines_.push(that.createHairline(xFraction));
+    that.hairlines_.push(that.createHairline(xval));
 
     that.updateHairlineDivPositions();
     that.updateHairlineInfo();
     that.attachHairlinesToChart_();
 
     $(that).triggerHandler('hairlineCreated', {
-      xFraction: xFraction
+      xval: xval
     });
     $(that).triggerHandler('hairlinesChanged', {});
   }, CLICK_DELAY_MS);
@@ -294,7 +302,7 @@ hairlines.prototype.destroy = function() {
  * implementation details like the handle divs.
  *
  * @typedef {
- *   xFraction: number,   // invariant across resize
+ *   xval:  number,       // x-value (i.e. millis or a raw number)
  *   interpolated: bool   // alternative is to snap to closest
  * } PublicHairline
  */
@@ -308,7 +316,7 @@ hairlines.prototype.get = function() {
   for (var i = 0; i < this.hairlines_.length; i++) {
     var h = this.hairlines_[i];
     result.push({
-      xFraction: h.xFraction,
+      xval: h.xval,
       interpolated: h.interpolated
     });
   }
@@ -331,11 +339,11 @@ hairlines.prototype.set = function(hairlines) {
     var h = hairlines[i];
 
     if (this.hairlines_.length > i) {
-      this.hairlines_[i].xFraction = h.xFraction;
+      this.hairlines_[i].xval = h.xval;
       this.hairlines_[i].interpolated = h.interpolated;
     } else {
       // TODO(danvk): pass in |interpolated| value.
-      this.hairlines_.push(this.createHairline(h.xFraction));
+      this.hairlines_.push(this.createHairline(h.xval));
       anyCreated = true;
     }
   }
