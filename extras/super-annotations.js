@@ -69,22 +69,21 @@ annotations.prototype.detachLabels = function() {
 annotations.prototype.annotationWasDragged = function(a, event, ui) {
   var g = this.dygraph_;
   var area = g.getArea();
-  var oldXVal = a.xval;
+  var oldYFrac = a.yFrac;
 
-  var row = g.findClosestRow(ui.position.left);
-  var newXVval = g.getValue(row, 0);
-  if (newXVval == oldXVal) return;
+  var infoDiv = a.infoDiv;
+  var newYFrac = ((infoDiv.offsetTop + infoDiv.offsetHeight) - area.y) / area.h;
+  if (newYFrac == oldYFrac) return;
 
-  a.xval = g.getValue(row, 0);
-  g.setSelection(row, a.series);
+  a.yFrac = newYFrac;
 
   this.moveAnnotationToTop(a);
   this.updateAnnotationDivPositions();
   this.updateAnnotationInfo();
   $(this).triggerHandler('annotationMoved', {
     annotation: a,
-    oldXVal: oldXVal,
-    newXVal: a.xval
+    oldYFrac: oldYFrac,
+    newYFrac: a.yFrac
   });
   $(this).triggerHandler('annotationsChanged', {});
 };
@@ -145,7 +144,8 @@ annotations.prototype.createAnnotation = function(a) {
       $(this).css({'top': ''});
       a.isDragging = false;
       self.updateAnnotationDivPositions();
-    }
+    },
+    'axis': 'y'
   });
 
   // TODO(danvk): use 'on' instead of delegate/dblclick
@@ -238,13 +238,21 @@ annotations.prototype.updateAnnotationDivPositions = function() {
       $([a.lineDiv, a.infoDiv]).show();
     }
     var xy = g.toDomCoords(a.xval, g.getValue(row_col[0], row_col[1]));
-    var x = xy[0], y = xy[1];
+    var x = xy[0], pointY = xy[1];
 
     var lineHeight = 6;  // TODO(danvk): option?
 
+    var y = pointY;
+    if (a.yFrac !== undefined) {
+      y = layout.y + layout.h * a.yFrac;
+    } else {
+      y -= lineHeight;
+    }
+
+    var lineHeight = y < pointY ? (pointY - y) : (y - pointY - a.infoDiv.offsetHeight);
     $(a.lineDiv).css({
       'left': x + 'px',
-      'top': (y - lineHeight) + 'px',
+      'top': Math.min(y, pointY) + 'px',
       'height': lineHeight + 'px'
     });
     $(a.infoDiv).css({
@@ -255,7 +263,7 @@ annotations.prototype.updateAnnotationDivPositions = function() {
       // 'bottom'. Setting both will make the annotation grow and contract as
       // the user drags it, which looks bad.
       $(a.infoDiv).css({
-        'bottom': (div.offsetHeight - (y - lineHeight)) + 'px'
+        'bottom': (div.offsetHeight - y) + 'px'
       })  //.draggable("option", "containment", box);
     }
   });
