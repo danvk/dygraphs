@@ -3707,9 +3707,10 @@ Dygraph.prototype.resize = function(width, height) {
     this.height_ = this.maindiv_.clientHeight;
   }
 
-  this.resizeElements_();
-
   if (old_width != this.width_ || old_height != this.height_) {
+    // Resizing a canvas erases it, even when the size doesn't change, so
+    // any resize needs to be followed by a redraw.
+    this.resizeElements_();
     this.predraw_();
   }
 

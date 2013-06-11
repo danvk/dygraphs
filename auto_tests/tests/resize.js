@@ -6,13 +6,13 @@
 var ResizeTestCase = TestCase("resize");
 
 ResizeTestCase.data =
-      "Date,Y\n" +
-      "2010/01/01,100\n" +
-      "2010/02/01,200\n" +
-      "2010/03/01,300\n" +
-      "2010/04/01,400\n" +
-      "2010/05/01,300\n" +
-      "2010/06/01,100\n";
+      "X,Y\n" +
+      "1,100\n" +
+      "2,200\n" +
+      "3,300\n" +
+      "4,400\n" +
+      "5,300\n" +
+      "6,100\n";
 
 ResizeTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
@@ -83,11 +83,18 @@ ResizeTestCase.prototype.testHiddenDivWithResize = function() {
   div.style.width = '400px';
   div.style.height = '300px';
 
-  var g = new Dygraph(div, ResizeTestCase.data, {});
+  var g = new Dygraph(div, ResizeTestCase.data, {strokeWidth: 3});
   div.style.display = '';
 
   g.resize();
   area = g.getArea();
   assertTrue(area.w > 0);
   assertTrue(area.h > 0);
+
+  // Regression test: check that graph remains visible after no-op resize.
+  g.resize();
+  var x = Math.floor(g.toDomXCoord(2));
+  var y = Math.floor(g.toDomYCoord(200));
+  assertEquals("Unexpected grid color found at pixel: x: " + x + " y: " + y,
+               [0, 128, 128, 255], Util.samplePixel(g.hidden_, x, y));
 };
