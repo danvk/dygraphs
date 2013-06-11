@@ -466,9 +466,11 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
       div.style.width = Dygraph.DEFAULT_WIDTH + "px";
     }
   }
-  // these will be zero if the dygraph's div is hidden.
-  this.width_ = div.clientWidth;
-  this.height_ = div.clientHeight;
+  // These will be zero if the dygraph's div is hidden. In that case,
+  // use the user-specified attributes if present. If not, use zero
+  // and assume the user will call resize to fix things later.
+  this.width_ = div.clientWidth || attrs.width || 0;
+  this.height_ = div.clientHeight || attrs.height || 0;
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
   if (attrs.stackedGraph) {
@@ -995,12 +997,12 @@ Dygraph.prototype.createInterface_ = function() {
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
 
+  // ... and for static parts of the chart.
+  this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+
   this.resizeElements_();
 
   this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
-
-  // ... and for static parts of the chart.
-  this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
 
   // The interactive parts of the graph are drawn on top of the chart.
@@ -1052,6 +1054,10 @@ Dygraph.prototype.resizeElements_ = function() {
   this.canvas_.height = this.height_;
   this.canvas_.style.width = this.width_ + "px";    // for IE
   this.canvas_.style.height = this.height_ + "px";  // for IE
+  this.hidden_.width = this.width_;
+  this.hidden_.height = this.height_;
+  this.hidden_.style.width = this.width_ + "px";    // for IE
+  this.hidden_.style.height = this.height_ + "px";  // for IE
 };
 
 /**
