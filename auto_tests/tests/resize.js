@@ -83,6 +83,8 @@ ResizeTestCase.prototype.testHiddenDivWithResize = function() {
   div.style.width = '400px';
   div.style.height = '300px';
 
+  // Setting strokeWidth 3 removes any ambiguitiy from the pixel sampling
+  // request, below.
   var g = new Dygraph(div, ResizeTestCase.data, {strokeWidth: 3});
   div.style.display = '';
 
