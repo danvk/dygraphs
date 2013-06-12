@@ -1732,12 +1732,11 @@ Dygraph.prototype.findClosestRow = function(domX) {
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
   var minDist = Infinity;
-  var idx = -1;
-  var dist, dx, dy, point, closestPoint, closestSeries;
+  var dist, dx, dy, point, closestPoint, closestSeries, closestRow;
   for ( var setIdx = this.layout_.points.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
-      var point = points[i];
+      point = points[i];
       if (!Dygraph.isValidPoint(point)) continue;
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
@@ -1746,13 +1745,13 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;
-        idx = i;
+        closestRow = point.idx;
       }
     }
   }
   var name = this.layout_.setNames[closestSeries];
   return {
-    row: idx + this.getLeftBoundary_(),
+    row: closestRow,
     seriesName: name,
     point: closestPoint
   };
@@ -1772,10 +1771,10 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
  */
 Dygraph.prototype.findStackedPoint = function(domX, domY) {
   var row = this.findClosestRow(domX);
-  var boundary = this.getLeftBoundary_();
-  var rowIdx = row - boundary;
   var closestPoint, closestSeries;
   for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
+    var boundary = this.getLeftBoundary_(setIdx);
+    var rowIdx = row - boundary;
     var points = this.layout_.points[setIdx];
     if (rowIdx >= points.length) continue;
     var p1 = points[rowIdx];
@@ -1852,22 +1851,27 @@ Dygraph.prototype.mouseMove_ = function(event) {
     callback(event,
         this.lastx_,
         this.selPoints_,
-        this.lastRow_ + this.getLeftBoundary_(),
+        this.lastRow_,
         this.highlightSet_);
   }
 };
 
 /**
- * Fetch left offset from first defined boundaryIds record (see bug #236).
+ * Fetch left offset from the specified set index or if not passed, the 
+ * first defined boundaryIds record (see bug #236).
  * @private
  */
-Dygraph.prototype.getLeftBoundary_ = function() {
-  for (var i = 0; i < this.boundaryIds_.length; i++) {
-    if (this.boundaryIds_[i] !== undefined) {
-      return this.boundaryIds_[i][0];
+Dygraph.prototype.getLeftBoundary_ = function(setIdx) {
+  if(!isNaN(setIdx) && setIdx < boundaryIds_.length){
+    return boundaryIds_[setIdx][0];
+  } else {
+    for (var i = 0; i < this.boundaryIds_.length; i++) {
+      if (this.boundaryIds_[i] !== undefined) {
+        return this.boundaryIds_[i][0];
+      }
     }
+    return 0;
   }
-  return 0;
 };
 
 /**
@@ -1879,7 +1883,7 @@ Dygraph.prototype.getLeftBoundary_ = function() {
 Dygraph.prototype.idxToRow_ = function(setIdx, rowIdx) {
   if (rowIdx < 0) return -1;
 
-  var boundary = this.getLeftBoundary_();
+  var boundary = this.getLeftBoundary_(setIdx);
   return boundary + rowIdx;
 };
 
@@ -2012,18 +2016,15 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   // Extract the points we've selected
   this.selPoints_ = [];
 
-  if (row !== false) {
-    row -= this.getLeftBoundary_();
-  }
-
   var changed = false;
   if (row !== false && row >= 0) {
     if (row != this.lastRow_) changed = true;
     this.lastRow_ = row;
     for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
       var points = this.layout_.points[setIdx];
-      if (row < points.length) {
-        var point = points[row];
+      var setRow = row - this.getLeftBoundary_(setIdx);
+      if (setRow < points.length) {
+        var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
       }
     }
@@ -2103,7 +2104,7 @@ Dygraph.prototype.getSelection = function() {
     var points = this.layout_.points[setIdx];
     for (var row = 0; row < points.length; row++) {
       if (points[row].x == this.selPoints_[0].x) {
-        return row + this.getLeftBoundary_();
+        return points[row].idx;
       }
     }
   }
@@ -2501,8 +2502,6 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         isInvalidValue = isValueNull(series[correctedLastIdx]);
       }
 
-      boundaryIds[i-1] = [(firstIdx > 0) ? firstIdx - 1 : firstIdx,
-          (lastIdx < series.length - 1) ? lastIdx + 1 : lastIdx];
 
       if (correctedFirstIdx!==firstIdx) {
         firstIdx = correctedFirstIdx;
@@ -2510,6 +2509,9 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       if (correctedLastIdx !== lastIdx) {
         lastIdx = correctedLastIdx;
       }
+      
+      boundaryIds[i-1] = [firstIdx, lastIdx];
+      
       // .slice's end is exclusive, we want to include lastIdx.
       series = series.slice(firstIdx, lastIdx + 1);
     } else {
