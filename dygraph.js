@@ -1862,8 +1862,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
  * @private
  */
 Dygraph.prototype.getLeftBoundary_ = function(setIdx) {
-  if(!isNaN(setIdx) && setIdx < boundaryIds_.length){
-    return boundaryIds_[setIdx][0];
+  if(!isNaN(setIdx) && setIdx < this.boundaryIds_.length){
+    return this.boundaryIds_[setIdx][0];
   } else {
     for (var i = 0; i < this.boundaryIds_.length; i++) {
       if (this.boundaryIds_[i] !== undefined) {
