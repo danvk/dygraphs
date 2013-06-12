@@ -1414,13 +1414,25 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
   // Draw a light-grey rectangle to show the new viewing area
   if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
-      ctx.fillStyle = "rgba(128,128,128,0.33)";
+      var zoomRectColor = this.attr_("zoomRectColor");
+      if(zoomRectColor !== null) {
+//        ctx.fillStyle = "rgba("+zoomRectColor.r+","+zoomRectColor.g+","+zoomRectColor.b+","+zoomRectColor.a+")";
+        ctx.fillStyle = zoomRectColor;
+      } else {
+        ctx.fillStyle = "rgba(128,128,128,0.33)";
+      }
       ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
                    Math.abs(endX - startX), this.layout_.getPlotArea().h);
     }
   } else if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
-      ctx.fillStyle = "rgba(128,128,128,0.33)";
+      var zoomRectColor = this.attr_("zoomRectColor");
+      if(zoomRectColor !== null) {
+//        ctx.fillStyle = "rgba("+zoomRectColor.r+","+zoomRectColor.g+","+zoomRectColor.b+","+zoomRectColor.a+")";
+        ctx.fillStyle = zoomRectColor;
+      } else {
+        ctx.fillStyle = "rgba(128,128,128,0.33)";
+      }
       ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
                    this.layout_.getPlotArea().w, Math.abs(endY - startY));
     }
