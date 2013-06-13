@@ -93,7 +93,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Zooming"],
     "type": "string",
     "example": "rgba(255,255,255,0.5)",
-    "description": "The color of the rectangle used for the visualization of the zoom."
+    "description": "The color of the rectangle used for the visualization of the zoom selection."
   },
   "pointClickCallback": {
     "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
