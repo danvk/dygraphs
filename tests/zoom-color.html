@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>zoom-color</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <h3>Click the buttons to change the color and the transparency of the zoom highlighting.</h3>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+
+
+    <p><b>Zoom operations:</b></p>
+    <p>
+      <input type="button" value="blue" onclick="setZoomColorToBlue()">&nbsp;
+      <input type="button" value="red" onclick="setZoomColorToRed()">&nbsp;
+      <input type="button" value="default" onclick="setZoomColorToDefault()">&nbsp;
+    </p>
+
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              errorBars: true,
+            }
+          );
+
+      function setZoomColorToBlue() {
+        g.updateOptions({
+          zoomRectColor : "rgba(0, 0, 255, 0.9)"
+        });  
+      }
+      
+      function setZoomColorToRed() {
+        g.updateOptions({
+          zoomRectColor : "rgba(255, 0, 0, 0.1)"
+        });  
+      }
+      
+      function setZoomColorToDefault() {
+        g.updateOptions({
+          zoomRectColor : null
+        });  
+      }
+    </script>
+
+  </body>
+</html>
