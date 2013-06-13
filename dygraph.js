@@ -320,6 +320,8 @@ Dygraph.DEFAULT_ATTRS = {
   drawXGrid: true,
   gridLineColor: "rgb(128,128,128)",
 
+  zoomRectColor: "rgba(128,128,128,0.33)",
+  
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
   animatedZooms: false,  // (for now)
 
@@ -1415,24 +1417,14 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
   if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
       var zoomRectColor = this.attr_("zoomRectColor");
-      if(zoomRectColor !== null) {
-//        ctx.fillStyle = "rgba("+zoomRectColor.r+","+zoomRectColor.g+","+zoomRectColor.b+","+zoomRectColor.a+")";
-        ctx.fillStyle = zoomRectColor;
-      } else {
-        ctx.fillStyle = "rgba(128,128,128,0.33)";
-      }
+      ctx.fillStyle = zoomRectColor;
       ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
                    Math.abs(endX - startX), this.layout_.getPlotArea().h);
     }
   } else if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
       var zoomRectColor = this.attr_("zoomRectColor");
-      if(zoomRectColor !== null) {
-//        ctx.fillStyle = "rgba("+zoomRectColor.r+","+zoomRectColor.g+","+zoomRectColor.b+","+zoomRectColor.a+")";
-        ctx.fillStyle = zoomRectColor;
-      } else {
-        ctx.fillStyle = "rgba(128,128,128,0.33)";
-      }
+      ctx.fillStyle = zoomRectColor;
       ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
                    this.layout_.getPlotArea().w, Math.abs(endY - startY));
     }
