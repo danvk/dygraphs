@@ -1697,7 +1697,7 @@ Dygraph.prototype.eventToDomCoords = function(event) {
  */
 Dygraph.prototype.findClosestRow = function(domX) {
   var minDistX = Infinity;
-  var pointIdx = -1, setIdx = -1;
+  var closestRow = -1;
   var sets = this.layout_.points;
   for (var i = 0; i < sets.length; i++) {
     var points = sets[i];
@@ -1708,14 +1708,12 @@ Dygraph.prototype.findClosestRow = function(domX) {
       var dist = Math.abs(point.canvasx - domX);
       if (dist < minDistX) {
         minDistX = dist;
-        setIdx = i;
-        pointIdx = j;
+        closestRow = point.idx;
       }
     }
   }
 
-  // TODO(danvk): remove this function; it's trivial and has only one use.
-  return this.idxToRow_(setIdx, pointIdx);
+  return closestRow;
 };
 
 /**
@@ -1862,8 +1860,8 @@ Dygraph.prototype.mouseMove_ = function(event) {
  * @private
  */
 Dygraph.prototype.getLeftBoundary_ = function(setIdx) {
-  if(!isNaN(setIdx) && setIdx < this.boundaryIds_.length){
-    return this.boundaryIds_[setIdx][0];
+  if(this.boundaryIds_[setIdx]){
+      return this.boundaryIds_[setIdx][0];
   } else {
     for (var i = 0; i < this.boundaryIds_.length; i++) {
       if (this.boundaryIds_[i] !== undefined) {
@@ -1872,19 +1870,6 @@ Dygraph.prototype.getLeftBoundary_ = function(setIdx) {
     }
     return 0;
   }
-};
-
-/**
- * Transforms layout_.points index into data row number.
- * @param int layout_.points index
- * @return int row number, or -1 if none could be found.
- * @private
- */
-Dygraph.prototype.idxToRow_ = function(setIdx, rowIdx) {
-  if (rowIdx < 0) return -1;
-
-  var boundary = this.getLeftBoundary_(setIdx);
-  return boundary + rowIdx;
 };
 
 Dygraph.prototype.animateSelection_ = function(direction) {
