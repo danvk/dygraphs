@@ -508,7 +508,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   addTouchEvents = function(elem, fn) {
     var types = ['touchstart', 'touchend', 'touchmove', 'touchcancel'];
     for (var i = 0; i < types.length; i++) {
-      self.dygraph_.addEvent(elem, types[i], fn);
+      self.dygraph_.addAndTrackEvent(elem, types[i], fn);
     }
   };
 
@@ -516,14 +516,14 @@ rangeSelector.prototype.initInteraction_ = function() {
   this.setDefaultOption_('panEdgeFraction', 0.0001);
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
-  this.dygraph_.addEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
-  this.dygraph_.addEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
+  this.dygraph_.addAndTrackEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
+  this.dygraph_.addAndTrackEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
 
   if (this.isUsingExcanvas_) {
-    this.dygraph_.addEvent(this.iePanOverlay_, 'mousedown', onPanStart);
+    this.dygraph_.addAndTrackEvent(this.iePanOverlay_, 'mousedown', onPanStart);
   } else {
-    this.dygraph_.addEvent(this.fgcanvas_, 'mousedown', onPanStart);
-    this.dygraph_.addEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
+    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart);
+    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
   }
 
   // Touch events

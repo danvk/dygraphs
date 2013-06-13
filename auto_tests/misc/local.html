@@ -70,9 +70,23 @@
     color: red;
   }
 
-  .activeAnchor {
-    color: black;
+  /* Broken: the active anchor isn't gray. Why not? */
+  #results .activeAnchor {
+    color: grey;
+  }
+
+  #results a {
     text-decoration: none;
+  }
+
+  #results a:visited {
+    color: blue;
+    text-decoration: none;
+  }
+
+  #results a:hover {
+    color: blue;
+    text-decoration: underline;
   }
 </style>
 </head>

@@ -251,7 +251,7 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
 };
 GridPerAxisTestCase.prototype.testGridLinePattern = function() {
   var opts = {
-    width : 480,
+    width : 120,
     height : 320,
     errorBars : false,
     drawXGrid : false,
@@ -291,7 +291,7 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
   }
   var x, y;
   // Step through all gridlines of the axis
-  for ( var i = 0; i < yGridlines.length; i++) {
+  for (var i = 0; i < yGridlines.length; i++) {
     y = halfDown(g.toDomYCoord(yGridlines[i], 0));
     // Step through the pixels of the line and test the pattern.
     for (x = halfUp(g.plotter_.area.x); x < g.plotter_.area.w; x++) {
@@ -304,11 +304,11 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill
-        assertEquals("Unexpected filled grid-pattern color found at pixel: x: " + x + "y: "
+        assertEquals("Unexpected filled grid-pattern color found at pixel: x: " + x + " y: "
             + y, [ 0, 0, 255 ], drawnPixel);
         break;
       case 1: // no fill
-        assertEquals("Unexpected empty grid-pattern color found at pixel: x: " + x + "y: "
+        assertEquals("Unexpected empty grid-pattern color found at pixel: x: " + x + " y: "
             + y, [ 0, 0, 0 ], drawnPixel);
         break;
       }

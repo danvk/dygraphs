@@ -31,11 +31,21 @@
  */
 var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.datasets = [];
+  /**
+   * Array of points for each series.
+   *
+   * [series index][row index in series] = |Point| structure,
+   * where series index refers to visible series only, and the
+   * point index is for the reduced set of points for the current
+   * zoom region (including one point just outside the window).
+   * All points in the same row index share the same X value.
+   *
+   * @type {Array.<Array.<Dygraph.PointType>>}
+   */
+  this.points = [];
   this.setNames = [];
   this.annotations = [];
   this.yAxes_ = null;
-  this.points = null;
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
@@ -47,8 +57,14 @@ DygraphLayout.prototype.attr_ = function(name) {
   return this.dygraph_.attr_(name);
 };
 
+/**
+ * Add points for a single series.
+ *
+ * @param {string} setname Name of the series.
+ * @param {Array.<Dygraph.PointType>} set_xy Points for the series.
+ */
 DygraphLayout.prototype.addDataset = function(setname, set_xy) {
-  this.datasets.push(set_xy);
+  this.points.push(set_xy);
   this.setNames.push(setname);
 };
 
@@ -63,7 +79,7 @@ DygraphLayout.prototype.getPlotArea = function() {
 };
 
 // Compute the box which the chart should be drawn in. This is the canvas's
-// box, less space needed for axis and chart labels.
+// box, less space needed for axis, chart labels, and other plug-ins.
 // NOTE: This should only be called by Dygraph.predraw_().
 DygraphLayout.prototype.computePlotArea = function() {
   var area = {
@@ -162,10 +178,6 @@ DygraphLayout.prototype.setYAxes = function (yAxes) {
   this.yAxes_ = yAxes;
 };
 
-DygraphLayout.prototype.setDateWindow = function(dateWindow) {
-  this.dateWindow_ = dateWindow;
-};
-
 DygraphLayout.prototype.evaluate = function() {
   this._evaluateLimits();
   this._evaluateLineCharts();
@@ -209,49 +221,44 @@ DygraphLayout._calcYNormal = function(axis, value, logscale) {
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
   var connectSeparated = this.attr_('connectSeparatedPoints');
+  var isStacked = this.attr_("stackedGraph");
+  var hasBars = this.attr_('errorBars') || this.attr_('customBars');
 
-  // series index -> point index in series -> |point| structure
-  this.points = new Array(this.datasets.length);
-
-  // TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
-  // on chrome+linux, they are 6 times more expensive than iterating through the
-  // points and drawing the lines. The brunt of the cost comes from allocating
-  // the |point| structures.
-  var boundaryIdStart = this.dygraph_.getLeftBoundary_();
-  for (var setIdx = 0; setIdx < this.datasets.length; setIdx++) {
-    var dataset = this.datasets[setIdx];
+  for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
+    var points = this.points[setIdx];
     var setName = this.setNames[setIdx];
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     // TODO (konigsberg): use optionsForAxis instead.
     var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
 
-    // Preallocating the size of points reduces reallocations, and therefore,
-    // calls to collect garbage.
-    var seriesPoints = new Array(dataset.length);
+    for (var j = 0; j < points.length; j++) {
+      var point = points[j];
 
-    for (var j = 0; j < dataset.length; j++) {
-      var item = dataset[j];
-      var xValue = DygraphLayout.parseFloat_(item[0]);
-      var yValue = DygraphLayout.parseFloat_(item[1]);
-      
       // Range from 0-1 where 0 represents left and 1 represents right.
-      var xNormal = (xValue - this.minxval) * this.xscale;
+      point.x = (point.xval - this.minxval) * this.xscale;
       // Range from 0-1 where 0 represents top and 1 represents bottom
-      var yNormal = DygraphLayout._calcYNormal(axis, yValue, logscale);
-      
-      // TODO(danvk): drop the point in this case, don't null it.
-      // The nulls create complexity in DygraphCanvasRenderer._drawSeries.
-      if (connectSeparated && item[1] === null) {
-        yValue = null;
+      var yval = point.yval;
+      if (isStacked) {
+        point.y_stacked = DygraphLayout._calcYNormal(
+            axis, point.yval_stacked, logscale);
+        if (yval !== null && !isNaN(yval)) {
+          yval = point.yval_stacked;
+        }
       }
-      seriesPoints[j] = {
-        x: xNormal,
-        y: yNormal,
-        xval: xValue,
-        yval: yValue,
-        name: setName,  // TODO(danvk): is this really necessary?
-        idx: j + boundaryIdStart
-      };
+      if (yval === null) {
+        yval = NaN;
+        if (!connectSeparated) {
+          point.yval = NaN;
+        }
+      }
+      point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
+      
+      if (hasBars) {
+        point.y_top = DygraphLayout._calcYNormal(
+            axis, yval - point.yval_minus, logscale);
+        point.y_bottom = DygraphLayout._calcYNormal(
+            axis, yval + point.yval_plus, logscale);
+      }
     }
 
     if(this.dygraph_.dataHandler_.onLineEvaluated !== undefined) {
@@ -337,49 +344,12 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
  * Convenience function to remove all the data sets from a graph
  */
 DygraphLayout.prototype.removeAllDatasets = function() {
-  delete this.datasets;
+  delete this.points;
   delete this.setNames;
   delete this.setPointsLengths;
   delete this.setPointsOffsets;
-  this.datasets = [];
+  this.points = [];
   this.setNames = [];
   this.setPointsLengths = [];
   this.setPointsOffsets = [];
-};
-
-/**
- * Return a copy of the point at the indicated index, with its yval unstacked.
- * @param int index of point in layout_.points
- */
-DygraphLayout.prototype.unstackPointAtIndex = function(setIdx, row) {
-  var point = this.points[setIdx][row];
-  // If the point is missing, no unstacking is necessary
-  if (!Dygraph.isValidPoint(point)) {
-    return point;
-  }
-
-  // Clone the point since we modify it
-  var unstackedPoint = {};
-  for (var pt in point) {
-    unstackedPoint[pt] = point[pt];
-  }
-
-  if (!this.attr_("stackedGraph")) {
-    return unstackedPoint;
-  }
-
-  // The unstacked yval is equal to the current yval minus the yval of the
-  // next point at the same xval.
-  // We need to iterate over setIdx just in case some series have invalid values
-  // at current row
-  for(setIdx++; setIdx < this.points.length; setIdx++) {
-    var nextPoint = this.points[setIdx][row];
-    if (nextPoint.xval == point.xval &&  // should always be true?
-        Dygraph.isValidPoint(nextPoint)) {
-      unstackedPoint.yval -= nextPoint.yval;
-      break; // stop at first valid point
-    }
-  }
-
-  return unstackedPoint;
 };
