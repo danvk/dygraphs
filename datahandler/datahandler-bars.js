@@ -10,6 +10,17 @@ BarsHandler.prototype.rollingAverage =  function(originalData, rollPeriod,
   // Not implemented here, must be extended.
   return rollingData;
 };
+
+BarsHandler.prototype.onPointsCreated = function(series, points) {
+  for (var i = 0; i < series.length; ++i) {
+    var item = series[i];
+    var point = points[i];
+    point.y_top = NaN;
+    point.y_bottom = NaN;
+    point.yval_minus = DygraphLayout.parseFloat_(item[2][0]);
+    point.yval_plus = DygraphLayout.parseFloat_(item[2][1]);
+  }
+};
 BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
   var minY = null, maxY = null, y;
 
@@ -33,19 +44,12 @@ BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot)
   return [ minY, maxY ];
 };
 
-BarsHandler.prototype.onLineEvaluated = function(seriesPoints, dataset, setName, dygraphs) {
-  var logscale = dygraphs.attributes_.getForSeries("logscale", setName);
-  // TODO (konigsberg): use optionsForAxis instead.
-  var axis = dygraphs.axisPropertiesForSeries(setName);
-  var point, sample, yv_minus, yv_plus;
-
-  for (var j = 0; j < seriesPoints.length; j++) {
+BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale, dygraphs) {
+  var point;
+  for (var j = 0; j < points.length; j++) {
     // Copy over the error terms
-    point = seriesPoints[j];
-    sample = dataset[j];
-    yv_minus = DygraphLayout.parseFloat_(sample[2][0]);
-    yv_plus = DygraphLayout.parseFloat_(sample[2][1]);
-    point.y_top = DygraphLayout._calcYNormal(axis, yv_minus, logscale);
-    point.y_bottom = DygraphLayout._calcYNormal(axis, yv_plus, logscale);
+    point = points[j];
+    point.y_top = DygraphLayout._calcYNormal(axis, point.yval_minus, logscale);
+    point.y_bottom = DygraphLayout._calcYNormal(axis, point.yval_plus, logscale);
   }
 };

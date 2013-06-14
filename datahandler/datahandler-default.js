@@ -19,6 +19,8 @@ DefaultHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs
   return series;
 };
 
+DefaultHandler.prototype.onPointsCreated = undefined;
+
 DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
     dygraphs) {
   rollPeriod = Math.min(rollPeriod, originalData.length);

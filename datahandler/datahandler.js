@@ -33,6 +33,54 @@ Dygraph.DataHandler = function DataHandler() {
    * @private
    */
   handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {};
+  
+  /**
+   * Converts a series to a Point array.
+   *
+   * @param {Array.<Array.<(?number|Array<?number>)>} series Array where
+   *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
+   * @param {string} setName Name of the series.
+   * @param {number} boundaryIdStart Index offset of the first point, equal to
+   *     the number of skipped points left of the date window minimum (if any).
+   * @return {Array.<Dygraph.PointType>} List of points for this series.
+   */
+  handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
+    //TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
+    //on chrome+linux, they are 6 times more expensive than iterating through the
+    //points and drawing the lines. The brunt of the cost comes from allocating
+    //the |point| structures.
+    var points = [];
+    for (var i = 0; i < series.length; ++i) {
+      var item = series[i];
+      var yraw = item[1];
+      var yval = yraw === null ? null : DygraphLayout.parseFloat_(yraw);
+      var point = {
+        x: NaN,
+        y: NaN,
+        xval: DygraphLayout.parseFloat_(item[0]),
+        yval: yval,
+        name: setName,  // TODO(danvk): is this really necessary?
+        idx: i + boundaryIdStart
+      };
+      points.push(point);
+    }
+    if(handler.prototype.onPointsCreated) {
+      handler.prototype.onPointsCreated(series, points);
+    }
+    return points;
+  };
+  /**
+   * @private
+   * Callback called for each series after the series points have been generated 
+   * which will later be used by the plotters to draw the graph.
+   * Here data may be added to the seriesPoints which is needed by the plotters.<br>
+   * The indexes of series and points are in sync meaning the original
+   * data sample for series[i] is points[i].
+   * Note: Set the callback to undefined if it is not used for better performance.
+   * @param {Array} series The data samples of the series.
+   * @param {Array} points The corresponding points passed to the plotter.
+   */
+  handler.prototype.onPointsCreated = function(series, points) {};
 
   /**
    * @private
@@ -67,18 +115,16 @@ Dygraph.DataHandler = function DataHandler() {
 
   /**
    * @private
-   * Callback called for each series after the series points have been generated 
-   * which will later be used by the plotters to draw the graph.
-   * Here data may be added to the seriesPoints which is needed by the plotters.<br>
-   * The indexes of seriesPoints and dataset are in sync meaning the original
-   * data sample for seriesPoints[i] is dataset[i].
+   * Callback called for each series after the layouting data has been calculated
+   * before the series is drawn.
+   * Here normalized positioning data should be calculated for the extras of each point.<br>
    * Note: Set the callback to undefined if it is not used for better performance.
-   * @param {Array} seriesPoints The points passed to the plotter.
-   * @param {Array} dataSet The corresponding data samples of the series.
-   * @param {String} Name of the series.
+   * @param {Array} points The points passed to the plotter.
+   * @param {} the axis on which the series will be rendered.
+   * @param {boolean} weather or not to use a logscale.
    * @param {} dygraphs the dygraphs instance.
    */
-  handler.prototype.onLineEvaluated = function(seriesPoints, dataset, setName, dygraphs) {};
+  handler.prototype.onLineEvaluated = function(points, axis, logscale, dygraphs) {};
 
   /**
    * @private

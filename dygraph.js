@@ -2268,48 +2268,6 @@ Dygraph.prototype.predraw_ = function() {
  */
 Dygraph.PointType = undefined;
 
-// TODO(bhs): these loops are a hot-spot for high-point-count charts. In fact,
-// on chrome+linux, they are 6 times more expensive than iterating through the
-// points and drawing the lines. The brunt of the cost comes from allocating
-// the |point| structures.
-/**
- * Converts a series to a Point array.
- *
- * @param {Array.<Array.<(?number|Array<?number>)>} series Array where
- *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
- * @param {boolean} bars True if error bars or custom bars are being drawn.
- * @param {string} setName Name of the series.
- * @param {number} boundaryIdStart Index offset of the first point, equal to
- *     the number of skipped points left of the date window minimum (if any).
- * @return {Array.<Dygraph.PointType>} List of points for this series.
- */
-Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
-  var points = [];
-  for (var i = 0; i < series.length; ++i) {
-    var item = series[i];
-    var yraw = bars ? item[1][0] : item[1];
-    var yval = yraw === null ? null : DygraphLayout.parseFloat_(yraw);
-    var point = {
-      x: NaN,
-      y: NaN,
-      xval: DygraphLayout.parseFloat_(item[0]),
-      yval: yval,
-      name: setName,  // TODO(danvk): is this really necessary?
-      idx: i + boundaryIdStart
-    };
-
-    if (bars) {
-      point.y_top = NaN;
-      point.y_bottom = NaN;
-      point.yval_minus = DygraphLayout.parseFloat_(item[1][1]);
-      point.yval_plus = DygraphLayout.parseFloat_(item[1][2]);
-    }
-    points.push(point);
-  }
-  return points;
-};
-
-
 /**
  * Calculates point stacking for stackedGraph=true.
  *
@@ -2485,13 +2443,13 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       series = rolledSeries[i];
       boundaryIds[i-1] = [0, series.length-1];
     }
-    
 
     var seriesName = this.attr_("labels")[i];
-    var seriesExtremes = this.dataHandler_.getExtremeYValues(series,dateWindow,this.attr_("stepPlot",seriesName));
+    var seriesExtremes = this.dataHandler_.getExtremeYValues(series, 
+        dateWindow, this.attr_("stepPlot",seriesName));
 
-    var seriesPoints = Dygraph.seriesToPoints_(
-        series, bars, seriesName, boundaryIds[i-1][0]);
+    var seriesPoints = this.dataHandler_.seriesToPoints(series, 
+        seriesName, boundaryIds[i-1][0]);
 
     if (this.attr_("stackedGraph")) {
       Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
