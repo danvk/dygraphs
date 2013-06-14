@@ -9,10 +9,10 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, logScale, dygra
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
-    if (logScale) {
+    if (logScale && point !== null) {
       // On the log scale, points less than zero do not exist.
       // This will create a gap in the chart.
-      if (point <= 0) {
+      if (point[0] <= 0 || point[1] <= 0 || point[2] <= 0) {
         point = null;
       }
     }
