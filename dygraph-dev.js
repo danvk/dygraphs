@@ -43,9 +43,7 @@
     "datahandler/datahandler-bars.js",
     "datahandler/datahandler-bars-error.js",
     "datahandler/datahandler-bars-custom.js",
-    "datahandler/datahandler-bars-fractions.js",
-    "datahandler/sauter-datahandler-raw.js",
-    "datahandler/sauter-datahandler-compressed.js"
+    "datahandler/datahandler-bars-fractions.js"
   ];
 
   for (var i = 0; i < source_files.length; i++) {
