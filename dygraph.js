@@ -1412,7 +1412,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
   if (prevDirection == Dygraph.HORIZONTAL) {
     ctx.clearRect(Math.min(startX, prevEndX), this.layout_.getPlotArea().y,
                   Math.abs(startX - prevEndX), this.layout_.getPlotArea().h);
-  } else if (prevDirection == Dygraph.VERTICAL){
+  } else if (prevDirection == Dygraph.VERTICAL) {
     ctx.clearRect(this.layout_.getPlotArea().x, Math.min(startY, prevEndY),
                   this.layout_.getPlotArea().w, Math.abs(startY - prevEndY));
   }
@@ -1860,7 +1860,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
  * @private
  */
 Dygraph.prototype.getLeftBoundary_ = function(setIdx) {
-  if(this.boundaryIds_[setIdx]){
+  if (this.boundaryIds_[setIdx]) {
       return this.boundaryIds_[setIdx][0];
   } else {
     for (var i = 0; i < this.boundaryIds_.length; i++) {
@@ -2212,7 +2212,7 @@ Dygraph.prototype.predraw_ = function() {
     this.plotter_.clear();
   }
 
-  if(!this.is_initial_draw_) {
+  if (!this.is_initial_draw_) {
     this.canvas_ctx_.restore();
     this.hidden_ctx_.restore();
   }
@@ -2840,7 +2840,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     }
     
     
-    if(independentTicks) {
+    if (independentTicks) {
       axis.independentTicks = independentTicks;
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');
@@ -3027,7 +3027,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   } else {
     // Calculate the rolling average for the first rollPeriod - 1 points where
     // there is not enough data to roll over the full number of points
-    if (!this.attr_("errorBars")){
+    if (!this.attr_("errorBars")) {
       if (rollPeriod == 1) {
         return originalData;
       }
