@@ -307,3 +307,40 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPointsConnected = funct
       [p1, p2, p3],
       { strokeStyle: '#ff0000' });
 };
+MissingPointsTestCase.prototype.testLeftBoundaryWithMisingPoints = function() {
+  var data = [
+              [1, null, 3],
+              [2, 1, null],
+              [3, 0, 5],
+              [4, 2, 1],
+              [5, 4, null],
+              [6, 3, 2]
+             ];
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      connectSeparatedPoints: true,
+      drawPoints: true,
+      colors: ['red','blue']
+    }
+  );
+  g.updateOptions({ dateWindow : [ 2.5, 4.5 ] });
+  assertEquals(1, g.getLeftBoundary_(0));
+  assertEquals(0, g.getLeftBoundary_(1));
+
+  var domX = g.toDomXCoord(1.9);
+  var closestRow = g.findClosestRow(domX);
+  assertEquals(1, closestRow);
+
+  g.setSelection(closestRow);
+  assertEquals(1, g.selPoints_.length);
+  assertEquals(1, g.selPoints_[0].yval);
+  
+
+  g.setSelection(3);
+  assertEquals(2, g.selPoints_.length);
+  assertEquals(g.selPoints_[0].xval, g.selPoints_[1].xval);
+  assertEquals(2, g.selPoints_[0].yval);
+  assertEquals(1, g.selPoints_[1].yval);
+};
