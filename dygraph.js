@@ -2813,56 +2813,6 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 };
 
 /**
- * Extracts one series from the raw data (a 2D array) into an array of (date,
- * value) tuples.
- *
- * This is where undesirable points (i.e. negative values on log scales and
- * missing values through which we wish to connect lines) are dropped.
- * TODO(danvk): the "missing values" bit above doesn't seem right.
- *
- * @private
- * @param {Array.<Array.<(number|Array<Number>)>>} rawData Input data. Rectangular
- *     grid of points, where rawData[row][0] is the X value for the row,
- *     and rawData[row][i] is the Y data for series #i.
- * @param {number} i Series index, starting from 1.
- * @param {boolean} logScale True if using logarithmic Y scale.
- * @return {Array.<Array.<(?number|Array<?number>)>} Series array, where
- *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
- */
-Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
-  // TODO(danvk): pre-allocate series here.
-  var series = [];
-  var errorBars = this.attr_("errorBars");
-  var customBars =  this.attr_("customBars");
-  for (var j = 0; j < rawData.length; j++) {
-    var x = rawData[j][0];
-    var point = rawData[j][i];
-    if (logScale) {
-      // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart.
-      if (errorBars || customBars) {
-        // point.length is either 2 (errorBars) or 3 (customBars)
-        for (var k = 0; k < point.length; k++) {
-          if (point[k] <= 0) {
-            point = null;
-            break;
-          }
-        }
-      } else if (point <= 0) {
-        point = null;
-      }
-    }
-    // Fix null points to fit the display type standard.
-    if (point !== null) {
-      series.push([x, point]);
-    } else {
-      series.push([x, errorBars ? [null, null] : customBars ? [null, null, null] : point]);
-    }
-  }
-  return series;
-};
-
-/**
  * Detects the type of the str (date or numeric) and sets the various
  * formatting attributes in this.attrs_ based on this type.
  * @param {String} str An x value.
