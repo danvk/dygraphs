@@ -28,7 +28,7 @@ Dygraph.Plugins.Hairlines = (function() {
 // double-click to unzoom. This sets that delay period.
 var CLICK_DELAY_MS = 300;
 
-var hairlines = function() {
+var hairlines = function(opt_options) {
   /* @type {!Array.<!Hairline>} */
   this.hairlines_ = [];
 
@@ -38,6 +38,9 @@ var hairlines = function() {
   this.dygraph_ = null;
 
   this.addTimer_ = null;
+  opt_options = opt_options || {};
+
+  this.divFiller_ = opt_options['divFiller'] || null;
 };
 
 hairlines.prototype.toString = function() {
@@ -179,6 +182,7 @@ hairlines.prototype.updateHairlineInfo = function() {
 
   var g = this.dygraph_;
   var xRange = g.xAxisRange();
+  var that = this;
   $.each(this.hairlines_, function(idx, h) {
     var row = null;
     if (mode == 'closest') {
@@ -202,8 +206,17 @@ hairlines.prototype.updateHairlineInfo = function() {
       });
     }
 
-    var html = Dygraph.Plugins.Legend.generateLegendHTML(g, h.xval, selPoints, 10);
-    $('.hairline-legend', h.infoDiv).html(html);
+    if (that.divFiller_) {
+      that.divFiller_(h.infoDiv, {
+        closestRow: row,
+        points: selPoints,
+        hairline: h,
+        dygraph: g
+      });
+    } else {
+      var html = Dygraph.Plugins.Legend.generateLegendHTML(g, h.xval, selPoints, 10);
+      $('.hairline-legend', h.infoDiv).html(html);
+    }
   });
 };
 

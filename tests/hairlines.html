@@ -143,7 +143,15 @@
         data.push([last_t, fn(last_t)]);
       }
 
-      hairlines = new Dygraph.Plugins.Hairlines();
+      hairlines = new Dygraph.Plugins.Hairlines({
+        divFiller: function(div, data) {
+          // This behavior is identical to what you'd get if you didn't set
+          // this option. It illustrates how to write a 'divFiller'.
+          var html = Dygraph.Plugins.Legend.generateLegendHTML(
+              data.dygraph, data.hairline.xval, data.points, 10);
+          $('.hairline-legend', div).html(html);
+        }
+      });
       annotations = new Dygraph.Plugins.SuperAnnotations({
         defaultAnnotationProperties: {
           'text': 'Annotation Description'
