@@ -323,7 +323,8 @@ hairlines.prototype.destroy = function() {
  *
  * @typedef {
  *   xval:  number,       // x-value (i.e. millis or a raw number)
- *   interpolated: bool   // alternative is to snap to closest
+ *   interpolated: bool,  // alternative is to snap to closest
+ *   selected: bool       // whether the hairline is selected.
  * } PublicHairline
  */
 
