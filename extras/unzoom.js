@@ -79,14 +79,14 @@ Dygraph.Plugins.Unzoom = (function() {
       g.resetZoom();
     };
 
-    g.addEvent(parent, 'mouseover', function() {
+    g.addAndTrackEvent(parent, 'mouseover', function() {
       if (g.isZoomed()) {
         self.show(true);
       }
       self.over_ = true;
     });
 
-    g.addEvent(parent, 'mouseout', function() {
+    g.addAndTrackEvent(parent, 'mouseout', function() {
       self.show(false);
       self.over_ = false;
     });

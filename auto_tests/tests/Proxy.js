@@ -38,7 +38,7 @@ var Proxy = function(delegate) {
       function makeFunc(name) {
         return function() {
           this.log__(name, arguments);
-          this.delegate__[name].apply(this.delegate__, arguments);
+          return this.delegate__[name].apply(this.delegate__, arguments);
         }
       };
       this[propname] = makeFunc(propname);
@@ -71,4 +71,3 @@ Proxy.prototype.log__ = function(name, args) {
   var call = { name : name, args : args, properties: properties };
   this.calls__.push(call);
 };
-

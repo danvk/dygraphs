@@ -151,3 +151,33 @@ CustomBarsTestCase.prototype.testCustomBarsLogScale = function() {
        [247.5, 152.02209814465604]],
       { fillStyle: "#00ff00" });
 };
+
+CustomBarsTestCase.prototype.testCustomBarsWithNegativeValuesInLogScale =
+    function() {
+  var graph = document.getElementById("graph");
+
+  var count = 0;
+  var drawPointCallback = function() {
+    count++;
+  };
+
+  var g = new Dygraph(graph,
+      [
+        [1, [10, 20,30]],
+        [2, [5, 10, 15]],
+        [3, [-1, 5, 10]]
+      ],
+      {
+        drawPoints: true,
+        drawPointCallback : drawPointCallback,
+        customBars: true
+      });
+
+  // Normally all three points would be drawn.
+  assertEquals(3, count);
+  count = 0;
+
+  // In log scale, the third point shouldn't be shown.
+  g.updateOptions({ logscale : true });
+  assertEquals(2, count);
+};

@@ -143,13 +143,13 @@ annotations.prototype.didDrawChart = function(e) {
     div.style.borderColor = g.colorsMap_[p.name];
     a.div = div;
 
-    g.addEvent(div, 'click',
+    g.addAndTrackEvent(div, 'click',
         bindEvt('clickHandler', 'annotationClickHandler', p, this));
-    g.addEvent(div, 'mouseover',
+    g.addAndTrackEvent(div, 'mouseover',
         bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
-    g.addEvent(div, 'mouseout',
+    g.addAndTrackEvent(div, 'mouseout',
         bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
-    g.addEvent(div, 'dblclick',
+    g.addAndTrackEvent(div, 'dblclick',
         bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
 
     containerDiv.appendChild(div);

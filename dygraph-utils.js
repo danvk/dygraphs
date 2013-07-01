@@ -192,7 +192,7 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.prototype.addEvent = function(elem, type, fn) {
+Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
   Dygraph.addEvent(elem, type, fn);
   this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
@@ -218,6 +218,17 @@ Dygraph.removeEvent = function(elem, type, fn) {
     }
     elem[type+fn] = null;
   }
+};
+
+Dygraph.prototype.removeTrackedEvents_ = function() {
+  if (this.registeredEvents_) {
+    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+      var reg = this.registeredEvents_[idx];
+      Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
+    }
+  }
+
+  this.registeredEvents_ = [];
 };
 
 /**
