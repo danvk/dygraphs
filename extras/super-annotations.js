@@ -219,6 +219,8 @@ annotations.prototype.moveAnnotationToTop = function(a) {
 // Positions existing hairline divs.
 annotations.prototype.updateAnnotationDivPositions = function() {
   var layout = this.dygraph_.getArea();
+  var chartLeft = layout.x, chartRight = layout.x + layout.w;
+  var chartTop = layout.y, chartBottom = layout.y + layout.h;
   var div = this.dygraph_.graphDiv;
   var box = [layout.x + Dygraph.findPosX(div),
              layout.y + Dygraph.findPosY(div)];
@@ -265,6 +267,10 @@ annotations.prototype.updateAnnotationDivPositions = function() {
       $(a.infoDiv).css({
         'bottom': (div.offsetHeight - y) + 'px'
       })  //.draggable("option", "containment", box);
+
+      var visible = (x >= chartLeft && x <= chartRight) &&
+                    (pointY >= chartTop && pointY <= chartBottom);
+      $([a.infoDiv, a.lineDiv]).toggle(visible);
     }
   });
 };
