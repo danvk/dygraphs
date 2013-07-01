@@ -155,6 +155,7 @@ hairlines.prototype.moveHairlineToTop = function(h) {
 hairlines.prototype.updateHairlineDivPositions = function() {
   var g = this.dygraph_;
   var layout = this.dygraph_.getArea();
+  var chartLeft = layout.x, chartRight = layout.x + layout.w;
   var div = this.dygraph_.graphDiv;
   var box = [layout.x + Dygraph.findPosX(div),
              layout.y + Dygraph.findPosY(div)];
@@ -173,6 +174,9 @@ hairlines.prototype.updateHairlineDivPositions = function() {
       'left': left + 'px',
       'top': layout.y + 'px',
     }).draggable("option", "containment", box);
+
+    var visible = (left >= chartLeft && left <= chartRight);
+    $([h.infoDiv, h.lineDiv]).toggle(visible);
   });
 };
 
