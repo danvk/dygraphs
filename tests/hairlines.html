@@ -266,7 +266,8 @@
       });
 
       // Select/Deselect hairlines on click.
-      $('.hairline-info').click(function() {
+      $(document).on('click', '.hairline-info', function() {
+        console.log('click');
         var xval = $(this).data('xval');
         var hs = hairlines.get();
         for (var i = 0; i < hs.length; i++) {

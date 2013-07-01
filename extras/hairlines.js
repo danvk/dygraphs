@@ -121,9 +121,6 @@ hairlines.prototype.createHairline = function(props) {
         self.hairlineWasDragged(h, event, ui);
       }
       // TODO(danvk): set cursor here
-    })
-    .on('click', function() {
-      self.moveHairlineToTop(h);
     });
 
   h = $.extend({
@@ -134,12 +131,15 @@ hairlines.prototype.createHairline = function(props) {
   }, props);
 
   var that = this;
-  $infoDiv.on('click', '.hairline-kill-button', function() {
+  $infoDiv.on('click', '.hairline-kill-button', function(e) {
     that.removeHairline(h);
     $(that).triggerHandler('hairlineDeleted', {
       xval: h.xval
     });
     $(that).triggerHandler('hairlinesChanged', {});
+    e.stopPropagation();  // don't want .click() to trigger, below.
+  }).on('click', function() {
+    that.moveHairlineToTop(h);
   });
 
   return h;
@@ -296,7 +296,7 @@ hairlines.prototype.click = function(e) {
 
     that.updateHairlineDivPositions();
     that.updateHairlineInfo();
-    this.updateHairlineStyles();
+    that.updateHairlineStyles();
     that.attachHairlinesToChart_();
 
     $(that).triggerHandler('hairlineCreated', {
