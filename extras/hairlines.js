@@ -21,6 +21,7 @@ Dygraph.Plugins.Hairlines = (function() {
  *   interpolated: bool,  // alternative is to snap to closest
  *   lineDiv: !Element    // vertical hairline div
  *   infoDiv: !Element    // div containing info about the nearest points
+ *   selected: boolean    // whether this hairline is selected
  * } Hairline
  */
 
@@ -76,6 +77,7 @@ hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
   this.moveHairlineToTop(h);
   this.updateHairlineDivPositions();
   this.updateHairlineInfo();
+  this.updateHairlineStyles();
   $(this).triggerHandler('hairlineMoved', {
     oldXVal: oldXVal,
     newXVal: h.xval
@@ -85,7 +87,7 @@ hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
 
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
-hairlines.prototype.createHairline = function(xval) {
+hairlines.prototype.createHairline = function(props) {
   var h;
   var self = this;
 
@@ -121,12 +123,12 @@ hairlines.prototype.createHairline = function(xval) {
       // TODO(danvk): set cursor here
     });
 
-  h = {
-    xval: xval,
+  h = $.extend({
     interpolated: true,
+    selected: false,
     lineDiv: $lineContainerDiv.get(0),
     infoDiv: $infoDiv.get(0)
-  };
+  }, props);
 
   var that = this;
   $infoDiv.on('click', '.hairline-kill-button', function() {
@@ -177,6 +179,13 @@ hairlines.prototype.updateHairlineDivPositions = function() {
 
     var visible = (left >= chartLeft && left <= chartRight);
     $([h.infoDiv, h.lineDiv]).toggle(visible);
+  });
+};
+
+// Sets styles on the hairline (i.e. "selected")
+hairlines.prototype.updateHairlineStyles = function() {
+  $.each(this.hairlines_, function(idx, h) {
+    $([h.infoDiv, h.lineDiv]).toggleClass('selected', h.selected);
   });
 };
 
@@ -253,6 +262,7 @@ hairlines.prototype.didDrawChart = function(e) {
   this.updateHairlineDivPositions();
   this.attachHairlinesToChart_();
   this.updateHairlineInfo();
+  this.updateHairlineStyles();
 };
 
 hairlines.prototype.dataDidUpdate = function(e) {
@@ -279,10 +289,11 @@ hairlines.prototype.click = function(e) {
   var that = this;
   this.addTimer_ = setTimeout(function() {
     that.addTimer_ = null;
-    that.hairlines_.push(that.createHairline(xval));
+    that.hairlines_.push(that.createHairline({xval: xval}));
 
     that.updateHairlineDivPositions();
     that.updateHairlineInfo();
+    this.updateHairlineStyles();
     that.attachHairlinesToChart_();
 
     $(that).triggerHandler('hairlineCreated', {
@@ -323,7 +334,8 @@ hairlines.prototype.destroy = function() {
 hairlines.prototype.createPublicHairline_ = function(h) {
   return {
     xval: h.xval,
-    interpolated: h.interpolated
+    interpolated: h.interpolated,
+    selected: h.selected
   };
 };
 
@@ -358,9 +370,13 @@ hairlines.prototype.set = function(hairlines) {
     if (this.hairlines_.length > i) {
       this.hairlines_[i].xval = h.xval;
       this.hairlines_[i].interpolated = h.interpolated;
+      this.hairlines_[i].selected = h.selected;
     } else {
-      // TODO(danvk): pass in |interpolated| value.
-      this.hairlines_.push(this.createHairline(h.xval));
+      this.hairlines_.push(this.createHairline({
+        xval: h.xval,
+        interpolated: h.interpolated,
+        selected: h.selected
+      }));
       anyCreated = true;
     }
   }
@@ -372,6 +388,7 @@ hairlines.prototype.set = function(hairlines) {
 
   this.updateHairlineDivPositions();
   this.updateHairlineInfo();
+  this.updateHairlineStyles();
   if (anyCreated) {
     this.attachHairlinesToChart_();
   }

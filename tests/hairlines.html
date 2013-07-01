@@ -66,6 +66,15 @@
         cursor: move;
       }
 
+      .dygraph-hairline.selected div {
+        left: 2px !important;
+        width: 2px !important;
+      }
+      .hairline-info.selected {
+        border: 2px solid black;
+        padding: 2px;
+      }
+
       .annotation-info {
         background: white;
         border-width: 1px;
@@ -150,6 +159,7 @@
           var html = Dygraph.Plugins.Legend.generateLegendHTML(
               data.dygraph, data.hairline.xval, data.points, 10);
           $('.hairline-legend', div).html(html);
+          $(div).data({xval: data.hairline.xval});  // see .hover() below.
         }
       });
       annotations = new Dygraph.Plugins.SuperAnnotations({
@@ -253,6 +263,18 @@
       // Set focus on text box when you edit an annotation.
       $(annotations).on('beganEditAnnotation', function(e, a) {
         $('input[type=text]', a.infoDiv).focus();
+      });
+
+      // Select/Deselect hairlines on click.
+      $('.hairline-info').click(function() {
+        var xval = $(this).data('xval');
+        var hs = hairlines.get();
+        for (var i = 0; i < hs.length; i++) {
+          if (hs[i].xval == xval) {
+            hs[i].selected = !hs[i].selected;
+          }
+        }
+        hairlines.set(hs);
       });
 
       // Demonstration of how to use various other event listeners
