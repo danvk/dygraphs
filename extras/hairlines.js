@@ -121,6 +121,9 @@ hairlines.prototype.createHairline = function(props) {
         self.hairlineWasDragged(h, event, ui);
       }
       // TODO(danvk): set cursor here
+    })
+    .on('click', function() {
+      self.moveHairlineToTop(h);
     });
 
   h = $.extend({
