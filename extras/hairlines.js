@@ -210,7 +210,7 @@ hairlines.prototype.updateHairlineInfo = function() {
       that.divFiller_(h.infoDiv, {
         closestRow: row,
         points: selPoints,
-        hairline: h,
+        hairline: that.createPublicHairline_(h),
         dygraph: g
       });
     } else {
@@ -313,6 +313,17 @@ hairlines.prototype.destroy = function() {
  */
 
 /**
+ * @param {!Hairline} h Internal hairline.
+ * @return {!PublicHairline} Restricted public view of the hairline.
+ */
+hairlines.prototype.createPublicHairline_ = function(h) {
+  return {
+    xval: h.xval,
+    interpolated: h.interpolated
+  };
+};
+
+/**
  * @return {!Array.<!PublicHairline>} The current set of hairlines, ordered
  *     from back to front.
  */
@@ -320,10 +331,7 @@ hairlines.prototype.get = function() {
   var result = [];
   for (var i = 0; i < this.hairlines_.length; i++) {
     var h = this.hairlines_[i];
-    result.push({
-      xval: h.xval,
-      interpolated: h.interpolated
-    });
+    result.push(this.createPublicHairline_(h));
   }
   return result;
 };
