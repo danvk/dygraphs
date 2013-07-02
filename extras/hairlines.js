@@ -269,6 +269,8 @@ hairlines.prototype.updateHairlineInfo = function() {
           canvasy: 1,  // TODO(danvk): real coordinate
           xval: h.xval,
           yval: yval,
+          prevRow: prevRow,
+          nextRow: nextRow,
           name: labels[i]
         });
       }
@@ -277,8 +279,6 @@ hairlines.prototype.updateHairlineInfo = function() {
     if (that.divFiller_) {
       that.divFiller_(h.infoDiv, {
         closestRow: row,
-        prevRow: prevRow,
-        nextRow: nextRow,
         points: selPoints,
         hairline: that.createPublicHairline_(h),
         dygraph: g
