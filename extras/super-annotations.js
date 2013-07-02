@@ -146,7 +146,8 @@ annotations.prototype.createAnnotation = function(a) {
       a.isDragging = false;
       self.updateAnnotationDivPositions();
     },
-    'axis': 'y'
+    'axis': 'y',
+    'containment': 'parent'
   });
 
   // TODO(danvk): use 'on' instead of delegate/dblclick
