@@ -192,6 +192,33 @@ hairlines.prototype.updateHairlineStyles = function() {
   });
 };
 
+// Find prevRow and nextRow such that
+// g.getValue(prevRow, 0) <= xval
+// g.getValue(nextRow, 0) >= xval
+// g.getValue({prev,next}Row, col) != null, NaN or undefined
+// and there's no other row such that:
+//   g.getValue(prevRow, 0) < g.getValue(row, 0) < g.getValue(nextRow, 0)
+//   g.getValue(row, col) != null, NaN or undefined.
+// Returns [prevRow, nextRow]. Either can be null (but not both).
+hairlines.findPrevNextRows = function(g, xval, col) {
+  var prevRow = null, nextRow = null;
+  var numRows = g.numRows();
+  for (var row = 0; row < numRows; row++) {
+    var yval = g.getValue(row, col);
+    if (yval === null || yval === undefined || isNaN(yval)) continue;
+
+    var rowXval = g.getValue(row, 0);
+    if (rowXval <= xval) prevRow = row;
+
+    if (rowXval >= xval) {
+      nextRow = row;
+      break;
+    }
+  }
+
+  return [prevRow, nextRow];
+};
+
 // Fills out the info div based on current coordinates.
 hairlines.prototype.updateHairlineInfo = function() {
   var mode = 'closest';
@@ -200,31 +227,58 @@ hairlines.prototype.updateHairlineInfo = function() {
   var xRange = g.xAxisRange();
   var that = this;
   $.each(this.hairlines_, function(idx, h) {
-    var row = null;
-    if (mode == 'closest') {
-      // TODO(danvk): make this dygraphs method public
-      row = g.findClosestRow(g.toDomXCoord(h.xval));
-    } else if (mode == 'interpolate') {
-      // ...
-    }
-
-    // To use generateLegendHTML, we have to synthesize an array of selected
-    // points.
+    // To use generateLegendHTML, we synthesize an array of selected points.
     var selPoints = [];
     var labels = g.getLabels();
-    for (var i = 1; i < g.numColumns(); i++) {
-      selPoints.push({
-        canvasx: 1,
-        canvasy: 1,
-        xval: h.xval,
-        yval: g.getValue(row, i),
-        name: labels[i]
-      });
+    var row, prevRow, nextRow;
+
+    if (!h.interpolated) {
+      // "closest point" mode.
+      // TODO(danvk): make findClosestRow method public
+      row = g.findClosestRow(g.toDomXCoord(h.xval));
+      for (var i = 1; i < g.numColumns(); i++) {
+        selPoints.push({
+          canvasx: 1,  // TODO(danvk): real coordinate
+          canvasy: 1,  // TODO(danvk): real coordinate
+          xval: h.xval,
+          yval: g.getValue(row, i),
+          name: labels[i]
+        });
+      }
+    } else {
+      // "interpolated" mode.
+      for (var i = 1; i < g.numColumns(); i++) {
+        var prevNextRow = hairlines.findPrevNextRows(g, h.xval, i);
+        prevRow = prevNextRow[0], nextRow = prevNextRow[1];
+
+        // For x-values outside the domain, interpolate "between" the extreme
+        // point and itself.
+        if (prevRow === null) prevRow = nextRow;
+        if (nextRow === null) nextRow = prevRow;
+
+        // linear interpolation
+        var prevX = g.getValue(prevRow, 0),
+            nextX = g.getValue(nextRow, 0),
+            prevY = g.getValue(prevRow, i),
+            nextY = g.getValue(nextRow, i),
+            frac = prevRow == nextRow ? 0 : (h.xval - prevX) / (nextX - prevX),
+            yval = frac * nextY + (1 - frac) * prevY;
+
+        selPoints.push({
+          canvasx: 1,  // TODO(danvk): real coordinate
+          canvasy: 1,  // TODO(danvk): real coordinate
+          xval: h.xval,
+          yval: yval,
+          name: labels[i]
+        });
+      }
     }
 
     if (that.divFiller_) {
       that.divFiller_(h.infoDiv, {
         closestRow: row,
+        prevRow: prevRow,
+        nextRow: nextRow,
         points: selPoints,
         hairline: that.createPublicHairline_(h),
         dygraph: g
