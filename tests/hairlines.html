@@ -83,6 +83,11 @@
         display: table;  /* shrink to fit */
         box-shadow: 0 0 4px gray;
         cursor: move;
+
+        min-width: 120px;  /* prevents squishing at the right edge of the chart */
+      }
+      .annotation-info.editable {
+        min-width: 180px;  /* prevents squishing at the right edge of the chart */
       }
 
       .dygraph-annotation-line {

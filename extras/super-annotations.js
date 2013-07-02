@@ -97,6 +97,7 @@ annotations.prototype.makeAnnotationEditable = function(a) {
   a.editable = true;
   var editableTemplateDiv = $('#annotation-editable-template').get(0);
   a.infoDiv.innerHTML = this.getTemplateHTML(editableTemplateDiv, a);
+  $(a.infoDiv).toggleClass('editable', !!a.editable);
   $(this).triggerHandler('beganEditAnnotation', a);
 };
 
@@ -284,6 +285,7 @@ annotations.prototype.updateAnnotationInfo = function() {
   $.each(this.annotations_, function(idx, a) {
     // We should never update an editable div -- doing so may kill unsaved
     // edits to an annotation.
+    $(a.infoDiv).toggleClass('editable', !!a.editable);
     if (a.editable) return;
     a.infoDiv.innerHTML = that.getTemplateHTML(templateDiv, a);
   });
