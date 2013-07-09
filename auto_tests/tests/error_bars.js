@@ -135,16 +135,17 @@ errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=392
 errorBarsTestCase.prototype.testRollingAveragePreservesNaNs = function() {
   var graph = document.getElementById("graph");
-  var data = [
-              [1, [null, null], [3,1]],
-              [2, [2, 1], [null, null]],
-              [3, [null, null], [5,1]],
-              [4, [4, 0.5], [null, null]],
-              [5, [null, null], [7,1]],
-              [6, [NaN, NaN], [null, null]],
-              [8, [8, 1], [null, null]],
-              [10, [10, 1], [null, null]]
-             ];
+  var data = 
+    [
+      [1, [null, null], [3,1]],
+      [2, [2, 1], [null, null]],
+      [3, [null, null], [5,1]],
+      [4, [4, 0.5], [null, null]],
+      [5, [null, null], [7,1]],
+      [6, [NaN, NaN], [null, null]],
+      [8, [8, 1], [null, null]],
+      [10, [10, 1], [null, null]]
+    ];
   var g = new Dygraph(graph, data,
         {
           labels: ['x', 'A', 'B' ],
