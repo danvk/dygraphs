@@ -2149,6 +2149,32 @@ Dygraph.prototype.addXTicks_ = function() {
 
 /**
  * @private
+ * Returns the correct handler ID for the currently set options. 
+ * The actual handler may then be retrieved using the
+ * Dygraph.DataHandlers.getHandler() method.
+ */
+Dygraph.prototype.getHandlerId_ = function() {
+  var handlerId;
+  if (this.attr_("dataHandlerId")) {
+    handlerId =  this.attr_("dataHandlerId");
+  } else if (this.fractions_){
+    if (this.attr_("errorBars")) {
+      handlerId = "bars-fractions";
+    } else {
+      handlerId = "default-fractions";
+    }
+  } else if (this.attr_("customBars")) {
+    handlerId = "bars-custom";
+  } else if (this.attr_("errorBars")) {
+    handlerId = "bars-error";
+  } else {
+    handlerId = "default";
+  }
+  return handlerId;
+};
+
+/**
+ * @private
  * This function is called once when the chart's data is changed or the options
  * dictionary is updated. It is _not_ called when the user pans or zooms. The
  * idea is that values derived from the chart's data can be computed here,
@@ -2158,24 +2184,8 @@ Dygraph.prototype.addXTicks_ = function() {
 Dygraph.prototype.predraw_ = function() {
   var start = new Date();
   
-  // Determine the correct dataHandler
-  var HandlerConstructor;
-  if (this.attr_("dataHandler")) {
-    HandlerConstructor =  Dygraph.DataHandlers.getHandler(this.attr_("dataHandler"));
-  } else if (this.fractions_){
-    if (this.attr_("errorBars")) {
-      HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-fractions");
-    } else {
-      HandlerConstructor = Dygraph.DataHandlers.getHandler("default-fractions");
-    }
-  } else if (this.attr_("customBars")) {
-    HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-custom");
-  } else if (this.attr_("errorBars")) {
-    HandlerConstructor = Dygraph.DataHandlers.getHandler("bars-error");
-  } else {
-    HandlerConstructor = Dygraph.DataHandlers.getHandler("default");
-  }
-  this.dataHandler_ = new HandlerConstructor();
+  // Create the correct dataHandler
+  this.dataHandler_ = new (Dygraph.DataHandlers.getHandler(this.getHandlerId_()))();
 
   this.layout_.computePlotArea();
 
@@ -2368,32 +2378,33 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var points = [];
   var cumulativeYval = [];  // For stacked series.
   var extremes = {};  // series name -> [low, high]
-  var i, j, k;
+  var seriesIdx, sampleIdx;
+  var firstIdx, lastIdx;
   
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
   var num_series = rolledSeries.length - 1;
   var series;
-  for (i = num_series; i >= 1; i--) {
-    if (!this.visibility()[i - 1]) continue;
+  for (seriesIdx = num_series; seriesIdx >= 1; seriesIdx--) {
+    if (!this.visibility()[seriesIdx - 1]) continue;
 
     // Prune down to the desired range, if necessary (for zooming)
     // Because there can be lines going to points outside of the visible area,
     // we actually prune to visible points, plus one on either side.
     if (dateWindow) {
-      series = rolledSeries[i];
+      series = rolledSeries[seriesIdx];
       var low = dateWindow[0];
       var high = dateWindow[1];
 
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
-      var firstIdx = null, lastIdx = null;
-      for (k = 0; k < series.length; k++) {
-        if (series[k][0] >= low && firstIdx === null) {
-          firstIdx = k;
+      firstIdx = null, lastIdx = null;
+      for (sampleIdx = 0; sampleIdx < series.length; sampleIdx++) {
+        if (series[sampleIdx][0] >= low && firstIdx === null) {
+          firstIdx = sampleIdx;
         }
-        if (series[k][0] <= high) {
-          lastIdx = k;
+        if (series[sampleIdx][0] <= high) {
+          lastIdx = sampleIdx;
         }
       }
 
@@ -2421,21 +2432,21 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         lastIdx = correctedLastIdx;
       }
       
-      boundaryIds[i-1] = [firstIdx, lastIdx];
+      boundaryIds[seriesIdx-1] = [firstIdx, lastIdx];
       
       // .slice's end is exclusive, we want to include lastIdx.
       series = series.slice(firstIdx, lastIdx + 1);
     } else {
-      series = rolledSeries[i];
-      boundaryIds[i-1] = [0, series.length-1];
+      series = rolledSeries[seriesIdx];
+      boundaryIds[seriesIdx-1] = [0, series.length-1];
     }
 
-    var seriesName = this.attr_("labels")[i];
+    var seriesName = this.attr_("labels")[seriesIdx];
     var seriesExtremes = this.dataHandler_.getExtremeYValues(series, 
         dateWindow, this.attr_("stepPlot",seriesName));
 
     var seriesPoints = this.dataHandler_.seriesToPoints(series, 
-        seriesName, boundaryIds[i-1][0]);
+        seriesName, boundaryIds[seriesIdx-1][0]);
 
     if (this.attr_("stackedGraph")) {
       Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
@@ -2443,7 +2454,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     extremes[seriesName] = seriesExtremes;
-    points[i] = seriesPoints;
+    points[seriesIdx] = seriesPoints;
   }
 
   return { points: points, extremes: extremes, boundaryIds: boundaryIds };
