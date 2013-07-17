@@ -3803,15 +3803,6 @@ Dygraph.prototype.indexFromSetName = function(name) {
 };
 
 /**
- * Get the internal dataset index given its name. These are numbered starting from 0,
- * and only count visible sets.
- * @private
- */
-Dygraph.prototype.datasetIndexFromSetName_ = function(name) {
-  return this.datasetIndex_[this.indexFromSetName(name)];
-};
-
-/**
  * @private
  * Adds a default style for the annotation CSS classes to the document. This is
  * only executed when annotations are actually used. It is designed to only be

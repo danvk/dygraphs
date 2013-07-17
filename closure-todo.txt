@@ -13,7 +13,6 @@ Core:
 - dygraph-interaction-model.js
 - dygraph-layout.js
 x dygraph-options.js
-- dygraph-range-selector.js
 - dygraph.js
 x dygraph-gviz.js
 x dygraph-tickers.js
@@ -29,6 +28,7 @@ Plugins:
 - plugins/chart-labels.js
 - plugins/grid.js
 - plugins/legend.js
+- plugins/range-selector.js
 
 Here's a command that can be used to build dygraphs using the closure
 compiler:
