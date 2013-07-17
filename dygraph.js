@@ -2282,6 +2282,7 @@ Dygraph.PointType = undefined;
 /**
  * Converts a series to a Point array.
  *
+ * @private
  * @param {Array.<Array.<(?number|Array<?number>)>} series Array where
  *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
  * @param {boolean} bars True if error bars or custom bars are being drawn.
@@ -2333,6 +2334,7 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
  *     to reflect the stacked values.
  * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
  *     'none'.
+ * @private
  */
 Dygraph.stackPoints_ = function(
     points, cumulativeYval, seriesExtremes, fillMethod) {
