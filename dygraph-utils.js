@@ -53,6 +53,7 @@ Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
  * @private
  */
 Dygraph.log = function(severity, message) {
+  // <REMOVE_FOR_COMBINED>
   var st;
   if (typeof(printStackTrace) != 'undefined') {
     try {
@@ -74,6 +75,7 @@ Dygraph.log = function(severity, message) {
       // Oh well, it was worth a shot!
     }
   }
+  // </REMOVE_FOR_COMBINED>
 
   if (typeof(window.console) != 'undefined') {
     // In older versions of Firefox, only console.log is defined.
@@ -102,9 +104,11 @@ Dygraph.log = function(severity, message) {
     }
   }
 
+  // <REMOVE_FOR_COMBINED>
   if (Dygraph.LOG_STACK_TRACES) {
     window.console.log(st.join('\n'));
   }
+  // </REMOVE_FOR_COMBINED>
 };
 
 /**
