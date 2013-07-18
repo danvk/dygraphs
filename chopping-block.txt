@@ -6,3 +6,25 @@ Things to do to make dygraph-combine.js smaller:
 - (2645) Simplify or eliminate dygraph-interaction-model.js.
 - (1983) Remove stacktrace.js from dygraph-combined.js
 - (????) Switch to Closure Compiler, which is more aggressive about dead code removal.
+- (????) Unify Dygraph.prototype.log vs. Dygraph.log
+- (????) Combined findPos{X,Y}, page{X,Y}
+- (????) merge update, updateDeep, clone
+- (????) can we kill the iterator stuff?
+- (????) move kberg's polygon stuff into a plugin
+- (????) unify/simplify date processing code (dateString_, hmsString_, ...)
+
+To measure size:
+$ ./generate-combined.sh cat_minified | wc -c
+
+To test correctness:
+$ make test-combined
+
+ 135782 Initial
+ 130557 removed stacktrace.js
+ 130142 removed stacktrace logic from combined
+ 129932 remove unused Dygraph.compareArrays_
+ 125996 remove strftime-min.js
+
+
+TODO:
+- remove all references to strftime-min.js

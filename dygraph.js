@@ -211,6 +211,12 @@ Dygraph.dateString_ = function(date) {
 };
 
 /**
+ * @type {!Array.<string>}
+ * @private
+ */
+Dygraph.shortMonthNames_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/**
  * Convert a JS date to a string appropriate to display on an axis that
  * is displaying values at the stated granularity.
  * @param {Date} date The date to format
@@ -220,13 +226,17 @@ Dygraph.dateString_ = function(date) {
  */
 Dygraph.dateAxisFormatter = function(date, granularity) {
   if (granularity >= Dygraph.DECADAL) {
-    return date.strftime('%Y');
+    // e.g. '2013' (%Y)
+    return '' + date.getFullYear();
   } else if (granularity >= Dygraph.MONTHLY) {
-    return date.strftime('%b %y');
+    // e.g. 'Jan 13' (%b %y)
+    return Dygraph.shortMonthNames_[date.getMonth()] + ' ' + date.getFullYear();
   } else {
     var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
     if (frac === 0 || granularity >= Dygraph.DAILY) {
-      return new Date(date.getTime() + 3600*1000).strftime('%d%b');
+      // e.g. '21Jan' (%d%b)
+      var nd = new Date(date.getTime() + 3600*1000);
+      return Dygraph.zeropad(nd.getDate()) + Dygraph.shortMonthNames_[nd.getMonth()];
     } else {
       return Dygraph.hmsString_(date.getTime());
     }
