@@ -1,3 +1,5 @@
+'use strict';
+
 var DygraphsLocalTester = function() {
   this.tc = null; // Selected test case
   this.name = null; 
@@ -76,12 +78,12 @@ DygraphsLocalTester.prototype.createAnchor = function(href, id, text) {
   var a = document.createElement('a');
   a.href = href;
   a.id = id;
-  a.innerText = text;
+  a.innerHTML = text;
   return a;
 }
 
 DygraphsLocalTester.prototype.createResultsDiv = function(summary, durationms) {
-  div = document.createElement('div');
+  var div = document.createElement('div');
   div.id='results';
 
   var body = document.getElementsByTagName('body')[0];
@@ -147,7 +149,7 @@ DygraphsLocalTester.prototype.postResults = function(summary, durationms) {
 
     var tdResult = document.createElement('td');
     tdResult.setAttribute('class', 'outcome');
-    tdResult.innerText = result.result ? 'pass' : 'fail';
+    tdResult.innerHTML = result.result ? 'pass' : 'fail';
     tr.appendChild(tdResult);
 
     var tdName = document.createElement('td');
@@ -159,7 +161,7 @@ DygraphsLocalTester.prototype.postResults = function(summary, durationms) {
     tr.appendChild(tdName);
 
     var tdDuration = document.createElement('td');
-    tdDuration.innerText = result.duration + ' ms';
+    tdDuration.innerHTML = result.duration + ' ms';
     tr.appendChild(tdDuration);
 
     if (result.e) {
