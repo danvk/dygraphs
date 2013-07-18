@@ -1,0 +1,8 @@
+The dygraphs JS binary has ballooned by about 3x over the past three years.
+
+Things to do to make dygraph-combine.js smaller:
+- (1431) Remove srtftime, which is only minimally used.
+- (4191) Move range selector out of core
+- (2645) Simplify or eliminate dygraph-interaction-model.js.
+- (1983) Remove stacktrace.js from dygraph-combined.js
+- (????) Switch to Closure Compiler, which is more aggressive about dead code removal.
