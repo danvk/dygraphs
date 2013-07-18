@@ -36,7 +36,7 @@ Copyright () {
   echo '/*! @license Copyright 2011 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
 }
 
-CatCompressed () {
+CatMinified () {
   Copyright
   CatSources \
   | java -jar yuicompressor-2.4.2.jar --type js
@@ -51,11 +51,11 @@ cat)
   Copyright
   CatSources
   ;;
-compress*|cat_compress*)
-  CatCompressed
+minify*|cat_minif*)
+  CatMinified
   ;;
 update)
-  CatCompressed > dygraph-combined.js
+  CatMinified > dygraph-combined.js
   chmod a+r dygraph-combined.js
   ;;
 *)
