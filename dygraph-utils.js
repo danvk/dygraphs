@@ -1024,30 +1024,6 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
 };
 
 /**
- * Compares two arrays to see if they are equal. If either parameter is not an
- * array it will return false. Does a shallow compare
- * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
- * @param {!Array.<T>} array1 first array
- * @param {!Array.<T>} array2 second array
- * @return {boolean} True if both parameters are arrays, and contents are equal.
- * @template T
- */
-Dygraph.compareArrays = function(array1, array2) {
-  if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
-    return false;
-  }
-  if (array1.length !== array2.length) {
-    return false;
-  }
-  for (var i = 0; i < array1.length; i++) {
-    if (array1[i] !== array2[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-/**
  * @param {!CanvasRenderingContext2D} ctx the canvas context
  * @param {number} sides the number of sides in the shape.
  * @param {number} radius the radius of the image.
