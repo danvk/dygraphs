@@ -1,17 +1,19 @@
 The dygraphs JS binary has ballooned by about 3x over the past three years.
 
 Things to do to make dygraph-combine.js smaller:
-- (1431) Remove srtftime, which is only minimally used.
+- (3942) Remove rgbcolor.js
 - (4191) Move range selector out of core
 - (2645) Simplify or eliminate dygraph-interaction-model.js.
-- (1983) Remove stacktrace.js from dygraph-combined.js
+- (1321) move kberg's polygon stuff into a plugin
+- (1322) reduce duplication of names in Dygraph.isPixelChangingOptionList
 - (????) Switch to Closure Compiler, which is more aggressive about dead code removal.
 - (????) Unify Dygraph.prototype.log vs. Dygraph.log
 - (????) Combined findPos{X,Y}, page{X,Y}
 - (????) merge update, updateDeep, clone
 - (????) can we kill the iterator stuff?
-- (????) move kberg's polygon stuff into a plugin
 - (????) unify/simplify date processing code (dateString_, hmsString_, ...)
+x (1983) Remove stacktrace.js from dygraph-combined.js
+x (1431) Remove srtftime, which is only minimally used.
 
 To measure size:
 $ ./generate-combined.sh cat_minified | wc -c
