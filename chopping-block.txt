@@ -1,7 +1,6 @@
 The dygraphs JS binary has ballooned by about 3x over the past three years.
 
 Things to do to make dygraph-combine.js smaller:
-- (3942) Remove rgbcolor.js
 - (4191) Move range selector out of core
 - (2645) Simplify or eliminate dygraph-interaction-model.js.
 - (1321) move kberg's polygon stuff into a plugin
@@ -12,6 +11,9 @@ Things to do to make dygraph-combine.js smaller:
 - (????) merge update, updateDeep, clone
 - (????) can we kill the iterator stuff?
 - (????) unify/simplify date processing code (dateString_, hmsString_, ...)
+- (????) update YUI compressor (maybe it's gotten better?)
+          -> ideally it would mangle internal method names & constants.
+x (3942) Remove rgbcolor.js
 x (1983) Remove stacktrace.js from dygraph-combined.js
 x (1431) Remove srtftime, which is only minimally used.
 
@@ -26,7 +28,13 @@ $ make test-combined
  130142 removed stacktrace logic from combined
  129932 remove unused Dygraph.compareArrays_
  125996 remove strftime-min.js
+ 122403 replace rgbcolor.js with a DOM trick.
+ 122185 consolidate findPos{X,Y}
+ 120905 move custom circles into extras/circles.js
 
 
 TODO:
 - remove all references to strftime-min.js
+- check that window.getComputedStyle() returns 'rgb()' cross-browser.
+    -> need to use document.defaultView.getComputedStyle for old FF
+    -> need to use element.currentStyle[property] for old IE
