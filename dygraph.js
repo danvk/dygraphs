@@ -2280,6 +2280,7 @@ Dygraph.PointType = undefined;
  *     to reflect the stacked values.
  * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
  *     'none'.
+ * @private
  */
 Dygraph.stackPoints_ = function(
     points, cumulativeYval, seriesExtremes, fillMethod) {
@@ -3546,15 +3547,6 @@ Dygraph.prototype.getLabels = function() {
  */
 Dygraph.prototype.indexFromSetName = function(name) {
   return this.setIndexByName_[name];
-};
-
-/**
- * Get the internal dataset index given its name. These are numbered starting from 0,
- * and only count visible sets.
- * @private
- */
-Dygraph.prototype.datasetIndexFromSetName_ = function(name) {
-  return this.datasetIndex_[this.indexFromSetName(name)];
 };
 
 /**

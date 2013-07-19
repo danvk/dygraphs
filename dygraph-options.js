@@ -370,15 +370,6 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
-/* Are we using this? */
-/**
- * Return the index of the specified series.
- * @param {string} series the series name.
- */
-DygraphOptions.prototype.indexOfSeries = function(series) {
-  return this.series_[series].idx;
-};
-
 return DygraphOptions;
 
 })();
