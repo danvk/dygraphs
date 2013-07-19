@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Exported Symbols test</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <p>This page lists the set of symbols that dygraphs exports.</p>
+    <ol id="list">
+    </ol>
+
+    <script type="text/javascript">
+      var windowProps = {};
+      var newProps = [];
+      var k, i, html;
+      for (k in window) {
+        windowProps[k] = true;
+      }
+    </script>
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript">
+      for (k in window) {
+        if (!windowProps.hasOwnProperty(k)) {
+          newProps.push(k);
+        }
+      }
+      newProps.sort();
+      html = '';
+      for (i = 0; i < newProps.length; i++) {
+        html += '<li>' + newProps[i] + '</li>\n';
+      }
+      document.getElementById('list').innerHTML = html;
+    </script>
+  </body>
+</html>
