@@ -486,6 +486,30 @@ Dygraph.hmsString_ = function(date) {
 };
 
 /**
+ * Convert a JS date (millis since epoch) to YYYY/MM/DD
+ * @param {number} date The JavaScript date (ms since epoch)
+ * @return {string} A date of the form "YYYY/MM/DD"
+ * @private
+ */
+Dygraph.dateString_ = function(date) {
+  var zeropad = Dygraph.zeropad;
+  var d = new Date(date);
+
+  // Get the year:
+  var year = "" + d.getFullYear();
+  // Get a 0 padded month string
+  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  // Get a 0 padded day string
+  var day = zeropad(d.getDate());
+
+  var ret = "";
+  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  if (frac) ret = " " + Dygraph.hmsString_(date);
+
+  return year + "/" + month + "/" + day + ret;
+};
+
+/**
  * Round a number to the specified number of digits past the decimal point.
  * @param {number} num The number to round
  * @param {number} places The number of decimals to which to round
