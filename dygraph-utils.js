@@ -303,76 +303,46 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
 // ... and modifications to support scrolling divs.
 
 /**
- * Find the x-coordinate of the supplied object relative to the left side
- * of the page.
+ * Find the coordinates of an object relative to the top left of the page.
  * TODO(danvk): change obj type from Node -&gt; !Node
  * @param {Node} obj
- * @return {number}
+ * @return {{x:number,y:number}}
  * @private
  */
-Dygraph.findPosX = function(obj) {
-  var curleft = 0;
-  if(obj.offsetParent) {
+Dygraph.findPos = function(obj) {
+  var curleft = 0, curtop = 0;
+  if (obj.offsetParent) {
     var copyObj = obj;
-    while(1) {
+    while (1) {
       // NOTE: the if statement here is for IE8.
-      var borderLeft = "0";
+      var borderLeft = "0", borderTop = "0";
       if (window.getComputedStyle) {
-        borderLeft = window.getComputedStyle(copyObj, null).borderLeft || "0";
+        var computedStyle = window.getComputedStyle(copyObj, null);
+        borderLeft = computedStyle.borderLeft || "0";
+        borderTop = computedStyle.borderTop || "0";
       }
       curleft += parseInt(borderLeft, 10) ;
-      curleft += copyObj.offsetLeft;
-      if(!copyObj.offsetParent) {
-        break;
-      }
-      copyObj = copyObj.offsetParent;
-    }
-  } else if(obj.x) {
-    curleft += obj.x;
-  }
-  // This handles the case where the object is inside a scrolled div.
-  while(obj && obj != document.body) {
-    curleft -= obj.scrollLeft;
-    obj = obj.parentNode;
-  }
-  return curleft;
-};
-
-/**
- * Find the y-coordinate of the supplied object relative to the top of the
- * page.
- * TODO(danvk): change obj type from Node -&gt; !Node
- * TODO(danvk): consolidate with findPosX and return an {x, y} object.
- * @param {Node} obj
- * @return {number}
- * @private
- */
-Dygraph.findPosY = function(obj) {
-  var curtop = 0;
-  if(obj.offsetParent) {
-    var copyObj = obj;
-    while(1) {
-      // NOTE: the if statement here is for IE8.
-      var borderTop = "0";
-      if (window.getComputedStyle) {
-        borderTop = window.getComputedStyle(copyObj, null).borderTop || "0";
-      }
       curtop += parseInt(borderTop, 10) ;
+      curleft += copyObj.offsetLeft;
       curtop += copyObj.offsetTop;
-      if(!copyObj.offsetParent) {
+      if (!copyObj.offsetParent) {
         break;
       }
       copyObj = copyObj.offsetParent;
     }
-  } else if(obj.y) {
-    curtop += obj.y;
+  } else {
+    // TODO(danvk): why would obj ever have these properties?
+    if (obj.x) curleft += obj.x;
+    if (obj.y) curtop += obj.y;
   }
+
   // This handles the case where the object is inside a scrolled div.
-  while(obj && obj != document.body) {
+  while (obj && obj != document.body) {
+    curleft -= obj.scrollLeft;
     curtop -= obj.scrollTop;
     obj = obj.parentNode;
   }
-  return curtop;
+  return {x: curleft, y: curtop};
 };
 
 /**
@@ -1170,8 +1140,9 @@ Dygraph.IFrameTarp.prototype.cover = function() {
   var iframes = document.getElementsByTagName("iframe");
   for (var i = 0; i < iframes.length; i++) {
     var iframe = iframes[i];
-    var x = Dygraph.findPosX(iframe),
-        y = Dygraph.findPosY(iframe),
+    var pos = Dygraph.findPos(iframe),
+        x = pos.x,
+        y = pos.y,
         width = iframe.offsetWidth,
         height = iframe.offsetHeight;
 
