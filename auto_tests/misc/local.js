@@ -34,7 +34,6 @@ DygraphsLocalTester.prototype.overrideWarn = function() {
     }
     throw 'Warnings not permitted: ' + msg;
   }
-  Dygraph.prototype.warn = Dygraph.warn;
 };
 
 DygraphsLocalTester.prototype.processVariables = function() {

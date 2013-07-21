@@ -88,8 +88,8 @@ legend.prototype.activate = function(g) {
       try {
         div.style[name] = messagestyle[name];
       } catch (e) {
-        this.warn("You are using unsupported css properties for your " +
-            "browser in labelsDivStyles");
+        Dygraph.warn("You are using unsupported css properties for your " +
+                     "browser in labelsDivStyles");
       }
     }
 

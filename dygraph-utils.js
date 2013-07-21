@@ -11,12 +11,13 @@
  * search) and generic DOM-manipulation functions.
  */
 
+(function() {
+
 /*jshint globalstrict: true */
 /*global Dygraph:false, G_vmlCanvasManager:false, Node:false, printStackTrace: false */
 "use strict";
 
-Dygraph.LOG_SCALE = 10;
-Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
+Dygraph.LN_TEN = Math.log(10);
 
 /**
  * @private
@@ -28,10 +29,10 @@ Dygraph.log10 = function(x) {
 };
 
 // Various logging levels.
-Dygraph.DEBUG = 1;
-Dygraph.INFO = 2;
-Dygraph.WARNING = 3;
-Dygraph.ERROR = 3;
+var DEBUG = 1;
+var INFO = 2;
+var WARNING = 3;
+var ERROR = 3;
 
 // Set this to log stack traces on warnings, etc.
 // This requires stacktrace.js, which is up to you to provide.
@@ -48,7 +49,7 @@ Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
 
 /**
  * Log an error on the JS console at the given severity.
- * @param {number} severity One of Dygraph.{DEBUG,INFO,WARNING,ERROR}
+ * @param {number} severity One of {DEBUG,INFO,WARNING,ERROR}
  * @param {string} message The message to log.
  * @private
  */
@@ -89,16 +90,16 @@ Dygraph.log = function(severity, message) {
     };
 
     switch (severity) {
-      case Dygraph.DEBUG:
+      case DEBUG:
         log(console, console.debug, 'dygraphs: ' + message);
         break;
-      case Dygraph.INFO:
+      case INFO:
         log(console, console.info, 'dygraphs: ' + message);
         break;
-      case Dygraph.WARNING:
+      case WARNING:
         log(console, console.warn, 'dygraphs: ' + message);
         break;
-      case Dygraph.ERROR:
+      case ERROR:
         log(console, console.error, 'dygraphs: ' + message);
         break;
     }
@@ -116,38 +117,23 @@ Dygraph.log = function(severity, message) {
  * @private
  */
 Dygraph.info = function(message) {
-  Dygraph.log(Dygraph.INFO, message);
+  Dygraph.log(INFO, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.info = Dygraph.info;
 
 /**
  * @param {string} message
  * @private
  */
 Dygraph.warn = function(message) {
-  Dygraph.log(Dygraph.WARNING, message);
+  Dygraph.log(WARNING, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.warn = Dygraph.warn;
 
 /**
  * @param {string} message
  */
 Dygraph.error = function(message) {
-  Dygraph.log(Dygraph.ERROR, message);
+  Dygraph.log(ERROR, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.error = Dygraph.error;
 
 /**
  * Return the 2d context for a dygraph canvas.
@@ -1203,3 +1189,5 @@ Dygraph.toRGB_ = function(color_str) {
     b: parseInt(bits[3], 10)
   };
 };
+
+})();
