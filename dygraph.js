@@ -355,6 +355,9 @@ Dygraph.DEFAULT_ATTRS = {
   }
 };
 
+// Utility functions
+var parseFloat_;
+
 // Directions for panning and zooming. Use bit operations when combined
 // values are possible.
 var HORIZONTAL = 1;
@@ -2285,11 +2288,11 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
   for (var i = 0; i < series.length; ++i) {
     var item = series[i];
     var yraw = bars ? item[1][0] : item[1];
-    var yval = yraw === null ? null : DygraphLayout.parseFloat_(yraw);
+    var yval = yraw === null ? null : parseFloat_(yraw);
     var point = {
       x: NaN,
       y: NaN,
-      xval: DygraphLayout.parseFloat_(item[0]),
+      xval: parseFloat_(item[0]),
       yval: yval,
       name: setName,  // TODO(danvk): is this really necessary?
       idx: i + boundaryIdStart
@@ -2298,8 +2301,8 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
     if (bars) {
       point.y_top = NaN;
       point.y_bottom = NaN;
-      point.yval_minus = DygraphLayout.parseFloat_(item[1][1]);
-      point.yval_plus = DygraphLayout.parseFloat_(item[1][2]);
+      point.yval_minus = parseFloat_(item[1][1]);
+      point.yval_plus = parseFloat_(item[1][2]);
     }
     points.push(point);
   }
@@ -3119,7 +3122,7 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
  */
 
 // Parse the x as a float or return null if it's not a number.
-Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
+var parseFloat_ = function(x, opt_line_no, opt_line) {
   var val = parseFloat(x);
   if (!isNaN(val)) return val;
 
@@ -3210,8 +3213,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
                         "form.");
           fields[j] = [0, 0];
         } else {
-          fields[j] = [this.parseFloat_(vals[0], i, line),
-                       this.parseFloat_(vals[1], i, line)];
+          fields[j] = [parseFloat_(vals[0], i, line),
+                       parseFloat_(vals[1], i, line)];
         }
       }
     } else if (this.attr_("errorBars")) {
@@ -3222,8 +3225,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
                       'values (' + (inFields.length - 1) + "): '" + line + "'");
       }
       for (j = 1; j < inFields.length; j += 2) {
-        fields[(j + 1) / 2] = [this.parseFloat_(inFields[j], i, line),
-                               this.parseFloat_(inFields[j + 1], i, line)];
+        fields[(j + 1) / 2] = [parseFloat_(inFields[j], i, line),
+                               parseFloat_(inFields[j + 1], i, line)];
       }
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
@@ -3234,9 +3237,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
         } else {
           vals = val.split(";");
           if (vals.length == 3) {
-            fields[j] = [ this.parseFloat_(vals[0], i, line),
-                          this.parseFloat_(vals[1], i, line),
-                          this.parseFloat_(vals[2], i, line) ];
+            fields[j] = [ parseFloat_(vals[0], i, line),
+                          parseFloat_(vals[1], i, line),
+                          parseFloat_(vals[2], i, line) ];
           } else {
             Dygraph.warn('When using customBars, values must be either blank ' +
                       'or "low;center;high" tuples (got "' + val +
@@ -3247,7 +3250,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else {
       // Values are just numbers
       for (j = 1; j < inFields.length; j++) {
-        fields[j] = this.parseFloat_(inFields[j], i, line);
+        fields[j] = parseFloat_(inFields[j], i, line);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
