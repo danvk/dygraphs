@@ -36,7 +36,8 @@ Copyright () {
 CatMinified () {
   Copyright
   CatSources \
-  | java -jar yuicompressor-2.4.2.jar --type js
+  | uglifyjs - -c -m
+  # | java -jar yuicompressor-2.4.2.jar --type js
 }
 
 ACTION="${1:-update}"

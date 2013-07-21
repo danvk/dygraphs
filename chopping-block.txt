@@ -31,6 +31,7 @@ $ make test-combined
  122403 replace rgbcolor.js with a DOM trick.
  122185 consolidate findPos{X,Y}
  120905 move custom circles into extras/circles.js
+ 115027 switch to uglifyjs
 
 
 TODO:
