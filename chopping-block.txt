@@ -3,11 +3,8 @@ The dygraphs JS binary has ballooned by about 3x over the past three years.
 Things to do to make dygraph-combine.js smaller:
 - (4191) Move range selector out of core
 - (2645) Simplify or eliminate dygraph-interaction-model.js.
-- (1321) move kberg's polygon stuff into a plugin
 - (1322) reduce duplication of names in Dygraph.isPixelChangingOptionList
 - (????) Switch to Closure Compiler, which is more aggressive about dead code removal.
-- (????) Unify Dygraph.prototype.log vs. Dygraph.log
-- (????) Combined findPos{X,Y}, page{X,Y}
 - (????) merge update, updateDeep, clone
 - (????) can we kill the iterator stuff?
 - (????) unify/simplify date processing code (dateString_, hmsString_, ...)
@@ -16,7 +13,10 @@ Things to do to make dygraph-combine.js smaller:
 x (3942) Remove rgbcolor.js
 x (1983) Remove stacktrace.js from dygraph-combined.js
 x (1431) Remove srtftime, which is only minimally used.
-- (????) Move symbols which shouldn't be exported out of Dygraph namespace.
+x (????) Move symbols which shouldn't be exported out of Dygraph namespace.
+x (????) Unify Dygraph.prototype.log vs. Dygraph.log
+x (????) Combined findPos{X,Y}, page{X,Y}
+x (1321) move kberg's polygon stuff into a plugin
 
 To measure size:
 $ ./generate-combined.sh cat_minified | wc -c
@@ -34,6 +34,9 @@ $ make test-combined
  120905 move custom circles into extras/circles.js
  115027 switch to uglifyjs
  113418 don't export ticker enum symbols.
+ 111327 more private symbols, consolidate on static log functions.
+ 110282 reduce exported symbols in dygraph-canvas.js
+ 109897 remove parseFloat_ from dygraph-layout.js
 
 
 TODO:
@@ -41,3 +44,4 @@ TODO:
 - check that window.getComputedStyle() returns 'rgb()' cross-browser.
     -> need to use document.defaultView.getComputedStyle for old FF
     -> need to use element.currentStyle[property] for old IE
+- remove "jshint:globalstrict" where possible.
