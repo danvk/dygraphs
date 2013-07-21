@@ -3747,6 +3747,48 @@ Dygraph.prototype.size = function() {
 };
 
 /**
+ * Adds a default style for the annotation CSS classes to the document. This is
+ * only executed when annotations are actually used. It is designed to only be
+ * called once -- all calls after the first will return immediately.
+ */
+var addAnnotationRule_ = function() {
+  // TODO(danvk): move this function into plugins/annotations.js?
+  if (addedAnnotationCSS) return;
+
+  var rule = "border: 1px solid black; " +
+             "background-color: white; " +
+             "text-align: center;";
+
+  var styleSheetElement = document.createElement("style");
+  styleSheetElement.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
+
+  // Find the first style sheet that we can access.
+  // We may not add a rule to a style sheet from another domain for security
+  // reasons. This sometimes comes up when using gviz, since the Google gviz JS
+  // adds its own style sheets from google.com.
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    if (document.styleSheets[i].disabled) continue;
+    var mysheet = document.styleSheets[i];
+    try {
+      if (mysheet.insertRule) {  // Firefox
+        var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
+        mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
+      } else if (mysheet.addRule) {  // IE
+        mysheet.addRule(".dygraphDefaultAnnotation", rule);
+      }
+      addedAnnotationCSS = true;
+      return;
+    } catch(err) {
+      // Was likely a security exception.
+    }
+  }
+
+  Dygraph.warn("Unable to add default annotation CSS rule; display may be off.");
+};
+
+
+/**
  * Update the list of annotations and redraw the chart.
  * See dygraphs.com/annotations.html for more info on how to use annotations.
  * @param ann {Array} An array of annotation objects.
@@ -3754,7 +3796,7 @@ Dygraph.prototype.size = function() {
  */
 Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
-  addAnnotationRule();
+  addAnnotationRule_();
   this.annotations_ = ann;
   if (!this.layout_) {
     Dygraph.warn("Tried to setAnnotations before dygraph was ready. " +
@@ -3793,47 +3835,6 @@ Dygraph.prototype.getLabels = function() {
  */
 Dygraph.prototype.indexFromSetName = function(name) {
   return this.setIndexByName_[name];
-};
-
-/**
- * Adds a default style for the annotation CSS classes to the document. This is
- * only executed when annotations are actually used. It is designed to only be
- * called once -- all calls after the first will return immediately.
- */
-var addAnnotationRule = function() {
-  // TODO(danvk): move this function into plugins/annotations.js?
-  if (addedAnnotationCSS) return;
-
-  var rule = "border: 1px solid black; " +
-             "background-color: white; " +
-             "text-align: center;";
-
-  var styleSheetElement = document.createElement("style");
-  styleSheetElement.type = "text/css";
-  document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
-
-  // Find the first style sheet that we can access.
-  // We may not add a rule to a style sheet from another domain for security
-  // reasons. This sometimes comes up when using gviz, since the Google gviz JS
-  // adds its own style sheets from google.com.
-  for (var i = 0; i < document.styleSheets.length; i++) {
-    if (document.styleSheets[i].disabled) continue;
-    var mysheet = document.styleSheets[i];
-    try {
-      if (mysheet.insertRule) {  // Firefox
-        var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
-        mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
-      } else if (mysheet.addRule) {  // IE
-        mysheet.addRule(".dygraphDefaultAnnotation", rule);
-      }
-      addedAnnotationCSS = true;
-      return;
-    } catch(err) {
-      // Was likely a security exception.
-    }
-  }
-
-  Dygraph.warn("Unable to add default annotation CSS rule; display may be off.");
 };
 
 return Dygraph;

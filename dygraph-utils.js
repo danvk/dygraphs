@@ -1180,7 +1180,7 @@ Dygraph.toRGB_ = function(color_str) {
   div.style.backgroundColor = color_str;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
-  var rgb_str = window.getComputedStyle(div)['backgroundColor'];
+  var rgb_str = window.getComputedStyle(div).backgroundColor;
   document.body.removeChild(div);
   var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgb_str);
   return {

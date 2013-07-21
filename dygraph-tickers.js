@@ -64,8 +64,11 @@
 /*global Dygraph:false */
 "use strict";
 
+// Constants, defined below.
+var PREFERRED_LOG_TICK_VALUES;
+
 /** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
-Dygraph.TickList = undefined;  // the ' = undefined' keeps jshint happy.
+var TickList;
 
 /** @typedef {function(
  *    number,
@@ -74,11 +77,11 @@ Dygraph.TickList = undefined;  // the ' = undefined' keeps jshint happy.
  *    function(string):*,
  *    Dygraph=,
  *    Array.<number>=
- *  ): Dygraph.TickList}
+ *  ): TickList}
  */
-Dygraph.Ticker = undefined;  // the ' = undefined' keeps jshint happy.
+var Ticker;
 
-/** @type {Dygraph.Ticker} */
+/** @type {Ticker} */
 Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
@@ -87,7 +90,7 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   return Dygraph.numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
 };
 
-/** @type {Dygraph.Ticker} */
+/** @type {Ticker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
@@ -206,7 +209,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 
-/** @type {Dygraph.Ticker} */
+/** @type {Ticker} */
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = Dygraph.pickDateTickGranularity(a, b, pixels, opts);
 
@@ -301,7 +304,7 @@ LONG_TICK_PLACEMENTS[CENTENNIAL] = {
  * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
  * @type {Array.<number>}
  */
-var PREFERRED_LOG_TICK_VALUES = function() {
+PREFERRED_LOG_TICK_VALUES = function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -361,7 +364,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} granularity (one of the granularities enumerated above)
  * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @param {Dygraph=} dg
- * @return {!Dygraph.TickList}
+ * @return {!TickList}
  */
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
