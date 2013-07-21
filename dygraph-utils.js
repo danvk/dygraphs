@@ -833,8 +833,8 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
-//   Dygraph.requestAnimFrame.call(window, function() {})
-Dygraph.requestAnimFrame = (function() {
+//   requestAnimFrame.call(window, function() {})
+var requestAnimFrame = (function() {
   return window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
@@ -872,7 +872,7 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
 
   (function loop() {
     if (frameNumber >= maxFrames) return;
-    Dygraph.requestAnimFrame.call(window, function() {
+    requestAnimFrame.call(window, function() {
       // Determine which frame to draw based on the delay so far.  Will skip
       // frames if necessary.
       var currentTime = new Date().getTime();
