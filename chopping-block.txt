@@ -16,6 +16,7 @@ Things to do to make dygraph-combine.js smaller:
 x (3942) Remove rgbcolor.js
 x (1983) Remove stacktrace.js from dygraph-combined.js
 x (1431) Remove srtftime, which is only minimally used.
+- (????) Move symbols which shouldn't be exported out of Dygraph namespace.
 
 To measure size:
 $ ./generate-combined.sh cat_minified | wc -c
@@ -32,6 +33,7 @@ $ make test-combined
  122185 consolidate findPos{X,Y}
  120905 move custom circles into extras/circles.js
  115027 switch to uglifyjs
+ 113418 don't export ticker enum symbols.
 
 
 TODO:
