@@ -14,6 +14,7 @@ x (3942) Remove rgbcolor.js
 x (1983) Remove stacktrace.js from dygraph-combined.js
 x (1431) Remove srtftime, which is only minimally used.
 x (????) Move symbols which shouldn't be exported out of Dygraph namespace.
+          -> started w/ 141 exported symbols; down to ~80.
 x (????) Unify Dygraph.prototype.log vs. Dygraph.log
 x (????) Combined findPos{X,Y}, page{X,Y}
 x (1321) move kberg's polygon stuff into a plugin
