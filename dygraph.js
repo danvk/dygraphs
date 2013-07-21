@@ -113,7 +113,7 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * @param {String} name The name of the point's data series
  * @param {Dygraph} g The dygraph object
  */
-Dygraph.numberValueFormatter = function(x, opts, pt, g) {
+var numberValueFormatter_ = function(x, opts, pt, g) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -184,8 +184,8 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
  * variant for use as an axisLabelFormatter.
  * @private
  */
-Dygraph.numberAxisLabelFormatter = function(x, granularity, opts, g) {
-  return Dygraph.numberValueFormatter(x, opts, g);
+var numberAxisLabelFormatter_ = function(x, granularity, opts, g) {
+  return numberValueFormatter_(x, opts, g);
 };
 
 /**
@@ -201,7 +201,7 @@ var SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
  * @return {String} The formatted date
  * @private
  */
-Dygraph.dateAxisFormatter = function(date, granularity) {
+var dateAxisFormatter_ = function(date, granularity) {
   if (granularity >= Dygraph.DECADAL) {
     // e.g. '2013' (%Y)
     return '' + date.getFullYear();
@@ -330,7 +330,7 @@ Dygraph.DEFAULT_ATTRS = {
   axes: {
     x: {
       pixelsPerLabel: 60,
-      axisLabelFormatter: Dygraph.dateAxisFormatter,
+      axisLabelFormatter: dateAxisFormatter_,
       valueFormatter: Dygraph.dateString_,
       drawGrid: true,
       independentTicks: true,
@@ -338,16 +338,16 @@ Dygraph.DEFAULT_ATTRS = {
     },
     y: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberValueFormatter,
-      axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
+      valueFormatter: numberValueFormatter_,
+      axisLabelFormatter: numberAxisLabelFormatter_,
       drawGrid: true,
       independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
       pixelsPerLabel: 30,
-      valueFormatter: Dygraph.numberValueFormatter,
-      axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
+      valueFormatter: numberValueFormatter_,
+      axisLabelFormatter: numberAxisLabelFormatter_,
       drawGrid: false,
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
@@ -1461,7 +1461,7 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
  * (totally old values) and 1.0 (totally new values) for each frame.
  * @private
  */
-Dygraph.zoomAnimationFunction = function(frame, numFrames) {
+var zoomAnimationFunction_ = function(frame, numFrames) {
   var k = 1.5;
   return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
 };
@@ -1623,7 +1623,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
 
   if (oldXRange !== null && newXRange !== null) {
     for (step = 1; step <= steps; step++) {
-      frac = Dygraph.zoomAnimationFunction(step, steps);
+      frac = zoomAnimationFunction_(step, steps);
       windows[step-1] = [oldXRange[0]*(1-frac) + frac*newXRange[0],
                          oldXRange[1]*(1-frac) + frac*newXRange[1]];
     }
@@ -1631,7 +1631,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
 
   if (oldYRanges !== null && newYRanges !== null) {
     for (step = 1; step <= steps; step++) {
-      frac = Dygraph.zoomAnimationFunction(step, steps);
+      frac = zoomAnimationFunction_(step, steps);
       var thisRange = [];
       for (var j = 0; j < this.axes_.length; j++) {
         thisRange.push([oldYRanges[j][0]*(1-frac) + frac*newYRanges[j][0],
@@ -3097,11 +3097,11 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
   } else {
     /** @private (shut up, jsdoc!) */
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-    // TODO(danvk): use Dygraph.numberValueFormatter here?
+    // TODO(danvk): use numberValueFormatter_ here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
@@ -3331,7 +3331,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a date x-axis.
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3354,7 +3354,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = numberAxisLabelFormatter_;
     return data;
   }
 };
@@ -3390,7 +3390,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.xValueParser = Dygraph.dateParser;
     this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };

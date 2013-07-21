@@ -9,6 +9,8 @@
  * dygraphs.
  */
 
+var DygraphLayout = (function() {
+
 /*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
@@ -331,3 +333,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
   this.setPointsLengths = [];
   this.setPointsOffsets = [];
 };
+
+return DygraphLayout;
+
+})();

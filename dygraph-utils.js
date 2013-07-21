@@ -34,11 +34,13 @@ var INFO = 2;
 var WARNING = 3;
 var ERROR = 3;
 
+// <REMOVE_FOR_COMBINED>
 // Set this to log stack traces on warnings, etc.
 // This requires stacktrace.js, which is up to you to provide.
 // A copy can be found in the dygraphs repo, or at
 // https://github.com/eriwen/javascript-stacktrace
-Dygraph.LOG_STACK_TRACES = false;
+var LOG_STACK_TRACES = false;
+// </REMOVE_FOR_COMBINED>
 
 /** A dotted line stroke pattern. */
 Dygraph.DOTTED_LINE = [2, 2];
@@ -106,7 +108,7 @@ Dygraph.log = function(severity, message) {
   }
 
   // <REMOVE_FOR_COMBINED>
-  if (Dygraph.LOG_STACK_TRACES) {
+  if (LOG_STACK_TRACES) {
     window.console.log(st.join('\n'));
   }
   // </REMOVE_FOR_COMBINED>

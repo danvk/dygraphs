@@ -38,6 +38,10 @@ $ make test-combined
  111327 more private symbols, consolidate on static log functions.
  110282 reduce exported symbols in dygraph-canvas.js
  109897 remove parseFloat_ from dygraph-layout.js
+ 109318 fewer exports from dygraph.js
+
+135782 -> 109897 = 19% reduction
+40827 -> 33214 gz = 18.6% reduction
 
 
 TODO:
