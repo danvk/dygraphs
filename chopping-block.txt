@@ -25,7 +25,7 @@ $ ./generate-combined.sh cat_minified | wc -c
 To test correctness:
 $ make test-combined
 
- 135782 Initial
+ 135782 Initial (40827 gzipped)
  130557 removed stacktrace.js
  130142 removed stacktrace logic from combined
  129932 remove unused Dygraph.compareArrays_
