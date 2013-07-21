@@ -77,7 +77,7 @@ DygraphsLocalTester.prototype.createAnchor = function(href, id, text) {
   var a = document.createElement('a');
   a.href = href;
   a.id = id;
-  a.innerHTML = text;
+  a.textContent = text;
   return a;
 }
 
@@ -148,7 +148,7 @@ DygraphsLocalTester.prototype.postResults = function(summary, durationms) {
 
     var tdResult = document.createElement('td');
     tdResult.setAttribute('class', 'outcome');
-    tdResult.innerHTML = result.result ? 'pass' : 'fail';
+    tdResult.textContent = result.result ? 'pass' : 'fail';
     tr.appendChild(tdResult);
 
     var tdName = document.createElement('td');
@@ -160,7 +160,7 @@ DygraphsLocalTester.prototype.postResults = function(summary, durationms) {
     tr.appendChild(tdName);
 
     var tdDuration = document.createElement('td');
-    tdDuration.innerHTML = result.duration + ' ms';
+    tdDuration.textContent = result.duration + ' ms';
     tr.appendChild(tdDuration);
 
     if (result.e) {
@@ -195,12 +195,12 @@ DygraphsLocalTester.prototype.listTests = function() {
     var createLink = function(parent, title, url) {
       var li = createAttached('li', parent);
       var a = createAttached('a', li);
-      a.innerHTML = title;
+      a.textContent = title;
       a.href = url;
       return li;
     }
     if (this.tc == null) {
-      description.innerHTML = 'Test cases:';
+      description.textContent = 'Test cases:';
       var testCases = getAllTestCases();
       createLink(list, '(run all tests)', document.URL + '?command=runAllTests');
       for (var idx in testCases) {
@@ -208,7 +208,7 @@ DygraphsLocalTester.prototype.listTests = function() {
         createLink(list, entryName, document.URL + '?testCaseName=' + entryName);
       }
     } else {
-      description.innerHTML = 'Tests for ' + name;
+      description.textContent = 'Tests for ' + name;
       var names = this.tc.getTestNames();
       createLink(list, 'Run All Tests', document.URL + '&command=runAllTests');
       for (var idx in names) {
