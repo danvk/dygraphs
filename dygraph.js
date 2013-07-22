@@ -265,10 +265,10 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * @private
  * Return a string version of a number. This respects the digitsAfterDecimal
  * and maxNumberWidth options.
- * @param {Number} x The number to be formatted
- * @param {Dygraph} opts An options view
- * @param {String} name The name of the point's data series
- * @param {Dygraph} g The dygraph object
+ * @param {number} x The number to be formatted
+ * @param {function(string)} opts An options view
+ * @param {string} name The name of the point's data series
+ * @param {!Dygraph} g The dygraph object
  */
 var numberValueFormatter_ = function(x, opts, pt, g) {
   var sigFigs = opts('sigFigs');
@@ -354,8 +354,8 @@ var SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
  * Convert a JS date to a string appropriate to display on an axis that
  * is displaying values at the stated granularity.
  * @param {Date} date The date to format
- * @param {Number} granularity One of the Dygraph granularity constants
- * @return {String} The formatted date
+ * @param {number} granularity One of the Dygraph granularity constants
+ * @return {string} The formatted date
  * @private
  */
 var dateAxisFormatter_ = function(date, granularity) {
@@ -601,7 +601,7 @@ Dygraph.prototype.toString = function() {
  * constructor or by calling updateOptions) or by dygraphs, and may be set to a
  * per-series value.
  * @param {string} name The name of the option, e.g. 'rollPeriod'.
- * @param {string} opt_seriesName The name of the series to which the option
+ * @param {string=} opt_seriesName The name of the series to which the option
  * will be applied. If no per-series value of this option is available, then
  * the global value is returned. This is optional.
  * @return {*} The value of the option.
@@ -677,7 +677,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
 
 /**
  * Returns the current rolling period, as set by the user or an option.
- * @return {Number} The number of points in the rolling window
+ * @return {number} The number of points in the rolling window
  */
 Dygraph.prototype.rollPeriod = function() {
   return this.rollPeriod_;
@@ -889,15 +889,15 @@ Dygraph.prototype.toDataYCoord = function(y, opt_axis) {
  * If y is null, this returns null.
  * if axis is null, this uses the first axis.
  *
- * @param { Number } y The data y-coordinate.
- * @param { Number } [axis] The axis number on which the data coordinate lives.
- * @return { Number } A fraction in [0, 1] where 0 = the top edge.
+ * @param {number} y The data y-coordinate.
+ * @param {number} opt_axis The axis number on which the data coordinate lives.
+ * @return {number} A fraction in [0, 1] where 0 = the top edge.
  */
-Dygraph.prototype.toPercentYCoord = function(y, axis) {
+Dygraph.prototype.toPercentYCoord = function(y, opt_axis) {
   if (y === null) {
     return null;
   }
-  if (typeof(axis) == "undefined") axis = 0;
+  var axis = opt_axis || 0;
 
   var yRange = this.yAxisRange(axis);
 
@@ -925,8 +925,8 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
  * values can fall outside the canvas.
  *
  * If x is null, this returns null.
- * @param { Number } x The data x-coordinate.
- * @return { Number } A fraction in [0, 1] where 0 = the left edge.
+ * @param {number} x The data x-coordinate.
+ * @return {number} A fraction in [0, 1] where 0 = the left edge.
  */
 Dygraph.prototype.toPercentXCoord = function(x) {
   if (x === null) {
@@ -939,7 +939,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
 
 /**
  * Returns the number of columns (including the independent variable).
- * @return { Integer } The number of columns.
+ * @return {number} The number of columns.
  */
 Dygraph.prototype.numColumns = function() {
   if (!this.rawData_) return 0;
@@ -948,7 +948,7 @@ Dygraph.prototype.numColumns = function() {
 
 /**
  * Returns the number of rows (excluding any header/label row).
- * @return { Integer } The number of rows, less any header.
+ * @return {number} The number of rows, less any header.
  */
 Dygraph.prototype.numRows = function() {
   if (!this.rawData_) return 0;
@@ -959,11 +959,11 @@ Dygraph.prototype.numRows = function() {
  * Returns the value in the given row and column. If the row and column exceed
  * the bounds on the data, returns null. Also returns null if the value is
  * missing.
- * @param { Number} row The row number of the data (0-based). Row 0 is the
- * first row of data, not a header row.
- * @param { Number} col The column number of the data (0-based)
- * @return { Number } The value in the specified cell or null if the row/col
- * were out of range.
+ * @param {number} row The row number of the data (0-based). Row 0 is the
+ *     first row of data, not a header row.
+ * @param {number} col The column number of the data (0-based)
+ * @return {?number} The value in the specified cell or null if the row/col
+ *     were out of range.
  */
 Dygraph.prototype.getValue = function(row, col) {
   if (row < 0 || row > this.rawData_.length) return null;
@@ -1462,8 +1462,8 @@ var zoomAnimationFunction_ = function(frame, numFrames) {
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
  *
- * @param {Number} minDate The minimum date that should be visible.
- * @param {Number} maxDate The maximum date that should be visible.
+ * @param {number} minDate The minimum date that should be visible.
+ * @param {number} maxDate The maximum date that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
@@ -1674,8 +1674,9 @@ Dygraph.prototype.eventToDomCoords = function(event) {
 
 /**
  * Given a canvas X coordinate, find the closest row.
- * @param {Number} domX graph-relative DOM X coordinate
  * Returns: row number, integer
+ * @param {number} domX graph-relative DOM X coordinate
+ * @return {number} The closest row.
  * @private
  */
 Dygraph.prototype.findClosestRow = function(domX) {
@@ -1706,9 +1707,11 @@ Dygraph.prototype.findClosestRow = function(domX) {
  * that's closest to the supplied DOM coordinates using the standard
  * Euclidean X,Y distance.
  *
- * @param {Number} domX graph-relative DOM X coordinate
- * @param {Number} domY graph-relative DOM Y coordinate
  * Returns: {row, seriesName, point}
+ *
+ * @param {number} domX graph-relative DOM X coordinate
+ * @param {number} domY graph-relative DOM Y coordinate
+ * @return {{row: number, seriesName: string, point: !Dygraph.PointType}}
  * @private
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
@@ -1745,9 +1748,9 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
  * then finds the series which puts the Y coordinate on top of its filled area,
  * using linear interpolation between adjacent point pairs.
  *
- * @param {Number} domX graph-relative DOM X coordinate
- * @param {Number} domY graph-relative DOM Y coordinate
- * Returns: {row, seriesName, point}
+ * @param {number} domX graph-relative DOM X coordinate
+ * @param {number} domY graph-relative DOM Y coordinate
+ * @return {{row: number, seriesName: string, point: !Dygraph.PointType}}
  * @private
  */
 Dygraph.prototype.findStackedPoint = function(domX, domY) {
@@ -2062,7 +2065,7 @@ Dygraph.prototype.clearSelection = function() {
 /**
  * Returns the number of the currently selected row. To get data for this row,
  * you can use the getValue method.
- * @return { Integer } row number, or -1 if nothing is selected
+ * @return {number} row number, or -1 if nothing is selected
  */
 Dygraph.prototype.getSelection = function() {
   if (!this.selPoints_ || this.selPoints_.length < 1) {
@@ -2099,7 +2102,7 @@ Dygraph.prototype.isSeriesLocked = function() {
 
 /**
  * Fires when there's data available to be graphed.
- * @param {String} data Raw CSV data to be plotted
+ * @param {string} data Raw CSV data to be plotted
  * @private
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
@@ -2673,7 +2676,7 @@ Dygraph.prototype.computeYAxes_ = function() {
 
 /**
  * Returns the number of y-axes on the chart.
- * @return {Number} the number of axes.
+ * @return {number} the number of axes.
  */
 Dygraph.prototype.numAxes = function() {
   return this.attributes_.numAxes();
@@ -2936,7 +2939,7 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
  * Note that this is where fractional input (i.e. '5/10') is converted into
  *   decimal values.
  * @param {Array} originalData The data in the appropriate format (see above)
- * @param {Number} rollPeriod The number of points over which to average the
+ * @param {number} rollPeriod The number of points over which to average the
  *                            data
  */
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
@@ -3071,7 +3074,7 @@ Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
 /**
  * Detects the type of the str (date or numeric) and sets the various
  * formatting attributes in this.attrs_ based on this type.
- * @param {String} str An x value.
+ * @param {string} str An x value.
  * @private
  */
 Dygraph.prototype.detectTypeFromString_ = function(str) {
@@ -3521,14 +3524,15 @@ Dygraph.prototype.start_ = function() {
  * full list, see http://dygraphs.com/options.html.
  *
  * @param {Object} attrs The new properties and values
- * @param {Boolean} [block_redraw] Usually the chart is redrawn after every
- * call to updateOptions(). If you know better, you can pass true to explicitly
- * block the redraw. This can be useful for chaining updateOptions() calls,
- * avoiding the occasional infinite loop and preventing redraws when it's not
- * necessary (e.g. when updating a callback).
+ * @param {boolean=} opt_blockRedraw Usually the chart is redrawn after every
+ *     call to updateOptions(). If you know better, you can pass true to
+ *     explicitly block the redraw. This can be useful for chaining
+ *     updateOptions() calls, avoiding the occasional infinite loop and
+ *     preventing redraws when it's not necessary (e.g. when updating a
+ *     callback).
  */
-Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
-  if (typeof(block_redraw) == 'undefined') block_redraw = false;
+Dygraph.prototype.updateOptions = function(input_attrs, opt_blockRedraw) {
+  var block_redraw = opt_blockRedraw || false;
 
   // mapLegacyOptions_ drops the "file" parameter as a convenience to us.
   var file = input_attrs.file;
@@ -3625,8 +3629,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.
  *
- * @param {Number} [width] Width (in pixels)
- * @param {Number} [height] Height (in pixels)
+ * @param {number} width Width (in pixels).
+ * @param {number} height Height (in pixels).
  */
 Dygraph.prototype.resize = function(width, height) {
   if (this.resize_lock) {
@@ -3666,7 +3670,7 @@ Dygraph.prototype.resize = function(width, height) {
 /**
  * Adjusts the number of points in the rolling average. Updates the graph to
  * reflect the new averaging period.
- * @param {Number} length Number of points over which to average the data.
+ * @param {number} length Number of points over which to average the data.
  */
 Dygraph.prototype.adjustRoll = function(length) {
   this.rollPeriod_ = length;
@@ -3757,10 +3761,10 @@ var addAnnotationRule_ = function() {
 /**
  * Update the list of annotations and redraw the chart.
  * See dygraphs.com/annotations.html for more info on how to use annotations.
- * @param ann {Array} An array of annotation objects.
- * @param suppressDraw {Boolean} Set to "true" to block chart redraw (optional).
+ * @param {!Array.<DygraphAnnotationType>} ann An array of annotation objects.
+ * @param {boolean=} opt_suppressDraw Set to "true" to block chart redraw.
  */
-Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
+Dygraph.prototype.setAnnotations = function(ann, opt_suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
   addAnnotationRule_();
   this.annotations_ = ann;
@@ -3772,7 +3776,7 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   }
 
   this.layout_.setAnnotations(this.annotations_);
-  if (!suppressDraw) {
+  if (!opt_suppressDraw) {
     this.predraw_();
   }
 };
