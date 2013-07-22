@@ -32,8 +32,8 @@ Dygraph.GVizChart = function(container) {
 };
 
 /**
- * @param {GVizDataTable} data
- * @param {Object.<*>} options
+ * @param {google.visualization.DataTable} data
+ * @param {Object} options
  */
 Dygraph.GVizChart.prototype.draw = function(data, options) {
   // Clear out any existing dygraph.

@@ -378,7 +378,7 @@ Dygraph.pageY = function(e) {
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
  * canvas (i.e. DOM Coords).
  * @param {!Event} e Drag event.
- * @param {!Dygraph.InteractionContext} context Interaction context object.
+ * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved to the right.
  */
 Dygraph.dragGetX_ = function(e, context) {
@@ -389,7 +389,7 @@ Dygraph.dragGetX_ = function(e, context) {
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
  * canvas (i.e. DOM Coords).
  * @param {!Event} e Drag event.
- * @param {!Dygraph.InteractionContext} context Interaction context object.
+ * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved down.
  */
 Dygraph.dragGetY_ = function(e, context) {

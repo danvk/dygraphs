@@ -117,7 +117,7 @@ var DygraphPlotterType;
  *   is2DPan: boolean,
  *   cancelNextDblclick: boolean,
  *   initializeMouseDown:
- *       function(!Event, !Dygraph, !Dygraph.InteractionContext)
+ *       function(!Event, !Dygraph, !DygraphInteractionContext)
  * }}
  */
-var DygraphsInteractionContext;
+var DygraphInteractionContext;

@@ -47,7 +47,7 @@ var DygraphLayout = function(dygraph) {
   /** @type {Array.<string>} */
   this.setNames = [];
 
-  /** @type {Array.<!Dygraph.AnnotationType>} */
+  /** @type {Array.<!DygraphAnnotationType>} */
   this.annotations = [];
 
   /** @type {Array.<DygraphAxisType>} */
@@ -55,9 +55,9 @@ var DygraphLayout = function(dygraph) {
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
-  /** @type {Dygraph.TickList} */
+  /** @type {DygraphTickList} */
   this.xTicks_ = null;
-  /** @type {Dygraph.TickList} */
+  /** @type {DygraphTickList} */
   this.yTicks_ = null;
 
   /** @type {?DygraphRect} */
@@ -176,20 +176,20 @@ DygraphLayout.prototype.computePlotArea = function() {
 };
 
 /**
- * @param {Array.<!Dygraph.AnnotationType>} ann The annotations
+ * @param {Array.<!DygraphAnnotationType>} ann The annotations
  */
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy. If there is no parser, then the user must be using raw format.
 
-  /** @type {Array.<!Dygraph.AnnotationType>} */
+  /** @type {Array.<!DygraphAnnotationType>} */
   this.annotations = [];
   
   var parse = /** @type {function(string):number} */(this.attr_('xValueParser')) || function(x) { return parseFloat(x); };
 
   for (var i = 0; i < ann.length; i++) {
     // lame that closure compiler wants all these undefineds!
-    /** @type {Dygraph.AnnotationType} */
+    /** @type {DygraphAnnotationType} */
     var a = {
       x: ann[i].x,
       series: ann[i].series,
@@ -218,7 +218,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
 };
 
 /**
- * @param {!Dygraph.TickList} xTicks The x-axis ticks.
+ * @param {!DygraphTickList} xTicks The x-axis ticks.
  */
 DygraphLayout.prototype.setXTicks = function(xTicks) {
   this.xTicks_ = xTicks;

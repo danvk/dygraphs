@@ -278,8 +278,8 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
  * @param {!DygraphInteractionContext} context
  */
 Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
-  var clickCallback = g.attr_('clickCallback');
-  var pointClickCallback = g.attr_('pointClickCallback');
+  var clickCallback = /**@type{Function}*/(g.attr_('clickCallback'));
+  var pointClickCallback = /**@type{Function}*/(g.attr_('pointClickCallback'));
 
   var selectedPoint = null;
 

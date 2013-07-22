@@ -76,8 +76,8 @@ var Dygraph = function(div, file, opt_attrs) {
       typeof(G_vmlCanvasManager) != 'undefined' &&
       document.readyState != 'complete') {
     // TODO(danvk): fix this code given lack of __init__ method.
-    var self = this;
-    setTimeout(function() { self.__init__(div, file, attrs); }, 100);
+    // var self = this;
+    // setTimeout(function() { self.__init__(div, file, attrs); }, 100);
     return;
   }
 
