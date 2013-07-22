@@ -73,7 +73,8 @@ Dygraph.GVizChart.prototype.getSelection = function() {
 
   if (row < 0) return selection;
 
-  var points = this.date_graph.layout_.points;
+  var layout = /** @type {DygraphLayout} */(this.date_graph.layout_);
+  var points = layout.points;
   for (var setIdx = 0; setIdx < points.length; ++setIdx) {
     selection.push({row: row, column: setIdx + 1});
   }

@@ -194,7 +194,7 @@ Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
  * of the world.
  * @param {!Element} elem The element to add the event to.
  * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
- * @param {function(Event):(boolean|undefined)} fn The function to call
+ * @param {function(?Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
@@ -1182,7 +1182,7 @@ Dygraph.toRGB_ = function(color_str) {
   div.style.backgroundColor = color_str;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
-  var rgb_str = window.getComputedStyle(div).backgroundColor;
+  var rgb_str = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgb_str);
   return {

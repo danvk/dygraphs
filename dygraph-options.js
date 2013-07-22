@@ -10,19 +10,6 @@
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
  */
 
-var DygraphOptions = (function() {
-
-/*jshint sub:true */
-/*global Dygraph:false */
-"use strict";
-
-/*
- * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
- * global_ - global attributes (common among all graphs, AIUI)
- * user - attributes set by the user
- * series_ - { seriesName -> { idx, yAxis, options }}
- */
-
 /**
  * This parses attributes into an object that can be easily queried.
  *
@@ -30,7 +17,7 @@ var DygraphOptions = (function() {
  * if labels are not yet available, since those drive details of the per-series
  * and per-axis options.
  *
- * @param {Dygraph} dygraph The chart to which these options belong.
+ * @param {!Dygraph} dygraph The chart to which these options belong.
  * @constructor
  */
 var DygraphOptions = function(dygraph) {
@@ -50,7 +37,8 @@ var DygraphOptions = function(dygraph) {
    * Contains x-axis specific options, which are stored in the options key.
    * This matches the yAxes_ object structure (by being a dictionary with an
    * options element) allowing for shared code.
-   * @type {options: Object} @private
+   * @type {Object}
+   * @private
    */
   this.xAxis_ = {};
   this.series_ = {};
@@ -68,6 +56,20 @@ var DygraphOptions = function(dygraph) {
   this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
   this.reparseSeries();
 };
+
+(function() {
+
+/*jshint sub:true */
+/*global Dygraph:false */
+"use strict";
+
+/*
+ * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
+ * global_ - global attributes (common among all graphs, AIUI)
+ * user - attributes set by the user
+ * series_ - { seriesName -> { idx, yAxis, options }}
+ */
+
 
 /**
  * Not optimal, but does the trick when you're only using two axes.
@@ -369,7 +371,5 @@ DygraphOptions.prototype.seriesForAxis = function(yAxis) {
 DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
-
-return DygraphOptions;
 
 })();

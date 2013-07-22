@@ -64,24 +64,7 @@
 /*global Dygraph:false */
 "use strict";
 
-// Constants, defined below.
-var PREFERRED_LOG_TICK_VALUES;
-
-/** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
-var TickList;
-
-/** @typedef {function(
- *    number,
- *    number,
- *    number,
- *    function(string):*,
- *    Dygraph=,
- *    Array.<number>=
- *  ): TickList}
- */
-var Ticker;
-
-/** @type {Ticker} */
+/** @type {Dygraph.Ticker} */
 Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
@@ -90,7 +73,27 @@ Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   return Dygraph.numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
 };
 
-/** @type {Ticker} */
+/**
+ * This is a list of human-friendly values at which to show tick marks on a log
+ * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
+ * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
+ * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
+ * @type {Array.<number>}
+ */
+var PREFERRED_LOG_TICK_VALUES = (function() {
+  var vals = [];
+  for (var power = -39; power <= 39; power++) {
+    var range = Math.pow(10, power);
+    for (var mult = 1; mult <= 9; mult++) {
+      var val = range * mult;
+      vals.push(val);
+    }
+  }
+  return vals;
+})();
+
+
+/** @type {Dygraph.Ticker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
@@ -209,7 +212,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 
-/** @type {Ticker} */
+/** @type {Dygraph.Ticker} */
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = Dygraph.pickDateTickGranularity(a, b, pixels, opts);
 
@@ -298,25 +301,6 @@ LONG_TICK_PLACEMENTS[CENTENNIAL] = {
 };
 
 /**
- * This is a list of human-friendly values at which to show tick marks on a log
- * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
- * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
- * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
- * @type {Array.<number>}
- */
-PREFERRED_LOG_TICK_VALUES = function() {
-  var vals = [];
-  for (var power = -39; power <= 39; power++) {
-    var range = Math.pow(10, power);
-    for (var mult = 1; mult <= 9; mult++) {
-      var val = range * mult;
-      vals.push(val);
-    }
-  }
-  return vals;
-}();
-
-/**
  * Determine the correct granularity of ticks on a date axis.
  *
  * @param {number} a Left edge of the chart (ms)
@@ -364,7 +348,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} granularity (one of the granularities enumerated above)
  * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @param {Dygraph=} dg
- * @return {!TickList}
+ * @return {!Dygraph.TickList}
  */
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
