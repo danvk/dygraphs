@@ -54,12 +54,13 @@
  * @param {!HTMLDivElement|string} div A div or the id of a div into which to
  *     construct the chart.
  * @param {DygraphDataArray|
- *     GVizDataTable|
+ *     google.visualization.DataTable|
  *     string|
- *     function():(DygraphDataArray|GVizDataTable|string)} file A file
- *     containing CSV data or a function that returns this data. The most basic
- *     expected format for each line is "YYYY/MM/DD,val1,val2,...". For more
- *     information, see http://dygraphs.com/data.html.
+ *     function():(DygraphDataArray|google.visualization.DataTable|string)}
+ *     file A file containing CSV data or a function that returns this data.
+ *     The most basic expected format for each line is
+ *     "YYYY/MM/DD,val1,val2,...". For more information, see
+ *     http://dygraphs.com/data.html.
  * @param {Object=} opt_attrs Various other attributes, e.g. errorBars
  *     determines whether the input data contains error ranges. For a complete
  *     list of options, see http://dygraphs.com/options.html.
@@ -3331,7 +3332,7 @@ Dygraph.prototype.parseArray_ = function(data) {
  * number. All subsequent columns must be numbers. If there is a clear mismatch
  * between this.xValueParser_ and the type of the first column, it will be
  * fixed. Fills out rawData_.
- * @param {[Object]} data See above.
+ * @param {Object} data See above.
  * @private
  */
 Dygraph.prototype.parseDataTable_ = function(data) {

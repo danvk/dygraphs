@@ -46,11 +46,6 @@ var ValueFormatter;
 var DygraphDataArray;
 
 /**
- * @constructor
- */
-function GVizDataTable() {}
-
-/**
  * @typedef {{
  *   xval: (number|undefined),
  *   x: string,
