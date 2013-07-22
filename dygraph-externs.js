@@ -95,6 +95,8 @@ Dygraph.PointType;
 Dygraph.prototype.attrs_;
 /** @type {Object} */
 Dygraph.prototype.user_attrs_;
+/** @type {Array.<Object>} */
+Dygraph.prototype.selPoints_;  // TODO(danvk): type actually has .canvasx, ...
 
 /**
  * @param {string} name the name of the option.
@@ -102,9 +104,45 @@ Dygraph.prototype.user_attrs_;
 Dygraph.prototype.attr_ = function(name) {};
 
 /**
- * @return {{w: number, h: number}} object.
+ * @return {{width: number, height: number}} object.
  */
-Dygraph.prototype.size;
+Dygraph.prototype.size = function() {};
+
+/**
+ * @return {Dygraph.Rect}
+ */
+Dygraph.prototype.getArea = function() {};
+
+/**
+ * @return {!Array.<number>}
+ */
+Dygraph.prototype.xAxisExtremes = function() {};
+
+/**
+ * @param {?number} x The data x-value.
+ * @return {?number} The DOM coordinate, or null if the input is null.
+ */
+Dygraph.prototype.toDomXCoord = function(x) {};
+
+/**
+ * @param {?number} y The data y-value.
+ * @param {number=} opt_axis The axis number (0=primary).
+ * @return {?number} The DOM coordinate, or null if the input is null.
+ */
+Dygraph.prototype.toDomYCoord = function(y, opt_axis) {};
+
+/**
+ * @param {?number} x The DOM x-coordinate.
+ * @return {?number} The data x-coordinate, or null if the input is null.
+ */
+Dygraph.prototype.toDataXCoord = function(x) {};
+
+/**
+ * @param {?number} y The DOM y-coordinate.
+ * @param {number=} opt_axis The axis number (0=primary).
+ * @return {?number} The data y-value, or null if the input is null.
+ */
+Dygraph.prototype.toDataYCoord = function(y, opt_axis) {};
 
 /**
  * @type {DygraphLayout}
@@ -156,9 +194,31 @@ Dygraph.prototype.hidden_ctx_;
 Dygraph.prototype.colorsMap_;
 
 /**
+ * TODO(danvk): be more specific
+ * @type {Array.<Object>}
+ */
+Dygraph.prototype.axes_;
+
+/**
+ * @type {number}
+ */
+Dygraph.prototype.lastx_;
+
+/**
  * @return {!Array.<number>} two element [left, right] array.
  */
 Dygraph.prototype.xAxisRange = function() {};
+
+/**
+ * @param {number=} opt_axis Optional axis (0=primary).
+ * @return {Array.<number>} A two-element array: [bottom, top].
+ */
+Dygraph.prototype.yAxisRange = function(opt_axis) {};
+
+/**
+ * @return {!Array.<!Array.<number>>}
+ */
+Dygraph.prototype.yAxisRanges = function() {};
 
 /**
  * @param {string} setName Set name.
@@ -190,6 +250,46 @@ Dygraph.prototype.getLabels = function() {};
  * @return {Array.<string>} The list of colors.
  */
 Dygraph.prototype.getColors = function() {};
+
+/**
+ */
+Dygraph.prototype.drawGraph_ = function() {};
+
+/**
+ * @param {number} direction 
+ * @param {number} startX
+ * @param {number} endX
+ * @param {number} startY
+ * @param {number} endY
+ * @param {number} prevDirection
+ * @param {number} prevEndX
+ * @param {number} prevEndY
+ * @private
+ */
+Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
+                                           endY, prevDirection, prevEndX,
+                                           prevEndY) {};
+
+
+Dygraph.prototype.clearZoomRect_ = function() {};
+Dygraph.prototype.resetZoom = function() {};
+
+/**
+ * @param {number} lowX
+ * @param {number} highX
+ */
+Dygraph.prototype.doZoomX_ = function(lowX, highX) {};
+
+/**
+ * @param {number} lowY
+ * @param {number} highY
+ */
+Dygraph.prototype.doZoomY_ = function(lowY, highY) {};
+
+/** @type {number} */
+Dygraph.HORIZONTAL;
+/** @type {number} */
+Dygraph.VERTICAL;
 
 /** @type {{axes: Object}} */
 Dygraph.DEFAULT_ATTRS;
@@ -255,3 +355,18 @@ Dygraph.AxisType;
  * @typedef {function(Object)}
  */
 Dygraph.PlotterType;
+
+
+/**
+ * @typedef {{
+ *   px: number,
+ *   py: number,
+ *   isZooming: boolean,
+ *   isPanning: boolean,
+ *   is2DPan: boolean,
+ *   cancelNextDblclick: boolean,
+ *   initializeMouseDown:
+ *       function(!Event, !Dygraph, !Dygraph.InteractionContext)
+ * }}
+ */
+Dygraph.InteractionContext;

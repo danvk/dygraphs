@@ -360,8 +360,8 @@ var parseFloat_;
 
 // Directions for panning and zooming. Use bit operations when combined
 // values are possible.
-var HORIZONTAL = 1;
-var VERTICAL = 2;
+Dygraph.HORIZONTAL = 1;
+Dygraph.VERTICAL = 2;
 
 // Installed plugins, in order of precedence (most-general to most-specific).
 // Plugins are installed after they are defined, in plugins/install.js.
@@ -708,6 +708,7 @@ Dygraph.prototype.xAxisRange = function() {
 /**
  * Returns the lower- and upper-bound x-axis values of the
  * data set.
+ * @return {!Array.<number>}
  */
 Dygraph.prototype.xAxisExtremes = function() {
   var pad = this.attr_('xRangePad') / this.plotter_.area.w;
@@ -729,10 +730,11 @@ Dygraph.prototype.xAxisExtremes = function() {
  * Returns the currently-visible y-range for an axis. This can be affected by
  * zooming, panning or a call to updateOptions. Axis indices are zero-based. If
  * called with no arguments, returns the range of the first axis.
- * Returns a two-element array: [bottom, top].
+ * @param {number=} opt_axis Optional axis (0=primary).
+ * @return {Array.<number>} A two-element array: [bottom, top].
  */
-Dygraph.prototype.yAxisRange = function(idx) {
-  if (typeof(idx) == "undefined") idx = 0;
+Dygraph.prototype.yAxisRange = function(opt_axis) {
+  var idx = opt_axis || 0;
   if (idx < 0 || idx >= this.axes_.length) {
     return null;
   }
@@ -744,6 +746,9 @@ Dygraph.prototype.yAxisRange = function(idx) {
  * Returns the currently-visible y-ranges for each axis. This can be affected by
  * zooming, panning, calls to updateOptions, etc.
  * Returns an array of [bottom, top] pairs, one for each y-axis.
+ *
+ * @return {!Array.<!Array.<number>>} An array of [bottom, top] pairs, one for
+ *     each axis.
  */
 Dygraph.prototype.yAxisRanges = function() {
   var ret = [];
@@ -772,6 +777,8 @@ Dygraph.prototype.toDomCoords = function(x, y, axis) {
  * If specified, do this conversion for the coordinate system of a particular
  * axis.
  * Returns a single value or null if x is null.
+ * @param {?number} x The data x-value.
+ * @return {?number} The DOM coordinate, or null if the input is null.
  */
 Dygraph.prototype.toDomXCoord = function(x) {
   if (x === null) {
@@ -788,9 +795,12 @@ Dygraph.prototype.toDomXCoord = function(x) {
  * axis. Uses the first axis by default.
  *
  * returns a single value or null if y is null.
+ * @param {?number} y The data y-value.
+ * @param {number=} opt_axis The axis number (0=primary).
+ * @return {?number} The DOM coordinate, or null if the input is null.
  */
-Dygraph.prototype.toDomYCoord = function(y, axis) {
-  var pct = this.toPercentYCoord(y, axis);
+Dygraph.prototype.toDomYCoord = function(y, opt_axis) {
+  var pct = this.toPercentYCoord(y, opt_axis);
 
   if (pct === null) {
     return null;
@@ -816,6 +826,8 @@ Dygraph.prototype.toDataCoords = function(x, y, axis) {
  * Convert from canvas/div x coordinate to data coordinate.
  *
  * If x is null, this returns null.
+ * @param {?number} x The DOM x-coordinate.
+ * @return {?number} The data x-coordinate, or null if the input is null.
  */
 Dygraph.prototype.toDataXCoord = function(x) {
   if (x === null) {
@@ -832,16 +844,20 @@ Dygraph.prototype.toDataXCoord = function(x) {
  *
  * If y is null, this returns null.
  * if axis is null, this uses the first axis.
+ * @param {?number} y The DOM y-coordinate.
+ * @param {number=} opt_axis The axis number (0=primary).
+ * @return {?number} The data y-value, or null if the input is null.
  */
-Dygraph.prototype.toDataYCoord = function(y, axis) {
+Dygraph.prototype.toDataYCoord = function(y, opt_axis) {
   if (y === null) {
     return null;
   }
 
   var area = this.plotter_.area;
-  var yRange = this.yAxisRange(axis);
+  var yRange = this.yAxisRange(opt_axis);
 
-  if (typeof(axis) == "undefined") axis = 0;
+  var axis = opt_axis || 0;
+
   if (!this.axes_[axis].logscale) {
     return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
@@ -1245,24 +1261,6 @@ Dygraph.prototype.createRollInterface_ = function() {
 };
 
 /**
- * @private
- * Converts page the x-coordinate of the event to pixel x-coordinates on the
- * canvas (i.e. DOM Coords).
- */
-Dygraph.prototype.dragGetX_ = function(e, context) {
-  return Dygraph.pageX(e) - context.px;
-};
-
-/**
- * @private
- * Converts page the y-coordinate of the event to pixel y-coordinates on the
- * canvas (i.e. DOM Coords).
- */
-Dygraph.prototype.dragGetY_ = function(e, context) {
-  return Dygraph.pageY(e) - context.py;
-};
-
-/**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
  * events.
  * @private
@@ -1322,8 +1320,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       var canvasPos = Dygraph.findPos(g.canvas_);
       contextB.px = canvasPos.x;
       contextB.py = canvasPos.y;
-      contextB.dragStartX = g.dragGetX_(event, contextB);
-      contextB.dragStartY = g.dragGetY_(event, contextB);
+      contextB.dragStartX = Dygraph.dragGetX_(event, contextB);
+      contextB.dragStartY = Dygraph.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
       contextB.tarp.cover();
     }
@@ -1378,20 +1376,20 @@ Dygraph.prototype.createDragInterface_ = function() {
  * avoid extra redrawing, but it's tricky to avoid interactions with the status
  * dots.
  *
- * @param {Number} direction the direction of the zoom rectangle. Acceptable
- * values are HORIZONTAL and VERTICAL.
- * @param {Number} startX The X position where the drag started, in canvas
- * coordinates.
- * @param {Number} endX The current X position of the drag, in canvas coords.
- * @param {Number} startY The Y position where the drag started, in canvas
- * coordinates.
- * @param {Number} endY The current Y position of the drag, in canvas coords.
- * @param {Number} prevDirection the value of direction on the previous call to
- * this function. Used to avoid excess redrawing
- * @param {Number} prevEndX The value of endX on the previous call to this
- * function. Used to avoid excess redrawing
- * @param {Number} prevEndY The value of endY on the previous call to this
- * function. Used to avoid excess redrawing
+ * @param {number} direction the direction of the zoom rectangle. Acceptable
+ *     values are Dygraph.HORIZONTAL and Dygraph.VERTICAL.
+ * @param {number} startX The X position where the drag started, in canvas
+ *     coordinates.
+ * @param {number} endX The current X position of the drag, in canvas coords.
+ * @param {number} startY The Y position where the drag started, in canvas
+ *     coordinates.
+ * @param {number} endY The current Y position of the drag, in canvas coords.
+ * @param {number} prevDirection the value of direction on the previous call to
+ *     this function. Used to avoid excess redrawing
+ * @param {number} prevEndX The value of endX on the previous call to this
+ *     function. Used to avoid excess redrawing
+ * @param {number} prevEndY The value of endY on the previous call to this
+ *     function. Used to avoid excess redrawing
  * @private
  */
 Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
@@ -1400,22 +1398,22 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
   var ctx = this.canvas_ctx_;
 
   // Clean up from the previous rect if necessary
-  if (prevDirection == HORIZONTAL) {
+  if (prevDirection == Dygraph.HORIZONTAL) {
     ctx.clearRect(Math.min(startX, prevEndX), this.layout_.getPlotArea().y,
                   Math.abs(startX - prevEndX), this.layout_.getPlotArea().h);
-  } else if (prevDirection == VERTICAL) {
+  } else if (prevDirection == Dygraph.VERTICAL) {
     ctx.clearRect(this.layout_.getPlotArea().x, Math.min(startY, prevEndY),
                   this.layout_.getPlotArea().w, Math.abs(startY - prevEndY));
   }
 
   // Draw a light-grey rectangle to show the new viewing area
-  if (direction == HORIZONTAL) {
+  if (direction == Dygraph.HORIZONTAL) {
     if (endX && startX) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
       ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
                    Math.abs(endX - startX), this.layout_.getPlotArea().h);
     }
-  } else if (direction == VERTICAL) {
+  } else if (direction == Dygraph.VERTICAL) {
     if (endY && startY) {
       ctx.fillStyle = "rgba(128,128,128,0.33)";
       ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
@@ -1443,8 +1441,8 @@ Dygraph.prototype.clearZoomRect_ = function() {
  * points near lowX or highX. Don't confuse this function with doZoomXDates,
  * which accepts dates that match the raw data. This function redraws the graph.
  *
- * @param {Number} lowX The leftmost pixel value that should be visible.
- * @param {Number} highX The rightmost pixel value that should be visible.
+ * @param {number} lowX The leftmost pixel value that should be visible.
+ * @param {number} highX The rightmost pixel value that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomX_ = function(lowX, highX) {
@@ -1494,8 +1492,8 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
  * Zoom to something containing [lowY, highY]. These are pixel coordinates in
  * the canvas. This function redraws the graph.
  *
- * @param {Number} lowY The topmost pixel value that should be visible.
- * @param {Number} highY The lowest pixel value that should be visible.
+ * @param {number} lowY The topmost pixel value that should be visible.
+ * @param {number} highY The lowest pixel value that should be visible.
  * @private
  */
 Dygraph.prototype.doZoomY_ = function(lowY, highY) {
@@ -1659,7 +1657,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
 /**
  * Get the current graph's area object.
  *
- * Returns: {x, y, w, h}
+ * @return {Dygraph.Rect} An {x, y, w, h} object.
  */
 Dygraph.prototype.getArea = function() {
   return this.plotter_.area;
@@ -3742,7 +3740,7 @@ Dygraph.prototype.setVisibility = function(num, value) {
 /**
  * How large of an area will the dygraph render itself in?
  * This is used for testing.
- * @return A {width: w, height: h} object.
+ * @return {{width: number, height: number}} The size of the chart element.
  * @private
  */
 Dygraph.prototype.size = function() {

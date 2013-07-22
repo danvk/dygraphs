@@ -118,8 +118,8 @@ DygraphLayout.prototype.computePlotArea = function() {
   };
 
   var size = this.dygraph_.size();
-  area.w = size.w - area.x - /** @type{number} */(this.attr_('rightGap'));
-  area.h = size.h;
+  area.w = size.width - area.x - /** @type{number} */(this.attr_('rightGap'));
+  area.h = size.height;
 
   // Let plugins reserve space.
   var e = {
