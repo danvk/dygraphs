@@ -50,18 +50,6 @@ var DygraphDataArray;
  */
 function GVizDataTable() {}
 
-// TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js
-/**
- * @param {!HTMLDivElement|string} div
- * @param {DygraphDataArray|
- *     GVizDataTable|
- *     string|
- *     function():(DygraphDataArray|GVizDataTable|string)} file
- * @param {Object} attrs
- * @constructor
- */
-function Dygraph(div, file, attrs) {}
-
 /**
  * @typedef {{
  *     idx: number,

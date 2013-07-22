@@ -1236,4 +1236,35 @@ Dygraph.isCanvasSupported = function(opt_canvasElement) {
   return true;
 };
 
+/**
+ * Parses the value as a floating point number. This is like the parseFloat()
+ * built-in, but with a few differences:
+ * - the empty string is parsed as null, rather than NaN.
+ * - if the string cannot be parsed at all, an error is logged.
+ * If the string can't be parsed, this method returns null.
+ * @param {string} x The string to be parsed
+ * @param {number=} opt_line_no The line number from which the string comes.
+ * @param {string=} opt_line The text of the line from which the string comes.
+ */
+Dygraph.parseFloat = function(x, opt_line_no, opt_line) {
+  var val = parseFloat(x);
+  if (!isNaN(val)) return val;
+
+  // Try to figure out what happeend.
+  // If the value is the empty string, parse it as null.
+  if (/^ *$/.test(x)) return null;
+
+  // If it was actually "NaN", return it as NaN.
+  if (/^ *nan *$/i.test(x)) return NaN;
+
+  // Looks like a parsing error.
+  var msg = "Unable to parse '" + x + "' as a number";
+  if (opt_line !== undefined && opt_line_no !== undefined) {
+    msg += " on line " + (1+(opt_line_no||0)) + " ('" + opt_line + "') of CSV.";
+  }
+  Dygraph.error(msg);
+
+  return null;
+};
+
 })();

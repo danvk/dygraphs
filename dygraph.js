@@ -43,8 +43,6 @@
 
  */
 
-var Dygraph = (function() {
-
 /*jshint globalstrict: true */
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false */
 "use strict";
@@ -53,26 +51,171 @@ var Dygraph = (function() {
  * Creates an interactive, zoomable chart.
  *
  * @constructor
- * @param {div | String} div A div or the id of a div into which to construct
- * the chart.
- * @param {String | Function} file A file containing CSV data or a function
- * that returns this data. The most basic expected format for each line is
- * "YYYY/MM/DD,val1,val2,...". For more information, see
- * http://dygraphs.com/data.html.
- * @param {Object} attrs Various other attributes, e.g. errorBars determines
- * whether the input data contains error ranges. For a complete list of
- * options, see http://dygraphs.com/options.html.
+ * @param {!HTMLDivElement|string} div A div or the id of a div into which to
+ *     construct the chart.
+ * @param {DygraphDataArray|
+ *     GVizDataTable|
+ *     string|
+ *     function():(DygraphDataArray|GVizDataTable|string)} file A file
+ *     containing CSV data or a function that returns this data. The most basic
+ *     expected format for each line is "YYYY/MM/DD,val1,val2,...". For more
+ *     information, see http://dygraphs.com/data.html.
+ * @param {Object=} opt_attrs Various other attributes, e.g. errorBars
+ *     determines whether the input data contains error ranges. For a complete
+ *     list of options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts, opt_fourth_param) {
-  if (opt_fourth_param !== undefined) {
-    // Old versions of dygraphs took in the series labels as a constructor
-    // parameter. This doesn't make sense anymore, but it's easy to continue
-    // to support this usage.
-    Dygraph.warn("Using deprecated four-argument dygraph constructor");
-    this.__old_init__(div, data, opts, opt_fourth_param);
-  } else {
-    this.__init__(div, data, opts);
+var Dygraph = function(div, file, opt_attrs) {
+  // Support two-argument constructor
+  var attrs = opt_attrs || {};
+
+  // Hack for IE: if we're using excanvas and the document hasn't finished
+  // loading yet (and hence may not have initialized whatever it needs to
+  // initialize), then keep calling this routine periodically until it has.
+  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
+      typeof(G_vmlCanvasManager) != 'undefined' &&
+      document.readyState != 'complete') {
+    // TODO(danvk): fix this code given lack of __init__ method.
+    var self = this;
+    setTimeout(function() { self.__init__(div, file, attrs); }, 100);
+    return;
   }
+
+  attrs = Dygraph.mapLegacyOptions_(attrs);
+
+  if (typeof(div) == 'string') {
+    div = document.getElementById(div);
+  }
+
+  if (!div) {
+    Dygraph.error("Constructing dygraph with a non-existent div!");
+    return;
+  }
+
+  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
+
+  // Copy the important bits into the object
+  // TODO(danvk): most of these should just stay in the attrs_ dictionary.
+  this.maindiv_ = /** @type {!HTMLDivElement} */(div);
+  this.file_ = file;
+  this.rollPeriod_ = attrs.rollPeriod || DEFAULT_ROLL_PERIOD;
+  this.previousVerticalX_ = -1;
+  this.fractions_ = attrs.fractions || false;
+  this.dateWindow_ = attrs.dateWindow || null;
+
+  this.is_initial_draw_ = true;
+
+  /** @type {!Array.<Dygraph.AnnotationType>} */
+  this.annotations_ = [];
+
+  // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
+  this.zoomed_x_ = false;
+  this.zoomed_y_ = false;
+
+  // Clear the div. This ensure that, if multiple dygraphs are passed the same
+  // div, then only one will be drawn.
+  div.innerHTML = "";
+
+  // For historical reasons, the 'width' and 'height' options trump all CSS
+  // rules _except_ for an explicit 'width' or 'height' on the div.
+  // As an added convenience, if the div has zero height (like <div></div> does
+  // without any styles), then we use a default height/width.
+  if (div.style.width === '' && attrs.width) {
+    div.style.width = attrs.width + "px";
+  }
+  if (div.style.height === '' && attrs.height) {
+    div.style.height = attrs.height + "px";
+  }
+  if (div.style.height === '' && div.clientHeight === 0) {
+    div.style.height = DEFAULT_HEIGHT + "px";
+    if (div.style.width === '') {
+      div.style.width = DEFAULT_WIDTH + "px";
+    }
+  }
+  // These will be zero if the dygraph's div is hidden. In that case,
+  // use the user-specified attributes if present. If not, use zero
+  // and assume the user will call resize to fix things later.
+  this.width_ = div.clientWidth || attrs.width || 0;
+  this.height_ = div.clientHeight || attrs.height || 0;
+
+  // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
+  if (attrs.stackedGraph) {
+    attrs.fillGraph = true;
+    // TODO(nikhilk): Add any other stackedGraph checks here.
+  }
+
+  // DEPRECATION WARNING: All option processing should be moved from
+  // attrs_ and user_attrs_ to options_, which holds all this information.
+  //
+  // Dygraphs has many options, some of which interact with one another.
+  // To keep track of everything, we maintain two sets of options:
+  //
+  //  this.user_attrs_   only options explicitly set by the user.
+  //  this.attrs_        defaults, options derived from user_attrs_, data.
+  //
+  // Options are then accessed this.attr_('attr'), which first looks at
+  // user_attrs_ and then computed attrs_. This way Dygraphs can set intelligent
+  // defaults without overriding behavior that the user specifically asks for.
+  this.user_attrs_ = {};
+  Dygraph.update(this.user_attrs_, attrs);
+
+  // This sequence ensures that Dygraph.DEFAULT_ATTRS is never modified.
+  this.attrs_ = {};
+  Dygraph.updateDeep(this.attrs_, Dygraph.DEFAULT_ATTRS);
+
+  this.boundaryIds_ = [];
+  this.setIndexByName_ = {};
+  this.datasetIndex_ = [];
+
+  this.registeredEvents_ = [];
+  this.eventListeners_ = {};
+
+  this.attributes_ = new DygraphOptions(this);
+
+  // Create the containing DIV and other interactive elements
+  this.createInterface_();
+
+  // Activate plugins.
+  this.plugins_ = [];
+  var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
+  for (var i = 0; i < plugins.length; i++) {
+    var Plugin = plugins[i];
+    var pluginInstance = new Plugin();
+    var pluginDict = {
+      plugin: pluginInstance,
+      events: {},
+      options: {},
+      pluginOptions: {}
+    };
+
+    var handlers = pluginInstance.activate(this);
+    for (var eventName in handlers) {
+      // TODO(danvk): validate eventName.
+      pluginDict.events[eventName] = handlers[eventName];
+    }
+
+    this.plugins_.push(pluginDict);
+  }
+
+  // At this point, plugins can no longer register event handlers.
+  // Construct a map from event -> ordered list of [callback, plugin].
+  for (var i = 0; i < this.plugins_.length; i++) {
+    var plugin_dict = this.plugins_[i];
+    for (var eventName in plugin_dict.events) {
+      if (!plugin_dict.events.hasOwnProperty(eventName)) continue;
+      var callback = plugin_dict.events[eventName];
+
+      var pair = [plugin_dict.plugin, callback];
+      if (!(eventName in this.eventListeners_)) {
+        this.eventListeners_[eventName] = [pair];
+      } else {
+        this.eventListeners_[eventName].push(pair);
+      }
+    }
+  }
+
+  this.createDragInterface_();
+
+  this.start_();
 };
 
 Dygraph.NAME = "Dygraph";
@@ -355,9 +498,6 @@ Dygraph.DEFAULT_ATTRS = {
   }
 };
 
-// Utility functions
-var parseFloat_;
-
 // Directions for panning and zooming. Use bit operations when combined
 // values are possible.
 Dygraph.HORIZONTAL = 1;
@@ -370,178 +510,6 @@ Dygraph.PLUGINS = [
 
 // Used for initializing annotation CSS rules only once.
 var addedAnnotationCSS = false;
-
-Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
-  // Labels is no longer a constructor parameter, since it's typically set
-  // directly from the data source. It also conains a name for the x-axis,
-  // which the previous constructor form did not.
-  if (labels !== null) {
-    var new_labels = ["Date"];
-    for (var i = 0; i < labels.length; i++) new_labels.push(labels[i]);
-    Dygraph.update(attrs, { 'labels': new_labels });
-  }
-  this.__init__(div, file, attrs);
-};
-
-/**
- * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
- * and context &lt;canvas&gt; inside of it. See the constructor for details.
- * on the parameters.
- * @param {Element} div the Element to render the graph into.
- * @param {String | Function} file Source data
- * @param {Object} attrs Miscellaneous other options
- * @private
- */
-Dygraph.prototype.__init__ = function(div, file, attrs) {
-  // Hack for IE: if we're using excanvas and the document hasn't finished
-  // loading yet (and hence may not have initialized whatever it needs to
-  // initialize), then keep calling this routine periodically until it has.
-  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
-      typeof(G_vmlCanvasManager) != 'undefined' &&
-      document.readyState != 'complete') {
-    var self = this;
-    setTimeout(function() { self.__init__(div, file, attrs); }, 100);
-    return;
-  }
-
-  // Support two-argument constructor
-  if (attrs === null || attrs === undefined) { attrs = {}; }
-
-  attrs = Dygraph.mapLegacyOptions_(attrs);
-
-  if (typeof(div) == 'string') {
-    div = document.getElementById(div);
-  }
-
-  if (!div) {
-    Dygraph.error("Constructing dygraph with a non-existent div!");
-    return;
-  }
-
-  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
-
-  // Copy the important bits into the object
-  // TODO(danvk): most of these should just stay in the attrs_ dictionary.
-  this.maindiv_ = div;
-  this.file_ = file;
-  this.rollPeriod_ = attrs.rollPeriod || DEFAULT_ROLL_PERIOD;
-  this.previousVerticalX_ = -1;
-  this.fractions_ = attrs.fractions || false;
-  this.dateWindow_ = attrs.dateWindow || null;
-
-  this.is_initial_draw_ = true;
-  this.annotations_ = [];
-
-  // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
-  this.zoomed_x_ = false;
-  this.zoomed_y_ = false;
-
-  // Clear the div. This ensure that, if multiple dygraphs are passed the same
-  // div, then only one will be drawn.
-  div.innerHTML = "";
-
-  // For historical reasons, the 'width' and 'height' options trump all CSS
-  // rules _except_ for an explicit 'width' or 'height' on the div.
-  // As an added convenience, if the div has zero height (like <div></div> does
-  // without any styles), then we use a default height/width.
-  if (div.style.width === '' && attrs.width) {
-    div.style.width = attrs.width + "px";
-  }
-  if (div.style.height === '' && attrs.height) {
-    div.style.height = attrs.height + "px";
-  }
-  if (div.style.height === '' && div.clientHeight === 0) {
-    div.style.height = DEFAULT_HEIGHT + "px";
-    if (div.style.width === '') {
-      div.style.width = DEFAULT_WIDTH + "px";
-    }
-  }
-  // These will be zero if the dygraph's div is hidden. In that case,
-  // use the user-specified attributes if present. If not, use zero
-  // and assume the user will call resize to fix things later.
-  this.width_ = div.clientWidth || attrs.width || 0;
-  this.height_ = div.clientHeight || attrs.height || 0;
-
-  // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
-  if (attrs.stackedGraph) {
-    attrs.fillGraph = true;
-    // TODO(nikhilk): Add any other stackedGraph checks here.
-  }
-
-  // DEPRECATION WARNING: All option processing should be moved from
-  // attrs_ and user_attrs_ to options_, which holds all this information.
-  //
-  // Dygraphs has many options, some of which interact with one another.
-  // To keep track of everything, we maintain two sets of options:
-  //
-  //  this.user_attrs_   only options explicitly set by the user.
-  //  this.attrs_        defaults, options derived from user_attrs_, data.
-  //
-  // Options are then accessed this.attr_('attr'), which first looks at
-  // user_attrs_ and then computed attrs_. This way Dygraphs can set intelligent
-  // defaults without overriding behavior that the user specifically asks for.
-  this.user_attrs_ = {};
-  Dygraph.update(this.user_attrs_, attrs);
-
-  // This sequence ensures that Dygraph.DEFAULT_ATTRS is never modified.
-  this.attrs_ = {};
-  Dygraph.updateDeep(this.attrs_, Dygraph.DEFAULT_ATTRS);
-
-  this.boundaryIds_ = [];
-  this.setIndexByName_ = {};
-  this.datasetIndex_ = [];
-
-  this.registeredEvents_ = [];
-  this.eventListeners_ = {};
-
-  this.attributes_ = new DygraphOptions(this);
-
-  // Create the containing DIV and other interactive elements
-  this.createInterface_();
-
-  // Activate plugins.
-  this.plugins_ = [];
-  var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
-  for (var i = 0; i < plugins.length; i++) {
-    var Plugin = plugins[i];
-    var pluginInstance = new Plugin();
-    var pluginDict = {
-      plugin: pluginInstance,
-      events: {},
-      options: {},
-      pluginOptions: {}
-    };
-
-    var handlers = pluginInstance.activate(this);
-    for (var eventName in handlers) {
-      // TODO(danvk): validate eventName.
-      pluginDict.events[eventName] = handlers[eventName];
-    }
-
-    this.plugins_.push(pluginDict);
-  }
-
-  // At this point, plugins can no longer register event handlers.
-  // Construct a map from event -> ordered list of [callback, plugin].
-  for (var i = 0; i < this.plugins_.length; i++) {
-    var plugin_dict = this.plugins_[i];
-    for (var eventName in plugin_dict.events) {
-      if (!plugin_dict.events.hasOwnProperty(eventName)) continue;
-      var callback = plugin_dict.events[eventName];
-
-      var pair = [plugin_dict.plugin, callback];
-      if (!(eventName in this.eventListeners_)) {
-        this.eventListeners_[eventName] = [pair];
-      } else {
-        this.eventListeners_[eventName].push(pair);
-      }
-    }
-  }
-
-  this.createDragInterface_();
-
-  this.start_();
-};
 
 /**
  * Triggers a cascade of events to the various plugins which are interested in them.
@@ -656,7 +624,7 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 
 /**
  * @private
- * @param  String} axis The name of the axis (i.e. 'x', 'y' or 'y2')
+ * @param {string} axis The name of the axis (i.e. 'x', 'y' or 'y2')
  * @return { ... } A function mapping string -> option value
  */
 Dygraph.prototype.optionsViewForAxis_ = function(axis) {
@@ -2286,11 +2254,11 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
   for (var i = 0; i < series.length; ++i) {
     var item = series[i];
     var yraw = bars ? item[1][0] : item[1];
-    var yval = yraw === null ? null : parseFloat_(yraw);
+    var yval = yraw === null ? null : Dygraph.parseFloat(yraw);
     var point = {
       x: NaN,
       y: NaN,
-      xval: parseFloat_(item[0]),
+      xval: Dygraph.parseFloat(item[0]),
       yval: yval,
       name: setName,  // TODO(danvk): is this really necessary?
       idx: i + boundaryIdStart
@@ -2299,8 +2267,8 @@ Dygraph.seriesToPoints_ = function(series, bars, setName, boundaryIdStart) {
     if (bars) {
       point.y_top = NaN;
       point.y_bottom = NaN;
-      point.yval_minus = parseFloat_(item[1][1]);
-      point.yval_plus = parseFloat_(item[1][2]);
+      point.yval_minus = Dygraph.parseFloat(item[1][1]);
+      point.yval_plus = Dygraph.parseFloat(item[1][2]);
     }
     points.push(point);
   }
@@ -3108,40 +3076,6 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
 };
 
 /**
- * Parses the value as a floating point number. This is like the parseFloat()
- * built-in, but with a few differences:
- * - the empty string is parsed as null, rather than NaN.
- * - if the string cannot be parsed at all, an error is logged.
- * If the string can't be parsed, this method returns null.
- * @param {String} x The string to be parsed
- * @param {Number} opt_line_no The line number from which the string comes.
- * @param {String} opt_line The text of the line from which the string comes.
- * @private
- */
-
-// Parse the x as a float or return null if it's not a number.
-var parseFloat_ = function(x, opt_line_no, opt_line) {
-  var val = parseFloat(x);
-  if (!isNaN(val)) return val;
-
-  // Try to figure out what happeend.
-  // If the value is the empty string, parse it as null.
-  if (/^ *$/.test(x)) return null;
-
-  // If it was actually "NaN", return it as NaN.
-  if (/^ *nan *$/i.test(x)) return NaN;
-
-  // Looks like a parsing error.
-  var msg = "Unable to parse '" + x + "' as a number";
-  if (opt_line !== null && opt_line_no !== null) {
-    msg += " on line " + (1+opt_line_no) + " ('" + opt_line + "') of CSV.";
-  }
-  Dygraph.error(msg);
-
-  return null;
-};
-
-/**
  * @private
  * Parses a string in a special csv format.  We expect a csv file where each
  * line is a date point, and the first field in each line is the date string.
@@ -3211,8 +3145,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
                         "form.");
           fields[j] = [0, 0];
         } else {
-          fields[j] = [parseFloat_(vals[0], i, line),
-                       parseFloat_(vals[1], i, line)];
+          fields[j] = [Dygraph.parseFloat(vals[0], i, line),
+                       Dygraph.parseFloat(vals[1], i, line)];
         }
       }
     } else if (this.attr_("errorBars")) {
@@ -3223,8 +3157,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
                       'values (' + (inFields.length - 1) + "): '" + line + "'");
       }
       for (j = 1; j < inFields.length; j += 2) {
-        fields[(j + 1) / 2] = [parseFloat_(inFields[j], i, line),
-                               parseFloat_(inFields[j + 1], i, line)];
+        fields[(j + 1) / 2] = [Dygraph.parseFloat(inFields[j], i, line),
+                               Dygraph.parseFloat(inFields[j + 1], i, line)];
       }
     } else if (this.attr_("customBars")) {
       // Bars are a low;center;high tuple
@@ -3235,9 +3169,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
         } else {
           vals = val.split(";");
           if (vals.length == 3) {
-            fields[j] = [ parseFloat_(vals[0], i, line),
-                          parseFloat_(vals[1], i, line),
-                          parseFloat_(vals[2], i, line) ];
+            fields[j] = [ Dygraph.parseFloat(vals[0], i, line),
+                          Dygraph.parseFloat(vals[1], i, line),
+                          Dygraph.parseFloat(vals[2], i, line) ];
           } else {
             Dygraph.warn('When using customBars, values must be either blank ' +
                       'or "low;center;high" tuples (got "' + val +
@@ -3248,7 +3182,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else {
       // Values are just numbers
       for (j = 1; j < inFields.length; j++) {
-        fields[j] = parseFloat_(inFields[j], i, line);
+        fields[j] = Dygraph.parseFloat(inFields[j], i, line);
       }
     }
     if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
@@ -3839,7 +3773,3 @@ Dygraph.prototype.getLabels = function() {
 Dygraph.prototype.indexFromSetName = function(name) {
   return this.setIndexByName_[name];
 };
-
-return Dygraph;
-
-})();
