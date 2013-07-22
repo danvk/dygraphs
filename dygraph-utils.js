@@ -1192,4 +1192,26 @@ Dygraph.toRGB_ = function(color_str) {
   };
 };
 
+/**
+ * Checks whether the browser supports the &lt;canvas&gt; tag.
+ * @param {HTMLCanvasElement=} opt_canvasElement Pass a canvas element as an
+ *     optimization if you have one.
+ * @return {boolean} Whether the browser supports canvas.
+ */
+Dygraph.isCanvasSupported = function(opt_canvasElement) {
+  var canvas;
+  try {
+    canvas = opt_canvasElement || document.createElement("canvas");
+    canvas.getContext("2d");
+  }
+  catch (e) {
+    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
+    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
+    if ((!ie) || (ie[1] < 6) || (opera))
+      return false;
+    return true;
+  }
+  return true;
+};
+
 })();

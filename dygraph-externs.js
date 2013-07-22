@@ -141,6 +141,21 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {};
 Dygraph.prototype.registeredEvents_;
 
 /**
+ * @type {CanvasRenderingContext2D}
+ */
+Dygraph.prototype.canvas_ctx_;
+
+/**
+ * @type {CanvasRenderingContext2D}
+ */
+Dygraph.prototype.hidden_ctx_;
+
+/**
+ * @type {Object.<string>}
+ */
+Dygraph.prototype.colorsMap_;
+
+/**
  * @return {!Array.<number>} two element [left, right] array.
  */
 Dygraph.prototype.xAxisRange = function() {};
@@ -157,6 +172,24 @@ Dygraph.prototype.axisPropertiesForSeries = function(setName) {};
  * @return {number} A fraction in [0, 1] where 0 = the top edge.
  */
 Dygraph.prototype.toPercentYCoord = function(y, axis) {};
+
+/**
+ * @param {string} name The name of the option (e.g. 'strokeWidth')
+ * @param {string=} opt_seriesName Series name to get per-series values.
+ * @return {*} The value of the option.
+ */
+Dygraph.prototype.getOption = function(name, opt_seriesName) {};
+
+/**
+ * @return {?Array.<string>} The names of each series (including the x-axis),
+ *     or null if they haven't been defined yet.
+ */
+Dygraph.prototype.getLabels = function() {};
+
+/**
+ * @return {Array.<string>} The list of colors.
+ */
+Dygraph.prototype.getColors = function() {};
 
 /** @type {{axes: Object}} */
 Dygraph.DEFAULT_ATTRS;
@@ -216,3 +249,9 @@ Dygraph.Rect;
  * }}
  */
 Dygraph.AxisType;
+
+/**
+ * TODO(danvk): be more specific than "Object".
+ * @typedef {function(Object)}
+ */
+Dygraph.PlotterType;

@@ -15,34 +15,10 @@
  */
 
 /**
+ * @constructor
+ *
  * The DygraphCanvasRenderer class does the actual rendering of the chart onto
  * a canvas. It's based on PlotKit.CanvasRenderer.
- * @param {Object} element The canvas to attach to
- * @param {Object} elementContext The 2d context of the canvas (injected so it
- * can be mocked for testing.)
- * @param {Layout} layout The DygraphLayout object for this graph.
- * @constructor
- */
-
-var DygraphCanvasRenderer = (function() {
-
-/*jshint globalstrict: true */
-/*global Dygraph:false,RGBColorParser:false */
-"use strict";
-
-// Utility methods for this file.
-var isCanvasSupported_,
-    getIteratorPredicate_,
-    predicateThatSkipsEmptyPoints_,
-    drawSeries_,
-    drawPointsOnLine_,
-    linePlotter_,
-    fillPlotter_,
-    errorPlotter_;
-
-
-/**
- * @constructor
  *
  * This gets called when there are "new points" to chart. This is generally the
  * case when the underlying data being charted has changed. It is _not_ called
@@ -70,9 +46,9 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.width = this.element.width;
 
   // --- check whether everything is ok before we return
-  // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
-  if (!this.isIE && !(isCanvasSupported_(this.element)))
-      throw "Canvas is not supported.";
+  if (!(Dygraph.isCanvasSupported(this.element))) {
+    throw "Canvas is not supported.";
+  }
 
   // internal state
   this.area = layout.getPlotArea();
@@ -99,6 +75,23 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
     }
   }
 };
+
+
+(function() {
+
+/*jshint globalstrict: true */
+/*global Dygraph:false,RGBColorParser:false */
+"use strict";
+
+// Utility methods for this file.
+var getIteratorPredicate_,
+    predicateThatSkipsEmptyPoints_,
+    drawSeries_,
+    drawPointsOnLine_,
+    linePlotter_,
+    fillPlotter_,
+    errorPlotter_;
+
 
 /**
  * Clears out all chart content and DOM elements.
@@ -127,29 +120,6 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
-};
-
-/**
- * Checks whether the browser supports the &lt;canvas&gt; tag.
- */
-isCanvasSupported_ = function(canvasName) {
-  var canvas = null;
-  try {
-    if (typeof(canvasName) == 'undefined' || canvasName === null) {
-      canvas = document.createElement("canvas");
-    } else {
-      canvas = canvasName;
-    }
-    canvas.getContext("2d");
-  }
-  catch (e) {
-    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
-    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
-    if ((!ie) || (ie[1] < 6) || (opera))
-      return false;
-    return true;
-  }
-  return true;
 };
 
 /**
@@ -438,8 +408,8 @@ DygraphCanvasRenderer.prototype._updatePoints = function() {
  *
  * @param {string=} opt_seriesName when specified, only that series will
  *     be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
- * @param {CanvasRenderingContext2D} opt_ctx when specified, the drawing
- *     context.  However, lines are typically drawn on the object's
+ * @param {CanvasRenderingContext2D=} opt_ctx when specified, the drawing
+ *     context. However, lines are typically drawn on the object's
  *     elementContext.
  * @private
  */
@@ -454,19 +424,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   this.colors = this.dygraph_.colorsMap_;
 
   // Determine which series have specialized plotters.
-  var plotter_attr = this.dygraph_.attr_("plotter");
-  var plotters = plotter_attr;
+  var plotter_attr = /** @type{!Array.<!Dygraph.PlotterType>|!Dygraph.PlotterType}*/(this.dygraph_.getOption("plotter"));
+
+  /** @type{!Array.<!Dygraph.PlotterType>} */
+  var plotters;
   if (!Dygraph.isArrayLike(plotters)) {
     plotters = [plotters];
+  } else {
+    plotters = /** @type {!Array.<!Dygraph.PlotterType>} */(plotter_attr);
   }
 
+  /** @type {Object.<!Dygraph.PlotterType>} */
   var setPlotters = {};  // series name -> plotter fn.
   for (i = 0; i < setNames.length; i++) {
     setName = setNames[i];
-    var setPlotter = this.dygraph_.attr_("plotter", setName);
+    var setPlotter = this.dygraph_.getOption("plotter", setName);
     if (setPlotter == plotter_attr) continue;  // not specialized.
 
-    setPlotters[setName] = setPlotter;
+    setPlotters[setName] = /** @type {!Dygraph.PlotterType} */(setPlotter);
   }
 
   for (i = 0; i < plotters.length; i++) {
@@ -491,11 +466,12 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
       }
 
       var color = this.colors[setName];
-      var strokeWidth = this.dygraph_.getOption("strokeWidth", setName);
+      var strokeWidth = /** @type{number}*/(this.dygraph_.getOption("strokeWidth", setName));
 
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = strokeWidth;
+      // TODO(danvk): add an @typedef for this Object.
       p({
         points: points,
         setName: setName,
@@ -801,7 +777,5 @@ DygraphCanvasRenderer._Plotters = {
   fillPlotter: fillPlotter_,
   errorPlotter: errorPlotter_
 };
-
-return DygraphCanvasRenderer;
 
 })();
