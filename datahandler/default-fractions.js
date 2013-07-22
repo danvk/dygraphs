@@ -9,6 +9,7 @@
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 /*jshint globalstrict: true */
+/*global Dygraph:false */
 "use strict";
 
 (function() {

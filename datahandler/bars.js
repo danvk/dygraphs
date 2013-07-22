@@ -11,6 +11,8 @@
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 /*jshint globalstrict: true */
+/*global Dygraph:false */
+/*global DygraphLayout:false */
 "use strict";
 
 (function() {

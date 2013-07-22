@@ -38,7 +38,9 @@
  * errorBar / customBar: [x, yVal, [yTopVariance, yBottomVariance] ]<br>
  * 
  */
-/* jshint globalstrict: true */
+/*jshint globalstrict: true */
+/*global Dygraph:false */
+/*global DygraphLayout:false */
 "use strict";
 
 /**
