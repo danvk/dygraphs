@@ -31,7 +31,7 @@ Dygraph.Interaction = {};
  *
  * @param {!Event} event the event object which led to the startPan call.
  * @param {!Dygraph} g The dygraph on which to act.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -112,7 +112,7 @@ Dygraph.Interaction.startPan = function(event, g, context) {
  *
  * @param {!Event} event the event object which led to the movePan call.
  * @param {!Dygraph} g The dygraph on which to act.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -185,7 +185,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  *
  * @param {!Event} event the event object which led to the endPan call.
  * @param {!Dygraph} g The dygraph on which to act.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -223,7 +223,7 @@ Dygraph.Interaction.endPan = function(event, g, context) {
  *
  * @param {!Event} event the event object which led to the startZoom call.
  * @param {!Dygraph} g The dygraph on which to act.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -242,7 +242,7 @@ Dygraph.Interaction.startZoom = function(event, g, context) {
  *
  * @param {!Event} event the event object which led to the moveZoom call.
  * @param {!Dygraph} g The dygraph on which to act.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -275,7 +275,7 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
 /**
  * @param {!Dygraph} g
  * @param {!Event} event
- * @param {!Dygraph.InteractionContext} context
+ * @param {!DygraphInteractionContext} context
  */
 Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   var clickCallback = g.attr_('clickCallback');
@@ -329,7 +329,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
  *
  * @param {!Event} event the event object which led to the endZoom call.
  * @param {!Dygraph} g The dygraph on which to end the zoom.
- * @param {!Dygraph.InteractionContext} context The dragging context object
+ * @param {!DygraphInteractionContext} context The dragging context object
  *     (with dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */

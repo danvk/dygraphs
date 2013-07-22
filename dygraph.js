@@ -104,7 +104,10 @@ var Dygraph = function(div, file, opt_attrs) {
 
   this.is_initial_draw_ = true;
 
-  /** @type {!Array.<Dygraph.AnnotationType>} */
+  /** @type {number} */
+  this.lastx_ = undefined;
+
+  /** @type {!Array.<DygraphAnnotationType>} */
   this.annotations_ = [];
 
   // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
@@ -166,10 +169,21 @@ var Dygraph = function(div, file, opt_attrs) {
   this.setIndexByName_ = {};
   this.datasetIndex_ = [];
 
+  /**
+   * @type {Array.<{
+   *   elem: !Element,
+   *   type: string,
+   *   fn: function(?Event):(boolean|undefined)
+   * }>}
+   */
   this.registeredEvents_ = [];
   this.eventListeners_ = {};
 
+  /** @type {!DygraphOptions} */
   this.attributes_ = new DygraphOptions(this);
+
+  /** @type {Array.<Dygraph.PointType>} */
+  this.selPoints_ = [];
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -221,14 +235,14 @@ var Dygraph = function(div, file, opt_attrs) {
 Dygraph.NAME = "Dygraph";
 Dygraph.VERSION = "1.2";
 Dygraph.__repr__ = function() {
-  return "[" + this.NAME + " " + this.VERSION + "]";
+  return "[" + Dygraph.NAME + " " + Dygraph.VERSION + "]";
 };
 
 /**
  * Returns information about the Dygraph class.
  */
 Dygraph.toString = function() {
-  return this.__repr__();
+  return Dygraph.__repr__();
 };
 
 // Various default values
@@ -377,6 +391,7 @@ Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
 
 
 // Default attribute values.
+/** @type {{axes: Object}} */
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
@@ -500,7 +515,9 @@ Dygraph.DEFAULT_ATTRS = {
 
 // Directions for panning and zooming. Use bit operations when combined
 // values are possible.
+/** @const */
 Dygraph.HORIZONTAL = 1;
+/** @const */
 Dygraph.VERTICAL = 2;
 
 // Installed plugins, in order of precedence (most-general to most-specific).
@@ -515,6 +532,9 @@ var addedAnnotationCSS = false;
  * Triggers a cascade of events to the various plugins which are interested in them.
  * Returns true if the "default behavior" should be performed, i.e. if none of
  * the event listeners called event.preventDefault().
+ * @param {string} name Event name.
+ * @param {Object} extra_props Event-specific properties.
+ * @return {boolean} Whether to perform the default action.
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
@@ -580,13 +600,13 @@ Dygraph.prototype.toString = function() {
  * Returns the value of an option. This may be set by the user (either in the
  * constructor or by calling updateOptions) or by dygraphs, and may be set to a
  * per-series value.
- * @param { String } name The name of the option, e.g. 'rollPeriod'.
- * @param { String } [seriesName] The name of the series to which the option
+ * @param {string} name The name of the option, e.g. 'rollPeriod'.
+ * @param {string} opt_seriesName The name of the series to which the option
  * will be applied. If no per-series value of this option is available, then
  * the global value is returned. This is optional.
- * @return { ... } The value of the option.
+ * @return {*} The value of the option.
  */
-Dygraph.prototype.attr_ = function(name, seriesName) {
+Dygraph.prototype.attr_ = function(name, opt_seriesName) {
 // <REMOVE_FOR_COMBINED>
   if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
     Dygraph.error('Must include options reference JS for testing');
@@ -597,7 +617,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
 // </REMOVE_FOR_COMBINED>
-  return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
+  return opt_seriesName ? this.attributes_.getForSeries(name, opt_seriesName) : this.attributes_.get(name);
 };
 
 /**
@@ -625,7 +645,7 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 /**
  * @private
  * @param {string} axis The name of the axis (i.e. 'x', 'y' or 'y2')
- * @return { ... } A function mapping string -> option value
+ * @return {function(string)} A function mapping string -> option value
  */
 Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
@@ -668,6 +688,7 @@ Dygraph.prototype.rollPeriod = function() {
  * panning or a call to updateOptions.
  * Returns a two-element array: [left, right].
  * If the Dygraph has dates on the x-axis, these will be millis since epoch.
+ * @return {!Array.<number>} two element [left, right] array.
  */
 Dygraph.prototype.xAxisRange = function() {
   return this.dateWindow_ ? this.dateWindow_ : this.xAxisExtremes();
@@ -961,6 +982,7 @@ Dygraph.prototype.createInterface_ = function() {
   // Create the all-enclosing graph div
   var enclosing = this.maindiv_;
 
+  /** @type {!HTMLDivElement} */
   this.graphDiv = document.createElement("div");
 
   // TODO(danvk): any other styles that are useful to set here?
@@ -976,7 +998,9 @@ Dygraph.prototype.createInterface_ = function() {
 
   this.resizeElements_();
 
+  /** @type {CanvasRenderingContext2D} */
   this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
+  /** @type {CanvasRenderingContext2D} */
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
 
   // The interactive parts of the graph are drawn on top of the chart.
@@ -984,7 +1008,7 @@ Dygraph.prototype.createInterface_ = function() {
   this.graphDiv.appendChild(this.canvas_);
   this.mouseEventElement_ = this.createMouseEventElement_();
 
-  // Create the grapher
+  /** @type {DygraphLayout} */
   this.layout_ = new DygraphLayout(this);
 
   var dygraph = this;
@@ -1129,6 +1153,7 @@ Dygraph.prototype.setColors_ = function() {
   var labels = this.getLabels();
   var num = labels.length - 1;
   this.colors_ = [];
+  /** @type {Object.<string>} */
   this.colorsMap_ = {};
   var colors = this.attr_('colors');
   var i;
@@ -1625,7 +1650,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
 /**
  * Get the current graph's area object.
  *
- * @return {Dygraph.Rect} An {x, y, w, h} object.
+ * @return {DygraphRect} An {x, y, w, h} object.
  */
 Dygraph.prototype.getArea = function() {
   return this.plotter_.area;
@@ -1947,13 +1972,14 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * Manually set the selected points and display information about them in the
  * legend. The selection can be cleared using clearSelection() and queried
  * using getSelection().
- * @param { Integer } row number that should be highlighted (i.e. appear with
- * hover dots on the chart). Set to false to clear any selection.
- * @param { seriesName } optional series name to highlight that series with the
- * the highlightSeriesOpts setting.
- * @param { locked } optional If true, keep seriesName selected when mousing
- * over the graph, disabling closest-series highlighting. Call clearSelection()
- * to unlock it.
+ *
+ * @param {number} row number that should be highlighted (i.e. appear with
+ *     hover dots on the chart). Set to false to clear any selection.
+ * @param {string=} opt_seriesName series name to highlight that series with
+ *     the the highlightSeriesOpts setting.
+ * @param {boolean=} opt_locked If true, keep seriesName selected when mousing
+ *     over the graph, disabling closest-series highlighting. Call
+ *     clearSelection() to unlock it.
  */
 Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   // Extract the points we've selected
@@ -2057,6 +2083,7 @@ Dygraph.prototype.getSelection = function() {
 /**
  * Returns the name of the currently-highlighted series.
  * Only available when the highlightSeriesOpts option is in use.
+ * @return {string} The name of the highlighted series.
  */
 Dygraph.prototype.getHighlightSeries = function() {
   return this.highlightSet_;
@@ -2241,7 +2268,7 @@ Dygraph.PointType = undefined;
  * Converts a series to a Point array.
  *
  * @private
- * @param {Array.<Array.<(?number|Array<?number>)>} series Array where
+ * @param {Array.<Array.<(?number|Array.<?number>)>>} series Array where
  *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
  * @param {boolean} bars True if error bars or custom bars are being drawn.
  * @param {string} setName Name of the series.
@@ -2375,7 +2402,7 @@ Dygraph.stackPoints_ = function(
  * extreme values "speculatively", i.e. without actually setting state on the
  * dygraph.
  *
- * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
+ * @param {Array.<Array.<Array.<(number|Array.<number>)>>>} rolledSeries, where
  *     rolledSeries[seriesIndex][row] = raw point, where
  *     seriesIndex is the column number starting with 1, and
  *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
@@ -2596,6 +2623,10 @@ Dygraph.prototype.computeYAxes_ = function() {
   // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
   // data computation as well as options storage.
   // Go through once and add all the axes.
+  /**
+   * TODO(danvk): be more specific
+   * @type {Array.<Object>}
+   */
   this.axes_ = [];
 
   for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
@@ -2649,11 +2680,11 @@ Dygraph.prototype.numAxes = function() {
 };
 
 /**
- * @private
  * Returns axis properties for the given series.
- * @param { String } setName The name of the series for which to get axis
- * properties, e.g. 'Y1'.
- * @return { Object } The axis properties.
+ * @param {string} setName The name of the series for which to get axis
+ *     properties, e.g. 'Y1'.
+ * @return {Object} The axis properties.
+ * @private
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.
@@ -2854,12 +2885,12 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
  * TODO(danvk): the "missing values" bit above doesn't seem right.
  *
  * @private
- * @param {Array.<Array.<(number|Array<Number>)>>} rawData Input data. Rectangular
- *     grid of points, where rawData[row][0] is the X value for the row,
- *     and rawData[row][i] is the Y data for series #i.
+ * @param {Array.<Array.<(number|Array.<number>)>>} rawData Input data.
+ *     Rectangular grid of points, where rawData[row][0] is the X value for the
+ *     row, and rawData[row][i] is the Y data for series #i.
  * @param {number} i Series index, starting from 1.
  * @param {boolean} logScale True if using logarithmic Y scale.
- * @return {Array.<Array.<(?number|Array<?number>)>} Series array, where
+ * @return {Array.<Array.<(?number|Array.<?number>)>>} Series array, where
  *     series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
  */
 Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {

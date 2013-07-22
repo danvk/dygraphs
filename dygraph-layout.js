@@ -50,7 +50,7 @@ var DygraphLayout = function(dygraph) {
   /** @type {Array.<!Dygraph.AnnotationType>} */
   this.annotations = [];
 
-  /** @type {Array.<Dygraph.AxisType>} */
+  /** @type {Array.<DygraphAxisType>} */
   this.yAxes_ = null;
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
@@ -60,7 +60,7 @@ var DygraphLayout = function(dygraph) {
   /** @type {Dygraph.TickList} */
   this.yTicks_ = null;
 
-  /** @type {?Dygraph.Rect} */
+  /** @type {?DygraphRect} */
   this.area_ = null;
 
   // TODO(danvk): these fields should be objects, not arrays of arrays, which
@@ -101,7 +101,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
  * Returns the box which the chart should be drawn in. This is the canvas's
  * box, less space needed for the axis and chart labels.
  *
- * @return {?Dygraph.Rect}
+ * @return {?DygraphRect}
  */
 DygraphLayout.prototype.getPlotArea = function() {
   return this.area_;
@@ -225,7 +225,7 @@ DygraphLayout.prototype.setXTicks = function(xTicks) {
 };
 
 /**
- * @param {Array.<Dygraph.AxisType>} yAxes The y-axes.
+ * @param {Array.<DygraphAxisType>} yAxes The y-axes.
  */
 DygraphLayout.prototype.setYAxes = function (yAxes) {
   this.yAxes_ = yAxes;

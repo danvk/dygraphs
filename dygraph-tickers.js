@@ -64,7 +64,7 @@
 /*global Dygraph:false */
 "use strict";
 
-/** @type {Dygraph.Ticker} */
+/** @type {DygraphTicker} */
 Dygraph.numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
@@ -93,7 +93,7 @@ var PREFERRED_LOG_TICK_VALUES = (function() {
 })();
 
 
-/** @type {Dygraph.Ticker} */
+/** @type {DygraphTicker} */
 Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
@@ -212,7 +212,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 
-/** @type {Dygraph.Ticker} */
+/** @type {DygraphTicker} */
 Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = Dygraph.pickDateTickGranularity(a, b, pixels, opts);
 
@@ -348,7 +348,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} granularity (one of the granularities enumerated above)
  * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @param {Dygraph=} dg
- * @return {!Dygraph.TickList}
+ * @return {!DygraphTickList}
  */
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(

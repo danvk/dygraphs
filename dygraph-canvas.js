@@ -424,24 +424,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   this.colors = this.dygraph_.colorsMap_;
 
   // Determine which series have specialized plotters.
-  var plotter_attr = /** @type{!Array.<!Dygraph.PlotterType>|!Dygraph.PlotterType}*/(this.dygraph_.getOption("plotter"));
+  var plotter_attr = /** @type{!Array.<!DygraphPlotterType>|!DygraphPlotterType}*/(this.dygraph_.getOption("plotter"));
 
-  /** @type{!Array.<!Dygraph.PlotterType>} */
+  /** @type{!Array.<!DygraphPlotterType>} */
   var plotters;
   if (!Dygraph.isArrayLike(plotters)) {
     plotters = [plotters];
   } else {
-    plotters = /** @type {!Array.<!Dygraph.PlotterType>} */(plotter_attr);
+    plotters = /** @type {!Array.<!DygraphPlotterType>} */(plotter_attr);
   }
 
-  /** @type {Object.<!Dygraph.PlotterType>} */
+  /** @type {Object.<!DygraphPlotterType>} */
   var setPlotters = {};  // series name -> plotter fn.
   for (i = 0; i < setNames.length; i++) {
     setName = setNames[i];
     var setPlotter = this.dygraph_.getOption("plotter", setName);
     if (setPlotter == plotter_attr) continue;  // not specialized.
 
-    setPlotters[setName] = /** @type {!Dygraph.PlotterType} */(setPlotter);
+    setPlotters[setName] = /** @type {!DygraphPlotterType} */(setPlotter);
   }
 
   for (i = 0; i < plotters.length; i++) {
