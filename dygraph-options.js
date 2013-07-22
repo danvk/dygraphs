@@ -76,7 +76,7 @@ var DygraphOptions = function(dygraph) {
  * @type {Object.<number>}
  * @private
  */
-DygraphOptions.AXIS_STRING_MAPPINGS_ = {
+var AXIS_STRING_MAPPINGS_ = {
   'y' : 0,
   'Y' : 0,
   'y1' : 0,
@@ -89,10 +89,10 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
  * @param {string|number} axis
  * @private
  */
-DygraphOptions.axisToIndex_ = function(axis) {
+var axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
-    if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
-      return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
+    if (AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
+      return AXIS_STRING_MAPPINGS_[axis];
     }
     throw "Unknown axis : " + axis;
   }
@@ -196,7 +196,7 @@ DygraphOptions.prototype.reparseSeries = function() {
     for (var idx = 0; idx < this.labels_.length; idx++) {
       var seriesName = this.labels_[idx];
       var optionsForSeries = this.user_.series[seriesName] || {};
-      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
+      var yAxis = axisToIndex_(optionsForSeries["axis"]);
 
       this.series_[seriesName] = {
         idx: idx,

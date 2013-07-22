@@ -1,0 +1,52 @@
+The dygraphs JS binary has ballooned by about 3x over the past three years.
+
+Things to do to make dygraph-combine.js smaller:
+- (4191) Move range selector out of core
+- (2645) Simplify or eliminate dygraph-interaction-model.js.
+- (1322) reduce duplication of names in Dygraph.isPixelChangingOptionList
+- (????) Switch to Closure Compiler, which is more aggressive about dead code removal.
+- (????) merge update, updateDeep, clone
+- (????) can we kill the iterator stuff?
+- (????) unify/simplify date processing code (dateString_, hmsString_, ...)
+- (????) update YUI compressor (maybe it's gotten better?)
+          -> ideally it would mangle internal method names & constants.
+x (3942) Remove rgbcolor.js
+x (1983) Remove stacktrace.js from dygraph-combined.js
+x (1431) Remove srtftime, which is only minimally used.
+x (????) Move symbols which shouldn't be exported out of Dygraph namespace.
+          -> started w/ 141 exported symbols; down to ~80.
+x (????) Unify Dygraph.prototype.log vs. Dygraph.log
+x (????) Combined findPos{X,Y}, page{X,Y}
+x (1321) move kberg's polygon stuff into a plugin
+
+To measure size:
+$ ./generate-combined.sh cat_minified | wc -c
+
+To test correctness:
+$ make test-combined
+
+ 135782 Initial (40827 gzipped)
+ 130557 removed stacktrace.js
+ 130142 removed stacktrace logic from combined
+ 129932 remove unused Dygraph.compareArrays_
+ 125996 remove strftime-min.js
+ 122403 replace rgbcolor.js with a DOM trick.
+ 122185 consolidate findPos{X,Y}
+ 120905 move custom circles into extras/circles.js
+ 115027 switch to uglifyjs
+ 113418 don't export ticker enum symbols.
+ 111327 more private symbols, consolidate on static log functions.
+ 110282 reduce exported symbols in dygraph-canvas.js
+ 109897 remove parseFloat_ from dygraph-layout.js
+ 109318 fewer exports from dygraph.js
+
+135782 -> 109897 = 19% reduction
+40827 -> 33214 gz = 18.6% reduction
+
+
+TODO:
+- remove all references to strftime-min.js
+- check that window.getComputedStyle() returns 'rgb()' cross-browser.
+    -> need to use document.defaultView.getComputedStyle for old FF
+    -> need to use element.currentStyle[property] for old IE
+- remove "jshint:globalstrict" where possible.

@@ -9,6 +9,8 @@
  * dygraphs.
  */
 
+var DygraphLayout = (function() {
+
 /*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
@@ -153,13 +155,13 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && ann[i].x === undefined) {
-      this.dygraph_.error("Annotations must have an 'x' property");
+      Dygraph.error("Annotations must have an 'x' property");
       return;
     }
     if (ann[i].icon &&
         !(ann[i].hasOwnProperty('width') &&
           ann[i].hasOwnProperty('height'))) {
-      this.dygraph_.error("Must set width and height when setting " +
+      Dygraph.error("Must set width and height when setting " +
                           "annotation.icon property");
       return;
     }
@@ -203,15 +205,15 @@ DygraphLayout.prototype._evaluateLimits = function() {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
-        axis.g.error('axis ' + i + ' of graph at ' + axis.g +
-            ' can\'t be displayed in log scale for range [' +
-            axis.minyval + ' - ' + axis.maxyval + ']');
+        Dygraph.error('axis ' + i + ' of graph at ' + axis.g +
+                      ' can\'t be displayed in log scale for range [' +
+                      axis.minyval + ' - ' + axis.maxyval + ']');
       }
     }
   }
 };
 
-DygraphLayout._calcYNormal = function(axis, value, logscale) {
+var calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
     return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
   } else {
@@ -239,7 +241,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
-        point.y_stacked = DygraphLayout._calcYNormal(
+        point.y_stacked = calcYNormal_(
             axis, point.yval_stacked, logscale);
         if (yval !== null && !isNaN(yval)) {
           yval = point.yval_stacked;
@@ -251,30 +253,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           point.yval = NaN;
         }
       }
-      point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
+      point.y = calcYNormal_(axis, yval, logscale);
 
       if (hasBars) {
-        point.y_top = DygraphLayout._calcYNormal(
-            axis, yval - point.yval_minus, logscale);
-        point.y_bottom = DygraphLayout._calcYNormal(
-            axis, yval + point.yval_plus, logscale);
+        point.y_top = calcYNormal_(axis, yval - point.yval_minus, logscale);
+        point.y_bottom = calcYNormal_(axis, yval + point.yval_plus, logscale);
       }
     }
   }
-};
-
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- */
-DygraphLayout.parseFloat_ = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
@@ -347,3 +333,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
   this.setPointsLengths = [];
   this.setPointsOffsets = [];
 };
+
+return DygraphLayout;
+
+})();

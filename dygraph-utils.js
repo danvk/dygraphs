@@ -11,12 +11,13 @@
  * search) and generic DOM-manipulation functions.
  */
 
+(function() {
+
 /*jshint globalstrict: true */
 /*global Dygraph:false, G_vmlCanvasManager:false, Node:false, printStackTrace: false */
 "use strict";
 
-Dygraph.LOG_SCALE = 10;
-Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
+Dygraph.LN_TEN = Math.log(10);
 
 /**
  * @private
@@ -28,16 +29,18 @@ Dygraph.log10 = function(x) {
 };
 
 // Various logging levels.
-Dygraph.DEBUG = 1;
-Dygraph.INFO = 2;
-Dygraph.WARNING = 3;
-Dygraph.ERROR = 3;
+var DEBUG = 1;
+var INFO = 2;
+var WARNING = 3;
+var ERROR = 3;
 
+// <REMOVE_FOR_COMBINED>
 // Set this to log stack traces on warnings, etc.
 // This requires stacktrace.js, which is up to you to provide.
 // A copy can be found in the dygraphs repo, or at
 // https://github.com/eriwen/javascript-stacktrace
-Dygraph.LOG_STACK_TRACES = false;
+var LOG_STACK_TRACES = false;
+// </REMOVE_FOR_COMBINED>
 
 /** A dotted line stroke pattern. */
 Dygraph.DOTTED_LINE = [2, 2];
@@ -48,11 +51,12 @@ Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
 
 /**
  * Log an error on the JS console at the given severity.
- * @param {number} severity One of Dygraph.{DEBUG,INFO,WARNING,ERROR}
+ * @param {number} severity One of {DEBUG,INFO,WARNING,ERROR}
  * @param {string} message The message to log.
  * @private
  */
 Dygraph.log = function(severity, message) {
+  // <REMOVE_FOR_COMBINED>
   var st;
   if (typeof(printStackTrace) != 'undefined') {
     try {
@@ -74,6 +78,7 @@ Dygraph.log = function(severity, message) {
       // Oh well, it was worth a shot!
     }
   }
+  // </REMOVE_FOR_COMBINED>
 
   if (typeof(window.console) != 'undefined') {
     // In older versions of Firefox, only console.log is defined.
@@ -87,24 +92,26 @@ Dygraph.log = function(severity, message) {
     };
 
     switch (severity) {
-      case Dygraph.DEBUG:
+      case DEBUG:
         log(console, console.debug, 'dygraphs: ' + message);
         break;
-      case Dygraph.INFO:
+      case INFO:
         log(console, console.info, 'dygraphs: ' + message);
         break;
-      case Dygraph.WARNING:
+      case WARNING:
         log(console, console.warn, 'dygraphs: ' + message);
         break;
-      case Dygraph.ERROR:
+      case ERROR:
         log(console, console.error, 'dygraphs: ' + message);
         break;
     }
   }
 
-  if (Dygraph.LOG_STACK_TRACES) {
+  // <REMOVE_FOR_COMBINED>
+  if (LOG_STACK_TRACES) {
     window.console.log(st.join('\n'));
   }
+  // </REMOVE_FOR_COMBINED>
 };
 
 /**
@@ -112,38 +119,23 @@ Dygraph.log = function(severity, message) {
  * @private
  */
 Dygraph.info = function(message) {
-  Dygraph.log(Dygraph.INFO, message);
+  Dygraph.log(INFO, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.info = Dygraph.info;
 
 /**
  * @param {string} message
  * @private
  */
 Dygraph.warn = function(message) {
-  Dygraph.log(Dygraph.WARNING, message);
+  Dygraph.log(WARNING, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.warn = Dygraph.warn;
 
 /**
  * @param {string} message
  */
 Dygraph.error = function(message) {
-  Dygraph.log(Dygraph.ERROR, message);
+  Dygraph.log(ERROR, message);
 };
-/**
- * @param {string} message
- * @private
- */
-Dygraph.prototype.error = Dygraph.error;
 
 /**
  * Return the 2d context for a dygraph canvas.
@@ -299,76 +291,47 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
 // ... and modifications to support scrolling divs.
 
 /**
- * Find the x-coordinate of the supplied object relative to the left side
- * of the page.
+ * Find the coordinates of an object relative to the top left of the page.
+ *
  * TODO(danvk): change obj type from Node -&gt; !Node
  * @param {Node} obj
- * @return {number}
+ * @return {{x:number,y:number}}
  * @private
  */
-Dygraph.findPosX = function(obj) {
-  var curleft = 0;
-  if(obj.offsetParent) {
+Dygraph.findPos = function(obj) {
+  var curleft = 0, curtop = 0;
+  if (obj.offsetParent) {
     var copyObj = obj;
-    while(1) {
+    while (1) {
       // NOTE: the if statement here is for IE8.
-      var borderLeft = "0";
+      var borderLeft = "0", borderTop = "0";
       if (window.getComputedStyle) {
-        borderLeft = window.getComputedStyle(copyObj, null).borderLeft || "0";
+        var computedStyle = window.getComputedStyle(copyObj, null);
+        borderLeft = computedStyle.borderLeft || "0";
+        borderTop = computedStyle.borderTop || "0";
       }
       curleft += parseInt(borderLeft, 10) ;
-      curleft += copyObj.offsetLeft;
-      if(!copyObj.offsetParent) {
-        break;
-      }
-      copyObj = copyObj.offsetParent;
-    }
-  } else if(obj.x) {
-    curleft += obj.x;
-  }
-  // This handles the case where the object is inside a scrolled div.
-  while(obj && obj != document.body) {
-    curleft -= obj.scrollLeft;
-    obj = obj.parentNode;
-  }
-  return curleft;
-};
-
-/**
- * Find the y-coordinate of the supplied object relative to the top of the
- * page.
- * TODO(danvk): change obj type from Node -&gt; !Node
- * TODO(danvk): consolidate with findPosX and return an {x, y} object.
- * @param {Node} obj
- * @return {number}
- * @private
- */
-Dygraph.findPosY = function(obj) {
-  var curtop = 0;
-  if(obj.offsetParent) {
-    var copyObj = obj;
-    while(1) {
-      // NOTE: the if statement here is for IE8.
-      var borderTop = "0";
-      if (window.getComputedStyle) {
-        borderTop = window.getComputedStyle(copyObj, null).borderTop || "0";
-      }
       curtop += parseInt(borderTop, 10) ;
+      curleft += copyObj.offsetLeft;
       curtop += copyObj.offsetTop;
-      if(!copyObj.offsetParent) {
+      if (!copyObj.offsetParent) {
         break;
       }
       copyObj = copyObj.offsetParent;
     }
-  } else if(obj.y) {
-    curtop += obj.y;
+  } else {
+    // TODO(danvk): why would obj ever have these properties?
+    if (obj.x) curleft += obj.x;
+    if (obj.y) curtop += obj.y;
   }
+
   // This handles the case where the object is inside a scrolled div.
-  while(obj && obj != document.body) {
+  while (obj && obj != document.body) {
+    curleft -= obj.scrollLeft;
     curtop -= obj.scrollTop;
     obj = obj.parentNode;
   }
-  return curtop;
+  return {x: curleft, y: curtop};
 };
 
 /**
@@ -508,6 +471,30 @@ Dygraph.hmsString_ = function(date) {
   } else {
     return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
   }
+};
+
+/**
+ * Convert a JS date (millis since epoch) to YYYY/MM/DD
+ * @param {number} date The JavaScript date (ms since epoch)
+ * @return {string} A date of the form "YYYY/MM/DD"
+ * @private
+ */
+Dygraph.dateString_ = function(date) {
+  var zeropad = Dygraph.zeropad;
+  var d = new Date(date);
+
+  // Get the year:
+  var year = "" + d.getFullYear();
+  // Get a 0 padded month string
+  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  // Get a 0 padded day string
+  var day = zeropad(d.getDate());
+
+  var ret = "";
+  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+  if (frac) ret = " " + Dygraph.hmsString_(date);
+
+  return year + "/" + month + "/" + day + ret;
 };
 
 /**
@@ -848,8 +835,8 @@ Dygraph.createIterator = function(array, start, length, opt_predicate) {
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
-//   Dygraph.requestAnimFrame.call(window, function() {})
-Dygraph.requestAnimFrame = (function() {
+//   requestAnimFrame.call(window, function() {})
+var requestAnimFrame = (function() {
   return window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
@@ -887,7 +874,7 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
 
   (function loop() {
     if (frameNumber >= maxFrames) return;
-    Dygraph.requestAnimFrame.call(window, function() {
+    requestAnimFrame.call(window, function() {
       // Determine which frame to draw based on the delay so far.  Will skip
       // frames if necessary.
       var currentTime = new Date().getTime();
@@ -1019,136 +1006,13 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   return requiresNewPoints;
 };
 
-/**
- * Compares two arrays to see if they are equal. If either parameter is not an
- * array it will return false. Does a shallow compare
- * Dygraph.compareArrays([[1,2], [3, 4]], [[1,2], [3,4]]) === false.
- * @param {!Array.<T>} array1 first array
- * @param {!Array.<T>} array2 second array
- * @return {boolean} True if both parameters are arrays, and contents are equal.
- * @template T
- */
-Dygraph.compareArrays = function(array1, array2) {
-  if (!Dygraph.isArrayLike(array1) || !Dygraph.isArrayLike(array2)) {
-    return false;
-  }
-  if (array1.length !== array2.length) {
-    return false;
-  }
-  for (var i = 0; i < array1.length; i++) {
-    if (array1[i] !== array2[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-/**
- * @param {!CanvasRenderingContext2D} ctx the canvas context
- * @param {number} sides the number of sides in the shape.
- * @param {number} radius the radius of the image.
- * @param {number} cx center x coordate
- * @param {number} cy center y coordinate
- * @param {number=} rotationRadians the shift of the initial angle, in radians.
- * @param {number=} delta the angle shift for each line. If missing, creates a
- *     regular polygon.
- * @private
- */
-Dygraph.regularShape_ = function(
-    ctx, sides, radius, cx, cy, rotationRadians, delta) {
-  rotationRadians = rotationRadians || 0;
-  delta = delta || Math.PI * 2 / sides;
-
-  ctx.beginPath();
-  var initialAngle = rotationRadians;
-  var angle = initialAngle;
-
-  var computeCoordinates = function() {
-    var x = cx + (Math.sin(angle) * radius);
-    var y = cy + (-Math.cos(angle) * radius);
-    return [x, y];
-  };
-
-  var initialCoordinates = computeCoordinates();
-  var x = initialCoordinates[0];
-  var y = initialCoordinates[1];
-  ctx.moveTo(x, y);
-
-  for (var idx = 0; idx < sides; idx++) {
-    angle = (idx == sides - 1) ? initialAngle : (angle + delta);
-    var coords = computeCoordinates();
-    ctx.lineTo(coords[0], coords[1]);
-  }
-  ctx.fill();
-  ctx.stroke();
-};
-
-/**
- * TODO(danvk): be more specific on the return type.
- * @param {number} sides
- * @param {number=} rotationRadians
- * @param {number=} delta
- * @return {Function}
- * @private
- */
-Dygraph.shapeFunction_ = function(sides, rotationRadians, delta) {
-  return function(g, name, ctx, cx, cy, color, radius) {
-    ctx.strokeStyle = color;
-    ctx.fillStyle = "white";
-    Dygraph.regularShape_(ctx, sides, radius, cx, cy, rotationRadians, delta);
-  };
-};
-
+// For more, include extras/stars.js
 Dygraph.Circles = {
   DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
     ctx.fill();
-  },
-  TRIANGLE : Dygraph.shapeFunction_(3),
-  SQUARE : Dygraph.shapeFunction_(4, Math.PI / 4),
-  DIAMOND : Dygraph.shapeFunction_(4),
-  PENTAGON : Dygraph.shapeFunction_(5),
-  HEXAGON : Dygraph.shapeFunction_(6),
-  CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.fillStyle = "white";
-    ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
-    ctx.fill();
-    ctx.stroke();
-  },
-  STAR : Dygraph.shapeFunction_(5, 0, 4 * Math.PI / 5),
-  PLUS : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.strokeStyle = color;
-
-    ctx.beginPath();
-    ctx.moveTo(cx + radius, cy);
-    ctx.lineTo(cx - radius, cy);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(cx, cy + radius);
-    ctx.lineTo(cx, cy - radius);
-    ctx.closePath();
-    ctx.stroke();
-  },
-  EX : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.strokeStyle = color;
-
-    ctx.beginPath();
-    ctx.moveTo(cx + radius, cy + radius);
-    ctx.lineTo(cx - radius, cy - radius);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(cx + radius, cy - radius);
-    ctx.lineTo(cx - radius, cy + radius);
-    ctx.closePath();
-    ctx.stroke();
   }
 };
 
@@ -1190,8 +1054,9 @@ Dygraph.IFrameTarp.prototype.cover = function() {
   var iframes = document.getElementsByTagName("iframe");
   for (var i = 0; i < iframes.length; i++) {
     var iframe = iframes[i];
-    var x = Dygraph.findPosX(iframe),
-        y = Dygraph.findPosY(iframe),
+    var pos = Dygraph.findPos(iframe),
+        x = pos.x,
+        y = pos.y,
         width = iframe.offsetWidth,
         height = iframe.offsetHeight;
 
@@ -1303,3 +1168,28 @@ Dygraph.setDateSameTZ = function(d, parts) {
     }
   }
 };
+
+/**
+ * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
+ *
+ * @param {!string} color_str Any valid CSS color string.
+ * @return {{r:number,g:number,b:number}} Parsed RGB tuple.
+ * @private
+ */
+Dygraph.toRGB_ = function(color_str) {
+  // TODO(danvk): cache color parses to avoid repeated DOM manipulation.
+  var div = document.createElement('div');
+  div.style.backgroundColor = color_str;
+  div.style.visibility = 'hidden';
+  document.body.appendChild(div);
+  var rgb_str = window.getComputedStyle(div).backgroundColor;
+  document.body.removeChild(div);
+  var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgb_str);
+  return {
+    r: parseInt(bits[1], 10),
+    g: parseInt(bits[2], 10),
+    b: parseInt(bits[3], 10)
+  };
+};
+
+})();

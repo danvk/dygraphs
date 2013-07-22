@@ -37,8 +37,9 @@ Gallery.register(
       var valueRange = [0, 100];
   
       function setPoint(event, g, context) {
-        var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(g.graphDiv);
-        var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(g.graphDiv);
+        var graphPos = Dygraph.findPos(g.graphDiv);
+        var canvasx = Dygraph.pageX(event) - graphPos.x;
+        var canvasy = Dygraph.pageY(event) - graphPos.y;
         var xy = g.toDataCoords(canvasx, canvasy);
         var x = xy[0], value = xy[1];
         var rows = g.numRows();
