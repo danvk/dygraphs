@@ -27,10 +27,10 @@
  * The chart canvas has already been created by the Dygraph object. The
  * renderer simply gets a drawing context.
  *
- * @param {Dygraph} dygraph The chart to which this renderer belongs.
- * @param {HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
- * @param {CanvasRenderingContext2D} elementContext The drawing context.
- * @param {DygraphLayout} layout The chart's DygraphLayout object.
+ * @param {!Dygraph} dygraph The chart to which this renderer belongs.
+ * @param {!HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
+ * @param {!CanvasRenderingContext2D} elementContext The drawing context.
+ * @param {!DygraphLayout} layout The chart's DygraphLayout object.
  *
  * TODO(danvk): remove the elementContext property.
  */
