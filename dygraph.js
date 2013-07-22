@@ -2945,7 +2945,7 @@ Dygraph.prototype.extractSeries_ = function(rawData, i, logScale) {
 Dygraph.prototype.rollingAverage = function(originalData, rollPeriod) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
-  var sigma = this.attr_("sigma");
+  var sigma = /** @type {number} */(this.attr_("sigma"));
 
   var low, high, i, j, y, sum, num_ok, stddev;
   if (this.fractions_) {
@@ -3261,8 +3261,8 @@ Dygraph.prototype.parseCSV_ = function(data) {
  * The user has provided their data as a pre-packaged JS array. If the x values
  * are numeric, this is the same as dygraphs' internal format. If the x values
  * are dates, we need to convert them from Date objects to ms since epoch.
- * @param {[Object]} data
- * @return {[Object]} data with numeric x values.
+ * @param {Object} data
+ * @return {Object} data with numeric x values.
  */
 Dygraph.prototype.parseArray_ = function(data) {
   // Peek at the first x value to see if it's numeric.
