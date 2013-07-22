@@ -49,7 +49,9 @@
 Dygraph.DataHandlers = {};
 
 /**
- * @private All registered data handlers are stored here.
+ * All registered data handlers are stored here.
+ * 
+ * @private
  */
 Dygraph.DataHandlers.handlers_ = {};
 
@@ -61,6 +63,7 @@ Dygraph.DataHandlers.handlers_ = {};
  * @param handler
  *          {Dygraph.DataHandler} DataHandler implementation which must be an
  *          instance of Dygraph.DataHandler.
+ * @public
  */
 Dygraph.DataHandlers.registerHandler = function(name, handler) {
   if (!handler instanceof Dygraph.DataHandler) {
@@ -76,6 +79,7 @@ Dygraph.DataHandlers.registerHandler = function(name, handler) {
  * @param name
  *          {String} The name, the handler was registered to.
  * @returns {Dygraph.DataHandler} The data handler constructor.
+ * @public
  */
 Dygraph.DataHandlers.getHandler = function(name) {
   return Dygraph.DataHandlers.handlers_[name];
@@ -87,6 +91,7 @@ Dygraph.DataHandlers.getHandler = function(name) {
  * @param name
  *          {String} The name, the handler was registered to.
  * @returns {Dygraph.DataHandler} A constructed instance of the data handler.
+ * @public
  */
 Dygraph.DataHandlers.createHandler = function(name) {
   return new Dygraph.DataHandlers.handlers_[name]();
@@ -104,36 +109,56 @@ Dygraph.DataHandler = function DataHandler() {
   var handler = function() {
     return this;
   };
-  // Uniform Data Format Constants
+
+  /**
+   * X-value array index constant for unified data samples.
+   */
   handler.prototype.X = 0;
+
+  /**
+   * Y-value array index constant for unified data samples.
+   */
   handler.prototype.Y = 1;
+
+  /**
+   * Extras-value array index constant for unified data samples.
+   */
   handler.prototype.EXTRAS = 2;
 
   /**
-   * Extracts one series from the raw data (a 2D array) into an array of (date,
-   * value) tuples.
-   * 
+   * Extracts one series from the raw data (a 2D array) into an array of the
+   * unified data format.<br>
    * This is where undesirable points (i.e. negative values on log scales and
    * missing values through which we wish to connect lines) are dropped.
    * TODO(danvk): the "missing values" bit above doesn't seem right.
    * 
-   * @private
+   * @param rawData
+   *          {Array where rawData[i] = [x,ySeries1,...,ySeriesN]} The raw data
+   *          passed into dygraphs.
+   * @param seriesIndex
+   *          {number} Index of the series to extract. All other series should
+   *          be ignored.
+   * @parma options {DygraphOptions} Dygraph options.
+   * @returns {Array where series[i] = [number,number/null,{}]} The series in
+   *          the unified data format.
+   * @public
    */
-  handler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
   };
 
   /**
    * Converts a series to a Point array.
    * 
-   * @param {Array.
-   *          <Array.<(?number|Array<?number>)>} series Array where
-   *          series[row] = [x,y] or [x, [y, err]] or [x, [y, yplus, yminus]].
+   * @param {Array
+   *          where series[i] = [number,number/null,{}]} The series in the
+   *          unified data format.
    * @param {string}
    *          setName Name of the series.
    * @param {number}
    *          boundaryIdStart Index offset of the first point, equal to the
    *          number of skipped points left of the date window minimum (if any).
    * @return {Array.<Dygraph.PointType>} List of points for this series.
+   * @public
    */
   handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
     // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
@@ -157,92 +182,85 @@ Dygraph.DataHandler = function DataHandler() {
       };
       points.push(point);
     }
-    if (handler.prototype.onPointsCreated) {
-      handler.prototype.onPointsCreated(series, points);
-    }
+    handler.prototype.onPointsCreated_(series, points);
     return points;
   };
   /**
-   * Callback called for each series after the series points have been
-   *          generated which will later be used by the plotters to draw the
-   *          graph. Here data may be added to the seriesPoints which is needed
-   *          by the plotters.<br>
-   *          The indexes of series and points are in sync meaning the original
-   *          data sample for series[i] is points[i]. Note: Set the callback to
-   *          undefined if it is not used for better performance.
+   * Callback called for each series after the series points have been generated
+   * which will later be used by the plotters to draw the graph.<br>
+   * Here data may be added to the seriesPoints which is needed by the plotters.<br>
+   * The indexes of series and points are in sync meaning the original data
+   * sample for series[i] is points[i].<br>
+   * 
    * @param {Array}
-   *          series The data samples of the series.
+   *          series The data samples of the series in the unified data format.
    * @param {Array}
    *          points The corresponding points passed to the plotter.
+   * @private
    */
-  handler.prototype.onPointsCreated = function(series, points) {
+  handler.prototype.onPointsCreated_ = function(series, points) {
   };
 
   /**
-   * Calculates the rolling average of a data set. If originalData is
-   *          [label, val], rolls the average of those. If originalData is
-   *          [label, [, it's interpreted as [value, stddev] and the roll is
-   *          returned in the same form, with appropriately reduced stddev for
-   *          each value. Note that this is where fractional input (i.e. '5/10')
-   *          is converted into decimal values.
+   * Calculates the rolling average of a data set.
+   * 
    * @param {Array}
-   *          originalData The data in the appropriate format (see above)
+   *          originalData The data in the unified data format.
    * @param {Number}
    *          rollPeriod The number of points over which to average the data
-   * @param {}
-   *          dygraphs the dygraphs instance.
+   * @param {DygraphOptions}
+   *          options The dygraph options.
    * @return the rolled series.
+   * @public
    */
-  handler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+  handler.prototype.rollingAverage = function(originalData, rollPeriod, options) {
   };
 
   /**
-   * Computes the range of the data series (including confidence
-   *          intervals).
-   * @param {
-   *          [Array] } series the data returned by the rollingAverage method,
-   *          either [ [x1, y1], [x2, y2], ... ] or [ [x1, [y1, dev_low,
-   *          dev_high]], [x2, [y2, dev_low, dev_high]], ...
-   * @param [min,max]
-   *          dateWindow, optional window that should be regarded for the
-   *          extremes computation.
-   * @param boolean
-   *          Whether or not this series is a step plot. Which has influence on
-   *          the computation of the left and right edges.
+   * Computes the range of the data series (including confidence intervals).
+   * 
+   * @param {Array}
+   *          series the data returned by the rollingAverage method in the
+   *          unified data format.
+   * @param {Array
+   *          [number,number]} dateWindow The x-value range to display with the
+   *          format: [min,max].
+   * @param {DygraphOptions}
+   *          options The dygraph options.
    * @return [low, high]
+   * @public
    */
-  handler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
+  handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
   };
 
   /**
    * Callback called for each series after the layouting data has been
-   *          calculated before the series is drawn. Here normalized positioning
-   *          data should be calculated for the extras of each point.<br>
-   *          Note: Set the callback to undefined if it is not used for better
-   *          performance.
+   * calculated before the series is drawn. Here normalized positioning data
+   * should be calculated for the extras of each point.<br>
+   * 
    * @param {Array}
    *          points The points passed to the plotter.
    * @param {}
-   *          the axis on which the series will be rendered.
+   *          axis The axis on which the series will be plotted.
    * @param {boolean}
-   *          weather or not to use a logscale.
-   * @param {}
-   *          dygraphs the dygraphs instance.
+   *          points Weather or not to use a logscale.
+   * @public
    */
-  handler.prototype.onLineEvaluated = function(points, axis, logscale, dygraphs) {
+  handler.prototype.onLineEvaluated = function(points, axis, logscale) {
   };
 
   /**
-   * @private Helper method that computes the y value of a line defined by the
-   *          points p1 and p2 and a given x value.
-   * @param [x,y]
-   *          p1 left point.
-   * @param [x,y]
-   *          p2 right point.
-   * @param {}
-   *          dygraphs the dygraphs instance.
+   * Helper method that computes the y value of a line defined by the points p1
+   * and p2 and a given x value.
+   * 
+   * @param {Array
+   *          [number,number]} p1 left point ([x,y]).
+   * @param {Array
+   *          [number,number]} p2 right point ([x,y]).
+   * @param {number}
+   *          X-value to compute the y-intersection for.
    * @return number corresponding y value to x on the line defined by p1 and p2.
+   * @private
    */
   handler.prototype.computeYIntersection_ = function(p1, p2, xValue) {
     var deltaY = p2[1] - p1[1];
@@ -253,16 +271,16 @@ Dygraph.DataHandler = function DataHandler() {
   };
 
   /**
-   * @private Helper method that returns the first and the last index of the
-   *          given series that lie inside the given dateWindow.
-   * @param {
-   *          [Array] } series the data returned by the rollingAverage method,
-   *          either [ [x1, y1], [x2, y2], ... ] or [ [x1, [y1, dev_low,
-   *          dev_high]], [x2, [y2, dev_low, dev_high]], ...
-   * @param [min,max]
-   *          dateWindow window defining the min and max x values.
-   * @return [firstIndex, lastIndex] first and last indexes lying in the date
-   *         window.
+   * Helper method that returns the first and the last index of the given series
+   * that lie inside the given dateWindow.
+   * 
+   * @param {Array}
+   *          series the data returned by the rollingAverage method in the
+   *          unified data format.
+   * @param {Array
+   *          [number,number]} dateWindow The x-value range to display with the
+   *          format: [min,max].
+   * @private
    */
   handler.prototype.getIndexesInWindow_ = function(series, dateWindow) {
     var firstIdx = 0, lastIdx = series.length - 1;

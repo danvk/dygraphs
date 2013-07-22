@@ -38,12 +38,12 @@
     "dygraph-plugin-install.js",
     "dygraph-options-reference.js",  // Shouldn't be included in generate-combined.sh
     "datahandler/datahandler.js",
-    "datahandler/datahandler-default.js",
-    "datahandler/datahandler-default-fractions.js",
-    "datahandler/datahandler-bars.js",
-    "datahandler/datahandler-bars-error.js",
-    "datahandler/datahandler-bars-custom.js",
-    "datahandler/datahandler-bars-fractions.js"
+    "datahandler/default.js",
+    "datahandler/default-fractions.js",
+    "datahandler/bars.js",
+    "datahandler/bars-error.js",
+    "datahandler/bars-custom.js",
+    "datahandler/bars-fractions.js"
   ];
 
   for (var i = 0; i < source_files.length; i++) {

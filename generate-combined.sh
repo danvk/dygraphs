@@ -21,12 +21,12 @@ GetSources () {
     plugins/*.js \
     dygraph-plugin-install.js \
     datahandler/datahandler.js \
-    datahandler/datahandler-default.js \
-    datahandler/datahandler-default-fractions.js \
-    datahandler/datahandler-bars.js \
-    datahandler/datahandler-bars-custom.js \
-    datahandler/datahandler-bars-error.js \
-    datahandler/datahandler-bars-fractions.js 
+    datahandler/default.js \
+    datahandler/default-fractions.js \
+    datahandler/bars.js \
+    datahandler/bars-custom.js \
+    datahandler/bars-error.js \
+    datahandler/bars-fractions.js 
   do
       echo "$F"
   done

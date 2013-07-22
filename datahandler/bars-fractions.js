@@ -17,12 +17,13 @@
   FractionsBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-fractions", FractionsBarsHandler);
   // errorBars
-  FractionsBarsHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
-    var sigma = dygraphs.attr_("sigma");
+  FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
     // TODO(danvk): pre-allocate series here.
     var series = [];
     var x, y, point, num, den, value, stddev, variance;
     var mult = 100.0;
+    var sigma = options.get("sigma");
+    var logScale = options.get('logscale');
     for ( var j = 0; j < rawData.length; j++) {
       x = rawData[j][0];
       point = rawData[j][i];
@@ -55,10 +56,11 @@
   };
 
   FractionsBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     rollPeriod = Math.min(rollPeriod, originalData.length);
     var rollingData = [];
-    var sigma = dygraphs.attr_("sigma");
+    var sigma = options.get("sigma");
+    var wilsonInterval = options.get("wilsonInterval");
 
     var low, high, i, stddev;
     var num = 0;
@@ -74,7 +76,7 @@
 
       var date = originalData[i][0];
       var value = den ? num / den : 0.0;
-      if (dygraphs.attr_("wilsonInterval")) {
+      if (wilsonInterval) {
         // For more details on this confidence interval, see:
         // http://en.wikipedia.org/wiki/Binomial_confidence_interval
         if (den) {

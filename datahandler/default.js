@@ -5,21 +5,21 @@
  */
 
 /**
- * @fileoverview DataHandler default implementation used for 
- * simple line charts.
+ * @fileoverview DataHandler default implementation used for simple line charts.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
+/* jshint globalstrict: true */
 "use strict";
 
 (function() {
   var DefaultHandler = Dygraph.DataHandler();
   Dygraph.DataHandlers.registerHandler("default", DefaultHandler);
 
-  DefaultHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  DefaultHandler.prototype.extractSeries = function(rawData, i, options) {
     // TODO(danvk): pre-allocate series here.
     var series = [];
-    for (var j = 0; j < rawData.length; j++) {
+    var logScale = options.get('logscale');
+    for ( var j = 0; j < rawData.length; j++) {
       var x = rawData[j][0];
       var point = rawData[j][i];
       if (logScale) {
@@ -29,15 +29,13 @@
           point = null;
         }
       }
-      series.push([x, point]);
+      series.push([ x, point ]);
     }
     return series;
   };
 
-  DefaultHandler.prototype.onPointsCreated = undefined;
-
   DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     rollPeriod = Math.min(rollPeriod, originalData.length);
     var rollingData = [];
 
@@ -69,10 +67,10 @@
   };
 
   DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
-      stepPlot) {
+      options) {
     var minY = null, maxY = null, y;
     var firstIdx = 0, lastIdx = series.length - 1;
-  
+
     for ( var j = firstIdx; j <= lastIdx; j++) {
       y = series[j][1];
       if (y === null || isNaN(y))
@@ -86,6 +84,4 @@
     }
     return [ minY, maxY ];
   };
-
-  DefaultHandler.prototype.onLineEvaluated = undefined;
 })();

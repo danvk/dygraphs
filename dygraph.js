@@ -2222,10 +2222,9 @@ Dygraph.prototype.predraw_ = function() {
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
     // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
-    var logScale = this.attr_('logscale');
-    var series = this.dataHandler_.extractSeries(this.rawData_, i, logScale, this);
+    var series = this.dataHandler_.extractSeries(this.rawData_, i, this.attributes_);
     if (this.rollPeriod_ > 1) {
-      series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this);
+      series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this.attributes_);
     }
     
     this.rolledSeries_.push(series);
@@ -2399,7 +2398,8 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
-      firstIdx = null, lastIdx = null;
+      firstIdx = null; 
+      lastIdx = null;
       for (sampleIdx = 0; sampleIdx < series.length; sampleIdx++) {
         if (series[sampleIdx][0] >= low && firstIdx === null) {
           firstIdx = sampleIdx;

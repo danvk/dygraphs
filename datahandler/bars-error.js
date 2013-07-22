@@ -16,12 +16,12 @@
   ErrorBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-error", ErrorBarsHandler);
   // errorBars
-  ErrorBarsHandler.prototype.extractSeries = function(rawData, i, logScale,
-      dygraphs) {
+  ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
     // TODO(danvk): pre-allocate series here.
     var series = [];
     var x, y, variance, point;
-    var sigma = dygraphs.attr_("sigma");
+    var sigma = options.get("sigma");
+    var logScale = options.get('logscale');
     for ( var j = 0; j < rawData.length; j++) {
       x = rawData[j][0];
       point = rawData[j][i];
@@ -51,10 +51,10 @@
   };
 
   ErrorBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     rollPeriod = Math.min(rollPeriod, originalData.length);
     var rollingData = [];
-    var sigma = dygraphs.attr_("sigma");
+    var sigma = options.get("sigma");
 
     var i, j, y, v, sum, num_ok, stddev, variance, value;
 

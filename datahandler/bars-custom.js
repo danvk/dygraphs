@@ -16,10 +16,11 @@
   CustomBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-custom", CustomBarsHandler);
   // customBars
-  CustomBarsHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
     // TODO(danvk): pre-allocate series here.
     var series = [];
     var x, y, point;
+    var logScale = options.get('logscale');
     for ( var j = 0; j < rawData.length; j++) {
       x = rawData[j][0];
       point = rawData[j][i];
@@ -46,10 +47,10 @@
   };
 
   CustomBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     rollPeriod = Math.min(rollPeriod, originalData.length);
     var rollingData = [];
-    var low, high, mid,count, i, extremes;
+    var y, low, high, mid,count, i, extremes;
 
     low = 0;
     mid = 0;

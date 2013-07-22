@@ -16,11 +16,12 @@
   DefaultFractionHandler.prototype = Dygraph.DataHandlers.createHandler("default");
   Dygraph.DataHandlers.registerHandler("default-fractions", DefaultFractionHandler);
 
-  DefaultFractionHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {
     // TODO(danvk): pre-allocate series here.
     var series = [];
     var x, y, point, num, den, value;
     var mult = 100.0;
+    var logScale = options.get('logscale');
     for ( var j = 0; j < rawData.length; j++) {
       x = rawData[j][0];
       point = rawData[j][i];
@@ -51,7 +52,7 @@
   };
 
   DefaultFractionHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     rollPeriod = Math.min(rollPeriod, originalData.length);
     var rollingData = [];
 

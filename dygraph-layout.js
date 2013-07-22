@@ -253,9 +253,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
     }
 
-    if(this.dygraph_.dataHandler_.onLineEvaluated !== undefined) {
-      this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale, this.dygraph_);
-    }
+    this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
   }
 };
 

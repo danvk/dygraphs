@@ -17,17 +17,16 @@
   var BarsHandler = Dygraph.DataHandler();
   Dygraph.DataHandlers.registerHandler("bars", BarsHandler);
   // errorBars
-  BarsHandler.prototype.extractSeries = function(rawData, i, logScale, dygraphs) {
+  BarsHandler.prototype.extractSeries = function(rawData, i, options) {
     // Not implemented here must be extended
   };
 
   BarsHandler.prototype.rollingAverage =  function(originalData, rollPeriod,
-      dygraphs) {
+      options) {
     // Not implemented here, must be extended.
-    return rollingData;
   };
 
-  BarsHandler.prototype.onPointsCreated = function(series, points) {
+  BarsHandler.prototype.onPointsCreated_ = function(series, points) {
     for (var i = 0; i < series.length; ++i) {
       var item = series[i];
       var point = points[i];
@@ -38,7 +37,7 @@
     }
   };
 
-  BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
+  BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
     var minY = null, maxY = null, y;
 
     var firstIdx = 0;
@@ -61,7 +60,7 @@
     return [ minY, maxY ];
   };
 
-  BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale, dygraphs) {
+  BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
     var point;
     for (var j = 0; j < points.length; j++) {
       // Copy over the error terms
