@@ -206,7 +206,7 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
           assertEquals('number', typeof(granularity));
           assertEquals('function', typeof(opts));
           assertEquals('[Dygraph graph]', dg.toString());
-          return 'x' + Dygraph.dateString_(x);
+          return 'x' + Util.formatDate(x);
         }
       },
       y : {
@@ -292,7 +292,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
           assertEquals('[Dygraph graph]', dg.toString());
-          return 'x' + Dygraph.dateString_(new Date(x));
+          return 'x' + Util.formatDate(x);
         }
       },
       y : {
