@@ -101,9 +101,28 @@ var DygraphRect;
  */
 var DygraphAxisType;
 
+
+/**
+ * @typedef {{
+ *   dygraph: !Dygraph,
+ *   points: Array,
+ *   setName: string,
+ *   drawingContext: !CanvasRenderingContext2D,
+ *   color: string,
+ *   strokeWidth: number,
+ *   axis: Object,
+ *   plotArea: DygraphRect,
+ *   seriesIndex: number,
+ *   seriesCount: number,
+ *   singleSeriesName: (string|undefined),
+ *   allSeriesPoints: Array
+ * }}
+ */
+var DygraphPlotterArguments;
+
 /**
  * TODO(danvk): be more specific than "Object".
- * @typedef {function(Object)}
+ * @typedef {function(DygraphPlotterArguments)}
  */
 var DygraphPlotterType;
 

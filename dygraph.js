@@ -651,7 +651,7 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
   return function(opt) {
-    var axis_opts = self.user_attrs_.axes;
+    var axis_opts = self.user_attrs_['axes'];
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
@@ -661,7 +661,7 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
       return self.user_attrs_[opt];
     }
 
-    axis_opts = self.attrs_.axes;
+    axis_opts = self.attrs_['axes'];
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
@@ -2666,10 +2666,10 @@ Dygraph.prototype.computeYAxes_ = function() {
       v = opts("valueRange");
       if (v) this.axes_[axis].valueRange = v;
     } else {  // To keep old behavior
-      var axes = this.user_attrs_.axes;
-      if (axes && axes.y2) {
-        v = axes.y2.valueRange;
-        if (v) this.axes_[axis].valueRange = v;
+      var axes = this.user_attrs_['axes'];
+      if (axes && axes['y2']) {
+        v = axes['y2']['valueRange'];
+        if (v) this.axes_[axis]['valueRange'] = v;
       }
     }
   }
@@ -3095,18 +3095,18 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 
 Dygraph.prototype.setXAxisOptions_ = function(isDate) {
   if (isDate) {
-    this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
+    this.attrs_['xValueParser'] = Dygraph.dateParser;
+    this.attrs_['axes']['x']['valueFormatter'] = Dygraph.dateString_;
+    this.attrs_['axes']['x']['ticker'] = Dygraph.dateTicker;
+    this.attrs_['axes']['x']['axisLabelFormatter'] = dateAxisFormatter_;
   } else {
     /** @private (shut up, jsdoc!) */
-    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+    this.attrs_['xValueParser'] = function(x) { return parseFloat(x); };
     // TODO(danvk): use numberValueFormatter_ here?
     /** @private (shut up, jsdoc!) */
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
-    this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
+    this.attrs_['axes']['x']['valueFormatter'] = function(x) { return x; };
+    this.attrs_['axes']['x']['ticker'] = Dygraph.numericLinearTicks;
+    this.attrs_['axes']['x']['axisLabelFormatter'] = this.attrs_['axes']['x']['valueFormatter'];
   }
 };
 

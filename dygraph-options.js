@@ -298,7 +298,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   }
 
   // Default axis options third.
-  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
+  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS['axes'][axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {
     return defaultAxisOptions[name];
   }
@@ -327,12 +327,12 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
   }
 
   var seriesObj = this.series_[series];
-  var seriesOptions = seriesObj["options"];
+  var seriesOptions = seriesObj.options;
   if (seriesOptions.hasOwnProperty(name)) {
     return seriesOptions[name];
   }
 
-  return this.getForAxis(name, seriesObj["yAxis"]);
+  return this.getForAxis(name, seriesObj.yAxis);
 };
 
 /**

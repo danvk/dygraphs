@@ -428,7 +428,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
   /** @type{!Array.<!DygraphPlotterType>} */
   var plotters;
-  if (!Dygraph.isArrayLike(plotters)) {
+  if (!Dygraph.isArrayLike(plotter_attr)) {
     plotters = [plotters];
   } else {
     plotters = /** @type {!Array.<!DygraphPlotterType>} */(plotter_attr);
@@ -471,7 +471,6 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = strokeWidth;
-      // TODO(danvk): add an @typedef for this Object.
       p({
         points: points,
         setName: setName,
@@ -493,6 +492,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 
 /**
  * Plotter which draws the central lines for a series.
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
 linePlotter_ = function(e) {
@@ -535,6 +535,7 @@ linePlotter_ = function(e) {
  * Draws the shaded error bars/confidence intervals for each series.
  * This happens before the center lines are drawn, since the center lines
  * need to be drawn on top of the error bars for all series.
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
 errorPlotter_ = function(e) {
@@ -619,6 +620,7 @@ errorPlotter_ = function(e) {
  * simultaneously. So this plotter plots all the points on the first series
  * it's asked to draw, then ignores all the other series.
  *
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
 fillPlotter_ = function(e) {
