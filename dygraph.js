@@ -394,122 +394,122 @@ Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
 // Default attribute values.
 /** @type {{axes: Object}} */
 Dygraph.DEFAULT_ATTRS = {
-  highlightCircleSize: 3,
-  highlightSeriesOpts: null,
-  highlightSeriesBackgroundAlpha: 0.5,
+  'highlightCircleSize': 3,
+  'highlightSeriesOpts': null,
+  'highlightSeriesBackgroundAlpha': 0.5,
 
-  labelsDivWidth: 250,
-  labelsDivStyles: {
+  'labelsDivWidth': 250,
+  'labelsDivStyles': {
     // TODO(danvk): move defaults from createStatusMessage_ here.
   },
-  labelsSeparateLines: false,
-  labelsShowZeroValues: true,
-  labelsKMB: false,
-  labelsKMG2: false,
-  showLabelsOnHighlight: true,
+  'labelsSeparateLines': false,
+  'labelsShowZeroValues': true,
+  'labelsKMB': false,
+  'labelsKMG2': false,
+  'showLabelsOnHighlight': true,
 
-  digitsAfterDecimal: 2,
-  maxNumberWidth: 6,
-  sigFigs: null,
+  'digitsAfterDecimal': 2,
+  'maxNumberWidth': 6,
+  'sigFigs': null,
 
-  strokeWidth: 1.0,
-  strokeBorderWidth: 0,
-  strokeBorderColor: "white",
+  'strokeWidth': 1.0,
+  'strokeBorderWidth': 0,
+  'strokeBorderColor': "white",
 
-  axisTickSize: 3,
-  axisLabelFontSize: 14,
-  xAxisLabelWidth: 50,
-  yAxisLabelWidth: 50,
-  rightGap: 5,
+  'axisTickSize': 3,
+  'axisLabelFontSize': 14,
+  'xAxisLabelWidth': 50,
+  'yAxisLabelWidth': 50,
+  'rightGap': 5,
 
-  showRoller: false,
-  xValueParser: Dygraph.dateParser,
+  'showRoller': false,
+  'xValueParser': Dygraph.dateParser,
 
-  delimiter: ',',
+  'delimiter': ',',
 
-  sigma: 2.0,
-  errorBars: false,
-  fractions: false,
-  wilsonInterval: true,  // only relevant if fractions is true
-  customBars: false,
-  fillGraph: false,
-  fillAlpha: 0.15,
-  connectSeparatedPoints: false,
+  'sigma': 2.0,
+  'errorBars': false,
+  'fractions': false,
+  'wilsonInterval': true,  // only relevant if fractions is true
+  'customBars': false,
+  'fillGraph': false,
+  'fillAlpha': 0.15,
+  'connectSeparatedPoints': false,
 
-  stackedGraph: false,
-  stackedGraphNaNFill: 'all',
-  hideOverlayOnMouseOut: true,
+  'stackedGraph': false,
+  'stackedGraphNaNFill': 'all',
+  'hideOverlayOnMouseOut': true,
 
   // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
-  legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
+  'legend': 'onmouseover',  // the only relevant value at the moment is 'always'.
 
-  stepPlot: false,
-  avoidMinZero: false,
-  xRangePad: 0,
-  yRangePad: null,
-  drawAxesAtZero: false,
+  'stepPlot': false,
+  'avoidMinZero': false,
+  'xRangePad': 0,
+  'yRangePad': null,
+  'drawAxesAtZero': false,
 
   // Sizes of the various chart labels.
-  titleHeight: 28,
-  xLabelHeight: 18,
-  yLabelWidth: 18,
+  'titleHeight': 28,
+  'xLabelHeight': 18,
+  'yLabelWidth': 18,
 
-  drawXAxis: true,
-  drawYAxis: true,
-  axisLineColor: "black",
-  axisLineWidth: 0.3,
-  gridLineWidth: 0.3,
-  axisLabelColor: "black",
-  axisLabelFont: "Arial",  // TODO(danvk): is this implemented?
-  axisLabelWidth: 50,
-  drawYGrid: true,
-  drawXGrid: true,
-  gridLineColor: "rgb(128,128,128)",
+  'drawXAxis': true,
+  'drawYAxis': true,
+  'axisLineColor': "black",
+  'axisLineWidth': 0.3,
+  'gridLineWidth': 0.3,
+  'axisLabelColor': "black",
+  'axisLabelFont': "Arial",  // TODO(danvk): is this implemented?
+  'axisLabelWidth': 50,
+  'drawYGrid': true,
+  'drawXGrid': true,
+  'gridLineColor': "rgb(128,128,128)",
 
-  interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
-  animatedZooms: false,  // (for now)
+  'interactionModel': null,  // will be set to Dygraph.Interaction.defaultModel
+  'animatedZooms': false,  // (for now)
 
   // Range selector options
-  showRangeSelector: false,
-  rangeSelectorHeight: 40,
-  rangeSelectorPlotStrokeColor: "#808FAB",
-  rangeSelectorPlotFillColor: "#A7B1C4",
+  'showRangeSelector': false,
+  'rangeSelectorHeight': 40,
+  'rangeSelectorPlotStrokeColor': "#808FAB",
+  'rangeSelectorPlotFillColor': "#A7B1C4",
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
-  plotter: [
+  'plotter': [
     Dygraph.Plotters.fillPlotter,
     Dygraph.Plotters.errorPlotter,
     Dygraph.Plotters.linePlotter
   ],
 
-  plugins: [ ],
+  'plugins': [ ],
 
   // per-axis options
-  axes: {
-    x: {
-      pixelsPerLabel: 60,
-      axisLabelFormatter: dateAxisFormatter_,
-      valueFormatter: Dygraph.dateString_,
-      drawGrid: true,
-      independentTicks: true,
-      ticker: null  // will be set in dygraph-tickers.js
+  'axes': {
+    'x': {
+      'pixelsPerLabel': 60,
+      'axisLabelFormatter': dateAxisFormatter_,
+      'valueFormatter': Dygraph.dateString_,
+      'drawGrid': true,
+      'independentTicks': true,
+      'ticker': null  // will be set in dygraph-tickers.js
     },
-    y: {
-      pixelsPerLabel: 30,
-      valueFormatter: numberValueFormatter_,
-      axisLabelFormatter: numberAxisLabelFormatter_,
-      drawGrid: true,
-      independentTicks: true,
-      ticker: null  // will be set in dygraph-tickers.js
+    'y': {
+      'pixelsPerLabel': 30,
+      'valueFormatter': numberValueFormatter_,
+      'axisLabelFormatter': numberAxisLabelFormatter_,
+      'drawGrid': true,
+      'independentTicks': true,
+      'ticker': null  // will be set in dygraph-tickers.js
     },
-    y2: {
-      pixelsPerLabel: 30,
-      valueFormatter: numberValueFormatter_,
-      axisLabelFormatter: numberAxisLabelFormatter_,
-      drawGrid: false,
-      independentTicks: false,
-      ticker: null  // will be set in dygraph-tickers.js
+    'y2': {
+      'pixelsPerLabel': 30,
+      'valueFormatter': numberValueFormatter_,
+      'axisLabelFormatter': numberAxisLabelFormatter_,
+      'drawGrid': false,
+      'independentTicks': false,
+      'ticker': null  // will be set in dygraph-tickers.js
     }
   }
 };
@@ -2836,7 +2836,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     
     
     if (independentTicks) {
-      axis.independentTicks = independentTicks;
+      axis['independentTicks'] = independentTicks;
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
@@ -2857,7 +2857,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
     
-    if (!axis.independentTicks) {
+    if (!axis['independentTicks']) {
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');
       var p_ticks = p_axis.ticks;
