@@ -14,13 +14,13 @@ GetSources () {
     dygraph-gviz.js \
     dygraph-interaction-model.js \
     dygraph-tickers.js \
-    dygraph-plugin-base.js \
-    plugins/*.js \
-    dygraph-plugin-install.js
+    dygraph-plugin-base.js
   do
       echo "$F"
   done
 }
+#   plugins/*.js \
+#   dygraph-plugin-install.js
 
 # Pack all the JS together.
 CatSources () {
@@ -36,7 +36,9 @@ Copyright () {
 CatMinified () {
   Copyright
   CatSources \
-  | uglifyjs - -c 'warnings=false' -m
+  | java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --js - --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
+    
+  #| uglifyjs - -c 'warnings=false' -m
   # | java -jar yuicompressor-2.4.2.jar --type js
 }
 
