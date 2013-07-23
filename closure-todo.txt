@@ -38,4 +38,4 @@ As each file is closurized, it can be added as a "--js" parameter.
 
 NOTES
 - Should add .getNumericOption() and .getStringOption() which are aliases for .getOption() but returns number/string, not *.
-- plugin-free code is 52778 compiled; for uglifyjs it's 83031 (36% savings)
+- plugin-free code is 59756 compiled; for uglifyjs it's 83031 (30% savings)
