@@ -8,11 +8,11 @@
  * @fileoverview DataHandler implementation for the error bars option.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  "use strict";
+
   var ErrorBarsHandler = Dygraph.DataHandler();
   ErrorBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-error", ErrorBarsHandler);

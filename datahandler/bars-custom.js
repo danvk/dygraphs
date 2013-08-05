@@ -8,11 +8,11 @@
  * @fileoverview DataHandler implementation for the custom bars option.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  "use strict";
+
   var CustomBarsHandler = Dygraph.DataHandler();
   CustomBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-custom", CustomBarsHandler);

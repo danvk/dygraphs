@@ -10,12 +10,12 @@
  * extractSeries and rollingAverage must be implemented.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-/*global DygraphLayout:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  /*global DygraphLayout:false */
+  "use strict";
+
   var BarsHandler = Dygraph.DataHandler();
   Dygraph.DataHandlers.registerHandler("bars", BarsHandler);
   // errorBars

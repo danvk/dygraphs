@@ -12,30 +12,30 @@
  * structures supported by dygraphs. To make this possible, the DataHandler
  * interface is introduced. This makes it possible, that dygraph itself can work
  * with the same logic for every data type independent of the actual format and
- * the DataHandler takes care of the data format specific jobs. <br>
+ * the DataHandler takes care of the data format specific jobs. 
  * DataHandlers are implemented for all data types supported by Dygraphs and
- * return Dygraphs compliant formats.<br>
+ * return Dygraphs compliant formats.
  * By default the correct DataHandler is chosen based on the options set.
  * Optionally the user may use his own DataHandler (similar to the plugin
- * system).<br>
- * <br>
- * <br>
- * The unified data format returend by each handler is defined as so: <br>
- * series[n][point] = [x,y,(extras)] <br>
- * <br>
+ * system).
+ * 
+ * 
+ * The unified data format returend by each handler is defined as so: 
+ * series[n][point] = [x,y,(extras)] 
+ * 
  * This format contains the common basis that is needed to draw a simple line
  * series extended by optional extras for more complex graphing types. It
  * contains a primitive x value as first array entry, a primitive y value as
- * second array entry and an optional extras object for additional data needed.<br>
- * <br>
- * x must always be a number.<br>
- * y must always be a number, NaN of type number or null.<br>
+ * second array entry and an optional extras object for additional data needed.
+ * 
+ * x must always be a number.
+ * y must always be a number, NaN of type number or null.
  * extras is optional and must be interpreted by the DataHandler. It may be of
- * any type. <br>
- * <br>
- * In practice this might look something like this:<br>
- * default: [x, yVal]<br>
- * errorBar / customBar: [x, yVal, [yTopVariance, yBottomVariance] ]<br>
+ * any type. 
+ * 
+ * In practice this might look something like this:
+ * default: [x, yVal]
+ * errorBar / customBar: [x, yVal, [yTopVariance, yBottomVariance] ]
  * 
  */
 /*jshint globalstrict: true */
@@ -45,8 +45,6 @@
 
 /**
  * A collection of functions to create and retrieve data handlers.
- * 
- * @class
  */
 Dygraph.DataHandlers = {};
 
@@ -58,12 +56,10 @@ Dygraph.DataHandlers = {};
 Dygraph.DataHandlers.handlers_ = {};
 
 /**
- * @param name
- *          {String} The name the data handler should be registered to.
+ * @param name {!string} The name the data handler should be registered to.
  *          Registers a data handler by the given name and makes it publicly
  *          accessible.
- * @param handler
- *          {Dygraph.DataHandler} DataHandler implementation which must be an
+ * @param handler {!Dygraph.DataHandler} DataHandler implementation which must be an
  *          instance of Dygraph.DataHandler.
  * @public
  */
@@ -75,11 +71,10 @@ Dygraph.DataHandlers.registerHandler = function(name, handler) {
 };
 
 /**
- * Returns the data handler registered to the given name.<br>
+ * Returns the data handler registered to the given name.
  * Note this is the data handler constructor method.
  * 
- * @param name
- *          {String} The name, the handler was registered to.
+ * @param name {!string} The name, the handler was registered to.
  * @returns {Dygraph.DataHandler} The data handler constructor.
  * @public
  */
@@ -88,10 +83,9 @@ Dygraph.DataHandlers.getHandler = function(name) {
 };
 
 /**
- * Returns the cunstructed data handler registered to the given name.<br>
+ * Returns the cunstructed data handler registered to the given name.
  * 
- * @param name
- *          {String} The name, the handler was registered to.
+ * @param name {!string} The name, the handler was registered to.
  * @returns {Dygraph.DataHandler} A constructed instance of the data handler.
  * @public
  */
@@ -107,42 +101,50 @@ Dygraph.DataHandlers.createHandler = function(name) {
  * 
  * @class
  */
-Dygraph.DataHandler = function DataHandler() {
+Dygraph.DataHandler = function () {
+  /**
+   * Constructor for all data handlers.
+   * @constructor
+   */
   var handler = function() {
     return this;
   };
 
   /**
    * X-value array index constant for unified data samples.
+   * @const
+   * @type {number}
    */
-  handler.prototype.X = 0;
+  handler.X = 0;
 
   /**
    * Y-value array index constant for unified data samples.
+   * @const
+   * @type {number}
    */
-  handler.prototype.Y = 1;
+  handler.Y = 1;
 
   /**
    * Extras-value array index constant for unified data samples.
+   * @const
+   * @type {number}
    */
-  handler.prototype.EXTRAS = 2;
+  handler.EXTRAS = 2;
 
   /**
    * Extracts one series from the raw data (a 2D array) into an array of the
-   * unified data format.<br>
+   * unified data format.
    * This is where undesirable points (i.e. negative values on log scales and
    * missing values through which we wish to connect lines) are dropped.
    * TODO(danvk): the "missing values" bit above doesn't seem right.
    * 
-   * @param rawData
-   *          {Array where rawData[i] = [x,ySeries1,...,ySeriesN]} The raw data
-   *          passed into dygraphs.
-   * @param seriesIndex
-   *          {number} Index of the series to extract. All other series should
+   * @param rawData {!Array.<Array>} The raw data passed into dygraphs where 
+   *          rawData[i] = [x,ySeries1,...,ySeriesN].
+   * @param seriesIndex {!number} Index of the series to extract. All other series should
    *          be ignored.
-   * @parma options {DygraphOptions} Dygraph options.
-   * @returns {Array where series[i] = [number,number/null,{}]} The series in
-   *          the unified data format.
+   * @param options {!DygraphOptions} Dygraph options.
+   * @returns {Array.<[!number,?number,?]>} The series in the unified data format
+   *          where series[i] = [x,y,{extras}]. 
    * @public
    */
   handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
@@ -151,15 +153,12 @@ Dygraph.DataHandler = function DataHandler() {
   /**
    * Converts a series to a Point array.
    * 
-   * @param {Array
-   *          where series[i] = [number,number/null,{}]} The series in the
-   *          unified data format.
-   * @param {string}
-   *          setName Name of the series.
-   * @param {number}
-   *          boundaryIdStart Index offset of the first point, equal to the
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!string} setName Name of the series.
+   * @param {!number} boundaryIdStart Index offset of the first point, equal to the
    *          number of skipped points left of the date window minimum (if any).
-   * @return {Array.<Dygraph.PointType>} List of points for this series.
+   * @return {!Array.<Dygraph.PointType>} List of points for this series.
    * @public
    */
   handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
@@ -187,17 +186,18 @@ Dygraph.DataHandler = function DataHandler() {
     handler.prototype.onPointsCreated_(series, points);
     return points;
   };
+
   /**
    * Callback called for each series after the series points have been generated
-   * which will later be used by the plotters to draw the graph.<br>
-   * Here data may be added to the seriesPoints which is needed by the plotters.<br>
+   * which will later be used by the plotters to draw the graph.
+   * Here data may be added to the seriesPoints which is needed by the plotters.
    * The indexes of series and points are in sync meaning the original data
-   * sample for series[i] is points[i].<br>
+   * sample for series[i] is points[i].
    * 
-   * @param {Array}
-   *          series The data samples of the series in the unified data format.
-   * @param {Array}
-   *          points The corresponding points passed to the plotter.
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!Array.<Dygraph.PointType>} points The corresponding points passed 
+   *          to the plotter.
    * @private
    */
   handler.prototype.onPointsCreated_ = function(series, points) {
@@ -206,30 +206,26 @@ Dygraph.DataHandler = function DataHandler() {
   /**
    * Calculates the rolling average of a data set.
    * 
-   * @param {Array}
-   *          originalData The data in the unified data format.
-   * @param {Number}
-   *          rollPeriod The number of points over which to average the data
-   * @param {DygraphOptions}
-   *          options The dygraph options.
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!number} rollPeriod The number of points over which to average the data
+   * @param {!DygraphOptions} options The dygraph options.
    * @return the rolled series.
    * @public
    */
-  handler.prototype.rollingAverage = function(originalData, rollPeriod, options) {
+  handler.prototype.rollingAverage = function(series, rollPeriod, options) {
   };
 
   /**
    * Computes the range of the data series (including confidence intervals).
    * 
-   * @param {Array}
-   *          series the data returned by the rollingAverage method in the
-   *          unified data format.
-   * @param {Array
-   *          [number,number]} dateWindow The x-value range to display with the
-   *          format: [min,max].
-   * @param {DygraphOptions}
-   *          options The dygraph options.
-   * @return [low, high]
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!Array.<number>} dateWindow The x-value range to display with 
+   *          the format: [min,max].
+   * @param {!DygraphOptions} options The dygraph options.
+   * @return {Array.<number>} The low and high extremes of the series in the given window with 
+   *          the format: [low, high].
    * @public
    */
   handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
@@ -238,14 +234,12 @@ Dygraph.DataHandler = function DataHandler() {
   /**
    * Callback called for each series after the layouting data has been
    * calculated before the series is drawn. Here normalized positioning data
-   * should be calculated for the extras of each point.<br>
+   * should be calculated for the extras of each point.
    * 
-   * @param {Array}
-   *          points The points passed to the plotter.
-   * @param {}
-   *          axis The axis on which the series will be plotted.
-   * @param {boolean}
-   *          points Weather or not to use a logscale.
+   * @param {!Array.<Dygraph.PointType>} points The points passed to 
+   *          the plotter.
+   * @param {!Object} axis The axis on which the series will be plotted.
+   * @param {!boolean} logscale Weather or not to use a logscale.
    * @public
    */
   handler.prototype.onLineEvaluated = function(points, axis, logscale) {
@@ -255,16 +249,13 @@ Dygraph.DataHandler = function DataHandler() {
    * Helper method that computes the y value of a line defined by the points p1
    * and p2 and a given x value.
    * 
-   * @param {Array
-   *          [number,number]} p1 left point ([x,y]).
-   * @param {Array
-   *          [number,number]} p2 right point ([x,y]).
-   * @param {number}
-   *          X-value to compute the y-intersection for.
-   * @return number corresponding y value to x on the line defined by p1 and p2.
+   * @param {!Array.<number>} p1 left point ([x,y]).
+   * @param {!Array.<number>} p2 right point ([x,y]).
+   * @param {!number} xValue The x value to compute the y-intersection for.
+   * @return {number} corresponding y value to x on the line defined by p1 and p2.
    * @private
    */
-  handler.prototype.computeYIntersection_ = function(p1, p2, xValue) {
+  handler.prototype.computeYInterpolation_ = function(p1, p2, xValue) {
     var deltaY = p2[1] - p1[1];
     var deltaX = p2[0] - p1[0];
     var gradient = deltaY / deltaX;
@@ -276,12 +267,12 @@ Dygraph.DataHandler = function DataHandler() {
    * Helper method that returns the first and the last index of the given series
    * that lie inside the given dateWindow.
    * 
-   * @param {Array}
-   *          series the data returned by the rollingAverage method in the
-   *          unified data format.
-   * @param {Array
-   *          [number,number]} dateWindow The x-value range to display with the
-   *          format: [min,max].
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!Array.<number>} dateWindow The x-value range to display with 
+   *          the format: [min,max].
+   * @return {!Array.<[!number,?number,?]>} The samples of the series that 
+   *          are in the given date window.
    * @private
    */
   handler.prototype.getIndexesInWindow_ = function(series, dateWindow) {

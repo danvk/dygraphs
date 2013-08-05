@@ -8,11 +8,11 @@
  * @fileoverview DataHandler default implementation used for simple line charts.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  "use strict";
+
   var DefaultHandler = Dygraph.DataHandler();
   Dygraph.DataHandlers.registerHandler("default", DefaultHandler);
 

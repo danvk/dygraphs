@@ -8,11 +8,11 @@
  * @fileoverview DataHandler implementation for the fractions option.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  "use strict";
+
   var DefaultFractionHandler = Dygraph.DataHandler();
   DefaultFractionHandler.prototype = Dygraph.DataHandlers.createHandler("default");
   Dygraph.DataHandlers.registerHandler("default-fractions", DefaultFractionHandler);

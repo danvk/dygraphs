@@ -9,11 +9,11 @@
  * of error bars and fractions options.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
 
 (function() {
+  /*global Dygraph:false */
+  "use strict";
+
   var FractionsBarsHandler = Dygraph.DataHandler();
   FractionsBarsHandler.prototype = Dygraph.DataHandlers.createHandler("bars");
   Dygraph.DataHandlers.registerHandler("bars-fractions", FractionsBarsHandler);
