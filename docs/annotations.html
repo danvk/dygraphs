@@ -26,43 +26,42 @@ them.</p>
       showRoller: true,
       customBars: true,
       labelsKMB: true,
-      labelsDivWidth: 300,
-      drawCallback: function(g, is_initial) {
-        if (!is_initial) return;
-
-        g.setAnnotations( [
-        {
-          series: "Real",
-          x: "1929-08-15",
-          shortText: "A",
-          text: "1929 Stock Market Peak",
-          cssClass: 'annotation'
-        },
-        {
-          series: "Nominal",
-          x: "1987-08-15",
-          shortText: "B",
-          text: "1987 Crash",
-          cssClass: 'annotation'
-        },
-        {
-          series: "Nominal",
-          x: "1999-12-15",
-          shortText: "C",
-          text: "1999 (.com) Peak",
-          cssClass: 'annotation'
-        },
-        {
-          series: "Nominal",
-          x: "2007-10-15",
-          shortText: "D",
-          text: "All-Time Market Peak",
-          cssClass: 'annotation'
-        }
-        ] );
-      }
+      labelsDivWidth: 300
     }
   );
+
+  stockchart.ready(function(g) {
+    g.setAnnotations( [
+    {
+      series: "Real",
+      x: "1929-08-15",
+      shortText: "A",
+      text: "1929 Stock Market Peak",
+      cssClass: 'annotation'
+    },
+    {
+      series: "Nominal",
+      x: "1987-08-15",
+      shortText: "B",
+      text: "1987 Crash",
+      cssClass: 'annotation'
+    },
+    {
+      series: "Nominal",
+      x: "1999-12-15",
+      shortText: "C",
+      text: "1999 (.com) Peak",
+      cssClass: 'annotation'
+    },
+    {
+      series: "Nominal",
+      x: "2007-10-15",
+      shortText: "D",
+      text: "All-Time Market Peak",
+      cssClass: 'annotation'
+    }
+    ] );
+  });
 </script>
 
 <h3>Adding Annotations</h3>
@@ -158,6 +157,22 @@ g.setAnnotations(annotations);  // causes a redraw
 
 <p>For a more real-life example, see the <a
 href="tests/annotation.html">annotations demo</a></p>
+
+<h3>Annotations and Data Sources</h3>
+<p>When you pass a URL as the data source to dygraphs, it must issue a request
+for the data before drawing the chart. This means that the chart data is not yet
+available immediately after you call <code>new Dygraph</code> and so the call to
+<code>g.setAnnotations</code> will fail. The best way around this is to use the
+<code>ready()</code> method:</p>
+
+<pre>g = new Dygraph(div, "path/to/data.csv");
+g.ready(function() {
+  // This is called when data.csv comes back and the chart draws.
+  g.setAnnotations([
+    &hellip;
+  ]);
+});
+</pre>
 
 <h3>Annotations property reference</h3>
 <p>These properties can all be set in the dictionary for an annotation. The use of each one is demonstrated on the <a href="tests/annotation.html">annotations demo</a> page.</p>

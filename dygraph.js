@@ -441,6 +441,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.is_initial_draw_ = true;
   this.annotations_ = [];
+  this.readyFns_ = [];
 
   // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
   this.zoomed_x_ = false;
@@ -2612,6 +2613,13 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   if (this.attr_("drawCallback") !== null) {
     this.attr_("drawCallback")(this, is_initial_draw);
   }
+  if (is_initial_draw) {
+    this.readyFired_ = true;
+    while (this.readyFns_.length > 0) {
+      var fn = this.readyFns_.pop();
+      fn(this);
+    }
+  }
 };
 
 /**
@@ -3802,6 +3810,26 @@ Dygraph.prototype.getLabels = function() {
  */
 Dygraph.prototype.indexFromSetName = function(name) {
   return this.setIndexByName_[name];
+};
+
+/**
+ * Trigger a callback when the dygraph has drawn itself and is ready to be
+ * manipulated. This is primarily useful when dygraphs has to do an XHR for the
+ * data (i.e. a URL is passed as the data source) and the chart is drawn
+ * asynchronously. If the chart has already drawn, the callback will fire
+ * immediately.
+ *
+ * This is a good place to call setAnnotation().
+ *
+ * @param {function(!Dygraph)} callback The callback to trigger when the chart
+ *     is ready.
+ */
+Dygraph.prototype.ready = function(callback) {
+  if (this.is_initial_draw_) {
+    this.readyFns_.push(callback);
+  } else {
+    callback(this);
+  }
 };
 
 /**
