@@ -164,7 +164,7 @@ chart_labels.prototype.layout = function(e) {
 
   if (g.getOption('y2label') && g.numAxes() == 2) {
     // same logic applies here as for ylabel.
-    var y2_rect = e.reserveSpaceRight(0);
+    var y2_rect = e.reserveSpaceRight(g.getOption('yLabelWidth'));
     this.y2label_div_ = createRotatedDiv(
         g, y2_rect,
         2,  // secondary (right) y-axis
