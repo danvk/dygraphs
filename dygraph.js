@@ -3542,7 +3542,16 @@ Dygraph.prototype.start_ = function() {
     if (line_delimiter) {
       this.loadedEvent_(data);
     } else {
-      var req = new XMLHttpRequest();
+      // REMOVE_FOR_IE
+      var req;
+      if (window.XMLHttpRequest) {
+        // Firefox, Opera, IE7, and other browsers will use the native object
+        req = new XMLHttpRequest();
+      } else {
+        // IE 5 and 6 will use the ActiveX control
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+
       var caller = this;
       req.onreadystatechange = function () {
         if (req.readyState == 4) {
