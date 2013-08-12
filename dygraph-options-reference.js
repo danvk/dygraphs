@@ -560,7 +560,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "dateWindow": {
     "default": "Full range of the input is shown",
     "labels": ["Axis display"],
-    "type": "Array of two Dates or numbers",
+    "type": "Array of two numbers",
     "example": "[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]",
     "description": "Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch. If the data for the x-axis is numeric, the values in dateWindow must also be numbers."
   },
