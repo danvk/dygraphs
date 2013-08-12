@@ -115,3 +115,16 @@ pre{
   border-color: black;
 }
 
+#current-release {
+  font-size: 18px;
+  background: #f9f9f9;
+  /*
+  padding: 10px 15px;
+  border: 1px dashed black;
+*/
+  display: table;
+  margin-bottom: 50px;
+}
+#current-release p:last-child {
+  margin-bottom: 0;
+}
