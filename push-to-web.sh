@@ -18,6 +18,7 @@ site=$1
 chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
+  ./generate-download.py > docs/download.html
 
   temp_dir=$(mktemp -d /tmp/dygraphs-docs.XXXX)
   cd docs
@@ -36,7 +37,8 @@ else
   echo "generate-documentation.py failed"
 fi
 
-# Revert changes to dygraph-combined.js and docs/options.html
+# Revert changes to dygraph-combined.js and docs.
 git checkout dygraph-combined.js
+git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir
