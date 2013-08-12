@@ -98,14 +98,16 @@ no-op: it simply causes the chart to refresh.</p>
     &quot;2008-05-09,80\n&quot;
   );
 
-  g.setAnnotations([
-  {
-    series: &quot;Temperature&quot;,
-    x: &quot;2008-05-08&quot;,
-    shortText: &quot;L&quot;,
-    text: &quot;Coldest Day&quot;
-  }
-  ]);
+  g.ready(function() {
+    g.setAnnotations([
+    {
+      series: &quot;Temperature&quot;,
+      x: &quot;2008-05-08&quot;,
+      shortText: &quot;L&quot;,
+      text: &quot;Coldest Day&quot;
+    }
+    ]);
+  });
 &lt;/script&gt;
 </pre>
 </div>
@@ -125,14 +127,16 @@ no-op: it simply causes the chart to refresh.</p>
       "2008-05-08,70\n" +
       "2008-05-09,80\n"
     );
-    g.setAnnotations([
-    {
-      series: "Temperature",
-      x: "2008-05-08",
-      shortText: "L",
-      text: "Coldest Day"
-    }
-    ]);
+    g.ready(function() {
+        g.setAnnotations([
+        {
+          series: "Temperature",
+          x: "2008-05-08",
+          shortText: "L",
+          text: "Coldest Day"
+        }
+        ]);
+    });
   </script>
 </div>
 </div>
