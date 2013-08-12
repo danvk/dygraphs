@@ -62,6 +62,12 @@
  * options, see http://dygraphs.com/options.html.
  */
 var Dygraph = function(div, data, opts, opt_fourth_param) {
+  // These have to go above the "Hack for IE" in __init__ since .ready() can be
+  // called as soon as the constructor returns. Once support for OldIE is
+  // dropped, this can go down with the rest of the initializers.
+  this.is_initial_draw_ = true;
+  this.readyFns_ = [];
+
   if (opt_fourth_param !== undefined) {
     // Old versions of dygraphs took in the series labels as a constructor
     // parameter. This doesn't make sense anymore, but it's easy to continue
@@ -439,9 +445,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
 
-  this.is_initial_draw_ = true;
   this.annotations_ = [];
-  this.readyFns_ = [];
 
   // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
   this.zoomed_x_ = false;
@@ -3784,7 +3788,7 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   this.annotations_ = ann;
   if (!this.layout_) {
     this.warn("Tried to setAnnotations before dygraph was ready. " +
-              "Try setting them in a drawCallback. See " +
+              "Try setting them in a ready() block. See " +
               "dygraphs.com/tests/annotation.html");
     return;
   }
