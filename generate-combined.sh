@@ -55,8 +55,8 @@ compress*|cat_compress*)
   CatCompressed
   ;;
 update)
-  CatCompressed > dygraph-combined.js
-  chmod a+r dygraph-combined.js
+  CatCompressed > dygraph-min.js
+  chmod a+r dygraph-min.js
   ;;
 *)
   echo >&2 "Unknown action '$ACTION'"
