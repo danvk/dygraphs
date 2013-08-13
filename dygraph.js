@@ -845,36 +845,19 @@ Dygraph.prototype.toDataXCoord = function(x) {
  * if axis is null, this uses the first axis.
  */
 Dygraph.prototype.toDataYCoord = function(y, axis) {
-  if (y === null) {
+  if (y === null){
     return null;
   }
 
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
 
-  if (typeof(axis) == "undefined") axis = 0;
-  if (!this.axes_[axis].logscale) {
-    return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0]);
-  } else {
-    // Computing the inverse of toDomCoord.
-    var pct = (y - area.y) / area.h;
+  if (typeof (axis) == "undefined") axis = 0;
 
-    // Computing the inverse of toPercentYCoord. The function was arrived at with
-    // the following steps:
-    //
-    // Original calcuation:
-    // pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
-    //
-    // Move denominator to both sides:
-    // pct * (logr1 - Dygraph.log10(yRange[0])) = logr1 - Dygraph.log10(y);
-    //
-    // subtract logr1, and take the negative value.
-    // logr1 - (pct * (logr1 - Dygraph.log10(yRange[0]))) = Dygraph.log10(y);
-    //
-    // Swap both sides of the equation, and we can compute the log of the
-    // return value. Which means we just need to use that as the exponent in
-    // e^exponent.
-    // Dygraph.log10(y) = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+  if (!this.attributes_.getForAxis("logscale", axis)){
+    return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0])
+  } else {
+    var pct = (y - area.y) / area.h;
 
     var logr1 = Dygraph.log10(yRange[1]);
     var exponent = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
