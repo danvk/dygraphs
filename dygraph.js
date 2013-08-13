@@ -845,17 +845,16 @@ Dygraph.prototype.toDataXCoord = function(x) {
  * if axis is null, this uses the first axis.
  */
 Dygraph.prototype.toDataYCoord = function(y, axis) {
-  if (y === null){
+  if (y === null) {
     return null;
   }
 
   var area = this.plotter_.area;
   var yRange = this.yAxisRange(axis);
 
-  if (typeof (axis) == "undefined") axis = 0;
-
-  if (!this.attributes_.getForAxis("logscale", axis)){
-    return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0])
+  if (typeof(axis) == "undefined") axis = 0;
+  if (!this.attributes_.getForAxis("logscale", axis)) {
+    return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
     var pct = (y - area.y) / area.h;
 
