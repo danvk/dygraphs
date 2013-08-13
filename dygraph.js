@@ -856,6 +856,7 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
   if (!this.attributes_.getForAxis("logscale", axis)) {
     return yRange[0] + (area.y + area.h - y) / area.h * (yRange[1] - yRange[0]);
   } else {
+    // Computing the inverse of toDomCoord.
     var pct = (y - area.y) / area.h;
 
     var logr1 = Dygraph.log10(yRange[1]);
