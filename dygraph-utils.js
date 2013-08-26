@@ -791,6 +791,30 @@ Dygraph.createCanvas = function() {
 };
 
 /**
+ * Returns the context's pixel ratio, which is the ratio between the device
+ * pixel ratio and the backing store ratio. Typically this is 1 for conventional
+ * displays, and > 1 for HiDPI displays (such as the Retina MBP).
+ * See http://www.html5rocks.com/en/tutorials/canvas/hidpi/ for more details.
+ *
+ * @param {!CanvasRenderingContext2D} context The canvas's 2d context.
+ * @return {number} The ratio of the device pixel ratio and the backing store
+ * ratio for the specified context.
+ */
+Dygraph.getContextPixelRatio = function(context) {
+  try {
+    var devicePixelRatio = window.devicePixelRatio || 1,
+        backingStoreRatio = context.webkitBackingStorePixelRatio ||
+                            context.mozBackingStorePixelRatio ||
+                            context.msBackingStorePixelRatio ||
+                            context.oBackingStorePixelRatio ||
+                            context.backingStorePixelRatio || 1;
+    return devicePixelRatio / backingStoreRatio;
+  } catch (e) {
+    return 1;
+  }
+};
+
+/**
  * Checks whether the user is on an Android browser.
  * Android does not fully support the <canvas> tag, e.g. w/r/t/ clipping.
  * @return {boolean}
