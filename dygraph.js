@@ -1008,10 +1008,10 @@ Dygraph.prototype.createInterface_ = function() {
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
 
-  this.resizeElements_();
-
   this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
+
+  this.resizeElements_();
 
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
@@ -1058,14 +1058,24 @@ Dygraph.prototype.createInterface_ = function() {
 Dygraph.prototype.resizeElements_ = function() {
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
+
+  var canvasScale = Dygraph.getContextPixelRatio(this.canvas_ctx_);
+  this.canvas_.width = this.width_ * canvasScale;
+  this.canvas_.height = this.height_ * canvasScale;
   this.canvas_.style.width = this.width_ + "px";    // for IE
   this.canvas_.style.height = this.height_ + "px";  // for IE
-  this.hidden_.width = this.width_;
-  this.hidden_.height = this.height_;
+  if (canvasScale !== 1) {
+    this.canvas_ctx_.scale(canvasScale, canvasScale);
+  }
+
+  var hiddenScale = Dygraph.getContextPixelRatio(this.hidden_ctx_);
+  this.hidden_.width = this.width_ * hiddenScale;
+  this.hidden_.height = this.height_ * hiddenScale;
   this.hidden_.style.width = this.width_ + "px";    // for IE
   this.hidden_.style.height = this.height_ + "px";  // for IE
+  if (hiddenScale !== 1) {
+    this.hidden_ctx_.scale(hiddenScale, hiddenScale);
+  }
 };
 
 /**
