@@ -12,63 +12,66 @@
  */
 
 (function() {
-  /*global Dygraph:false */
-  /*global DygraphLayout:false */
-  "use strict";
 
-  var BarsHandler = Dygraph.DataHandler();
-  Dygraph.DataHandlers.registerHandler("bars", BarsHandler);
-  // errorBars
-  BarsHandler.prototype.extractSeries = function(rawData, i, options) {
-    // Not implemented here must be extended
-  };
+/*global Dygraph:false */
+/*global DygraphLayout:false */
+"use strict";
 
-  BarsHandler.prototype.rollingAverage =  function(originalData, rollPeriod,
-      options) {
-    // Not implemented here, must be extended.
-  };
+Dygraph.DataHandlers.BarsHandler = Dygraph.DataHandler();
+var BarsHandler = Dygraph.DataHandlers.BarsHandler;
 
-  BarsHandler.prototype.onPointsCreated_ = function(series, points) {
-    for (var i = 0; i < series.length; ++i) {
-      var item = series[i];
-      var point = points[i];
-      point.y_top = NaN;
-      point.y_bottom = NaN;
-      point.yval_minus = DygraphLayout.parseFloat_(item[2][0]);
-      point.yval_plus = DygraphLayout.parseFloat_(item[2][1]);
-    }
-  };
+// errorBars
+BarsHandler.prototype.extractSeries = function(rawData, i, options) {
+  // Not implemented here must be extended
+};
 
-  BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
-    var minY = null, maxY = null, y;
+BarsHandler.prototype.rollingAverage =
+    function(originalData, rollPeriod, options) {
+  // Not implemented here, must be extended.
+};
 
-    var firstIdx = 0;
-    var lastIdx = series.length - 1;
+BarsHandler.prototype.onPointsCreated_ = function(series, points) {
+  for (var i = 0; i < series.length; ++i) {
+    var item = series[i];
+    var point = points[i];
+    point.y_top = NaN;
+    point.y_bottom = NaN;
+    point.yval_minus = DygraphLayout.parseFloat_(item[2][0]);
+    point.yval_plus = DygraphLayout.parseFloat_(item[2][1]);
+  }
+};
 
-    for ( var j = firstIdx; j <= lastIdx; j++) {
-      y = series[j][1];
-      if (y === null || isNaN(y)) continue;
+BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
+  var minY = null, maxY = null, y;
 
-      var low = series[j][2][0];
-      var high = series[j][2][1];
+  var firstIdx = 0;
+  var lastIdx = series.length - 1;
 
-      if (low > y) low = y; // this can happen with custom bars,
-      if (high < y) high = y; // e.g. in tests/custom-bars.html
+  for ( var j = firstIdx; j <= lastIdx; j++) {
+    y = series[j][1];
+    if (y === null || isNaN(y)) continue;
 
-      if (maxY === null || high > maxY) maxY = high;
-      if (minY === null || low < minY) minY = low;
-    }
+    var low = series[j][2][0];
+    var high = series[j][2][1];
 
-    return [ minY, maxY ];
-  };
+    if (low > y) low = y; // this can happen with custom bars,
+    if (high < y) high = y; // e.g. in tests/custom-bars.html
 
-  BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
-    var point;
-    for (var j = 0; j < points.length; j++) {
-      // Copy over the error terms
-      point = points[j];
-      point.y_top = DygraphLayout._calcYNormal(axis, point.yval_minus, logscale);
-      point.y_bottom = DygraphLayout._calcYNormal(axis, point.yval_plus, logscale);
-    }
-  };
+    if (maxY === null || high > maxY) maxY = high;
+    if (minY === null || low < minY) minY = low;
+  }
+
+  return [ minY, maxY ];
+};
+
+BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
+  var point;
+  for (var j = 0; j < points.length; j++) {
+    // Copy over the error terms
+    point = points[j];
+    point.y_top = DygraphLayout._calcYNormal(axis, point.yval_minus, logscale);
+    point.y_bottom = DygraphLayout._calcYNormal(axis, point.yval_plus, logscale);
+  }
+};
+
 })();

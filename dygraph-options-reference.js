@@ -802,7 +802,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "[]",
     "labels": ["Configuration"],
     "type": "Array<plugin>",
-    "description": "Defines per-graph plug-ins. Useful for per-graph customization"
+    "description": "Defines per-graph plugins. Useful for per-graph customization"
+  },
+  "dataHandler": {
+    "default": "(depends on data)",
+    "labels": ["Data"],
+    "type": "Dygraph.DataHandler",
+    "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
   }
 }
 ;  // </JSON>

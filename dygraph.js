@@ -2153,29 +2153,27 @@ Dygraph.prototype.addXTicks_ = function() {
 };
 
 /**
+ * Returns the correct handler class for the currently set options.
  * @private
- * Returns the correct handler ID for the currently set options. 
- * The actual handler may then be retrieved using the
- * Dygraph.DataHandlers.getHandler() method.
  */
-Dygraph.prototype.getHandlerId_ = function() {
-  var handlerId;
-  if (this.attr_("dataHandlerId")) {
-    handlerId =  this.attr_("dataHandlerId");
-  } else if (this.fractions_){
-    if (this.attr_("errorBars")) {
-      handlerId = "bars-fractions";
+Dygraph.prototype.getHandlerClass_ = function() {
+  var handlerClass;
+  if (this.attr_('dataHandler')) {
+    handlerClass =  this.attr_('dataHandler');
+  } else if (this.fractions_) {
+    if (this.attr_('errorBars')) {
+      handlerClass = Dygraph.DataHandlers.FractionsBarsHandler;
     } else {
-      handlerId = "default-fractions";
+      handlerClass = Dygraph.DataHandlers.DefaultFractionHandler;
     }
-  } else if (this.attr_("customBars")) {
-    handlerId = "bars-custom";
-  } else if (this.attr_("errorBars")) {
-    handlerId = "bars-error";
+  } else if (this.attr_('customBars')) {
+    handlerClass = Dygraph.DataHandlers.CustomBarsHandler;
+  } else if (this.attr_('errorBars')) {
+    handlerClass = Dygraph.DataHandlers.ErrorBarsHandler;
   } else {
-    handlerId = "default";
+    handlerClass = Dygraph.DataHandlers.DefaultHandler;
   }
-  return handlerId;
+  return handlerClass;
 };
 
 /**
@@ -2190,7 +2188,7 @@ Dygraph.prototype.predraw_ = function() {
   var start = new Date();
   
   // Create the correct dataHandler
-  this.dataHandler_ = new (Dygraph.DataHandlers.getHandler(this.getHandlerId_()))();
+  this.dataHandler_ = new (this.getHandlerClass_())();
 
   this.layout_.computePlotArea();
 

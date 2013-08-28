@@ -38,68 +38,24 @@
  * errorBar / customBar: [x, yVal, [yTopVariance, yBottomVariance] ]
  * 
  */
-/*jshint globalstrict: true */
 /*global Dygraph:false */
 /*global DygraphLayout:false */
+
+(function() {
+
 "use strict";
 
 /**
  * A collection of functions to create and retrieve data handlers.
+ * @type {Object.<!Dygraph.DataHandler>}
  */
 Dygraph.DataHandlers = {};
-
-/**
- * All registered data handlers are stored here.
- * 
- * @private
- */
-Dygraph.DataHandlers.handlers_ = {};
-
-/**
- * @param name {!string} The name the data handler should be registered to.
- *          Registers a data handler by the given name and makes it publicly
- *          accessible.
- * @param handler {!Dygraph.DataHandler} DataHandler implementation which must be an
- *          instance of Dygraph.DataHandler.
- * @public
- */
-Dygraph.DataHandlers.registerHandler = function(name, handler) {
-  if (!handler instanceof Dygraph.DataHandler) {
-    throw ("the handler must be a prototype of Dygraph.DataHandler");
-  }
-  Dygraph.DataHandlers.handlers_[name] = handler;
-};
-
-/**
- * Returns the data handler registered to the given name.
- * Note this is the data handler constructor method.
- * 
- * @param name {!string} The name, the handler was registered to.
- * @returns {Dygraph.DataHandler} The data handler constructor.
- * @public
- */
-Dygraph.DataHandlers.getHandler = function(name) {
-  return Dygraph.DataHandlers.handlers_[name];
-};
-
-/**
- * Returns the cunstructed data handler registered to the given name.
- * 
- * @param name {!string} The name, the handler was registered to.
- * @returns {Dygraph.DataHandler} A constructed instance of the data handler.
- * @public
- */
-Dygraph.DataHandlers.createHandler = function(name) {
-  return new Dygraph.DataHandlers.handlers_[name]();
-};
 
 /**
  * 
  * The data handler is responsible for all data specific operations. All of the
  * series data it receives and returns is always in the unified data format.
  * Initially the unified data is created by the extractSeries method
- * 
- * @class
  */
 Dygraph.DataHandler = function () {
   /**
@@ -303,3 +259,5 @@ Dygraph.DataHandler = function () {
 
   return handler;
 };
+
+})();
