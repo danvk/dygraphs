@@ -19,7 +19,14 @@ GetSources () {
     dygraph-tickers.js \
     dygraph-plugin-base.js \
     plugins/*.js \
-    dygraph-plugin-install.js
+    dygraph-plugin-install.js \
+    datahandler/datahandler.js \
+    datahandler/default.js \
+    datahandler/default-fractions.js \
+    datahandler/bars.js \
+    datahandler/bars-custom.js \
+    datahandler/bars-error.js \
+    datahandler/bars-fractions.js 
   do
       echo "$F"
   done

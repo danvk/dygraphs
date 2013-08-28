@@ -30,6 +30,15 @@ Plugins:
 - plugins/legend.js
 - plugins/range-selector.js
 
+Datahandler:
+- datahandler/bars-custom.js
+- datahandler/bars-error.js
+- datahandler/bars-fractions.js
+- datahandler/bars.js
+- datahandler/datahandler.js
+- datahandler/default-fractions.js
+- datahandler/default.js
+
 Here's a command that can be used to build dygraphs using the closure
 compiler:
 java -jar ../../closure-compiler-read-only/build/compiler.jar --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-options-reference.js --js=dygraph-tickers.js --js=dygraph-gviz.js --js=dygraph-options.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js

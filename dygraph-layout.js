@@ -222,7 +222,6 @@ DygraphLayout._calcYNormal = function(axis, value, logscale) {
 DygraphLayout.prototype._evaluateLineCharts = function() {
   var connectSeparated = this.attr_('connectSeparatedPoints');
   var isStacked = this.attr_("stackedGraph");
-  var hasBars = this.attr_('errorBars') || this.attr_('customBars');
 
   for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
     var points = this.points[setIdx];
@@ -252,14 +251,9 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         }
       }
       point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
-
-      if (hasBars) {
-        point.y_top = DygraphLayout._calcYNormal(
-            axis, yval - point.yval_minus, logscale);
-        point.y_bottom = DygraphLayout._calcYNormal(
-            axis, yval + point.yval_plus, logscale);
-      }
     }
+
+    this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
   }
 };
 
