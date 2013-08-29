@@ -742,7 +742,7 @@ Dygraph.prototype.xAxisRange = function() {
  * @return {!Array.<number>}
  */
 Dygraph.prototype.xAxisExtremes = function() {
-  var pad = this.attr_('xRangePad') / this.plotter_.area.w;
+  var pad = this.getNumericOption('xRangePad') / this.plotter_.area.w;
   if (this.numRows() === 0) {
     return [0 - pad, 1 + pad];
   }
@@ -931,9 +931,9 @@ Dygraph.prototype.toDataYCoord = function(y, opt_axis) {
  * If y is null, this returns null.
  * if axis is null, this uses the first axis.
  *
- * @param {number} y The data y-coordinate.
- * @param {number} opt_axis The axis number on which the data coordinate lives.
- * @return {number} A fraction in [0, 1] where 0 = the top edge.
+ * @param {?number} y The data y-coordinate.
+ * @param {number=} opt_axis The axis number on which the data coordinate lives.
+ * @return {?number} A fraction in [0, 1] where 0 = the top edge.
  */
 Dygraph.prototype.toPercentYCoord = function(y, opt_axis) {
   if (y === null) {
@@ -967,8 +967,8 @@ Dygraph.prototype.toPercentYCoord = function(y, opt_axis) {
  * values can fall outside the canvas.
  *
  * If x is null, this returns null.
- * @param {number} x The data x-coordinate.
- * @return {number} A fraction in [0, 1] where 0 = the left edge.
+ * @param {?number} x The data x-coordinate.
+ * @return {?number} A fraction in [0, 1] where 0 = the left edge.
  */
 Dygraph.prototype.toPercentXCoord = function(x) {
   if (x === null) {
@@ -1032,10 +1032,12 @@ Dygraph.prototype.createInterface_ = function() {
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
+  /** @type {!HTMLCanvasElement} */
   this.canvas_ = Dygraph.createCanvas();
   this.canvas_.style.position = "absolute";
 
   // ... and for static parts of the chart.
+  /** @type {!HTMLCanvasElement} */
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
 
   this.resizeElements_();
@@ -1145,8 +1147,8 @@ Dygraph.prototype.destroy = function() {
  * Creates the canvas on which the chart will be drawn. Only the Renderer ever
  * draws on this particular canvas. All Dygraph work (i.e. drawing hover dots
  * or the zoom rectangles) is done on this.canvas_.
- * @param {Object} canvas The Dygraph canvas over which to overlay the plot
- * @return {Object} The newly-created canvas
+ * @param {!HTMLCanvasElement} canvas The Dygraph canvas over which to overlay the plot
+ * @return {!HTMLCanvasElement} The newly-created canvas
  * @private
  */
 Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
@@ -1197,11 +1199,11 @@ Dygraph.prototype.setColors_ = function() {
   this.colors_ = [];
   /** @type {Object.<string>} */
   this.colorsMap_ = {};
-  var colors = this.attr_('colors');
+  var colors = /**@type{Array.<string>}*/(this.attr_('colors'));
   var i;
   if (!colors) {
-    var sat = this.attr_('colorSaturation') || 1.0;
-    var val = this.attr_('colorValue') || 0.5;
+    var sat = this.getNumericOption('colorSaturation') || 1.0;
+    var val = this.getNumericOption('colorValue') || 0.5;
     var half = Math.ceil(num / 2);
     for (i = 1; i <= num; i++) {
       if (!this.visibility()[i-1]) continue;
@@ -1484,8 +1486,8 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
   this.currentZoomRectArgs_ = null;
   // Find the earliest and latest dates contained in this canvasx range.
   // Convert the call to date ranges of the raw data.
-  var minDate = this.toDataXCoord(lowX);
-  var maxDate = this.toDataXCoord(highX);
+  var minDate = /** @type{number} */(this.toDataXCoord(lowX));
+  var maxDate = /** @type{number} */(this.toDataXCoord(highX));
   this.doZoomXDates_(minDate, maxDate);
 };
 
@@ -2390,7 +2392,7 @@ Dygraph.stackPoints_ = function(
  * extreme values "speculatively", i.e. without actually setting state on the
  * dygraph.
  *
- * @param {Array.<Array.<Array.<(number|Array.<number>)>>} rolledSeries, where
+ * @param {Array.<Array.<Array.<(number|Array.<number>)>>>} rolledSeries, where
  *     rolledSeries[seriesIndex][row] = raw point, where
  *     seriesIndex is the column number starting with 1, and
  *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
@@ -3416,17 +3418,18 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.
  *
- * @param {number|null|undefined} width Width (in pixels).
- * @param {number|null|undefined} height Height (in pixels).
+ * @param {number=} opt_width Width (in pixels).
+ * @param {number=} opt_height Height (in pixels).
  */
-Dygraph.prototype.resize = function(width, height) {
+Dygraph.prototype.resize = function(opt_width, opt_height) {
   if (this.resize_lock) {
     return;
   }
   this.resize_lock = true;
 
-  if ((width === null || width === undefined) !=
-      (height === null || width === undefined)) {
+  var width = opt_width, height = opt_height;
+
+  if ((opt_width === undefined) != (opt_height === undefined)) {
     Dygraph.warn("Dygraph.resize() should be called with zero parameters or " +
                  "two non-NULL parameters. Pretending it was zero.");
     width = height = null;
