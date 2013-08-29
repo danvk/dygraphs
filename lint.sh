@@ -21,7 +21,7 @@ fi
 RETURN_VALUE=0
 
 if [ $# -eq 0 ]; then
-  files=$(ls dygraph*.js plugins/*.js | grep -v combined | grep -v dev.js| grep -v externs)
+  files=$(ls dygraph*.js plugins/*.js datahandler/*.js | grep -v combined | grep -v dev.js| grep -v externs)
 else
   files=$1
 fi

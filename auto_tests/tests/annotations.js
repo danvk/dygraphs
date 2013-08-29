@@ -240,3 +240,33 @@ AnnotationsTestCase.prototype.testAnnotationsStacked = function() {
   assertEquals(annEls[0].offsetLeft, annEls[1].offsetLeft);
   assert(annEls[1].offsetTop < annEls[0].offsetTop - 10);
 };
+
+
+// Test the .ready() method, which is most often used with setAnnotations().
+AnnotationsTestCase.prototype.testReady = function() {
+  var data = 'X,Y1,Y2\n' +
+      '0,1,2\n' +
+      '1,2,3\n';
+  var mockXhr = Util.overrideXMLHttpRequest(data);
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, "data.csv", {
+    width: 480,
+    height: 320
+  });
+
+  var ready_calls = 0;
+  g.ready(function() { ready_calls++; });
+
+  assertEquals(0, ready_calls);
+  mockXhr.respond();
+  assertEquals(1, ready_calls);
+
+  // Make sure that ready isn't called on redraws.
+  g.updateOptions({});
+  assertEquals(1, ready_calls);
+
+  // Or data changes.
+  g.updateOptions({file: data});
+  assertEquals(1, ready_calls);
+};

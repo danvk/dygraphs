@@ -114,3 +114,38 @@ Util.formatDate = function(date_ms) {
 
   return year + "/" + month + "/" + day;
 };
+
+/**
+ * Overrides the browser's built-in XMLHttpRequest with a mock.
+ * Usage:
+ *
+ * var mockXhr = Util.overrideXMLHttpRequest(your_data);
+ * ... call code that does an XHR ...
+ * mockXhr.respond();  // restores default behavior.
+ * ... do your assertions ...
+ */
+Util.overrideXMLHttpRequest = function(data) {
+  var originalXMLHttpRequest = XMLHttpRequest;
+
+  var requests = [];
+  var FakeXMLHttpRequest = function () {
+    requests.push(this);
+  };
+  FakeXMLHttpRequest.prototype.open = function () {};
+  FakeXMLHttpRequest.prototype.send = function () {
+    this.readyState = 4;
+    this.status = 200;
+    this.responseText = data;
+  };
+  FakeXMLHttpRequest.restore = function() {
+    XMLHttpRequest = originalXMLHttpRequest;
+  };
+  FakeXMLHttpRequest.respond = function() {
+    for (var i = 0; i < requests.length; i++) {
+      requests[i].onreadystatechange();
+    }
+    FakeXMLHttpRequest.restore();
+  };
+  XMLHttpRequest = FakeXMLHttpRequest;
+  return FakeXMLHttpRequest;
+};

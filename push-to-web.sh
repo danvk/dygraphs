@@ -18,6 +18,12 @@ site=$1
 chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
   ./generate-jsdoc.sh
+  ./generate-download.py > docs/download.html
+
+  temp_dir=$(mktemp -d /tmp/dygraphs-docs.XXXX)
+  cd docs
+  ./ssi_expander.py $temp_dir
+  cd ..
 
   # Make sure everything will be readable on the web.
   # This is like "chmod -R a+rX", but excludes the .git directory.
@@ -26,11 +32,13 @@ if [ -s docs/options.html ] ; then
   # Copy everything to the site.
   rsync -avzr gallery strftime rgbcolor common tests jsdoc experimental plugins $site \
   && \
-  rsync -avzr dashed-canvas.js stacktrace.js dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png docs/* $site/
+  rsync -avzr --copy-links dashed-canvas.js stacktrace.js dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png $temp_dir/* $site/
 else
   echo "generate-documentation.py failed"
 fi
 
-# Revert changes to dygraph-combined.js and docs/options.html
+# Revert changes to dygraph-combined.js and docs.
 git checkout dygraph-combined.js
+git checkout docs/download.html
 rm docs/options.html
+rm -rf $temp_dir
