@@ -165,3 +165,32 @@ ToDomCoordsTestCase.prototype.testAxisTickSize = function() {
   assertEquals([200, 0], g.toDomCoords(0, 100));
   assertEquals([500, 386], g.toDomCoords(100, 0));
 }
+
+ToDomCoordsTestCase.prototype.testChartLogarithmic = function() {
+  var opts = {
+    drawXAxis: false,
+    drawYAxis: false,
+    drawXGrid: false,
+    drawYGrid: false,
+    logscale: true,
+    rightGap: 0,
+    valueRange: [10, 100],
+    dateWindow: [10, 100],
+    width: 400,
+    height: 400,
+    colors: ['#ff0000']
+  }
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, [ [10,10], [100,100] ], opts);
+
+  assertEquals([10, 100], g.toDataCoords(0, 0));
+  assertEquals([10, 10], g.toDataCoords(0, 400));
+  assertEquals([100, 100], g.toDataCoords(400, 0));
+  assertEquals([100, 10], g.toDataCoords(400, 400));
+  
+  assertEquals([0, 0], g.toDomCoords(10, 100));
+  assertEquals([0, 400], g.toDomCoords(10, 10));
+  assertEquals([400, 0], g.toDomCoords(100, 100));
+  assertEquals([400, 400], g.toDomCoords(100, 10));
+}
