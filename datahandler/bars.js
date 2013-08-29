@@ -36,8 +36,8 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
     var point = points[i];
     point.y_top = NaN;
     point.y_bottom = NaN;
-    point.yval_minus = DygraphLayout.parseFloat_(item[2][0]);
-    point.yval_plus = DygraphLayout.parseFloat_(item[2][1]);
+    point.yval_minus = Dygraph.parseFloat(item[2][0]);
+    point.yval_plus = Dygraph.parseFloat(item[2][1]);
   }
 };
 
@@ -69,8 +69,8 @@ BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
   for (var j = 0; j < points.length; j++) {
     // Copy over the error terms
     point = points[j];
-    point.y_top = DygraphLayout._calcYNormal(axis, point.yval_minus, logscale);
-    point.y_bottom = DygraphLayout._calcYNormal(axis, point.yval_plus, logscale);
+    point.y_top = DygraphLayout.calcYNormal_(axis, point.yval_minus, logscale);
+    point.y_bottom = DygraphLayout.calcYNormal_(axis, point.yval_plus, logscale);
   }
 };
 

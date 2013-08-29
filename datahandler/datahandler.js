@@ -128,11 +128,11 @@ Dygraph.DataHandler = function () {
     for ( var i = 0; i < series.length; ++i) {
       var item = series[i];
       var yraw = item[1];
-      var yval = yraw === null ? null : DygraphLayout.parseFloat_(yraw);
+      var yval = yraw === null ? null : Dygraph.parseFloat(yraw);
       var point = {
         x : NaN,
         y : NaN,
-        xval : DygraphLayout.parseFloat_(item[0]),
+        xval : Dygraph.parseFloat(item[0]),
         yval : yval,
         name : setName, // TODO(danvk): is this really necessary?
         idx : i + boundaryIdStart

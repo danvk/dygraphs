@@ -264,7 +264,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
   }
 };
 
-var calcYNormal_ = function(axis, value, logscale) {
+/**
+ * @param {DygraphAxisType} axis
+ * @param {number} value
+ * @param {boolean} logscale
+ * @return {number}
+ */
+DygraphLayout.calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
     return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
   } else {
@@ -291,7 +297,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
-        point.y_stacked = calcYNormal_(
+        point.y_stacked = DygraphLayout.calcYNormal_(
             axis, point.yval_stacked, logscale);
         if (yval !== null && !isNaN(yval)) {
           yval = point.yval_stacked;
@@ -303,7 +309,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           point.yval = NaN;
         }
       }
-      point.y = calcYNormal_(axis, yval, logscale);
+      point.y = DygraphLayout.calcYNormal_(axis, yval, logscale);
     }
 
     this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
