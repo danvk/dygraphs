@@ -3629,6 +3629,3 @@ Dygraph.addAnnotationRule = function() {
 
   this.warn("Unable to add default annotation CSS rule; display may be off.");
 };
-
-// Older pages may still use this name.
-var DateGraph = Dygraph;
