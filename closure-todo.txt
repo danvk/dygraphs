@@ -9,6 +9,7 @@ This file tracks which files have been fully "closurized", i.e. compile
 under the Closure Compiler without any errors or warnings.
 
 Core:
+x dygraph-constants.js 
 x dygraph-canvas.js
 x dygraph-interaction-model.js
 x dygraph-layout.js
@@ -41,7 +42,7 @@ Datahandler:
 
 Here's a command that can be used to build dygraphs using the closure
 compiler:
-java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-tickers.js --js=dygraph-canvas.js --js=dygraph.js --js=dygraph-gviz.js --js=dygraph-options-reference.js --js=dygraph-options.js --js=dygraph-layout.js --js=dygraph-interaction-model.js --js=dygraph-plugin-base.js --js=dygraph-exports.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
+java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --js=dygraph-constants.js --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-tickers.js --js=dygraph-canvas.js --js=dygraph.js --js=dygraph-gviz.js --js=dygraph-options-reference.js --js=dygraph-options.js --js=dygraph-layout.js --js=dygraph-interaction-model.js --js=dygraph-plugin-base.js --js=dygraph-exports.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
 
 As each file is closurized, it can be added as a "--js" parameter.
 

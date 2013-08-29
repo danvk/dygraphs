@@ -140,3 +140,23 @@ var DygraphPlotterType;
  * }}
  */
 var DygraphInteractionContext;
+
+
+/**
+ * @constructor
+ */
+var DygraphPluginType;
+
+/**
+ * @param {!Dygraph} dygraph
+ * TODO(danvk): be more specific than Object
+ * @return {Object.<function(Object)>} Mapping from event -> callback.
+ */
+DygraphPluginType.prototype.activate = function(dygraph) {};
+
+/**
+ * @return {string}
+ */
+DygraphPluginType.prototype.toString = function() {};
+
+DygraphPluginType.prototype.destroy = function() {};

@@ -18,6 +18,7 @@
   var source_files = [
     "stacktrace.js",
     "dashed-canvas.js",
+    "dygraph-constants.js",
     "dygraph-options.js",
     "dygraph-layout.js",
     "dygraph-canvas.js",

@@ -60,7 +60,7 @@
 
 (function() {
 
-/*jshint globalstrict:true, sub:true */
+/*jshint sub:true */
 /*global Dygraph:false */
 "use strict";
 
@@ -224,48 +224,23 @@ Dygraph.dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   }
 };
 
-// Time granularity enumeration
-// TODO(danvk): make this an @enum
-var SECONDLY = 0;
-var TWO_SECONDLY = 1;
-var FIVE_SECONDLY = 2;
-var TEN_SECONDLY = 3;
-var THIRTY_SECONDLY  = 4;
-var MINUTELY = 5;
-var TWO_MINUTELY = 6;
-var FIVE_MINUTELY = 7;
-var TEN_MINUTELY = 8;
-var THIRTY_MINUTELY = 9;
-var HOURLY = 10;
-var TWO_HOURLY = 11;
-var SIX_HOURLY = 12;
-var DAILY = 13;
-var WEEKLY = 14;
-var MONTHLY = 15;
-var QUARTERLY = 16;
-var BIANNUAL = 17;
-var ANNUAL = 18;
-var DECADAL = 19;
-var CENTENNIAL = 20;
-var NUM_GRANULARITIES = 21;
-
 /** @type {Array.<number>} */
 var SHORT_SPACINGS = [];
-SHORT_SPACINGS[SECONDLY]        = 1000 * 1;
-SHORT_SPACINGS[TWO_SECONDLY]    = 1000 * 2;
-SHORT_SPACINGS[FIVE_SECONDLY]   = 1000 * 5;
-SHORT_SPACINGS[TEN_SECONDLY]    = 1000 * 10;
-SHORT_SPACINGS[THIRTY_SECONDLY] = 1000 * 30;
-SHORT_SPACINGS[MINUTELY]        = 1000 * 60;
-SHORT_SPACINGS[TWO_MINUTELY]    = 1000 * 60 * 2;
-SHORT_SPACINGS[FIVE_MINUTELY]   = 1000 * 60 * 5;
-SHORT_SPACINGS[TEN_MINUTELY]    = 1000 * 60 * 10;
-SHORT_SPACINGS[THIRTY_MINUTELY] = 1000 * 60 * 30;
-SHORT_SPACINGS[HOURLY]          = 1000 * 3600;
-SHORT_SPACINGS[TWO_HOURLY]      = 1000 * 3600 * 2;
-SHORT_SPACINGS[SIX_HOURLY]      = 1000 * 3600 * 6;
-SHORT_SPACINGS[DAILY]           = 1000 * 86400;
-SHORT_SPACINGS[WEEKLY]          = 1000 * 604800;
+SHORT_SPACINGS[DygraphGranularities.SECONDLY]        = 1000 * 1;
+SHORT_SPACINGS[DygraphGranularities.TWO_SECONDLY]    = 1000 * 2;
+SHORT_SPACINGS[DygraphGranularities.FIVE_SECONDLY]   = 1000 * 5;
+SHORT_SPACINGS[DygraphGranularities.TEN_SECONDLY]    = 1000 * 10;
+SHORT_SPACINGS[DygraphGranularities.THIRTY_SECONDLY] = 1000 * 30;
+SHORT_SPACINGS[DygraphGranularities.MINUTELY]        = 1000 * 60;
+SHORT_SPACINGS[DygraphGranularities.TWO_MINUTELY]    = 1000 * 60 * 2;
+SHORT_SPACINGS[DygraphGranularities.FIVE_MINUTELY]   = 1000 * 60 * 5;
+SHORT_SPACINGS[DygraphGranularities.TEN_MINUTELY]    = 1000 * 60 * 10;
+SHORT_SPACINGS[DygraphGranularities.THIRTY_MINUTELY] = 1000 * 60 * 30;
+SHORT_SPACINGS[DygraphGranularities.HOURLY]          = 1000 * 3600;
+SHORT_SPACINGS[DygraphGranularities.TWO_HOURLY]      = 1000 * 3600 * 2;
+SHORT_SPACINGS[DygraphGranularities.SIX_HOURLY]      = 1000 * 3600 * 6;
+SHORT_SPACINGS[DygraphGranularities.DAILY]           = 1000 * 86400;
+SHORT_SPACINGS[DygraphGranularities.WEEKLY]          = 1000 * 604800;
 
 /** 
  * A collection of objects specifying where it is acceptable to place tick
@@ -275,27 +250,27 @@ SHORT_SPACINGS[WEEKLY]          = 1000 * 604800;
  * @type {Array.<Object>} 
  */
 var LONG_TICK_PLACEMENTS = [];
-LONG_TICK_PLACEMENTS[MONTHLY] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.MONTHLY] = {
   months : [0,1,2,3,4,5,6,7,8,9,10,11], 
   year_mod : 1
 };
-LONG_TICK_PLACEMENTS[QUARTERLY] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.QUARTERLY] = {
   months: [0,3,6,9], 
   year_mod: 1
 };
-LONG_TICK_PLACEMENTS[BIANNUAL] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.BIANNUAL] = {
   months: [0,6], 
   year_mod: 1
 };
-LONG_TICK_PLACEMENTS[ANNUAL] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.ANNUAL] = {
   months: [0], 
   year_mod: 1
 };
-LONG_TICK_PLACEMENTS[DECADAL] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.DECADAL] = {
   months: [0], 
   year_mod: 10
 };
-LONG_TICK_PLACEMENTS[CENTENNIAL] = {
+LONG_TICK_PLACEMENTS[DygraphGranularities.CENTENNIAL] = {
   months: [0], 
   year_mod: 100
 };
@@ -313,7 +288,7 @@ LONG_TICK_PLACEMENTS[CENTENNIAL] = {
  */
 Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
-  for (var i = 0; i < NUM_GRANULARITIES; i++) {
+  for (var i = 0; i < DygraphGranularities.NUM_GRANULARITIES; i++) {
     var num_ticks = Dygraph.numDateTicks(a, b, i);
     if (pixels / num_ticks >= pixels_per_tick) {
       return i;
@@ -329,7 +304,7 @@ Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
  * @return {number} Number of ticks that would result.
  */
 Dygraph.numDateTicks = function(start_time, end_time, granularity) {
-  if (granularity < MONTHLY) {
+  if (granularity < DygraphGranularities.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = SHORT_SPACINGS[granularity];
     return Math.floor(0.5 + 1.0 * (end_time - start_time) / spacing);
@@ -356,7 +331,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var ticks = [];
   var t;
 
-  if (granularity < MONTHLY) {
+  if (granularity < DygraphGranularities.MONTHLY) {
     // Generate one tick mark for every fixed interval of time.
     var spacing = SHORT_SPACINGS[granularity];
 
@@ -399,7 +374,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // savings transitions to get consistent ticks. For finer-grained ticks,
     // it's essential to show the DST transition in all its messiness.
     var start_offset_min = new Date(start_time).getTimezoneOffset();
-    var check_dst = (spacing >= SHORT_SPACINGS[TWO_HOURLY]);
+    var check_dst = (spacing >= SHORT_SPACINGS[DygraphGranularities.TWO_HOURLY]);
 
     for (t = start_time; t <= end_time; t += spacing) {
       d = new Date(t);
@@ -436,7 +411,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     var months;
     var year_mod = 1;  // e.g. to only print one point every 10 years.
 
-    if (granularity < NUM_GRANULARITIES) {
+    if (granularity < DygraphGranularities.NUM_GRANULARITIES) {
       months = LONG_TICK_PLACEMENTS[granularity].months;
       year_mod = LONG_TICK_PLACEMENTS[granularity].year_mod;
     } else {

@@ -6,6 +6,7 @@ GetSources () {
   # and the one in jsTestDriver.conf. Order matters, except for the plugins.
   for F in \
     dashed-canvas.js \
+    dygraph-constants.js \
     dygraph-options.js \
     dygraph-layout.js \
     dygraph-canvas.js \

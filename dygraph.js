@@ -94,7 +94,7 @@ function Dygraph(div, file, opt_attrs) {
   attrs = Dygraph.mapLegacyOptions_(attrs);
 
   if (typeof(div) == 'string') {
-    div = document.getElementById(div);
+    div = /**@type{!HTMLDivElement}*/(document.getElementById(div));
   }
 
   if (!div) {
@@ -115,7 +115,7 @@ function Dygraph(div, file, opt_attrs) {
 
   this.is_initial_draw_ = true;
 
-  /** @type {number} */
+  /** @type {number|undefined} */
   this.lastx_ = undefined;
 
   /** @type {!Array.<DygraphAnnotationType>} */
@@ -204,6 +204,7 @@ function Dygraph(div, file, opt_attrs) {
   var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
   for (var i = 0; i < plugins.length; i++) {
     var Plugin = plugins[i];
+    /** @type{!DygraphPluginType} */
     var pluginInstance = new Plugin();
     var pluginDict = {
       plugin: pluginInstance,
@@ -273,15 +274,14 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
 
 // These are defined before DEFAULT_ATTRS so that it can refer to them.
 /**
- * @private
  * Return a string version of a number. This respects the digitsAfterDecimal
  * and maxNumberWidth options.
  * @param {number} x The number to be formatted
  * @param {function(string)} opts An options view
- * @param {string} name The name of the point's data series
  * @param {!Dygraph} g The dygraph object
+ * @private
  */
-var numberValueFormatter_ = function(x, opts, pt, g) {
+var numberValueFormatter_ = function(x, opts, g) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -313,8 +313,7 @@ var numberValueFormatter_ = function(x, opts, pt, g) {
     if (kmb) {
       k = 1000;
       k_labels = KMB_LABELS;
-    }
-    if (kmg2) {
+    } else {
       if (kmb) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
       k_labels = KMG2_BIG_LABELS;
@@ -370,15 +369,15 @@ var SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
  * @private
  */
 var dateAxisFormatter_ = function(date, granularity) {
-  if (granularity >= Dygraph.DECADAL) {
+  if (granularity >= DygraphGranularities.DECADAL) {
     // e.g. '2013' (%Y)
     return '' + date.getFullYear();
-  } else if (granularity >= Dygraph.MONTHLY) {
+  } else if (granularity >= DygraphGranularities.MONTHLY) {
     // e.g. 'Jan 13' (%b %y)
     return SHORT_MONTH_NAMES[date.getMonth()] + ' ' + date.getFullYear();
   } else {
     var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
-    if (frac === 0 || granularity >= Dygraph.DAILY) {
+    if (frac === 0 || granularity >= DygraphGranularities.DAILY) {
       // e.g. '21Jan' (%d%b)
       var nd = new Date(date.getTime() + 3600*1000);
       return Dygraph.zeropad(nd.getDate()) + SHORT_MONTH_NAMES[nd.getMonth()];
