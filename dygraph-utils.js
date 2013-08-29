@@ -409,18 +409,18 @@ Dygraph.isOK = function(x) {
 };
 
 /**
- * @param { {x:?number,y:?number,yval:?number} } p The point to consider, valid
+ * @param {{x:?number,y:?number,yval:?number}} p The point to consider, valid
  *     points are {x, y} objects
- * @param { boolean } allowNaNY Treat point with y=NaN as valid
- * @return { boolean } Whether the point has numeric x and y.
+ * @param {boolean=} opt_allowNaNY Treat point with y=NaN as valid
+ * @return {boolean} Whether the point has numeric x and y.
  * @private
  */
-Dygraph.isValidPoint = function(p, allowNaNY) {
+Dygraph.isValidPoint = function(p, opt_allowNaNY) {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;
   if (p.y === null || p.y === undefined) return false;
-  if (isNaN(p.x) || (!allowNaNY && isNaN(p.y))) return false;
+  if (isNaN(p.x) || (!opt_allowNaNY && isNaN(p.y))) return false;
   return true;
 };
 
@@ -707,7 +707,7 @@ Dygraph.updateDeep = function (self, o) {
 };
 
 /**
- * @param {Object} o
+ * @param {*} o
  * @return {boolean}
  * @private
  */

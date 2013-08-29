@@ -544,12 +544,14 @@ var addedAnnotationCSS = false;
  * Returns true if the "default behavior" should be performed, i.e. if none of
  * the event listeners called event.preventDefault().
  * @param {string} name Event name.
- * @param {Object} extra_props Event-specific properties.
+ * @param {Object=} opt_extra_props Event-specific properties.
  * @return {boolean} Whether to perform the default action.
  * @private
  */
-Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
+Dygraph.prototype.cascadeEvents_ = function(name, opt_extra_props) {
   if (!(name in this.eventListeners_)) return true;
+
+  var extra_props = opt_extra_props || {};
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
@@ -1948,7 +1950,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   var ctx = this.canvas_ctx_;
   if (this.attr_('highlightSeriesOpts')) {
     ctx.clearRect(0, 0, this.width_, this.height_);
-    var alpha = 1.0 - this.attr_('highlightSeriesBackgroundAlpha');
+    var alpha = 1.0 - this.getNumericOption('highlightSeriesBackgroundAlpha');
     if (alpha) {
       // Activating background fade includes an animation effect for a gradual
       // fade. TODO(klausw): make this independently configurable if it causes
@@ -1994,16 +1996,16 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       var pt = this.selPoints_[i];
       if (!Dygraph.isOK(pt.canvasy)) continue;
 
-      var circleSize = this.attr_('highlightCircleSize', pt.name);
+      var circleSize = this.getNumericOption('highlightCircleSize', pt.name);
       var callback = this.attr_("drawHighlightPointCallback", pt.name);
       var color = this.plotter_.colors[pt.name];
       if (!callback) {
         callback = Dygraph.Circles.DEFAULT;
       }
-      ctx.lineWidth = this.attr_('strokeWidth', pt.name);
+      ctx.lineWidth = this.getNumericOption('strokeWidth', pt.name);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
-      callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
+      callback(this, pt.name, ctx, canvasx, pt.canvasy,
           color, circleSize, pt.idx);
     }
     ctx.restore();
@@ -2017,8 +2019,8 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * legend. The selection can be cleared using clearSelection() and queried
  * using getSelection().
  *
- * @param {number} row number that should be highlighted (i.e. appear with
- *     hover dots on the chart). Set to false to clear any selection.
+ * @param {number|boolean} row number that should be highlighted (i.e. appear
+ *     with hover dots on the chart). Set to false to clear any selection.
  * @param {string=} opt_seriesName series name to highlight that series with
  *     the the highlightSeriesOpts setting.
  * @param {boolean=} opt_locked If true, keep seriesName selected when mousing
@@ -2389,7 +2391,7 @@ Dygraph.stackPoints_ = function(
  * extreme values "speculatively", i.e. without actually setting state on the
  * dygraph.
  *
- * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
+ * @param {Array.<Array.<Array.<(number|Array.<number>)>>} rolledSeries, where
  *     rolledSeries[seriesIndex][row] = raw point, where
  *     seriesIndex is the column number starting with 1, and
  *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
@@ -2478,7 +2480,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
     if (this.attr_("stackedGraph")) {
       Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
-                           this.attr_("stackedGraphNaNFill"));
+                           this.getStringOption("stackedGraphNaNFill"));
     }
 
     extremes[seriesName] = seriesExtremes;
@@ -2504,7 +2506,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   this.layout_.removeAllDatasets();
   this.setColors_();
-  this.attrs_.pointSize = 0.5 * this.attr_('highlightCircleSize');
+  this.attrs_['pointSize'] = 0.5 * this.getNumericOption('highlightCircleSize');
 
   var packed = this.gatherDatasets_(this.rolledSeries_, this.dateWindow_);
   var points = packed.points;
@@ -2642,12 +2644,12 @@ Dygraph.prototype.computeYAxes_ = function() {
     if (axis === 0) {
       opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
       v = opts("valueRange");
-      if (v) this.axes_[axis].valueRange = v;
+      if (v) this.axes_[axis]['valueRange'] = v;
     } else {  // To keep old behavior
-      var axes = this.user_attrs_.axes;
-      if (axes && axes.y2) {
-        v = axes.y2.valueRange;
-        if (v) this.axes_[axis].valueRange = v;
+      var axes = this.user_attrs_['axes'];
+      if (axes && axes['y2']) {
+        v = axes['y2']['valueRange'];
+        if (v) this.axes_[axis]['valueRange'] = v;
       }
     }
   }
@@ -2662,11 +2664,11 @@ Dygraph.prototype.numAxes = function() {
 };
 
 /**
- * @private
  * Returns axis properties for the given series.
- * @param {string} setName The name of the series for which to get axis
+ * @param {string} series The name of the series for which to get axis
  * properties, e.g. 'Y1'.
  * @return {DygraphAxisType} The axis properties.
+ * @private
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.
@@ -2715,7 +2717,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     if (this.attr_('yRangePad') !== null) {
       ypadCompat = false;
       // Convert pixel padding to ratio
-      ypad = this.attr_('yRangePad') / this.plotter_.area.h;
+      ypad = this.getNumericOption('yRangePad') / this.plotter_.area.h;
     }
 
     if (series.length === 0) {
@@ -2880,6 +2882,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 };
 
 Dygraph.prototype.setXAxisOptions_ = function(isDate) {
+  // TODO(danvk): clean these up with Dygraph.updateDeep().
   if (isDate) {
     this.attrs_['xValueParser'] = Dygraph.dateParser;
     this.attrs_['axes']['x']['valueFormatter'] = Dygraph.dateString_;
@@ -2903,8 +2906,8 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
  * We also expect that all remaining fields represent series.
  * if the errorBars attribute is set, then interpret the fields as:
  * date, series1, stddev1, series2, stddev2, ...
- * @param {[Object]} data See above.
  *
+ * @param {string} data See above.
  * @return [Object] An array with one entry for each row. These entries
  * are an array of cells in that row. The first entry is the parsed x-value for
  * the row. The second, third, etc. are the y-values. These can take on one of
@@ -2920,7 +2923,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   var vals, j;
 
   // Use the default delimiter or fall back to a tab if that makes sense.
-  var delim = this.attr_('delimiter');
+  var delim = this.getStringOption('delimiter');
   if (lines[0].indexOf(delim) == -1 && lines[0].indexOf('\t') >= 0) {
     delim = '\t';
   }
@@ -3308,7 +3311,7 @@ Dygraph.prototype.start_ = function() {
  * There's a huge variety of options that can be passed to this method. For a
  * full list, see http://dygraphs.com/options.html.
  *
- * @param {Object} attrs The new properties and values
+ * @param {Object} input_attrs The new properties and values
  * @param {boolean=} opt_blockRedraw Usually the chart is redrawn after every
  *     call to updateOptions(). If you know better, you can pass true to
  *     explicitly block the redraw. This can be useful for chaining
@@ -3414,8 +3417,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.
  *
- * @param {?number} width Width (in pixels).
- * @param {?number} height Height (in pixels).
+ * @param {number|null|undefined} width Width (in pixels).
+ * @param {number|null|undefined} height Height (in pixels).
  */
 Dygraph.prototype.resize = function(width, height) {
   if (this.resize_lock) {
@@ -3423,7 +3426,8 @@ Dygraph.prototype.resize = function(width, height) {
   }
   this.resize_lock = true;
 
-  if ((width === null) != (height === null)) {
+  if ((width === null || width === undefined) !=
+      (height === null || width === undefined)) {
     Dygraph.warn("Dygraph.resize() should be called with zero parameters or " +
                  "two non-NULL parameters. Pretending it was zero.");
     width = height = null;
