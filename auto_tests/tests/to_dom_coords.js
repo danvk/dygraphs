@@ -165,3 +165,35 @@ ToDomCoordsTestCase.prototype.testAxisTickSize = function() {
   assertEquals([200, 0], g.toDomCoords(0, 100));
   assertEquals([500, 386], g.toDomCoords(100, 0));
 }
+
+ToDomCoordsTestCase.prototype.testChartLogarithmic = function() {
+  var opts = {
+    drawXAxis: false,
+    drawYAxis: false,
+    drawXGrid: false,
+    drawYGrid: false,
+    logscale: true,
+    rightGap: 0,
+    valueRange: [1, 4],
+    dateWindow: [0, 10],
+    width: 400,
+    height: 400,
+    colors: ['#ff0000']
+  }
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, [ [1,1], [4,4] ], opts);
+
+  var epsilon = 1e-8;
+  assertEqualsDelta([0, 4], g.toDataCoords(0, 0), epsilon);
+  assertEqualsDelta([0, 1], g.toDataCoords(0, 400), epsilon);
+  assertEqualsDelta([10, 4], g.toDataCoords(400, 0), epsilon);
+  assertEqualsDelta([10, 1], g.toDataCoords(400, 400), epsilon);
+  assertEqualsDelta([10, 2], g.toDataCoords(400, 200), epsilon);
+  
+  assertEquals([0, 0], g.toDomCoords(0, 4));
+  assertEquals([0, 400], g.toDomCoords(0, 1));
+  assertEquals([400, 0], g.toDomCoords(10, 4));
+  assertEquals([400, 400], g.toDomCoords(10, 1));
+  assertEquals([400, 200], g.toDomCoords(10, 2));
+}

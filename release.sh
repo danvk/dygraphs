@@ -42,7 +42,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Everything is good. Tag this release and push it.
+# Everything is good.
+# Switch to the "releases" branch, merge this change and tag it.
+echo "Switching branches to do the release."
+git checkout releases
+git merge --no-ff $branch
+
 COMMIT=$(git rev-parse HEAD)
 echo "Tagging commit $COMMIT as version $VERSION"
 git tag -a "v$VERSION" -m "Release of version $VERSION"
@@ -50,3 +55,6 @@ git push --tags
 
 echo "Release was successful!"
 echo "Don't forget to merge changes on this branch back into master."
+
+# Discourage users from working on the "releases" branch.
+git checkout master
