@@ -3081,16 +3081,7 @@ Dygraph.prototype.parseArray_ = function(data) {
   }
 
   if (Dygraph.isDateLike(data[0][0])) {
-    // Some intelligent defaults for a date x-axis.
-    Dygraph.updateDeep(this.attrs_, {
-      'axes': {
-        'x': {
-          'valueFormatter': Dygraph.dateString_,
-          'ticker': Dygraph.dateTicker,
-          'axisLabelFormatter': dateAxisFormatter_
-        }
-      }
-    });
+    this.setXAxisOptions_(true /* isDate */);
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3110,16 +3101,8 @@ Dygraph.prototype.parseArray_ = function(data) {
     return parsedData;
   } else {
     // Some intelligent defaults for a numeric x-axis.
-    /** @private (shut up, jsdoc!) */
-    Dygraph.updateDeep(this.attrs_, {
-      'axes': {
-        'x': {
-          'valueFormatter': function(x) { return x; },
-          'ticker': Dygraph.numericLinearTicks,
-          'axisLabelFormatter': numberAxisLabelFormatter_
-        }
-      }
-    });
+    this.setXAxisOptions_(false /* isDate */);
+
     return data;
   }
 };
@@ -3152,15 +3135,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 
   var indepType = data.getColumnType(0);
   if (indepType == 'date' || indepType == 'datetime') {
-    this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
+    this.setXAxisOptions_(true /* isDate */);
   } else if (indepType == 'number') {
-    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
-    this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
+    this.setXAxisOptions_(false /* isDate */);
   } else {
     Dygraph.error("only 'date', 'datetime' and 'number' types are supported for " +
                   "column 1 of DataTable input (Got '" + indepType + "')");
