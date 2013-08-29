@@ -59,7 +59,7 @@ echo "Pushing the new version to dygraphs.com..."
 
 echo "Success!\n"
 echo "Don't forget to merge changes on this branch back into master:"
-echo "git merge $branch"
+echo "git merge --no-ff $branch"
 
 # Discourage users from working on the "releases" branch.
 git checkout master
