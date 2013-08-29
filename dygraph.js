@@ -679,7 +679,7 @@ Dygraph.prototype.getStringOption = function(name, opt_seriesName) {
  * @param {string=} opt_seriesName Series name to get per-series values.
  * @return {boolean} The value of the option.
  */
-Dygraph.prototype.getBoolOption = function(name, opt_seriesName) {
+Dygraph.prototype.getBooleanOption = function(name, opt_seriesName) {
   return /** @type{boolean} */(this.getOption(name, opt_seriesName));
 }
 
@@ -3082,9 +3082,15 @@ Dygraph.prototype.parseArray_ = function(data) {
 
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
-    this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = dateAxisFormatter_;
+    Dygraph.updateDeep(this.attrs_, {
+      'axes': {
+        'x': {
+          'valueFormatter': Dygraph.dateString_,
+          'ticker': Dygraph.dateTicker,
+          'axisLabelFormatter': dateAxisFormatter_
+        }
+      }
+    });
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3105,9 +3111,15 @@ Dygraph.prototype.parseArray_ = function(data) {
   } else {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
-    this.attrs_.axes.x.axisLabelFormatter = numberAxisLabelFormatter_;
+    Dygraph.updateDeep(this.attrs_, {
+      'axes': {
+        'x': {
+          'valueFormatter': function(x) { return x; },
+          'ticker': Dygraph.numericLinearTicks,
+          'axisLabelFormatter': numberAxisLabelFormatter_
+        }
+      }
+    });
     return data;
   }
 };
@@ -3425,8 +3437,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.
  *
- * @param {number} width Width (in pixels).
- * @param {number} height Height (in pixels).
+ * @param {?number} width Width (in pixels).
+ * @param {?number} height Height (in pixels).
  */
 Dygraph.prototype.resize = function(width, height) {
   if (this.resize_lock) {
