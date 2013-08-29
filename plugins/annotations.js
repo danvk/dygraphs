@@ -92,7 +92,7 @@ annotations.prototype.didDrawChart = function(e) {
 
     var a = p.annotation;
     var tick_height = 6;
-    if (a.hasOwnProperty("tickHeight")) {
+    if (a.tickHeight) {
       tick_height = a.tickHeight;
     }
 
@@ -102,22 +102,22 @@ annotations.prototype.didDrawChart = function(e) {
         div.style[name] = annotationStyle[name];
       }
     }
-    if (!a.hasOwnProperty('icon')) {
+    if (!a.icon) {
       div.className = "dygraphDefaultAnnotation";
     }
-    if (a.hasOwnProperty('cssClass')) {
+    if (a.cssClass) {
       div.className += " " + a.cssClass;
     }
 
-    var width = a.hasOwnProperty('width') ? a.width : 16;
-    var height = a.hasOwnProperty('height') ? a.height : 16;
-    if (a.hasOwnProperty('icon')) {
+    var width = a.width !== undefined ? a.width : 16;
+    var height = a.height !== undefined ? a.height : 16;
+    if (a.icon) {
       var img = document.createElement("img");
       img.src = a.icon;
       img.width = width;
       img.height = height;
       div.appendChild(img);
-    } else if (p.annotation.hasOwnProperty('shortText')) {
+    } else if (p.annotation.shortText) {
       div.appendChild(document.createTextNode(p.annotation.shortText));
     }
     var left = p.canvasx - width / 2;
