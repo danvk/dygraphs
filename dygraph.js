@@ -654,6 +654,36 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 };
 
 /**
+// This is a convenience function for working with the Closure Compiler.
+ * @param {string} name The name of the option (e.g. 'strokeWidth')
+ * @param {string=} opt_seriesName Series name to get per-series values.
+ * @return {number} The value of the option.
+ */
+Dygraph.prototype.getNumericOption = function(name, opt_seriesName) {
+  return /** @type{number} */(this.getOption(name, opt_seriesName));
+}
+
+/**
+// This is a convenience function for working with the Closure Compiler.
+ * @param {string} name The name of the option (e.g. 'strokeWidth')
+ * @param {string=} opt_seriesName Series name to get per-series values.
+ * @return {string} The value of the option.
+ */
+Dygraph.prototype.getStringOption = function(name, opt_seriesName) {
+  return /** @type{string} */(this.getOption(name, opt_seriesName));
+}
+
+/**
+// This is a convenience function for working with the Closure Compiler.
+ * @param {string} name The name of the option (e.g. 'strokeWidth')
+ * @param {string=} opt_seriesName Series name to get per-series values.
+ * @return {boolean} The value of the option.
+ */
+Dygraph.prototype.getBoolOption = function(name, opt_seriesName) {
+  return /** @type{boolean} */(this.getOption(name, opt_seriesName));
+}
+
+/**
  * @private
  * @param {string} axis The name of the axis (i.e. 'x', 'y' or 'y2')
  * @return {function(string)} A function mapping string -> option value
@@ -2625,7 +2655,7 @@ Dygraph.prototype.computeYAxes_ = function() {
 
 /**
  * Returns the number of y-axes on the chart.
- * @return {Number} the number of axes.
+ * @return {number} the number of axes.
  */
 Dygraph.prototype.numAxes = function() {
   return this.attributes_.numAxes();
@@ -2634,9 +2664,9 @@ Dygraph.prototype.numAxes = function() {
 /**
  * @private
  * Returns axis properties for the given series.
- * @param { String } setName The name of the series for which to get axis
+ * @param {string} setName The name of the series for which to get axis
  * properties, e.g. 'Y1'.
- * @return { Object } The axis properties.
+ * @return {DygraphAxisType} The axis properties.
  */
 Dygraph.prototype.axisPropertiesForSeries = function(series) {
   // TODO(danvk): handle errors.

@@ -503,12 +503,12 @@ linePlotter_ = function(e) {
   // TODO(danvk): Check if there's any performance impact of just calling
   // getOption() inside of drawStyledLine_. Passing in so many parameters makes
   // this code a bit nasty.
-  var borderWidth = g.getOption("strokeBorderWidth", setName);
+  var borderWidth = g.getNumericOption("strokeBorderWidth", setName);
   var drawPointCallback = g.getOption("drawPointCallback", setName) ||
       Dygraph.Circles.DEFAULT;
   var strokePattern = g.getOption("strokePattern", setName);
-  var drawPoints = g.getOption("drawPoints", setName);
-  var pointSize = g.getOption("pointSize", setName);
+  var drawPoints = g.getBooleanOption("drawPoints", setName);
+  var pointSize = g.getNumericOption("pointSize", setName);
 
   if (borderWidth && strokeWidth) {
     drawStyledLine_(e,

@@ -105,7 +105,7 @@ var DygraphAxisType;
 /**
  * @typedef {{
  *   dygraph: !Dygraph,
- *   points: Array,
+ *   points: !Array,
  *   setName: string,
  *   drawingContext: !CanvasRenderingContext2D,
  *   color: string,
