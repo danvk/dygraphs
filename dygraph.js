@@ -80,7 +80,7 @@ var Dygraph = function(div, data, opts, opt_fourth_param) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "1.0.0";
+Dygraph.VERSION = "1.0.1";
 Dygraph.__repr__ = function() {
   return "[" + this.NAME + " " + this.VERSION + "]";
 };
