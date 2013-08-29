@@ -174,23 +174,26 @@ ToDomCoordsTestCase.prototype.testChartLogarithmic = function() {
     drawYGrid: false,
     logscale: true,
     rightGap: 0,
-    valueRange: [10, 100],
-    dateWindow: [10, 100],
+    valueRange: [1, 4],
+    dateWindow: [0, 10],
     width: 400,
     height: 400,
     colors: ['#ff0000']
   }
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, [ [10,10], [100,100] ], opts);
+  g = new Dygraph(graph, [ [1,1], [4,4] ], opts);
 
-  assertEquals([10, 100], g.toDataCoords(0, 0));
-  assertEquals([10, 10], g.toDataCoords(0, 400));
-  assertEquals([100, 100], g.toDataCoords(400, 0));
-  assertEquals([100, 10], g.toDataCoords(400, 400));
+  var epsilon = 1e-8;
+  assertEqualsDelta([0, 4], g.toDataCoords(0, 0), epsilon);
+  assertEqualsDelta([0, 1], g.toDataCoords(0, 400), epsilon);
+  assertEqualsDelta([10, 4], g.toDataCoords(400, 0), epsilon);
+  assertEqualsDelta([10, 1], g.toDataCoords(400, 400), epsilon);
+  assertEqualsDelta([10, 2], g.toDataCoords(400, 200), epsilon);
   
-  assertEquals([0, 0], g.toDomCoords(10, 100));
-  assertEquals([0, 400], g.toDomCoords(10, 10));
-  assertEquals([400, 0], g.toDomCoords(100, 100));
-  assertEquals([400, 400], g.toDomCoords(100, 10));
+  assertEquals([0, 0], g.toDomCoords(0, 4));
+  assertEquals([0, 400], g.toDomCoords(0, 1));
+  assertEquals([400, 0], g.toDomCoords(10, 4));
+  assertEquals([400, 400], g.toDomCoords(10, 1));
+  assertEquals([400, 200], g.toDomCoords(10, 2));
 }
