@@ -65,6 +65,8 @@ print '''
 %(previous_lis)s
 </ul>
 
+<p>See <a href="/versions.html">Version History</a> for more information on each release.</p>
+
 
 <!--#include virtual="footer.html" -->
 ''' % {
