@@ -54,7 +54,12 @@ git tag -a "v$VERSION" -m "Release of version $VERSION"
 git push --tags
 
 echo "Release was successful!"
-echo "Don't forget to merge changes on this branch back into master."
+echo "Pushing the new version to dygraphs.com..."
+./push-to-web.sh dygraphs.com:dygraphs.com
+
+echo "Success!\n"
+echo "Don't forget to merge changes on this branch back into master:"
+echo "git merge $branch"
 
 # Discourage users from working on the "releases" branch.
 git checkout master
