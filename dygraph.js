@@ -1025,7 +1025,7 @@ Dygraph.prototype.createInterface_ = function() {
   var enclosing = this.maindiv_;
 
   /** @type {!HTMLDivElement} */
-  this.graphDiv = document.createElement("div");
+  this.graphDiv = /**@type{!HTMLDivElement}*/(document.createElement("div"));
 
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
@@ -1050,6 +1050,8 @@ Dygraph.prototype.createInterface_ = function() {
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
   this.graphDiv.appendChild(this.canvas_);
+
+  /** @type {!Element} */
   this.mouseEventElement_ = this.createMouseEventElement_();
 
   /** @type {DygraphLayout} */
@@ -1073,7 +1075,7 @@ Dygraph.prototype.createInterface_ = function() {
     }
   };
 
-  this.addAndTrackEvent(window, 'mouseout', this.mouseOutHandler_);
+  this.addAndTrackEvent(document, 'mouseout', this.mouseOutHandler_);
   this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // Don't recreate and register the resize handler on subsequent calls.
@@ -1085,7 +1087,7 @@ Dygraph.prototype.createInterface_ = function() {
 
     // Update when the window is resized.
     // TODO(danvk): drop frames depending on complexity of the chart.
-    this.addAndTrackEvent(window, 'resize', this.resizeHandler_);
+    this.addAndTrackEvent(document, 'resize', this.resizeHandler_);
   }
 };
 
@@ -1121,11 +1123,11 @@ Dygraph.prototype.destroy = function() {
   this.removeTrackedEvents_();
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
+  Dygraph.removeEvent(document, 'mouseout', this.mouseOutHandler_);
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // remove window handlers
-  Dygraph.removeEvent(window,'resize',this.resizeHandler_);
+  Dygraph.removeEvent(document, 'resize', this.resizeHandler_);
   this.resizeHandler_ = null;
 
   removeRecursive(this.maindiv_);
@@ -1168,7 +1170,7 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
 
 /**
  * Creates an overlay element used to handle mouse events.
- * @return {Object} The mouse event element.
+ * @return {!Element} The mouse event element.
  * @private
  */
 Dygraph.prototype.createMouseEventElement_ = function() {
@@ -1502,6 +1504,21 @@ var zoomAnimationFunction_ = function(frame, numFrames) {
 };
 
 /**
+ * Fires the zoomCallback callback.
+ * @param {number} minDate The minimum date to pass to the callback.
+ * @param {number} maxDate The maximum date to pass to the callback.
+ * @private
+ */
+Dygraph.prototype.fireZoomCallback = function(minDate, maxDate) {
+  var zoomCallback =
+    /**@type{?function(number,number,!Array.<!Array.<number>>)}*/(
+        this.attr_('zoomCallback'));
+  if (zoomCallback) {
+    zoomCallback(minDate, maxDate, this.yAxisRanges());
+  }
+};
+
+/**
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
@@ -1517,11 +1534,10 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
   this.zoomed_x_ = true;
+
   var that = this;
   this.doAnimatedZoom(old_window, new_window, null, null, function() {
-    if (that.attr_("zoomCallback")) {
-      that.attr_("zoomCallback")(minDate, maxDate, that.yAxisRanges());
-    }
+    that.fireZoomCallback(minDate, maxDate);
   });
 };
 
@@ -1550,10 +1566,8 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   this.zoomed_y_ = true;
   var that = this;
   this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
-    if (that.attr_("zoomCallback")) {
-      var xRange = that.xAxisRange();
-      that.attr_("zoomCallback")(xRange[0], xRange[1], that.yAxisRanges());
-    }
+    var xRange = that.xAxisRange();
+    that.fireZoomCallback(xRange[0], xRange[1]);
   });
 };
 
@@ -1595,9 +1609,7 @@ Dygraph.prototype.resetZoom = function() {
         }
       }
       this.drawGraph_();
-      if (this.attr_("zoomCallback")) {
-        this.attr_("zoomCallback")(minDate, maxDate, this.yAxisRanges());
-      }
+      this.fireZoomCallback(minDate, maxDate);
       return;
     }
 
@@ -1637,9 +1649,7 @@ Dygraph.prototype.resetZoom = function() {
               delete that.axes_[i].valueWindow;
             }
           }
-          if (that.attr_("zoomCallback")) {
-            that.attr_("zoomCallback")(minDate, maxDate, that.yAxisRanges());
-          }
+          this.fireZoomCallback(minDate, maxDate);
         });
   }
 };
