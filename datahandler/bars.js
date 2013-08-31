@@ -17,19 +17,28 @@
 /*global DygraphLayout:false */
 "use strict";
 
-Dygraph.DataHandlers.BarsHandler = Dygraph.DataHandler();
-var BarsHandler = Dygraph.DataHandlers.BarsHandler;
+/**
+ * @constructor
+ * @extends {Dygraph.DataHandler}
+ */
+Dygraph.DataHandlers.BarsHandler = function() {
+};
 
-// errorBars
-BarsHandler.prototype.extractSeries = function(rawData, i, options) {
+var BarsHandler = Dygraph.DataHandlers.BarsHandler;
+BarsHandler.prototype = new Dygraph.DataHandler();
+
+/** @inheritDoc */
+BarsHandler.prototype.extractSeries = function(rawData, seriesIndex, options) {
   // Not implemented here must be extended
 };
 
+/** @inheritDoc */
 BarsHandler.prototype.rollingAverage =
-    function(originalData, rollPeriod, options) {
+    function(series, rollPeriod, options) {
   // Not implemented here, must be extended.
 };
 
+/** @inheritDoc */
 BarsHandler.prototype.onPointsCreated_ = function(series, points) {
   for (var i = 0; i < series.length; ++i) {
     var item = series[i];
@@ -41,6 +50,7 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
   }
 };
 
+/** @inheritDoc */
 BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
   var minY = null, maxY = null, y;
 
@@ -64,6 +74,7 @@ BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) 
   return [ minY, maxY ];
 };
 
+/** @inheritDoc */
 BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
   var point;
   for (var j = 0; j < points.length; j++) {

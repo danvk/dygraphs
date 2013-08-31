@@ -15,11 +15,17 @@
 /*global Dygraph:false */
 "use strict";
 
-Dygraph.DataHandlers.FractionsBarsHandler = Dygraph.DataHandler();
+/**
+ * @constructor
+ * @extends Dygraph.DataHandlers.BarsHandler
+ */
+Dygraph.DataHandlers.FractionsBarsHandler = function() {
+};
+
 var FractionsBarsHandler = Dygraph.DataHandlers.FractionsBarsHandler;
 FractionsBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
 
-// errorBars
+/** @inheritDoc */
 FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
@@ -58,8 +64,9 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-FractionsBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+/** @inheritDoc */
+FractionsBarsHandler.prototype.rollingAverage =
+    function(originalData, rollPeriod, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = options.get("sigma");

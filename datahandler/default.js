@@ -14,9 +14,17 @@
 /*global Dygraph:false */
 "use strict";
 
-Dygraph.DataHandlers.DefaultHandler = Dygraph.DataHandler();
-var DefaultHandler = Dygraph.DataHandlers.DefaultHandler;
+/**
+ * @constructor
+ * @extends Dygraph.DataHandler
+ */
+Dygraph.DataHandlers.DefaultHandler = function() {
+};
 
+var DefaultHandler = Dygraph.DataHandlers.DefaultHandler;
+DefaultHandler.prototype = new Dygraph.DataHandler();
+
+/** @inheritDoc */
 DefaultHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
@@ -36,6 +44,7 @@ DefaultHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
+/** @inheritDoc */
 DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
     options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
@@ -68,6 +77,7 @@ DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
   return rollingData;
 };
 
+/** @inheritDoc */
 DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
     options) {
   var minY = null, maxY = null, y;

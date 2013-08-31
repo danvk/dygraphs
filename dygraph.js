@@ -1884,7 +1884,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     selectionChanged = this.setSelection(idx);
   }
 
-  var callback = this.attr_("highlightCallback");
+  var callback = /**@type{?function(...)}*/(this.attr_("highlightCallback"));
   if (callback && selectionChanged) {
     callback(event,
         this.lastx_,
@@ -2008,7 +2008,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       if (!Dygraph.isOK(pt.canvasy)) continue;
 
       var circleSize = this.getNumericOption('highlightCircleSize', pt.name);
-      var callback = this.attr_("drawHighlightPointCallback", pt.name);
+      var callback = /**@type{function(...)}*/(this.attr_("drawHighlightPointCallback", pt.name));
       var color = this.plotter_.colors[pt.name];
       if (!callback) {
         callback = Dygraph.Circles.DEFAULT;
@@ -2086,8 +2086,9 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
  * @private
  */
 Dygraph.prototype.mouseOut_ = function(event) {
-  if (this.attr_("unhighlightCallback")) {
-    this.attr_("unhighlightCallback")(event);
+  var unhighlightCallback = /**@type{function(...)}*/(this.attr_('unhighlightCallback'));
+  if (unhighlightCallback) {
+    unhighlightCallback(event);
   }
 
   if (this.attr_("hideOverlayOnMouseOut") && !this.lockedSet_) {
