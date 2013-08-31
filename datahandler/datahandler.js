@@ -174,9 +174,9 @@ handler.prototype.rollingAverage = function(series, rollPeriod, options) {
  * Computes the range of the data series (including confidence intervals).
  * 
  * @param {!Array.<[!number,?number,?]>} series The series in the unified 
- *     data format where series[i] = [x,y,{extras}].
+ *     data format where series[i] = [x, y, {extras}].
  * @param {!Array.<number>} dateWindow The x-value range to display with 
- *     the format: [min,max].
+ *     the format: [min, max].
  * @param {!DygraphOptions} options The dygraph options.
  * @return {Array.<number>} The low and high extremes of the series in the
  *     given window with the format: [low, high].
