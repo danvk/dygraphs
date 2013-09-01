@@ -98,7 +98,6 @@ handler.EXTRAS = 2;
  * @param {!DygraphOptions} options Dygraph options.
  * @return {Array.<[!number,?number,?]>} The series in the unified data format
  *     where series[i] = [x,y,{extras}]. 
- * @public
  */
 handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
 };
@@ -112,7 +111,6 @@ handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
  * @param {!number} boundaryIdStart Index offset of the first point, equal to the
  *          number of skipped points left of the date window minimum (if any).
  * @return {!Array.<Dygraph.PointType>} List of points for this series.
- * @public
  */
 handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
   // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
@@ -165,7 +163,6 @@ handler.prototype.onPointsCreated_ = function(series, points) {
  * @param {!DygraphOptions} options The dygraph options.
  * TODO(danvk): be more specific than "Array" here.
  * @return {!Array.<[!number,?number,?]>} the rolled series.
- * @public
  */
 handler.prototype.rollingAverage = function(series, rollPeriod, options) {
 };
@@ -180,7 +177,6 @@ handler.prototype.rollingAverage = function(series, rollPeriod, options) {
  * @param {!DygraphOptions} options The dygraph options.
  * @return {Array.<number>} The low and high extremes of the series in the
  *     given window with the format: [low, high].
- * @public
  */
 handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
 };
@@ -194,7 +190,6 @@ handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
  *          the plotter.
  * @param {!Object} axis The axis on which the series will be plotted.
  * @param {!boolean} logscale Weather or not to use a logscale.
- * @public
  */
 handler.prototype.onLineEvaluated = function(points, axis, logscale) {
 };

@@ -22,17 +22,38 @@
  * @extends {Dygraph.DataHandler}
  */
 Dygraph.DataHandlers.BarsHandler = function() {
+  Dygraph.DataHandler.call(this);
 };
+Dygraph.DataHandlers.BarsHandler.prototype = new Dygraph.DataHandler();
 
+// alias for the rest of the implementation
 var BarsHandler = Dygraph.DataHandlers.BarsHandler;
-BarsHandler.prototype = new Dygraph.DataHandler();
 
-/** @inheritDoc */
+// TODO(danvk): figure out why the jsdoc has to be copy/pasted from superclass.
+//   (I get closure compiler errors if this isn't here.)
+/**
+ * @override
+ * @param {!Array.<Array>} rawData The raw data passed into dygraphs where 
+ *     rawData[i] = [x,ySeries1,...,ySeriesN].
+ * @param {!number} seriesIndex Index of the series to extract. All other
+ *     series should be ignored.
+ * @param {!DygraphOptions} options Dygraph options.
+ * @return {Array.<[!number,?number,?]>} The series in the unified data format
+ *     where series[i] = [x,y,{extras}]. 
+ */
 BarsHandler.prototype.extractSeries = function(rawData, seriesIndex, options) {
   // Not implemented here must be extended
 };
 
-/** @inheritDoc */
+/**
+ * @override
+ * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+ *          data format where series[i] = [x,y,{extras}].
+ * @param {!number} rollPeriod The number of points over which to average the data
+ * @param {!DygraphOptions} options The dygraph options.
+ * TODO(danvk): be more specific than "Array" here.
+ * @return {!Array.<[!number,?number,?]>} the rolled series.
+ */
 BarsHandler.prototype.rollingAverage =
     function(series, rollPeriod, options) {
   // Not implemented here, must be extended.
