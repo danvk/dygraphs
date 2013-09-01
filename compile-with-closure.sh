@@ -15,6 +15,13 @@ java -jar ../../closure-compiler-read-only/build/compiler.jar  \
  --js=dygraph-interaction-model.js \
  --js=dygraph-tickers.js \
  --js=dygraph-plugin-base.js \
+ --js=plugins/annotations.js \
+ --js=plugins/axes.js \
+ --js=plugins/chart-labels.js \
+ --js=plugins/grid.js \
+ --js=plugins/legend.js \
+ --js=plugins/range-selector.js \
+ --js=dygraph-plugin-install.js \
  --js=dygraph-options-reference.js \
  --js=datahandler/datahandler.js \
  --js=datahandler/default.js \
