@@ -135,6 +135,12 @@ axes.prototype.willDrawChart = function(e) {
     y2 : makeLabelStyle('y2')
   };
 
+  /**
+   * @param {string} txt
+   * @param {string} axis
+   * @param {?string=} prec_axis
+   * @return {!HTMLDivElement}
+   */
   var makeDiv = function(txt, axis, prec_axis) {
     /*
      * This seems to be called with the following three sets of axis/prec_axis:
@@ -142,7 +148,7 @@ axes.prototype.willDrawChart = function(e) {
      * y: y1
      * y: y2
      */
-    var div = document.createElement("div");
+    var div = /**@type{!HTMLDivElement}*/(document.createElement("div"));
     var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {

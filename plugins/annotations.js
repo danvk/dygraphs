@@ -144,13 +144,13 @@ annotations.prototype.didDrawChart = function(e) {
     a.div = div;
 
     g.addAndTrackEvent(div, 'click',
-        bindEvt('clickHandler', 'annotationClickHandler', p, this));
+        bindEvt('clickHandler', 'annotationClickHandler', p));
     g.addAndTrackEvent(div, 'mouseover',
-        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
+        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p));
     g.addAndTrackEvent(div, 'mouseout',
-        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
+        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p));
     g.addAndTrackEvent(div, 'dblclick',
-        bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
+        bindEvt('dblClickHandler', 'annotationDblClickHandler', p));
 
     containerDiv.appendChild(div);
     this.annotations_.push(div);

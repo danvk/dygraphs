@@ -50,15 +50,15 @@ var generateLegendHTML, generateLegendDashHTML;
  * - Registering event listeners
  *
  * @param {Dygraph} g Graph instance.
- * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
+ * @return {Object.<function(Event)>} Mapping of event names to callbacks.
  */
 legend.prototype.activate = function(g) {
   var div;
-  var divWidth = g.getOption('labelsDivWidth');
+  var divWidth = g.getNumericOption('labelsDivWidth');
 
   var userLabelsDiv = g.getOption('labelsDiv');
-  if (userLabelsDiv && null !== userLabelsDiv) {
-    if (typeof(userLabelsDiv) == "string" || userLabelsDiv instanceof String) {
+  if (userLabelsDiv) {
+    if (typeof(userLabelsDiv) == "string") {
       div = document.getElementById(userLabelsDiv);
     } else {
       div = userLabelsDiv;
@@ -79,7 +79,7 @@ legend.prototype.activate = function(g) {
       "overflow": "hidden"};
 
     // TODO(danvk): get rid of labelsDivStyles? CSS is better.
-    Dygraph.update(messagestyle, g.getOption('labelsDivStyles'));
+    Dygraph.update(messagestyle, /**@type{!Object}*/(g.getOption('labelsDivStyles')));
     div = document.createElement("div");
     div.className = "dygraph-legend";
     for (var name in messagestyle) {

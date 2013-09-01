@@ -52,7 +52,7 @@ grid.prototype.willDrawChart = function(e) {
   if (g.getOption('drawYGrid')) {
     var axes = ["y", "y2"];
     var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern = [];
-    for (var i = 0; i < axes.length; i++) {
+    for (i = 0; i < axes.length; i++) {
       drawGrid[i] = g.getOptionForAxis("drawGrid", axes[i]);
       if (drawGrid[i]) {
         strokeStyles[i] = g.getOptionForAxis('gridLineColor', axes[i]);

@@ -43,9 +43,7 @@
 
  */
 
-/*jshint globalstrict: true */
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
-"use strict";
 
 /**
  * Creates an interactive, zoomable chart.
@@ -66,6 +64,51 @@
  *     list of options, see http://dygraphs.com/options.html.
  */
 function Dygraph(div, file, opt_attrs) {
+  "use strict";
+  this.init_(div, file, opt_attrs);
+}
+
+/**
+ * Point structure.
+ *
+ * xval_* and yval_* are the original unscaled data values,
+ * while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
+ * yval_stacked is the cumulative Y value used for stacking graphs,
+ * and bottom/top/minus/plus are used for error bar graphs.
+ *
+ * @typedef {{
+ *     idx: number,
+ *     name: string,
+ *     x: ?number,
+ *     xval: ?number,
+ *     y_bottom: ?number,
+ *     y: ?number,
+ *     y_stacked: ?number,
+ *     y_top: ?number,
+ *     yval_minus: ?number,
+ *     yval: ?number,
+ *     yval_plus: ?number,
+ *     yval_stacked
+ * }}
+ */
+Dygraph.PointType = undefined;
+
+(function() {
+
+"use strict";
+
+/**
+ * (see comments on Dygraph constructor)
+ * @param {!HTMLDivElement|string} div
+ * @param {DygraphDataArray|
+ *     google.visualization.DataTable|
+ *     string|
+ *     function():(DygraphDataArray|google.visualization.DataTable|string)}
+ *     file
+ * @param {Object=} opt_attrs
+ * @private
+ */
+Dygraph.prototype.init_ = function(div, file, opt_attrs) {
   // Support two-argument constructor
   var attrs = opt_attrs || {};
 
@@ -86,7 +129,7 @@ function Dygraph(div, file, opt_attrs) {
       document.readyState != 'complete') {
     var self = this;
     setTimeout(function() {
-      Dygraph.call(self, div, file, attrs);
+      self.init_(div, file, attrs);
     }, 100);
     return;
   }
@@ -243,6 +286,7 @@ function Dygraph(div, file, opt_attrs) {
 
   this.start_();
 };
+
 
 Dygraph.NAME = "Dygraph";
 Dygraph.VERSION = "1.0.1";
@@ -2296,31 +2340,6 @@ Dygraph.prototype.predraw_ = function() {
 };
 
 /**
- * Point structure.
- *
- * xval_* and yval_* are the original unscaled data values,
- * while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
- * yval_stacked is the cumulative Y value used for stacking graphs,
- * and bottom/top/minus/plus are used for error bar graphs.
- *
- * @typedef {{
- *     idx: number,
- *     name: string,
- *     x: ?number,
- *     xval: ?number,
- *     y_bottom: ?number,
- *     y: ?number,
- *     y_stacked: ?number,
- *     y_top: ?number,
- *     yval_minus: ?number,
- *     yval: ?number,
- *     yval_plus: ?number,
- *     yval_stacked
- * }}
- */
-Dygraph.PointType = undefined;
-
-/**
  * Calculates point stacking for stackedGraph=true.
  *
  * For stacking purposes, interpolate or extend neighboring data across
@@ -3647,3 +3666,5 @@ Dygraph.prototype.ready = function(callback) {
     callback(this);
   }
 };
+
+})();

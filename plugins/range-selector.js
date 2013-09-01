@@ -268,7 +268,9 @@ rangeSelector.prototype.createZoomHandles_ = function() {
  */
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
-  var topElem = this.isIE_ ? document : window;
+  // TODO(danvk): ask Paul why this is here.
+  // var topElem = this.isIE_ ? document : window;
+  var topElem = document;
   var clientXLast = 0;
   var handle = null;
   var isZooming = false;
