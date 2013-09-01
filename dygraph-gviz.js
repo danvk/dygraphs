@@ -17,8 +17,9 @@
  * - http://dygraphs.com/tests/annotation-gviz.html
  */
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
+
+(function() {
 "use strict";
 
 /**
@@ -81,3 +82,5 @@ Dygraph.GVizChart.prototype.getSelection = function() {
 
   return selection;
 };
+
+})();

@@ -151,10 +151,10 @@ Dygraph.prototype.init_ = function(div, file, opt_attrs) {
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = /** @type {!HTMLDivElement} */(div);
   this.file_ = file;
-  this.rollPeriod_ = attrs.rollPeriod || DEFAULT_ROLL_PERIOD;
+  this.rollPeriod_ = attrs['rollPeriod'] || DEFAULT_ROLL_PERIOD;
   this.previousVerticalX_ = -1;
-  this.fractions_ = attrs.fractions || false;
-  this.dateWindow_ = attrs.dateWindow || null;
+  this.fractions_ = attrs['fractions'] || false;
+  this.dateWindow_ = attrs['dateWindow'] || null;
 
   this.is_initial_draw_ = true;
 
@@ -176,11 +176,11 @@ Dygraph.prototype.init_ = function(div, file, opt_attrs) {
   // rules _except_ for an explicit 'width' or 'height' on the div.
   // As an added convenience, if the div has zero height (like <div></div> does
   // without any styles), then we use a default height/width.
-  if (div.style.width === '' && attrs.width) {
-    div.style.width = attrs.width + "px";
+  if (div.style.width === '' && attrs['width']) {
+    div.style.width = attrs['width'] + "px";
   }
-  if (div.style.height === '' && attrs.height) {
-    div.style.height = attrs.height + "px";
+  if (div.style.height === '' && attrs['height']) {
+    div.style.height = attrs['height'] + "px";
   }
   if (div.style.height === '' && div.clientHeight === 0) {
     div.style.height = DEFAULT_HEIGHT + "px";
@@ -191,12 +191,12 @@ Dygraph.prototype.init_ = function(div, file, opt_attrs) {
   // These will be zero if the dygraph's div is hidden. In that case,
   // use the user-specified attributes if present. If not, use zero
   // and assume the user will call resize to fix things later.
-  this.width_ = div.clientWidth || attrs.width || 0;
-  this.height_ = div.clientHeight || attrs.height || 0;
+  this.width_ = div.clientWidth || attrs['width'] || 0;
+  this.height_ = div.clientHeight || attrs['height'] || 0;
 
   // TODO(danvk): set fillGraph to be part of attrs_ here, not user_attrs_.
-  if (attrs.stackedGraph) {
-    attrs.fillGraph = true;
+  if (attrs['stackedGraph']) {
+    attrs['fillGraph'] = true;
     // TODO(nikhilk): Add any other stackedGraph checks here.
   }
 
@@ -3378,9 +3378,9 @@ Dygraph.prototype.updateOptions = function(input_attrs, opt_blockRedraw) {
     this.rollPeriod_ = attrs.rollPeriod;
   }
   if ('dateWindow' in attrs) {
-    this.dateWindow_ = attrs.dateWindow;
+    this.dateWindow_ = attrs['dateWindow'];
     if (!('isZoomedIgnoreProgrammaticZoom' in attrs)) {
-      this.zoomed_x_ = (attrs.dateWindow !== null);
+      this.zoomed_x_ = (attrs['dateWindow'] !== null);
     }
   }
   if ('valueRange' in attrs && !('isZoomedIgnoreProgrammaticZoom' in attrs)) {
