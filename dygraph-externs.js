@@ -173,3 +173,8 @@ DygraphPluginType.prototype.activate = function(dygraph) {};
 DygraphPluginType.prototype.toString = function() {};
 
 DygraphPluginType.prototype.destroy = function() {};
+
+// Convenience for debugging -- makes "console.log" compile-able.
+var console = {};
+/** @param {...} varargs */
+console.log = function(varargs) {};

@@ -138,7 +138,6 @@ legend.prototype.deselect = function(e) {
 };
 
 legend.prototype.didDrawChart = function(e) {
-  window.console.log('legend.didDrawChart');
   this.deselect(e);
 };
 
@@ -152,7 +151,6 @@ legend.prototype.didDrawChart = function(e) {
  * @private
  */
 legend.prototype.predraw = function(e) {
-  window.console.log('legend.predraw');
   // Don't touch a user-specified labelsDiv.
   if (!this.is_generated_div_) return;
 
