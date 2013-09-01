@@ -1,0 +1,29 @@
+#!/bin/bash
+java -jar ../../closure-compiler-read-only/build/compiler.jar  \
+ --compilation_level ADVANCED_OPTIMIZATIONS  \
+ --warning_level VERBOSE  \
+ --output_wrapper='(function() {%output%})();'  \
+ --js ../../closure-library-read-only/closure/goog/base.js \
+ --js=dashed-canvas.js \
+ --js=dygraph-constants.js \
+ --js=dygraph-options.js \
+ --js=dygraph-layout.js \
+ --js=dygraph-canvas.js \
+ --js=dygraph.js \
+ --js=dygraph-utils.js \
+ --js=dygraph-gviz.js \
+ --js=dygraph-interaction-model.js \
+ --js=dygraph-tickers.js \
+ --js=dygraph-plugin-base.js \
+ --js=dygraph-options-reference.js \
+ --js=datahandler/datahandler.js \
+ --js=datahandler/default.js \
+ --js=datahandler/default-fractions.js \
+ --js=datahandler/bars.js \
+ --js=datahandler/bars-custom.js \
+ --js=datahandler/bars-error.js \
+ --js=datahandler/bars-fractions.js \
+ --js=dygraph-exports.js \
+ --externs dygraph-externs.js  \
+ --externs gviz-api.js  \
+ --js_output_file=/tmp/out.js
