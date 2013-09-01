@@ -31,16 +31,20 @@ These too. What is the difference between axisLablelWidth and {x,y}AxisLabelWidt
  * Draws the axes. This includes the labels on the x- and y-axes, as well
  * as the tick marks on the axes.
  * It does _not_ draw the grid lines which span the entire chart.
+ * @constructor
+ * @implements {DygraphPluginType}
  */
 var axes = function() {
   this.xlabels_ = [];
   this.ylabels_ = [];
 };
 
+/** @override */
 axes.prototype.toString = function() {
   return "Axes Plugin";
 };
 
+/** @override */
 axes.prototype.activate = function(g) {
   return {
     'layout': this.layout,
@@ -315,6 +319,10 @@ axes.prototype.willDrawChart = function(e) {
   }
 
   context.restore();
+};
+
+/** @override */
+axes.prototype.destroy = function() {
 };
 
 return axes;

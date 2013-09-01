@@ -143,14 +143,27 @@ var DygraphInteractionContext;
 
 
 /**
- * @constructor
+ * @typedef {{
+ *   clearChart:    (function(Object)|undefined),
+ *   deselect:      (function(Object)|undefined),
+ *   didDrawChart:  (function(Object)|undefined),
+ *   layout:        (function(Object)|undefined),
+ *   predraw:       (function(Object)|undefined),
+ *   select:        (function(Object)|undefined),
+ *   willDrawChart: (function(Object)|undefined)
+ * }}
+ */
+var DygraphPluginHandlers;
+
+
+/**
+ * @interface
  */
 var DygraphPluginType;
 
 /**
  * @param {!Dygraph} dygraph
- * TODO(danvk): be more specific than Object
- * @return {Object.<function(Object)>} Mapping from event -> callback.
+ * @return {DygraphPluginHandlers} Mapping from event -> callback.
  */
 DygraphPluginType.prototype.activate = function(dygraph) {};
 

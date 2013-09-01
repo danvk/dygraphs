@@ -22,15 +22,18 @@ Current bits of jankiness:
  * Draws the gridlines, i.e. the gray horizontal & vertical lines running the
  * length of the chart.
  *
+ * @implements {DygraphPluginType}
  * @constructor
  */
 var grid = function() {
 };
 
+/** @override */
 grid.prototype.toString = function() {
   return "Gridline Plugin";
 };
 
+/** @override */
 grid.prototype.activate = function(g) {
   return {
     'willDrawChart': this.willDrawChart
@@ -116,6 +119,7 @@ grid.prototype.willDrawChart = function(e) {
   }
 };
 
+/** @override */
 grid.prototype.destroy = function() {
 };
 
