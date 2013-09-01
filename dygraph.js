@@ -655,7 +655,7 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 };
 
 /**
-// This is a convenience function for working with the Closure Compiler.
+ * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
  * @return {number} The value of the option.
@@ -665,7 +665,7 @@ Dygraph.prototype.getNumericOption = function(name, opt_seriesName) {
 }
 
 /**
-// This is a convenience function for working with the Closure Compiler.
+ * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
  * @return {string} The value of the option.
@@ -675,13 +675,23 @@ Dygraph.prototype.getStringOption = function(name, opt_seriesName) {
 }
 
 /**
-// This is a convenience function for working with the Closure Compiler.
+ * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
  * @return {boolean} The value of the option.
  */
 Dygraph.prototype.getBooleanOption = function(name, opt_seriesName) {
   return /** @type{boolean} */(this.getOption(name, opt_seriesName));
+}
+
+/**
+ * This is a convenience function for working with the Closure Compiler.
+ * @param {string} name The name of the option (e.g. 'strokeWidth')
+ * @param {string=} opt_seriesName Series name to get per-series values.
+ * @return {function(...)} The value of the option.
+ */
+Dygraph.prototype.getFunctionOption = function(name, opt_seriesName) {
+  return /** @type{function(...)} */(this.getOption(name, opt_seriesName));
 }
 
 /**
@@ -1884,7 +1894,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     selectionChanged = this.setSelection(idx);
   }
 
-  var callback = /**@type{?function(...)}*/(this.attr_("highlightCallback"));
+  var callback = this.getFunctionOption("highlightCallback");
   if (callback && selectionChanged) {
     callback(event,
         this.lastx_,
@@ -2008,7 +2018,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       if (!Dygraph.isOK(pt.canvasy)) continue;
 
       var circleSize = this.getNumericOption('highlightCircleSize', pt.name);
-      var callback = /**@type{function(...)}*/(this.attr_("drawHighlightPointCallback", pt.name));
+      var callback = this.getFunctionOption("drawHighlightPointCallback", pt.name);
       var color = this.plotter_.colors[pt.name];
       if (!callback) {
         callback = Dygraph.Circles.DEFAULT;
@@ -2086,7 +2096,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
  * @private
  */
 Dygraph.prototype.mouseOut_ = function(event) {
-  var unhighlightCallback = /**@type{function(...)}*/(this.attr_('unhighlightCallback'));
+  var unhighlightCallback = this.getFunctionOption('unhighlightCallback');
   if (unhighlightCallback) {
     unhighlightCallback(event);
   }
@@ -2569,7 +2579,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   if (this.attr_('underlayCallback')) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.attr_('underlayCallback')(
+    this.getFunctionOption('underlayCallback')(
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
@@ -2588,7 +2598,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
                                           this.canvas_.height);
 
   if (this.attr_("drawCallback") !== null) {
-    this.attr_("drawCallback")(this, is_initial_draw);
+    this.getFunctionOption("drawCallback")(this, is_initial_draw);
   }
   if (is_initial_draw) {
     this.readyFired_ = true;
@@ -2964,7 +2974,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     var fields = [];
     if (!defaultParserSet) {
       this.detectTypeFromString_(inFields[0]);
-      xParser = this.attr_("xValueParser");
+      xParser = this.getFunctionOption("xValueParser");
       defaultParserSet = true;
     }
     fields[0] = xParser(inFields[0], this);
