@@ -1775,6 +1775,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
  * @param {number} domX graph-relative DOM X coordinate
  * @param {number} domY graph-relative DOM Y coordinate
  * @return {{row: number, seriesName: string, point: !Dygraph.PointType}}
+ * TODO(danvk): PointType already contains seriesName
  * @private
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
@@ -1796,11 +1797,14 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       }
     }
   }
-  var name = this.layout_.setNames[closestSeries];
+
+  // The error cases (-1, null) can't happen because of checks in mouseMove_.
+  // They're here for the Closure Compiler.
+  var name = this.layout_.setNames[closestSeries] || "";
   return {
-    row: closestRow,
+    row: closestRow !== undefined ? closestRow : -1,
     seriesName: name,
-    point: closestPoint
+    point: closestPoint || /**@type{!Dygraph.PointType}*/(null)
   };
 };
 
@@ -1855,10 +1859,13 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
     }
   }
   var name = this.layout_.setNames[closestSeries];
+
+  // The "point: null" case is here for the Closure Compiler.
+  // It can't actually happen because of checks in mouseMove_.
   return {
     row: row,
     seriesName: name,
-    point: closestPoint
+    point: closestPoint || /**@type{!Dygraph.PointType}*/(null)
   };
 };
 
@@ -3281,7 +3288,7 @@ Dygraph.prototype.start_ = function() {
   }
 
   if (Dygraph.isArrayLike(data)) {
-    this.rawData_ = this.parseArray_(data);
+    this.rawData_ = this.parseArray_(/**@type{!Array}*/(data));
     this.predraw_();
   } else if (typeof data == 'object' &&
              typeof data.getColumnRange == 'function') {
