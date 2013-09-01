@@ -33,7 +33,7 @@ grid.prototype.toString = function() {
 
 grid.prototype.activate = function(g) {
   return {
-    willDrawChart: this.willDrawChart
+    'willDrawChart': this.willDrawChart
   };
 };
 

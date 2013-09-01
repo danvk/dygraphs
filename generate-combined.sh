@@ -46,7 +46,7 @@ Copyright () {
 CatMinified () {
   Copyright
   (CatSources | grep -v '@license') \
-  | java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --js - --js dygraph-exports.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
+  | java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --formatting PRETTY_PRINT --js - --js dygraph-exports.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
   # Add this for debugging:
   #  --formatting PRETTY_PRINT 
 

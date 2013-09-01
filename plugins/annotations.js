@@ -33,8 +33,8 @@ annotations.prototype.toString = function() {
 
 annotations.prototype.activate = function(g) {
   return {
-    clearChart: this.clearChart,
-    didDrawChart: this.didDrawChart
+    'clearChart': this.clearChart,
+    'didDrawChart': this.didDrawChart
   };
 };
 

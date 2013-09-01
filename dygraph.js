@@ -281,6 +281,7 @@ Dygraph.prototype.init_ = function(div, file, opt_attrs) {
       }
     }
   }
+  window.console.log(this.eventListeners_);
 
   this.createDragInterface_();
 

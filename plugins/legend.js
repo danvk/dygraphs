@@ -102,11 +102,11 @@ legend.prototype.activate = function(g) {
   this.one_em_width_ = 10;  // just a guess, will be updated.
 
   return {
-    select: this.select,
-    deselect: this.deselect,
+    'select': this.select,
+    'deselect': this.deselect,
     // TODO(danvk): rethink the name "predraw" before we commit to it in any API.
-    predraw: this.predraw,
-    didDrawChart: this.didDrawChart
+    'predraw': this.predraw,
+    'didDrawChart': this.didDrawChart
   };
 };
 
@@ -138,6 +138,7 @@ legend.prototype.deselect = function(e) {
 };
 
 legend.prototype.didDrawChart = function(e) {
+  window.console.log('legend.didDrawChart');
   this.deselect(e);
 };
 
@@ -151,6 +152,7 @@ legend.prototype.didDrawChart = function(e) {
  * @private
  */
 legend.prototype.predraw = function(e) {
+  window.console.log('legend.predraw');
   // Don't touch a user-specified labelsDiv.
   if (!this.is_generated_div_) return;
 

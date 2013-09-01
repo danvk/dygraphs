@@ -43,9 +43,9 @@ axes.prototype.toString = function() {
 
 axes.prototype.activate = function(g) {
   return {
-    layout: this.layout,
-    clearChart: this.clearChart,
-    willDrawChart: this.willDrawChart
+    'layout': this.layout,
+    'clearChart': this.clearChart,
+    'willDrawChart': this.willDrawChart
   };
 };
 

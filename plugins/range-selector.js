@@ -34,9 +34,9 @@ rangeSelector.prototype.activate = function(dygraph) {
     this.createInterface_();
   }
   return {
-    layout: this.reserveSpace_,
-    predraw: this.renderStaticLayer_,
-    didDrawChart: this.renderInteractiveLayer_
+    'layout': this.reserveSpace_,
+    'predraw': this.renderStaticLayer_,
+    'didDrawChart': this.renderInteractiveLayer_
   };
 };
 
