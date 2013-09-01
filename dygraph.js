@@ -1408,7 +1408,6 @@ Dygraph.prototype.createDragInterface_ = function() {
       context.draggingDate = null;
       context.dateRange = null;
       for (var i = 0; i < self.axes_.length; i++) {
-        delete self.axes_[i].draggingValue;
         delete self.axes_[i].dragValueRange;
       }
     }
@@ -2420,7 +2419,7 @@ Dygraph.stackPoints_ = function(
  * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
  * @return {{
  *     points: Array.<Array.<Dygraph.PointType>>,
- *     seriesExtremes: Array.<Array.<number>>,
+ *     extremes: Object.<Array.<Array.<number>>>,
  *     boundaryIds: Array.<number>}}
  * @private
  */
@@ -3069,12 +3068,12 @@ Dygraph.prototype.parseCSV_ = function(data) {
 };
 
 /**
- * @private
  * The user has provided their data as a pre-packaged JS array. If the x values
  * are numeric, this is the same as dygraphs' internal format. If the x values
  * are dates, we need to convert them from Date objects to ms since epoch.
- * @param {Object} data
+ * @param {Array} data
  * @return {Object} data with numeric x values.
+ * @private
  */
 Dygraph.prototype.parseArray_ = function(data) {
   // Peek at the first x value to see if it's numeric.
@@ -3370,7 +3369,8 @@ Dygraph.prototype.updateOptions = function(input_attrs, opt_blockRedraw) {
   // highlightCircleSize
 
   // Check if this set options will require new points.
-  var requiresNewPoints = Dygraph.isPixelChangingOptionList(this.attr_("labels"), attrs);
+  var requiresNewPoints = Dygraph.isPixelChangingOptionList(
+      /**@type{!Array.<string>}*/(this.getLabels()), attrs);
 
   Dygraph.updateDeep(this.user_attrs_, attrs);
 
