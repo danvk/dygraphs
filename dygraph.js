@@ -1161,28 +1161,32 @@ Dygraph.prototype.setColors_ = function() {
   var num = labels.length - 1;
   this.colors_ = [];
   this.colorsMap_ = {};
+
+  // These are used for when no custom colors are specified.
+  var sat = this.attr_('colorSaturation') || 1.0;
+  var val = this.attr_('colorValue') || 0.5;
+  var half = Math.ceil(num / 2);
+
   var colors = this.attr_('colors');
-  var i;
-  if (!colors) {
-    var sat = this.attr_('colorSaturation') || 1.0;
-    var val = this.attr_('colorValue') || 0.5;
-    var half = Math.ceil(num / 2);
-    for (i = 1; i <= num; i++) {
-      if (!this.visibility()[i-1]) continue;
-      // alternate colors for high contrast.
-      var idx = i % 2 ? Math.ceil(i / 2) : (half + i / 2);
-      var hue = (1.0 * idx/ (1 + num));
-      var colorStr = Dygraph.hsvToRGB(hue, sat, val);
-      this.colors_.push(colorStr);
-      this.colorsMap_[labels[i]] = colorStr;
+  var visibility = this.visibility();
+  for (var i = 0; i < num; i++) {
+    if (!visibility[i]) {
+      continue;
     }
-  } else {
-    for (i = 0; i < num; i++) {
-      if (!this.visibility()[i]) continue;
-      var colorStr = colors[i % colors.length];
-      this.colors_.push(colorStr);
-      this.colorsMap_[labels[1 + i]] = colorStr;
+    var label = labels[i + 1];
+    var colorStr = this.attributes_.getForSeries('color', label);
+    if (!colorStr) {
+      if (colors) {
+        colorStr = colors[i % colors.length];
+      } else {
+        // alternate colors for high contrast.
+        var idx = i % 2 ? (half + (i + 1)/ 2) : Math.ceil((i + 1) / 2);
+        var hue = (1.0 * idx / (1 + num));
+        colorStr = Dygraph.hsvToRGB(hue, sat, val);
+      }
     }
+    this.colors_.push(colorStr);
+    this.colorsMap_[label] = colorStr;
   }
 };
 
