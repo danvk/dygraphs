@@ -99,19 +99,19 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     ],
     "description": "A function to call when a data point is clicked. and the point that was clicked."
   },
+  "color": {
+    "default": "(see description)",
+    "labels": ["Data Series Colors"],
+    "type": "string",
+    "example": "red",
+    "description": "A per-series color definition. Used in conjunction with, and overrides, the colors option."
+  },
   "colors": {
     "default": "(see description)",
     "labels": ["Data Series Colors"],
     "type": "array<string>",
     "example": "['red', '#00FF00']",
     "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the 'color' option."
-  },
-  "colors": {
-    "default": "(see description)",
-    "labels": ["Data Series Colors"],
-    "type": "string",
-    "example": "red",
-    "description": "A per-series color definition. Used in conjunction with, and overrides, the colors option."
   },
   "connectSeparatedPoints": {
     "default": "false",
