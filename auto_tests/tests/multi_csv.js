@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for how axis labels are chosen and formatted.
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
@@ -36,7 +36,7 @@ MultiCsvTestCase.prototype.testOneCSV = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['0','0.5','1','1.5','2','2.5'], getXLabels());
+  assertEquals(['0','0.5','1','1.5','2','2.5','3'], getXLabels());
 };
 
 MultiCsvTestCase.prototype.testTwoCSV = function() {
@@ -54,9 +54,9 @@ MultiCsvTestCase.prototype.testTwoCSV = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['0','0.5','1','1.5','2','2.5'], getXLabels());
+  assertEquals(['0','0.5','1','1.5','2','2.5','3'], getXLabels());
 
   g.updateOptions({file: data});
 
-  assertEquals(['0','0.5','1','1.5','2','2.5'], getXLabels());
+  assertEquals(['0','0.5','1','1.5','2','2.5','3'], getXLabels());
 };

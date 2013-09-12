@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Tests involving multiple y-axes.
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
@@ -50,8 +50,8 @@ MultipleAxesOldTestCase.prototype.testOldBasicMultipleAxes = function() {
     }
   );
 
-  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], Util.getYLabels("1"));
-  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], Util.getYLabels("2"));
+  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110"], Util.getYLabels("1"));
+  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M", "2.1M"], Util.getYLabels("2"));
 };
 
 MultipleAxesOldTestCase.prototype.testOldNewStylePerAxisOptions = function() {
@@ -78,8 +78,8 @@ MultipleAxesOldTestCase.prototype.testOldNewStylePerAxisOptions = function() {
     }
   );
 
-  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], Util.getYLabels("1"));
-  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], Util.getYLabels("2"));
+  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110"], Util.getYLabels("1"));
+  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M", "2.1M"], Util.getYLabels("2"));
 };
 
 MultipleAxesOldTestCase.prototype.testOldMultiAxisLayout = function() {
@@ -248,9 +248,9 @@ MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
       yAxisLabelWidth: 60
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
-  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
-  
+  assertEquals(["40", "45", "50", "55", "60", "65", "70"], Util.getYLabels("1"));
+  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M","2.1M"], Util.getYLabels("2"));
+
   g.updateOptions(
     {
       axes: {
@@ -263,8 +263,8 @@ MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
      }
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], Util.getYLabels("1"));
-  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
+  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75", "80"], Util.getYLabels("1"));
+  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M", "1.2M"], Util.getYLabels("2"));
 };
 
 MultipleAxesOldTestCase.prototype.testOldDrawPointCallback = function() {
@@ -272,12 +272,12 @@ MultipleAxesOldTestCase.prototype.testOldDrawPointCallback = function() {
 
   var results = { y : {}, y2 : {}};
   var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
-    results.y[seriesName] = 1; 
+    results.y[seriesName] = 1;
     Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
 
   };
   var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
-    results.y2[seriesName] = 1; 
+    results.y2[seriesName] = 1;
     Dygraph.Circles.TRIANGLE(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 
