@@ -184,7 +184,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       // Construct the set of ticks.
       // Allow reverse y-axis if it's explicitly requested.
       if (low_val > high_val) scale *= -1;
-      for (i = 0; i < nTicks; i++) {
+      for (i = 0; i <= nTicks; i++) {
         tickV = low_val + i * scale;
         ticks.push( {v: tickV} );
       }
@@ -259,36 +259,36 @@ Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
 Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
 Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
 
-/** 
+/**
  * A collection of objects specifying where it is acceptable to place tick
- * marks for granularities larger than WEEKLY.  
+ * marks for granularities larger than WEEKLY.
  * 'months' is an array of month indexes on which to place tick marks.
  * 'year_mod' ticks are placed when year % year_mod = 0.
- * @type {Array.<Object>} 
+ * @type {Array.<Object>}
  */
 Dygraph.LONG_TICK_PLACEMENTS = [];
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.MONTHLY] = {
-  months : [0,1,2,3,4,5,6,7,8,9,10,11], 
+  months : [0,1,2,3,4,5,6,7,8,9,10,11],
   year_mod : 1
 };
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.QUARTERLY] = {
-  months: [0,3,6,9], 
+  months: [0,3,6,9],
   year_mod: 1
 };
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.BIANNUAL] = {
-  months: [0,6], 
+  months: [0,6],
   year_mod: 1
 };
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.ANNUAL] = {
-  months: [0], 
+  months: [0],
   year_mod: 1
 };
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.DECADAL] = {
-  months: [0], 
+  months: [0],
   year_mod: 10
 };
 Dygraph.LONG_TICK_PLACEMENTS[Dygraph.CENTENNIAL] = {
-  months: [0], 
+  months: [0],
   year_mod: 100
 };
 
