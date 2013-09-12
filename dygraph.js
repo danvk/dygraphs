@@ -1188,31 +1188,6 @@ Dygraph.prototype.setColors_ = function() {
     this.colors_.push(colorStr);
     this.colorsMap_[label] = colorStr;
   }
-/*
-  if (!colors) {
-    var sat = this.attr_('colorSaturation') || 1.0;
-    var val = this.attr_('colorValue') || 0.5;
-    var half = Math.ceil(num / 2);
-    for (i = 1; i <= num; i++) {
-      if (!this.visibility()[i-1]) continue;
-      var customColor = this.attributes_.getForSeries('color', labels[i]);
-      // alternate colors for high contrast.
-      var idx = i % 2 ? Math.ceil(i / 2) : (half + i / 2);
-      var hue = (1.0 * idx/ (1 + num));
-      var colorStr = Dygraph.hsvToRGB(hue, sat, val);
-      this.colors_.push(colorStr);
-      this.colorsMap_[labels[i]] = colorStr;
-    }
-  } else {
-    for (i = 0; i < num; i++) {
-      if (!this.visibility()[i]) continue;
-      var colorStr = colors[i % colors.length];
-      this.colors_.push(colorStr);
-      this.colorsMap_[labels[1 + i]] = colorStr;
-    }
-  }
-*/
-
 };
 
 /**
