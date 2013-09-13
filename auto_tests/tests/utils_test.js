@@ -171,6 +171,12 @@ UtilsTestCase.prototype.testIterator_no_args = function() {
   assertNull(iter.next());
 };
 
+UtilsTestCase.prototype.testToRGB = function() {
+  assertEquals({r: 255, g: 200, b: 150}, Dygraph.toRGB_('rgb(255,200,150)'));
+  assertEquals({r: 255, g: 200, b: 150}, Dygraph.toRGB_('#FFC896'));
+  assertEquals({r: 255, g: 0, b: 0}, Dygraph.toRGB_('red'));
+};
+
 /*
 UtilsTestCase.prototype.testDateSet = function() {
   var base = new Date(1383455100000);

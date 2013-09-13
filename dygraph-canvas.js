@@ -15,22 +15,10 @@
  */
 
 /**
+ * @constructor
+ *
  * The DygraphCanvasRenderer class does the actual rendering of the chart onto
  * a canvas. It's based on PlotKit.CanvasRenderer.
- * @param {Object} element The canvas to attach to
- * @param {Object} elementContext The 2d context of the canvas (injected so it
- * can be mocked for testing.)
- * @param {Layout} layout The DygraphLayout object for this graph.
- * @constructor
- */
-
-/*jshint globalstrict: true */
-/*global Dygraph:false,RGBColorParser:false */
-"use strict";
-
-
-/**
- * @constructor
  *
  * This gets called when there are "new points" to chart. This is generally the
  * case when the underlying data being charted has changed. It is _not_ called
@@ -39,10 +27,10 @@
  * The chart canvas has already been created by the Dygraph object. The
  * renderer simply gets a drawing context.
  *
- * @param {Dygraph} dygraph The chart to which this renderer belongs.
- * @param {HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
- * @param {CanvasRenderingContext2D} elementContext The drawing context.
- * @param {DygraphLayout} layout The chart's DygraphLayout object.
+ * @param {!Dygraph} dygraph The chart to which this renderer belongs.
+ * @param {!HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
+ * @param {!CanvasRenderingContext2D} elementContext The drawing context.
+ * @param {!DygraphLayout} layout The chart's DygraphLayout object.
  *
  * TODO(danvk): remove the elementContext property.
  */
@@ -58,9 +46,9 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.width = this.element.width;
 
   // --- check whether everything is ok before we return
-  // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
-  if (!this.isIE && !(DygraphCanvasRenderer.isSupported(this.element)))
-      throw "Canvas is not supported.";
+  if (!(Dygraph.isCanvasSupported(this.element))) {
+    throw "Canvas is not supported.";
+  }
 
   // internal state
   this.area = layout.getPlotArea();
@@ -88,14 +76,22 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   }
 };
 
-/**
- * This just forwards to dygraph.attr_.
- * TODO(danvk): remove this?
- * @private
- */
-DygraphCanvasRenderer.prototype.attr_ = function(name, opt_seriesName) {
-  return this.dygraph_.attr_(name, opt_seriesName);
-};
+
+(function() {
+
+/*jshint globalstrict: true */
+/*global Dygraph:false,RGBColorParser:false */
+"use strict";
+
+// Utility methods for this file.
+var getIteratorPredicate_,
+    predicateThatSkipsEmptyPoints_,
+    drawSeries_,
+    drawPointsOnLine_,
+    linePlotter_,
+    fillPlotter_,
+    errorPlotter_;
+
 
 /**
  * Clears out all chart content and DOM elements.
@@ -124,30 +120,6 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
-};
-
-/**
- * Checks whether the browser supports the &lt;canvas&gt; tag.
- * @private
- */
-DygraphCanvasRenderer.isSupported = function(canvasName) {
-  var canvas = null;
-  try {
-    if (typeof(canvasName) == 'undefined' || canvasName === null) {
-      canvas = document.createElement("canvas");
-    } else {
-      canvas = canvasName;
-    }
-    canvas.getContext("2d");
-  }
-  catch (e) {
-    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
-    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
-    if ((!ie) || (ie[1] < 6) || (opera))
-      return false;
-    return true;
-  }
-  return true;
 };
 
 /**
@@ -241,14 +213,11 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
  * connectSeparatedPoints is true. When it's false, the predicate will
  * skip over points with missing yVals.
  */
-DygraphCanvasRenderer._getIteratorPredicate = function(connectSeparatedPoints) {
-  return connectSeparatedPoints ?
-      DygraphCanvasRenderer._predicateThatSkipsEmptyPoints :
-      null;
+getIteratorPredicate_ = function(connectSeparatedPoints) {
+  return connectSeparatedPoints ?  predicateThatSkipsEmptyPoints_ : null;
 };
 
-DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
-    function(array, idx) {
+predicateThatSkipsEmptyPoints_ = function(array, idx) {
   return array[idx].yval !== null;
 };
 
@@ -257,7 +226,7 @@ DygraphCanvasRenderer._predicateThatSkipsEmptyPoints =
  * @param {Object} e The dictionary passed to the plotter function.
  * @private
  */
-DygraphCanvasRenderer._drawStyledLine = function(e,
+var drawStyledLine_ = function(e,
     color, strokeWidth, strokePattern, drawPoints,
     drawPointCallback, pointSize) {
   var g = e.dygraph;
@@ -272,7 +241,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
 
   var points = e.points;
   var iter = Dygraph.createIterator(points, 0, points.length,
-      DygraphCanvasRenderer._getIteratorPredicate(
+      getIteratorPredicate_(
           g.getOption("connectSeparatedPoints")));  // TODO(danvk): per-series?
 
   var stroking = strokePattern && (strokePattern.length >= 2);
@@ -283,10 +252,9 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
     ctx.installPattern(strokePattern);
   }
 
-  var pointsOnLine = DygraphCanvasRenderer._drawSeries(
+  var pointsOnLine = drawSeries_(
       e, iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, color);
-  DygraphCanvasRenderer._drawPointsOnLine(
-      e, pointsOnLine, drawPointCallback, color, pointSize);
+  drawPointsOnLine_(e, pointsOnLine, drawPointCallback, color, pointSize);
 
   if (stroking) {
     ctx.uninstallPattern();
@@ -301,9 +269,8 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
  * drawPointCallback should be fired.  These include isolated points, or all
  * points if drawPoints=true.
  * @param {Object} e The dictionary passed to the plotter function.
- * @private
  */
-DygraphCanvasRenderer._drawSeries = function(e,
+drawSeries_ = function(e,
     iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, color) {
 
   var prevCanvasX = null;
@@ -392,7 +359,7 @@ DygraphCanvasRenderer._drawSeries = function(e,
  * @param {Object} e The dictionary passed to the plotter function.
  * @private
  */
-DygraphCanvasRenderer._drawPointsOnLine = function(
+drawPointsOnLine_ = function(
     e, pointsOnLine, drawPointCallback, color, pointSize) {
   var ctx = e.drawingContext;
   for (var idx = 0; idx < pointsOnLine.length; idx++) {
@@ -441,8 +408,8 @@ DygraphCanvasRenderer.prototype._updatePoints = function() {
  *
  * @param {string=} opt_seriesName when specified, only that series will
  *     be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
- * @param {CanvasRenderingContext2D} opt_ctx when specified, the drawing
- *     context.  However, lines are typically drawn on the object's
+ * @param {CanvasRenderingContext2D=} opt_ctx when specified, the drawing
+ *     context. However, lines are typically drawn on the object's
  *     elementContext.
  * @private
  */
@@ -457,19 +424,24 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   this.colors = this.dygraph_.colorsMap_;
 
   // Determine which series have specialized plotters.
-  var plotter_attr = this.attr_("plotter");
-  var plotters = plotter_attr;
-  if (!Dygraph.isArrayLike(plotters)) {
+  var plotter_attr = /** @type{!Array.<!DygraphPlotterType>|!DygraphPlotterType}*/(this.dygraph_.getOption("plotter"));
+
+  /** @type{!Array.<!DygraphPlotterType>} */
+  var plotters;
+  if (!Dygraph.isArrayLike(plotter_attr)) {
     plotters = [plotters];
+  } else {
+    plotters = /** @type {!Array.<!DygraphPlotterType>} */(plotter_attr);
   }
 
+  /** @type {Object.<!DygraphPlotterType>} */
   var setPlotters = {};  // series name -> plotter fn.
   for (i = 0; i < setNames.length; i++) {
     setName = setNames[i];
-    var setPlotter = this.attr_("plotter", setName);
+    var setPlotter = this.dygraph_.getOption("plotter", setName);
     if (setPlotter == plotter_attr) continue;  // not specialized.
 
-    setPlotters[setName] = setPlotter;
+    setPlotters[setName] = /** @type {!DygraphPlotterType} */(setPlotter);
   }
 
   for (i = 0; i < plotters.length; i++) {
@@ -494,7 +466,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
       }
 
       var color = this.colors[setName];
-      var strokeWidth = this.dygraph_.getOption("strokeWidth", setName);
+      var strokeWidth = this.dygraph_.getNumericOption("strokeWidth", setName);
 
       ctx.save();
       ctx.strokeStyle = color;
@@ -519,44 +491,27 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
 };
 
 /**
- * Standard plotters. These may be used by clients via Dygraph.Plotters.
- * See comments there for more details.
- */
-DygraphCanvasRenderer._Plotters = {
-  linePlotter: function(e) {
-    DygraphCanvasRenderer._linePlotter(e);
-  },
-
-  fillPlotter: function(e) {
-    DygraphCanvasRenderer._fillPlotter(e);
-  },
-
-  errorPlotter: function(e) {
-    DygraphCanvasRenderer._errorPlotter(e);
-  }
-};
-
-/**
  * Plotter which draws the central lines for a series.
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
-DygraphCanvasRenderer._linePlotter = function(e) {
+linePlotter_ = function(e) {
   var g = e.dygraph;
   var setName = e.setName;
   var strokeWidth = e.strokeWidth;
 
   // TODO(danvk): Check if there's any performance impact of just calling
-  // getOption() inside of _drawStyledLine. Passing in so many parameters makes
+  // getOption() inside of drawStyledLine_. Passing in so many parameters makes
   // this code a bit nasty.
-  var borderWidth = g.getOption("strokeBorderWidth", setName);
+  var borderWidth = g.getNumericOption("strokeBorderWidth", setName);
   var drawPointCallback = g.getOption("drawPointCallback", setName) ||
       Dygraph.Circles.DEFAULT;
   var strokePattern = g.getOption("strokePattern", setName);
-  var drawPoints = g.getOption("drawPoints", setName);
-  var pointSize = g.getOption("pointSize", setName);
+  var drawPoints = g.getBooleanOption("drawPoints", setName);
+  var pointSize = g.getNumericOption("pointSize", setName);
 
   if (borderWidth && strokeWidth) {
-    DygraphCanvasRenderer._drawStyledLine(e,
+    drawStyledLine_(e,
         g.getOption("strokeBorderColor", setName),
         strokeWidth + 2 * borderWidth,
         strokePattern,
@@ -566,7 +521,7 @@ DygraphCanvasRenderer._linePlotter = function(e) {
         );
   }
 
-  DygraphCanvasRenderer._drawStyledLine(e,
+  drawStyledLine_(e,
       e.color,
       strokeWidth,
       strokePattern,
@@ -580,9 +535,10 @@ DygraphCanvasRenderer._linePlotter = function(e) {
  * Draws the shaded error bars/confidence intervals for each series.
  * This happens before the center lines are drawn, since the center lines
  * need to be drawn on top of the error bars for all series.
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
-DygraphCanvasRenderer._errorPlotter = function(e) {
+errorPlotter_ = function(e) {
   var g = e.dygraph;
   var setName = e.setName;
   var errorBars = g.getOption("errorBars") || g.getOption("customBars");
@@ -590,7 +546,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 
   var fillGraph = g.getOption("fillGraph", setName);
   if (fillGraph) {
-    g.warn("Can't use fillGraph option with error bars");
+    Dygraph.warn("Can't use fillGraph option with error bars");
   }
 
   var ctx = e.drawingContext;
@@ -600,8 +556,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var points = e.points;
 
   var iter = Dygraph.createIterator(points, 0, points.length,
-      DygraphCanvasRenderer._getIteratorPredicate(
-          g.getOption("connectSeparatedPoints")));
+      getIteratorPredicate_(g.getOption("connectSeparatedPoints")));
 
   var newYs;
 
@@ -610,7 +565,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var prevY = NaN;
   var prevYs = [-1, -1];
   // should be same color as the lines but only 15% opaque.
-  var rgb = new RGBColorParser(color);
+  var rgb = Dygraph.toRGB_(color);
   var err_color =
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
@@ -665,9 +620,10 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
  * simultaneously. So this plotter plots all the points on the first series
  * it's asked to draw, then ignores all the other series.
  *
+ * @param {DygraphPlotterArguments} e Plotter inputs.
  * @private
  */
-DygraphCanvasRenderer._fillPlotter = function(e) {
+fillPlotter_ = function(e) {
   // Skip if we're drawing a single series for interactive highlight overlay.
   if (e.singleSeriesName) return;
 
@@ -728,15 +684,14 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
     var points = sets[setIdx];
     var iter = Dygraph.createIterator(points, 0, points.length,
-        DygraphCanvasRenderer._getIteratorPredicate(
-            g.getOption("connectSeparatedPoints")));
+        getIteratorPredicate_(g.getOption("connectSeparatedPoints")));
 
     // setup graphics context
     var prevX = NaN;
     var prevYs = [-1, -1];
     var newYs;
     // should be same color as the lines but only 15% opaque.
-    var rgb = new RGBColorParser(color);
+    var rgb = Dygraph.toRGB_(color);
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
@@ -814,3 +769,15 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     ctx.fill();
   }
 };
+
+/**
+ * Standard plotters. These may be used by clients via Dygraph.Plotters.
+ * See comments there for more details.
+ */
+DygraphCanvasRenderer._Plotters = {
+  linePlotter: linePlotter_,
+  fillPlotter: fillPlotter_,
+  errorPlotter: errorPlotter_
+};
+
+})();

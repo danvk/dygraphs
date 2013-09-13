@@ -1,0 +1,26 @@
+// Time granularity enumeration
+/** @enum{number} */
+var DygraphGranularities = {
+  SECONDLY: 0,
+  TWO_SECONDLY: 1,
+  FIVE_SECONDLY: 2,
+  TEN_SECONDLY: 3,
+  THIRTY_SECONDLY : 4,
+  MINUTELY: 5,
+  TWO_MINUTELY: 6,
+  FIVE_MINUTELY: 7,
+  TEN_MINUTELY: 8,
+  THIRTY_MINUTELY: 9,
+  HOURLY: 10,
+  TWO_HOURLY: 11,
+  SIX_HOURLY: 12,
+  DAILY: 13,
+  WEEKLY: 14,
+  MONTHLY: 15,
+  QUARTERLY: 16,
+  BIANNUAL: 17,
+  ANNUAL: 18,
+  DECADAL: 19,
+  CENTENNIAL: 20,
+  NUM_GRANULARITIES: 21
+};

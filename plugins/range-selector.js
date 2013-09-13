@@ -34,9 +34,9 @@ rangeSelector.prototype.activate = function(dygraph) {
     this.createInterface_();
   }
   return {
-    layout: this.reserveSpace_,
-    predraw: this.renderStaticLayer_,
-    didDrawChart: this.renderInteractiveLayer_
+    'layout': this.reserveSpace_,
+    'predraw': this.renderStaticLayer_,
+    'didDrawChart': this.renderInteractiveLayer_
   };
 };
 
@@ -74,7 +74,7 @@ rangeSelector.prototype.createInterface_ = function() {
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
   if (this.getOption_('animatedZooms')) {
-    this.dygraph_.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    Dygraph.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
@@ -268,7 +268,9 @@ rangeSelector.prototype.createZoomHandles_ = function() {
  */
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
-  var topElem = this.isIE_ ? document : window;
+  // TODO(danvk): ask Paul why this is here.
+  // var topElem = this.isIE_ ? document : window;
+  var topElem = document;
   var clientXLast = 0;
   var handle = null;
   var isZooming = false;

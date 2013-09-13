@@ -17,8 +17,9 @@
  * - http://dygraphs.com/tests/annotation-gviz.html
  */
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
+
+(function() {
 "use strict";
 
 /**
@@ -32,8 +33,8 @@ Dygraph.GVizChart = function(container) {
 };
 
 /**
- * @param {GVizDataTable} data
- * @param {Object.<*>} options
+ * @param {google.visualization.DataTable} data
+ * @param {Object} options
  */
 Dygraph.GVizChart.prototype.draw = function(data, options) {
   // Clear out any existing dygraph.
@@ -73,10 +74,13 @@ Dygraph.GVizChart.prototype.getSelection = function() {
 
   if (row < 0) return selection;
 
-  var points = this.date_graph.layout_.points;
+  var layout = /** @type {DygraphLayout} */(this.date_graph.layout_);
+  var points = layout.points;
   for (var setIdx = 0; setIdx < points.length; ++setIdx) {
     selection.push({row: row, column: setIdx + 1});
   }
 
   return selection;
 };
+
+})();

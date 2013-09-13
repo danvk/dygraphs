@@ -46,48 +46,142 @@ var ValueFormatter;
 var DygraphDataArray;
 
 /**
- * @constructor
+ * @typedef {{
+ *   xval: (number|undefined),
+ *   x: string,
+ *   series: string,
+ *   icon: (string|undefined),
+ *   width: (number|undefined),
+ *   height: (number|undefined),
+ *   shortText: (string|undefined),
+ *   text: (string|undefined),
+ *   attachAtBottom: (boolean|undefined),
+ *   div: (!HTMLDivElement|undefined),
+ *   cssClass: (string|undefined),
+ *   tickHeight: (number|undefined),
+ *   canvasx: (number|undefined),
+ *   canvasy: (number|undefined)
+ * }}
  */
-function GVizDataTable() {}
-
-// TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js
-/**
- * @param {!HTMLDivElement|string} div
- * @param {DygraphDataArray|
- *     GVizDataTable|
- *     string|
- *     function():(DygraphDataArray|GVizDataTable|string)} file
- * @param {Object} attrs
- * @constructor
- */
-function Dygraph(div, file, attrs) {}
-
-/**
- * @constructor
- */
-function DygraphLayout() {}
+var DygraphAnnotationType;
 
 /**
- * @type {Array}
+ * @typedef {Array.<{
+ *   v:number,
+ *   label:string,
+ *   label_v:(string|undefined)
+ * }>}
  */
-DygraphLayout.prototype.datasets;
-
-// TODO: DygraphOptions should not reach inside Dygraph private data like this.
-/** @type {Object} */
-Dygraph.prototype.attrs_;
-/** @type {Object} */
-Dygraph.prototype.user_attrs_;
+var DygraphTickList;
 
 /**
- * @type {DygraphLayout}
+ * @typedef {(function(
+ *    number,
+ *    number,
+ *    number,
+ *    function(string):*,
+ *    Dygraph=,
+ *    Array.<number>=
+ *  ): DygraphTickList)}
  */
-Dygraph.prototype.layout_;
+var DygraphTicker;
 
-/** @type {function(): string} */
-Dygraph.prototype.getHighlightSeries;
+/**
+ * @typedef {{
+ *   x: number,
+ *   y: number,
+ *   w: number,
+ *   h: number
+ * }}
+ */
+var DygraphRect;
 
-/** @type {Array.<{elem:Element,type:string,fn:function(!Event):(boolean|undefined|null)}>} */
-Dygraph.prototype.registeredEvents_;
+/**
+ * @typedef {{
+ *   g: !Dygraph,
+ *   minyval: number,
+ *   maxyval: number,
+ *   ticks: Array,
+ *   computedValueRange: Array.<number>
+ * }}
+ */
+var DygraphAxisType;
 
-/** @type {{axes: Object}} */
-Dygraph.DEFAULT_ATTRS;
+
+/**
+ * @typedef {{
+ *   dygraph: !Dygraph,
+ *   points: !Array,
+ *   setName: string,
+ *   drawingContext: !CanvasRenderingContext2D,
+ *   color: string,
+ *   strokeWidth: number,
+ *   axis: Object,
+ *   plotArea: DygraphRect,
+ *   seriesIndex: number,
+ *   seriesCount: number,
+ *   singleSeriesName: (string|undefined),
+ *   allSeriesPoints: Array
+ * }}
+ */
+var DygraphPlotterArguments;
+
+/**
+ * TODO(danvk): be more specific than "Object".
+ * @typedef {function(DygraphPlotterArguments)}
+ */
+var DygraphPlotterType;
+
+
+/**
+ * @typedef {{
+ *   px: number,
+ *   py: number,
+ *   isZooming: boolean,
+ *   isPanning: boolean,
+ *   is2DPan: boolean,
+ *   cancelNextDblclick: boolean,
+ *   initializeMouseDown:
+ *       function(!Event, !Dygraph, !DygraphInteractionContext)
+ * }}
+ */
+var DygraphInteractionContext;
+
+
+/**
+ * @typedef {{
+ *   clearChart:    (function(Object)|undefined),
+ *   deselect:      (function(Object)|undefined),
+ *   didDrawChart:  (function(Object)|undefined),
+ *   layout:        (function(Object)|undefined),
+ *   predraw:       (function(Object)|undefined),
+ *   select:        (function(Object)|undefined),
+ *   willDrawChart: (function(Object)|undefined)
+ * }}
+ */
+var DygraphPluginHandlers;
+
+
+/**
+ * @interface
+ */
+var DygraphPluginType;
+
+/**
+ * @param {!Dygraph} dygraph
+ * @return {DygraphPluginHandlers} Mapping from event -> callback.
+ */
+DygraphPluginType.prototype.activate = function(dygraph) {};
+
+/**
+ * @return {string}
+ */
+DygraphPluginType.prototype.toString = function() {};
+
+DygraphPluginType.prototype.destroy = function() {};
+
+// Convenience for debugging -- makes "console.log" compile-able.
+var console = {};
+/** @param {...} varargs */
+console.log = function(varargs) {};
+

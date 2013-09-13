@@ -31,21 +31,25 @@ These too. What is the difference between axisLablelWidth and {x,y}AxisLabelWidt
  * Draws the axes. This includes the labels on the x- and y-axes, as well
  * as the tick marks on the axes.
  * It does _not_ draw the grid lines which span the entire chart.
+ * @constructor
+ * @implements {DygraphPluginType}
  */
 var axes = function() {
   this.xlabels_ = [];
   this.ylabels_ = [];
 };
 
+/** @override */
 axes.prototype.toString = function() {
   return "Axes Plugin";
 };
 
+/** @override */
 axes.prototype.activate = function(g) {
   return {
-    layout: this.layout,
-    clearChart: this.clearChart,
-    willDrawChart: this.willDrawChart
+    'layout': this.layout,
+    'clearChart': this.clearChart,
+    'willDrawChart': this.willDrawChart
   };
 };
 
@@ -135,6 +139,12 @@ axes.prototype.willDrawChart = function(e) {
     y2 : makeLabelStyle('y2')
   };
 
+  /**
+   * @param {string} txt
+   * @param {string} axis
+   * @param {?string=} prec_axis
+   * @return {!HTMLDivElement}
+   */
   var makeDiv = function(txt, axis, prec_axis) {
     /*
      * This seems to be called with the following three sets of axis/prec_axis:
@@ -142,7 +152,7 @@ axes.prototype.willDrawChart = function(e) {
      * y: y1
      * y: y2
      */
-    var div = document.createElement("div");
+    var div = /**@type{!HTMLDivElement}*/(document.createElement("div"));
     var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
@@ -309,6 +319,10 @@ axes.prototype.willDrawChart = function(e) {
   }
 
   context.restore();
+};
+
+/** @override */
+axes.prototype.destroy = function() {
 };
 
 return axes;

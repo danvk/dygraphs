@@ -10,19 +10,6 @@
  * Still tightly coupled to Dygraphs, we could remove some of that, you know.
  */
 
-var DygraphOptions = (function() {
-
-/*jshint sub:true */
-/*global Dygraph:false */
-"use strict";
-
-/*
- * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
- * global_ - global attributes (common among all graphs, AIUI)
- * user - attributes set by the user
- * series_ - { seriesName -> { idx, yAxis, options }}
- */
-
 /**
  * This parses attributes into an object that can be easily queried.
  *
@@ -30,7 +17,7 @@ var DygraphOptions = (function() {
  * if labels are not yet available, since those drive details of the per-series
  * and per-axis options.
  *
- * @param {Dygraph} dygraph The chart to which these options belong.
+ * @param {!Dygraph} dygraph The chart to which these options belong.
  * @constructor
  */
 var DygraphOptions = function(dygraph) {
@@ -50,7 +37,8 @@ var DygraphOptions = function(dygraph) {
    * Contains x-axis specific options, which are stored in the options key.
    * This matches the yAxes_ object structure (by being a dictionary with an
    * options element) allowing for shared code.
-   * @type {options: Object} @private
+   * @type {Object}
+   * @private
    */
   this.xAxis_ = {};
   this.series_ = {};
@@ -69,6 +57,20 @@ var DygraphOptions = function(dygraph) {
   this.reparseSeries();
 };
 
+(function() {
+
+/*jshint sub:true */
+/*global Dygraph:false */
+"use strict";
+
+/*
+ * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
+ * global_ - global attributes (common among all graphs, AIUI)
+ * user - attributes set by the user
+ * series_ - { seriesName -> { idx, yAxis, options }}
+ */
+
+
 /**
  * Not optimal, but does the trick when you're only using two axes.
  * If we move to more axes, this can just become a function.
@@ -76,7 +78,7 @@ var DygraphOptions = function(dygraph) {
  * @type {Object.<number>}
  * @private
  */
-DygraphOptions.AXIS_STRING_MAPPINGS_ = {
+var AXIS_STRING_MAPPINGS_ = {
   'y' : 0,
   'Y' : 0,
   'y1' : 0,
@@ -89,10 +91,10 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
  * @param {string|number} axis
  * @private
  */
-DygraphOptions.axisToIndex_ = function(axis) {
+var axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
-    if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
-      return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
+    if (AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
+      return AXIS_STRING_MAPPINGS_[axis];
     }
     throw "Unknown axis : " + axis;
   }
@@ -195,8 +197,8 @@ DygraphOptions.prototype.reparseSeries = function() {
   } else {
     for (var idx = 0; idx < this.labels_.length; idx++) {
       var seriesName = this.labels_[idx];
-      var optionsForSeries = this.user_.series[seriesName] || {};
-      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
+      var optionsForSeries = this.user_['series'][seriesName] || {};
+      var yAxis = axisToIndex_(optionsForSeries["axis"]);
 
       this.series_[seriesName] = {
         idx: idx,
@@ -296,7 +298,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   }
 
   // Default axis options third.
-  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
+  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS['axes'][axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {
     return defaultAxisOptions[name];
   }
@@ -325,12 +327,12 @@ DygraphOptions.prototype.getForSeries = function(name, series) {
   }
 
   var seriesObj = this.series_[series];
-  var seriesOptions = seriesObj["options"];
+  var seriesOptions = seriesObj.options;
   if (seriesOptions.hasOwnProperty(name)) {
     return seriesOptions[name];
   }
 
-  return this.getForAxis(name, seriesObj["yAxis"]);
+  return this.getForAxis(name, seriesObj.yAxis);
 };
 
 /**
@@ -369,7 +371,5 @@ DygraphOptions.prototype.seriesForAxis = function(yAxis) {
 DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
-
-return DygraphOptions;
 
 })();

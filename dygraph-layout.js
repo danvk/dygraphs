@@ -9,9 +9,7 @@
  * dygraphs.
  */
 
-/*jshint globalstrict: true */
-/*global Dygraph:false */
-"use strict";
+// Note: @constructor must live outside (function() {})() for Closure Compiler.
 
 /**
  * Creates a new DygraphLayout object.
@@ -27,10 +25,12 @@
  *
  * The naming is a vestige of Dygraph's original PlotKit roots.
  *
+ * @param {!Dygraph} dygraph The dygraph object.
  * @constructor
  */
 var DygraphLayout = function(dygraph) {
   this.dygraph_ = dygraph;
+
   /**
    * Array of points for each series.
    *
@@ -43,16 +43,45 @@ var DygraphLayout = function(dygraph) {
    * @type {Array.<Array.<Dygraph.PointType>>}
    */
   this.points = [];
+
+  /** @type {Array.<string>} */
   this.setNames = [];
+
+  /** @type {Array.<!DygraphAnnotationType>} */
   this.annotations = [];
+
+  /** @type {Array.<DygraphAxisType>} */
   this.yAxes_ = null;
 
   // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
   // yticks are outputs. Clean this up.
+  /** @type {DygraphTickList} */
   this.xTicks_ = null;
+  /** @type {DygraphTickList} */
   this.yTicks_ = null;
+
+  /** @type {?DygraphRect} */
+  this.area_ = null;
+
+  // TODO(danvk): these fields should be objects, not arrays of arrays, which
+  // can't be easily described in the closure type system.
+  /** @type {Array.<Array>} */
+  this.xticks = null;
+  /** @type {Array.<Array>} */
+  this.yticks = null;
 };
 
+
+(function() {
+
+/*jshint globalstrict: true */
+/*global Dygraph:false */
+"use strict";
+
+/**
+ * @param {string} name Name of the attribute.
+ * @return {*} Attribute value.
+ */
 DygraphLayout.prototype.attr_ = function(name) {
   return this.dygraph_.attr_(name);
 };
@@ -61,7 +90,7 @@ DygraphLayout.prototype.attr_ = function(name) {
  * Add points for a single series.
  *
  * @param {string} setname Name of the series.
- * @param {Array.<Dygraph.PointType>} set_xy Points for the series.
+ * @param {Array.<!Dygraph.PointType>} set_xy Points for the series.
  */
 DygraphLayout.prototype.addDataset = function(setname, set_xy) {
   this.points.push(set_xy);
@@ -72,7 +101,7 @@ DygraphLayout.prototype.addDataset = function(setname, set_xy) {
  * Returns the box which the chart should be drawn in. This is the canvas's
  * box, less space needed for the axis and chart labels.
  *
- * @return {{x: number, y: number, w: number, h: number}}
+ * @return {?DygraphRect}
  */
 DygraphLayout.prototype.getPlotArea = function() {
   return this.area_;
@@ -88,8 +117,9 @@ DygraphLayout.prototype.computePlotArea = function() {
     y: 0
   };
 
-  area.w = this.dygraph_.width_ - area.x - this.attr_('rightGap');
-  area.h = this.dygraph_.height_;
+  var size = this.dygraph_.size();
+  area.w = size.width - area.x - /** @type{number} */(this.attr_('rightGap'));
+  area.h = size.height;
 
   // Let plugins reserve space.
   var e = {
@@ -145,21 +175,39 @@ DygraphLayout.prototype.computePlotArea = function() {
   this.area_ = area;
 };
 
+/**
+ * @param {Array.<!DygraphAnnotationType>} ann The annotations
+ */
 DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy. If there is no parser, then the user must be using raw format.
+
+  /** @type {Array.<!DygraphAnnotationType>} */
   this.annotations = [];
-  var parse = this.attr_('xValueParser') || function(x) { return x; };
+  
+  var parse = /** @type {function(string):number} */(this.attr_('xValueParser')) || function(x) { return parseFloat(x); };
+
   for (var i = 0; i < ann.length; i++) {
-    var a = {};
+    // lame that closure compiler wants all these undefineds!
+    /** @type {DygraphAnnotationType} */
+    var a = {
+      x: ann[i].x,
+      series: ann[i].series,
+      xval: undefined,
+      icon: undefined,
+      width: undefined,
+      height: undefined,
+      shortText: undefined,
+      text: undefined
+    };
     if (!ann[i].xval && ann[i].x === undefined) {
-      this.dygraph_.error("Annotations must have an 'x' property");
+      Dygraph.error("Annotations must have an 'x' property");
       return;
     }
     if (ann[i].icon &&
         !(ann[i].hasOwnProperty('width') &&
           ann[i].hasOwnProperty('height'))) {
-      this.dygraph_.error("Must set width and height when setting " +
+      Dygraph.error("Must set width and height when setting " +
                           "annotation.icon property");
       return;
     }
@@ -169,11 +217,16 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   }
 };
 
+/**
+ * @param {!DygraphTickList} xTicks The x-axis ticks.
+ */
 DygraphLayout.prototype.setXTicks = function(xTicks) {
   this.xTicks_ = xTicks;
 };
 
-// TODO(danvk): add this to the Dygraph object's API or move it into Layout.
+/**
+ * @param {Array.<DygraphAxisType>} yAxes The y-axes.
+ */
 DygraphLayout.prototype.setYAxes = function (yAxes) {
   this.yAxes_ = yAxes;
 };
@@ -203,15 +256,21 @@ DygraphLayout.prototype._evaluateLimits = function() {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
-        axis.g.error('axis ' + i + ' of graph at ' + axis.g +
-            ' can\'t be displayed in log scale for range [' +
-            axis.minyval + ' - ' + axis.maxyval + ']');
+        Dygraph.error('axis ' + i + ' of graph at ' + axis.g +
+                      ' can\'t be displayed in log scale for range [' +
+                      axis.minyval + ' - ' + axis.maxyval + ']');
       }
     }
   }
 };
 
-DygraphLayout._calcYNormal = function(axis, value, logscale) {
+/**
+ * @param {DygraphAxisType} axis
+ * @param {number} value
+ * @param {boolean} logscale
+ * @return {number}
+ */
+DygraphLayout.calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
     return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
   } else {
@@ -238,7 +297,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
-        point.y_stacked = DygraphLayout._calcYNormal(
+        point.y_stacked = DygraphLayout.calcYNormal_(
             axis, point.yval_stacked, logscale);
         if (yval !== null && !isNaN(yval)) {
           yval = point.yval_stacked;
@@ -250,25 +309,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           point.yval = NaN;
         }
       }
-      point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
+      point.y = DygraphLayout.calcYNormal_(axis, yval, logscale);
     }
 
     this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
   }
-};
-
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- */
-DygraphLayout.parseFloat_ = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
@@ -301,12 +346,16 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   // Add the annotations to the point to which they belong.
   // Make a map from (setName, xval) to annotation for quick lookups.
   var i;
+  /** @type {Object.<!DygraphAnnotationType>} */
   var annotations = {};
   for (i = 0; i < this.annotations.length; i++) {
     var a = this.annotations[i];
     annotations[a.xval + "," + a.series] = a;
   }
 
+  /**
+   * @type {Array.<Dygraph.PointType>}
+   */
   this.annotated_points = [];
 
   // Exit the function early if there are no annotations.
@@ -341,3 +390,7 @@ DygraphLayout.prototype.removeAllDatasets = function() {
   this.setPointsLengths = [];
   this.setPointsOffsets = [];
 };
+
+return DygraphLayout;
+
+})();

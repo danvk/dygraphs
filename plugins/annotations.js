@@ -23,18 +23,25 @@ TODO(danvk): cache DOM elements.
 
 */
 
+/**
+ * @constructor
+ * @implements DygraphPluginType
+ */
 var annotations = function() {
+  /** @type {Array.<HTMLDivElement>} */
   this.annotations_ = [];
 };
 
+/** @override */
 annotations.prototype.toString = function() {
   return "Annotations Plugin";
 };
 
+/** @override */
 annotations.prototype.activate = function(g) {
   return {
-    clearChart: this.clearChart,
-    didDrawChart: this.didDrawChart
+    'clearChart': this.clearChart,
+    'didDrawChart': this.didDrawChart
   };
 };
 
@@ -55,8 +62,11 @@ annotations.prototype.didDrawChart = function(e) {
   var g = e.dygraph;
 
   // Early out in the (common) case of zero annotations.
+  /** @type {Array.<DygraphAnnotationType>} */
   var points = g.layout_.annotated_points;
   if (!points || points.length === 0) return;
+
+  console.log(points);
 
   var containerDiv = e.canvas.parentNode;
   var annotationStyle = {
@@ -92,7 +102,7 @@ annotations.prototype.didDrawChart = function(e) {
 
     var a = p.annotation;
     var tick_height = 6;
-    if (a.hasOwnProperty("tickHeight")) {
+    if (a.tickHeight) {
       tick_height = a.tickHeight;
     }
 
@@ -102,22 +112,22 @@ annotations.prototype.didDrawChart = function(e) {
         div.style[name] = annotationStyle[name];
       }
     }
-    if (!a.hasOwnProperty('icon')) {
+    if (!a.icon) {
       div.className = "dygraphDefaultAnnotation";
     }
-    if (a.hasOwnProperty('cssClass')) {
+    if (a.cssClass) {
       div.className += " " + a.cssClass;
     }
 
-    var width = a.hasOwnProperty('width') ? a.width : 16;
-    var height = a.hasOwnProperty('height') ? a.height : 16;
-    if (a.hasOwnProperty('icon')) {
+    var width = a.width !== undefined ? a.width : 16;
+    var height = a.height !== undefined ? a.height : 16;
+    if (a.icon) {
       var img = document.createElement("img");
       img.src = a.icon;
       img.width = width;
       img.height = height;
       div.appendChild(img);
-    } else if (p.annotation.hasOwnProperty('shortText')) {
+    } else if (p.annotation.shortText) {
       div.appendChild(document.createTextNode(p.annotation.shortText));
     }
     var left = p.canvasx - width / 2;
@@ -144,13 +154,13 @@ annotations.prototype.didDrawChart = function(e) {
     a.div = div;
 
     g.addAndTrackEvent(div, 'click',
-        bindEvt('clickHandler', 'annotationClickHandler', p, this));
+        bindEvt('clickHandler', 'annotationClickHandler', p));
     g.addAndTrackEvent(div, 'mouseover',
-        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p, this));
+        bindEvt('mouseOverHandler', 'annotationMouseOverHandler', p));
     g.addAndTrackEvent(div, 'mouseout',
-        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p, this));
+        bindEvt('mouseOutHandler', 'annotationMouseOutHandler', p));
     g.addAndTrackEvent(div, 'dblclick',
-        bindEvt('dblClickHandler', 'annotationDblClickHandler', p, this));
+        bindEvt('dblClickHandler', 'annotationDblClickHandler', p));
 
     containerDiv.appendChild(div);
     this.annotations_.push(div);
@@ -173,6 +183,7 @@ annotations.prototype.didDrawChart = function(e) {
   }
 };
 
+/** @override */
 annotations.prototype.destroy = function() {
   this.detachLabels();
 };

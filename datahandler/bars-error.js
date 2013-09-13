@@ -14,11 +14,17 @@
 /*global Dygraph:false */
 "use strict";
 
-Dygraph.DataHandlers.ErrorBarsHandler = Dygraph.DataHandler();
+/**
+ * @constructor
+ * @extends Dygraph.DataHandlers.BarsHandler
+ */
+Dygraph.DataHandlers.ErrorBarsHandler = function() {
+};
+
 var ErrorBarsHandler = Dygraph.DataHandlers.ErrorBarsHandler;
 ErrorBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
 
-// errorBars
+/** @inheritDoc */
 ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
@@ -53,8 +59,9 @@ ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-ErrorBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+/** @inheritDoc */
+ErrorBarsHandler.prototype.rollingAverage =
+    function(originalData, rollPeriod, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var sigma = options.get("sigma");

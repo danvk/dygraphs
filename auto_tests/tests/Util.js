@@ -97,6 +97,25 @@ Util.samplePixel = function(canvas, x, y) {
 };
 
 /**
+ * Format a date as 2000/01/23
+ * @param {number} date_ms Millis since epoch.
+ * @return {string} The date formatted as YYYY-MM-DD.
+ */
+Util.formatDate = function(date_ms) {
+  var zeropad = function(x) { if (x < 10) return "0" + x; else return "" + x; };
+  var d = new Date(date_ms);
+
+  // Get the year:
+  var year = "" + d.getFullYear();
+  // Get a 0 padded month string
+  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  // Get a 0 padded day string
+  var day = zeropad(d.getDate());
+
+  return year + "/" + month + "/" + day;
+};
+
+/**
  * Overrides the browser's built-in XMLHttpRequest with a mock.
  * Usage:
  *
@@ -130,4 +149,3 @@ Util.overrideXMLHttpRequest = function(data) {
   XMLHttpRequest = FakeXMLHttpRequest;
   return FakeXMLHttpRequest;
 };
-

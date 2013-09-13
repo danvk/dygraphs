@@ -9,9 +9,10 @@ This file tracks which files have been fully "closurized", i.e. compile
 under the Closure Compiler without any errors or warnings.
 
 Core:
-- dygraph-canvas.js
-- dygraph-interaction-model.js
-- dygraph-layout.js
+x dygraph-constants.js 
+x dygraph-canvas.js
+x dygraph-interaction-model.js
+x dygraph-layout.js
 x dygraph-options.js
 - dygraph.js
 x dygraph-gviz.js
@@ -19,10 +20,10 @@ x dygraph-tickers.js
 x dygraph-options-reference.js
 x dygraph-utils.js
 x dashed-canvas.js
-- dygraph-plugin-base.js
-- dygraph-plugin-install.js
+x dygraph-plugin-base.js
 
 Plugins:
+- dygraph-plugin-install.js
 - plugins/annotations.js
 - plugins/axes.js
 - plugins/chart-labels.js
@@ -41,6 +42,25 @@ Datahandler:
 
 Here's a command that can be used to build dygraphs using the closure
 compiler:
-java -jar ../../closure-compiler-read-only/build/compiler.jar --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-options-reference.js --js=dygraph-tickers.js --js=dygraph-gviz.js --js=dygraph-options.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js
+java -jar ../../closure-compiler-read-only/build/compiler.jar --js ../../closure-library-read-only/closure/goog/base.js --js=dygraph-constants.js --js=dygraph-utils.js --js=dashed-canvas.js --js=dygraph-tickers.js --js=dygraph-canvas.js --js=dygraph.js --js=dygraph-gviz.js --js=dygraph-options-reference.js --js=dygraph-options.js --js=dygraph-layout.js --js=dygraph-interaction-model.js --js=dygraph-plugin-base.js --js=dygraph-exports.js --js_output_file=/tmp/out.js --compilation_level ADVANCED_OPTIMIZATIONS --warning_level VERBOSE --externs dygraph-externs.js --externs gviz-api.js --output_wrapper='(function() {%output%})();'
 
 As each file is closurized, it can be added as a "--js" parameter.
+
+NOTES
+- plugin-free code is 59756 compiled; for uglifyjs it's 83031 (30% savings)
+- How to deal with types for callback attributes? Always repeat?
+  Any way to declare these statically?
+
+
+TODO:
+- Make all plugins @implements DygraphPluginType
+- plugins/annotations.js -- annotation properties are likely getting mangled.
+- don't forget to remove "--formatting PRETTY_PRINT" before pulling.
+- Some of the changing from method -> local function is unnecessary now:
+    DygraphOptions.axisToIndex_
+    various methods in DygraphCanvas
+- Need to export symbols within Dygraph.Plotters ?
+- Really need a single canonical source of JS files.
+    -> Has to be dygraph-dev.js, since shell can read JS but not vice versa.
+- Anything else to move into dygraph-constant.js?
+- Big question: does Dygraph.toRGB_ work in IE?

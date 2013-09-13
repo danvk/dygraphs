@@ -225,7 +225,7 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
   };
   var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
     results.y2[seriesName] = 1; 
-    Dygraph.Circles.TRIANGLE(g, seriesName, ctx, canvasx, canvasy, color, radius);
+    Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 
   g = new Dygraph(

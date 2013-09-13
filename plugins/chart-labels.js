@@ -25,9 +25,9 @@ chart_labels.prototype.toString = function() {
 
 chart_labels.prototype.activate = function(g) {
   return {
-    layout: this.layout,
+    'layout': this.layout,
     // clearChart: this.clearChart,
-    didDrawChart: this.didDrawChart
+    'didDrawChart': this.didDrawChart
   };
 };
 
