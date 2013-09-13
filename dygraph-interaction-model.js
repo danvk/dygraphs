@@ -45,7 +45,7 @@ Dygraph.Interaction.startPan = function(event, g, context) {
 
   if (g.attr_("panEdgeFraction")) {
     var size = g.size();
-    var maxXPixelsToDraw = size.width * /**@type{number}*/(g.getOption("panEdgeFraction"));
+    var maxXPixelsToDraw = size.width * g.getNumericOption("panEdgeFraction");
     var xExtremes = g.xAxisExtremes(); // I REALLY WANT TO CALL THIS xTremes!
 
     var boundedLeftX = g.toDomXCoord(xExtremes[0]) - maxXPixelsToDraw;
@@ -56,7 +56,7 @@ Dygraph.Interaction.startPan = function(event, g, context) {
     context.boundedDates = [boundedLeftDate, boundedRightDate];
 
     var boundedValues = [];
-    var maxYPixelsToDraw = size.height * /**@type{number}*/(g.attr_("panEdgeFraction"));
+    var maxYPixelsToDraw = size.height * g.getNumericOption("panEdgeFraction");
 
     for (i = 0; i < g.axes_.length; i++) {
       axis = g.axes_[i];

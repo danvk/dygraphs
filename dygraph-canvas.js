@@ -466,7 +466,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
       }
 
       var color = this.colors[setName];
-      var strokeWidth = /** @type{number}*/(this.dygraph_.getOption("strokeWidth", setName));
+      var strokeWidth = this.dygraph_.getNumericOption("strokeWidth", setName);
 
       ctx.save();
       ctx.strokeStyle = color;

@@ -23,14 +23,21 @@ TODO(danvk): cache DOM elements.
 
 */
 
+/**
+ * @constructor
+ * @implements DygraphPluginType
+ */
 var annotations = function() {
+  /** @type {Array.<HTMLDivElement>} */
   this.annotations_ = [];
 };
 
+/** @override */
 annotations.prototype.toString = function() {
   return "Annotations Plugin";
 };
 
+/** @override */
 annotations.prototype.activate = function(g) {
   return {
     'clearChart': this.clearChart,
@@ -55,8 +62,11 @@ annotations.prototype.didDrawChart = function(e) {
   var g = e.dygraph;
 
   // Early out in the (common) case of zero annotations.
+  /** @type {Array.<DygraphAnnotationType>} */
   var points = g.layout_.annotated_points;
   if (!points || points.length === 0) return;
+
+  console.log(points);
 
   var containerDiv = e.canvas.parentNode;
   var annotationStyle = {
@@ -173,6 +183,7 @@ annotations.prototype.didDrawChart = function(e) {
   }
 };
 
+/** @override */
 annotations.prototype.destroy = function() {
   this.detachLabels();
 };

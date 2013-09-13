@@ -346,6 +346,7 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
   // Add the annotations to the point to which they belong.
   // Make a map from (setName, xval) to annotation for quick lookups.
   var i;
+  /** @type {Object.<!DygraphAnnotationType>} */
   var annotations = {};
   for (i = 0; i < this.annotations.length; i++) {
     var a = this.annotations[i];

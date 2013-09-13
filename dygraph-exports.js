@@ -19,6 +19,7 @@ goog.exportSymbol('Dygraph.prototype.isZoomed', Dygraph.prototype.isZoomed);
 goog.exportSymbol('Dygraph.prototype.numAxes', Dygraph.prototype.numAxes);
 goog.exportSymbol('Dygraph.prototype.numColumns', Dygraph.prototype.numColumns);
 goog.exportSymbol('Dygraph.prototype.numRows', Dygraph.prototype.numRows);
+goog.exportSymbol('Dygraph.prototype.ready', Dygraph.prototype.ready);
 goog.exportSymbol('Dygraph.prototype.resetZoom', Dygraph.prototype.resetZoom);
 goog.exportSymbol('Dygraph.prototype.resize', Dygraph.prototype.resize);
 goog.exportSymbol('Dygraph.prototype.rollPeriod', Dygraph.prototype.rollPeriod);

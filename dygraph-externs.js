@@ -54,7 +54,13 @@ var DygraphDataArray;
  *   width: (number|undefined),
  *   height: (number|undefined),
  *   shortText: (string|undefined),
- *   text: (string|undefined)
+ *   text: (string|undefined),
+ *   attachAtBottom: (boolean|undefined),
+ *   div: (!HTMLDivElement|undefined),
+ *   cssClass: (string|undefined),
+ *   tickHeight: (number|undefined),
+ *   canvasx: (number|undefined),
+ *   canvasy: (number|undefined)
  * }}
  */
 var DygraphAnnotationType;
@@ -178,3 +184,4 @@ DygraphPluginType.prototype.destroy = function() {};
 var console = {};
 /** @param {...} varargs */
 console.log = function(varargs) {};
+

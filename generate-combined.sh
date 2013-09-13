@@ -29,8 +29,6 @@ GetSources () {
       echo "$F"
   done
 }
-#   plugins/*.js \
-#   dygraph-plugin-install.js
 
 # Pack all the JS together.
 CatSources () {

@@ -50,3 +50,17 @@ NOTES
 - plugin-free code is 59756 compiled; for uglifyjs it's 83031 (30% savings)
 - How to deal with types for callback attributes? Always repeat?
   Any way to declare these statically?
+
+
+TODO:
+- Make all plugins @implements DygraphPluginType
+- plugins/annotations.js -- annotation properties are likely getting mangled.
+- don't forget to remove "--formatting PRETTY_PRINT" before pulling.
+- Some of the changing from method -> local function is unnecessary now:
+    DygraphOptions.axisToIndex_
+    various methods in DygraphCanvas
+- Need to export symbols within Dygraph.Plotters ?
+- Really need a single canonical source of JS files.
+    -> Has to be dygraph-dev.js, since shell can read JS but not vice versa.
+- Anything else to move into dygraph-constant.js?
+- Big question: does Dygraph.toRGB_ work in IE?
