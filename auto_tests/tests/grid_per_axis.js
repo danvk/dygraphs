@@ -249,6 +249,7 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
         emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3));
   }
 };
+
 GridPerAxisTestCase.prototype.testGridLinePattern = function() {
   var opts = {
     width : 120,

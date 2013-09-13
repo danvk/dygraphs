@@ -352,6 +352,7 @@ Dygraph.DEFAULT_ATTRS = {
       axisLabelFormatter: Dygraph.dateAxisFormatter,
       valueFormatter: Dygraph.dateString_,
       drawGrid: true,
+      drawAxis: true,
       independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
@@ -360,6 +361,7 @@ Dygraph.DEFAULT_ATTRS = {
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
       drawGrid: true,
+      drawAxis: true,
       independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
@@ -367,6 +369,7 @@ Dygraph.DEFAULT_ATTRS = {
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
+      drawAxis: false,
       drawGrid: false,
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
@@ -3425,6 +3428,10 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   map('pixelsPerYLabel', 'y', 'pixelsPerLabel');
   map('yAxisLabelFormatter', 'y', 'axisLabelFormatter');
   map('yTicker', 'y', 'ticker');
+  map('drawXGrid', 'x', 'drawGrid');
+  map('drawXAxis', 'x', 'drawAxis');
+  map('drawYGrid', 'y', 'drawGrid');
+  map('drawYAxis', 'y', 'drawAxis');
   return my_attrs;
 };
 
