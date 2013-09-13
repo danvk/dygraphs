@@ -178,7 +178,7 @@ rangeSelector.prototype.resize_ = function() {
   var plotArea = this.dygraph_.layout_.getPlotArea();
   
   var xAxisLabelHeight = 0;
-  if(this.getOption_('drawXAxis')){
+  if(this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
     xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   }
   this.canvasRect_ = {

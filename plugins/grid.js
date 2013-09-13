@@ -49,11 +49,11 @@ grid.prototype.willDrawChart = function(e) {
   function halfDown(y){ return Math.round(y) - 0.5; }
 
   var x, y, i, ticks;
-  if (g.getOption('drawYGrid')) {
+  if (g.getOptionForAxis('drawGrid', 'y')) {
     var axes = ["y", "y2"];
     var strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern = [];
     for (var i = 0; i < axes.length; i++) {
-      drawGrid[i] = g.getOptionForAxis("drawGrid", axes[i]);
+      drawGrid[i] = g.getOptionForAxis('drawGrid', axes[i]);
       if (drawGrid[i]) {
         strokeStyles[i] = g.getOptionForAxis('gridLineColor', axes[i]);
         lineWidths[i] = g.getOptionForAxis('gridLineWidth', axes[i]);
@@ -90,7 +90,7 @@ grid.prototype.willDrawChart = function(e) {
   }
 
   // draw grid for x axis
-  if (g.getOption('drawXGrid') && g.getOptionForAxis("drawGrid", 'x')) {
+  if (g.getOptionForAxis('drawGrid', 'x')) {
     ticks = layout.xticks;
     ctx.save();
     var strokePattern = g.getOptionForAxis('gridLinePattern', 'x');

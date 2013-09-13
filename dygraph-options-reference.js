@@ -689,13 +689,19 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "true",
     "labels": ["Axis display"],
     "type": "boolean",
-    "description" : "Whether to draw the x-axis. Setting this to false also prevents x-axis ticks from being drawn and reclaims the space for the chart grid/lines."
+    "description" : "Deprecated. Use axes : { x : { drawAxis } }."
   },
   "drawYAxis": {
     "default": "true",
     "labels": ["Axis display"],
     "type": "boolean",
-    "description" : "Whether to draw the y-axis. Setting this to false also prevents y-axis ticks from being drawn and reclaims the space for the chart grid/lines."
+    "description" : "Deprecated. Use axes : { y : { drawAxis } }."
+  },
+  "drawAxis": {
+    "default": "true for x and y, false for y2",
+    "labels": ["Axis display"],
+    "type": "boolean",
+    "description" : "Whether to draw the specified axis. This may be set on a per-axis basis to define the visibility of each axis separately. Setting this to false also prevents axis ticks from being drawn and reclaims the space for the chart grid/lines."
   },
   "gridLineWidth": {
     "default": "0.3",
