@@ -3509,6 +3509,9 @@ Dygraph.prototype.visibility = function() {
 
 /**
  * Changes the visiblity of a series.
+ *
+ * @param {Number} num the series index
+ * @param {Boolean} value true or false, identifying the visibility.
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
