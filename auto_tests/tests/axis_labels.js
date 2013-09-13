@@ -74,17 +74,17 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  assertEqualsDelta([-0.1, -0.08, -0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08, 0.1],
+  assertEqualsDelta([-0.1, -0.08, -0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08],
                     Util.makeNumbers(Util.getYLabels()), this.kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
-  assertEquals([-0.05, -0.04, -0.03, -0.02, -0.01, 0, 0.01, 0.02, 0.03, 0.04, 0.05],
+  assertEquals([-0.05, -0.04, -0.03, -0.02, -0.01, 0, 0.01, 0.02, 0.03, 0.04],
                Util.makeNumbers(Util.getYLabels()));
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assertEquals([-0.01, -8.00e-3, -6.00e-3, -4.00e-3, -2.00e-3, 0, 2.00e-3, 4.00e-3, 6.00e-3, 8.00e-3, 0.01],
+  assertEquals([-0.01, -8.00e-3, -6.00e-3, -4.00e-3, -2.00e-3, 0, 2.00e-3, 4.00e-3, 6.00e-3, 8.00e-3],
                Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
