@@ -52,12 +52,12 @@ axes.prototype.activate = function(g) {
 axes.prototype.layout = function(e) {
   var g = e.dygraph;
 
-  if (g.getOption('drawYAxis')) {
+  if (g.getOptionForAxis('drawAxis', 'y')) {
     var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
     e.reserveSpaceLeft(w);
   }
 
-  if (g.getOption('drawXAxis')) {
+  if (g.getOptionForAxis('drawAxis', 'x')) {
     var h;
     // NOTE: I think this is probably broken now, since g.getOption() now
     // hits the dictionary. (That is, g.getOption('xAxisHeight') now always
@@ -72,7 +72,7 @@ axes.prototype.layout = function(e) {
 
   if (g.numAxes() == 2) {
     // TODO(danvk): introduce a 'drawAxis' per-axis property.
-    if (g.getOption('drawYAxis')) {
+    if (g.getOptionForAxis('drawAxis', 'y')) {
       // TODO(danvk): per-axis setting.
       var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
       e.reserveSpaceRight(w);
@@ -103,7 +103,8 @@ axes.prototype.clearChart = function(e) {
 
 axes.prototype.willDrawChart = function(e) {
   var g = e.dygraph;
-  if (!g.getOption('drawXAxis') && !g.getOption('drawYAxis')) return;
+
+  if (!g.getOptionForAxis('drawAxis', 'x') && !g.getOptionForAxis('drawAxis', 'y')) return;
   
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x)  { return Math.round(x) + 0.5; }
@@ -164,7 +165,7 @@ axes.prototype.willDrawChart = function(e) {
   var layout = g.layout_;
   var area = e.dygraph.plotter_.area;
 
-  if (g.getOption('drawYAxis')) {
+  if (g.getOptionForAxis('drawAxis', 'y')) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       for (i = 0; i < layout.yticks.length; i++) {
@@ -255,7 +256,7 @@ axes.prototype.willDrawChart = function(e) {
     }
   }
 
-  if (g.getOption('drawXAxis')) {
+  if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       for (i = 0; i < layout.xticks.length; i++) {
         tick = layout.xticks[i];
