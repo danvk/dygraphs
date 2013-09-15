@@ -746,6 +746,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBPerAxis = function() {
       });
 
   // labelsKMB doesn't apply to the x axis. This value should be different.
+  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assertEquals(["1000", "1500", "2000", "2500", "3000", "3500"], Util.getXLabels());
   assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
   assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
@@ -775,6 +776,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
   // It is weird that labelsKMG2 does something on the x axis but KMB does not.
   // Plus I can't be sure they're doing the same thing as they're done in different
   // bits of code.
+  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assertEquals(["1024","1536","2048","2560","3072","3584"], Util.getXLabels());
   assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
   assertEquals(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
@@ -802,6 +804,7 @@ AxisLabelsTestCase.prototype.testSigFigsPerAxis = function() {
 
       });
   // sigFigs doesn't apply to the x axis. This value should be different.
+  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assertEquals(["1000","1500","2000","2500","3000","3500"], Util.getXLabels());
   assertEquals(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
   assertEquals(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
@@ -845,6 +848,7 @@ AxisLabelsTestCase.prototype.testDigitsAfterDecimalPerAxis = function() {
 
 
   // digitsAfterDecimal is ignored for the x-axis.
+  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 3 }}});
   assertEquals(["0.006","0.006500000000000001","0.007","0.0075","0.008","0.0085"], Util.getXLabels());
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 4 }}});
@@ -887,6 +891,7 @@ fail = function(x) {console.log(x)};
   assertEquals(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
 
   // maxNumberWidth is ignored for the x-axis.
+  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   g.updateOptions({ axes: { x: { maxNumberWidth: 4 }}});
   assertEquals(["12401","12401.5","12402","12402.5","12403","12403.5"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: 5 }}});
