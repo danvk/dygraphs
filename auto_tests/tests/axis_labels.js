@@ -521,7 +521,7 @@ AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
       Util.getYLabels());
 };
 
-// Same sa testLabelKMG2 but specifies the option at the
+// Same as testLabelKMG2 but specifies the option at the
 // top of the option dictionary.
 AxisLabelsTestCase.prototype.testLabelKMG2_top = function() {
   var data = [];
@@ -727,29 +727,173 @@ AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
 /*
  * This test shows that you can override labelsKMB on the axis level.
  */
-AxisLabelsTestCase.prototype.testLabelsKMBIgnoredWhenOverridden = function() {
+AxisLabelsTestCase.prototype.testLabelsKMBPerAxis = function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
-      "1,0,2000\n" +
-      "2,500,1500\n" +
-      "3,1000,1000\n" +
-      "4,2000,0\n", {
-        labelsKMB: true,
+      "1000,0,2000\n" +
+      "2000,500,1500\n" +
+      "3000,1000,1000\n" +
+      "4000,2000,0\n", {
+        labelsKMB: false,
         axes: {
-          y2: {
-            labelsKMB: false
-          }
+          y2: { labelsKMB: true },
+          x: { labelsKMB: true }
         },
         series: {
-          b: {
-            axis: "y2"
-          },
+          b: { axis: "y2" },
         }
       });
-  assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(1));
-  assertEquals(["0","500","1000","1500","2000"], Util.getYLabels(2));
+
+  // labelsKMB doesn't apply to the x axis. This value should be different.
+  assertEquals(["1000", "1500", "2000", "2500", "3000", "3500"], Util.getXLabels());
+  assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
 };
+
+/*
+ * This test shows that you can override labelsKMG2 on the axis level.
+ */
+AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "1000,0,2000\n" +
+      "2000,500,1500\n" +
+      "3000,1000,1000\n" +
+      "4000,2000,0\n", {
+        labelsKMG2: false,
+        axes: {
+          y2: { labelsKMG2: true },
+          x: { labelsKMG2: true }
+        },
+        series: {
+          b: { axis: "y2" },
+        }
+      });
+
+  // It is weird that labelsKMG2 does something on the x axis but KMB does not.
+  // Plus I can't be sure they're doing the same thing as they're done in different
+  // bits of code.
+  assertEquals(["1024","1536","2048","2560","3072","3584"], Util.getXLabels());
+  assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assertEquals(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
+};
+
+/**
+ * This test shows you can override sigFigs on the axis level.
+ */
+AxisLabelsTestCase.prototype.testSigFigsPerAxis = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "1000,0,2000\n" +
+      "2000,500,1500\n" +
+      "3000,1000,1000\n" +
+      "4000,2000,0\n", {
+        sigFigs: 2,
+        axes: {
+          y2: { sigFigs: 6 },
+          x: { sigFigs: 8 }
+        },
+        series: {
+          b: { axis: "y2" },
+        }
+
+      });
+  // sigFigs doesn't apply to the x axis. This value should be different.
+  assertEquals(["1000","1500","2000","2500","3000","3500"], Util.getXLabels());
+  assertEquals(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
+  assertEquals(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
+}
+
+/**
+ * This test shows you can override digitsAfterDecimal on the axis level.
+ */
+AxisLabelsTestCase.prototype.testDigitsAfterDecimalPerAxis = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "0.006,0.001,0.008\n" +
+      "0.007,0.002,0.007\n" +
+      "0.008,0.003,0.006\n" +
+      "0.009,0.004,0.005\n", {
+        digitsAfterDecimal: 1,
+        series: {
+          b: { axis: "y2" },
+        }
+
+      });
+
+  g.updateOptions({ axes: { y: { digitsAfterDecimal: 3 }}});
+  assertEquals(["0.001","0.002","0.002","0.003","0.003","0.004","0.004"], Util.getYLabels(1));
+  g.updateOptions({ axes: { y: { digitsAfterDecimal: 4 }}});
+  assertEquals(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
+  g.updateOptions({ axes: { y: { digitsAfterDecimal: 5 }}});
+  assertEquals(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
+  g.updateOptions({ axes: { y: { digitsAfterDecimal: null }}});
+  assertEquals(["1e-3","2e-3","2e-3","3e-3","3e-3","4e-3","4e-3"], Util.getYLabels(1));
+
+  g.updateOptions({ axes: { y2: { digitsAfterDecimal: 3 }}});
+  assertEquals(["0.005","0.006","0.006","0.007","0.007","0.008","0.008"], Util.getYLabels(2));
+  g.updateOptions({ axes: { y2: { digitsAfterDecimal: 4 }}});
+  assertEquals(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
+  g.updateOptions({ axes: { y2: { digitsAfterDecimal: 5 }}});
+  assertEquals(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
+  g.updateOptions({ axes: { y2: { digitsAfterDecimal: null }}});
+  assertEquals(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
+
+
+  // digitsAfterDecimal is ignored for the x-axis.
+  g.updateOptions({ axes: { x: { digitsAfterDecimal: 3 }}});
+  assertEquals(["0.006","0.006500000000000001","0.007","0.0075","0.008","0.0085"], Util.getXLabels());
+  g.updateOptions({ axes: { x: { digitsAfterDecimal: 4 }}});
+  assertEquals(["0.006","0.006500000000000001","0.007","0.0075","0.008","0.0085"], Util.getXLabels());
+  g.updateOptions({ axes: { x: { digitsAfterDecimal: 5 }}});
+  assertEquals(["0.006","0.006500000000000001","0.007","0.0075","0.008","0.0085"], Util.getXLabels());
+  g.updateOptions({ axes: { x: { digitsAfterDecimal: null }}});
+  assertEquals(["0.006","0.006500000000000001","0.007","0.0075","0.008","0.0085"], Util.getXLabels());
+}
+
+/**
+ * This test shows you can override digitsAfterDecimal on the axis level.
+ */
+AxisLabelsTestCase.prototype.testMaxNumberWidthPerAxis = function() {
+  var g = new Dygraph(
+      document.getElementById("graph"),
+      "x,a,b\n" +
+      "12401,12601,12804\n" +
+      "12402,12602,12803\n" +
+      "12403,12603,12802\n" +
+      "12404,12604,12801\n", {
+        maxNumberWidth: 1,
+        series: {
+          b: { axis: "y2" },
+        }
+      });
+fail = function(x) {console.log(x)};
+  g.updateOptions({ axes: { y: { maxNumberWidth: 4 }}});
+  assertEquals(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
+  g.updateOptions({ axes: { y: { maxNumberWidth: 5 }}});
+  assertEquals(["12601","12601.5","12602","12602.5","12603","12603.5","12604"] , Util.getYLabels(1));
+  g.updateOptions({ axes: { y: { maxNumberWidth: null }}});
+  assertEquals(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
+
+  g.updateOptions({ axes: { y2: { maxNumberWidth: 4 }}});
+  assertEquals(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
+  g.updateOptions({ axes: { y2: { maxNumberWidth: 5 }}});
+  assertEquals(["12801","12801.5","12802","12802.5","12803","12803.5","12804"], Util.getYLabels(2));
+  g.updateOptions({ axes: { y2: { maxNumberWidth: null }}});
+  assertEquals(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
+
+  // maxNumberWidth is ignored for the x-axis.
+  g.updateOptions({ axes: { x: { maxNumberWidth: 4 }}});
+  assertEquals(["12401","12401.5","12402","12402.5","12403","12403.5"], Util.getXLabels());
+  g.updateOptions({ axes: { x: { maxNumberWidth: 5 }}});
+  assertEquals(["12401","12401.5","12402","12402.5","12403","12403.5"], Util.getXLabels());
+  g.updateOptions({ axes: { x: { maxNumberWidth: null }}});
+  assertEquals(["12401","12401.5","12402","12402.5","12403","12403.5"], Util.getXLabels());
+}
 
 /*
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
