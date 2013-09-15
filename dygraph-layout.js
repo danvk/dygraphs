@@ -84,7 +84,7 @@ DygraphLayout.prototype.computePlotArea = function() {
     y: 0
   };
 
-  area.w = this.dygraph_.width_ - area.x - this.dygraph_.attr_('rightGap');
+  area.w = this.dygraph_.width_ - area.x - this.dygraph_.getOption('rightGap');
   area.h = this.dygraph_.height_;
 
   // Let plugins reserve space.
@@ -145,7 +145,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   // The Dygraph object's annotations aren't parsed. We parse them here and
   // save a copy. If there is no parser, then the user must be using raw format.
   this.annotations = [];
-  var parse = this.dygraph_.attr_('xValueParser') || function(x) { return x; };
+  var parse = this.dygraph_.getOption('xValueParser') || function(x) { return x; };
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && ann[i].x === undefined) {
@@ -195,7 +195,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange !== 0 ? 1.0 / axis.yrange : 1.0);
 
-    if (axis.g.attr_("logscale")) {
+    if (axis.g.getOption("logscale")) {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
@@ -216,12 +216,12 @@ DygraphLayout._calcYNormal = function(axis, value, logscale) {
 };
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
-  var isStacked = this.dygraph_.attr_("stackedGraph");
+  var isStacked = this.dygraph_.getOption("stackedGraph");
 
   for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
     var points = this.points[setIdx];
     var setName = this.setNames[setIdx];
-    var connectSeparated = this.dygraph_.attr_('connectSeparatedPoints', setName);
+    var connectSeparated = this.dygraph_.getOption('connectSeparatedPoints', setName);
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     // TODO (konigsberg): use optionsForAxis instead.
     var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
