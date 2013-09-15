@@ -185,8 +185,10 @@ CanvasAssertions.numLinesDrawn = function(proxy, color) {
   var num_lines = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
     var call = proxy.calls__[i];
-    if (call.name == "lineTo" && call.properties.strokeStyle == color) {
-      num_lines++;
+    if (call.name == "lineTo") {
+      if (call.properties.strokeStyle == color) {
+        num_lines++;
+      }
     }
   }
   return num_lines;
