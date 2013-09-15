@@ -71,3 +71,7 @@ Proxy.prototype.log__ = function(name, args) {
   var call = { name : name, args : args, properties: properties };
   this.calls__.push(call);
 };
+
+Proxy.reset = function(proxy) {
+  proxy.calls__ = [];
+}
