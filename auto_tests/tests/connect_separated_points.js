@@ -351,3 +351,58 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsErrorBars = function() {
   // even if the point is outside the visible range and only one series has a valid value for this point.
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
 };
+
+ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = function() {
+  var assertExpectedLinesDrawnPerSeries = function(htx, expectedSeries1, expectedSeries2, expectedSeries3) {
+    var expected = [expectedSeries1, expectedSeries2, expectedSeries3];    
+    var actual = [ 
+        CanvasAssertions.numLinesDrawn(htx, "#ff0000"),
+        CanvasAssertions.numLinesDrawn(htx, "#00ff00"),
+        CanvasAssertions.numLinesDrawn(htx, "#0000ff")];
+    assertEquals(expected, actual);
+  }
+
+  var g = new Dygraph(document.getElementById("graph"),
+  [
+    [1, 10, 10, 10],
+    [2, 15, 11, 12],
+    [3, null, null, 12],
+    [4, 20, 14, null],
+    [5, 15, null, 17],
+    [6, 18, null, null],
+    [7, 12, 14, null]
+  ],
+  {
+    labels: ["Date","Series1","Series2","Series3"],
+    connectSeparatedPoints: false,
+    colors: ["#ff0000", "#00ff00", "#0000ff"]
+  });
+
+  htx = g.hidden_ctx_;
+  assertExpectedLinesDrawnPerSeries(htx, 4, 1, 2);
+
+  Proxy.reset(htx);
+  g.updateOptions({
+    connectSeparatedPoints : true,
+  });
+  assertExpectedLinesDrawnPerSeries(htx, 5, 3, 3);
+
+  Proxy.reset(htx);
+  g.updateOptions({
+    connectSeparatedPoints : false,
+    series : {
+      Series1 : { connectSeparatedPoints : true }
+    }
+  });
+  assertExpectedLinesDrawnPerSeries(htx, 5, 1, 2);
+
+
+  Proxy.reset(htx);
+  g.updateOptions({
+    connectSeparatedPoints : true,
+    series : {
+      Series1 : { connectSeparatedPoints : false }
+    }
+  });
+  assertExpectedLinesDrawnPerSeries(htx, 4, 3, 3);
+}
