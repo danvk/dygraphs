@@ -155,7 +155,7 @@ errorBarsTestCase.prototype.testRollingAveragePreservesNaNs = function() {
         }
       );
 
-  var in_series = g.dataHandler_.extractSeries(data, 1, g.attributes_);
+  var in_series = g.dataHandler_.extractSeries(data, 1, 'A', g.attributes_);
 
   assertEquals(null, in_series[4][1]);
   assertEquals(null, in_series[4][2][0]);
@@ -164,7 +164,7 @@ errorBarsTestCase.prototype.testRollingAveragePreservesNaNs = function() {
   assertNaN(in_series[5][2][0]);
   assertNaN(in_series[5][2][1]);
 
-  var out_series = g.dataHandler_.rollingAverage(in_series, 1, g.attributes_);
+  var out_series = g.dataHandler_.rollingAverage(in_series, 1, 'A', g.attributes_);
   assertNaN(out_series[5][1]);
   assertNaN(out_series[5][2][0]);
   assertNaN(out_series[5][2][1]);

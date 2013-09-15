@@ -20,13 +20,13 @@ var FractionsBarsHandler = Dygraph.DataHandlers.FractionsBarsHandler;
 FractionsBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
 
 // errorBars
-FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
+FractionsBarsHandler.prototype.extractSeries = function(rawData, i, seriesName, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
   var x, y, point, num, den, value, stddev, variance;
   var mult = 100.0;
-  var sigma = options.get("sigma");
-  var logScale = options.get('logscale');
+  var sigma = options.getForSeries('sigma', seriesName);
+  var logScale = options.getForAxis('logscale', options.axisForSeries(seriesName));
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -58,12 +58,12 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-FractionsBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+FractionsBarsHandler.prototype.rollingAverage = function(
+    originalData, rollPeriod, seriesName, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
-  var sigma = options.get("sigma");
-  var wilsonInterval = options.get("wilsonInterval");
+  var sigma = options.getForSeries('sigma', seriesName);
+  var wilsonInterval = options.getForSeries('wilsonInterval', seriesName);
 
   var low, high, i, stddev;
   var num = 0;

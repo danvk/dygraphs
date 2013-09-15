@@ -230,7 +230,10 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
   }
 };
 
-rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod){
+rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod) {
+  // TODO(konigsberg): exposure to attributes_.
   var options = g.attributes_;
-  return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options);
+  var seriesName = g.getLabels()[seriesIdx];
+  var interim = g.dataHandler_.extractSeries(data, seriesIdx, seriesName, options);
+  return g.dataHandler_.rollingAverage(interim, rollPeriod, seriesName, options);
 };

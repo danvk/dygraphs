@@ -17,10 +17,10 @@
 Dygraph.DataHandlers.DefaultHandler = Dygraph.DataHandler();
 var DefaultHandler = Dygraph.DataHandlers.DefaultHandler;
 
-DefaultHandler.prototype.extractSeries = function(rawData, i, options) {
+DefaultHandler.prototype.extractSeries = function(rawData, i, seriesName, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
-  var logScale = options.get('logscale');
+  var logScale = options.getForAxis('logscale', options.axisForSeries(seriesName));
   for ( var j = 0; j < rawData.length; j++) {
     var x = rawData[j][0];
     var point = rawData[j][i];
@@ -36,8 +36,8 @@ DefaultHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+DefaultHandler.prototype.rollingAverage = function(
+    originalData, rollPeriod, seriesName, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
 
