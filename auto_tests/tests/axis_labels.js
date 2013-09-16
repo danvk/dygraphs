@@ -228,7 +228,7 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08", "x2011/01/09"], Util.getXLabels());
+  assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08"], Util.getXLabels());
   assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
 
   g.setSelection(0);
@@ -316,7 +316,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan','09Jan'], Util.getXLabels());
+  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan'], Util.getXLabels());
   assertEquals(['2','4','6','8','10','12','14','16','18'], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
@@ -721,7 +721,7 @@ AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
         }
       });
   assertEquals(["0:X","500:X","1000:X","1500:X","2000:X"], Util.getYLabels());
-  assertEquals(["1:X","1.5:X","2:X","2.5:X","3:X","3.5:X","4:X"], Util.getXLabels());
+  assertEquals(["1:X","1.5:X","2:X","2.5:X","3:X","3.5:X"], Util.getXLabels());
 }
 
 /*
