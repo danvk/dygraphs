@@ -278,7 +278,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     tick = this.xTicks_[i];
     label = tick.label;
     pos = this.xscale * (tick.v - this.minxval);
-    if ((pos >= 0.0) && (pos <= 1.0)) {
+    if ((pos >= 0.0) && (pos < 1.0)) {
       this.xticks.push([pos, label]);
     }
   }
@@ -290,7 +290,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
       tick = axis.ticks[j];
       label = tick.label;
       pos = this.dygraph_.toPercentYCoord(tick.v, i);
-      if ((pos >= 0.0) && (pos <= 1.0)) {
+      if ((pos > 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
       }
     }
