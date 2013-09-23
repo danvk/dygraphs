@@ -61,13 +61,16 @@ Util.getLegend = function(parent) {
 /**
  * Assert that all elements have a certain style property.
  */
-Util.assertStyleOfChildren = function(selector, property, expectedValue) {
-  assertTrue(selector.length > 0);
-  $.each(selector, function(idx, child) {
-    assertEquals(expectedValue,  $(child).css(property));
-  });
-};
+Util.assertStyleOfChildren = function(elements, property, expectedValue) {
 
+  assertFunction("No window.getComputedStyle", window.getComputedStyle);
+
+  assertTrue(elements.length > 0);
+  for (var i = 0; i < elements.length; i++) {
+    var style = window.getComputedStyle(elements[i], null);
+    assertEquals(expectedValue, style[property]);
+  }
+};
 
 /**
  * Takes in an array of strings and returns an array of floats.
