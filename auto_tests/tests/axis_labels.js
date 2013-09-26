@@ -741,7 +741,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBPerAxis = function() {
           x: { labelsKMB: true }
         },
         series: {
-          b: { axis: "y2" },
+          b: { axis: "y2" }
         }
       });
 
@@ -769,7 +769,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
           x: { labelsKMG2: true }
         },
         series: {
-          b: { axis: "y2" },
+          b: { axis: "y2" }
         }
       });
 
@@ -799,7 +799,7 @@ AxisLabelsTestCase.prototype.testSigFigsPerAxis = function() {
           x: { sigFigs: 8 }
         },
         series: {
-          b: { axis: "y2" },
+          b: { axis: "y2" }
         }
 
       });
@@ -823,7 +823,7 @@ AxisLabelsTestCase.prototype.testDigitsAfterDecimalPerAxis = function() {
       "0.009,0.004,0.005\n", {
         digitsAfterDecimal: 1,
         series: {
-          b: { axis: "y2" },
+          b: { axis: "y2" }
         }
 
       });
@@ -872,10 +872,10 @@ AxisLabelsTestCase.prototype.testMaxNumberWidthPerAxis = function() {
       "12404,12604,12801\n", {
         maxNumberWidth: 1,
         series: {
-          b: { axis: "y2" },
+          b: { axis: "y2" }
         }
       });
-fail = function(x) {console.log(x)};
+
   g.updateOptions({ axes: { y: { maxNumberWidth: 4 }}});
   assertEquals(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
   g.updateOptions({ axes: { y: { maxNumberWidth: 5 }}});
