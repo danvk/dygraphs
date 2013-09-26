@@ -230,7 +230,59 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
   }
 };
 
-rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod){
+
+rollingAverageTestCase.prototype.testWilsonIntervalPerSeries = function() {
+  var opts = {
+    fractions: true,
+    errorBars: true,
+    rollPeriod: 2,
+    labels: ['x', 'A'],
+
+    series: {
+      A: { wilsonInterval : true },
+    }
+  };
+  var data = [ [1, [1, 10]],
+               [2, [2, 10]],
+               [3, [3, 10]],
+               [4, [4, 10]]
+              ];
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  var rolled = this.getRolledData(g, data, 1, 2);
+
+  //precalculated rounded values expected
+  var values = [10, 15, 25, 35];
+  var lows = [2, 5, 11, 18];
+  var highs = [41, 37, 47, 57];
+
+  for (var i=0;i<data.length;i++) {
+    assertEquals("unexpected rolled average", values[i], Math.round(rolled[i][1]));
+    assertEquals("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
+    assertEquals("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+  }
+
+  g.updateOptions({series: {A: { wilsonInterval: false }}});
+  rolled = this.getRolledData(g, data, 1, 2); // updated rolled data
+
+  // updated rounded values expected
+  values = [10, 15, 25, 35];
+  lows = [-9, -1, 6, 14];
+  highs = [29, 31, 44, 56];
+
+  for (var i=0;i<data.length;i++) {
+    assertEquals("unexpected rolled average", values[i], Math.round(rolled[i][1]));
+    assertEquals("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
+    assertEquals("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+  }
+
+};
+
+rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod) {
+  // TODO(konigsberg): exposure to attributes_.
   var options = g.attributes_;
-  return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options);
+  var seriesName = g.getLabels()[seriesIdx];
+  var interim = g.dataHandler_.extractSeries(data, seriesIdx, seriesName, options);
+  return g.dataHandler_.rollingAverage(interim, rollPeriod, seriesName, options);
 };

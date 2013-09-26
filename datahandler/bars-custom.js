@@ -19,11 +19,11 @@ var CustomBarsHandler = Dygraph.DataHandlers.CustomBarsHandler;
 CustomBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
 
 // customBars
-CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
+CustomBarsHandler.prototype.extractSeries = function(rawData, i, seriesName, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
   var x, y, point;
-  var logScale = options.get('logscale');
+  var logScale = options.getForAxis('logscale', options.axisForSeries(seriesName));
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -49,8 +49,8 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-CustomBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+CustomBarsHandler.prototype.rollingAverage = function(
+    originalData, rollPeriod, seriesName, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var y, low, high, mid,count, i, extremes;

@@ -98,12 +98,13 @@ Dygraph.DataHandler = function () {
    *          rawData[i] = [x,ySeries1,...,ySeriesN].
    * @param seriesIndex {!number} Index of the series to extract. All other series should
    *          be ignored.
+   * @param {!string} seriesName Name of the series.
    * @param options {!DygraphOptions} Dygraph options.
    * @returns {Array.<[!number,?number,?]>} The series in the unified data format
    *          where series[i] = [x,y,{extras}]. 
    * @public
    */
-  handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
+  handler.prototype.extractSeries = function(rawData, seriesIndex, seriesName, options) {
   };
 
   /**
@@ -111,13 +112,13 @@ Dygraph.DataHandler = function () {
    * 
    * @param {!Array.<[!number,?number,?]>} series The series in the unified 
    *          data format where series[i] = [x,y,{extras}].
-   * @param {!string} setName Name of the series.
+   * @param {!string} seriesName Name of the series.
    * @param {!number} boundaryIdStart Index offset of the first point, equal to the
    *          number of skipped points left of the date window minimum (if any).
    * @return {!Array.<Dygraph.PointType>} List of points for this series.
    * @public
    */
-  handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
+  handler.prototype.seriesToPoints = function(series, seriesName, boundaryIdStart) {
     // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
     // fact,
     // on chrome+linux, they are 6 times more expensive than iterating through
@@ -134,7 +135,7 @@ Dygraph.DataHandler = function () {
         y : NaN,
         xval : DygraphLayout.parseFloat_(item[0]),
         yval : yval,
-        name : setName, // TODO(danvk): is this really necessary?
+        name : seriesName, // TODO(danvk): is this really necessary?
         idx : i + boundaryIdStart
       };
       points.push(point);
@@ -164,12 +165,13 @@ Dygraph.DataHandler = function () {
    * 
    * @param {!Array.<[!number,?number,?]>} series The series in the unified 
    *          data format where series[i] = [x,y,{extras}].
-   * @param {!number} rollPeriod The number of points over which to average the data
+   * @param {!number} rollPeriod The number of points over which to average the data.
+   * @param {!String} seriesName the name of the series.
    * @param {!DygraphOptions} options The dygraph options.
    * @return the rolled series.
    * @public
    */
-  handler.prototype.rollingAverage = function(series, rollPeriod, options) {
+  handler.prototype.rollingAverage = function(series, rollPeriod, seriesName, options) {
   };
 
   /**

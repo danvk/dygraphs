@@ -21,7 +21,7 @@ Dygraph.DataHandlers.BarsHandler = Dygraph.DataHandler();
 var BarsHandler = Dygraph.DataHandlers.BarsHandler;
 
 // errorBars
-BarsHandler.prototype.extractSeries = function(rawData, i, options) {
+BarsHandler.prototype.extractSeries = function(rawData, i, seriesName, options) {
   // Not implemented here must be extended
 };
 
@@ -41,7 +41,7 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
   }
 };
 
-BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
+BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, seriesName, options) {
   var minY = null, maxY = null, y;
 
   var firstIdx = 0;

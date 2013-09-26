@@ -512,6 +512,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.registeredEvents_ = [];
   this.eventListeners_ = {};
 
+  // TODO(konigsberg): Rename attributes_ to options_.
   this.attributes_ = new DygraphOptions(this);
 
   // Create the containing DIV and other interactive elements
@@ -2230,11 +2231,11 @@ Dygraph.prototype.predraw_ = function() {
   // Convert the raw data (a 2D array) into the internal format and compute
   // rolling averages.
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
-  for (var i = 1; i < this.numColumns(); i++) {
-    // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
-    var series = this.dataHandler_.extractSeries(this.rawData_, i, this.attributes_);
+  for (var seriesIdx = 1; seriesIdx < this.numColumns(); seriesIdx++) {
+    var seriesName = this.attr_('labels')[seriesIdx];
+    var series = this.dataHandler_.extractSeries(this.rawData_, seriesIdx, seriesName, this.attributes_);
     if (this.rollPeriod_ > 1) {
-      series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this.attributes_);
+      series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, seriesName, this.attributes_);
     }
     
     this.rolledSeries_.push(series);
@@ -2454,7 +2455,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
     var seriesName = this.attr_("labels")[seriesIdx];
     var seriesExtremes = this.dataHandler_.getExtremeYValues(series, 
-        dateWindow, this.attr_("stepPlot",seriesName));
+        dateWindow, this.attr_("stepPlot", seriesName));
 
     var seriesPoints = this.dataHandler_.seriesToPoints(series, 
         seriesName, boundaryIds[seriesIdx-1][0]);
