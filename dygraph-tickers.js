@@ -184,7 +184,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       // Construct the set of ticks.
       // Allow reverse y-axis if it's explicitly requested.
       if (low_val > high_val) scale *= -1;
-      for (i = 0; i < nTicks; i++) {
+      for (i = 0; i <= nTicks; i++) {
         tickV = low_val + i * scale;
         ticks.push( {v: tickV} );
       }

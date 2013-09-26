@@ -34,10 +34,16 @@ ToDomCoordsTestCase.prototype.checkForInverses = function(g) {
 
 ToDomCoordsTestCase.prototype.testPlainChart = function() {
   var opts = {
-    drawXAxis: false,
-    drawYAxis: false,
-    drawXGrid: false,
-    drawYGrid: false,
+    axes : {
+      x : {
+        drawAxis : false,
+        drawGrid : false,
+      },
+      y : {
+        drawAxis : false,
+        drawGrid : false,
+      }
+    },
     rightGap: 0,
     valueRange: [0, 100],
     dateWindow: [0, 100],
