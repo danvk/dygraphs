@@ -271,9 +271,10 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
   var drawGapPoints = g.getOption('drawGapEdgePoints', e.setName);
 
   var points = e.points;
+  var setName = e.setName;
   var iter = Dygraph.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
-          g.getOption("connectSeparatedPoints")));  // TODO(danvk): per-series?
+          g.getOption("connectSeparatedPoints", setName)));
 
   var stroking = strokePattern && (strokePattern.length >= 2);
 
@@ -604,7 +605,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 
   var iter = Dygraph.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
-          g.getOption("connectSeparatedPoints")));
+          g.getOption("connectSeparatedPoints", setName)));
 
   var newYs;
 
@@ -732,7 +733,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var points = sets[setIdx];
     var iter = Dygraph.createIterator(points, 0, points.length,
         DygraphCanvasRenderer._getIteratorPredicate(
-            g.getOption("connectSeparatedPoints")));
+            g.getOption("connectSeparatedPoints", setName)));
 
     // setup graphics context
     var prevX = NaN;
