@@ -214,7 +214,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
 DygraphLayout._calcYNormal = function(axis, value, logscale) {
   if (logscale) {
     var x = 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
-    return isFinite(x) ? x : NaN;
+    return isFinite(x) ? x : NaN;  // shim for v8 issue; see pull request 276
   } else {
     return 1.0 - ((value - axis.minyval) * axis.yscale);
   }
