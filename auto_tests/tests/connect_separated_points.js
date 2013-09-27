@@ -363,20 +363,20 @@ ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = f
   }
 
   var g = new Dygraph(document.getElementById("graph"),
-  [
-    [1, 10, 10, 10],
-    [2, 15, 11, 12],
-    [3, null, null, 12],
-    [4, 20, 14, null],
-    [5, 15, null, 17],
-    [6, 18, null, null],
-    [7, 12, 14, null]
-  ],
-  {
-    labels: ["Date","Series1","Series2","Series3"],
-    connectSeparatedPoints: false,
-    colors: ["#ff0000", "#00ff00", "#0000ff"]
-  });
+      [
+        [1, 10, 10, 10],
+        [2, 15, 11, 12],
+        [3, null, null, 12],
+        [4, 20, 14, null],
+        [5, 15, null, 17],
+        [6, 18, null, null],
+        [7, 12, 14, null]
+      ],
+      {
+        labels: ["Date","Series1","Series2","Series3"],
+        connectSeparatedPoints: false,
+        colors: ["#ff0000", "#00ff00", "#0000ff"]
+      });
 
   htx = g.hidden_ctx_;
   assertExpectedLinesDrawnPerSeries(htx, 4, 1, 2);
