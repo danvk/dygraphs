@@ -334,6 +334,9 @@ DygraphCanvasRenderer._drawSeries = function(e,
       point = arr[i];
     }
 
+    // FIXME: The 'canvasy != canvasy' test here catches NaN values but the test
+    // doesn't catch Infinity values. Could change this to
+    // !isFinite(point.canvasy), but I assume it avoids isNaN for performance?
     if (point.canvasy === null || point.canvasy != point.canvasy) {
       if (stepPlot && prevCanvasX !== null) {
         // Draw a horizontal line to the start of the missing data
