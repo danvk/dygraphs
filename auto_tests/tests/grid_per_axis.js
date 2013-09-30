@@ -1,7 +1,7 @@
 /**
  * @fileoverview Test cases for the per-axis grid options, including the new
  *               option "gridLinePattern".
- * 
+ *
  * @author david.eberlein@ch.sauter-bc.com (Fr. Sauter AG)
  */
 var GridPerAxisTestCase = TestCase("grid-per-axis");
@@ -50,7 +50,7 @@ GridPerAxisTestCase.prototype.testIndependentGrids = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   // The expected gridlines
   var yGridlines = [ 0, 20, 40, 60, 80, 100, 120 ];
@@ -67,9 +67,9 @@ GridPerAxisTestCase.prototype.testIndependentGrids = function() {
   var attrs = {}, x, y;
   x = halfUp(g.plotter_.area.x);
   // Step through y(0) and y2(1) axis
-  for ( var axis = 0; axis < 2; axis++) {
+  for (var axis = 0; axis < 2; axis++) {
     // Step through all gridlines of the axis
-    for ( var i = 0; i < gridlines[axis].length; i++) {
+    for (var i = 0; i < gridlines[axis].length; i++) {
       // Check the labels:
       var labels = Util.getYLabels(axis + 1);
       assertEquals("Expected label not found.", gridlines[axis][i], labels[i]);
@@ -114,7 +114,6 @@ GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
       [ 5, 110, 333 ] ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  htx = g.hidden_ctx_;
 
   // The expected gridlines
   var yGridlines = [ 20, 40, 60, 80, 100, 120 ];
@@ -131,9 +130,9 @@ GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
   var x, y;
   x = halfUp(g.plotter_.area.x);
   // Step through y(0) and y2(1) axis
-  for ( var axis = 0; axis < 2; axis++) {
+  for (var axis = 0; axis < 2; axis++) {
     // Step through all gridlines of the axis
-    for ( var i = 0; i < gridlines[axis].length; i++) {
+    for (var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Check the grid colors.
       assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y,
@@ -141,6 +140,7 @@ GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
     }
   }
 };
+
 GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   var opts = {
     width : 480,
@@ -174,7 +174,6 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
       [ 5, 110, 333 ] ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  htx = g.hidden_ctx_;
 
   // The expected gridlines
   var yGridlines = [ 20, 40, 60, 80 ];
@@ -193,9 +192,9 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   var x, y;
   x = halfUp(g.plotter_.area.x + 10);
   // Step through y(0) and y2(1) axis
-  for ( var axis = 0; axis < 2; axis++) {
+  for (var axis = 0; axis < 2; axis++) {
     // Step through all gridlines of the axis
-    for ( var i = 0; i < gridlines[axis].length; i++) {
+    for (var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Ignore the alpha value
 
@@ -233,7 +232,7 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
 
   // Check the x axis grid
   y = halfDown(g.plotter_.area.y) + 10;
-  for ( var i = 0; i < xGridlines.length; i++) {
+  for (var i = 0; i < xGridlines.length; i++) {
     x = halfUp(g.toDomXCoord(xGridlines[i]));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
         emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3));
@@ -281,7 +280,6 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       [ 5, 110, 333 ] ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  htx = g.hidden_ctx_;
 
   // The expected gridlines
   var yGridlines = [ 0, 20, 40, 60, 80, 100, 120 ];
@@ -301,9 +299,9 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       // avoid checking the edge pixels since they differ depending on the OS.
       var pixelpos = x % 10;
       if(pixelpos < 1 || pixelpos > 8) continue;
-      
+
       // Ignore alpha
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0,3);
+      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);
       var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill
