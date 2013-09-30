@@ -127,6 +127,8 @@ GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
   function halfDown(y) {
     return Math.round(y) - 1;
   }
+
+  var sampler = new PixelSampler(g);
   var x, y;
   x = halfUp(g.plotter_.area.x);
   // Step through y(0) and y2(1) axis
@@ -136,7 +138,7 @@ GridPerAxisTestCase.prototype.testPerAxisGridColors = function() {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Check the grid colors.
       assertEquals("Unexpected grid color found at pixel: x: " + x + "y: " + y,
-          gridColors[axis], Util.samplePixel(g.hidden_, x, y));
+          gridColors[axis], sampler.colorAtPixel(x, y));
     }
   }
 };
@@ -189,6 +191,8 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   function halfDown(y) {
     return Math.round(y) - 1;
   }
+
+  var sampler = new PixelSampler(g);
   var x, y;
   x = halfUp(g.plotter_.area.x + 10);
   // Step through y(0) and y2(1) axis
@@ -197,13 +201,12 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
     for (var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Ignore the alpha value
-
       // FIXME(pholden): this test fails with a context pixel ratio of 2.
-      var drawnPixeldown2 = Util.samplePixel(g.hidden_, x, y - 2).slice(0, 3);
-      var drawnPixeldown1 = Util.samplePixel(g.hidden_, x, y - 1).slice(0, 3);
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);
-      var drawnPixelup1 = Util.samplePixel(g.hidden_, x, y + 1).slice(0, 3);
-      var drawnPixelup2 = Util.samplePixel(g.hidden_, x, y + 2).slice(0, 3);
+      var drawnPixeldown2 = sampler.colorAtPixel(x, y - 2).slice(0, 3);
+      var drawnPixeldown1 = sampler.colorAtPixel(x, y - 1).slice(0, 3);
+      var drawnPixel = sampler.colorAtPixel(x, y).slice(0, 3);
+      var drawnPixelup1 = sampler.colorAtPixel(x, y + 1).slice(0, 3);
+      var drawnPixelup2 = sampler.colorAtPixel(x, y + 2).slice(0, 3);
       // Check the grid width.
       switch (axis) {
       case 0: // y with 2 pixels width
@@ -235,19 +238,19 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
   for (var i = 0; i < xGridlines.length; i++) {
     x = halfUp(g.toDomXCoord(xGridlines[i]));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3));
+        emptyColor, sampler.colorAtPixel(x - 4, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 3, y).slice(0, 3));
+        gridColor, sampler.colorAtPixel(x - 3, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 2, y).slice(0, 3));
+        gridColor, sampler.colorAtPixel(x - 2, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 1, y).slice(0, 3));
+        gridColor, sampler.colorAtPixel(x - 1, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x, y).slice(0, 3));
+        gridColor, sampler.colorAtPixel(x, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x + 1, y).slice(0, 3));
+        gridColor, sampler.colorAtPixel(x + 1, y).slice(0, 3));
     assertEquals("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3));
+        emptyColor, sampler.colorAtPixel(x + 2, y).slice(0, 3));
   }
 };
 
@@ -292,6 +295,8 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
   function halfDown(y) {
     return Math.round(y) - 1;
   }
+
+  var sampler = new PixelSampler(g);
   var x, y;
   // Step through all gridlines of the axis
   for (var i = 0; i < yGridlines.length; i++) {
@@ -303,7 +308,7 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       if(pixelpos < 1 || pixelpos > 8) continue;
 
       // Ignore alpha
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);
+      var drawnPixel = sampler.colorAtPixel(x, y).slice(0, 3);
       var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill
