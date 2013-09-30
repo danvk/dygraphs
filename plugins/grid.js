@@ -38,8 +38,7 @@ grid.prototype.activate = function(g) {
 };
 
 grid.prototype.willDrawChart = function(e) {
-  // Draw the new X/Y grid. Lines appear crisper when pixels are rounded to
-  // half-integers. This prevents them from drawing in two rows/cols.
+  // Draw the new X/Y grid.
   var g = e.dygraph;
   var ctx = e.drawingContext;
   var layout = g.layout_;
@@ -47,6 +46,11 @@ grid.prototype.willDrawChart = function(e) {
 
   function halfUp(x)  { return Math.round(x) + 0.5; }
   function halfDown(y){ return Math.round(y) - 0.5; }
+
+  // Odd width lines appear crisper when pixels are rounded to half-integers.
+  // This prevents them from drawing in two rows/cols.
+  function alignX(x, width) { return Math.round(x) + (width & 1) / 2.0; }
+  function alignY(y, width) { return Math.round(y) - (width & 1) / 2.0; }
 
   var x, y, i, ticks;
   if (g.getOptionForAxis('drawGrid', 'y')) {
@@ -74,7 +78,7 @@ grid.prototype.willDrawChart = function(e) {
         ctx.lineWidth = lineWidths[axis];
 
         x = halfUp(area.x);
-        y = halfDown(area.y + ticks[i][1] * area.h);
+        y = alignY(area.y + ticks[i][1] * area.h, lineWidths[axis]);
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + area.w, y);
@@ -99,9 +103,10 @@ grid.prototype.willDrawChart = function(e) {
       ctx.installPattern(strokePattern);
     }
     ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
-    ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
+    var lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
+    ctx.lineWidth = lineWidth;
     for (i = 0; i < ticks.length; i++) {
-      x = halfUp(area.x + ticks[i][0] * area.w);
+      x = alignX(area.x + ticks[i][0] * area.w, lineWidth);
       y = halfDown(area.y + area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
