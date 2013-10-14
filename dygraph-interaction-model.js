@@ -42,8 +42,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
   context.initialLeftmostDate = xRange[0];
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
-  if (g.attr_("panEdgeFraction")) {
-    var maxXPixelsToDraw = g.width_ * g.attr_("panEdgeFraction");
+  if (g.getNumericOption("panEdgeFraction")) {
+    var maxXPixelsToDraw = g.width_ * g.getNumericOption("panEdgeFraction");
     var xExtremes = g.xAxisExtremes(); // I REALLY WANT TO CALL THIS xTremes!
 
     var boundedLeftX = g.toDomXCoord(xExtremes[0]) - maxXPixelsToDraw;
@@ -54,7 +54,7 @@ Dygraph.Interaction.startPan = function(event, g, context) {
     context.boundedDates = [boundedLeftDate, boundedRightDate];
 
     var boundedValues = [];
-    var maxYPixelsToDraw = g.height_ * g.attr_("panEdgeFraction");
+    var maxYPixelsToDraw = g.height_ * g.getNumericOption("panEdgeFraction");
 
     for (i = 0; i < g.axes_.length; i++) {
       axis = g.axes_[i];
@@ -276,8 +276,8 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
  * @param {Object} context
  */
 Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
-  var clickCallback = g.attr_('clickCallback');
-  var pointClickCallback = g.attr_('pointClickCallback');
+  var clickCallback = g.getFunctionOption('clickCallback');
+  var pointClickCallback = g.getFunctionOption('pointClickCallback');
 
   var selectedPoint = null;
 
@@ -300,7 +300,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
     }
 
     // Allow any click within two pixels of the dot.
-    var radius = g.attr_('highlightCircleSize') + 2;
+    var radius = g.getNumericOption('highlightCircleSize') + 2;
     if (closestDistance <= radius * radius) {
       selectedPoint = g.selPoints_[closestIdx];
     }
@@ -523,9 +523,9 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   g.drawGraph_(false);
 
   // We only call zoomCallback on zooms, not pans, to mirror desktop behavior.
-  if (didZoom && touches.length > 1 && g.attr_('zoomCallback')) {
+  if (didZoom && touches.length > 1 && g.getFunctionOption('zoomCallback')) {
     var viewWindow = g.xAxisRange();
-    g.attr_("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
+    g.getFunctionOption("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
   }
 };
 
