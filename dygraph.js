@@ -669,6 +669,7 @@ Dygraph.prototype.getOption = function(name, opt_seriesName) {
 };
 
 /**
+ * Like getOption(), but specifically returns a number.
  * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
@@ -680,6 +681,7 @@ Dygraph.prototype.getNumericOption = function(name, opt_seriesName) {
 };
 
 /**
+ * Like getOption(), but specifically returns a string.
  * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
@@ -691,6 +693,7 @@ Dygraph.prototype.getStringOption = function(name, opt_seriesName) {
 };
 
 /**
+ * Like getOption(), but specifically returns a boolean.
  * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
@@ -702,6 +705,7 @@ Dygraph.prototype.getBooleanOption = function(name, opt_seriesName) {
 };
 
 /**
+ * Like getOption(), but specifically returns a function.
  * This is a convenience function for working with the Closure Compiler.
  * @param {string} name The name of the option (e.g. 'strokeWidth')
  * @param {string=} opt_seriesName Series name to get per-series values.
