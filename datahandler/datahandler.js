@@ -123,11 +123,11 @@ handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
   for ( var i = 0; i < series.length; ++i) {
     var item = series[i];
     var yraw = item[1];
-    var yval = yraw === null ? null : Dygraph.parseFloat(yraw);
+    var yval = yraw === null ? null : handler.parseFloat(yraw);
     var point = {
       x : NaN,
       y : NaN,
-      xval : Dygraph.parseFloat(item[0]),
+      xval : handler.parseFloat(item[0]),
       yval : yval,
       name : setName, // TODO(danvk): is this really necessary?
       idx : i + boundaryIdStart
@@ -248,6 +248,22 @@ handler.prototype.getIndexesInWindow_ = function(series, dateWindow) {
   } else {
     return [ 0, series.length - 1 ];
   }
+};
+
+/**
+ * Optimized replacement for parseFloat, which was way too slow when almost
+ * all values were type number, with few edge cases, none of which were strings.
+ * @param {?number} val
+ * @return {number}
+ */
+handler.parseFloat = function(val) {
+  // parseFloat(null) is NaN
+  if (val === null) {
+    return NaN;
+  }
+
+  // Assume it's a number or NaN. If it's something else, I'll be shocked.
+  return val;
 };
 
 })();

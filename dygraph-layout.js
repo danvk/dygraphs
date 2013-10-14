@@ -254,20 +254,6 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
   }
 };
 
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- */
-DygraphLayout.parseFloat_ = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
-};
-
 DygraphLayout.prototype._evaluateLineTicks = function() {
   var i, tick, label, pos;
   this.xticks = [];

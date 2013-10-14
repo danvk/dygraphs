@@ -66,8 +66,8 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
     var point = points[i];
     point.y_top = NaN;
     point.y_bottom = NaN;
-    point.yval_minus = Dygraph.parseFloat(item[2][0]);
-    point.yval_plus = Dygraph.parseFloat(item[2][1]);
+    point.yval_minus = Dygraph.DataHandler.parseFloat(item[2][0]);
+    point.yval_plus = Dygraph.DataHandler.parseFloat(item[2][1]);
   }
 };
 
