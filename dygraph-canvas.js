@@ -89,15 +89,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 };
 
 /**
- * This just forwards to dygraph.attr_.
- * TODO(danvk): remove this?
- * @private
- */
-DygraphCanvasRenderer.prototype.attr_ = function(name, opt_seriesName) {
-  return this.dygraph_.attr_(name, opt_seriesName);
-};
-
-/**
  * Clears out all chart content and DOM elements.
  * This is called immediately before render() on every frame, including
  * during zooms and pans.
@@ -262,19 +253,19 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
     drawPointCallback, pointSize) {
   var g = e.dygraph;
   // TODO(konigsberg): Compute attributes outside this method call.
-  var stepPlot = g.getOption("stepPlot", e.setName);
+  var stepPlot = g.getBooleanOption("stepPlot", e.setName);
 
   if (!Dygraph.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
 
-  var drawGapPoints = g.getOption('drawGapEdgePoints', e.setName);
+  var drawGapPoints = g.getBooleanOption('drawGapEdgePoints', e.setName);
 
   var points = e.points;
   var setName = e.setName;
   var iter = Dygraph.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
-          g.getOption("connectSeparatedPoints", setName)));
+          g.getBooleanOption("connectSeparatedPoints", setName)));
 
   var stroking = strokePattern && (strokePattern.length >= 2);
 
@@ -461,7 +452,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   this.colors = this.dygraph_.colorsMap_;
 
   // Determine which series have specialized plotters.
-  var plotter_attr = this.attr_("plotter");
+  var plotter_attr = this.dygraph_.getOption("plotter");
   var plotters = plotter_attr;
   if (!Dygraph.isArrayLike(plotters)) {
     plotters = [plotters];
@@ -470,7 +461,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   var setPlotters = {};  // series name -> plotter fn.
   for (i = 0; i < setNames.length; i++) {
     setName = setNames[i];
-    var setPlotter = this.attr_("plotter", setName);
+    var setPlotter = this.dygraph_.getOption("plotter", setName);
     if (setPlotter == plotter_attr) continue;  // not specialized.
 
     setPlotters[setName] = setPlotter;
@@ -552,12 +543,12 @@ DygraphCanvasRenderer._linePlotter = function(e) {
   // TODO(danvk): Check if there's any performance impact of just calling
   // getOption() inside of _drawStyledLine. Passing in so many parameters makes
   // this code a bit nasty.
-  var borderWidth = g.getOption("strokeBorderWidth", setName);
+  var borderWidth = g.getNumericOption("strokeBorderWidth", setName);
   var drawPointCallback = g.getOption("drawPointCallback", setName) ||
       Dygraph.Circles.DEFAULT;
   var strokePattern = g.getOption("strokePattern", setName);
-  var drawPoints = g.getOption("drawPoints", setName);
-  var pointSize = g.getOption("pointSize", setName);
+  var drawPoints = g.getBooleanOption("drawPoints", setName);
+  var pointSize = g.getNumericOption("pointSize", setName);
 
   if (borderWidth && strokeWidth) {
     DygraphCanvasRenderer._drawStyledLine(e,
@@ -589,23 +580,24 @@ DygraphCanvasRenderer._linePlotter = function(e) {
 DygraphCanvasRenderer._errorPlotter = function(e) {
   var g = e.dygraph;
   var setName = e.setName;
-  var errorBars = g.getOption("errorBars") || g.getOption("customBars");
+  var errorBars = g.getBooleanOption("errorBars") ||
+      g.getBooleanOption("customBars");
   if (!errorBars) return;
 
-  var fillGraph = g.getOption("fillGraph", setName);
+  var fillGraph = g.getBooleanOption("fillGraph", setName);
   if (fillGraph) {
     g.warn("Can't use fillGraph option with error bars");
   }
 
   var ctx = e.drawingContext;
   var color = e.color;
-  var fillAlpha = g.getOption('fillAlpha', setName);
-  var stepPlot = g.getOption("stepPlot", setName);
+  var fillAlpha = g.getNumericOption('fillAlpha', setName);
+  var stepPlot = g.getBooleanOption("stepPlot", setName);
   var points = e.points;
 
   var iter = Dygraph.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
-          g.getOption("connectSeparatedPoints", setName)));
+          g.getBooleanOption("connectSeparatedPoints", setName)));
 
   var newYs;
 
@@ -690,7 +682,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
   var anySeriesFilled = (function() {
     for (var i = 0; i < setNames.length; i++) {
-      if (g.getOption("fillGraph", setNames[i])) return true;
+      if (g.getBooleanOption("fillGraph", setNames[i])) return true;
     }
     return false;
   })();
@@ -702,8 +694,8 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var sets = e.allSeriesPoints;
   var setCount = sets.length;
 
-  var fillAlpha = g.getOption('fillAlpha');
-  var stackedGraph = g.getOption("stackedGraph");
+  var fillAlpha = g.getNumericOption('fillAlpha');
+  var stackedGraph = g.getBooleanOption("stackedGraph");
   var colors = g.getColors();
 
   // For stacked graphs, track the baseline for filling.
@@ -720,9 +712,9 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
     var setName = setNames[setIdx];
-    if (!g.getOption('fillGraph', setName)) continue;
+    if (!g.getBooleanOption('fillGraph', setName)) continue;
     
-    var stepPlot = g.getOption('stepPlot', setName);
+    var stepPlot = g.getBooleanOption('stepPlot', setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
     var axisY = 1.0 + axis.minyval * axis.yscale;
@@ -733,7 +725,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var points = sets[setIdx];
     var iter = Dygraph.createIterator(points, 0, points.length,
         DygraphCanvasRenderer._getIteratorPredicate(
-            g.getOption("connectSeparatedPoints", setName)));
+            g.getBooleanOption("connectSeparatedPoints", setName)));
 
     // setup graphics context
     var prevX = NaN;
