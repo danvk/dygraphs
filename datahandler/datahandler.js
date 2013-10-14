@@ -255,6 +255,7 @@ handler.prototype.getIndexesInWindow_ = function(series, dateWindow) {
  * all values were type number, with few edge cases, none of which were strings.
  * @param {?number} val
  * @return {number}
+ * @protected
  */
 handler.parseFloat = function(val) {
   // parseFloat(null) is NaN
