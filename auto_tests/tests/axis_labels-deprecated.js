@@ -85,7 +85,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
       assertEquals('number', typeof(granularity));
       assertEquals('function', typeof(opts));
       assertEquals('[Dygraph graph]', dg.toString());
-      return 'x' + Util.fomratDate(x);
+      return 'x' + Util.formatDate(x);
     },
     yAxisLabelFormatter: function(y, granularity, opts, dg) {
       assertEquals('number', typeof(y));

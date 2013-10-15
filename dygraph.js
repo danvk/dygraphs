@@ -1735,7 +1735,7 @@ Dygraph.prototype.eventToDomCoords = function(event) {
   if (event.offsetX && event.offsetY) {
     return [ event.offsetX, event.offsetY ];
   } else {
-    var eventElementPos = Dygraph.findPosX(this.mouseEventElement_)
+    var eventElementPos = Dygraph.findPos(this.mouseEventElement_)
     var canvasx = Dygraph.pageX(event) - eventElementPos.x;
     var canvasy = Dygraph.pageY(event) - eventElementPos.y;
     return [canvasx, canvasy];
