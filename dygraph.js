@@ -218,7 +218,7 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
     if (frac === 0 || granularity >= Dygraph.DAILY) {
       // e.g. '21Jan' (%d%b)
       var nd = new Date(date.getTime() + 3600*1000);
-      return Dygraph.zeropad(nd.getDate()) + SHORT_MONTH_NAMES[nd.getMonth()];
+      return Dygraph.zeropad(nd.getDate()) + Dygraph.SHORT_MONTH_NAMES_[nd.getMonth()];
     } else {
       return Dygraph.hmsString_(date.getTime());
     }
@@ -1375,7 +1375,7 @@ Dygraph.prototype.createDragInterface_ = function() {
         event.cancelBubble = true;
       }
 
-      var canvasPos = DygraphafindPos(g.canvas_);
+      var canvasPos = Dygraph.findPos(g.canvas_);
       contextB.px = canvasPos.x;
       contextB.py = canvasPos.y;
       contextB.dragStartX = g.dragGetX_(event, contextB);
