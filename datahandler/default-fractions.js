@@ -14,7 +14,13 @@
 /*global Dygraph:false */
 "use strict";
 
-Dygraph.DataHandlers.DefaultFractionHandler = Dygraph.DataHandler();
+/**
+ * @extends Dygraph.DataHandlers.DefaultHandler
+ * @constructor
+ */
+Dygraph.DataHandlers.DefaultFractionHandler = function() {
+};
+  
 var DefaultFractionHandler = Dygraph.DataHandlers.DefaultFractionHandler;
 DefaultFractionHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
 

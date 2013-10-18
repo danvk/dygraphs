@@ -207,7 +207,13 @@ DygraphLayout.prototype._evaluateLimits = function() {
   }
 };
 
-DygraphLayout._calcYNormal = function(axis, value, logscale) {
+/**
+ * @param {DygraphAxisType} axis
+ * @param {number} value
+ * @param {boolean} logscale
+ * @return {number}
+ */
+DygraphLayout.calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
     var x = 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
     return isFinite(x) ? x : NaN;  // shim for v8 issue; see pull request 276
@@ -235,7 +241,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
-        point.y_stacked = DygraphLayout._calcYNormal(
+        point.y_stacked = DygraphLayout.calcYNormal_(
             axis, point.yval_stacked, logscale);
         if (yval !== null && !isNaN(yval)) {
           yval = point.yval_stacked;
@@ -247,25 +253,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           point.yval = NaN;
         }
       }
-      point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
+      point.y = DygraphLayout.calcYNormal_(axis, yval, logscale);
     }
 
     this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
   }
-};
-
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- */
-DygraphLayout.parseFloat_ = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
