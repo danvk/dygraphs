@@ -59,7 +59,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
   // --- check whether everything is ok before we return
   // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
-  if (!this.isIE && !(DygraphCanvasRenderer.isSupported(this.element)))
+  if (!this.isIE && !(Dygraph.isCanvasSupported(this.element)))
       throw "Canvas is not supported.";
 
   // internal state
@@ -115,30 +115,6 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
-};
-
-/**
- * Checks whether the browser supports the &lt;canvas&gt; tag.
- * @private
- */
-DygraphCanvasRenderer.isSupported = function(canvasName) {
-  var canvas = null;
-  try {
-    if (typeof(canvasName) == 'undefined' || canvasName === null) {
-      canvas = document.createElement("canvas");
-    } else {
-      canvas = canvasName;
-    }
-    canvas.getContext("2d");
-  }
-  catch (e) {
-    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
-    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
-    if ((!ie) || (ie[1] < 6) || (opera))
-      return false;
-    return true;
-  }
-  return true;
 };
 
 /**

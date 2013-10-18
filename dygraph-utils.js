@@ -408,18 +408,18 @@ Dygraph.isOK = function(x) {
 };
 
 /**
- * @param { {x:?number,y:?number,yval:?number} } p The point to consider, valid
+ * @param {{x:?number,y:?number,yval:?number}} p The point to consider, valid
  *     points are {x, y} objects
- * @param { boolean } allowNaNY Treat point with y=NaN as valid
- * @return { boolean } Whether the point has numeric x and y.
+ * @param {boolean=} opt_allowNaNY Treat point with y=NaN as valid
+ * @return {boolean} Whether the point has numeric x and y.
  * @private
  */
-Dygraph.isValidPoint = function(p, allowNaNY) {
+Dygraph.isValidPoint = function(p, opt_allowNaNY) {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;
   if (p.y === null || p.y === undefined) return false;
-  if (isNaN(p.x) || (!allowNaNY && isNaN(p.y))) return false;
+  if (isNaN(p.x) || (!opt_allowNaNY && isNaN(p.y))) return false;
   return true;
 };
 
@@ -706,7 +706,7 @@ Dygraph.updateDeep = function (self, o) {
 };
 
 /**
- * @param {Object} o
+ * @param {*} o
  * @return {boolean}
  * @private
  */
@@ -1210,4 +1210,57 @@ Dygraph.toRGB_ = function(colorStr) {
     g: parseInt(bits[2], 10),
     b: parseInt(bits[3], 10)
   };
+};
+
+/**
+ * Checks whether the browser supports the &lt;canvas&gt; tag.
+ * @param {HTMLCanvasElement=} opt_canvasElement Pass a canvas element as an
+ *     optimization if you have one.
+ * @return {boolean} Whether the browser supports canvas.
+ */
+Dygraph.isCanvasSupported = function(opt_canvasElement) {
+  var canvas;
+  try {
+    canvas = opt_canvasElement || document.createElement("canvas");
+    canvas.getContext("2d");
+  }
+  catch (e) {
+    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
+    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
+    if ((!ie) || (ie[1] < 6) || (opera))
+      return false;
+    return true;
+  }
+  return true;
+};
+
+/**
+ * Parses the value as a floating point number. This is like the parseFloat()
+ * built-in, but with a few differences:
+ * - the empty string is parsed as null, rather than NaN.
+ * - if the string cannot be parsed at all, an error is logged.
+ * If the string can't be parsed, this method returns null.
+ * @param {string} x The string to be parsed
+ * @param {number=} opt_line_no The line number from which the string comes.
+ * @param {string=} opt_line The text of the line from which the string comes.
+ */
+Dygraph.parseFloat_ = function(x, opt_line_no, opt_line) {
+  var val = parseFloat(x);
+  if (!isNaN(val)) return val;
+
+  // Try to figure out what happeend.
+  // If the value is the empty string, parse it as null.
+  if (/^ *$/.test(x)) return null;
+
+  // If it was actually "NaN", return it as NaN.
+  if (/^ *nan *$/i.test(x)) return NaN;
+
+  // Looks like a parsing error.
+  var msg = "Unable to parse '" + x + "' as a number";
+  if (opt_line !== undefined && opt_line_no !== undefined) {
+    msg += " on line " + (1+(opt_line_no||0)) + " ('" + opt_line + "') of CSV.";
+  }
+  Dygraph.error(msg);
+
+  return null;
 };
