@@ -374,6 +374,28 @@ Dygraph.pageY = function(e) {
 };
 
 /**
+ * Converts page the x-coordinate of the event to pixel x-coordinates on the
+ * canvas (i.e. DOM Coords).
+ * @param {!Event} e Drag event.
+ * @param {!DygraphInteractionContext} context Interaction context object.
+ * @return {number} The amount by which the drag has moved to the right.
+ */
+Dygraph.dragGetX_ = function(e, context) {
+  return Dygraph.pageX(e) - context.px;
+};
+
+/**
+ * Converts page the y-coordinate of the event to pixel y-coordinates on the
+ * canvas (i.e. DOM Coords).
+ * @param {!Event} e Drag event.
+ * @param {!DygraphInteractionContext} context Interaction context object.
+ * @return {number} The amount by which the drag has moved down.
+ */
+Dygraph.dragGetY_ = function(e, context) {
+  return Dygraph.pageY(e) - context.py;
+};
+
+/**
  * This returns true unless the parameter is 0, null, undefined or NaN.
  * TODO(danvk): rename this function to something like 'isNonZeroNan'.
  *

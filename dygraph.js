@@ -1301,24 +1301,6 @@ Dygraph.prototype.createRollInterface_ = function() {
 };
 
 /**
- * @private
- * Converts page the x-coordinate of the event to pixel x-coordinates on the
- * canvas (i.e. DOM Coords).
- */
-Dygraph.prototype.dragGetX_ = function(e, context) {
-  return Dygraph.pageX(e) - context.px;
-};
-
-/**
- * @private
- * Converts page the y-coordinate of the event to pixel y-coordinates on the
- * canvas (i.e. DOM Coords).
- */
-Dygraph.prototype.dragGetY_ = function(e, context) {
-  return Dygraph.pageY(e) - context.py;
-};
-
-/**
  * Set up all the mouse handlers needed to capture dragging behavior for zoom
  * events.
  * @private
@@ -1378,8 +1360,8 @@ Dygraph.prototype.createDragInterface_ = function() {
       var canvasPos = Dygraph.findPos(g.canvas_);
       contextB.px = canvasPos.x;
       contextB.py = canvasPos.y;
-      contextB.dragStartX = g.dragGetX_(event, contextB);
-      contextB.dragStartY = g.dragGetY_(event, contextB);
+      contextB.dragStartX = Dygraph.dragGetX_(event, contextB);
+      contextB.dragStartY = Dygraph.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
       contextB.tarp.cover();
     }
