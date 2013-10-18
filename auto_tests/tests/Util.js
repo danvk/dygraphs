@@ -131,3 +131,11 @@ Util.overrideXMLHttpRequest = function(data) {
   return FakeXMLHttpRequest;
 };
 
+/**
+ * Format a date as 2000/01/23
+ * @param {number} dateMillis Millis since epoch.
+ * @return {string} The date formatted as YYYY-MM-DD.
+ */
+Util.formatDate = function(dateMillis) {
+  return Dygraph.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
+};

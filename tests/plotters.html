@@ -52,6 +52,15 @@
     <div id="mixed-error" class="chart"></div>
 
     <script type="text/javascript">
+      // Darken a color
+      function darkenColor(colorStr) {
+        // Defined in dygraph-utils.js
+        var color = Dygraph.toRGB_(colorStr);
+        color.r = Math.floor((255 + color.r) / 2);
+        color.g = Math.floor((255 + color.g) / 2);
+        color.b = Math.floor((255 + color.b) / 2);
+        return 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+      }
 
       // This function draws bars for a single series. See
       // multiColumnBarPlotter below for a plotter which can draw multi-series
@@ -61,13 +70,7 @@
         var points = e.points;
         var y_bottom = e.dygraph.toDomYCoord(0);
 
-        // The RGBColorParser class is provided by rgbcolor.js, which is
-        // packed in with dygraphs.
-        var color = new RGBColorParser(e.color);
-        color.r = Math.floor((255 + color.r) / 2);
-        color.g = Math.floor((255 + color.g) / 2);
-        color.b = Math.floor((255 + color.b) / 2);
-        ctx.fillStyle = color.toRGB();
+        ctx.fillStyle = darkenColor(e.color);
 
         // Find the minimum separation between x-values.
         // This determines the bar width.
@@ -274,11 +277,7 @@ var candleData = "Date,Open,Close,High,Low\n" +
       var fillColors = [];
       var strokeColors = g.getColors();
       for (var i = 0; i < strokeColors.length; i++) {
-        var color = new RGBColorParser(strokeColors[i]);
-        color.r = Math.floor((255 + color.r) / 2);
-        color.g = Math.floor((255 + color.g) / 2);
-        color.b = Math.floor((255 + color.b) / 2);
-        fillColors.push(color.toRGB());
+        fillColors.push(darkenColor(strokeColors[i]));
       }
 
       for (var j = 0; j < sets.length; j++) {

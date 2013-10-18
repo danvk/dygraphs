@@ -25,7 +25,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global Dygraph:false,RGBColorParser:false */
+/*global Dygraph:false */
 "use strict";
 
 
@@ -586,7 +586,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 
   var fillGraph = g.getBooleanOption("fillGraph", setName);
   if (fillGraph) {
-    g.warn("Can't use fillGraph option with error bars");
+    Dygraph.warn("Can't use fillGraph option with error bars");
   }
 
   var ctx = e.drawingContext;
@@ -606,7 +606,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var prevY = NaN;
   var prevYs = [-1, -1];
   // should be same color as the lines but only 15% opaque.
-  var rgb = new RGBColorParser(color);
+  var rgb = Dygraph.toRGB_(color);
   var err_color =
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
@@ -732,7 +732,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var prevYs = [-1, -1];
     var newYs;
     // should be same color as the lines but only 15% opaque.
-    var rgb = new RGBColorParser(color);
+    var rgb = Dygraph.toRGB_(color);
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;

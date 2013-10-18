@@ -12,8 +12,6 @@ dygraph-utils.js \
 dygraph-gviz.js \
 dygraph-interaction-model.js \
 dygraph-tickers.js \
-rgbcolor/rgbcolor.js \
-strftime/strftime-min.js \
 dashed-canvas.js \
 dygraph-plugin-base.js \
 plugins/annotations.js \
