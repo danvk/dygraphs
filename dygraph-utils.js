@@ -158,9 +158,9 @@ Dygraph.getContext = function(canvas) {
 /**
  * Add an event handler. This smooths a difference between IE and the rest of
  * the world.
- * @param { !Element } elem The element to add the event to.
- * @param { string } type The type of the event, e.g. 'click' or 'mousemove'.
- * @param { function(Event):(boolean|undefined) } fn The function to call
+ * @param {!Node} elem The element to add the event to.
+ * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param {function(Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
@@ -177,9 +177,9 @@ Dygraph.addEvent = function addEvent(elem, type, fn) {
  * Add an event handler. This event handler is kept until the graph is
  * destroyed with a call to graph.destroy().
  *
- * @param { !Element } elem The element to add the event to.
- * @param { string } type The type of the event, e.g. 'click' or 'mousemove'.
- * @param { function(Event):(boolean|undefined) } fn The function to call
+ * @param {!Node} elem The element to add the event to.
+ * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param {function(Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
@@ -191,7 +191,7 @@ Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
 /**
  * Remove an event handler. This smooths a difference between IE and the rest
  * of the world.
- * @param {!Element} elem The element to add the event to.
+ * @param {!Node} elem The element to remove the event from.
  * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
  * @param {function(Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
@@ -227,7 +227,7 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
  * browser actions, e.g. highlighting text on a double-click.
  * Based on the article at
  * http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
- * @param { !Event } e The event whose normal behavior should be canceled.
+ * @param {!Event} e The event whose normal behavior should be canceled.
  * @private
  */
 Dygraph.cancelEvent = function(e) {
