@@ -133,19 +133,9 @@ Util.overrideXMLHttpRequest = function(data) {
 
 /**
  * Format a date as 2000/01/23
- * @param {number} date_ms Millis since epoch.
+ * @param {number} dateMillis Millis since epoch.
  * @return {string} The date formatted as YYYY-MM-DD.
  */
-Util.formatDate = function(date_ms) {
-  var zeropad = function(x) { if (x < 10) return "0" + x; else return "" + x; };
-  var d = new Date(date_ms);
-
-  // Get the year:
-  var year = "" + d.getFullYear();
-  // Get a 0 padded month string
-  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
-  // Get a 0 padded day string
-  var day = zeropad(d.getDate());
-
-  return year + "/" + month + "/" + day;
+Util.formatDate = function(dateMillis) {
+  return Dygraph.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
 };

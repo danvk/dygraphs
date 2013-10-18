@@ -1012,7 +1012,7 @@ Dygraph.Circles = {
     ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
     ctx.fill();
   }
-  // For more shapes, include extras/stars.js
+  // For more shapes, include extras/shapes.js
 };
 
 /**
@@ -1170,19 +1170,19 @@ Dygraph.setDateSameTZ = function(d, parts) {
 /**
  * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
  *
- * @param {!string} color_str Any valid CSS color string.
+ * @param {!string} colorStr Any valid CSS color string.
  * @return {{r:number,g:number,b:number}} Parsed RGB tuple.
  * @private
  */
-Dygraph.toRGB_ = function(color_str) {
+Dygraph.toRGB_ = function(colorStr) {
   // TODO(danvk): cache color parses to avoid repeated DOM manipulation.
   var div = document.createElement('div');
-  div.style.backgroundColor = color_str;
+  div.style.backgroundColor = colorStr;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
-  var rgb_str = window.getComputedStyle(div).backgroundColor;
+  var rgbStr = window.getComputedStyle(div).backgroundColor;
   document.body.removeChild(div);
-  var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgb_str);
+  var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgbStr);
   return {
     r: parseInt(bits[1], 10),
     g: parseInt(bits[2], 10),
