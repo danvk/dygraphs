@@ -109,8 +109,9 @@ DygraphOps.dispatchDoubleClick = function(g, custom) {
  * type, screenX, screenY, clientX, clientY.
  */
 DygraphOps.createOptsForPoint_ = function(g, type, x, y) {
-  var pageX = Dygraph.findPosX(g.canvas_) + x;
-  var pageY = Dygraph.findPosY(g.canvas_) + y;
+  var pos = Dygraph.findPos(g.canvas_);
+  var pageX = pos.x + x;
+  var pageY = pos.y + y;
 
   return {
     type : type,

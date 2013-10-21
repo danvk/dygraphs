@@ -72,7 +72,7 @@ var Dygraph = function(div, data, opts, opt_fourth_param) {
     // Old versions of dygraphs took in the series labels as a constructor
     // parameter. This doesn't make sense anymore, but it's easy to continue
     // to support this usage.
-    this.warn("Using deprecated four-argument dygraph constructor");
+    Dygraph.warn("Using deprecated four-argument dygraph constructor");
     this.__old_init__(div, data, opts, opt_fourth_param);
   } else {
     this.__init__(div, data, opts);
@@ -193,28 +193,12 @@ Dygraph.numberAxisLabelFormatter = function(x, granularity, opts, g) {
 };
 
 /**
- * Convert a JS date (millis since epoch) to YYYY/MM/DD
- * @param {Number} date The JavaScript date (ms since epoch)
- * @return {String} A date of the form "YYYY/MM/DD"
+ * @type {!Array.<string>}
  * @private
+ * @constant
  */
-Dygraph.dateString_ = function(date) {
-  var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
+Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Get the year:
-  var year = "" + d.getFullYear();
-  // Get a 0 padded month string
-  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
-  // Get a 0 padded day string
-  var day = zeropad(d.getDate());
-
-  var ret = "";
-  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + Dygraph.hmsString_(date);
-
-  return year + "/" + month + "/" + day + ret;
-};
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
@@ -226,13 +210,15 @@ Dygraph.dateString_ = function(date) {
  */
 Dygraph.dateAxisFormatter = function(date, granularity) {
   if (granularity >= Dygraph.DECADAL) {
-    return date.strftime('%Y');
+    return '' + date.getFullYear();
   } else if (granularity >= Dygraph.MONTHLY) {
-    return date.strftime('%b %y');
+    return Dygraph.SHORT_MONTH_NAMES_[date.getMonth()] + ' ' + date.getFullYear();
   } else {
     var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
     if (frac === 0 || granularity >= Dygraph.DAILY) {
-      return new Date(date.getTime() + 3600*1000).strftime('%d%b');
+      // e.g. '21Jan' (%d%b)
+      var nd = new Date(date.getTime() + 3600*1000);
+      return Dygraph.zeropad(nd.getDate()) + Dygraph.SHORT_MONTH_NAMES_[nd.getMonth()];
     } else {
       return Dygraph.hmsString_(date.getTime());
     }
@@ -639,10 +625,10 @@ Dygraph.prototype.toString = function() {
 Dygraph.prototype.attr_ = function(name, seriesName) {
 // <REMOVE_FOR_COMBINED>
   if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
-    this.error('Must include options reference JS for testing');
+    Dygraph.error('Must include options reference JS for testing');
   } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
-    this.error('Dygraphs is using property ' + name + ', which has no entry ' +
-               'in the Dygraphs.OPTIONS_REFERENCE listing.');
+    Dygraph.error('Dygraphs is using property ' + name + ', which has no ' +
+                  'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
     // Only log this error once.
     Dygraph.OPTIONS_REFERENCE[name] = true;
   }
@@ -1389,8 +1375,9 @@ Dygraph.prototype.createDragInterface_ = function() {
         event.cancelBubble = true;
       }
 
-      contextB.px = Dygraph.findPosX(g.canvas_);
-      contextB.py = Dygraph.findPosY(g.canvas_);
+      var canvasPos = Dygraph.findPos(g.canvas_);
+      contextB.px = canvasPos.x;
+      contextB.py = canvasPos.y;
       contextB.dragStartX = g.dragGetX_(event, contextB);
       contextB.dragStartY = g.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
@@ -1748,8 +1735,9 @@ Dygraph.prototype.eventToDomCoords = function(event) {
   if (event.offsetX && event.offsetY) {
     return [ event.offsetX, event.offsetY ];
   } else {
-    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(this.mouseEventElement_);
-    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(this.mouseEventElement_);
+    var eventElementPos = Dygraph.findPos(this.mouseEventElement_);
+    var canvasx = Dygraph.pageX(event) - eventElementPos.x;
+    var canvasy = Dygraph.pageY(event) - eventElementPos.y;
     return [canvasx, canvasy];
   }
 };
@@ -2961,7 +2949,7 @@ Dygraph.prototype.parseFloat_ = function(x, opt_line_no, opt_line) {
   if (opt_line !== null && opt_line_no !== null) {
     msg += " on line " + (1+opt_line_no) + " ('" + opt_line + "') of CSV.";
   }
-  this.error(msg);
+  Dygraph.error(msg);
 
   return null;
 };
@@ -3030,9 +3018,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         vals = inFields[j].split("/");
         if (vals.length != 2) {
-          this.error('Expected fractional "num/den" values in CSV data ' +
-                     "but found a value '" + inFields[j] + "' on line " +
-                     (1 + i) + " ('" + line + "') which is not of this form.");
+          Dygraph.error('Expected fractional "num/den" values in CSV data ' +
+                        "but found a value '" + inFields[j] + "' on line " +
+                        (1 + i) + " ('" + line + "') which is not of this form.");
           fields[j] = [0, 0];
         } else {
           fields[j] = [this.parseFloat_(vals[0], i, line),
@@ -3042,9 +3030,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else if (this.getBooleanOption("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       if (inFields.length % 2 != 1) {
-        this.error('Expected alternating (value, stdev.) pairs in CSV data ' +
-                   'but line ' + (1 + i) + ' has an odd number of values (' +
-                   (inFields.length - 1) + "): '" + line + "'");
+        Dygraph.error('Expected alternating (value, stdev.) pairs in CSV data ' +
+                      'but line ' + (1 + i) + ' has an odd number of values (' +
+                      (inFields.length - 1) + "): '" + line + "'");
       }
       for (j = 1; j < inFields.length; j += 2) {
         fields[(j + 1) / 2] = [this.parseFloat_(inFields[j], i, line),
@@ -3063,9 +3051,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
                           this.parseFloat_(vals[1], i, line),
                           this.parseFloat_(vals[2], i, line) ];
           } else {
-            this.warn('When using customBars, values must be either blank ' +
-                      'or "low;center;high" tuples (got "' + val +
-                      '" on line ' + (1+i));
+            Dygraph.warn('When using customBars, values must be either blank ' +
+                         'or "low;center;high" tuples (got "' + val +
+                         '" on line ' + (1+i));
           }
         }
       }
@@ -3080,9 +3068,9 @@ Dygraph.prototype.parseCSV_ = function(data) {
     }
 
     if (fields.length != expectedCols) {
-      this.error("Number of columns in line " + i + " (" + fields.length +
-                 ") does not agree with number of labels (" + expectedCols +
-                 ") " + line);
+      Dygraph.error("Number of columns in line " + i + " (" + fields.length +
+                    ") does not agree with number of labels (" + expectedCols +
+                    ") " + line);
     }
 
     // If the user specified the 'labels' option and none of the cells of the
@@ -3095,9 +3083,10 @@ Dygraph.prototype.parseCSV_ = function(data) {
         if (fields[j]) all_null = false;
       }
       if (all_null) {
-        this.warn("The dygraphs 'labels' option is set, but the first row of " +
-                  "CSV data ('" + line + "') appears to also contain labels. " +
-                  "Will drop the CSV labels and use the option labels.");
+        Dygraph.warn("The dygraphs 'labels' option is set, but the first row " +
+                     "of CSV data ('" + line + "') appears to also contain " +
+                     "labels. Will drop the CSV labels and use the option " +
+                     "labels.");
         continue;
       }
     }
@@ -3105,7 +3094,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   }
 
   if (outOfOrder) {
-    this.warn("CSV is out of order; order it correctly to speed loading.");
+    Dygraph.warn("CSV is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0]; });
   }
 
@@ -3123,18 +3112,18 @@ Dygraph.prototype.parseCSV_ = function(data) {
 Dygraph.prototype.parseArray_ = function(data) {
   // Peek at the first x value to see if it's numeric.
   if (data.length === 0) {
-    this.error("Can't plot empty data set");
+    Dygraph.error("Can't plot empty data set");
     return null;
   }
   if (data[0].length === 0) {
-    this.error("Data set cannot contain an empty row");
+    Dygraph.error("Data set cannot contain an empty row");
     return null;
   }
 
   var i;
   if (this.attr_("labels") === null) {
-    this.warn("Using default labels. Set labels explicitly via 'labels' " +
-              "in the options parameter");
+    Dygraph.warn("Using default labels. Set labels explicitly via 'labels' " +
+                 "in the options parameter");
     this.attrs_.labels = [ "X" ];
     for (i = 1; i < data[0].length; i++) {
       this.attrs_.labels.push("Y" + i); // Not user_attrs_.
@@ -3143,8 +3132,8 @@ Dygraph.prototype.parseArray_ = function(data) {
   } else {
     var num_labels = this.attr_("labels");
     if (num_labels.length != data[0].length) {
-      this.error("Mismatch between number of labels (" + num_labels +
-          ") and number of columns in array (" + data[0].length + ")");
+      Dygraph.error("Mismatch between number of labels (" + num_labels + ")" +
+                    " and number of columns in array (" + data[0].length + ")");
       return null;
     }
   }
@@ -3159,13 +3148,13 @@ Dygraph.prototype.parseArray_ = function(data) {
     var parsedData = Dygraph.clone(data);
     for (i = 0; i < data.length; i++) {
       if (parsedData[i].length === 0) {
-        this.error("Row " + (1 + i) + " of data is empty");
+        Dygraph.error("Row " + (1 + i) + " of data is empty");
         return null;
       }
       if (parsedData[i][0] === null ||
           typeof(parsedData[i][0].getTime) != 'function' ||
           isNaN(parsedData[i][0].getTime())) {
-        this.error("x value in row " + (1 + i) + " is not a Date");
+        Dygraph.error("x value in row " + (1 + i) + " is not a Date");
         return null;
       }
       parsedData[i][0] = parsedData[i][0].getTime();
@@ -3219,8 +3208,8 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
-    this.error("only 'date', 'datetime' and 'number' types are supported for " +
-               "column 1 of DataTable input (Got '" + indepType + "')");
+    Dygraph.error("only 'date', 'datetime' and 'number' types are supported " +
+                  "for column 1 of DataTable input (Got '" + indepType + "')");
     return null;
   }
 
@@ -3243,8 +3232,8 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       }
       hasAnnotations = true;
     } else {
-      this.error("Only 'number' is supported as a dependent type with Gviz." +
-                 " 'string' is only supported if displayAnnotations is true");
+      Dygraph.error("Only 'number' is supported as a dependent type with Gviz." +
+                    " 'string' is only supported if displayAnnotations is true");
     }
   }
 
@@ -3265,8 +3254,8 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
         data.getValue(i, 0) === null) {
-      this.warn("Ignoring row " + i +
-                " of DataTable because of undefined or null first column.");
+      Dygraph.warn("Ignoring row " + i +
+                   " of DataTable because of undefined or null first column.");
       continue;
     }
 
@@ -3311,7 +3300,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   }
 
   if (outOfOrder) {
-    this.warn("DataTable is out of order; order it correctly to speed loading.");
+    Dygraph.warn("DataTable is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0]; });
   }
   this.rawData_ = ret;
@@ -3373,7 +3362,7 @@ Dygraph.prototype.start_ = function() {
       req.send(null);
     }
   } else {
-    this.error("Unknown data format: " + (typeof data));
+    Dygraph.error("Unknown data format: " + (typeof data));
   }
 };
 
@@ -3506,8 +3495,8 @@ Dygraph.prototype.resize = function(width, height) {
   this.resize_lock = true;
 
   if ((width === null) != (height === null)) {
-    this.warn("Dygraph.resize() should be called with zero parameters or " +
-              "two non-NULL parameters. Pretending it was zero.");
+    Dygraph.warn("Dygraph.resize() should be called with zero parameters or " +
+                 "two non-NULL parameters. Pretending it was zero.");
     width = height = null;
   }
 
@@ -3569,7 +3558,7 @@ Dygraph.prototype.visibility = function() {
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
   if (num < 0 || num >= x.length) {
-    this.warn("invalid series number in setVisibility: " + num);
+    Dygraph.warn("invalid series number in setVisibility: " + num);
   } else {
     x[num] = value;
     this.predraw_();
@@ -3597,9 +3586,9 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   Dygraph.addAnnotationRule();
   this.annotations_ = ann;
   if (!this.layout_) {
-    this.warn("Tried to setAnnotations before dygraph was ready. " +
-              "Try setting them in a ready() block. See " +
-              "dygraphs.com/tests/annotation.html");
+    Dygraph.warn("Tried to setAnnotations before dygraph was ready. " +
+                 "Try setting them in a ready() block. See " +
+                 "dygraphs.com/tests/annotation.html");
     return;
   }
 
@@ -3694,5 +3683,5 @@ Dygraph.addAnnotationRule = function() {
     }
   }
 
-  this.warn("Unable to add default annotation CSS rule; display may be off.");
+  Dygraph.warn("Unable to add default annotation CSS rule; display may be off.");
 };

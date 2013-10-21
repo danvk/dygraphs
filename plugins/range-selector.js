@@ -74,7 +74,7 @@ rangeSelector.prototype.createInterface_ = function() {
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
   if (this.getOption_('animatedZooms')) {
-    this.dygraph_.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    Dygraph.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
@@ -178,7 +178,7 @@ rangeSelector.prototype.resize_ = function() {
   var plotArea = this.dygraph_.layout_.getPlotArea();
   
   var xAxisLabelHeight = 0;
-  if(this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
+  if (this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
     xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   }
   this.canvasRect_ = {

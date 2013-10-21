@@ -14,11 +14,17 @@
 /*global Dygraph:false */
 "use strict";
 
-Dygraph.DataHandlers.CustomBarsHandler = Dygraph.DataHandler();
+/**
+ * @constructor
+ * @extends Dygraph.DataHandlers.BarsHandler
+ */
+Dygraph.DataHandlers.CustomBarsHandler = function() {
+};
+
 var CustomBarsHandler = Dygraph.DataHandlers.CustomBarsHandler;
 CustomBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
 
-// customBars
+/** @inheritDoc */
 CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
@@ -49,8 +55,9 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   return series;
 };
 
-CustomBarsHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+/** @inheritDoc */
+CustomBarsHandler.prototype.rollingAverage =
+    function(originalData, rollPeriod, options) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var y, low, high, mid,count, i, extremes;
