@@ -1,11 +1,10 @@
 #!/bin/bash
 java -jar ../../closure-compiler-read-only/build/compiler.jar  \
- --compilation_level ADVANCED_OPTIMIZATIONS  \
+ --compilation_level SIMPLE_OPTIMIZATIONS  \
  --warning_level VERBOSE  \
  --output_wrapper='(function() {%output%})();'  \
  --js ../../closure-library-read-only/closure/goog/base.js \
  --js=dashed-canvas.js \
- --js=dygraph-constants.js \
  --js=dygraph-options.js \
  --js=dygraph-layout.js \
  --js=dygraph-canvas.js \
@@ -31,6 +30,8 @@ java -jar ../../closure-compiler-read-only/build/compiler.jar  \
  --js=datahandler/bars-error.js \
  --js=datahandler/bars-fractions.js \
  --js=dygraph-exports.js \
- --externs dygraph-externs.js  \
+ --externs dygraph-internal.externs.js  \
  --externs gviz-api.js  \
  --js_output_file=/tmp/out.js
+
+# --js=dygraph-constants.js \
