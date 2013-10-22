@@ -115,8 +115,8 @@ Dygraph.Interaction.startPan = function(event, g, context) {
  *     context.
  */
 Dygraph.Interaction.movePan = function(event, g, context) {
-  context.dragEndX = g.dragGetX_(event, context);
-  context.dragEndY = g.dragGetY_(event, context);
+  context.dragEndX = Dygraph.dragGetX_(event, context);
+  context.dragEndY = Dygraph.dragGetY_(event, context);
 
   var minDate = context.initialLeftmostDate -
     (context.dragEndX - context.dragStartX) * context.xUnitsPerPixel;
@@ -188,8 +188,8 @@ Dygraph.Interaction.movePan = function(event, g, context) {
  *     context.
  */
 Dygraph.Interaction.endPan = function(event, g, context) {
-  context.dragEndX = g.dragGetX_(event, context);
-  context.dragEndY = g.dragGetY_(event, context);
+  context.dragEndX = Dygraph.dragGetX_(event, context);
+  context.dragEndY = Dygraph.dragGetY_(event, context);
 
   var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
   var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
@@ -246,8 +246,8 @@ Dygraph.Interaction.startZoom = function(event, g, context) {
  */
 Dygraph.Interaction.moveZoom = function(event, g, context) {
   context.zoomMoved = true;
-  context.dragEndX = g.dragGetX_(event, context);
-  context.dragEndY = g.dragGetY_(event, context);
+  context.dragEndX = Dygraph.dragGetX_(event, context);
+  context.dragEndY = Dygraph.dragGetY_(event, context);
 
   var xDelta = Math.abs(context.dragStartX - context.dragEndX);
   var yDelta = Math.abs(context.dragStartY - context.dragEndY);
@@ -333,8 +333,8 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
  */
 Dygraph.Interaction.endZoom = function(event, g, context) {
   context.isZooming = false;
-  context.dragEndX = g.dragGetX_(event, context);
-  context.dragEndY = g.dragGetY_(event, context);
+  context.dragEndX = Dygraph.dragGetX_(event, context);
+  context.dragEndY = Dygraph.dragGetY_(event, context);
   var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
   var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
@@ -645,8 +645,8 @@ Dygraph.Interaction.nonInteractiveModel_ = {
   },
   mouseup: function(event, g, context) {
     // TODO(danvk): this logic is repeated in Dygraph.Interaction.endZoom
-    context.dragEndX = g.dragGetX_(event, context);
-    context.dragEndY = g.dragGetY_(event, context);
+    context.dragEndX = Dygraph.dragGetX_(event, context);
+    context.dragEndY = Dygraph.dragGetY_(event, context);
     var regionWidth = Math.abs(context.dragEndX - context.dragStartX);
     var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
