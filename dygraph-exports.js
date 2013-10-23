@@ -1,3 +1,7 @@
+// This is the complete set of symbols that dygraphs exports for use by
+// clients. Exporting a symbols forces the Closure Compiler to preserve it in
+// the minified JS (symbols not in this list are mangled).
+
 goog.exportSymbol('Dygraph', Dygraph);
 
 goog.exportSymbol('Dygraph.prototype.adjustRoll', Dygraph.prototype.adjustRoll);

@@ -1,6 +1,13 @@
 #!/bin/bash
+
+# This script runs dygraphs through the Closure Compiler. This checks for
+# errors (both in the JS and in the jsdoc) and flags type errors as WARNINGS.
+
+# It outputs minified JS to a temp file. This should be ignored for now, until
+# it's fully functional.
+
 java -jar ../../closure-compiler-read-only/build/compiler.jar  \
- --compilation_level SIMPLE_OPTIMIZATIONS  \
+ --compilation_level ADVANCED_OPTIMIZATIONS  \
  --warning_level VERBOSE  \
  --output_wrapper='(function() {%output%})();'  \
  --js ../../closure-library-read-only/closure/goog/base.js \
@@ -33,5 +40,3 @@ java -jar ../../closure-compiler-read-only/build/compiler.jar  \
  --externs dygraph-internal.externs.js  \
  --externs gviz-api.js  \
  --js_output_file=/tmp/out.js
-
-# --js=dygraph-constants.js \
