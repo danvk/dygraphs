@@ -6,7 +6,9 @@
 # It outputs minified JS to a temp file. This should be ignored for now, until
 # it's fully functional.
 
-java -jar ../../closure-compiler-read-only/build/compiler.jar  \
+CLOSURE_COMPILER=../../closure-compiler-read-only/build/compiler.jar
+
+java -jar $CLOSURE_COMPILER \
  --compilation_level ADVANCED_OPTIMIZATIONS  \
  --warning_level VERBOSE  \
  --output_wrapper='(function() {%output%})();'  \
