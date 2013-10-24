@@ -6,7 +6,16 @@
 # It outputs minified JS to a temp file. This should be ignored for now, until
 # it's fully functional.
 
-CLOSURE_COMPILER=../../closure-compiler-read-only/build/compiler.jar
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 (path/to/closure/compiler.jar)" 1>&2
+  exit 1
+fi
+if [ ! -f $1 ]; then
+  echo "$1 does not exist"
+  exit 1
+fi
+
+CLOSURE_COMPILER=$1
 
 java -jar $CLOSURE_COMPILER \
  --compilation_level ADVANCED_OPTIMIZATIONS  \
