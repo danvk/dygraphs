@@ -1075,8 +1075,9 @@ Dygraph.IFrameTarp.prototype.cover = function() {
   var iframes = document.getElementsByTagName("iframe");
   for (var i = 0; i < iframes.length; i++) {
     var iframe = iframes[i];
-    var x = Dygraph.findPosX(iframe),
-        y = Dygraph.findPosY(iframe),
+    var pos = Dygraph.findPos(iframe),
+        x = pos.x,
+        y = pos.y,
         width = iframe.offsetWidth,
         height = iframe.offsetHeight;
 
@@ -1202,7 +1203,7 @@ Dygraph.toRGB_ = function(colorStr) {
   div.style.backgroundColor = colorStr;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
-  var rgbStr = window.getComputedStyle(div).backgroundColor;
+  var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgbStr);
   return {
