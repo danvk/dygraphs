@@ -645,14 +645,10 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
  */
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var g = this.dygraph_;
-  var data = g.rawData_;
   var logscale = this.getOption_('logscale');
 
   // Create a combined series (average of all series values).
-  var sum;
-  var count;
-  var mutipleValues;
-  var i, j, k;
+  var i, j;
   var xVal, yVal;
 
   // TODO(danvk): short-circuit if there's only one series.
