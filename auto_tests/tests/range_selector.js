@@ -359,6 +359,7 @@ RangeSelectorTestCase.prototype.testMiniPlotDrawn = function() {
   var origFunc = Dygraph.getContext;
   var miniHtx;
   Dygraph.getContext = function(canvas) {
+    console.log(canvas.className);
     if (canvas.className != 'dygraph-rangesel-bgcanvas') {
       return origFunc(canvas);
     }
@@ -385,6 +386,7 @@ RangeSelectorTestCase.prototype.testMiniPlotDrawn = function() {
   var g = new Dygraph(graph, data, opts);
 
   // TODO(danvk): more precise tests.
+  assertNotNull(miniHtx);
   assertTrue(0 < CanvasAssertions.numLinesDrawn(miniHtx, '#ff0000'));
 
   Dygraph.getContext = origFunc;

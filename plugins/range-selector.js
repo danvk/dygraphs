@@ -541,11 +541,11 @@ rangeSelector.prototype.initInteraction_ = function() {
 rangeSelector.prototype.drawStaticLayer_ = function() {
   var ctx = this.bgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
-  try {
+  // try {
     this.drawMiniPlot_();
-  } catch(ex) {
-    Dygraph.warn(ex);
-  }
+  // } catch(ex) {
+  //   Dygraph.warn(ex);
+  // }
 
   var margin = 0.5;
   this.bgcanvas_ctx_.lineWidth = 1;
@@ -638,89 +638,47 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
 /**
  * @private
- * Computes and returns the combinded series data along with min/max for the mini plot.
- * @return {Object} An object containing combinded series array, ymin, ymax.
+ * Computes and returns the combined series data along with min/max for the mini plot.
+ * The combined series consists of averaged values for all series.
+ * When series have error bars, the error bars are ignored.
+ * @return {Object} An object containing combined series array, ymin, ymax.
  */
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
-  var data = this.dygraph_.rawData_;
+  var g = this.dygraph_;
+  var data = g.rawData_;
   var logscale = this.getOption_('logscale');
 
   // Create a combined series (average of all series values).
-  var combinedSeries = [];
   var sum;
   var count;
   var mutipleValues;
   var i, j, k;
   var xVal, yVal;
 
-  // Find out if data has multiple values per datapoint.
-  // Go to first data point that actually has values (see http://code.google.com/p/dygraphs/issues/detail?id=246)
-  for (i = 0; i < data.length; i++) {
-    if (data[i].length > 1 && data[i][1] !== null) {
-      mutipleValues = typeof data[i][1] != 'number';
-      if (mutipleValues) {
-        sum = [];
-        count = [];
-        for (k = 0; k < data[i][1].length; k++) {
-          sum.push(0);
-          count.push(0);
-        }
-      }
-      break;
+  // TODO(danvk): short-circuit if there's only one series.
+  var rolledSeries = [];
+  var dataHandler = g.dataHandler_;
+  var options = g.attributes_;
+  for (var i = 1; i < g.numColumns(); i++) {
+    var series = dataHandler.extractSeries(g.rawData_, i, options);
+    if (g.rollPeriod() > 1) {
+      series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
     }
+    
+    rolledSeries.push(series);
   }
 
-  for (i = 0; i < data.length; i++) {
-    var dataPoint = data[i];
-    xVal = dataPoint[0];
-
-    if (mutipleValues) {
-      for (k = 0; k < sum.length; k++) {
-        sum[k] = count[k] = 0;
-      }
-    } else {
-      sum = count = 0;
+  var combinedSeries = [];
+  for (i = 0; i < rolledSeries[0].length; i++) {
+    var sum = 0;
+    var count = 0;
+    for (j = 0; j < rolledSeries.length; j++) {
+      var y = rolledSeries[j][i][1];
+      if (y === null || isNaN(y)) continue;
+      count++;
+      sum += y;
     }
-
-    for (j = 1; j < dataPoint.length; j++) {
-      if (this.dygraph_.visibility()[j-1]) {
-        var y;
-        if (mutipleValues) {
-          for (k = 0; k < sum.length; k++) {
-            y = dataPoint[j][k];
-            if (y === null || isNaN(y)) continue;
-            sum[k] += y;
-            count[k]++;
-          }
-        } else {
-          y = dataPoint[j];
-          if (y === null || isNaN(y)) continue;
-          sum += y;
-          count++;
-        }
-      }
-    }
-
-    if (mutipleValues) {
-      for (k = 0; k < sum.length; k++) {
-        sum[k] /= count[k];
-      }
-      yVal = sum.slice(0);
-    } else {
-      yVal = sum/count;
-    }
-
-    combinedSeries.push([xVal, yVal]);
-  }
-
-  // Account for roll period, fractions.
-  combinedSeries = this.dygraph_.rollingAverage(combinedSeries, this.dygraph_.rollPeriod_);
-
-  if (typeof combinedSeries[0][1] != 'number') {
-    for (i = 0; i < combinedSeries.length; i++) {
-      yVal = combinedSeries[i][1];
-      combinedSeries[i][1] = yVal[0];
-    }
+    combinedSeries.push([rolledSeries[0][i][0], sum / count]);
   }
 
   // Compute the y range.
