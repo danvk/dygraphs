@@ -2,6 +2,8 @@
 // clients. Exporting a symbols forces the Closure Compiler to preserve it in
 // the minified JS (symbols not in this list are mangled).
 
+/*global Dygraph:false, goog:false */
+
 goog.exportSymbol('Dygraph', Dygraph);
 
 goog.exportSymbol('Dygraph.prototype.adjustRoll', Dygraph.prototype.adjustRoll);

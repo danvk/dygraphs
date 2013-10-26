@@ -649,7 +649,6 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
 
   // Create a combined series (average of all series values).
   var i, j;
-  var xVal, yVal;
 
   // TODO(danvk): short-circuit if there's only one series.
   var rolledSeries = [];
@@ -681,7 +680,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var yMin = Number.MAX_VALUE;
   var yMax = -Number.MAX_VALUE;
   for (i = 0; i < combinedSeries.length; i++) {
-    yVal = combinedSeries[i][1];
+    var yVal = combinedSeries[i][1];
     if (yVal !== null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);
