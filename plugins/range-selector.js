@@ -541,11 +541,11 @@ rangeSelector.prototype.initInteraction_ = function() {
 rangeSelector.prototype.drawStaticLayer_ = function() {
   var ctx = this.bgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
-  // try {
+  try {
     this.drawMiniPlot_();
-  // } catch(ex) {
-  //   Dygraph.warn(ex);
-  // }
+  } catch(ex) {
+    Dygraph.warn(ex);
+  }
 
   var margin = 0.5;
   this.bgcanvas_ctx_.lineWidth = 1;
