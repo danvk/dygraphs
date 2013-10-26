@@ -585,6 +585,22 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
 };
 
 /**
+ * Fetch a plugin instance of a particular class. Only for testing.
+ * @private
+ * @param {!Class} type The type of the plugin.
+ * @return {Object} Instance of the plugin, or null if there is none.
+ */
+Dygraph.prototype.getPluginInstance_ = function(type) {
+  for (var i = 0; i < this.plugins_.length; i++) {
+    var p = this.plugins_[i];
+    if (p.plugin instanceof type) {
+      return p.plugin;
+    }
+  }
+  return null;
+};
+
+/**
  * Returns the zoomed status of the chart for one or both axes.
  *
  * Axis is an optional parameter. Can be set to 'x' or 'y'.
