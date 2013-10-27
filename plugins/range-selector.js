@@ -268,7 +268,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
  */
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
-  var topElem = this.isIE_ ? document : window;
+  var topElem = document;
   var clientXLast = 0;
   var handle = null;
   var isZooming = false;
@@ -648,13 +648,13 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var logscale = this.getOption_('logscale');
 
   // Create a combined series (average of all series values).
-  var i, j;
+  var i;
 
   // TODO(danvk): short-circuit if there's only one series.
   var rolledSeries = [];
   var dataHandler = g.dataHandler_;
   var options = g.attributes_;
-  for (var i = 1; i < g.numColumns(); i++) {
+  for (i = 1; i < g.numColumns(); i++) {
     var series = dataHandler.extractSeries(g.rawData_, i, options);
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
@@ -667,7 +667,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   for (i = 0; i < rolledSeries[0].length; i++) {
     var sum = 0;
     var count = 0;
-    for (j = 0; j < rolledSeries.length; j++) {
+    for (var j = 0; j < rolledSeries.length; j++) {
       var y = rolledSeries[j][i][1];
       if (y === null || isNaN(y)) continue;
       count++;
