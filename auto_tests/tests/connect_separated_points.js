@@ -406,3 +406,44 @@ ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = f
   });
   assertExpectedLinesDrawnPerSeries(htx, 4, 3, 3);
 }
+
+ConnectSeparatedPointsTestCase.prototype.testNaNErrorBars = function() {
+  var data = [
+    [0,[1,2,3]],
+    [1,[2,3,4]],
+    [2,[3,4,5]],
+    [3,[null,null,null]],
+    [4,[2,3,4]],
+    [5,[3,4,5]],
+    [6,[2,3,4]],
+    [7,[NaN,NaN,NaN]],
+    [8,[2,3,4]],
+    [9,[2,3,4]],
+    [10,[2,3,4]],
+    [11,[2,3,4]]
+  ];
+    
+  var opts = {
+    labels: ["x", "y"],
+    colors: ["#ff0000"],
+    customBars: true,
+    connectSeparatedPoints: true
+  };
+  
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  
+  htx = g.hidden_ctx_;
+
+  var attrs = {};  
+  
+  // Line should be drawn across the null gap.
+  CanvasAssertions.assertLineDrawn(htx, 
+	g.toDomCoords(data[2][0], data[2][1][1]),
+	g.toDomCoords(data[4][0], data[4][1][1]),
+        attrs);
+
+  // No line across the NaN gap, and a single line (not two)
+  // across the null gap.
+  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+};
