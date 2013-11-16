@@ -160,6 +160,18 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float",
     "description": "Fade the background while highlighting series. 1=fully visible background (disable fading), 0=hiddden background (show highlighted series only)."
   },
+  "highlightSeriesBackgroundAnim": {
+    "default": "true",
+    "labels": ["Interactive Elements"],
+    "type": "boolean",
+    "description": "Gradually fade the background while highlighting series. true = use an animation, false = fade immediately"
+  },
+  "highlightSeriesBackgroundColorRGB": {
+    "default": "255, 255, 255 (white)",
+    "labels": ["Interactive Elements"],
+    "type": "string (rgb format)",
+    "description": "Fade the background using this background color while highlighting series. Must be an RGB value, eg: '128, 196, 196'."
+  },
   "includeZero": {
     "default": "false",
     "labels": ["Axis display"],
