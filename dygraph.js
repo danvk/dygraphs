@@ -2366,18 +2366,23 @@ Dygraph.stackPoints_ = function(
 
     var actualYval = point.yval;
     if (isNaN(actualYval) || actualYval === null) {
-      // Interpolate/extend for stacking purposes if possible.
-      updateNextPoint(i);
-      if (prevPoint && nextPoint && fillMethod != 'none') {
-        // Use linear interpolation between prevPoint and nextPoint.
-        actualYval = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
-            ((xval - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
-      } else if (prevPoint && fillMethod == 'all') {
-        actualYval = prevPoint.yval;
-      } else if (nextPoint && fillMethod == 'all') {
-        actualYval = nextPoint.yval;
-      } else {
+      if(fillMethod == 'none') {
         actualYval = 0;
+      }
+      else {
+        // Interpolate/extend for stacking purposes if possible.
+        updateNextPoint(i);
+        if (prevPoint && nextPoint && fillMethod != 'none') {
+          // Use linear interpolation between prevPoint and nextPoint.
+          actualYval = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
+              ((xval - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
+        } else if (prevPoint && fillMethod == 'all') {
+          actualYval = prevPoint.yval;
+        } else if (nextPoint && fillMethod == 'all') {
+          actualYval = nextPoint.yval;
+        } else {
+          actualYval = 0;
+        }
       }
     } else {
       prevPoint = point;
