@@ -2368,8 +2368,7 @@ Dygraph.stackPoints_ = function(
     if (isNaN(actualYval) || actualYval === null) {
       if(fillMethod == 'none') {
         actualYval = 0;
-      }
-      else {
+      } else {
         // Interpolate/extend for stacking purposes if possible.
         updateNextPoint(i);
         if (prevPoint && nextPoint && fillMethod != 'none') {
