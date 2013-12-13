@@ -17,15 +17,15 @@ Gallery.register(
             customBars: true,
             logscale: true
           });
-  
+
       var linear = document.getElementById("linear");
       var log = document.getElementById("log");
-      linear.onclick = function() { setLog(false); }
-      log.onclick = function() { setLog(true); }
+      linear.onclick = function() { setLog(false); };
+      log.onclick = function() { setLog(true); };
       var setLog = function(val) {
         g.updateOptions({ logscale: val });
         linear.disabled = !val;
         log.disabled = val;
-      }
+      };
     }
   });

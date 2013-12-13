@@ -17,12 +17,12 @@ Gallery.register(
       var showLabels = document.getElementById('showLabels');
       showLabels.onclick =  function() {
         g.updateOptions({showLabelsOnHighlight: showLabels.checked});
-      }
+      };
 
       var s = document.getElementById("status");
       var clearStatus = function() {
         s.innerHTML = '';
-      }
+      };
       document.getElementById('clear').onclick = clearStatus;
 
       var g = null;

@@ -1,3 +1,4 @@
+/*jshint loopfunc:true */
 Gallery.register(
   'synchronize',
   {

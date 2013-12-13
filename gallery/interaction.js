@@ -41,7 +41,7 @@ Gallery.register(
           "    to mark them.",
           "  </p>",
           "  <div id='div_g4' style='width:600px; height:300px;'></div>",
-          "</div>",
+          "</div>"
           ].join('\n');
 
     },
@@ -69,15 +69,18 @@ Gallery.register(
       }});
       document.getElementById("restore3").onclick = function() {
         restorePositioning(g3);
-      }
+      };
       var g4 = new Dygraph(document.getElementById("div_g4"),
-           NoisyData, { errorBars : true, drawPoints : true, interactionModel : {
-            'mousedown' : downV4,
-            'mousemove' : moveV4,
-            'mouseup' : upV4,
-            'dblclick' : dblClickV4,
-           },
-           underlayCallback : captureCanvas
-      });
+           NoisyData, {
+             errorBars : true,
+             drawPoints : true,
+             interactionModel : {
+               'mousedown' : downV4,
+               'mousemove' : moveV4,
+               'mouseup' : upV4,
+               'dblclick' : dblClickV4
+             },
+             underlayCallback : captureCanvas
+          });
     }
   });

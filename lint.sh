@@ -13,17 +13,12 @@
 jsc_opts='maxerr:10000,devel:true,browser:true,shadow:true'
 rhino_opts='maxerr=10000,devel=true,browser=true,shadow=true'
 
-if [ $# -gt 1 ]; then
-  echo "Usage: $0 [file.js]"
-  exit 1
-fi
-
 RETURN_VALUE=0
 
 if [ $# -eq 0 ]; then
-  files=$(ls dygraph*.js plugins/*.js datahandler/*.js | grep -v combined | grep -v dev.js| grep -v externs)
+  files=$(ls dygraph*.js plugins/*.js datahandler/*.js gallery/*.js | grep -v combined | grep -v dev.js| grep -v externs)
 else
-  files=$1
+  files=$@
 fi
 
 if [ -e /System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc ]; then
