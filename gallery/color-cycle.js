@@ -17,7 +17,7 @@ Gallery.register(
         ['#284785', '#EE1111', '#8AE234'],
         ['#444444', '#888888', '#DDDDDD'],
         null
-      ]
+      ];
       chart = new Dygraph(document.getElementById("blah"),
                           "X,a,b,c\n" +
                           "10,12345,23456,34567\n" +

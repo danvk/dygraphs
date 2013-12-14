@@ -17,9 +17,9 @@ Gallery.register(
         "</div>"].join("\n");
     },
     run: function() {
-      document.getElementById("ry1").onclick = function() { regression(1) };
-      document.getElementById("ry2").onclick = function() { regression(2) };
-      document.getElementById("clear").onclick = function() { clearLines() };
+      document.getElementById("ry1").onclick = function() { regression(1); };
+      document.getElementById("ry2").onclick = function() { regression(2); };
+      document.getElementById("clear").onclick = function() { clearLines(); };
 
       var data = [];
       for (var i = 0; i < 120; i++) {
@@ -42,7 +42,7 @@ Gallery.register(
           if (x < range[0] || x > range[1]) continue;
 
           var y = g.getValue(i, series);
-          if (y == null) continue;
+          if (y === null || y === undefined) continue;
           if (y.length == 2) {
             // using fractions
             y = y[0] / y[1];
@@ -88,11 +88,11 @@ Gallery.register(
           var p1 = g.toDomCoords(x1, y1);
           var p2 = g.toDomCoords(x2, y2);
 
-          var c = new RGBColorParser(g.getColors()[i - 1]);
+          var c = Dygraph.toRGB_(g.getColors()[i - 1]);
           c.r = Math.floor(255 - 0.5 * (255 - c.r));
           c.g = Math.floor(255 - 0.5 * (255 - c.g));
           c.b = Math.floor(255 - 0.5 * (255 - c.b));
-          var color = c.toHex();
+          var color = 'rgb(' + c.r + ',' + c.g + ',' + c.b + ')';
           ctx.save();
           ctx.strokeStyle = color;
           ctx.lineWidth = 1.0;
@@ -104,7 +104,7 @@ Gallery.register(
           ctx.restore();
         }
       }
-      
+
       g = new Dygraph(
               document.getElementById("demodiv"),
               data,

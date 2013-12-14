@@ -18,7 +18,7 @@ Gallery.register(
         "2008-05-10,0\n" +
         "2008-05-11,3\n" +
         "2008-05-12,4\n"
-    )
+    );
     var g2 = new Dygraph(document.getElementById("graphd2"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
@@ -30,7 +30,7 @@ Gallery.register(
         {
            stepPlot: true
         }
-    )
+    );
     var g3 = new Dygraph(document.getElementById("graph3"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
@@ -42,7 +42,7 @@ Gallery.register(
         {
             avoidMinZero: true
         }
-    )
+    );
     var g4 = new Dygraph(document.getElementById("graphd4"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
@@ -55,6 +55,6 @@ Gallery.register(
            stepPlot: true,
            avoidMinZero: true
         }
-    )
+    );
   }
 });

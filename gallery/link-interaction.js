@@ -63,12 +63,12 @@ Gallery.register(
         var w = g.xAxisRange();
         desired_range = [ w[0], w[0] + res * 1000 ];
         animate();
-      }
+      };
 
       var reset = function() {
         desired_range = orig_range;
         animate();
-      }
+      };
 
       var pan = function(dir) {
         var w = g.xAxisRange();
@@ -76,7 +76,7 @@ Gallery.register(
         var amount = scale * 0.25 * dir;
         desired_range = [ w[0] + amount, w[1] + amount ];
         animate();
-      }
+      };
 
       document.getElementById('hour').onclick = function() { zoom(3600); };
       document.getElementById('day').onclick = function() { zoom(86400); };

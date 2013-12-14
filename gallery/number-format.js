@@ -29,7 +29,7 @@ Gallery.register(
           var text = document.createTextNode(columns[i]);
           th.appendChild(text);
           row.appendChild(th);
-        };
+        }
         return row;
       };
 
@@ -54,7 +54,7 @@ Gallery.register(
         var headers = ['Dygraph.floatFormat()', 'toPrecision()',
                        'Dygraph.floatFormat()', 'toPrecision()'];
         var numbers = [];
-        var p = parseInt(document.getElementById('p_input').value);
+        var p = parseInt(document.getElementById('p_input').value, 10);
 
         for (var i = -10; i <= 10; i++) {
           var n = Math.pow(10, i);
@@ -66,7 +66,7 @@ Gallery.register(
 
         // Check exact values of 0.
         numbers.push([Dygraph.floatFormat(0.0, p),
-                      0.0.toPrecision(p)]);
+                      (0.0).toPrecision(p)]);
 
         var elem = document.getElementById('content');
         elem.innerHTML = '';
