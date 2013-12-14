@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'two-axes',
   {
@@ -11,6 +12,7 @@ Gallery.register(
           "<input type='checkbox' id='check'><label for='check'> Fill?</label>";
     },
     run: function() {
+      var g, g2;
       document.getElementById('check').onchange = function(el) {
         g.updateOptions( { fillGraph: el.checked } );
         g2.updateOptions( { fillGraph: el.checked } );

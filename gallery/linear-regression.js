@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'linear-regression',
   {
@@ -17,6 +18,7 @@ Gallery.register(
         "</div>"].join("\n");
     },
     run: function() {
+      var g, regression, clearLines;  // defined below
       document.getElementById("ry1").onclick = function() { regression(1); };
       document.getElementById("ry2").onclick = function() { regression(2); };
       document.getElementById("clear").onclick = function() { clearLines(); };
@@ -32,7 +34,7 @@ Gallery.register(
       // if coeffs = [ null, [1, 2], null ] then we draw a regression for series 1
       // only. The regression line is y = 1 + 2 * x.
       var coeffs = [ null, null, null ];
-      function regression(series) {
+      regression = function(series) {
         // Only run the regression over visible points.
         var range = g.xAxisRange();
 
@@ -64,12 +66,12 @@ Gallery.register(
         }
 
         g.updateOptions({});  // forces a redraw.
-      }
+      };
 
-      function clearLines() {
+      clearLines = function() {
         for (var i = 0; i < coeffs.length; i++) coeffs[i] = null;
         g.updateOptions({});
-      }
+      };
 
       function drawLines(ctx, area, layout) {
         if (typeof(g) == 'undefined') return;  // won't be set on the initial draw.

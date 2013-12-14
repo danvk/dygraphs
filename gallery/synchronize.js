@@ -1,4 +1,6 @@
+/*global Gallery,Dygraph,data */
 /*jshint loopfunc:true */
+/*global NoisyData */
 Gallery.register(
   'synchronize',
   {
@@ -16,7 +18,7 @@ Gallery.register(
         "<td><div id='div4' style='width:500px; height:300px;'></div></td></table>"].join("\n");
     },
     run: function() {
-      gs = [];
+      var gs = [];
       var blockRedraw = false;
       for (var i = 1; i <= 4; i++) {
         gs.push(

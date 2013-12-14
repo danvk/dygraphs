@@ -1,3 +1,6 @@
+/*global Gallery,Dygraph,data */
+/*global NoisyData,downV3,moveV3,upV3,clickV3,dblClickV3,scrollV3,restorePositioning,downV4,moveV4,upV4,dblClickV4,captureCanvas */
+
 Gallery.register(
   'interaction',
   {
@@ -46,13 +49,13 @@ Gallery.register(
 
     },
     run: function() {
+      var lastClickedGraph;
       // TODO(konigsberg): Add cleanup to remove callbacks.
       Dygraph.addEvent(document, "mousewheel", function() { lastClickedGraph = null; });
       Dygraph.addEvent(document, "click", function() { lastClickedGraph = null; });
-      var g = new Dygraph(document.getElementById("div_g"),
+      new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
-      var s = document.getElementById("g2_console");
-      var g2 = new Dygraph(document.getElementById("div_g2"),
+      new Dygraph(document.getElementById("div_g2"),
            NoisyData,
            {
              errorBars : true,
@@ -70,7 +73,7 @@ Gallery.register(
       document.getElementById("restore3").onclick = function() {
         restorePositioning(g3);
       };
-      var g4 = new Dygraph(document.getElementById("div_g4"),
+      new Dygraph(document.getElementById("div_g4"),
            NoisyData, {
              errorBars : true,
              drawPoints : true,

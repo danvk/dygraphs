@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'annotations',
   {
@@ -19,7 +20,7 @@ Gallery.register(
         return "(" + ann.series + ", " + ann.x + ")";
       }
   
-      g = new Dygraph(
+      var g = new Dygraph(
               document.getElementById("g_div"),
               function() {
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
@@ -54,7 +55,7 @@ Gallery.register(
           );
 
       var last_ann = 0;
-      annotations = [];
+      var annotations = [];
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
@@ -81,7 +82,6 @@ Gallery.register(
 
       document.getElementById('add').onclick = function() {
         var x = last_ann + 2;
-        var annnotations = g.annotations();
         annotations.push( {
           series: 'line',
           x: "200610" + x,

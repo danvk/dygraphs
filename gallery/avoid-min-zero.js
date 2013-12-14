@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'avoid-min-zero',
   {
@@ -10,7 +11,7 @@ Gallery.register(
           "<p>4: Step chart with <code>avoidMinZero</code> option:</p><div id='graphd4'></div> ";
     },
     run: function() {
-    var g1 = new Dygraph(document.getElementById("graph1"),
+    new Dygraph(document.getElementById("graph1"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
         "2008-05-08,1\n" +
@@ -19,7 +20,7 @@ Gallery.register(
         "2008-05-11,3\n" +
         "2008-05-12,4\n"
     );
-    var g2 = new Dygraph(document.getElementById("graphd2"),
+    new Dygraph(document.getElementById("graphd2"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
         "2008-05-08,1\n" +
@@ -31,7 +32,7 @@ Gallery.register(
            stepPlot: true
         }
     );
-    var g3 = new Dygraph(document.getElementById("graph3"),
+    new Dygraph(document.getElementById("graph3"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
         "2008-05-08,1\n" +
@@ -43,7 +44,7 @@ Gallery.register(
             avoidMinZero: true
         }
     );
-    var g4 = new Dygraph(document.getElementById("graphd4"),
+    new Dygraph(document.getElementById("graphd4"),
         "Date,Temperature\n" +
         "2008-05-07,0\n" +
         "2008-05-08,1\n" +

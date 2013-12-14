@@ -1,3 +1,4 @@
+/*global Dygraph */
 // Code for a variety of interaction models. Used in interaction.html, but split out from
 // that file so they can be tested in isolation.
 //

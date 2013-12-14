@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'no-range',
   {
@@ -11,11 +12,11 @@ Gallery.register(
           "<div id='blah2'></div>";
     },
     run: function() {
-      var g1 = new Dygraph(document.getElementById("blah"),
+      new Dygraph(document.getElementById("blah"),
                   "X,Y\n10,12345\n11,12345\n",
                   { width: 640, height: 480 });
   
-      var g2 = new Dygraph(document.getElementById("blah2"),
+      new Dygraph(document.getElementById("blah2"),
           "date,10M\n" +
           "20021229,10000000.000000\n" +
           "20030105,10000000.000000\n" +

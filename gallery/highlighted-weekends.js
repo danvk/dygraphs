@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'highlighted-weekends',
   {
@@ -42,7 +43,7 @@ Gallery.register(
         "2011-01-30," + Math.random()*100 + "\n" +
         "2011-01-31," + Math.random()*100 + "\n";
 
-      var g = new Dygraph(
+      new Dygraph(
         document.getElementById("div_g"),
         data,
         {
@@ -64,7 +65,6 @@ Gallery.register(
             // get day of week
             var d = new Date(min_data_x);
             var dow = d.getUTCDay();
-            var ds = d.toUTCString();
 
             var w = min_data_x;
             // starting on Sunday is a special case

@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'drawing',
   {
@@ -16,6 +17,7 @@ Gallery.register(
     },
 
     run: function() {
+      var change_tool;  // defined below.
       var zoom = document.getElementById('tool_zoom');
       zoom.onclick = function() { change_tool(zoom); };
       var pencil = document.getElementById('tool_pencil');
@@ -89,7 +91,7 @@ Gallery.register(
         lastDrawValue = null;
       }
 
-      var change_tool = function(tool_div) {
+      change_tool = function(tool_div) {
         var ids = ['tool_zoom', 'tool_pencil', 'tool_eraser'];
         for (var i = 0; i < ids.length; i++) {
           var div = document.getElementById(ids[i]);
@@ -112,7 +114,7 @@ Gallery.register(
       };
       change_tool(document.getElementById("tool_pencil"));
 
-      g = new Dygraph(document.getElementById("draw_div"), data,
+      new Dygraph(document.getElementById("draw_div"), data,
           {
             valueRange: valueRange,
             labels: [ 'Date', 'Value' ],

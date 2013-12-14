@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global NoisyData */
 Gallery.register(
   'resize',
   {
@@ -7,7 +9,7 @@ Gallery.register(
       parent.innerHTML = "<div id='div_g'>";
     },
     run: function() {
-      g = new Dygraph(
+      new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
               rollPeriod: 7,

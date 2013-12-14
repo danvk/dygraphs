@@ -1,4 +1,6 @@
+/*global Gallery,Dygraph,data */
 /*jshint evil:true */
+/*global fn */
 Gallery.register(
   'plotter',
   {
@@ -27,6 +29,7 @@ Gallery.register(
 
     },
     run: function() {
+      var plot;  // defined below
       var select = document.getElementById("presets");
       var presets = {
         'id': [ -10, 10, 'function(x) {\n  return x;\n}' ],
@@ -46,7 +49,7 @@ Gallery.register(
       };
 
       var plotButton = document.getElementById("plot");
-      var plot = function() {
+      plot = function() {
         var eq = document.getElementById("eq").value;
         eval("fn = " + eq);
 
@@ -71,7 +74,7 @@ Gallery.register(
           data.push(row);
         }
 
-        g = new Dygraph(graph, data);
+        new Dygraph(graph, data);
       };
       plotButton.onclick = plot;
       plot();

@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'demo',
   {
@@ -14,7 +15,7 @@ Gallery.register(
         "</tr></table>";
     },
     run: function() {
-      var g = new Dygraph(
+      new Dygraph(
               document.getElementById("demodiv"),
               function() {
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };

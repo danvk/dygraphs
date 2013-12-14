@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'link-interaction',
   {
@@ -26,7 +27,7 @@ Gallery.register(
                ]);
       }
       var orig_range = [ r[0][0].valueOf(), r[r.length - 1][0].valueOf() ];
-      g = new Dygraph(
+      var g = new Dygraph(
             document.getElementById("div_g"),
             r, {
               rollPeriod: 7,
@@ -38,7 +39,7 @@ Gallery.register(
             }
           );
 
-      var desired_range = null;
+      var desired_range = null, animate;
       function approach_range() {
         if (!desired_range) return;
         // go halfway there
@@ -55,9 +56,9 @@ Gallery.register(
           animate();
         }
       }
-      function animate() {
+      animate = function() {
         setTimeout(approach_range, 50);
-      }
+      };
 
       var zoom = function(res) {
         var w = g.xAxisRange();

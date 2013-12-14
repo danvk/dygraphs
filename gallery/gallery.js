@@ -1,4 +1,5 @@
 /*jshint loopfunc:true */
+/*global Dygraph,$,TextArea,jQuery */
 var Gallery = {};
 
 Gallery.entries = {};
