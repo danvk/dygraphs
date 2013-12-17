@@ -275,8 +275,13 @@ axes.prototype.willDrawChart = function(e) {
         label.style.textAlign = "center";
         label.style.top = (y + g.getOption('axisTickSize')) + 'px';
 
-        var left = (x - g.getOption('axisLabelWidth')/2);
-        if (left + g.getOption('axisLabelWidth') > canvasWidth) {
+        // xAxis labels don't align correctly with ticks if xAxisLabelWidth is
+        // used in dygraph configuration. 
+        // var left = (x - g.getOption('axisLabelWidth')/2);
+        // if (left + g.getOption('axisLabelWidth') > canvasWidth) {
+        // FIX: use xAxisLabelWith for calculation!
+        var left = (x - g.getOption('xAxisLabelWidth')/2);
+        if (left + g.getOption('xAxisLabelWidth') > canvasWidth) {
           left = canvasWidth - g.getOption('xAxisLabelWidth');
           label.style.textAlign = "right";
         }
