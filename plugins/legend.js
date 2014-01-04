@@ -122,7 +122,7 @@ var calculateEmWidthInDiv = function(div) {
 
 var escapeHTML = function(str) {
   return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+};
 
 legend.prototype.select = function(e) {
   var xValue = e.selectedX;
