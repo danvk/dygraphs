@@ -120,6 +120,10 @@ var calculateEmWidthInDiv = function(div) {
   return oneEmWidth;
 };
 
+var escapeHTML = function(str) {
+  return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+};
+
 legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
@@ -208,7 +212,7 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
       strokePattern = g.getOption("strokePattern", labels[i]);
       dash = generateLegendDashHTML(strokePattern, series.color, oneEmWidth);
       html += "<span style='font-weight: bold; color: " + series.color + ";'>" +
-          dash + " " + labels[i] + "</span>";
+          dash + " " + escapeHTML(labels[i]) + "</span>";
     }
     return html;
   }
@@ -245,7 +249,7 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
 
     // TODO(danvk): use a template string here and make it an attribute.
     html += "<span" + cls + ">" + " <b><span style='color: " + series.color + ";'>" +
-        pt.name + "</span></b>:&nbsp;" + yval + "</span>";
+        escapeHTML(pt.name) + "</span></b>:&nbsp;" + yval + "</span>";
   }
   return html;
 };
