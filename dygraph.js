@@ -205,7 +205,7 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
  * is displaying values at the stated granularity.
  * @param {Date} date The date to format
  * @param {number} granularity One of the Dygraph granularity constants
- * @return {string} The formatted date
+ * @return {string} The date formatted as local time
  * @private
  */
 Dygraph.dateAxisFormatter = function(date, granularity) {
@@ -214,16 +214,61 @@ Dygraph.dateAxisFormatter = function(date, granularity) {
   } else if (granularity >= Dygraph.MONTHLY) {
     return Dygraph.SHORT_MONTH_NAMES_[date.getMonth()] + ' ' + date.getFullYear();
   } else {
-    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
-    if (frac === 0 || granularity >= Dygraph.DAILY) {
+    // 1e-3 factor on millis missing in original implementation
+    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + 1e-3 * date.getMilliseconds();
+    if (frac == 0 || granularity >= Dygraph.DAILY) {
       // e.g. '21Jan' (%d%b)
-      var nd = new Date(date.getTime() + 3600*1000);
+      var nd = new Date(date.getTime() + 3600*1000); // why add an hour in this case? it should not change the output string!
       return Dygraph.zeropad(nd.getDate()) + Dygraph.SHORT_MONTH_NAMES_[nd.getMonth()];
     } else {
       return Dygraph.hmsString_(date.getTime());
     }
   }
 };
+
+/**
+ * Convert a JS date to a UTC string (instead of local time) appropriate to 
+ * display on an axis that is displaying values at the stated granularity.
+ * @param {Date} date The date to format
+ * @param {number} granularity One of the Dygraph granularity constants
+ * @return {string} The date formatted as UTC
+ * @private
+ *
+ * This is just a copy of the original dateAxisFormatter, but using UTC date 
+ * functions instead of the local time ones. An alternative approach is to add 
+ * a utc boolean paramater and the related logic into the dateAxisFormatter 
+ * function (as in Dygraph.hmsString_ in dygraph-utils.js) and provide the 
+ * following specializations:
+ *
+ * Dygraph.dateUTCAxisFormatter = function(date, granularity) {
+ *   return Dygraph.dateAxisFormatter(date, granularity, true)
+ * }
+ *
+ * Dygraph.dateLocalTimeAxisFormatter = function(date, granularity) {
+ *   return Dygraph.dateAxisFormatter(date, granularity, false)
+ * }
+ *
+ * I (joanpau) am not sure if the modified dateAxisFormatter would be backwards 
+ * compatible the (would the third parameter break some formatter interface?). 
+ * If it was, the local time specialization would not be needed.
+ */
+Dygraph.dateUTCAxisFormatter = function(date, granularity) {
+  if (granularity >= Dygraph.DECADAL) {
+    return '' + date.getUTCFullYear();
+  } else if (granularity >= Dygraph.MONTHLY) {
+    return Dygraph.SHORT_MONTH_NAMES_[date.getUTCMonth()] + ' ' + date.getUTCFullYear();
+  } else {
+    var frac = date.getUTCHours() * 3600 + date.getUTCMinutes() * 60 + date.getUTCSeconds() + 1e-3 * date.getUTCMilliseconds();
+    if (frac == 0 || granularity >= Dygraph.DAILY) {
+      // e.g. '21Jan' (%d%b)
+      // var nd = new Date(date.getTime() + 3600*1000); // again: is this really needed?
+      return Dygraph.zeropad(date.getUTCDate()) + Dygraph.SHORT_MONTH_NAMES_[date.getUTCMonth()];
+    } else {
+      return Dygraph.hmsString_(date.getTime(), true);
+    }
+  }
+};
+
 
 /**
  * Standard plotters. These may be used by clients.
