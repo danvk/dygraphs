@@ -477,45 +477,60 @@ Dygraph.zeropad = function(x) {
 
 /**
  * Return a string version of the hours, minutes and seconds portion of a date.
- *
- * @param {number} date The JavaScript date (ms since epoch)
- * @return {string} A time of the form "HH:MM:SS"
+ * @param {number} hh The hours (from 0-23)
+ * @param {number} mm The minutes (from 0-59)
+ * @param {number} ss The seconds (from 0-59)
+ * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-Dygraph.hmsString_ = function(date) {
+Dygraph.hmsString_ = function(hh, mm, ss) {
   var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
-  if (d.getSeconds()) {
-    return zeropad(d.getHours()) + ":" +
-           zeropad(d.getMinutes()) + ":" +
-           zeropad(d.getSeconds());
-  } else {
-    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
+  var ret = zeropad(hh) + ":" + zeropad(mm);
+  if (ss) {
+    ret += ":" + zeropad(ss);
   }
+  return ret;
 };
 
 /**
- * Convert a JS date (millis since epoch) to YYYY/MM/DD
+ * Convert a JS date (millis since epoch) to a formatted string.
  * @param {number} date The JavaScript date (ms since epoch)
- * @return {string} A date of the form "YYYY/MM/DD"
+ * @param {boolean} utc Wether output UTC or local time
+ * @return {string} A date of one of these forms:
+ *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private
  */
-Dygraph.dateString_ = function(date) {
+Dygraph.dateString_ = function(date, utc) {
   var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
-
-  // Get the year:
-  var year = "" + d.getFullYear();
+  var dt = new Date(date);
+  var y, m, d, hh, mm, ss;
+  if (utc) {
+    y = dt.getUTCFullYear();
+    m = dt.getUTCMonth();
+    d = dt.getUTCDate();
+    hh = dt.getUTCHours();
+    mm = dt.getUTCMinutes();
+    ss = dt.getUTCSeconds();
+  } else {
+    y = dt.getFullYear();
+    m = dt.getMonth();
+    d = dt.getDate();
+    hh = dt.getHours();
+    mm = dt.getMinutes();
+    ss = dt.getSeconds();
+  }
+  // Get a year string:
+  var year = "" + y;
   // Get a 0 padded month string
-  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  var month = zeropad(m + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
-  var day = zeropad(d.getDate());
-
-  var ret = "";
-  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + Dygraph.hmsString_(date);
-
-  return year + "/" + month + "/" + day + ret;
+  var day = zeropad(d);
+  var frac = hh * 3600 + mm * 60 + ss
+  var ret = year + "/" + month + "/" + day;
+  if (frac) {
+    ret += " " + Dygraph.hmsString_(hh,mm,ss);
+  }
+  return ret;
 };
 
 /**
