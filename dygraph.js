@@ -229,7 +229,7 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
     mins = date.getMinutes();
     secs = date.getSeconds();
     millis = date.getMilliseconds();
-  };
+  }
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
@@ -250,12 +250,12 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
  * @private
  * Return a string version of a JS date for a value label. This respects the 
  * labelsDateUTC option.
- * @param {Date} date The number to be formatted
+ * @param {Date} date The date to be formatted
  * @param {Dygraph} opts An options view
  */
 Dygraph.dateValueFormatter = function(d, opts) {
-  return Dygraph.dateString_(d, opts('labelsDateUTC'))
-}
+  return Dygraph.dateString_(d, opts('labelsDateUTC'));
+};
 
 /**
  * Standard plotters. These may be used by clients.
