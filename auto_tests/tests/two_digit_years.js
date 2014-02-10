@@ -6,7 +6,9 @@
 var TwoDigitYearsTestCase = TestCase("TwoDigitYears");
 
 TwoDigitYearsTestCase.prototype.testTwoDigitYears = function() {
+  // A date with a one digit year: '9 AD'.
   var start = new Date(9, 2, 3);
+  // A date with a two digit year: '11 AD'.
   var end = new Date(11, 3, 5);
 
   // Javascript will automatically add 1900 to our years if they are < 100.
