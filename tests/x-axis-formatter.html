@@ -47,8 +47,8 @@
             { 
               axes: {
                 x: {
-                  axisLabelFormatter: function(d, gran) {
-                      return Dygraph.dateAxisFormatter(new Date(d.getTime() + 7200*1000), gran);
+                  axisLabelFormatter: function(d, gran, opts) {
+                      return Dygraph.dateAxisLabelFormatter(new Date(d.getTime() + 7200*1000), gran, opts);
                   }
                 }
               }
