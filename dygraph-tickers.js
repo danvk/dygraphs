@@ -456,12 +456,12 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
 
     var start_year = new Date(start_time).getFullYear();
     var end_year   = new Date(end_time).getFullYear();
-    var zeropad = Dygraph.zeropad;
     for (var i = start_year; i <= end_year; i++) {
       if (i % year_mod !== 0) continue;
       for (var j = 0; j < months.length; j++) {
-        var date_str = i + "/" + zeropad(1 + months[j]) + "/01";
-        t = Dygraph.dateStrToMillis(date_str);
+        var dt = new Date(i, months[j], 1);
+        dt.setFullYear(i);
+        t = dt.getTime();
         if (t < start_time || t > end_time) continue;
         ticks.push({ v:t,
                      label: formatter(new Date(t), granularity, opts, dg)
