@@ -30,6 +30,11 @@
     </p>
     <div id="roll14" style="width:800px; height:320px;"></div>
     <p>
+      Use the average of a specific subset of series to draw the mini plot (only the first serie is used in this test).
+      The default behaviour is to compute the average of <em>all</em> series.
+    </p>
+    <div id="selectcombined" style="width:800px; height:320px;"></div>
+    <p>
       Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
     </p>
     <div id="nochart" style="width:800px; height:30px;"></div>
@@ -65,6 +70,21 @@
           }
       );
       g3 = new Dygraph(
+          document.getElementById("selectcombined"),
+          [
+            [0, 1, 4, 10],
+            [10, 2, 8, 19],
+            [25, 15, 4, 2],
+            [35, 0, 3, 2]
+          ],
+          {
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            showRangeSelector: true,
+            rangeSelectorCombinedSeries: [1]
+          }
+      );
+      g4 = new Dygraph(
           document.getElementById("nochart"),
           [[0,1],[10,1]],
           {
