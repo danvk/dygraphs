@@ -320,6 +320,7 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+  rangeSelectorCombinedSeries: null,
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.

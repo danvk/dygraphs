@@ -451,6 +451,36 @@ RangeSelectorTestCase.prototype.testCombinedSeries = function() {
   }, combinedSeries);
 };
 
+// Tests selection of a specific series to average for the mini plot.
+RangeSelectorTestCase.prototype.testSelectedCombinedSeries = function() {
+  var opts = {
+    showRangeSelector: true,
+    rangeSelectorCombinedSeries: [1, 3], // first and third series averaged, second skipped
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
+  };
+  var data = [
+      [0, 5, 8, 13, 21],  // average (first and third) = 9
+      [5, 1, 3, 7, 14],   // average (first and third) = 4
+      [10, 0, 19, 10, 6]  // average (first and third) = 5
+    ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
+  assertNotNull(rangeSelector);
+
+  var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
+  assertEquals({
+    yMin: 4 - 5 * 0.25,  // 25% padding on combined series range.
+    yMax: 9 + 5 * 0.25,
+    data: [
+      [0, 9],
+      [5, 4],
+      [10, 5]
+    ]
+  }, combinedSeries);
+};
+
 // Tests data computation for the mini plot with a single error bar series.
 RangeSelectorTestCase.prototype.testSingleCombinedSeriesCustomBars = function() {
   var opts = {
