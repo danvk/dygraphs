@@ -39,7 +39,7 @@ Dygraph.Interaction.startPan = function(event, g, context) {
   context.isPanning = true;
   var xRange = g.xAxisRange();
 
-  if (g.getOptionForAxis("logscale", 'x')) {
+  if (g.getOptionForAxis("logscale", "x")) {
     context.initialLeftmostDate = Dygraph.log10(xRange[0]);
     context.dateRange = Dygraph.log10(xRange[1]) - Dygraph.log10(xRange[0]);
   } else {
@@ -138,7 +138,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
     }
   }
 
-  if (g.getOptionForAxis("logscale", 'x')) {
+  if (g.getOptionForAxis("logscale", "x")) {
     g.dateWindow_ = [ Math.pow(Dygraph.LOG_SCALE, minDate),
                       Math.pow(Dygraph.LOG_SCALE, maxDate) ];
   } else {
