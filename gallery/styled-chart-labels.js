@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'styled-chart-labels',
   {
@@ -11,7 +12,7 @@ Gallery.register(
           "<div class='chart' id='div_g2' style='width:600px; height:300px;'></div>"].join("\n");
     },
     run: function() {
-      g = new Dygraph(
+      new Dygraph(
             document.getElementById("div_g"),
             data, {
               rollPeriod: 7,
@@ -28,7 +29,7 @@ Gallery.register(
             }
           );
 
-      g2 = new Dygraph(
+      new Dygraph(
             document.getElementById("div_g2"),
             data, {
               rollPeriod: 30,

@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'highlighted-series',
   {
@@ -57,8 +58,8 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
         highlightSeriesOpts: {
           strokeWidth: 3,
           strokeBorderWidth: 1,
-          highlightCircleSize: 5,
-        },
+          highlightCircleSize: 5
+        }
       });
   var onclick = function(ev) {
     if (g.isSeriesLocked()) {

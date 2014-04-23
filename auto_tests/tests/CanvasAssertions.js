@@ -183,15 +183,20 @@ CanvasAssertions.assertBalancedSaveRestore = function(proxy) {
 CanvasAssertions.numLinesDrawn = function(proxy, color) {
   CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   var num_lines = 0;
+  var num_potential_calls = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
     var call = proxy.calls__[i];
-
-    // note: Don't simplify these two conditionals into one. The
-    // separation simplifies debugging tricky tests.
-    if (call.name == "lineTo") {
+    if (call.name == "beginPath") {
+      num_potential_calls = 0;
+    } else if (call.name == "lineTo") {
+      num_potential_calls++;
+    } else if (call.name == "stroke") {
+      // note: Don't simplify these two conditionals into one. The
+      // separation simplifies debugging tricky tests.
       if (call.properties.strokeStyle == color) {
-        num_lines++;
+        num_lines += num_potential_calls;
       }
+      num_potential_calls = 0;
     }
   }
   return num_lines;

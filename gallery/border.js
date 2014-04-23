@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'border',
   { 
@@ -8,7 +9,7 @@ Gallery.register(
           "<div id='bordered' style='border: 1px solid red; width:600px; height:300px;'></div>";
     },
     run: function() {
-      var g = new Dygraph(document.getElementById('bordered'), data,
+      new Dygraph(document.getElementById('bordered'), data,
       {
         labelsDivStyles: { border: '1px solid black' },
         title: 'Chart Title',

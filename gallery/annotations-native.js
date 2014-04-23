@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'annotations-native',
   {
@@ -9,7 +10,7 @@ Gallery.register(
         "<div id='demodiv'></div>";
     },
     run: function() {
-      g = new Dygraph(
+      var g = new Dygraph(
               document.getElementById("demodiv"),
               [
                 [ new Date("2011/11/01"), 100 ],

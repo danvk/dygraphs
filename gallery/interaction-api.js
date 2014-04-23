@@ -1,3 +1,4 @@
+/*global Dygraph */
 // Code for a variety of interaction models. Used in interaction.html, but split out from
 // that file so they can be tested in isolation.
 //
@@ -50,9 +51,9 @@ function offsetToPercentage(g, offsetX, offsetY) {
   var h = g.toDomCoords(null, yar0[0])[1] - yOffset;
 
   // Percentage from the left.
-  var xPct = w == 0 ? 0 : (x / w);
+  var xPct = w === 0 ? 0 : (x / w);
   // Percentage from the top.
-  var yPct = h == 0 ? 0 : (y / h);
+  var yPct = h === 0 ? 0 : (y / h);
 
   // The (1-) part below changes it from "% distance down from the top"
   // to "% distance up from the bottom".
@@ -73,9 +74,9 @@ function dblClickV3(event, g, context) {
   var yPct = percentages[1];
 
   if (event.ctrlKey) {
-    zoom(g, -.25, xPct, yPct);
+    zoom(g, -0.25, xPct, yPct);
   } else {
-    zoom(g, +.2, xPct, yPct);
+    zoom(g, +0.2, xPct, yPct);
   }
 }
 
@@ -149,8 +150,9 @@ function moveV4(event, g, context) {
   var RANGE = 7;
 
   if (v4Active) {
-    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(g.graphDiv);
-    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(g.graphDiv);
+    var graphPos = Dygraph.findPos(g.graphDiv);
+    var canvasx = Dygraph.pageX(event) - graphPos.x;
+    var canvasy = Dygraph.pageY(event) - graphPos.y;
 
     var rows = g.numRows();
     // Row layout:
@@ -163,7 +165,7 @@ function moveV4(event, g, context) {
         for (var col = 1; col < 3; col++) {
           // TODO(konigsberg): these will throw exceptions as data is removed.
           var vals =  g.getValue(row, col);
-          if (vals == null) { continue; }
+          if (vals === null || vals === undefined) { continue; }
           var val = vals[0];
           var y = g.toDomCoords(null, val)[1];
           var diff2 = Math.abs(canvasy - y);

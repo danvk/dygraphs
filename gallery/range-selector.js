@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global data_temp */
 Gallery.register(
   'range-selector',
   {
@@ -12,7 +14,7 @@ Gallery.register(
           "<div id='roll14' style='width:600px; height:300px;'></div>"].join("\n");
     },
     run: function() {
-      g1 = new Dygraph(
+      new Dygraph(
           document.getElementById("noroll"),
           data_temp,
           {
@@ -24,7 +26,7 @@ Gallery.register(
             showRangeSelector: true
           }
       );
-      g2 = new Dygraph(
+      new Dygraph(
           document.getElementById("roll14"),
           data_temp,
           {

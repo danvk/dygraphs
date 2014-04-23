@@ -149,14 +149,14 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && ann[i].x === undefined) {
-      this.dygraph_.error("Annotations must have an 'x' property");
+      Dygraph.error("Annotations must have an 'x' property");
       return;
     }
     if (ann[i].icon &&
         !(ann[i].hasOwnProperty('width') &&
           ann[i].hasOwnProperty('height'))) {
-      this.dygraph_.error("Must set width and height when setting " +
-                          "annotation.icon property");
+      Dygraph.error("Must set width and height when setting " +
+                    "annotation.icon property");
       return;
     }
     Dygraph.update(a, ann[i]);
@@ -204,15 +204,15 @@ DygraphLayout.prototype._evaluateLimits = function() {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
-        axis.g.error('axis ' + i + ' of graph at ' + axis.g +
-            ' can\'t be displayed in log scale for range [' +
-            axis.minyval + ' - ' + axis.maxyval + ']');
+        Dygraph.error('axis ' + i + ' of graph at ' + axis.g +
+                      ' can\'t be displayed in log scale for range [' +
+                      axis.minyval + ' - ' + axis.maxyval + ']');
       }
     }
   }
 };
 
-DygraphLayout._calcXNormal = function(value, axis, logscale) {
+DygraphLayout.calcXNormal_ = function(value, axis, logscale) {
   if (logscale) {
     return ((Dygraph.log10(value) - Dygraph.log10(axis.minxval)) * axis.xlogscale);
   } else {
@@ -220,9 +220,16 @@ DygraphLayout._calcXNormal = function(value, axis, logscale) {
   }
 };
 
-DygraphLayout._calcYNormal = function(axis, value, logscale) {
+/**
+ * @param {DygraphAxisType} axis
+ * @param {number} value
+ * @param {boolean} logscale
+ * @return {number}
+ */
+DygraphLayout.calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
-    return 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
+    var x = 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
+    return isFinite(x) ? x : NaN;  // shim for v8 issue; see pull request 276
   } else {
     return 1.0 - ((value - axis.minyval) * axis.yscale);
   }
@@ -244,11 +251,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       var point = points[j];
 
       // Range from 0-1 where 0 represents left and 1 represents right.
-      point.x = DygraphLayout._calcXNormal(point.xval, this._xAxis, isLogscaleForX);
+      point.x = DygraphLayout.calcXNormal_(point.xval, this._xAxis, isLogscaleForX);
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
-        point.y_stacked = DygraphLayout._calcYNormal(
+        point.y_stacked = DygraphLayout.calcYNormal_(
             axis, point.yval_stacked, logscale);
         if (yval !== null && !isNaN(yval)) {
           yval = point.yval_stacked;
@@ -260,25 +267,11 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
           point.yval = NaN;
         }
       }
-      point.y = DygraphLayout._calcYNormal(axis, yval, logscale);
+      point.y = DygraphLayout.calcYNormal_(axis, yval, logscale);
     }
 
     this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
   }
-};
-
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- */
-DygraphLayout.parseFloat_ = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
@@ -288,7 +281,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     tick = this.xTicks_[i];
     label = tick.label;
     pos = this.dygraph_.toPercentXCoord(tick.v);
-    if ((pos >= 0.0) && (pos <= 1.0)) {
+    if ((pos >= 0.0) && (pos < 1.0)) {
       this.xticks.push([pos, label]);
     }
   }
@@ -300,7 +293,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
       tick = axis.ticks[j];
       label = tick.label;
       pos = this.dygraph_.toPercentYCoord(tick.v, i);
-      if ((pos >= 0.0) && (pos <= 1.0)) {
+      if ((pos > 0.0) && (pos <= 1.0)) {
         this.yticks.push([i, pos, label]);
       }
     }

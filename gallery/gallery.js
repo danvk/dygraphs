@@ -1,3 +1,5 @@
+/*jshint loopfunc:true */
+/*global Dygraph,$,TextArea,jQuery */
 var Gallery = {};
 
 Gallery.entries = {};
@@ -42,9 +44,9 @@ Gallery.start = function() {
 
     innerDiv.textContent = demo.name;
     div.onclick = function(demo, id) { return function() {
-      if (Gallery.runningDemo != null) {
+      if (Gallery.runningDemo !== null) {
         Gallery.runningDemo.innerDiv.className = "";
-        if (Gallery.runningDemo.clean != null) {
+        if (Gallery.runningDemo.clean) {
           Gallery.runningDemo.clean(Gallery.workareaChild);
         }
       }
@@ -73,9 +75,10 @@ Gallery.start = function() {
       javascriptLink.textContent = "Javascript";
 
       var css = getCss(id);
+      var cssLink;
       if (css) {
         Gallery.create("span", codeSpan).textContent = " | ";
-        var cssLink = Gallery.create("a", codeSpan);
+        cssLink = Gallery.create("a", codeSpan);
         cssLink.textContent = "CSS";
       }
 
@@ -93,37 +96,37 @@ Gallery.start = function() {
       var html = Gallery.workareaChild.innerHTML;
 
       // tweak for use in jsfiddle
-      javascript = " $(document).ready(" + javascript + "\n);"
+      javascript = " $(document).ready(" + javascript + "\n);";
       jQuery('<textarea/>', { name: 'html' })
-      .val(html)
-      .hide()
-      .appendTo(jsfs);
+        .val(html)
+        .hide()
+        .appendTo(jsfs);
 
       jQuery('<textarea/>', { name: 'js' })
-      .val(javascript)
-      .hide()
-      .appendTo(jsfs);
+        .val(javascript)
+        .hide()
+        .appendTo(jsfs);
 
       if (css) {
         jQuery('<textarea/>', { name: 'css' })
-        .val(css)
-        .hide()
-        .appendTo(jsfs);
-      }      
+          .val(css)
+          .hide()
+          .appendTo(jsfs);
+      }
       jQuery('<input/>', {
         type: 'text',
         name: 'title',
         value: 'title tbd'
       })
-      .hide()
-      .appendTo(jsfs);
+        .hide()
+        .appendTo(jsfs);
       jQuery('<input/>', {
         type: 'text',
         name: 'description',
         value: 'desc tbd'
       })
-      .hide()
-      .appendTo(jsfs);
+        .hide()
+        .appendTo(jsfs);
 
       htmlLink.onclick = function() {
         Gallery.textarea.show("HTML", html);
@@ -146,7 +149,7 @@ Gallery.start = function() {
 
   Gallery.hashChange();
 
-  window.onhashchange = Gallery.setHash;("hashchange", Gallery.hashChange, false);
+  window.onhashchange = Gallery.setHash;
 };
 
 var getCss = function(id) {
@@ -161,7 +164,7 @@ var getCss = function(id) {
             var rule = rules[j];
             var cssText = rule.cssText;
             var key = "#workarea #" + id + " ";
-            if (cssText.indexOf(key) == 0) {
+            if (cssText.indexOf(key) === 0) {
               arry.push(cssText.substr(key.length));
             }
           }
@@ -173,7 +176,7 @@ var getCss = function(id) {
     }
   }
   return "not found";
-}
+};
 
 Gallery.register = function(id, demo) {
   if (Gallery.entries[id]) {
@@ -185,12 +188,12 @@ Gallery.register = function(id, demo) {
 
 Gallery.hashChange = function(event) {
   if (location.hash) {
-    if (location.hash.indexOf("#g/") == 0) {
+    if (location.hash.indexOf("#g/") === 0) {
       var id = location.hash.substring(3) + "-toc";
       var elem = document.getElementById(id);
       elem.onclick();
       return;
     }
   }
-  Gallery.workareaChild.innerHTML = "<h3>Select a demo from the gallery on the left</h3>"
+  Gallery.workareaChild.innerHTML = "<h3>Select a demo from the gallery on the left</h3>";
 };

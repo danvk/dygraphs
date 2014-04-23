@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global stockData */
 Gallery.register(
   'stock',
   {
@@ -17,15 +19,15 @@ Gallery.register(
             customBars: true,
             logscale: true
           });
-  
+
       var linear = document.getElementById("linear");
       var log = document.getElementById("log");
-      linear.onclick = function() { setLog(false); }
-      log.onclick = function() { setLog(true); }
       var setLog = function(val) {
         g.updateOptions({ logscale: val });
         linear.disabled = !val;
         log.disabled = val;
-      }
+      };
+      linear.onclick = function() { setLog(false); };
+      log.onclick = function() { setLog(true); };
     }
   });

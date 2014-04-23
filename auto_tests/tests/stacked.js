@@ -47,24 +47,9 @@ stackedTestCase.prototype.testCorrectColors = function() {
   // y pixel 100 = y1 line (green)
   // y pixels 0-99 = nothing (white)
 
-  // TODO(danvk): factor this and getPixel() into a utility usable by all tests.
-  var ctx = g.hidden_ctx_;
-  var imageData = ctx.getImageData(0, 0, 400, 300);
-
-  assertEquals(400, imageData.width);
-  assertEquals(300, imageData.height);
-
-  // returns an (r, g, b, alpha) tuple for the pixel.
-  // values are in [0, 255].
-  var getPixel = function(imageData, x, y) {
-    var i = 4 * (x + imageData.width * y);
-    var d = imageData.data;
-    return [d[i], d[i+1], d[i+2], d[i+3]];
-  };
-
   // 38 = round(0.15 * 255)
-  assertEquals([0, 0, 255, 38], getPixel(imageData, 200, 250));
-  assertEquals([0, 255, 0, 38], getPixel(imageData, 200, 150));
+  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 250));
+  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 150));
 };
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=358

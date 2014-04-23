@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'independent-series',
   {
@@ -125,7 +126,7 @@ Gallery.register(
           "  [10, 10, null]\n" +
           "]";
 
-      var g1 = new Dygraph(
+      new Dygraph(
         document.getElementById('graph'),
         [
           [1, null, 3],
@@ -142,18 +143,18 @@ Gallery.register(
         }
       );
 
-    g2 = new Dygraph(
+    new Dygraph(
       document.getElementById('graph2'),
-'x,A,B  \n' +
-'1,,3   \n' +
-'2,2,   \n' +
-'3,,5   \n' +
-'4,4,   \n' +
-'5,,7   \n' +
-'6,NaN, \n' +
-'8,8,   \n' +
-'10,10, \n'
-      , {
+      'x,A,B  \n' +
+      '1,,3   \n' +
+      '2,2,   \n' +
+      '3,,5   \n' +
+      '4,4,   \n' +
+      '5,,7   \n' +
+      '6,NaN, \n' +
+      '8,8,   \n' +
+      '10,10, \n',
+      {
         labels: ['x', 'A', 'B' ],
         connectSeparatedPoints: true,
         drawPoints: true

@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'edge-padding',
   {
@@ -61,13 +62,15 @@ Gallery.register(
           avoidMinZero: false,
           xRangePad: 3,
           yRangePad: 10,
-          drawAxesAtZero: true})};
+          drawAxesAtZero: true});
+      };
       mode[1].onchange = function() {
         updateGraphOpts({
           avoidMinZero: true,
           xRangePad: 0,
           yRangePad: null,
-          drawAxesAtZero: false})};
+          drawAxesAtZero: false});
+      };
       mode[0].checked = true;
       mode[0].onchange();
 

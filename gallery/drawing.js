@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'drawing',
   {
@@ -16,29 +17,31 @@ Gallery.register(
     },
 
     run: function() {
+      var change_tool;  // defined below.
       var zoom = document.getElementById('tool_zoom');
-      zoom.onclick = function() { change_tool(zoom) };
+      zoom.onclick = function() { change_tool(zoom); };
       var pencil = document.getElementById('tool_pencil');
-      pencil.onclick = function() { change_tool(pencil) };
+      pencil.onclick = function() { change_tool(pencil); };
       var eraser = document.getElementById('tool_eraser');
-      eraser.onclick = function() { change_tool(eraser) };
+      eraser.onclick = function() { change_tool(eraser); };
 
       var start_date = new Date("2002/12/29").getTime();
       var end_date = new Date().getTime();
       var data = [];
       for (var d = start_date; d < end_date; d += 604800 * 1000) {
         var millis = d + 2 * 3600 * 1000;
-        data.push( [ new Date(new Date(millis).strftime("%Y/%m/%d")), 50 ]);
+        data.push( [ new Date(Dygraph.dateString_(millis)), 50 ]);
       }
-  
+
       var isDrawing = false;
       var lastDrawRow = null, lastDrawValue = null;
       var tool = 'pencil';
       var valueRange = [0, 100];
-  
+
       function setPoint(event, g, context) {
-        var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(g.graphDiv);
-        var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(g.graphDiv);
+        var graphPos = Dygraph.findPos(g.graphDiv);
+        var canvasx = Dygraph.pageX(event) - graphPos.x;
+        var canvasy = Dygraph.pageY(event) - graphPos.y;
         var xy = g.toDataCoords(canvasx, canvasy);
         var x = xy[0], value = xy[1];
         var rows = g.numRows();
@@ -53,7 +56,7 @@ Gallery.register(
             closest_row = row;
           }
         }
-  
+
         if (closest_row != -1) {
           if (lastDrawRow === null) {
             lastDrawRow = closest_row;
@@ -68,7 +71,9 @@ Gallery.register(
               var val = lastDrawValue + coeff * (row - lastDrawRow);
               val = Math.max(valueRange[0], Math.min(val, valueRange[1]));
               data[row][1] = val;
-              if (val == null || isNaN(val)) console.log(val);
+              if (val === null || value === undefined || isNaN(val)) {
+                console.log(val);
+              }
             } else if (tool == 'eraser') {
               data[row][1] = null;
             }
@@ -79,14 +84,14 @@ Gallery.register(
           g.setSelection(closest_row);  // prevents the dot from being finnicky.
         }
       }
-  
+
       function finishDraw() {
         isDrawing = false;
         lastDrawRow = null;
         lastDrawValue = null;
       }
-  
-      var change_tool = function(tool_div) {
+
+      change_tool = function(tool_div) {
         var ids = ['tool_zoom', 'tool_pencil', 'tool_eraser'];
         for (var i = 0; i < ids.length; i++) {
           var div = document.getElementById(ids[i]);
@@ -97,7 +102,7 @@ Gallery.register(
           }
         }
         tool = tool_div.id.replace('tool_', '');
-  
+
         var dg_div = document.getElementById("draw_div");
         if (tool == 'pencil') {
           dg_div.style.cursor = 'url(images/cursor-pencil.png) 2 30, auto';
@@ -106,10 +111,10 @@ Gallery.register(
         } else if (tool == 'zoom') {
           dg_div.style.cursor = 'crosshair';
         }
-      }
+      };
       change_tool(document.getElementById("tool_pencil"));
-  
-      g = new Dygraph(document.getElementById("draw_div"), data,
+
+      new Dygraph(document.getElementById("draw_div"), data,
           {
             valueRange: valueRange,
             labels: [ 'Date', 'Value' ],
@@ -159,13 +164,13 @@ Gallery.register(
                 var xOffset = g.toDomCoords(axis[0], null)[0];
                 var x = event.offsetX - xOffset;
                 var w = g.toDomCoords(axis[1], null)[0] - xOffset;
-                var xPct = w == 0 ? 0 : (x / w);
-  
+                var xPct = w === 0 ? 0 : (x / w);
+
                 var delta = axis[1] - axis[0];
                 var increment = delta * percentage;
                 var foo = [increment * xPct, increment * (1 - xPct)];
                 var dateWindow = [ axis[0] + foo[0], axis[1] - foo[1] ];
-  
+
                 g.updateOptions({
                   dateWindow: dateWindow
                 });

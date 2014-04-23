@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'negative',
   {
@@ -23,17 +24,17 @@ Gallery.register(
         pos.push([i, 1000 + 2 * i, 1100 + i]);
       }
 
-      var g1 = new Dygraph(
+      new Dygraph(
         document.getElementById("g1"),
         negs, { labels: [ 'x', 'y1', 'y2' ] }
       );
 
-      var g2 = new Dygraph(
+      new Dygraph(
         document.getElementById("g2"),
         mixed, { labels: [ 'x', 'y1', 'y2' ] }
       );
 
-      var g3 = new Dygraph(
+      new Dygraph(
         document.getElementById("g3"),
         pos, { labels: [ 'x', 'y1', 'y2' ] }
       );

@@ -74,7 +74,7 @@ rangeSelector.prototype.createInterface_ = function() {
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
   if (this.getOption_('animatedZooms')) {
-    this.dygraph_.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    Dygraph.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
@@ -178,7 +178,7 @@ rangeSelector.prototype.resize_ = function() {
   var plotArea = this.dygraph_.layout_.getPlotArea();
   
   var xAxisLabelHeight = 0;
-  if(this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
+  if (this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
     xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
   }
   this.canvasRect_ = {
@@ -268,7 +268,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
  */
 rangeSelector.prototype.initInteraction_ = function() {
   var self = this;
-  var topElem = this.isIE_ ? document : window;
+  var topElem = document;
   var clientXLast = 0;
   var handle = null;
   var isZooming = false;
@@ -638,96 +638,49 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
 /**
  * @private
- * Computes and returns the combinded series data along with min/max for the mini plot.
- * @return {Object} An object containing combinded series array, ymin, ymax.
+ * Computes and returns the combined series data along with min/max for the mini plot.
+ * The combined series consists of averaged values for all series.
+ * When series have error bars, the error bars are ignored.
+ * @return {Object} An object containing combined series array, ymin, ymax.
  */
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
-  var data = this.dygraph_.rawData_;
+  var g = this.dygraph_;
   var logscale = this.getOption_('logscale');
 
   // Create a combined series (average of all series values).
+  var i;
+
+  // TODO(danvk): short-circuit if there's only one series.
+  var rolledSeries = [];
+  var dataHandler = g.dataHandler_;
+  var options = g.attributes_;
+  for (i = 1; i < g.numColumns(); i++) {
+    var series = dataHandler.extractSeries(g.rawData_, i, options);
+    if (g.rollPeriod() > 1) {
+      series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
+    }
+    
+    rolledSeries.push(series);
+  }
+
   var combinedSeries = [];
-  var sum;
-  var count;
-  var mutipleValues;
-  var i, j, k;
-  var xVal, yVal;
-
-  // Find out if data has multiple values per datapoint.
-  // Go to first data point that actually has values (see http://code.google.com/p/dygraphs/issues/detail?id=246)
-  for (i = 0; i < data.length; i++) {
-    if (data[i].length > 1 && data[i][1] !== null) {
-      mutipleValues = typeof data[i][1] != 'number';
-      if (mutipleValues) {
-        sum = [];
-        count = [];
-        for (k = 0; k < data[i][1].length; k++) {
-          sum.push(0);
-          count.push(0);
-        }
-      }
-      break;
+  for (i = 0; i < rolledSeries[0].length; i++) {
+    var sum = 0;
+    var count = 0;
+    for (var j = 0; j < rolledSeries.length; j++) {
+      var y = rolledSeries[j][i][1];
+      if (y === null || isNaN(y)) continue;
+      count++;
+      sum += y;
     }
-  }
-
-  for (i = 0; i < data.length; i++) {
-    var dataPoint = data[i];
-    xVal = dataPoint[0];
-
-    if (mutipleValues) {
-      for (k = 0; k < sum.length; k++) {
-        sum[k] = count[k] = 0;
-      }
-    } else {
-      sum = count = 0;
-    }
-
-    for (j = 1; j < dataPoint.length; j++) {
-      if (this.dygraph_.visibility()[j-1]) {
-        var y;
-        if (mutipleValues) {
-          for (k = 0; k < sum.length; k++) {
-            y = dataPoint[j][k];
-            if (y === null || isNaN(y)) continue;
-            sum[k] += y;
-            count[k]++;
-          }
-        } else {
-          y = dataPoint[j];
-          if (y === null || isNaN(y)) continue;
-          sum += y;
-          count++;
-        }
-      }
-    }
-
-    if (mutipleValues) {
-      for (k = 0; k < sum.length; k++) {
-        sum[k] /= count[k];
-      }
-      yVal = sum.slice(0);
-    } else {
-      yVal = sum/count;
-    }
-
-    combinedSeries.push([xVal, yVal]);
-  }
-
-  // Account for roll period, fractions.
-  combinedSeries = this.dygraph_.rollingAverage(combinedSeries, this.dygraph_.rollPeriod_);
-
-  if (typeof combinedSeries[0][1] != 'number') {
-    for (i = 0; i < combinedSeries.length; i++) {
-      yVal = combinedSeries[i][1];
-      combinedSeries[i][1] = yVal[0];
-    }
+    combinedSeries.push([rolledSeries[0][i][0], sum / count]);
   }
 
   // Compute the y range.
   var yMin = Number.MAX_VALUE;
   var yMax = -Number.MAX_VALUE;
   for (i = 0; i < combinedSeries.length; i++) {
-    yVal = combinedSeries[i][1];
+    var yVal = combinedSeries[i][1];
     if (yVal !== null && isFinite(yVal) && (!logscale || yVal > 0)) {
       yMin = Math.min(yMin, yVal);
       yMax = Math.max(yMax, yVal);

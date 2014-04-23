@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global google */
 Gallery.register(
   'annotations-gviz',
   {
@@ -11,7 +13,7 @@ Gallery.register(
           "<div id='dg_div' style='width: 700px; height: 240px;'></div>";
     },
     run: function() {
-      drawChart = function() {
+      var drawChart = function() {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
         data.addColumn('number', 'Sold Pencils');
