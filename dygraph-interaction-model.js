@@ -38,8 +38,14 @@ Dygraph.Interaction.startPan = function(event, g, context) {
   var i, axis;
   context.isPanning = true;
   var xRange = g.xAxisRange();
-  context.dateRange = xRange[1] - xRange[0];
-  context.initialLeftmostDate = xRange[0];
+
+  if (g.getOptionForAxis("logscale", 'x')) {
+    context.initialLeftmostDate = Dygraph.log10(xRange[0]);
+    context.dateRange = Dygraph.log10(xRange[1]) - Dygraph.log10(xRange[0]);
+  } else {
+    context.initialLeftmostDate = xRange[0];    
+    context.dateRange = xRange[1] - xRange[0];
+  }
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
 
   if (g.attr_("panEdgeFraction")) {
@@ -132,7 +138,12 @@ Dygraph.Interaction.movePan = function(event, g, context) {
     }
   }
 
-  g.dateWindow_ = [minDate, maxDate];
+  if (g.getOptionForAxis("logscale", 'x')) {
+    g.dateWindow_ = [ Math.pow(Dygraph.LOG_SCALE, minDate),
+                      Math.pow(Dygraph.LOG_SCALE, maxDate) ];
+  } else {
+    g.dateWindow_ = [minDate, maxDate];    
+  }
 
   // y-axis scaling is automatic unless this is a full 2D pan.
   if (context.is2DPan) {
@@ -160,8 +171,7 @@ Dygraph.Interaction.movePan = function(event, g, context) {
           minValue = maxValue - axis_data.dragValueRange;
         }
       }
-      var logscale = g.attributes_.getForAxis("logscale", i);
-      if (logscale) {
+      if (g.attributes_.getForAxis("logscale", i)) {
         axis.valueWindow = [ Math.pow(Dygraph.LOG_SCALE, minValue),
                              Math.pow(Dygraph.LOG_SCALE, maxValue) ];
       } else {

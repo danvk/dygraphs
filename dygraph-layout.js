@@ -175,6 +175,7 @@ DygraphLayout.prototype.setYAxes = function (yAxes) {
 };
 
 DygraphLayout.prototype.evaluate = function() {
+  this._xAxis = {};
   this._evaluateLimits();
   this._evaluateLineCharts();
   this._evaluateLineTicks();
@@ -183,11 +184,15 @@ DygraphLayout.prototype.evaluate = function() {
 
 DygraphLayout.prototype._evaluateLimits = function() {
   var xlimits = this.dygraph_.xAxisRange();
-  this.minxval = xlimits[0];
-  this.maxxval = xlimits[1];
+  this._xAxis.minxval = xlimits[0];
+  this._xAxis.maxxval = xlimits[1];
   var xrange = xlimits[1] - xlimits[0];
-  this.xscale = (xrange !== 0 ? 1 / xrange : 1.0);
+  this._xAxis.xscale = (xrange !== 0 ? 1 / xrange : 1.0);
 
+  if (this.dygraph_.getOptionForAxis("logscale", 'x')) {
+    this._xAxis.xlogrange = Dygraph.log10(this._xAxis.maxxval) - Dygraph.log10(this._xAxis.minxval);
+    this._xAxis.xlogscale = (this._xAxis.xlogrange !== 0 ? 1.0 / this._xAxis.xlogrange : 1.0);
+  }
   for (var i = 0; i < this.yAxes_.length; i++) {
     var axis = this.yAxes_[i];
     axis.minyval = axis.computedValueRange[0];
@@ -195,7 +200,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange !== 0 ? 1.0 / axis.yrange : 1.0);
 
-    if (axis.g.getOption("logscale")) {
+    if (this.dygraph_.getOption("logscale")) {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
@@ -204,6 +209,14 @@ DygraphLayout.prototype._evaluateLimits = function() {
             axis.minyval + ' - ' + axis.maxyval + ']');
       }
     }
+  }
+};
+
+DygraphLayout._calcXNormal = function(value, axis, logscale) {
+  if (logscale) {
+    return ((Dygraph.log10(value) - Dygraph.log10(axis.minxval)) * axis.xlogscale);
+  } else {
+    return (value - axis.minxval) * axis.xscale;
   }
 };
 
@@ -217,6 +230,7 @@ DygraphLayout._calcYNormal = function(axis, value, logscale) {
 
 DygraphLayout.prototype._evaluateLineCharts = function() {
   var isStacked = this.dygraph_.getOption("stackedGraph");
+  var isLogscaleForX = this.dygraph_.getOptionForAxis("logscale", 'x');
 
   for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
     var points = this.points[setIdx];
@@ -230,7 +244,7 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
       var point = points[j];
 
       // Range from 0-1 where 0 represents left and 1 represents right.
-      point.x = (point.xval - this.minxval) * this.xscale;
+      point.x = DygraphLayout._calcXNormal(point.xval, this._xAxis, isLogscaleForX);
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
@@ -273,7 +287,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
   for (i = 0; i < this.xTicks_.length; i++) {
     tick = this.xTicks_[i];
     label = tick.label;
-    pos = this.xscale * (tick.v - this.minxval);
+    pos = this.dygraph_.toPercentXCoord(tick.v);
     if ((pos >= 0.0) && (pos <= 1.0)) {
       this.xticks.push([pos, label]);
     }
