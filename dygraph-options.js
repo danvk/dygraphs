@@ -290,11 +290,13 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   }
 
   // User-specified global options second.
-  var result = this.getGlobalUser_(name);
-  if (result !== null) {
-    return result;
+  // But, hack, ignore globally-specified 'logscale' for 'x' axis declaration.
+  if (!(axis === 'x' && name === 'logscale')) {
+    var result = this.getGlobalUser_(name);
+    if (result !== null) {
+      return result;
+    }
   }
-
   // Default axis options third.
   var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {

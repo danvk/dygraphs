@@ -172,19 +172,25 @@ ToDomCoordsTestCase.prototype.testAxisTickSize = function() {
   assertEquals([500, 386], g.toDomCoords(100, 0));
 }
 
-ToDomCoordsTestCase.prototype.testChartLogarithmic = function() {
+ToDomCoordsTestCase.prototype.testChartLogarithmic_YAxis = function() {
   var opts = {
-    drawXAxis: false,
-    drawYAxis: false,
-    drawXGrid: false,
-    drawYGrid: false,
-    logscale: true,
     rightGap: 0,
     valueRange: [1, 4],
     dateWindow: [0, 10],
     width: 400,
     height: 400,
-    colors: ['#ff0000']
+    colors: ['#ff0000'],
+    axes: {
+      x: {
+        drawGrid: false,
+        drawAxis: false
+      },
+      y: {
+        drawGrid: false,
+        drawAxis: false,
+        logscale: true
+      }
+    }
   }
 
   var graph = document.getElementById("graph");
@@ -202,4 +208,65 @@ ToDomCoordsTestCase.prototype.testChartLogarithmic = function() {
   assertEquals([400, 0], g.toDomCoords(10, 4));
   assertEquals([400, 400], g.toDomCoords(10, 1));
   assertEquals([400, 200], g.toDomCoords(10, 2));
+}
+
+ToDomCoordsTestCase.prototype.testChartLogarithmic_XAxis = function() {
+  var opts = {
+    rightGap: 0,
+    valueRange: [1, 1000],
+    dateWindow: [1, 1000],
+    width: 400,
+    height: 400,
+    colors: ['#ff0000'],
+    axes: {
+      x: {
+        drawGrid: false,
+        drawAxis: false,
+        logscale: true
+      },
+      y: {
+        drawGrid: false,
+        drawAxis: false
+      }
+    }
+  }
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, [ [1,1], [10, 10], [100,100], [1000,1000] ], opts);
+
+  var epsilon = 1e-8;
+  assertEqualsDelta(1, g.toDataXCoord(0), epsilon);
+  assertEqualsDelta(5.623413251903489, g.toDataXCoord(100), epsilon);
+  assertEqualsDelta(31.62277660168378, g.toDataXCoord(200), epsilon);
+  assertEqualsDelta(177.8279410038921, g.toDataXCoord(300), epsilon);
+  assertEqualsDelta(1000, g.toDataXCoord(400), epsilon);
+
+  assertEqualsDelta(0, g.toDomXCoord(1), epsilon);
+  assertEqualsDelta(3.6036036036036037, g.toDomXCoord(10), epsilon);
+  assertEqualsDelta(39.63963963963964, g.toDomXCoord(100), epsilon);
+  assertEqualsDelta(400, g.toDomXCoord(1000), epsilon);
+
+  assertEqualsDelta(0, g.toPercentXCoord(1), epsilon);
+  assertEqualsDelta(0.3333333333, g.toPercentXCoord(10), epsilon);
+  assertEqualsDelta(0.6666666666, g.toPercentXCoord(100), epsilon);
+  assertEqualsDelta(1, g.toPercentXCoord(1000), epsilon);
+ 
+  // Now zoom in and ensure that the methods return reasonable values.
+  g.updateOptions({dateWindow: [ 10, 100 ]});
+
+  assertEqualsDelta(10, g.toDataXCoord(0), epsilon);
+  assertEqualsDelta(17.78279410038923, g.toDataXCoord(100), epsilon);
+  assertEqualsDelta(31.62277660168379, g.toDataXCoord(200), epsilon);
+  assertEqualsDelta(56.23413251903491, g.toDataXCoord(300), epsilon);
+  assertEqualsDelta(100, g.toDataXCoord(400), epsilon);
+
+  assertEqualsDelta(-40, g.toDomXCoord(1), epsilon);
+  assertEqualsDelta(0, g.toDomXCoord(10), epsilon);
+  assertEqualsDelta(400, g.toDomXCoord(100), epsilon);
+  assertEqualsDelta(4400, g.toDomXCoord(1000), epsilon);
+
+  assertEqualsDelta(-1, g.toPercentXCoord(1), epsilon);
+  assertEqualsDelta(0, g.toPercentXCoord(10), epsilon);
+  assertEqualsDelta(1, g.toPercentXCoord(100), epsilon);
+  assertEqualsDelta(2, g.toPercentXCoord(1000), epsilon);
 }
