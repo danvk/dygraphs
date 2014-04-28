@@ -115,4 +115,4 @@ Dygraph.update(Dygraph.Circles, {
   }
 });
 
-});
+})();
