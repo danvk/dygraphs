@@ -474,6 +474,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "When to display the legend. By default, it only appears when a user mouses over the chart. Set it to \"always\" to always display a legend of some sort."
   },
+  "legendFollow": {
+    "default": "false",
+    "labels": ["Legend"],
+    "type": "boolean",
+    "description": "Legend follows highlighted points"
+  },
   "labelsShowZeroValues": {
     "default": "true",
     "labels": ["Legend"],
