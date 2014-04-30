@@ -320,12 +320,6 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
-  
-  // START - Custom code By Mrin
-  labelFollow: false,
-  verticalCrosshair: false,
-  // END - Custom code By Mrin
-
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
@@ -2029,14 +2023,6 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   if (this.selPoints_.length > 0) {
     // Draw colored circles over the center of each selected point
     var canvasx = this.selPoints_[0].canvasx;
-    // START - Custom code By Mrin
-    if(this.attr_('verticalCrosshair')){
-      ctx.clearRect(0, 0, this.width_, this.height_);
-      ctx.fillStyle = "rgba(0, 0, 0,0.3)";
-      ctx.fillRect(canvasx, 0, 1, this.height_);
-    }
-    // END - Custom code By Mrin
-    
     ctx.save();
     for (i = 0; i < this.selPoints_.length; i++) {
       var pt = this.selPoints_[i];

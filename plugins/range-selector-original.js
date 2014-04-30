@@ -235,7 +235,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
   img.style.position = 'absolute';
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
-  img.style.cursor = 'pointer';
+  img.style.cursor = 'col-resize';
 
   if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
     img.width = 7;
@@ -243,10 +243,14 @@ rangeSelector.prototype.createZoomHandles_ = function() {
     img.style.backgroundColor = 'white';
     img.style.border = '1px solid #333333'; // Just show box in IE7.
   } else {
-    img.width = 19;
-    img.height = 18;
-    img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAASCAYAAAC5DOVpAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAALtJREFUOE/VlLEKwjAQhg+6SHFRCoLiIBYXFzfXPFreOQmBEKL325qqENPEycJXjiT/lyx3dD4dV4CIusN+tymFcwumeQCREOJWy7Jt1y9C6rAYQigGOc73UYin/ii7MNs3mfe+mFF2/SqTUmZrkJQ55yII5WrwhzJrbQShXA2SMmNMBKFcDWbJ5pKUaa2LScqUUsUkZbWwZGon/MZG7Rls4Ka54PzU6PxhdDyFuKGIzxE0DLZhoRbOU3MHLGK+ZKC2zpMAAAAASUVORK5CYII="
-             //data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAASCAMAAACO0hVbAAAAQlBMVEUAAAArJiMAAAAAAAAAAAAMCgoAAAAhHRsAAAAAAAD+/v7z8/P39/f8/Pz6+vr////09PT19fXe3dzg39/i4eHh4OASom+cAAAACnRSTlMIESQUAxIwFxo3SAd+EwAAAGNJREFUGNN90EkOgDAMQ1EXkjLPcP+rYqCUBiGevPpLw7m8SEEEbrAUgry2MgWKV/MlW2dVd1uvxdbTFkaxLdd+W0tzGJ1tojmMQotiG62zNdZX82zQzFcPf3wg0DKlLCIwGHZahQ3wQLdEYgAAAABJRU5ErkJggg==
+    img.width = 9;
+    img.height = 16;
+    img.src = 'data:image/png;base64,' +
+'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
+'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
+'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
+'6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
+'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
   }
 
   if (this.isMobileDevice_) {
@@ -538,7 +542,7 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   var ctx = this.bgcanvas_ctx_;
   ctx.clearRect(0, 0, this.canvasRect_.w, this.canvasRect_.h);
   try {
-     //this.drawMiniPlot_();
+    this.drawMiniPlot_();
   } catch(ex) {
     Dygraph.warn(ex);
   }

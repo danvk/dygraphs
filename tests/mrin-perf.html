@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Temperatures with Range Selector</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script src="https://raw.github.com/marcoscaceres/jsi18n/master/jsi18n_patch.js"></script>
+
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #bordered {
+      border: 1px solid red;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Demo of a graph with the range selector.</p>
+    <p>
+      No roll period.
+    </p>
+    <div id="noroll" style="width:100%; height:420px;"></div>
+    <p>
+      Roll period of 14 timesteps, custom range selector height and plot color.
+    </p>
+    <div id="roll14" style="width:800px; height:320px;"></div>
+    <p>
+      Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
+    </p>
+    <div id="nochart" style="width:1000px; height:30px;"></div>
+    <script type="text/javascript">
+      g1 = new Dygraph(
+          document.getElementById("noroll"),
+          data_temp,
+          {
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            labelsDivStyles: { 'textAlign': 'right' },
+            xAxisHeight: 40,
+            labelsDivStyles: {
+                "backgroundColor":"#FFFFFF",
+                "border":"1px solid #006ACB",
+                "borderRadius":"2px",
+                "boxShadow":"1px 1px 4px #CCCCCC",
+                "fontFamily":"Lucida Grande , Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif",
+                "fontSize":"11px",
+                "fontWeight":"normal",
+                "opacity":"0.85",
+                "padding":"3px",
+                "width":"100px"
+              },
+            showRangeSelector: true,
+            rangeSelectorHeight: 25,
+
+            labelsDivWidth: 120,
+            labelsSeparateLines:true,
+            labelsFollowSelection:true,
+            labelsFollowAlign:'top',
+            verticalCrosshair:true,
+
+          axes: {
+              x: {
+                valueFormatter: function(ms) {
+                
+                   var d = new Date(ms),o;
+                   
+                   if ( d.getHours()==0 && d.getMinutes()==0 &&  d.getSeconds()==0){
+                      o = {year: "numeric", month: "short", day: "numeric"};
+                   }
+                   else{
+                      o = {year: "numeric", month: "short", day: "numeric", hour:'numeric', minute:'numeric', second:'numeric'};
+                   }
+                   return d.toLocaleDateString(undefined, o);
+                   //return new Date(ms).strftime('%Y-%m-%d');
+                },
+                
+                axisLabelFormatter: function(d, gran) {
+                    var o;
+                    if (gran >= Dygraph.DECADAL)        { o = {year: "numeric"}; } 
+                    else if (gran >= Dygraph.MONTHLY)   { o = {year: "numeric", month: "short"}; } 
+                    else {
+                        var frac = d.getHours() + d.getMinutes() + d.getSeconds() + d.getMilliseconds();
+                        if   (frac === 0 || gran >= Dygraph.DAILY) {
+                            o = {month: "short", day: "numeric"};
+                        } 
+                        else { 
+                            o = {hour:'numeric', minute:'numeric', second:'numeric'}; 
+                            return '' + d.toLocaleTimeString(undefined, o);
+                        }
+                      }
+                    return '' + d.toLocaleDateString(undefined, o);
+                }
+              }
+            }
+        }    
+      );
+      g2 = new Dygraph(
+          document.getElementById("roll14"),
+          data_temp,
+          {
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            labelsDivStyles: { 'textAlign': 'right' },
+            xAxisHeight: 40,
+            showRangeSelector: true,
+            rangeSelectorHeight: 10,
+            rangeSelectorPlotStrokeColor: 'yellow',
+            rangeSelectorPlotFillColor: 'lightyellow'
+          }
+      );
+      g3 = new Dygraph(
+          document.getElementById("nochart"),
+          [[0,1],[10,1]],
+          {
+            xAxisHeight: 30,
+            drawXAxis: false,
+            showRangeSelector: true,
+            rangeSelectorHeight: 30
+          }
+      );
+    </script>
+  </body>
+</html>

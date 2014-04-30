@@ -129,39 +129,6 @@ legend.prototype.select = function(e) {
   var points = e.selectedPoints;
 
   var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
-  
-  // START  Mrin
-  if (e.dygraph.getOption('labelsFollowSelection') == true) {
-      var leftLabel,topLabel;
-      var area = e.dygraph.plotter_.area;
-      this.legend_div_.style.position = "absolute";
-      if (e.dygraph.getOption("labelsFollowAlign")=='middle'){
-          this.legend_div_.style.top = ((area.y + area.h)/2) + "px";
-          leftLabel = points[0].canvasx - (this.legend_div_.offsetWidth/2);
-          if((points[0].canvasx + e.dygraph.getOption("labelsDivWidth") ) > e.dygraph.size().width){
-            leftLabel = points[0].canvasx - e.dygraph.getOption("labelsDivWidth") - 20;
-          }
-          else{
-            leftLabel = points[0].canvasx - (this.legend_div_.offsetWidth/2);
-          }
-      }
-      else if (e.dygraph.getOption("labelsFollowAlign")=='top'){
-          //this.legend_div_.style.top  = area.y + "px";
-          //this.legend_div_.style.left = points[0].canvasx - (this.legend_div_.offsetWidth/2) + "px";
-          this.legend_div_.style.top = (area.y + area.h) - (this.legend_div_.offsetHeight)+ "px";
-          this.legend_div_.style.left = points[0].canvasx - (this.legend_div_.offsetWidth/2) + "px";
-
-      }
-      else if (e.dygraph.getOption("labelsFollowAlign")=='bottom'){
-          this.legend_div_.style.top = (area.y + area.h) - (this.legend_div_.offsetHeight)+ "px";
-          this.legend_div_.style.left = points[0].canvasx - (this.legend_div_.offsetWidth/2) + "px";
-      }
-      else{
-       //topLabel  = (points[0].canvasy-10);
-       this.legend_div_.style.top = (points[0].canvasy-10) + "px"
-      }
-  }
-  // END Mrin
   this.legend_div_.innerHTML = html;
 };
 
@@ -172,10 +139,6 @@ legend.prototype.deselect = function(e) {
 
   var html = generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
   this.legend_div_.innerHTML = html;
-  // START Mrin
-  this.predraw(e);
-  // END Mrin
-  
 };
 
 legend.prototype.didDrawChart = function(e) {

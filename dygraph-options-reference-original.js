@@ -822,38 +822,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
-  },
-  
-  // START - Custom code By Mrin
-  "labelsFollowSelection": {
-    "default": "false",
-    "labels": ["Legend"],
-    "type": "boolean",
-    "description": "When set to true the labelsDiv(Legends) will follow the mouse cursor."
-  },
-  
-  "labelsFollowAlign": {
-    "default": "false",
-    "labels": ["Legend"],
-    "type": "string",
-    "description": " Applicable only when When labelsFollowSelection is set to true,  possible values are 'top', 'bottom', 'middle', 'dynamic',"
-  },
-
-  "verticalCrosshair": {
-    "default": "false",
-    "labels": ["Data Line display"],
-    "type": "boolean",
-    "description": "When set to true a vertical line is drawn."
-  },
-   "drawRangeSelectorGraph": {
-    "default": "true",
-    "labels": ["Interactive Elements"],
-    "type": "boolean",
-    "description": "Set to false to avoid creating a preview graph inside range selector."
-  },
-  
-  // END - Custom code By Mrin
-
+  }
 }
 ;  // </JSON>
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
