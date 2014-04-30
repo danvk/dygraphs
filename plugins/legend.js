@@ -143,7 +143,7 @@ legend.prototype.select = function(e) {
     // if legend floats to end of the plotting area, it flips to the other
     // side of the selection point
     if((leftLegend + labelsDivWidth + 1) > area.w) {
-      leftLegend = leftLegend - 2*20 - labelsDivWidth - (yAxisLabelWidth - area.x)
+      leftLegend = leftLegend - 2*20 - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
