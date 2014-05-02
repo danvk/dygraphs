@@ -828,7 +828,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Configuration"],
     "type": "boolean or string",
     "description": "Defines crosshair visibility. May be 'horizontal', 'vertical' or 'both'."
-  },
+  }
 }
 ;  // </JSON>
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid

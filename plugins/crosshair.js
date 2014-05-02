@@ -43,7 +43,7 @@ crosshair.prototype.select = function(e) {
   var canvasx = e.dygraph.selPoints_[0].canvasx;
   var options = this.options;
 
-  if (!!options === false) return;
+  if (options === false) return;
   
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(0, 0, 0,0.3)";
@@ -64,10 +64,7 @@ crosshair.prototype.select = function(e) {
 
   ctx.stroke();
   ctx.closePath();
-}
-
-crosshair.prototype.deselect = function(e) {
-}
+};
 
 return crosshair;
 })();
