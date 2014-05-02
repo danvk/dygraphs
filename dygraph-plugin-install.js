@@ -15,5 +15,6 @@ Dygraph.PLUGINS.push(
   Dygraph.Plugins.RangeSelector, // Has to be before ChartLabels so that its callbacks are called after ChartLabels' callbacks.
   Dygraph.Plugins.ChartLabels,
   Dygraph.Plugins.Annotations,
-  Dygraph.Plugins.Grid
+  Dygraph.Plugins.Grid,
+  Dygraph.Plugins.Crosshair
 );

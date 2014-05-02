@@ -30,6 +30,7 @@
     "plugins/annotations.js",
     "plugins/axes.js",
     "plugins/chart-labels.js",
+    "plugins/crosshair.js",
     "plugins/grid.js",
     "plugins/legend.js",
     "plugins/range-selector.js",
