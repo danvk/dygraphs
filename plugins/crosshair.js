@@ -17,6 +17,7 @@ Dygraph.Plugins.Crosshair = (function() {
 
 var crosshair = function() {
   this.options = null;
+  this.canvas_ = document.createElement("canvas");
 };
 
 crosshair.prototype.toString = function() {
@@ -29,6 +30,11 @@ crosshair.prototype.toString = function() {
  */
 crosshair.prototype.activate = function(g) {
   this.options = g.getOption('crosshair');
+  this.canvas_.width = g.width_;
+  this.canvas_.height = g.height_;
+  this.canvas_.style.width = g.width_ + "px";    // for IE
+  this.canvas_.style.height = g.height_ + "px";  // for IE
+  g.graphDiv.appendChild(this.canvas_);
 
   return {
     select: this.select,
@@ -37,7 +43,7 @@ crosshair.prototype.activate = function(g) {
 };
 
 crosshair.prototype.select = function(e) {
-  var ctx = e.dygraph.canvas_ctx_;
+  var ctx = this.canvas_.getContext("2d");
   var width = e.dygraph.width_;
   var height = e.dygraph.height_;
   var canvasx = e.dygraph.selPoints_[0].canvasx;
@@ -64,6 +70,15 @@ crosshair.prototype.select = function(e) {
 
   ctx.stroke();
   ctx.closePath();
+};
+
+crosshair.prototype.deselect = function(e) {
+  var ctx = this.canvas_.getContext("2d");
+  ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+};
+
+crosshair.prototype.destroy = function() {
+  this.canvas_ = null;
 };
 
 return crosshair;
