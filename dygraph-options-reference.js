@@ -822,7 +822,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
-  }
+  },
+  "crosshair": {
+    "default": "false",
+    "labels": ["Configuration"],
+    "type": "boolean or string",
+    "description": "Defines crosshair visibility. May be 'horizontal', 'vertical' or 'both'."
+  },
 }
 ;  // </JSON>
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
