@@ -136,14 +136,17 @@ legend.prototype.select = function(e) {
       var area = e.dygraph.plotter_.area;
       this.legend_div_.style.position = "absolute";
       if (e.dygraph.getOption("labelsFollowAlign")=='middle'){
-          this.legend_div_.style.top = ((area.y + area.h)/2) + "px";
-          leftLabel = points[0].canvasx - (this.legend_div_.offsetWidth/2);
+          leftLabel = points[0].canvasx +10;
           if((points[0].canvasx + e.dygraph.getOption("labelsDivWidth") ) > e.dygraph.size().width){
             leftLabel = points[0].canvasx - e.dygraph.getOption("labelsDivWidth") - 20;
           }
           else{
-            leftLabel = points[0].canvasx - (this.legend_div_.offsetWidth/2);
+            leftLabel = points[0].canvasx +10;
           }
+          this.legend_div_.style.left = leftLabel + "px";
+          this.legend_div_.style.top = ((area.y + area.h)/2) + "px";
+console.log(leftLabel);
+
       }
       else if (e.dygraph.getOption("labelsFollowAlign")=='top'){
           //this.legend_div_.style.top  = area.y + "px";
