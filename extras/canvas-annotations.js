@@ -185,6 +185,7 @@ annotations.prototype.didDrawChart = function(e) {
 
     containerDiv.appendChild(canvas);
     containerDiv.appendChild(div);
+    this.annotations_.push(canvas);
     this.annotations_.push(div);
   }
 };
