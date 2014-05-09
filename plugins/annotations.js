@@ -119,6 +119,9 @@ annotations.prototype.didDrawChart = function(e) {
       div.appendChild(img);
     } else if (p.annotation.hasOwnProperty('shortText')) {
       div.appendChild(document.createTextNode(p.annotation.shortText));
+    } else {
+      // don't create annotation div if there are no 'icon' or 'shortText' property
+      continue;
     }
     var left = p.canvasx - width / 2;
     div.style.left = left + "px";
