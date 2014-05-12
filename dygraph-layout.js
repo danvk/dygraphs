@@ -184,13 +184,13 @@ DygraphLayout.prototype.evaluate = function() {
 
 DygraphLayout.prototype._evaluateLimits = function() {
   var xlimits = this.dygraph_.xAxisRange();
-  this._xAxis.minxval = xlimits[0];
-  this._xAxis.maxxval = xlimits[1];
+  this._xAxis.minval = xlimits[0];
+  this._xAxis.maxval = xlimits[1];
   var xrange = xlimits[1] - xlimits[0];
-  this._xAxis.xscale = (xrange !== 0 ? 1 / xrange : 1.0);
+  this._xAxis.scale = (xrange !== 0 ? 1 / xrange : 1.0);
 
   if (this.dygraph_.getOptionForAxis("logscale", 'x')) {
-    this._xAxis.xlogrange = Dygraph.log10(this._xAxis.maxxval) - Dygraph.log10(this._xAxis.minxval);
+    this._xAxis.xlogrange = Dygraph.log10(this._xAxis.maxval) - Dygraph.log10(this._xAxis.minval);
     this._xAxis.xlogscale = (this._xAxis.xlogrange !== 0 ? 1.0 / this._xAxis.xlogrange : 1.0);
   }
   for (var i = 0; i < this.yAxes_.length; i++) {
@@ -212,11 +212,11 @@ DygraphLayout.prototype._evaluateLimits = function() {
   }
 };
 
-DygraphLayout.calcXNormal_ = function(value, axis, logscale) {
+DygraphLayout.calcXNormal_ = function(value, xAxis, logscale) {
   if (logscale) {
-    return ((Dygraph.log10(value) - Dygraph.log10(axis.minxval)) * axis.xlogscale);
+    return ((Dygraph.log10(value) - Dygraph.log10(xAxis.minval)) * xAxis.xlogscale);
   } else {
-    return (value - axis.minxval) * axis.xscale;
+    return (value - xAxis.minval) * xAxis.scale;
   }
 };
 
