@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>synchronize</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../extras/shapes.js"></script>
+    <script type="text/javascript" src="../extras/canvas-annotations.js"></script>
+
+    <style type="text/css">
+      #div1 { position: absolute; left: 10px; top: 30px; }
+      #div2 { position: absolute; left: 520px; top: 30px; }
+      #div3 { position: absolute; left: 10px; top: 340px; }
+      #div4 { position: absolute; left: 520px; top: 340px; }
+      .bubble {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.75);
+        border-radius: 4px;
+        border: 1px solid #999;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.75);
+        z-index: 10;
+        font-size: 10px;
+        padding: 1em;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Zooming and panning on any of the charts will zoom and pan all the
+    others.</p>
+
+    <div id="div1" style="width:500px; height:300px;"></div>
+    <div id="div2" style="width:500px; height:300px;"></div>
+    <div id="div3" style="width:500px; height:300px;"></div>
+    <div id="div4" style="width:500px; height:300px;"></div>
+
+    <script type="text/javascript">
+      var CustomNoisyData = JSON.parse('['+
+'   {'+
+'      "date" : "2006/10/01",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.01953818828,'+
+'               0.7212041046'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.18487394958,'+
+'               0.599318549691'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/02",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.63321799308,'+
+'               0.778297234566'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.69491525424,'+
+'               0.531417655826'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/03",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.44328097731,'+
+'               0.644967734352'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.51256281407,'+
+'               0.640539070386'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/04",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.52733686067,'+
+'               0.774700921683'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.68456375839,'+
+'               0.66207105053'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/05",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.28719723183,'+
+'               0.741636245748'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.35294117647,'+
+'               0.621407707226'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/06",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.58450704225,'+
+'               0.523967868159'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.78657487091,'+
+'               0.791868460623'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/07",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               5.32859680284,'+
+'               0.946589405904'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               4.0404040404,'+
+'               0.807910739509'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/08",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.64084507042,'+
+'               0.672799548916'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.37288135593,'+
+'               0.626609885481'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/09",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.26480836237,'+
+'               0.620990945917'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.5413153457,'+
+'               0.75897176848'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/10",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.29289428076,'+
+'               0.74289969528'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.02702702703,'+
+'               0.579191340004'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/11",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.7633851468,'+
+'               0.681234043829'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.1744966443,'+
+'               0.4413034044'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/12",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.28719723183,'+
+'               0.741636245748'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.37268128162,'+
+'               0.741327769578'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/13",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.77304964539,'+
+'               0.55569466381'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.85810810811,'+
+'               0.555011329732'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/14",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.39892665474,'+
+'               0.7664008338'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.67224080268,'+
+'               0.524368852929'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/15",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.65017667845,'+
+'               0.675144574777'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.35570469799,'+
+'               0.737661045752'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/16",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.63951473137,'+
+'               0.779620631266'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.34899328859,'+
+'               0.620377617453'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/17",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.25694444444,'+
+'               0.618859623032'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.68067226891,'+
+'               0.526990133716'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/18",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               4.47504302926,'+
+'               0.857766274964'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.51677852349,'+
+'               0.641599927369'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/19",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.44755244755,'+
+'               0.646081155692'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.68067226891,'+
+'               0.526990133716'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/20",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.67775831874,'+
+'               0.787656442774'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.066439523,'+
+'               0.711598843969'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/21",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.94265232975,'+
+'               0.823839169829'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.85906040268,'+
+'               0.788990618726'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/22",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.59067357513,'+
+'               0.660187558973'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.71621621622,'+
+'               0.777438794254'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/23",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               4.33275563258,'+
+'               0.847570482324'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.85906040268,'+
+'               0.788990618726'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/24",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.10344827586,'+
+'               0.720049610821'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.84280936455,'+
+'               0.679611549697'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/25",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.40350877193,'+
+'               0.492720767725'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.7027027027,'+
+'               0.666482380968'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/26",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.95035460993,'+
+'               0.582291234145'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.36486486486,'+
+'               0.624518599275'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/27",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.30905861456,'+
+'               0.632980642182'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.03045685279,'+
+'               0.580161203819'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/28",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               4.09252669039,'+
+'               0.835706590809'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.87648054146,'+
+'               0.68754192469'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/29",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.66903914591,'+
+'               0.679883997626'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.02360876897,'+
+'               0.578224712918'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/30",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               4.74516695958,'+
+'               0.89127787497'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               4.36241610738,'+
+'               0.836670992529'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/10/31",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.78260869565,'+
+'               0.685905251933'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.20945945946,'+
+'               0.724388507178'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/01",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.5873015873,'+
+'               0.524884521441'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.51260504202,'+
+'               0.500373860545'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/02",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.78745644599,'+
+'               0.687083077461'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.0202020202,'+
+'               0.57726130639'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/03",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               5.11463844797,'+
+'               0.925157232782'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.68907563025,'+
+'               0.663168401088'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/04",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               4.9001814882,'+
+'               0.919644816432'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.07692307692,'+
+'               0.713993047527'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/05",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               5.13274336283,'+
+'               0.928343545136'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.55329949239,'+
+'               0.761492892041'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/06",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.92644483363,'+
+'               0.575222935029'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.35294117647,'+
+'               0.621407707226'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/07",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.46478873239,'+
+'               0.650573541306'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.52027027027,'+
+'               0.502889967904'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/08",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.13523131673,'+
+'               0.609772022763'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.6981450253,'+
+'               0.665374048085'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/09",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.88007054674,'+
+'               0.811026422222'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.72572402044,'+
+'               0.672079879106'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/10",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.63620386643,'+
+'               0.671633132526'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.71621621622,'+
+'               0.777438794254'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/11",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.69718309859,'+
+'               0.791736755355'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.0303030303,'+
+'               0.703344064467'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/12",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.83944153578,'+
+'               0.802703592906'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               4.05405405405,'+
+'               0.81058250986'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/13",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.47787610619,'+
+'               0.653984033555'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.20338983051,'+
+'               0.604340313133'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/14",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.77304964539,'+
+'               0.55569466381'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.22222222222,'+
+'               0.60944692682'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/15",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.30088495575,'+
+'               0.630766388737'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               0.843170320405,'+
+'               0.375484163785'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/16",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.57894736842,'+
+'               0.522144132232'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.19594594595,'+
+'               0.602321544724'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/18",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.45183887916,'+
+'               0.647198426991'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.69491525424,'+
+'               0.531417655826'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/19",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.52733686067,'+
+'               0.774700921683'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.85185185185,'+
+'               0.55316023504'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/20",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.97723292469,'+
+'               0.711254751484'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.6981450253,'+
+'               0.665374048085'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/21",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.29681978799,'+
+'               0.629665059963'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.01680672269,'+
+'               0.576301104352'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/22",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.01418439716,'+
+'               0.719945245328'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.5466893039,'+
+'               0.649125445325'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/23",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.78378378378,'+
+'               0.809917534069'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.6936026936,'+
+'               0.664269394219'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/24",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.18584070796,'+
+'               0.738851643987'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.01005025126,'+
+'               0.57439025002'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/25",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.83185840708,'+
+'               0.697868332879'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "red",'+
+'               "rotation" : "down",'+
+'               "text" : "<p><img src=\'dollar.png\'> <strong>Lorem ipsum</strong> dolor sit amet,<br>consectetur <em>adipiscing elit</em>.</p>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.066439523,'+
+'               0.711598843969'+
+'            ],'+
+'            "annotation" : {'+
+'               "fillStyle" : "green",'+
+'               "rotation" : "up",'+
+'               "text" : "<ul><li>Lorem ipsum dolor sit amet</li><li>consectetur adipiscing elit</li></ul>",'+
+'               "shape" : "ARROW",'+
+'               "strokeStyle" : "black"'+
+'            }'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/26",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               3.01953818828,'+
+'               0.7212041046'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.53378378378,'+
+'               0.645878720149'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/27",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.81195079086,'+
+'               0.693033387099'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               1.51006711409,'+
+'               0.499540743312'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/28",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               2.97723292469,'+
+'               0.711254751484'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               2.54237288136,'+
+'               0.648039583782'+
+'            ]'+
+'         }'+
+'      }'+
+'   },'+
+'   {'+
+'      "date" : "2006/11/29",'+
+'      "series" : {'+
+'         "A" : {'+
+'            "value" : ['+
+'               1.41093474427,'+
+'               0.495309102312'+
+'            ]'+
+'         },'+
+'         "B" : {'+
+'            "value" : ['+
+'               3.02013422819,'+
+'               0.701020603129'+
+'            ]'+
+'         }'+
+'      }'+
+'   }'+
+']');
+
+      var gs = [];
+      var blockRedraw = false;
+      var initialized = false;
+      var canvas_annotations = Dygraph.Plugins.CanvasAnnotations;
+      var data = [];
+      var annotations_data = [];
+
+      CustomNoisyData.forEach(function (item) {
+        var row = [];
+        row.push(new Date(item.date));
+        row.push(item.series["A"].value);
+        row.push(item.series["B"].value);
+
+        data.push(row);
+
+        ["A", "B"].forEach(function (s) {
+          if (item.series[s].annotation) {
+            a = item.series[s].annotation;
+            a.x = new Date(item.date).getTime();
+            a.series = s;
+            a.canvas = Dygraph.Circles[a.shape];
+            annotations_data.push(a);
+          }
+        });
+      });
+
+      for (var i = 1; i <= 4; i++) {
+        gs.push(
+          new Dygraph(
+            document.getElementById("div" + i),
+            data, {
+              plugins: [canvas_annotations],
+              labels: ["Date", "A", "B"],
+              rollPeriod: 7,
+              errorBars: true,
+              drawCallback: function(me, initial) {
+                if (blockRedraw || initial) return;
+                blockRedraw = true;
+                var range = me.xAxisRange();
+                var yrange = me.yAxisRange();
+                for (var j = 0; j < 4; j++) {
+                  if (gs[j] == me) continue;
+                  gs[j].updateOptions( {
+                    dateWindow: range,
+                    valueRange: yrange
+                  } );
+                }
+                blockRedraw = false;
+              }
+            }
+          )
+        );
+      }
+      gs.forEach(function (g) {
+        g.ready(function (dygraph) {
+          dygraph.setAnnotations(annotations_data);
+        });
+        g.updateOptions({
+          annotationMouseOverHandler: function(ann, point, dg, event) {
+            var bubble = document.createElement("div");
+            bubble.className = "bubble";
+            bubble.id = "bubble" + ann.series + ann.x;
+            bubble.innerHTML = ann.text;
+            bubble.style.top = point.canvasy + "px";
+            bubble.style.left = point.canvasx + "px"
+            dg.graphDiv.appendChild(bubble);
+            ann.div.title = "";
+          },
+          annotationMouseOutHandler: function(ann, point, dg, event) {
+            var bubble = document.getElementById("bubble" + ann.series + ann.x);
+            if (bubble && bubble.parentNode) {
+              bubble.parentNode.removeChild(bubble);
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
