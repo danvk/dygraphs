@@ -464,7 +464,8 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
         }
       }
 
-      var color = this.colors[setName];
+      var color = this.dygraph_.getOption("color", setName) || this.colors[setName];
+      this.dygraph_.colorsMap_[setName] = color;
       var strokeWidth = this.dygraph_.getOption("strokeWidth", setName);
 
       ctx.save();
