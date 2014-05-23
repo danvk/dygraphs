@@ -10,10 +10,12 @@ annotations.prototype.toString = function() {
 };
 
 annotations.prototype.activate = function(g) {
-  g.ready(function(dg) {
-    var annotations = dg.getFunctionOption('annotationDataParser')(dg.rawData_, dg);
-    dg.setAnnotations(annotations, true); // Don't redraw chart
-  });
+  if (g.getFunctionOption("annotationDataParser") !== null) {
+    g.ready(function(dg) {
+      var annotations = dg.getFunctionOption("annotationDataParser")(dg.rawData_, dg);
+      dg.setAnnotations(annotations, true); // Don't redraw chart
+    });
+  }
 
   return {
     clearChart: this.clearChart,
