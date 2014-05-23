@@ -569,6 +569,51 @@
             document.getElementById("div" + i),
             CustomNoisyData, {
               plugins: [canvas_annotations],
+              annotationDataParser: function(data, dg) {
+                var annotations = [];
+                var labels = dg.getLabels();
+
+                for (var j = 0; j < data.length; j++) {
+                  var v = data[j];
+                  var o = v[v.length - 1];
+                  var a = {};
+
+                  if (o.hasOwnProperty("annotations")) {
+                    o.annotations.forEach(function(ann) {
+                      a = {};
+                      for (k in ann) {
+                        if (ann.hasOwnProperty(k)) {
+                          if (k === "series") {
+                            a[k] = labels[ann[k]];
+                          } else {
+                            a[k] = ann[k];
+                          }
+                        }
+                      }
+                      a.x = v[0];
+                      annotations.push(a);
+                    });
+                  }
+                }
+
+                return annotations;
+              },
+              annotationMouseOverHandler: function(ann, point, dg, event) {
+                var bubble = document.createElement("div");
+                bubble.className = "bubble";
+                bubble.id = "bubble" + ann.series + ann.x + i;
+                bubble.innerHTML = ann.text;
+                bubble.style.top = point.canvasy + "px";
+                bubble.style.left = point.canvasx + "px"
+                dg.graphDiv.appendChild(bubble);
+                ann.div.title = "";
+              },
+              annotationMouseOutHandler: function(ann, point, dg, event) {
+                var bubble = document.getElementById("bubble" + ann.series + ann.x + i);
+                if (bubble && bubble.parentNode) {
+                  bubble.parentNode.removeChild(bubble);
+                }
+              },
               labels: ["Date", "A", "B"],
               rollPeriod: 7,
               errorBars: true,
@@ -590,55 +635,11 @@
           )
         );
       }
-      gs.forEach(function (g) {
-        g.ready(function (dygraph) {
-          var annotations = [];
-          var labels = dygraph.getLabels();
-
-          for (var n = 0; n < dygraph.rawData_.length; n++) {
-            var v = dygraph.rawData_[n];
-            var o = v[v.length - 1];
-            var a = {};
-
-            if (o.hasOwnProperty("annotations")) {
-              o.annotations.forEach(function(ann, j) {
-                a = {};
-                for (k in ann) {
-                  if (ann.hasOwnProperty(k)) {
-                    if (k === "series") {
-                      a[k] = labels[ann[k]];
-                    } else {
-                      a[k] = ann[k];
-                    }
-                  }
-                }
-                a.x = v[0];
-                annotations.push(a);
-              });
-            }
-          }
-
-          dygraph.setAnnotations(annotations);
+      for (var i = 1; i < 4; i++) {
+        gs[i].ready(function(dg) {
+          dg.setAnnotations(dg.annotations()); // Show annotations
         });
-        g.updateOptions({
-          annotationMouseOverHandler: function(ann, point, dg, event) {
-            var bubble = document.createElement("div");
-            bubble.className = "bubble";
-            bubble.id = "bubble" + ann.series + ann.x;
-            bubble.innerHTML = ann.text;
-            bubble.style.top = point.canvasy + "px";
-            bubble.style.left = point.canvasx + "px"
-            dg.graphDiv.appendChild(bubble);
-            ann.div.title = "";
-          },
-          annotationMouseOutHandler: function(ann, point, dg, event) {
-            var bubble = document.getElementById("bubble" + ann.series + ann.x);
-            if (bubble && bubble.parentNode) {
-              bubble.parentNode.removeChild(bubble);
-            }
-          }
-        });
-      });
+      }
     </script>
   </body>
 </html>
