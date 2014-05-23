@@ -211,6 +211,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "Prefer axes: { y: { pixelsPerLabel } }"
   },
+  "annotationDataParser": {
+    "default": "null",
+    "labels": ["Annotations"],
+    "type": "function(data, dygraph)",
+    "description": "If provided, this function parses Dygraph data for annotations data."
+  },
   "annotationMouseOverHandler": {
     "default": "null",
     "labels": ["Annotations"],
