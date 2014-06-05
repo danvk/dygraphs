@@ -413,6 +413,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "Should the area underneath the graph be filled? This option is not compatible with error bars. This may be set on a <a href='per-axis.html'>per-series</a> basis."
   },
+  "fillStepPlot": {
+    "default": "false",
+    "labels": ["Data Line display"],
+    "type": "boolean",
+    "description": "If true, allows the graph to be filled the right way including gaps (only if stepPlot and fillGraph are set true) and ignored if stepPlot is set to false"
+  },
   "highlightCircleSize": {
     "default": "3",
     "labels": ["Interactive Elements"],
