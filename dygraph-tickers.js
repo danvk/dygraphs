@@ -303,7 +303,7 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
  * @param {number} a Left edge of the chart (ms)
  * @param {number} b Right edge of the chart (ms)
  * @param {number} pixels Size of the chart in the relevant dimension (width).
- * @param {function(string):*} opts Function mapping from option name -> value.
+ * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @return {number} The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
@@ -335,7 +335,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} start_time
  * @param {number} end_time
  * @param {number} granularity (one of the granularities enumerated above)
- * @param {function(string):*} opts Function mapping from option name -> value.
+ * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @param {Dygraph=} dg
  * @return {!Dygraph.TickList}
  */
