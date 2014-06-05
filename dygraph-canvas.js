@@ -672,6 +672,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
   var fillAlpha = g.getNumericOption('fillAlpha');
   var stackedGraph = g.getBooleanOption("stackedGraph");
+  var fillStepPlot = g.getBooleanOption("stepPlot") && g.getBooleanOption("fillStepPlot");
   var colors = g.getColors();
 
   // For stacked graphs, track the baseline for filling.
@@ -716,7 +717,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var last_x, is_first = true;
     while (iter.hasNext) {
       var point = iter.next();
-      if (!Dygraph.isOK(point.y)) {
+      if (!Dygraph.isOK(point.y) && !fillStepPlot) {
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -757,7 +758,14 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
 
       } else {
-        newYs = [ point.canvasy, axisY ];
+        if (isNaN(point.canvasy) && fillStepPlot)
+        {
+          newYs = [ area.y + area.h, axisY ];
+        }
+        else
+        {
+          newYs = [ point.canvasy, axisY ];
+        }
       }
       if (!isNaN(prevX)) {
         ctx.moveTo(prevX, prevYs[0]);
