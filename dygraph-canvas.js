@@ -691,7 +691,6 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     if (!g.getBooleanOption('fillGraph', setName)) continue;
     
     var stepPlot = g.getBooleanOption('stepPlot', setName);
-    var fillStepPlot = stepPlot && g.getBooleanOption("fillStepPlot", setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
     var axisY = 1.0 + axis.minyval * axis.yscale;
@@ -717,7 +716,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var last_x, is_first = true;
     while (iter.hasNext) {
       var point = iter.next();
-      if (!Dygraph.isOK(point.y) && !fillStepPlot) {
+      if (!Dygraph.isOK(point.y) && !stepPlot) {
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -758,12 +757,9 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
 
       } else {
-        if (isNaN(point.canvasy) && fillStepPlot)
-        {
+        if (isNaN(point.canvasy) && stepPlot) {
           newYs = [ area.y + area.h, axisY ];
-        }
-        else
-        {
+        } else {
           newYs = [ point.canvasy, axisY ];
         }
       }
