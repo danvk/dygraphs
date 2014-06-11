@@ -280,7 +280,6 @@ Dygraph.DEFAULT_ATTRS = {
   customBars: false,
   fillGraph: false,
   fillAlpha: 0.15,
-  fillStepPlot: false,
   connectSeparatedPoints: false,
 
   stackedGraph: false,
