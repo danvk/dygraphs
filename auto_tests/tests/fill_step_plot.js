@@ -1,5 +1,5 @@
 /**
- * @fileoverview Test if you put give null values to dygraph with stepPlot
+ * @fileoverview Test if you give null values to dygraph with stepPlot
  * and fillGraph options enabled
  *
  * @author benoitboivin.pro@gmail.com (Benoit Boivin)
@@ -25,7 +25,6 @@ fillStepPlotTestCase.prototype.tearDown = function() {
 
 
 fillStepPlotTestCase.prototype.testFillStepPlotNullValues = function() {
-  var attrs = {};
   var opts = {
     labels: ["x","y"],
     width: 480,
@@ -55,5 +54,5 @@ fillStepPlotTestCase.prototype.testFillStepPlotNullValues = function() {
   var xy2 = g.toDomCoords(x2, y2);
   
   // Check if a line is drawn between the previous y and the bottom of the chart
-  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
+  CanvasAssertions.assertLineDrawn(htx, xy1, xy2, {});
 };
