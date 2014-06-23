@@ -42,5 +42,6 @@ lint:
 	@./lint.sh
 
 publish:
-	@./generate-combined.sh
-	@npm publish
+	./generate-combined.sh
+	npm publish
+	git checkout dygraph-combined.js
