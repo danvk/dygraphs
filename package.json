@@ -29,7 +29,9 @@
   },
   "homepage": "https://github.com/danvk/dygraphs",
   "devDependencies": {
-    "phantomjs": "^1.9.7-8"
+    "phantomjs": "^1.9.7-8",
+    "closure-compiler": "^0.2.6",
+    "obvious-closure-library": "^20140401.0.2"
   },
   "scripts": {
     "test": "make test"

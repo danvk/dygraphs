@@ -6,22 +6,18 @@
 # It outputs minified JS to a temp file. This should be ignored for now, until
 # it's fully functional.
 
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 (path/to/closure/compiler.jar)" 1>&2
+CLOSURE_COMPILER=node_modules/closure-compiler/lib/vendor/compiler.jar
+BASE_JS=node_modules/obvious-closure-library/closure/goog/base.js
+if [[ (! -f $CLOSURE_COMPILER) || (! -f $BASE_JS) ]]; then
+  echo "Missing compiler.jar or base.js. Try running 'npm install'." 1>&2
   exit 1
 fi
-if [ ! -f $1 ]; then
-  echo "$1 does not exist"
-  exit 1
-fi
-
-CLOSURE_COMPILER=$1
 
 java -jar $CLOSURE_COMPILER \
  --compilation_level ADVANCED_OPTIMIZATIONS  \
  --warning_level VERBOSE  \
  --output_wrapper='(function() {%output%})();'  \
- --js ../../closure-library-read-only/closure/goog/base.js \
+ --js $BASE_JS \
  --js=dashed-canvas.js \
  --js=dygraph-options.js \
  --js=dygraph-layout.js \
