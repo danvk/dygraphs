@@ -1136,6 +1136,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
+  this.graphDiv.style.position = 'relative';
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
