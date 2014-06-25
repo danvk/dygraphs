@@ -31,7 +31,8 @@
   "devDependencies": {
     "phantomjs": "^1.9.7-8",
     "closure-compiler": "^0.2.6",
-    "obvious-closure-library": "^20140401.0.2"
+    "obvious-closure-library": "^20140401.0.2",
+    "uglify-js": "^2"
   },
   "scripts": {
     "test": "make test"
