@@ -44,7 +44,7 @@ CatCompressed () {
   Copyright
   CatSources \
   | grep -v '"use strict";' \
-  | node_modules/uglify-js/bin/uglifyjs -c -m
+  | node_modules/uglify-js/bin/uglifyjs -c warnings=false -m
 }
 
 ACTION="${1:-update}"
