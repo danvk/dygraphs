@@ -52,7 +52,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.layout = layout;
   this.element = element;
   this.elementContext = elementContext;
-  this.container = this.element.parentNode;
 
   this.height = this.element.height;
   this.width = this.element.width;
@@ -64,8 +63,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
   // internal state
   this.area = layout.getPlotArea();
-  this.container.style.position = "relative";
-  this.container.style.width = this.width + "px";
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
