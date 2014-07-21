@@ -60,6 +60,7 @@ compress*|cat_compress*)
   CatCompressed
   ;;
 update)
+  npm install
   CatCompressed > dygraph-combined.js
   chmod a+r dygraph-combined.js
   ;;
