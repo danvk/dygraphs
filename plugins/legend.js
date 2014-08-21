@@ -249,7 +249,7 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
 
     // TODO(danvk): use a template string here and make it an attribute.
     html += "<span" + cls + ">" + " <b><span style='color: " + series.color + ";'>" +
-        escapeHTML(pt.name) + "</span></b>:&nbsp;" + yval + "</span>";
+        escapeHTML(pt.name) + "</span></b>:&#160;" + yval + "</span>";
   }
   return html;
 };
