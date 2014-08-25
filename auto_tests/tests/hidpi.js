@@ -17,7 +17,10 @@ hidpiTestCase.prototype.tearDown = function() {
   window.devicePixelRatio = savePixelRatio;
 };
 
-hidpiTestCase.prototype.testNameGoesHere = function() {
+hidpiTestCase.prototype.testDoesntCreateScrollbars = function() {
+  var sw = document.body.scrollWidth;
+  var cw = document.body.clientWidth;
+
   var graph = document.getElementById("graph");
   graph.style.width = "70%";  // more than half.
   graph.style.height = "200px";
@@ -32,8 +35,10 @@ hidpiTestCase.prototype.testNameGoesHere = function() {
 
   var g = new Dygraph(graph, data, opts);
 
+  // Adding the graph shouldn't cause the width of the page to change.
+  // (essentially, we're checking that we don't end up with a scrollbar)
   // See http://stackoverflow.com/a/2146905/388951
-  var hasHorizontalScrollbar = (document.body.scrollWidth > document.body.clientWidth);
-  assertEquals(false, hasHorizontalScrollbar);
+  assertEquals(cw, document.body.clientWidth);
+  assertEquals(sw, document.body.scrollWidth);
 };
 
