@@ -275,7 +275,8 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       y : {
         drawAxis : false,
         gridLineColor : "#0000ff",
-        gridLinePattern : [ 10, 10 ]
+        gridLinePattern : [ 10, 10 ],
+        gridLineWidth : 1
       }
     }
   };
