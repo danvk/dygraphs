@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
 // This file contains typedefs and externs that are needed by the Closure Compiler.
 
 /**
