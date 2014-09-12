@@ -529,7 +529,7 @@ CallbackTestCase.prototype.testFailedResponse = function() {
 };
 
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355 
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355
 CallbackTestCase.prototype.testHighlightCallbackRow = function() {
   var highlightRow;
   var highlightCallback = function(e, x, pts, row) {
@@ -672,7 +672,7 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
 CallbackTestCase.prototype.testDrawHighlightPointCallback_idx = function() {
     var idxToCheck = null;
 
-    var drawHighlightPointCallback  = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
+    var drawHighlightPointCallback  = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam, idx) {
         idxToCheck = idx;
     };
     var testdata = [[1, 2], [2, 3], [3, NaN], [4, 2], [5, NaN], [6, 3]];
@@ -691,4 +691,36 @@ CallbackTestCase.prototype.testDrawHighlightPointCallback_idx = function() {
     assertEquals(0,idxToCheck);
     DygraphOps.dispatchMouseMove(g, 6, 3);
     assertEquals(5,idxToCheck);
+};
+
+/**
+ * Test that highlight min distance works
+  */
+CallbackTestCase.prototype.testhighlightMinDistance= function() {
+    var idxToCheck = null;
+
+    var drawHighlightPointCallback  = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam, idx) {
+        idxToCheck = idx;
+    };
+    var testdata = [[1, 2], [15, 15]];
+    var graph = document.getElementById("graph");
+    var g = new Dygraph(graph, testdata,
+        {
+            drawHighlightPointCallback: drawHighlightPointCallback,
+            // Distance in pixels
+            highlightMinDistance: 50
+        });
+
+    assertNull(idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 300, 300);
+    // Check that far away point is not returned
+    assertNull(idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 2, 2);
+    // Check that the first index is returned
+    assertEquals(0, idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 7, 7);
+    // Check that idx is not changed
+    assertEquals(0, idxToCheck);
+    DygraphOps.dispatchMouseMove(g, 14, 14);
+    assertEquals(1, idxToCheck);
 };
