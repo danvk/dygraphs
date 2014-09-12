@@ -1043,7 +1043,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   var xRange = this.xAxisRange();
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", 'x') ;
-  if (logscale == true) { // logscale can be null so we test for true explicitly.
+  if (logscale === true) { // logscale can be null so we test for true explicitly.
     var logr0 = Dygraph.log10(xRange[0]);
     var logr1 = Dygraph.log10(xRange[1]);
     pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);
@@ -1828,7 +1828,7 @@ Dygraph.prototype.findClosestRow = function(domX, domY) {
       var dx = point.canvasx - domX;
       var dy = point.canvasy - domY;
       var euclideanDist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < minDistX && euclideanDist < highlightMinDistance) {
+      if (dist < minDistX && (isNaN(euclideanDist) || euclideanDist < highlightMinDistance)) {
         minDistX = dist;
         closestRow = point.idx;
       }
@@ -1862,7 +1862,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (dist < minDist && dist < highlightMinDistance) {
+      if (dist < minDist && (isNaN(dist) || dist < highlightMinDistance)) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;

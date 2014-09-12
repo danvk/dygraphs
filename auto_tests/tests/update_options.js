@@ -5,7 +5,7 @@
  * @author antrob@google.com (Anthony Robledo)
  */
 var UpdateOptionsTestCase = TestCase("update-options");
-  
+
 UpdateOptionsTestCase.prototype.opts = {
   width: 480,
   height: 320,
@@ -76,7 +76,7 @@ UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
   this.unwrapDrawGraph(graph);
   assertFalse(graph._testDrawCalled);
 };
- 
+
 UpdateOptionsTestCase.prototype.testSingleSeriesRequiresNewPoints = function() {
   var graphDiv = document.getElementById("graph");
   var graph = new Dygraph(graphDiv, this.data, this.opts);
@@ -122,6 +122,17 @@ UpdateOptionsTestCase.prototype.testUpdateLabelsDivDoesntInfiniteLoop = function
   var labelsDiv = document.getElementById("labels");
   var graph = new Dygraph(graphDiv, this.data, this.opts);
   graph.updateOptions({labelsDiv : labelsDiv});
+}
+
+// Test https://github.com/danvk/dygraphs/pull/311
+UpdateOptionsTestCase.prototype.testUpdateHighlightMinDistance = function() {
+  var graphDiv = document.getElementById("graph");
+  var graph = new Dygraph(graphDiv, this.data, this.opts);
+  assertEquals(Infinity, graph.getNumericOption('highlightMinDistance'));
+  graph.updateOptions({ highlightMinDistance : 100 });
+  assertEquals(100, graph.getNumericOption('highlightMinDistance'));
+  graph.updateOptions({ highlightMinDistance : Infinity });
+  assertEquals(Infinity, graph.getNumericOption('highlightMinDistance'));
 }
 
 // Test https://github.com/danvk/dygraphs/issues/247
