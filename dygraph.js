@@ -1828,8 +1828,7 @@ Dygraph.prototype.findClosestRow = function(domX, domY) {
       var dx = point.canvasx - domX;
       var dy = point.canvasy - domY;
       var euclideanDist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < minDistX && (isNaN(point.canvasx) || isNaN(point.canvasy) || isNaN(domX)
-          || isNaN(domY) || euclideanDist < highlightMinDistance)) {
+      if (dist < minDistX && !isNaN(euclideanDist) && euclideanDist < highlightMinDistance) {
         minDistX = dist;
         closestRow = point.idx;
       }
@@ -1863,8 +1862,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (dist < minDist && (isNaN(point.canvasx) || isNaN(point.canvasy) || isNaN(domX)
-          || isNaN(domY) || dist < highlightMinDistance)) {
+      if (dist < minDist && !isNaN(euclideanDist) && dist < highlightMinDistance) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;

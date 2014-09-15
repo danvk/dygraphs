@@ -363,7 +363,7 @@ CallbackTestCase.prototype.testNaNData = function() {
 
   // Explicitly test closest point algorithms
   var dom = g.toDomCoords(10.1, 0.9);
-  assertEquals(1, g.findClosestRow(dom[0]));
+  assertEquals(1, g.findClosestRow(dom[0], dom[1]));
 
   var res = g.findClosestPoint(dom[0], dom[1]);
   assertEquals(1, res.row);
