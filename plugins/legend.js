@@ -234,6 +234,18 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   var showZeros = g.getOption("labelsShowZeroValues");
   sepLines = g.getOption("labelsSeparateLines");
   var highlightSeries = g.getHighlightSeries();
+
+  //
+  // Sort values by yval
+  var sortByValue=g.getOption("labelsSortByValue");
+  if (sortByValue) {
+    sel_points=sel_points.sort(function(a, b) {
+      var first = a.yval;
+      var second = b.yval;
+      return((first < second) ? 1 : ((first > second) ? -1:0))
+    })
+  }
+
   for (i = 0; i < sel_points.length; i++) {
     var pt = sel_points[i];
     if (pt.yval === 0 && !showZeros) continue;
