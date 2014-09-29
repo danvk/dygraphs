@@ -112,6 +112,13 @@ DygraphCanvasRenderer.prototype.clear = function() {
 
   context = this.elementContext;
   context.clearRect(0, 0, this.width, this.height);
+  //workarout for old android and cordova until 4.3
+  //http://code.google.com/p/android/issues/detail?id=39247
+  context.canvas.style.opacity = 0.99;
+  setTimeout(function() {
+    context.canvas.style.opacity = 1;
+  }, 1);
+
 };
 
 /**
