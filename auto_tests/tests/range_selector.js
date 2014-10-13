@@ -114,6 +114,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
     height: 320,
     showRangeSelector: true,
     rangeSelectorHeight: 30,
+    rangeSelectorPlotFillGradientColor: 'rgba(200, 200, 42, 10)',
     rangeSelectorPlotFillColor: 'lightyellow',
     rangeSelectorPlotStyleColor: 'yellow',
     labels: ['X', 'Y']
