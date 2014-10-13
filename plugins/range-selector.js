@@ -625,7 +625,7 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
   if (fillStyle) {
     var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
     if (fillGradientStyle) {
-        lingrad.addColorStop(0, fillGradientStyle);
+      lingrad.addColorStop(0, fillGradientStyle);
     }
     lingrad.addColorStop(1, fillStyle);
     this.bgcanvas_ctx_.fillStyle = lingrad;

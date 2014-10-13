@@ -797,7 +797,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "white",
     "labels": ["Interactive Elements"],
     "type": "string",
-    "description": "The second color for the range selector mini plot fill color gradient. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"rgba(255,100,200,42)\" or \"yellow\". You can also specify null or \"\" to disable the gradient and fill with one single color."
+    "description": "The top color for the range selector mini plot fill color gradient. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"rgba(255,100,200,42)\" or \"yellow\". You can also specify null or \"\" to disable the gradient and fill with one single color."
   },
   "animatedZooms": {
     "default": "false",
