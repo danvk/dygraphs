@@ -27,6 +27,11 @@
       <input type=checkbox id="2" checked onClick="change(this)">
       <label for="2"> C</label>
     </p>
+    <p><b>Show/Hide Series by Array (works faster on graphs with many series)</b></p>
+    <p>
+      <input type="button" value="show all" onClick="showAll()"/> 
+      <input type="button" value="hide all" onClick="hideAll()"/> 
+    </p>
 
     <p>g.visibility() = <span id="visibility"></span></p>
 
@@ -51,6 +56,27 @@
         g.setVisibility(parseInt(el.id), el.checked);
         setStatus();
       }
+
+      function setAllItems(bValue)
+      {
+        var rgVisibility = g.visibility();
+        rgVisibility.map(function(x, i, ar){
+            ar[i] = bValue;
+        });        
+        g.setVisibilityArray(rgVisibility);        
+        setStatus();
+      }
+
+      function showAll()
+      {
+        setAllItems(true);
+      }
+
+      function hideAll()
+      {
+       setAllItems(false);
+      }
+
     </script>
 
   </body>
