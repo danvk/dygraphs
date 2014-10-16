@@ -234,6 +234,16 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   var showZeros = g.getOption("labelsShowZeroValues");
   sepLines = g.getOption("labelsSeparateLines");
   var highlightSeries = g.getHighlightSeries();
+
+  // sort legend by value
+  if (g.getOption("sortedLegend")) {
+    sel_points.sort(function(a, b) {
+      if (!Dygraph.isOK(a.canvasy) && !Dygraph.isOK(b.canvasy)) return 0;
+      if (!Dygraph.isOK(a.canvasy)) return 1;
+      if (!Dygraph.isOK(b.canvasy)) return -1;
+      return b.yval - a.yval; });
+  }
+
   for (i = 0; i < sel_points.length; i++) {
     var pt = sel_points[i];
     if (pt.yval === 0 && !showZeros) continue;
