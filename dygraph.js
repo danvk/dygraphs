@@ -3614,6 +3614,22 @@ Dygraph.prototype.setVisibility = function(num, value) {
 };
 
 /**
+ * Changes the visibility of a series by evaluating a modified
+ * array previously obtained from .visibility()
+ *
+ * @param visibilityStatus {Array.<boolean>}  boolean array of visibility status
+ */
+Dygraph.prototype.setVisibilityArray = function (visibilityStatus) {  
+  var x = this.visibility();  
+  if (visibilityStatus.length != x.length) {
+    Dygraph.warn("Array sizes do not match!");
+  } else {
+    x = visibilityStatus;
+    this.predraw_();    
+  }
+};
+
+/**
  * How large of an area will the dygraph render itself in?
  * This is used for testing.
  * @return A {width: w, height: h} object.
