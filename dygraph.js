@@ -1104,6 +1104,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
+  this.graphDiv.style.position = 'relative';
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
@@ -2123,10 +2124,23 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
     this.lastRow_ = row;
     for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
       var points = this.layout_.points[setIdx];
+      // Check if the point at the appropriate index is the point we're looking
+      // for.  If it is, just use it, otherwise search the array for a point
+      // in the proper place.
       var setRow = row - this.getLeftBoundary_(setIdx);
-      if (setRow < points.length) {
+      if (setRow < points.length && points[setRow].idx == row) {
         var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
+      } else {
+        for (var pointIdx = 0; pointIdx < points.length; ++pointIdx) {
+          var point = points[pointIdx];
+          if (point.idx == row) {
+            if (point.yval !== null) {
+              this.selPoints_.push(point);
+            }
+            break;
+          }
+        }
       }
     }
   } else {

@@ -26,6 +26,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+grep "$VERSION" package.json
+if [ $? -ne 0 ]; then
+  echo "Version in package.json doesn't match command line argument." >&2
+  exit 1
+fi
+
+grep "v$VERSION" bower.json
+if [ $? -ne 0 ]; then
+  echo "Version in bower.json doesn't match command line argument." >&2
+  exit 1
+fi
+
 make lint test test-combined
 if [ $? -ne 0 ]; then
   echo "Tests failed. Won't release!" >&2
