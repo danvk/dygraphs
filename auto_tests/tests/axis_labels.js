@@ -37,7 +37,7 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   var g = new Dygraph(graph, data, opts);
 
   // TODO(danvk): would ['-1.0','-0.5','0.0','0.5','1.0'] be better?
-  assertEquals(['-1','-0.5','0','0.5','1'], Util.getYLabels());
+  assertEquals(['-1.0','-0.5','0.0','0.5','1.0'], Util.getYLabels());
 
   // Go up to 2
   data += "4,2\n";
