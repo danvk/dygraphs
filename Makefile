@@ -28,6 +28,7 @@ generate-gwt:
 
 test:
 	@./test.sh
+	@./check-combined-unaffected.sh
 
 test-combined: move-combined test clean-combined-test
 
