@@ -1,6 +1,6 @@
 {
   "name": "dygraphs",
-  "version": "v1.0.1-bower",
+  "version": "v1.0.1+bower",
   "main": "dygraph-combined.js",
   "ignore": [
     "Makefile",
@@ -32,7 +32,7 @@
     "package.json",
     "phantom-driver.js",
     "phantom-perf.js",
-    "push-to-web.sh"
+    "push-to-web.sh",
     "release.sh",
     "releases.json",
     "screenshot.png",
@@ -40,6 +40,6 @@
     "test.sh",
     "tests",
     "thumbnail.png",
-    "yuicompressor-2.4.2.jar",
+    "yuicompressor-2.4.2.jar"
   ]
 }
