@@ -241,56 +241,42 @@ Dygraph.DECADAL = 19;
 Dygraph.CENTENNIAL = 20;
 Dygraph.NUM_GRANULARITIES = 21;
 
-/** @type {Array.<number>} */
-Dygraph.SHORT_SPACINGS = [];
-Dygraph.SHORT_SPACINGS[Dygraph.SECONDLY]        = 1000 * 1;
-Dygraph.SHORT_SPACINGS[Dygraph.TWO_SECONDLY]    = 1000 * 2;
-Dygraph.SHORT_SPACINGS[Dygraph.FIVE_SECONDLY]   = 1000 * 5;
-Dygraph.SHORT_SPACINGS[Dygraph.TEN_SECONDLY]    = 1000 * 10;
-Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_SECONDLY] = 1000 * 30;
-Dygraph.SHORT_SPACINGS[Dygraph.MINUTELY]        = 1000 * 60;
-Dygraph.SHORT_SPACINGS[Dygraph.TWO_MINUTELY]    = 1000 * 60 * 2;
-Dygraph.SHORT_SPACINGS[Dygraph.FIVE_MINUTELY]   = 1000 * 60 * 5;
-Dygraph.SHORT_SPACINGS[Dygraph.TEN_MINUTELY]    = 1000 * 60 * 10;
-Dygraph.SHORT_SPACINGS[Dygraph.THIRTY_MINUTELY] = 1000 * 60 * 30;
-Dygraph.SHORT_SPACINGS[Dygraph.HOURLY]          = 1000 * 3600;
-Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]      = 1000 * 3600 * 2;
-Dygraph.SHORT_SPACINGS[Dygraph.SIX_HOURLY]      = 1000 * 3600 * 6;
-Dygraph.SHORT_SPACINGS[Dygraph.DAILY]           = 1000 * 86400;
-Dygraph.SHORT_SPACINGS[Dygraph.WEEKLY]          = 1000 * 604800;
+// Date components enumeration (in the order of the arguments in Date)
+// TODO: make this an @enum
+Dygraph.DATEFIELD_Y = 0;
+Dygraph.DATEFIELD_M = 1;
+Dygraph.DATEFIELD_D = 2;
+Dygraph.DATEFIELD_HH = 3;
+Dygraph.DATEFIELD_MM = 4;
+Dygraph.DATEFIELD_SS = 5;
+Dygraph.DATEFIELD_MS = 6;
+Dygraph.NUM_DATEFIELDS = 7;
 
-/** 
- * A collection of objects specifying where it is acceptable to place tick
- * marks for granularities larger than WEEKLY.  
- * 'months' is an array of month indexes on which to place tick marks.
- * 'year_mod' ticks are placed when year % year_mod = 0.
- * @type {Array.<Object>} 
- */
-Dygraph.LONG_TICK_PLACEMENTS = [];
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.MONTHLY] = {
-  months : [0,1,2,3,4,5,6,7,8,9,10,11], 
-  year_mod : 1
-};
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.QUARTERLY] = {
-  months: [0,3,6,9], 
-  year_mod: 1
-};
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.BIANNUAL] = {
-  months: [0,6], 
-  year_mod: 1
-};
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.ANNUAL] = {
-  months: [0], 
-  year_mod: 1
-};
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.DECADAL] = {
-  months: [0], 
-  year_mod: 10
-};
-Dygraph.LONG_TICK_PLACEMENTS[Dygraph.CENTENNIAL] = {
-  months: [0], 
-  year_mod: 100
-};
+
+/** @type {Array.<{datefield:number, step:number, spacing:number}>} */
+Dygraph.TICK_PLACEMENT = [];
+Dygraph.TICK_PLACEMENT[Dygraph.SECONDLY]        = {datefield: Dygraph.DATEFIELD_SS, step:   1, spacing: 1000 * 1};
+Dygraph.TICK_PLACEMENT[Dygraph.TWO_SECONDLY]    = {datefield: Dygraph.DATEFIELD_SS, step:   2, spacing: 1000 * 2};
+Dygraph.TICK_PLACEMENT[Dygraph.FIVE_SECONDLY]   = {datefield: Dygraph.DATEFIELD_SS, step:   5, spacing: 1000 * 5};
+Dygraph.TICK_PLACEMENT[Dygraph.TEN_SECONDLY]    = {datefield: Dygraph.DATEFIELD_SS, step:  10, spacing: 1000 * 10};
+Dygraph.TICK_PLACEMENT[Dygraph.THIRTY_SECONDLY] = {datefield: Dygraph.DATEFIELD_SS, step:  30, spacing: 1000 * 30};
+Dygraph.TICK_PLACEMENT[Dygraph.MINUTELY]        = {datefield: Dygraph.DATEFIELD_MM, step:   1, spacing: 1000 * 60};
+Dygraph.TICK_PLACEMENT[Dygraph.TWO_MINUTELY]    = {datefield: Dygraph.DATEFIELD_MM, step:   2, spacing: 1000 * 60 * 2};
+Dygraph.TICK_PLACEMENT[Dygraph.FIVE_MINUTELY]   = {datefield: Dygraph.DATEFIELD_MM, step:   5, spacing: 1000 * 60 * 5};
+Dygraph.TICK_PLACEMENT[Dygraph.TEN_MINUTELY]    = {datefield: Dygraph.DATEFIELD_MM, step:  10, spacing: 1000 * 60 * 10};
+Dygraph.TICK_PLACEMENT[Dygraph.THIRTY_MINUTELY] = {datefield: Dygraph.DATEFIELD_MM, step:  30, spacing: 1000 * 60 * 30};
+Dygraph.TICK_PLACEMENT[Dygraph.HOURLY]          = {datefield: Dygraph.DATEFIELD_HH, step:   1, spacing: 1000 * 3600};
+Dygraph.TICK_PLACEMENT[Dygraph.TWO_HOURLY]      = {datefield: Dygraph.DATEFIELD_HH, step:   2, spacing: 1000 * 3600 * 2};
+Dygraph.TICK_PLACEMENT[Dygraph.SIX_HOURLY]      = {datefield: Dygraph.DATEFIELD_HH, step:   6, spacing: 1000 * 3600 * 6};
+Dygraph.TICK_PLACEMENT[Dygraph.DAILY]           = {datefield: Dygraph.DATEFIELD_D,  step:   1, spacing: 1000 * 86400};
+Dygraph.TICK_PLACEMENT[Dygraph.WEEKLY]          = {datefield: Dygraph.DATEFIELD_D,  step:   7, spacing: 1000 * 604800};
+Dygraph.TICK_PLACEMENT[Dygraph.MONTHLY]         = {datefield: Dygraph.DATEFIELD_M,  step:   1, spacing: 1000 * 7200  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 12
+Dygraph.TICK_PLACEMENT[Dygraph.QUARTERLY]       = {datefield: Dygraph.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
+Dygraph.TICK_PLACEMENT[Dygraph.BIANNUAL]        = {datefield: Dygraph.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
+Dygraph.TICK_PLACEMENT[Dygraph.ANNUAL]          = {datefield: Dygraph.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
+Dygraph.TICK_PLACEMENT[Dygraph.DECADAL]         = {datefield: Dygraph.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
+Dygraph.TICK_PLACEMENT[Dygraph.CENTENNIAL]      = {datefield: Dygraph.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
+
 
 /**
  * This is a list of human-friendly values at which to show tick marks on a log
@@ -317,8 +303,7 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
  * @param {number} a Left edge of the chart (ms)
  * @param {number} b Right edge of the chart (ms)
  * @param {number} pixels Size of the chart in the relevant dimension (width).
- * @param {function(string):*} opts Function mapping from option name ->
- *     value.
+ * @param {function(string):*} opts Function mapping from option name -&gt; value.
  * @return {number} The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
@@ -334,26 +319,19 @@ Dygraph.pickDateTickGranularity = function(a, b, pixels, opts) {
 };
 
 /**
+ * Compute the number of ticks on a date axis for a given granularity.
  * @param {number} start_time
  * @param {number} end_time
  * @param {number} granularity (one of the granularities enumerated above)
- * @return {number} Number of ticks that would result.
+ * @return {number} (Approximate) number of ticks that would result.
  */
 Dygraph.numDateTicks = function(start_time, end_time, granularity) {
-  if (granularity < Dygraph.MONTHLY) {
-    // Generate one tick mark for every fixed interval of time.
-    var spacing = Dygraph.SHORT_SPACINGS[granularity];
-    return Math.floor(0.5 + 1.0 * (end_time - start_time) / spacing);
-  } else {
-    var tickPlacement = Dygraph.LONG_TICK_PLACEMENTS[granularity];
-
-    var msInYear = 365.2524 * 24 * 3600 * 1000;
-    var num_years = 1.0 * (end_time - start_time) / msInYear;
-    return Math.floor(0.5 + 1.0 * num_years * tickPlacement.months.length / tickPlacement.year_mod);
-  }
+  var spacing = Dygraph.TICK_PLACEMENT[granularity].spacing;
+  return Math.round(1.0 * (end_time - start_time) / spacing);
 };
 
 /**
+ * Compute the positions and labels of ticks on a date axis for a given granularity.
  * @param {number} start_time
  * @param {number} end_time
  * @param {number} granularity (one of the granularities enumerated above)
@@ -364,112 +342,112 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
       opts("axisLabelFormatter"));
-  var ticks = [];
-  var t;
-
-  if (granularity < Dygraph.MONTHLY) {
-    // Generate one tick mark for every fixed interval of time.
-    var spacing = Dygraph.SHORT_SPACINGS[granularity];
-
-    // Find a time less than start_time which occurs on a "nice" time boundary
-    // for this granularity.
-    var g = spacing / 1000;
-    var d = new Date(start_time);
-    Dygraph.setDateSameTZ(d, {ms: 0});
-
-    var x;
-    if (g <= 60) {  // seconds
-      x = d.getSeconds();
-      Dygraph.setDateSameTZ(d, {s: x - x % g});
-    } else {
-      Dygraph.setDateSameTZ(d, {s: 0});
-      g /= 60;
-      if (g <= 60) {  // minutes
-        x = d.getMinutes();
-        Dygraph.setDateSameTZ(d, {m: x - x % g});
-      } else {
-        Dygraph.setDateSameTZ(d, {m: 0});
-        g /= 60;
-
-        if (g <= 24) {  // days
-          x = d.getHours();
-          d.setHours(x - x % g);
-        } else {
-          d.setHours(0);
-          g /= 24;
-
-          if (g == 7) {  // one week
-            d.setDate(d.getDate() - d.getDay());
-          }
-        }
-      }
-    }
-    start_time = d.getTime();
-
-    // For spacings coarser than two-hourly, we want to ignore daylight
-    // savings transitions to get consistent ticks. For finer-grained ticks,
-    // it's essential to show the DST transition in all its messiness.
-    var start_offset_min = new Date(start_time).getTimezoneOffset();
-    var check_dst = (spacing >= Dygraph.SHORT_SPACINGS[Dygraph.TWO_HOURLY]);
-
-    for (t = start_time; t <= end_time; t += spacing) {
-      d = new Date(t);
-
-      // This ensures that we stay on the same hourly "rhythm" across
-      // daylight savings transitions. Without this, the ticks could get off
-      // by an hour. See tests/daylight-savings.html or issue 147.
-      if (check_dst && d.getTimezoneOffset() != start_offset_min) {
-        var delta_min = d.getTimezoneOffset() - start_offset_min;
-        t += delta_min * 60 * 1000;
-        d = new Date(t);
-        start_offset_min = d.getTimezoneOffset();
-
-        // Check whether we've backed into the previous timezone again.
-        // This can happen during a "spring forward" transition. In this case,
-        // it's best to skip this tick altogether (we may be shooting for a
-        // non-existent time like the 2AM that's skipped) and go to the next
-        // one.
-        if (new Date(t + spacing).getTimezoneOffset() != start_offset_min) {
-          t += spacing;
-          d = new Date(t);
-          start_offset_min = d.getTimezoneOffset();
-        }
-      }
-
-      ticks.push({ v:t,
-                   label: formatter(d, granularity, opts, dg)
-                 });
-    }
+  var utc = opts("labelsDateUTC");
+  
+  var step = Dygraph.TICK_PLACEMENT[granularity].step;
+  var datefield = Dygraph.TICK_PLACEMENT[granularity].datefield;
+  
+  // Choose appropiate date methods according to UTC or local time option.
+  // weekday:        return the day of week from a Date object.
+  // decompose_date: decompose a Date object into an array of datefields.
+  // compose_date:   compose a Date object from an array of date fields.
+  var compose_date, decompose_date, weekday;
+  if (utc) {
+    weekday = function (d) {
+      return d.getUTCDay();
+    };
+    decompose_date = function (d) {
+      var a = [];
+      a[Dygraph.DATEFIELD_Y]  = d.getUTCFullYear();
+      a[Dygraph.DATEFIELD_M]  = d.getUTCMonth();
+      a[Dygraph.DATEFIELD_D]  = d.getUTCDate();
+      a[Dygraph.DATEFIELD_HH] = d.getUTCHours();
+      a[Dygraph.DATEFIELD_MM] = d.getUTCMinutes();
+      a[Dygraph.DATEFIELD_SS] = d.getUTCSeconds();
+      a[Dygraph.DATEFIELD_MS] = d.getUTCMilliseconds();
+      return a;
+    };
+    compose_date = function (a) {
+      var d = new Date(Date.UTC(a[Dygraph.DATEFIELD_Y],
+                                a[Dygraph.DATEFIELD_M],
+                                a[Dygraph.DATEFIELD_D],
+                                a[Dygraph.DATEFIELD_HH],
+                                a[Dygraph.DATEFIELD_MM],
+                                a[Dygraph.DATEFIELD_SS],
+                                a[Dygraph.DATEFIELD_MS]));
+      return d;
+    };
   } else {
-    // Display a tick mark on the first of a set of months of each year.
-    // Years get a tick mark iff y % year_mod == 0. This is useful for
-    // displaying a tick mark once every 10 years, say, on long time scales.
-    var months;
-    var year_mod = 1;  // e.g. to only print one point every 10 years.
-
-    if (granularity < Dygraph.NUM_GRANULARITIES) {
-      months = Dygraph.LONG_TICK_PLACEMENTS[granularity].months;
-      year_mod = Dygraph.LONG_TICK_PLACEMENTS[granularity].year_mod;
-    } else {
-      Dygraph.warn("Span of dates is too long");
-    }
-
-    var start_year = new Date(start_time).getFullYear();
-    var end_year   = new Date(end_time).getFullYear();
-    for (var i = start_year; i <= end_year; i++) {
-      if (i % year_mod !== 0) continue;
-      for (var j = 0; j < months.length; j++) {
-        var dt = new Date(i, months[j], 1);
-        dt.setFullYear(i);
-        t = dt.getTime();
-        if (t < start_time || t > end_time) continue;
-        ticks.push({ v:t,
-                     label: formatter(new Date(t), granularity, opts, dg)
-                   });
-      }
-    }
+    weekday = function(d) {
+      return d.getDay();
+    };
+    decompose_date = function (d) {
+      var a = [];
+      a[Dygraph.DATEFIELD_Y]  = d.getFullYear();
+      a[Dygraph.DATEFIELD_M]  = d.getMonth();
+      a[Dygraph.DATEFIELD_D]  = d.getDate();
+      a[Dygraph.DATEFIELD_HH] = d.getHours();
+      a[Dygraph.DATEFIELD_MM] = d.getMinutes();
+      a[Dygraph.DATEFIELD_SS] = d.getSeconds();
+      a[Dygraph.DATEFIELD_MS] = d.getMilliseconds();
+      return a;
+    };
+    compose_date = function (a) {
+      var d = new Date(a[Dygraph.DATEFIELD_Y], 
+                       a[Dygraph.DATEFIELD_M],
+                       a[Dygraph.DATEFIELD_D],
+                       a[Dygraph.DATEFIELD_HH],
+                       a[Dygraph.DATEFIELD_MM],
+                       a[Dygraph.DATEFIELD_SS],
+                       a[Dygraph.DATEFIELD_MS]);
+      return d;
+    };
+  }
+  
+  // Choose a nice tick position before the initial instant.
+  // Currently, this code deals properly with the existent daily granularities:
+  // DAILY (with step of 1) and WEEKLY (with step of 7 but specially handled).
+  // Other daily granularities (say TWO_DAILY) should also be handled specially
+  // by setting the start_date_offset to 0.
+  var start_date = new Date(start_time);
+  var date_array = decompose_date(start_date);
+  var start_date_offset = date_array[datefield] % step;
+  if (granularity == Dygraph.WEEKLY) {
+    // This will put the ticks on Sundays.
+    start_date_offset = weekday(start_date);
+  }
+  date_array[datefield] -= start_date_offset;
+  for (var df = datefield + 1; df < Dygraph.NUM_DATEFIELDS; df++) {
+    // The minimum value is 1 for the day of month, and 0 for all other fields.
+    date_array[df] = (df === Dygraph.DATEFIELD_D) ? 1 : 0;
   }
 
+  // Generate the ticks.
+  // This relies on the roll over property of the Date functions:
+  // when some date field is set to a value outside of its logical range,
+  // the excess 'rolls over' the next (more significant) field.
+  // When using local time with DST transitions, different dates may represent 
+  // the same time instant, so do not repeat the tick. At each step, 
+  // we have to check that the date is effectively increased because native 
+  // JS date functions do not assert that on DST transitions.
+  // Since start_date is no later than start_time (but possibly equal), 
+  // assuming a previous tick just before start_time also removes an spurious
+  // tick outside the given time range.
+  var ticks = [];
+  var next_tick_date = compose_date(date_array);
+  var next_tick_time = next_tick_date.getTime();
+  var prev_tick_time = start_time - 1;
+  while (next_tick_time <= end_time) {
+    if (next_tick_time > prev_tick_time) {
+      ticks.push({ v: next_tick_time,
+                   label: formatter(next_tick_date, granularity, opts, dg)
+                 });
+      prev_tick_time = next_tick_time;
+    }
+    date_array[datefield] += step;
+    next_tick_date = compose_date(date_array);
+    next_tick_time = next_tick_date.getTime();
+  }
   return ticks;
 };
 
