@@ -281,7 +281,7 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     tick = this.xTicks_[i];
     label = tick.label;
     pos = this.dygraph_.toPercentXCoord(tick.v);
-    if ((pos >= 0.0) && (pos <= 1.0)) {
+    if ((pos >= 0.0) && (pos < 1.0)) {
       this.xticks.push([pos, label]);
     }
   }
