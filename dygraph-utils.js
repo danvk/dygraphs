@@ -787,13 +787,20 @@ Dygraph.createCanvas = function() {
  */
 Dygraph.getContextPixelRatio = function(context) {
   try {
-    var devicePixelRatio = window.devicePixelRatio || 1,
-        backingStoreRatio = context.webkitBackingStorePixelRatio ||
+    var devicePixelRatio = window.devicePixelRatio;
+    var backingStoreRatio = context.webkitBackingStorePixelRatio ||
                             context.mozBackingStorePixelRatio ||
                             context.msBackingStorePixelRatio ||
                             context.oBackingStorePixelRatio ||
-                            context.backingStorePixelRatio || 1;
-    return devicePixelRatio / backingStoreRatio;
+                            context.backingStorePixelRatio;
+    if (devicePixelRatio !== undefined &&
+        backingStorePixelRatio !== undefined) {
+      return devicePixelRatio / backingStoreRatio;
+    } else {
+      // If either value is undefined, the ratio is meaningless so we want to
+      // return 1.
+      return 1;
+    }
   } catch (e) {
     return 1;
   }
