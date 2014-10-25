@@ -1000,6 +1000,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     'pointClickCallback': true,
     'pointSize': true,
     'rangeSelectorPlotFillColor': true,
+    'rangeSelectorPlotFillGradientColor': true,
     'rangeSelectorPlotStrokeColor': true,
     'showLabelsOnHighlight': true,
     'showRoller': true,
