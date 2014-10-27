@@ -37,13 +37,14 @@ CatSources () {
 }
 
 Copyright () {
-  echo '/*! @license Copyright 2011 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
+  echo '/*! @license Copyright 2014 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
 }
 
 CatCompressed () {
   Copyright
   CatSources \
-  | java -jar yuicompressor-2.4.2.jar --type js
+  | grep -v '"use strict";' \
+  | node_modules/uglify-js/bin/uglifyjs -c warnings=false -m
 }
 
 ACTION="${1:-update}"

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+ * MIT-licensed (http://opensource.org/licenses/MIT)
+ */
+
 // TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js
 /**
  * @param {!HTMLDivElement|string} div
@@ -18,6 +24,15 @@ Dygraph.VERSION;
 
 /** @type {function(): string} */
 Dygraph.toString;
+
+/** @type {function(Event, Dygraph, DygraphInteractionContext)} */
+Dygraph.startPan;
+
+/** @type {function(Event, Dygraph, DygraphInteractionContext)} */
+Dygraph.movePan;
+
+/** @type {function(Event, Dygraph, DygraphInteractionContext)} */
+Dygraph.endPan;
 
 /** @type {function(?string): boolean} */
 Dygraph.prototype.isZoomed;

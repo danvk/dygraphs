@@ -103,7 +103,8 @@ handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
 };
 
 /**
- * Converts a series to a Point array.
+ * Converts a series to a Point array.  The resulting point array must be
+ * returned in increasing order of idx property.
  * 
  * @param {!Array.<[!number,?number,?]>} series The series in the unified 
  *          data format where series[i] = [x,y,{extras}].

@@ -48,3 +48,43 @@ SelectionTestCase.prototype.testSetGetSelectionDense = function() {
   g.setSelection(3);
   assertEquals(3, g.getSelection());
 };
+
+SelectionTestCase.prototype.testSetGetSelectionMissingPoints = function() {
+  dataHandler = function() {};
+  dataHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
+  dataHandler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
+    var val = null;
+    if (setName == 'A') {
+      val = 1;
+    } else if (setName == 'B') {
+      val = 2;
+    } else if (setName == 'C') {
+      val = 3;
+    }
+    return [{
+      x: NaN,
+      y: NaN,
+      xval: val,
+      yval: val,
+      name: setName,
+      idx: val - 1
+    }];
+  };
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph,
+    "X,A,B,C\n" +
+    "1,1,null,null\n" +
+    "2,null,2,null\n" +
+    "3,null,null,3\n",
+    {
+      dataHandler: dataHandler
+    }
+  );
+
+  g.setSelection(0);
+  assertEquals(0, g.getSelection());
+  g.setSelection(1);
+  assertEquals(1, g.getSelection());
+  g.setSelection(2);
+  assertEquals(2, g.getSelection());
+};

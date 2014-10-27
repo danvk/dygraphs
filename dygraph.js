@@ -766,6 +766,14 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
+
+    // I don't like that this is in a second spot.
+    if (axis === 'x' && opt === 'logscale') {
+      // return the default value.
+      // TODO(konigsberg): pull the default from a global default.
+      return false;
+    }
+
     // user-specified attributes always trump defaults, even if they're less
     // specific.
     if (typeof(self.user_attrs_[opt]) != 'undefined') {
@@ -924,7 +932,37 @@ Dygraph.prototype.toDataXCoord = function(x) {
 
   var area = this.plotter_.area;
   var xRange = this.xAxisRange();
-  return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+
+  if (!this.attributes_.getForAxis("logscale", 'x')) {
+    return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+  } else {
+    // TODO: remove duplicate code?
+    // Computing the inverse of toDomCoord.
+    var pct = (x - area.x) / area.w;
+
+    // Computing the inverse of toPercentXCoord. The function was arrived at with
+    // the following steps:
+    //
+    // Original calcuation:
+    // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
+    //
+    // Multiply both sides by the right-side demoninator.
+    // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
+    //
+    // add log(xRange[0]) to both sides
+    // log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])) = log(x);
+    //
+    // Swap both sides of the equation,
+    // log(x) = log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0]))
+    //
+    // Use both sides as the exponent in 10^exp and we're done.
+    // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
+    var logr0 = Dygraph.log10(xRange[0]);
+    var logr1 = Dygraph.log10(xRange[1]);
+    var exponent = logr0 + (pct * (logr1 - logr0));
+    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
+    return value;
+  }
 };
 
 /**
@@ -952,21 +990,25 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
     // the following steps:
     //
     // Original calcuation:
-    // pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
+    // pct = (log(yRange[1]) - log(y)) / (log(yRange[1]) - log(yRange[0]));
     //
-    // Move denominator to both sides:
-    // pct * (logr1 - Dygraph.log10(yRange[0])) = logr1 - Dygraph.log10(y);
+    // Multiply both sides by the right-side demoninator.
+    // pct * (log(yRange[1]) - log(yRange[0])) = log(yRange[1]) - log(y);
     //
-    // subtract logr1, and take the negative value.
-    // logr1 - (pct * (logr1 - Dygraph.log10(yRange[0]))) = Dygraph.log10(y);
+    // subtract log(yRange[1]) from both sides.
+    // (pct * (log(yRange[1]) - log(yRange[0]))) - log(yRange[1]) = -log(y);
     //
-    // Swap both sides of the equation, and we can compute the log of the
-    // return value. Which means we just need to use that as the exponent in
-    // e^exponent.
-    // Dygraph.log10(y) = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
-
+    // and multiply both sides by -1.
+    // log(yRange[1]) - (pct * (logr1 - log(yRange[0])) = log(y);
+    //
+    // Swap both sides of the equation,
+    // log(y) = log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0])));
+    //
+    // Use both sides as the exponent in 10^exp and we're done.
+    // y = 10 ^ (log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0]))));
+    var logr0 = Dygraph.log10(yRange[0]);
     var logr1 = Dygraph.log10(yRange[1]);
-    var exponent = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+    var exponent = logr1 - (pct * (logr1 - logr0));
     var value = Math.pow(Dygraph.LOG_SCALE, exponent);
     return value;
   }
@@ -998,14 +1040,15 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
 
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", axis);
-  if (!logscale) {
+  if (logscale) {
+    var logr0 = Dygraph.log10(yRange[0]);
+    var logr1 = Dygraph.log10(yRange[1]);
+    pct = (logr1 - Dygraph.log10(y)) / (logr1 - logr0);
+  } else {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
     pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
-  } else {
-    var logr1 = Dygraph.log10(yRange[1]);
-    pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
   }
   return pct;
 };
@@ -1029,7 +1072,19 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   }
 
   var xRange = this.xAxisRange();
-  return (x - xRange[0]) / (xRange[1] - xRange[0]);
+  var pct;
+  var logscale = this.attributes_.getForAxis("logscale", 'x') ;
+  if (logscale == true) { // logscale can be null so we test for true explicitly.
+    var logr0 = Dygraph.log10(xRange[0]);
+    var logr1 = Dygraph.log10(xRange[1]);
+    pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);
+  } else {
+    // x - xRange[0] is unit distance from the left.
+    // xRange[1] - xRange[0] is the scale of the range.
+    // The full expression below is the % from the left.
+    pct = (x - xRange[0]) / (xRange[1] - xRange[0]);
+  }
+  return pct;
 };
 
 /**
@@ -1081,6 +1136,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
+  this.graphDiv.style.position = 'relative';
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
@@ -1090,10 +1146,10 @@ Dygraph.prototype.createInterface_ = function() {
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
 
-  this.resizeElements_();
-
   this.canvas_ctx_ = Dygraph.getContext(this.canvas_);
   this.hidden_ctx_ = Dygraph.getContext(this.hidden_);
+
+  this.resizeElements_();
 
   // The interactive parts of the graph are drawn on top of the chart.
   this.graphDiv.appendChild(this.hidden_);
@@ -1140,14 +1196,24 @@ Dygraph.prototype.createInterface_ = function() {
 Dygraph.prototype.resizeElements_ = function() {
   this.graphDiv.style.width = this.width_ + "px";
   this.graphDiv.style.height = this.height_ + "px";
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
+
+  var canvasScale = Dygraph.getContextPixelRatio(this.canvas_ctx_);
+  this.canvas_.width = this.width_ * canvasScale;
+  this.canvas_.height = this.height_ * canvasScale;
   this.canvas_.style.width = this.width_ + "px";    // for IE
   this.canvas_.style.height = this.height_ + "px";  // for IE
-  this.hidden_.width = this.width_;
-  this.hidden_.height = this.height_;
+  if (canvasScale !== 1) {
+    this.canvas_ctx_.scale(canvasScale, canvasScale);
+  }
+
+  var hiddenScale = Dygraph.getContextPixelRatio(this.hidden_ctx_);
+  this.hidden_.width = this.width_ * hiddenScale;
+  this.hidden_.height = this.height_ * hiddenScale;
   this.hidden_.style.width = this.width_ + "px";    // for IE
   this.hidden_.style.height = this.height_ + "px";  // for IE
+  if (hiddenScale !== 1) {
+    this.hidden_ctx_.scale(hiddenScale, hiddenScale);
+  }
 };
 
 /**
@@ -1543,16 +1609,6 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
 };
 
 /**
- * Transition function to use in animations. Returns values between 0.0
- * (totally old values) and 1.0 (totally new values) for each frame.
- * @private
- */
-Dygraph.zoomAnimationFunction = function(frame, numFrames) {
-  var k = 1.5;
-  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
-};
-
-/**
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
@@ -1562,8 +1618,8 @@ Dygraph.zoomAnimationFunction = function(frame, numFrames) {
  * @private
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
-  // TODO(danvk): when yAxisRange is null (i.e. "fit to data", the animation
-  // can produce strange effects. Rather than the y-axis transitioning slowly
+  // TODO(danvk): when xAxisRange is null (i.e. "fit to data", the animation
+  // can produce strange effects. Rather than the x-axis transitioning slowly
   // between values, it can jerk around.)
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
@@ -1608,6 +1664,16 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
           xRange[0], xRange[1], that.yAxisRanges());
     }
   });
+};
+
+/**
+ * Transition function to use in animations. Returns values between 0.0
+ * (totally old values) and 1.0 (totally new values) for each frame.
+ * @private
+ */
+Dygraph.zoomAnimationFunction = function(frame, numFrames) {
+  var k = 1.5;
+  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
 };
 
 /**
@@ -2059,7 +2125,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.lineWidth = this.getNumericOption('strokeWidth', pt.name);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
-      callback(this.g, pt.name, ctx, canvasx, pt.canvasy,
+      callback(this, pt.name, ctx, canvasx, pt.canvasy,
           color, circleSize, pt.idx);
     }
     ctx.restore();
@@ -2090,10 +2156,23 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
     this.lastRow_ = row;
     for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
       var points = this.layout_.points[setIdx];
+      // Check if the point at the appropriate index is the point we're looking
+      // for.  If it is, just use it, otherwise search the array for a point
+      // in the proper place.
       var setRow = row - this.getLeftBoundary_(setIdx);
-      if (setRow < points.length) {
+      if (setRow < points.length && points[setRow].idx == row) {
         var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
+      } else {
+        for (var pointIdx = 0; pointIdx < points.length; ++pointIdx) {
+          var point = points[pointIdx];
+          if (point.idx == row) {
+            if (point.yval !== null) {
+              this.selPoints_.push(point);
+            }
+            break;
+          }
+        }
       }
     }
   } else {
@@ -2949,7 +3028,7 @@ Dygraph.prototype.setXAxisOptions_ = function(isDate) {
     // TODO(danvk): use Dygraph.numberValueFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
 };
@@ -3164,7 +3243,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     return data;
   }
@@ -3205,7 +3284,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
     Dygraph.error("only 'date', 'datetime' and 'number' types are supported " +

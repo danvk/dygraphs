@@ -1,0 +1,40 @@
+{
+  "name": "dygraphs",
+  "version": "1.0.1",
+  "description": "dygraphs is a fast, flexible open source JavaScript charting library.",
+  "main": "dygraph.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/danvk/dygraphs.git"
+  },
+  "keywords": [
+    "dygraphs",
+    "javascript",
+    "visualization",
+    "canvas",
+    "chart",
+    "timeseries"
+  ],
+  "author": "Dan Vanderkam (danvdk@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danvk/dygraphs/issues"
+  },
+  "homepage": "https://github.com/danvk/dygraphs",
+  "devDependencies": {
+    "phantomjs": "^1.9.7-8",
+    "closure-compiler": "^0.2.6",
+    "obvious-closure-library": "^20140401.0.2",
+    "uglify-js": "^2"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}

@@ -198,6 +198,8 @@ GridPerAxisTestCase.prototype.testPerAxisGridWidth = function() {
     for ( var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Ignore the alpha value
+
+      // FIXME(pholden): this test fails with a context pixel ratio of 2.
       var drawnPixeldown2 = Util.samplePixel(g.hidden_, x, y - 2).slice(0, 3);
       var drawnPixeldown1 = Util.samplePixel(g.hidden_, x, y - 1).slice(0, 3);
       var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);

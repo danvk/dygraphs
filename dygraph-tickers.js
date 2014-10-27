@@ -422,7 +422,6 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     date_array[df] = (df === Dygraph.DATEFIELD_D) ? 1 : 0;
   }
 
-
   // Generate the ticks.
   // This relies on the roll over property of the Date functions:
   // when some date field is set to a value outside of its logical range,

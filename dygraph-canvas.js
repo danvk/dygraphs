@@ -52,7 +52,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.layout = layout;
   this.element = element;
   this.elementContext = elementContext;
-  this.container = this.element.parentNode;
 
   this.height = this.element.height;
   this.width = this.element.width;
@@ -64,8 +63,6 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
   // internal state
   this.area = layout.getPlotArea();
-  this.container.style.position = "relative";
-  this.container.style.width = this.width + "px";
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
@@ -716,7 +713,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var last_x, is_first = true;
     while (iter.hasNext) {
       var point = iter.next();
-      if (!Dygraph.isOK(point.y)) {
+      if (!Dygraph.isOK(point.y) && !stepPlot) {
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -757,7 +754,11 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
 
       } else {
-        newYs = [ point.canvasy, axisY ];
+        if (isNaN(point.canvasy) && stepPlot) {
+          newYs = [ area.y + area.h, axisY ];
+        } else {
+          newYs = [ point.canvasy, axisY ];
+        }
       }
       if (!isNaN(prevX)) {
         ctx.moveTo(prevX, prevYs[0]);

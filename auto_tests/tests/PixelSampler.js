@@ -17,6 +17,7 @@ var PixelSampler = function(dygraph) {
   var canvas = dygraph.hidden_;
   var ctx = canvas.getContext("2d");
   this.imageData_ = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  this.scale = canvas.width / dygraph.width_;
 };
 
 /**
@@ -26,7 +27,7 @@ var PixelSampler = function(dygraph) {
  * are in [0, 255]. A pixel which has never been touched will be [0,0,0,0].
  */
 PixelSampler.prototype.colorAtPixel = function(x, y) {
-  var i = 4 * (x + this.imageData_.width * y);
+  var i = 4 * (x * this.scale + this.imageData_.width * y * this.scale);
   var d = this.imageData_.data;
   return [d[i], d[i+1], d[i+2], d[i+3]];
 };

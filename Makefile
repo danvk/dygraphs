@@ -28,6 +28,7 @@ generate-gwt:
 
 test:
 	@./test.sh
+	@./check-combined-unaffected.sh
 
 test-combined: move-combined test clean-combined-test
 
@@ -40,3 +41,8 @@ clean-combined-test: clean
 
 lint:
 	@./lint.sh
+
+publish:
+	./generate-combined.sh
+	npm publish
+	git checkout dygraph-combined.js
