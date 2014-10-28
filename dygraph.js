@@ -241,6 +241,7 @@ Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
 // Default attribute values.
 Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
+  highlightMinDistance: Infinity,
   highlightSeriesOpts: null,
   highlightSeriesBackgroundAlpha: 0.5,
 
@@ -1042,7 +1043,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   var xRange = this.xAxisRange();
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", 'x') ;
-  if (logscale == true) { // logscale can be null so we test for true explicitly.
+  if (logscale === true) { // logscale can be null so we test for true explicitly.
     var logr0 = Dygraph.log10(xRange[0]);
     var logr1 = Dygraph.log10(xRange[1]);
     pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);
@@ -1812,8 +1813,9 @@ Dygraph.prototype.eventToDomCoords = function(event) {
  * Returns {number} row number.
  * @private
  */
-Dygraph.prototype.findClosestRow = function(domX) {
+Dygraph.prototype.findClosestRow = function(domX, domY) {
   var minDistX = Infinity;
+  var highlightMinDistance = this.getNumericOption('highlightMinDistance');
   var closestRow = -1;
   var sets = this.layout_.points;
   for (var i = 0; i < sets.length; i++) {
@@ -1823,7 +1825,10 @@ Dygraph.prototype.findClosestRow = function(domX) {
       var point = points[j];
       if (!Dygraph.isValidPoint(point, true)) continue;
       var dist = Math.abs(point.canvasx - domX);
-      if (dist < minDistX) {
+      var dx = point.canvasx - domX;
+      var dy = point.canvasy - domY;
+      var euclideanDist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < minDistX && !isNaN(euclideanDist) && euclideanDist < highlightMinDistance) {
         minDistX = dist;
         closestRow = point.idx;
       }
@@ -1847,6 +1852,7 @@ Dygraph.prototype.findClosestRow = function(domX) {
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
   var minDist = Infinity;
+  var highlightMinDistance = this.getNumericOption('highlightMinDistance');
   var dist, dx, dy, point, closestPoint, closestSeries, closestRow;
   for ( var setIdx = this.layout_.points.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
@@ -1856,7 +1862,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
-      if (dist < minDist) {
+      if (dist < minDist && !isNaN(euclideanDist) && dist < highlightMinDistance) {
         minDist = dist;
         closestPoint = point;
         closestSeries = setIdx;
@@ -1885,7 +1891,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
  * @private
  */
 Dygraph.prototype.findStackedPoint = function(domX, domY) {
-  var row = this.findClosestRow(domX);
+  var row = this.findClosestRow(domX, domY);
   var closestPoint, closestSeries;
   for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
     var boundary = this.getLeftBoundary_(setIdx);
@@ -1918,8 +1924,8 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
     }
     // Stop if the point (domX, py) is above this series' upper edge
     if (setIdx === 0 || py < domY) {
-      closestPoint = p1;
-      closestSeries = setIdx;
+        closestPoint = p1;
+        closestSeries = setIdx;
     }
   }
   var name = this.layout_.setNames[closestSeries];
@@ -1957,7 +1963,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     }
     selectionChanged = this.setSelection(closest.row, closest.seriesName);
   } else {
-    var idx = this.findClosestRow(canvasx);
+    var idx = this.findClosestRow(canvasx, canvasy);
     selectionChanged = this.setSelection(idx);
   }
 
@@ -1972,7 +1978,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 };
 
 /**
- * Fetch left offset from the specified set index or if not passed, the 
+ * Fetch left offset from the specified set index or if not passed, the
  * first defined boundaryIds record (see bug #236).
  * @private
  */
@@ -2311,7 +2317,7 @@ Dygraph.prototype.getHandlerClass_ = function() {
  */
 Dygraph.prototype.predraw_ = function() {
   var start = new Date();
-  
+
   // Create the correct dataHandler
   this.dataHandler_ = new (this.getHandlerClass_())();
 
@@ -2354,7 +2360,7 @@ Dygraph.prototype.predraw_ = function() {
     if (this.rollPeriod_ > 1) {
       series = this.dataHandler_.rollingAverage(series, this.rollPeriod_, this.attributes_);
     }
-    
+
     this.rolledSeries_.push(series);
   }
 
@@ -2512,7 +2518,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var extremes = {};  // series name -> [low, high]
   var seriesIdx, sampleIdx;
   var firstIdx, lastIdx;
-  
+
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
   var num_series = rolledSeries.length - 1;
@@ -2530,7 +2536,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
       // TODO(danvk): do binary search instead of linear search.
       // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
-      firstIdx = null; 
+      firstIdx = null;
       lastIdx = null;
       for (sampleIdx = 0; sampleIdx < series.length; sampleIdx++) {
         if (series[sampleIdx][0] >= low && firstIdx === null) {
@@ -2564,9 +2570,9 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
       if (correctedLastIdx !== lastIdx) {
         lastIdx = correctedLastIdx;
       }
-      
+
       boundaryIds[seriesIdx-1] = [firstIdx, lastIdx];
-      
+
       // .slice's end is exclusive, we want to include lastIdx.
       series = series.slice(firstIdx, lastIdx + 1);
     } else {
@@ -2575,10 +2581,10 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
     }
 
     var seriesName = this.attr_("labels")[seriesIdx];
-    var seriesExtremes = this.dataHandler_.getExtremeYValues(series, 
+    var seriesExtremes = this.dataHandler_.getExtremeYValues(series,
         dateWindow, this.getBooleanOption("stepPlot",seriesName));
 
-    var seriesPoints = this.dataHandler_.seriesToPoints(series, 
+    var seriesPoints = this.dataHandler_.seriesToPoints(series,
         seriesName, boundaryIds[seriesIdx-1][0]);
 
     if (this.getBooleanOption("stackedGraph")) {
@@ -2790,7 +2796,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   };
   var numAxes = this.attributes_.numAxes();
   var ypadCompat, span, series, ypad;
-  
+
   var p_axis;
 
   // Compute extreme values, a span and tick marks for each axis.
@@ -2916,8 +2922,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
-    
-    
+
+
     if (independentTicks) {
       axis.independentTicks = independentTicks;
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
@@ -2939,7 +2945,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
   // independent ticks, then that is permissible as well.
   for (var i = 0; i < numAxes; i++) {
     var axis = this.axes_[i];
-    
+
     if (!axis.independentTicks) {
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');

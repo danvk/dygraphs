@@ -148,6 +148,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     ],
     "description": "Draw a custom item when a point is highlighted.  Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy) Also see <a href='#drawPointCallback'>drawPointCallback</a>"
   },
+  "highlightMinDistance": {
+    "default": "Infinity",
+    "labels": ["Interactive Elements"],
+    "type": "Object",
+    "description": "Minimum distance in pixels to highlight a series."
+  },
   "highlightSeriesOpts": {
     "default": "null",
     "labels": ["Interactive Elements"],
