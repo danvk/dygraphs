@@ -344,8 +344,9 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       opts("axisLabelFormatter"));
   var utc = opts("labelsDateUTC");
   
-  var step = Dygraph.TICK_PLACEMENT[granularity].step;
   var datefield = Dygraph.TICK_PLACEMENT[granularity].datefield;
+  var step = Dygraph.TICK_PLACEMENT[granularity].step;
+  var spacing = Dygraph.TICK_PLACEMENT[granularity].spacing;
   
   // Choose appropiate date methods according to UTC or local time option.
   // weekday:        return the day of week from a Date object.
@@ -423,30 +424,67 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   }
 
   // Generate the ticks.
-  // This relies on the roll over property of the Date functions:
-  // when some date field is set to a value outside of its logical range,
-  // the excess 'rolls over' the next (more significant) field.
-  // When using local time with DST transitions, different dates may represent 
-  // the same time instant, so do not repeat the tick. At each step, 
-  // we have to check that the date is effectively increased because native 
-  // JS date functions do not assert that on DST transitions.
+  // For granularities not coarser than HOURLY we use the fact that:
+  //   the number of milliseconds between ticks is constant
+  //   and equal to the defined spacing.
+  // Otherwise we rely on the 'roll over' property of the Date functions:
+  //   when some date field is set to a value outside of its logical range,
+  //   the excess 'rolls over' the next (more significant) field.
+  // However, when using local time with DST transitions,
+  // there are dates that do not represent any time value at all
+  // (those in the hour skipped at the 'spring forward'),
+  // and the JavaScript engines usually return an equivalent value.
+  // Hence we have to check that the date is effectively increased at each step,
+  // and that a tick should be place at the returned date.
   // Since start_date is no later than start_time (but possibly equal), 
-  // assuming a previous tick just before start_time also removes an spurious
+  // assuming a previous tick just before start_time removes an spurious
   // tick outside the given time range.
   var ticks = [];
   var next_tick_date = compose_date(date_array);
   var next_tick_time = next_tick_date.getTime();
   var prev_tick_time = start_time - 1;
-  while (next_tick_time <= end_time) {
-    if (next_tick_time > prev_tick_time) {
-      ticks.push({ v: next_tick_time,
-                   label: formatter(next_tick_date, granularity, opts, dg)
-                 });
-      prev_tick_time = next_tick_time;
+  if (granularity <= Dygraph.HOURLY) {
+    while (next_tick_time <= end_time) {
+      if (next_tick_time > prev_tick_time) {
+        ticks.push({ v: next_tick_time,
+                     label: formatter(next_tick_date, granularity, opts, dg)
+                   });
+        prev_tick_time = next_tick_time;
+      }
+      next_tick_time += spacing;
+      next_tick_date = new Date(next_tick_time);
     }
-    date_array[datefield] += step;
-    next_tick_date = compose_date(date_array);
-    next_tick_time = next_tick_date.getTime();
+  } else if (granularity < Dygraph.DAILY) {
+    var get_hours;
+    if (utc) {
+        get_hours = function (d) { return d.getUTCHours(); };
+    } else {
+        get_hours = function (d) { return d.getHours(); };
+    }
+    while (next_tick_time <= end_time) {
+      if (next_tick_time > prev_tick_time &&
+          get_hours(next_tick_date) % step == 0) {
+        ticks.push({ v: next_tick_time,
+                     label: formatter(next_tick_date, granularity, opts, dg)
+                   });
+        prev_tick_time = next_tick_time;
+      }
+      date_array[datefield] += step;
+      next_tick_date = compose_date(date_array);
+      next_tick_time = next_tick_date.getTime();
+    }
+  } else {
+    while (next_tick_time <= end_time) {
+      if (next_tick_time > prev_tick_time) {
+        ticks.push({ v: next_tick_time,
+                     label: formatter(next_tick_date, granularity, opts, dg)
+                   });
+        prev_tick_time = next_tick_time;
+      }
+      date_array[datefield] += step;
+      next_tick_date = compose_date(date_array);
+      next_tick_time = next_tick_date.getTime();
+    }
   }
   return ticks;
 };
