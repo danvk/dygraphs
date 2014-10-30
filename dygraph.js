@@ -233,9 +233,8 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + Dygraph.zeropad(year % 100);
+    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + Dygraph.zeropad(year);
   } else {
-    // 1e-3 factor on millis missing in original implementation
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
       // e.g. '21Jan' (%d%b)
