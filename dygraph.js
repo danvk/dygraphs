@@ -2512,6 +2512,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var extremes = {};  // series name -> [low, high]
   var seriesIdx, sampleIdx;
   var firstIdx, lastIdx;
+  var axisIdx;
   
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
@@ -2582,7 +2583,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         seriesName, boundaryIds[seriesIdx-1][0]);
 
     if (this.getBooleanOption("stackedGraph")) {
-      Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
+      axisIdx = this.attributes_.axisForSeries(seriesName);
+      if (cumulativeYval[axisIdx] === undefined) {
+        cumulativeYval[axisIdx] = [];
+      }
+      Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
                            this.getBooleanOption("stackedGraphNaNFill"));
     }
 
