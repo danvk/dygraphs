@@ -343,80 +343,33 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
       opts("axisLabelFormatter"));
   var utc = opts("labelsDateUTC");
-  
+  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+
   var datefield = Dygraph.TICK_PLACEMENT[granularity].datefield;
   var step = Dygraph.TICK_PLACEMENT[granularity].step;
   var spacing = Dygraph.TICK_PLACEMENT[granularity].spacing;
-  
-  // Choose appropiate date methods according to UTC or local time option.
-  // weekday:        return the day of week from a Date object.
-  // decompose_date: decompose a Date object into an array of datefields.
-  // compose_date:   compose a Date object from an array of date fields.
-  var compose_date, decompose_date, weekday;
-  if (utc) {
-    weekday = function (d) {
-      return d.getUTCDay();
-    };
-    decompose_date = function (d) {
-      var a = [];
-      a[Dygraph.DATEFIELD_Y]  = d.getUTCFullYear();
-      a[Dygraph.DATEFIELD_M]  = d.getUTCMonth();
-      a[Dygraph.DATEFIELD_D]  = d.getUTCDate();
-      a[Dygraph.DATEFIELD_HH] = d.getUTCHours();
-      a[Dygraph.DATEFIELD_MM] = d.getUTCMinutes();
-      a[Dygraph.DATEFIELD_SS] = d.getUTCSeconds();
-      a[Dygraph.DATEFIELD_MS] = d.getUTCMilliseconds();
-      return a;
-    };
-    compose_date = function (a) {
-      var d = new Date(Date.UTC(a[Dygraph.DATEFIELD_Y],
-                                a[Dygraph.DATEFIELD_M],
-                                a[Dygraph.DATEFIELD_D],
-                                a[Dygraph.DATEFIELD_HH],
-                                a[Dygraph.DATEFIELD_MM],
-                                a[Dygraph.DATEFIELD_SS],
-                                a[Dygraph.DATEFIELD_MS]));
-      return d;
-    };
-  } else {
-    weekday = function(d) {
-      return d.getDay();
-    };
-    decompose_date = function (d) {
-      var a = [];
-      a[Dygraph.DATEFIELD_Y]  = d.getFullYear();
-      a[Dygraph.DATEFIELD_M]  = d.getMonth();
-      a[Dygraph.DATEFIELD_D]  = d.getDate();
-      a[Dygraph.DATEFIELD_HH] = d.getHours();
-      a[Dygraph.DATEFIELD_MM] = d.getMinutes();
-      a[Dygraph.DATEFIELD_SS] = d.getSeconds();
-      a[Dygraph.DATEFIELD_MS] = d.getMilliseconds();
-      return a;
-    };
-    compose_date = function (a) {
-      var d = new Date(a[Dygraph.DATEFIELD_Y], 
-                       a[Dygraph.DATEFIELD_M],
-                       a[Dygraph.DATEFIELD_D],
-                       a[Dygraph.DATEFIELD_HH],
-                       a[Dygraph.DATEFIELD_MM],
-                       a[Dygraph.DATEFIELD_SS],
-                       a[Dygraph.DATEFIELD_MS]);
-      return d;
-    };
-  }
-  
+
   // Choose a nice tick position before the initial instant.
   // Currently, this code deals properly with the existent daily granularities:
   // DAILY (with step of 1) and WEEKLY (with step of 7 but specially handled).
   // Other daily granularities (say TWO_DAILY) should also be handled specially
   // by setting the start_date_offset to 0.
   var start_date = new Date(start_time);
-  var date_array = decompose_date(start_date);
+  var date_array = [];
+  date_array[Dygraph.DATEFIELD_Y]  = accessors.getFullYear(start_date);
+  date_array[Dygraph.DATEFIELD_M]  = accessors.getMonth(start_date);
+  date_array[Dygraph.DATEFIELD_D]  = accessors.getDate(start_date);
+  date_array[Dygraph.DATEFIELD_HH] = accessors.getHours(start_date);
+  date_array[Dygraph.DATEFIELD_MM] = accessors.getMinutes(start_date);
+  date_array[Dygraph.DATEFIELD_SS] = accessors.getSeconds(start_date);
+  date_array[Dygraph.DATEFIELD_MS] = accessors.getMilliseconds(start_date);
+
   var start_date_offset = date_array[datefield] % step;
   if (granularity == Dygraph.WEEKLY) {
     // This will put the ticks on Sundays.
-    start_date_offset = weekday(start_date);
+    start_date_offset = accessors.getDay(start_date);
   }
+  
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < Dygraph.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.
@@ -434,56 +387,39 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   // there are dates that do not represent any time value at all
   // (those in the hour skipped at the 'spring forward'),
   // and the JavaScript engines usually return an equivalent value.
-  // Hence we have to check that the date is effectively increased at each step,
-  // and that a tick should be place at the returned date.
-  // Since start_date is no later than start_time (but possibly equal), 
-  // assuming a previous tick just before start_time removes an spurious
-  // tick outside the given time range.
+  // Hence we have to check that the date is properly increased at each step,
+  // returning a date at a nice tick position.
   var ticks = [];
-  var next_tick_date = compose_date(date_array);
-  var next_tick_time = next_tick_date.getTime();
-  var prev_tick_time = start_time - 1;
+  var tick_date = accessors.makeDate.apply(null, date_array);
+  var tick_time = tick_date.getTime();
   if (granularity <= Dygraph.HOURLY) {
-    while (next_tick_time <= end_time) {
-      if (next_tick_time > prev_tick_time) {
-        ticks.push({ v: next_tick_time,
-                     label: formatter(next_tick_date, granularity, opts, dg)
-                   });
-        prev_tick_time = next_tick_time;
-      }
-      next_tick_time += spacing;
-      next_tick_date = new Date(next_tick_time);
+    if (tick_time < start_time) {
+      tick_time += spacing;
+      tick_date = new Date(tick_time);
     }
-  } else if (granularity < Dygraph.DAILY) {
-    var get_hours;
-    if (utc) {
-        get_hours = function (d) { return d.getUTCHours(); };
-    } else {
-        get_hours = function (d) { return d.getHours(); };
-    }
-    while (next_tick_time <= end_time) {
-      if (next_tick_time > prev_tick_time &&
-          get_hours(next_tick_date) % step == 0) {
-        ticks.push({ v: next_tick_time,
-                     label: formatter(next_tick_date, granularity, opts, dg)
-                   });
-        prev_tick_time = next_tick_time;
-      }
-      date_array[datefield] += step;
-      next_tick_date = compose_date(date_array);
-      next_tick_time = next_tick_date.getTime();
+    while (tick_time <= end_time) {
+      ticks.push({ v: tick_time,
+                   label: formatter(tick_date, granularity, opts, dg)
+                 });
+      tick_time += spacing;
+      tick_date = new Date(tick_time);
     }
   } else {
-    while (next_tick_time <= end_time) {
-      if (next_tick_time > prev_tick_time) {
-        ticks.push({ v: next_tick_time,
-                     label: formatter(next_tick_date, granularity, opts, dg)
+    if (tick_time < start_time) {
+      date_array[datefield] += step;
+      tick_date = accessors.makeDate.apply(null, date_array);
+      tick_time = tick_date.getTime();
+    }
+    while (tick_time <= end_time) {
+      if (granularity >= Dygraph.DAILY ||
+          accessors.getHours(tick_date) % step === 0) {
+        ticks.push({ v: tick_time,
+                     label: formatter(tick_date, granularity, opts, dg)
                    });
-        prev_tick_time = next_tick_time;
       }
       date_array[datefield] += step;
-      next_tick_date = compose_date(date_array);
-      next_tick_time = next_tick_date.getTime();
+      tick_date = accessors.makeDate.apply(null, date_array);
+      tick_time = tick_date.getTime();
     }
   }
   return ticks;
