@@ -3,9 +3,10 @@ Version 1.0.1
 Copyright (c) 2006-, Dan Vanderkam.
 
 Documentation: http://dygraphs.com/
-Support: http://groups.google.com/group/dygraphs-users
+Support: http://stackoverflow.com/questions/tagged/dygraphs
+         http://groups.google.com/group/dygraphs-users
 Source: http://github.com/danvk/dygraphs
-Issues: http://code.google.com/p/dygraphs/
+Issues: https://github.com/danvk/dygraphs/issues
 
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series.
