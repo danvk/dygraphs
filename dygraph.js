@@ -246,11 +246,11 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
 };
 
 /**
- * @private
  * Return a string version of a JS date for a value label. This respects the 
  * labelsDateUTC option.
  * @param {Date} date The date to be formatted
  * @param {Dygraph} opts An options view
+ * @private
  */
 Dygraph.dateValueFormatter = function(d, opts) {
   return Dygraph.dateString_(d, opts('labelsDateUTC'));

@@ -31,7 +31,9 @@
 
     <hr/>
     <div id="chart2"></div>
-    <p>This chart shows a continuous line going across the "fall back" EST/EDT event. You may need to switch your computer's time zone to Eastern to see this. The x-axis tick marks go from 01:00 &rarr; 01:55 and then back to 01:00.</p>
+    <p>This chart shows a continuous line going across the "fall back" EST/EDT event.
+    You may need to switch your computer's time zone to Eastern to see this.
+    The x-axis tick marks go from 01:00 &rarr; 01:55 and then back to 01:00.</p>
 
     <hr/>
     <div id="chart3"></div>
@@ -39,7 +41,8 @@
 
     <hr/>
     <div id="chart4"></div>
-    <p>This chart shows a continuous series which crosses a "spring forward". The x-axis ticks should skip from 1:55AM to 3:00AM.</p>
+    <p>This chart shows a continuous series which crosses a "spring forward".
+    The x-axis ticks should skip from 1:50AM to 3:00AM.</p>
 
     <script type="text/javascript">
       g = new Dygraph(
@@ -57,8 +60,8 @@
 
       // Generate data which crosses the EST/EDT boundary.
       var dst_data = [];
-      var base_ms = 1383454200000;
-      for (var x = base_ms; x < base_ms + 1000 * 60 * 80; x += 1000) {
+      var base_ms = 1383453600000;
+      for (var x = base_ms; x < base_ms + 1000 * 60 * 160; x += 1000) {
         dst_data.push([new Date(x), x]);
       }
 
@@ -82,9 +85,9 @@
           }
           );
 
-      var base_ms_spring = 1299999000000;
+      var base_ms_spring = 1299997800000;
       var dst_data_spring = [];
-      for (var x = base_ms_spring; x < base_ms_spring + 1000 * 60 * 80; x += 1000) {
+      for (var x = base_ms_spring; x < base_ms_spring + 1000 * 60 * 120; x += 1000) {
         dst_data_spring.push([new Date(x), x]);
       }
 
