@@ -244,6 +244,8 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
     }
   }
 };
+// alias in case anyone is referencing the old method.
+Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
 
 /**
  * Return a string version of a JS date for a value label. This respects the 
