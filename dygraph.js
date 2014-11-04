@@ -212,28 +212,20 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
  */
 Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
   var utc = opts('labelsDateUTC');
-  var year, month, day, hours, mins, secs, millis;
-  if (utc) {
-    year = date.getUTCFullYear();
-    month = date.getUTCMonth();
-    day = date.getUTCDate();
-    hours = date.getUTCHours();
-    mins = date.getUTCMinutes();
-    secs = date.getUTCSeconds();
-    millis = date.getUTCMilliseconds();
-  } else {
-    year = date.getFullYear();
-    month = date.getMonth();
-    day = date.getDate();
-    hours = date.getHours();
-    mins = date.getMinutes();
-    secs = date.getSeconds();
-    millis = date.getMilliseconds();
-  }
+  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+
+  var year = accessors.getFullYear(date),
+      month = accessors.getMonth(date),
+      day = accessors.getDate(date),
+      hours = accessors.getHours(date),
+      mins = accessors.getMinutes(date),
+      secs = accessors.getSeconds(date),
+      millis = accessors.getSeconds(date);
+
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + Dygraph.zeropad(year);
+    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + year;
   } else {
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {

@@ -28,7 +28,6 @@ DateTickerTestCase.prototype.createOptionsViewForAxis = function(axis, dict) {
   };
 };
 
-// Broken, since it assumes EST.
 DateTickerTestCase.prototype.testBasicDateTicker = function() {
   var opts = {labelsDateUTC: true};
   var options = this.createOptionsViewForAxis('x', opts);
