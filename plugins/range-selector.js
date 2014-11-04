@@ -597,7 +597,7 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
     // Skip points that don't change the x-value. Overly fine-grained points
     // can cause major slowdowns with the ctx.fill() call below.
-    if (prevX !== null && Math.round(x) == Math.round(prevX)) {
+    if (!stepPlot && prevX !== null && Math.round(x) == Math.round(prevX)) {
       continue;
     }
 
