@@ -588,9 +588,12 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
   var prevX = null, prevY = null;
 
+  // For large datasets, reduce the data sampling to no more than one point per pixel.
+  var incr = Math.max(1, Math.floor(combinedSeriesData.data.length/canvasWidth));
+
   ctx.beginPath();
   ctx.moveTo(margin, canvasHeight);
-  for (var i = 0; i < combinedSeriesData.data.length; i++) {
+  for (var i = 0; i < combinedSeriesData.data.length; i += incr) {
     var dataPoint = combinedSeriesData.data[i];
     var x = ((dataPoint[0] !== null) ? ((dataPoint[0] - xExtremes[0])*xFact) : NaN);
     var y = ((dataPoint[1] !== null) ? (canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact) : NaN);
