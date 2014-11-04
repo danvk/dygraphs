@@ -647,15 +647,29 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var g = this.dygraph_;
   var logscale = this.getOption_('logscale');
 
-  // Create a combined series (average of all series values).
+  // Create a combined series (average of selected series values).
   var i;
+
+  // Select series to combine
+  var selectedSeries = this.getOption_('rangeSelectorCombinedSeries');
+
+  // Default: select all series
+  if (selectedSeries === null) {
+    var numColumns = g.numColumns();
+    selectedSeries = new Array(numColumns - 1);
+
+    for (i = 1; i < numColumns; i++) {
+      selectedSeries[i - 1] = i;
+    }
+  }
 
   // TODO(danvk): short-circuit if there's only one series.
   var rolledSeries = [];
   var dataHandler = g.dataHandler_;
   var options = g.attributes_;
-  for (i = 1; i < g.numColumns(); i++) {
-    var series = dataHandler.extractSeries(g.rawData_, i, options);
+  for (i = 0; i < selectedSeries.length; i++) {
+    var seriesIndex = selectedSeries[i];
+    var series = dataHandler.extractSeries(g.rawData_, seriesIndex, options);
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
     }
