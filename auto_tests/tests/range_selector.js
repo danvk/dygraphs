@@ -455,8 +455,11 @@ RangeSelectorTestCase.prototype.testCombinedSeries = function() {
 RangeSelectorTestCase.prototype.testSelectedCombinedSeries = function() {
   var opts = {
     showRangeSelector: true,
-    rangeSelectorCombinedSeries: [1, 3], // first and third series averaged, second skipped
-    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4'],
+    series: {
+      'Y1': { showInRangeSelector: true },
+      'Y3': { showInRangeSelector: true }
+    }
   };
   var data = [
       [0, 5, 8, 13, 21],  // average (first and third) = 9

@@ -793,11 +793,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
   },
-  "rangeSelectorCombinedSeries": {
+  "showInRangeSelector": {
     "default": "null",
     "labels": ["Interactive Elements"],
-    "type": "array<integer>",
-    "description": "Array of series indexes (1 being the first serie) to combine for drawing the mini plot. The mini plot curve will be an average of these series. If \"null\", all series are combined."
+    "type": "boolean",
+    "description": "Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the series. Setting it for one series will result in that series being charted alone in the range selector."
   },
   "animatedZooms": {
     "default": "false",

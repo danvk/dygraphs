@@ -52,8 +52,8 @@ rangeSelector.prototype.destroy = function() {
 // Private methods
 //------------------------------------------------------------------
 
-rangeSelector.prototype.getOption_ = function(name) {
-  return this.dygraph_.getOption(name);
+rangeSelector.prototype.getOption_ = function(name, opt_series) {
+  return this.dygraph_.getOption(name, opt_series);
 };
 
 rangeSelector.prototype.setDefaultOption_ = function(name, value) {
@@ -646,30 +646,30 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var g = this.dygraph_;
   var logscale = this.getOption_('logscale');
-
-  // Create a combined series (average of selected series values).
   var i;
 
-  // Select series to combine
-  var selectedSeries = this.getOption_('rangeSelectorCombinedSeries');
-
-  // Default: select all series
-  if (selectedSeries === null) {
-    var numColumns = g.numColumns();
-    selectedSeries = new Array(numColumns - 1);
-
-    for (i = 1; i < numColumns; i++) {
-      selectedSeries[i - 1] = i;
-    }
+  // Select series to combine. By default, all series are combined.
+  var numColumns = g.numColumns();
+  var labels = g.getLabels();
+  var includeSeries = new Array(numColumns);
+  var anySet = false;
+  for (i = 1; i < numColumns; i++) {
+    var include = this.getOption_('showInRangeSelector', labels[i]);
+    includeSeries[i] = include;
+    if (include !== null) anySet = true;  // it's set explicitly for this series
+  }
+  if (!anySet) {
+    for (i = 0; i < includeSeries.length; i++) includeSeries[i] = true;
   }
 
+  // Create a combined series (average of selected series values).
   // TODO(danvk): short-circuit if there's only one series.
   var rolledSeries = [];
   var dataHandler = g.dataHandler_;
   var options = g.attributes_;
-  for (i = 0; i < selectedSeries.length; i++) {
-    var seriesIndex = selectedSeries[i];
-    var series = dataHandler.extractSeries(g.rawData_, seriesIndex, options);
+  for (i = 1; i < g.numColumns(); i++) {
+    if (!includeSeries[i]) continue;
+    var series = dataHandler.extractSeries(g.rawData_, i, options);
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
     }

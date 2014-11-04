@@ -30,7 +30,7 @@
     </p>
     <div id="roll14" style="width:800px; height:320px;"></div>
     <p>
-      Use the average of a specific subset of series to draw the mini plot (only the first serie is used in this test).
+      Use the average of a specific subset of series to draw the mini plot (only the first series is used in this test).
       The default behaviour is to compute the average of <em>all</em> series.
     </p>
     <div id="selectcombined" style="width:800px; height:320px;"></div>
@@ -81,7 +81,10 @@
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             showRangeSelector: true,
-            rangeSelectorCombinedSeries: [1]
+            labels: ['X', 'Y1', 'Y2', 'Y3'],
+            series: {
+              'Y1': { showInRangeSelector: true }
+            }
           }
       );
       g4 = new Dygraph(
