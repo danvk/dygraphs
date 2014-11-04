@@ -38,6 +38,9 @@
       Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
     </p>
     <div id="nochart" style="width:800px; height:30px;"></div>
+    <p>Demo of range selector with stepPlot</p>
+    <div id="stepplot" style="width:800px; height:320px;"></div>
+
     <script type="text/javascript">
       g1 = new Dygraph(
           document.getElementById("noroll"),
@@ -97,6 +100,20 @@
             rangeSelectorHeight: 30
           }
       );
+      g5 = new Dygraph(document.getElementById("stepplot"),
+                      "Date,Idle,Used\n" +
+                      "2008-05-07,70,30\n" +
+                      "2008-05-08,42,88\n" +
+                      "2008-05-09,88,42\n" +
+                      "2008-05-10,33,37\n" +
+                      "2008-05-11,30,35\n",
+                       {
+                          stepPlot: true,
+                          fillGraph: true,
+                          stackedGraph: true,
+                          includeZero: true,
+                          showRangeSelector: true
+                       });
     </script>
   </body>
 </html>
