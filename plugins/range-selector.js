@@ -594,6 +594,13 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
     var dataPoint = combinedSeriesData.data[i];
     var x = ((dataPoint[0] !== null) ? ((dataPoint[0] - xExtremes[0])*xFact) : NaN);
     var y = ((dataPoint[1] !== null) ? (canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact) : NaN);
+
+    // Skip points that don't change the x-value. Overly fine-grained points
+    // can cause major slowdowns with the ctx.fill() call below.
+    if (!stepPlot && prevX !== null && Math.round(x) == Math.round(prevX)) {
+      continue;
+    }
+
     if (isFinite(x) && isFinite(y)) {
       if(prevX === null) {
         ctx.lineTo(x, canvasHeight);
