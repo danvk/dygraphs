@@ -149,13 +149,13 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
   for (var i = 0; i < ann.length; i++) {
     var a = {};
     if (!ann[i].xval && ann[i].x === undefined) {
-      Dygraph.error("Annotations must have an 'x' property");
+      console.error("Annotations must have an 'x' property");
       return;
     }
     if (ann[i].icon &&
         !(ann[i].hasOwnProperty('width') &&
           ann[i].hasOwnProperty('height'))) {
-      Dygraph.error("Must set width and height when setting " +
+      console.error("Must set width and height when setting " +
                     "annotation.icon property");
       return;
     }
@@ -204,7 +204,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
       axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
-        Dygraph.error('axis ' + i + ' of graph at ' + axis.g +
+        console.error('axis ' + i + ' of graph at ' + axis.g +
                       ' can\'t be displayed in log scale for range [' +
                       axis.minyval + ' - ' + axis.maxyval + ']');
       }

@@ -451,7 +451,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       months = Dygraph.LONG_TICK_PLACEMENTS[granularity].months;
       year_mod = Dygraph.LONG_TICK_PLACEMENTS[granularity].year_mod;
     } else {
-      Dygraph.warn("Span of dates is too long");
+      console.warn("Span of dates is too long");
     }
 
     var start_year = new Date(start_time).getFullYear();

@@ -74,7 +74,7 @@ rangeSelector.prototype.createInterface_ = function() {
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
   if (this.getOption_('animatedZooms')) {
-    Dygraph.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    console.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
@@ -544,7 +544,7 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   try {
     this.drawMiniPlot_();
   } catch(ex) {
-    Dygraph.warn(ex);
+    console.warn(ex);
   }
 
   var margin = 0.5;
