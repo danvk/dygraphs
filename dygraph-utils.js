@@ -12,7 +12,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global Dygraph:false, G_vmlCanvasManager:false, Node:false, printStackTrace: false */
+/*global Dygraph:false, G_vmlCanvasManager:false, Node:false */
 "use strict";
 
 Dygraph.LOG_SCALE = 10;

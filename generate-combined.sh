@@ -5,6 +5,7 @@ GetSources () {
   # This list needs to be kept in sync w/ the one in dygraph-dev.js
   # and the one in jsTestDriver.conf. Order matters, except for the plugins.
   for F in \
+    polyfills/console.js \
     dashed-canvas.js \
     dygraph-options.js \
     dygraph-layout.js \
