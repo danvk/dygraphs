@@ -183,7 +183,7 @@ DygraphOptions.prototype.reparseSeries = function() {
 
       if (typeof(axis) == 'string') {
         if (!this.series_.hasOwnProperty(axis)) {
-          Dygraph.error("Series " + seriesName + " wants to share a y-axis with " +
+          console.error("Series " + seriesName + " wants to share a y-axis with " +
                      "series " + axis + ", which does not define its own axis.");
           return;
         }

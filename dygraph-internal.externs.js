@@ -2,12 +2,6 @@
 // - declares symbols that are provided outisde of dygraphs (e.g. by excanvas)
 // - defines custom types used internally
 
-/**
- * @param {Object} dict
- * @return {!Array.<string>}
- */
-function printStackTrace(dict) {}
-
 
 /**
  * @constructor

@@ -12,7 +12,7 @@
  */
 
 /*jshint globalstrict: true */
-/*global Dygraph:false, G_vmlCanvasManager:false, Node:false, printStackTrace: false */
+/*global Dygraph:false, G_vmlCanvasManager:false, Node:false */
 "use strict";
 
 Dygraph.LOG_SCALE = 10;
@@ -27,114 +27,12 @@ Dygraph.log10 = function(x) {
   return Math.log(x) / Dygraph.LN_TEN;
 };
 
-// Various logging levels.
-Dygraph.DEBUG = 1;
-Dygraph.INFO = 2;
-Dygraph.WARNING = 3;
-Dygraph.ERROR = 3;
-
-// <REMOVE_FOR_COMBINED>
-// Set this to log stack traces on warnings, etc.
-// This requires stacktrace.js, which is up to you to provide.
-// A copy can be found in the dygraphs repo, or at
-// https://github.com/eriwen/javascript-stacktrace
-Dygraph.LOG_STACK_TRACES = false;
-// </REMOVE_FOR_COMBINED>
-
 /** A dotted line stroke pattern. */
 Dygraph.DOTTED_LINE = [2, 2];
 /** A dashed line stroke pattern. */
 Dygraph.DASHED_LINE = [7, 3];
 /** A dot dash stroke pattern. */
 Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
-
-/**
- * Log an error on the JS console at the given severity.
- * @param {number} severity One of Dygraph.{DEBUG,INFO,WARNING,ERROR}
- * @param {string} message The message to log.
- * @private
- */
-Dygraph.log = function(severity, message) {
-  // <REMOVE_FOR_COMBINED>
-  var st;
-  if (typeof(printStackTrace) != 'undefined') {
-    try {
-      // Remove uninteresting bits: logging functions and paths.
-      st = printStackTrace({guess:false});
-      while (st[0].indexOf("stacktrace") != -1) {
-        st.splice(0, 1);
-      }
-
-      st.splice(0, 2);
-      for (var i = 0; i < st.length; i++) {
-        st[i] = st[i].replace(/\([^)]*\/(.*)\)/, '@$1')
-            .replace(/\@.*\/([^\/]*)/, '@$1')
-            .replace('[object Object].', '');
-      }
-      var top_msg = st.splice(0, 1)[0];
-      message += ' (' + top_msg.replace(/^.*@ ?/, '') + ')';
-    } catch(e) {
-      // Oh well, it was worth a shot!
-    }
-  }
-  // </REMOVE_FOR_COMBINED>
-
-  if (typeof(window.console) != 'undefined') {
-    // In older versions of Firefox, only console.log is defined.
-    var console = window.console;
-    var log = function(console, method, msg) {
-      if (method && typeof(method) == 'function') {
-        method.call(console, msg);
-      } else {
-        console.log(msg);
-      }
-    };
-
-    switch (severity) {
-      case Dygraph.DEBUG:
-        log(console, console.debug, 'dygraphs: ' + message);
-        break;
-      case Dygraph.INFO:
-        log(console, console.info, 'dygraphs: ' + message);
-        break;
-      case Dygraph.WARNING:
-        log(console, console.warn, 'dygraphs: ' + message);
-        break;
-      case Dygraph.ERROR:
-        log(console, console.error, 'dygraphs: ' + message);
-        break;
-    }
-  }
-
-  // <REMOVE_FOR_COMBINED>
-  if (Dygraph.LOG_STACK_TRACES) {
-    window.console.log(st.join('\n'));
-  }
-  // </REMOVE_FOR_COMBINED>
-};
-
-/**
- * @param {string} message
- * @private
- */
-Dygraph.info = function(message) {
-  Dygraph.log(Dygraph.INFO, message);
-};
-
-/**
- * @param {string} message
- * @private
- */
-Dygraph.warn = function(message) {
-  Dygraph.log(Dygraph.WARNING, message);
-};
-
-/**
- * @param {string} message
- */
-Dygraph.error = function(message) {
-  Dygraph.log(Dygraph.ERROR, message);
-};
 
 /**
  * Return the 2d context for a dygraph canvas.
@@ -628,7 +526,7 @@ Dygraph.dateParser = function(dateStr) {
   }
 
   if (!d || isNaN(d)) {
-    Dygraph.error("Couldn't parse " + dateStr + " as a date");
+    console.error("Couldn't parse " + dateStr + " as a date");
   }
   return d;
 };
@@ -1292,7 +1190,7 @@ Dygraph.parseFloat_ = function(x, opt_line_no, opt_line) {
   if (opt_line !== undefined && opt_line_no !== undefined) {
     msg += " on line " + (1+(opt_line_no||0)) + " ('" + opt_line + "') of CSV.";
   }
-  Dygraph.error(msg);
+  console.error(msg);
 
   return null;
 };

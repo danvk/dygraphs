@@ -559,7 +559,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 
   var fillGraph = g.getBooleanOption("fillGraph", setName);
   if (fillGraph) {
-    Dygraph.warn("Can't use fillGraph option with error bars");
+    console.warn("Can't use fillGraph option with error bars");
   }
 
   var ctx = e.drawingContext;

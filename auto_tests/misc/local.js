@@ -24,12 +24,12 @@ var DygraphsLocalTester = function() {
  * In some cases we will still allow warnings to be warnings, however.
  */
 DygraphsLocalTester.prototype.overrideWarn = function() {
-  // save Dygraph.warn so we can catch warnings.
-  var originalDygraphWarn = Dygraph.warn;
-  Dygraph.warn = function(msg) {
-    // This warning is still
+  // save console.warn so we can catch warnings.
+  var originalWarn = console.warn;
+  console.warn = function(msg) {
+    // This warning is pervasive enough that we'll let it slide (for now).
     if (msg == "Using default labels. Set labels explicitly via 'labels' in the options parameter") {
-      originalDygraphWarn(msg);
+      originalWarn(msg);
       return;
     }
     throw 'Warnings not permitted: ' + msg;
