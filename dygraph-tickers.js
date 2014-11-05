@@ -342,7 +342,7 @@ Dygraph.numDateTicks = function(start_time, end_time, granularity) {
 Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
       opts("axisLabelFormatter"));
-  var utc = opts("labelsDateUTC");
+  var utc = opts("labelsUTC");
   var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
 
   var datefield = Dygraph.TICK_PLACEMENT[granularity].datefield;

@@ -203,7 +203,7 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
 /**
  * Convert a JS date to a string appropriate to display on an axis that
  * is displaying values at the stated granularity. This respects the 
- * labelsDateUTC option.
+ * labelsUTC option.
  * @param {Date} date The date to format
  * @param {number} granularity One of the Dygraph granularity constants
  * @param {Dygraph} opts An options view
@@ -211,7 +211,7 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
  * @private
  */
 Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
-  var utc = opts('labelsDateUTC');
+  var utc = opts('labelsUTC');
   var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
 
   var year = accessors.getFullYear(date),
@@ -241,13 +241,13 @@ Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
 
 /**
  * Return a string version of a JS date for a value label. This respects the 
- * labelsDateUTC option.
+ * labelsUTC option.
  * @param {Date} date The date to be formatted
  * @param {Dygraph} opts An options view
  * @private
  */
 Dygraph.dateValueFormatter = function(d, opts) {
-  return Dygraph.dateString_(d, opts('labelsDateUTC'));
+  return Dygraph.dateString_(d, opts('labelsUTC'));
 };
 
 /**

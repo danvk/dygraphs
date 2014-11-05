@@ -17,7 +17,7 @@
     <h2>UTC date and time labels</h2>
 
     <p>This shows how date ticks and labels may be generated according to local 
-    time (default) or UTC with the option <code>labelsDateUTC</code>.</p>
+    time (default) or UTC with the option <code>labelsUTC</code>.</p>
     
     <p>72 hours of random hourly data since 2009-Jul-23 18:00 UTC 
     according to local time (top) and UTC (bottom):</p>
@@ -54,7 +54,7 @@
                    document.getElementById("div_utc"),
                    data,
                    {
-                     labelsDateUTC: true,
+                     labelsUTC: true,
                      labels: ['UTC', 'random']
                    }
                  );
