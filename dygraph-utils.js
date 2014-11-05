@@ -374,46 +374,90 @@ Dygraph.zeropad = function(x) {
 };
 
 /**
- * Return a string version of the hours, minutes and seconds portion of a date.
- *
- * @param {number} date The JavaScript date (ms since epoch)
- * @return {string} A time of the form "HH:MM:SS"
- * @private
+ * Date accessors to get the parts of a calendar date (year, month, 
+ * day, hour, minute, second and millisecond) according to local time,
+ * and factory method to call the Date constructor with an array of arguments.
  */
-Dygraph.hmsString_ = function(date) {
-  var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
-  if (d.getSeconds()) {
-    return zeropad(d.getHours()) + ":" +
-           zeropad(d.getMinutes()) + ":" +
-           zeropad(d.getSeconds());
-  } else {
-    return zeropad(d.getHours()) + ":" + zeropad(d.getMinutes());
+Dygraph.DateAccessorsLocal = {
+  getFullYear:     function(d) {return d.getFullYear();},
+  getMonth:        function(d) {return d.getMonth();},
+  getDate:         function(d) {return d.getDate();},
+  getHours:        function(d) {return d.getHours();},
+  getMinutes:      function(d) {return d.getMinutes();},
+  getSeconds:      function(d) {return d.getSeconds();},
+  getMilliseconds: function(d) {return d.getMilliseconds();},
+  getDay:          function(d) {return d.getDay();},
+  makeDate:        function(y, m, d, hh, mm, ss, ms) {
+    return new Date(y, m, d, hh, mm, ss, ms);
   }
 };
 
 /**
- * Convert a JS date (millis since epoch) to YYYY/MM/DD
- * @param {number} date The JavaScript date (ms since epoch)
- * @return {string} A date of the form "YYYY/MM/DD"
+ * Date accessors to get the parts of a calendar date (year, month, 
+ * day of month, hour, minute, second and millisecond) according to UTC time,
+ * and factory method to call the Date constructor with an array of arguments.
+ */
+Dygraph.DateAccessorsUTC = {
+  getFullYear:     function(d) {return d.getUTCFullYear();},
+  getMonth:        function(d) {return d.getUTCMonth();},
+  getDate:         function(d) {return d.getUTCDate();},
+  getHours:        function(d) {return d.getUTCHours();},
+  getMinutes:      function(d) {return d.getUTCMinutes();},
+  getSeconds:      function(d) {return d.getUTCSeconds();},
+  getMilliseconds: function(d) {return d.getUTCMilliseconds();},
+  getDay:          function(d) {return d.getUTCDay();},
+  makeDate:        function(y, m, d, hh, mm, ss, ms) {
+    return new Date(Date.UTC(y, m, d, hh, mm, ss, ms));
+  }
+};
+
+/**
+ * Return a string version of the hours, minutes and seconds portion of a date.
+ * @param {number} hh The hours (from 0-23)
+ * @param {number} mm The minutes (from 0-59)
+ * @param {number} ss The seconds (from 0-59)
+ * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-Dygraph.dateString_ = function(date) {
+Dygraph.hmsString_ = function(hh, mm, ss) {
   var zeropad = Dygraph.zeropad;
-  var d = new Date(date);
+  var ret = zeropad(hh) + ":" + zeropad(mm);
+  if (ss) {
+    ret += ":" + zeropad(ss);
+  }
+  return ret;
+};
 
-  // Get the year:
-  var year = "" + d.getFullYear();
+/**
+ * Convert a JS date (millis since epoch) to a formatted string.
+ * @param {number} time The JavaScript time value (ms since epoch)
+ * @param {boolean} utc Wether output UTC or local time
+ * @return {string} A date of one of these forms:
+ *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
+ * @private
+ */
+Dygraph.dateString_ = function(time, utc) {
+  var zeropad = Dygraph.zeropad;
+  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+  var date = new Date(time);
+  var y = accessors.getFullYear(date);
+  var m = accessors.getMonth(date);
+  var d = accessors.getDate(date);
+  var hh = accessors.getHours(date);
+  var mm = accessors.getMinutes(date);
+  var ss = accessors.getSeconds(date);
+  // Get a year string:
+  var year = "" + y;
   // Get a 0 padded month string
-  var month = zeropad(d.getMonth() + 1);  //months are 0-offset, sigh
+  var month = zeropad(m + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
-  var day = zeropad(d.getDate());
-
-  var ret = "";
-  var frac = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-  if (frac) ret = " " + Dygraph.hmsString_(date);
-
-  return year + "/" + month + "/" + day + ret;
+  var day = zeropad(d);
+  var frac = hh * 3600 + mm * 60 + ss;
+  var ret = year + "/" + month + "/" + day;
+  if (frac) {
+    ret += " " + Dygraph.hmsString_(hh, mm, ss);
+  }
+  return ret;
 };
 
 /**
@@ -1086,37 +1130,6 @@ Dygraph.pow = function(base, exp) {
     return 1.0 / Math.pow(base, -exp);
   }
   return Math.pow(base, exp);
-};
-
-// For Dygraph.setDateSameTZ, below.
-Dygraph.dateSetters = {
-  ms: Date.prototype.setMilliseconds,
-  s: Date.prototype.setSeconds,
-  m: Date.prototype.setMinutes,
-  h: Date.prototype.setHours
-};
-
-/**
- * This is like calling d.setSeconds(), d.setMinutes(), etc, except that it
- * adjusts for time zone changes to keep the date/time parts consistent.
- *
- * For example, d.getSeconds(), d.getMinutes() and d.getHours() will all be
- * the same before/after you call setDateSameTZ(d, {ms: 0}). The same is not
- * true if you call d.setMilliseconds(0).
- *
- * @type {function(!Date, Object.<number>)}
- */
-Dygraph.setDateSameTZ = function(d, parts) {
-  var tz = d.getTimezoneOffset();
-  for (var k in parts) {
-    if (!parts.hasOwnProperty(k)) continue;
-    var setter = Dygraph.dateSetters[k];
-    if (!setter) throw "Invalid setter: " + k;
-    setter.call(d, parts[k]);
-    if (d.getTimezoneOffset() != tz) {
-      d.setTime(d.getTime() + (tz - d.getTimezoneOffset()) * 60 * 1000);
-    }
-  }
 };
 
 /**

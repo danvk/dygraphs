@@ -486,6 +486,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "When set, display the graph as a step plot instead of a line plot. This option may either be set for the whole graph or for single series."
   },
+  "labelsUTC": {
+    "default": "false",
+    "labels": ["Value display/formatting", "Axis display"],
+    "type": "boolean",
+    "description": "Show date/time labels according to UTC (instead of local time)."
+  },
   "labelsKMB": {
     "default": "false",
     "labels": ["Value display/formatting"],

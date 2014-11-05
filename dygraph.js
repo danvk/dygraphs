@@ -202,27 +202,52 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
- * is displaying values at the stated granularity.
+ * is displaying values at the stated granularity. This respects the 
+ * labelsUTC option.
  * @param {Date} date The date to format
  * @param {number} granularity One of the Dygraph granularity constants
- * @return {string} The formatted date
+ * @param {Dygraph} opts An options view
+ * @return {string} The date formatted as local time
  * @private
  */
-Dygraph.dateAxisFormatter = function(date, granularity) {
+Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
+  var utc = opts('labelsUTC');
+  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+
+  var year = accessors.getFullYear(date),
+      month = accessors.getMonth(date),
+      day = accessors.getDate(date),
+      hours = accessors.getHours(date),
+      mins = accessors.getMinutes(date),
+      secs = accessors.getSeconds(date),
+      millis = accessors.getSeconds(date);
+
   if (granularity >= Dygraph.DECADAL) {
-    return '' + date.getFullYear();
+    return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[date.getMonth()] + ' ' + date.getFullYear();
+    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + year;
   } else {
-    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
+    var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
       // e.g. '21Jan' (%d%b)
-      var nd = new Date(date.getTime() + 3600*1000);
-      return Dygraph.zeropad(nd.getDate()) + Dygraph.SHORT_MONTH_NAMES_[nd.getMonth()];
+      return Dygraph.zeropad(day) + Dygraph.SHORT_MONTH_NAMES_[month];
     } else {
-      return Dygraph.hmsString_(date.getTime());
+      return Dygraph.hmsString_(hours, mins, secs);
     }
   }
+};
+// alias in case anyone is referencing the old method.
+Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
+
+/**
+ * Return a string version of a JS date for a value label. This respects the 
+ * labelsUTC option.
+ * @param {Date} date The date to be formatted
+ * @param {Dygraph} opts An options view
+ * @private
+ */
+Dygraph.dateValueFormatter = function(d, opts) {
+  return Dygraph.dateString_(d, opts('labelsUTC'));
 };
 
 /**
@@ -336,8 +361,8 @@ Dygraph.DEFAULT_ATTRS = {
   axes: {
     x: {
       pixelsPerLabel: 60,
-      axisLabelFormatter: Dygraph.dateAxisFormatter,
-      valueFormatter: Dygraph.dateString_,
+      axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
+      valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
       drawAxis: true,
       independentTicks: true,
@@ -2993,9 +3018,9 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 Dygraph.prototype.setXAxisOptions_ = function(isDate) {
   if (isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
   } else {
     /** @private (shut up, jsdoc!) */
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
@@ -3193,9 +3218,9 @@ Dygraph.prototype.parseArray_ = function(data) {
 
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
@@ -3252,9 +3277,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var indepType = data.getColumnType(0);
   if (indepType == 'date' || indepType == 'datetime') {
     this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
