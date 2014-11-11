@@ -734,13 +734,13 @@ Dygraph.getContextPixelRatio = function(context) {
                             context.mozBackingStorePixelRatio ||
                             context.msBackingStorePixelRatio ||
                             context.oBackingStorePixelRatio ||
-                            context.backingStorePixelRatio;
-    if (devicePixelRatio !== undefined &&
-        backingStorePixelRatio !== undefined) {
+                            context.backingStorePixelRatio || 1;
+    if (devicePixelRatio !== undefined) {
       return devicePixelRatio / backingStoreRatio;
     } else {
-      // If either value is undefined, the ratio is meaningless so we want to
-      // return 1.
+      // At least devicePixelRatio must be defined for this ratio to make sense.
+      // We default backingStoreRatio to 1: this does not exist on some browsers
+      // (i.e. desktop Chrome).
       return 1;
     }
   } catch (e) {
