@@ -16,7 +16,7 @@ G_vmlCanvasManager.initElement = function(canvas) {};
 // For IE
 /**
  * @param {string} type
- * @param {Object} fn
+ * @param {Function} fn
  */
 Element.prototype.detachEvent = function(type, fn) {};
 
