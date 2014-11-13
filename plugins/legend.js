@@ -128,7 +128,7 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
-  if(e.dygraph.getOption("legendFollow")) {
+  if (e.dygraph.getOption("legendFollow")) {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
     var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
@@ -142,8 +142,8 @@ legend.prototype.select = function(e) {
 
     // if legend floats to end of the plotting area, it flips to the other
     // side of the selection point
-    if((leftLegend + labelsDivWidth + 1) > area.w) {
-      leftLegend = leftLegend - 2*20 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    if ((leftLegend + labelsDivWidth + 1) > (window.scrollX + window.innerWidth)) {
+      leftLegend = leftLegend - 2 * 20 - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
