@@ -366,7 +366,7 @@ DygraphCanvasRenderer._drawPointsOnLine = function(
   for (var idx = 0; idx < pointsOnLine.length; idx++) {
     var cb = pointsOnLine[idx];
     ctx.save();
-    drawPointCallback(
+    drawPointCallback.call(e.dygraph,
         e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize, cb[2]);
     ctx.restore();
   }

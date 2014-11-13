@@ -317,12 +317,12 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   }
 
   if (selectedPoint) {
-    pointClickCallback(event, selectedPoint);
+    pointClickCallback.call(g, event, selectedPoint);
   }
 
   // TODO(danvk): pass along more info about the points, e.g. 'x'
   if (clickCallback) {
-    clickCallback(event, g.lastx_, g.selPoints_);
+    clickCallback.call(g, event, g.lastx_, g.selPoints_);
   }
 };
 
@@ -535,7 +535,7 @@ Dygraph.Interaction.moveTouch = function(event, g, context) {
   // We only call zoomCallback on zooms, not pans, to mirror desktop behavior.
   if (didZoom && touches.length > 1 && g.getFunctionOption('zoomCallback')) {
     var viewWindow = g.xAxisRange();
-    g.getFunctionOption("zoomCallback")(viewWindow[0], viewWindow[1], g.yAxisRanges());
+    g.getFunctionOption("zoomCallback").call(g, viewWindow[0], viewWindow[1], g.yAxisRanges());
   }
 };
 
