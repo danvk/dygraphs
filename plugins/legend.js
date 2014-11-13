@@ -128,7 +128,7 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
-  if (e.dygraph.getOption("legendFollow")) {
+  if (e.dygraph.getOption("legend") === "follow") {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
     var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
@@ -149,6 +149,7 @@ legend.prototype.select = function(e) {
     e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
+    this.legend_div_.style.display = "block";
   }
 
   var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
@@ -157,9 +158,8 @@ legend.prototype.select = function(e) {
 
 legend.prototype.deselect = function(e) {
 
-  if(e.dygraph.getOption("legendFollow")) {
-    // return legend to the default non-floating position
-    this.predraw(e);
+  if (e.dygraph.getOption("legend") === "follow") {
+    this.legend_div_.style.display = "none";
   }
 
   // Have to do this every time, since styles might have changed.
