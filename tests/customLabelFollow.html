@@ -13,6 +13,16 @@
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+      .dygraph-legend {
+        background-color: rgba(200, 200, 255, 0.75) !important;
+        padding: 4px;
+        border: 1px solid #000;
+        border-radius: 10px;
+        box-shadow: 4px 4px 4px #888;
+        pointer-events: none;
+      }
+    </style>
   </head>
   <body>
     <p>Legend follows highlighted points:</p>
@@ -25,14 +35,6 @@
               rollPeriod: 14,
               errorBars: true,
               labelsDivWidth: 100,
-              labelsDivStyles: {
-                'backgroundColor': 'rgba(200, 200, 255, 0.75)',
-                'padding': '4px',
-                'border': '1px solid black',
-                'borderRadius': '10px',
-                'boxShadow': '4px 4px 4px #888',
-                'pointerEvents': 'none' // let mouse events fall through to the chart
-              },
               labelsSeparateLines: true,
               legendFollow: true,
               yAxisLabelWidth: 20
