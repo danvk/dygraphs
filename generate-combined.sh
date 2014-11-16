@@ -33,8 +33,7 @@ GetSources () {
 # Pack all the JS together.
 CatSources () {
   GetSources \
-  | xargs cat \
-  | perl -ne 'print unless m,REMOVE_FOR_COMBINED,..m,/REMOVE_FOR_COMBINED,'
+  | xargs cat 
 }
 
 Copyright () {
@@ -42,10 +41,13 @@ Copyright () {
 }
 
 CatCompressed () {
-  Copyright
-  CatSources \
-  | grep -v '"use strict";' \
-  | node_modules/uglify-js/bin/uglifyjs -c warnings=false -m
+  node_modules/uglify-js/bin/uglifyjs \
+    $(GetSources | xargs) \
+    --compress warnings=false \
+    --mangle \
+    --define DEBUG=false \
+    --preamble "$(Copyright)" \
+    $*
 }
 
 ACTION="${1:-update}"
@@ -61,8 +63,9 @@ compress*|cat_compress*)
   CatCompressed
   ;;
 update)
-  CatCompressed > dygraph-combined.js
-  chmod a+r dygraph-combined.js
+  CatCompressed --source-map dygraph-combined.js.map \
+    > dygraph-combined.js
+  chmod a+r dygraph-combined.js dygraph-combined.js.map
   ;;
 *)
   echo >&2 "Unknown action '$ACTION'"
