@@ -1624,7 +1624,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   var that = this;
   this.doAnimatedZoom(old_window, new_window, null, null, function() {
     if (that.getFunctionOption("zoomCallback")) {
-      that.getFunctionOption("zoomCallback")(
+      that.getFunctionOption("zoomCallback").call(that,
           minDate, maxDate, that.yAxisRanges());
     }
   });
@@ -1657,7 +1657,7 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
     if (that.getFunctionOption("zoomCallback")) {
       var xRange = that.xAxisRange();
-      that.getFunctionOption("zoomCallback")(
+      that.getFunctionOption("zoomCallback").call(that,
           xRange[0], xRange[1], that.yAxisRanges());
     }
   });
@@ -1712,7 +1712,7 @@ Dygraph.prototype.resetZoom = function() {
       }
       this.drawGraph_();
       if (this.getFunctionOption("zoomCallback")) {
-        this.getFunctionOption("zoomCallback")(
+        this.getFunctionOption("zoomCallback").call(this,
             minDate, maxDate, this.yAxisRanges());
       }
       return;
@@ -1755,7 +1755,7 @@ Dygraph.prototype.resetZoom = function() {
             }
           }
           if (that.getFunctionOption("zoomCallback")) {
-            that.getFunctionOption("zoomCallback")(
+            that.getFunctionOption("zoomCallback").call(that,
                 minDate, maxDate, that.yAxisRanges());
           }
         });
@@ -1992,7 +1992,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var callback = this.getFunctionOption("highlightCallback");
   if (callback && selectionChanged) {
-    callback(event,
+    callback.call(this, event,
         this.lastx_,
         this.selPoints_,
         this.lastRow_,
@@ -2122,7 +2122,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.lineWidth = this.getNumericOption('strokeWidth', pt.name);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
-      callback(this, pt.name, ctx, canvasx, pt.canvasy,
+      callback.call(this, this, pt.name, ctx, canvasx, pt.canvasy,
           color, circleSize, pt.idx);
     }
     ctx.restore();
@@ -2205,10 +2205,10 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
  */
 Dygraph.prototype.mouseOut_ = function(event) {
   if (this.getFunctionOption("unhighlightCallback")) {
-    this.getFunctionOption("unhighlightCallback")(event);
+    this.getFunctionOption("unhighlightCallback").call(this, event);
   }
 
-  if (this.getFunctionOption("hideOverlayOnMouseOut") && !this.lockedSet_) {
+  if (this.getBooleanOption("hideOverlayOnMouseOut") && !this.lockedSet_) {
     this.clearSelection();
   }
 };
@@ -2694,7 +2694,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   if (this.getFunctionOption('underlayCallback')) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.getFunctionOption('underlayCallback')(
+    this.getFunctionOption('underlayCallback').call(this,
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
@@ -3722,7 +3722,7 @@ Dygraph.prototype.ready = function(callback) {
   if (this.is_initial_draw_) {
     this.readyFns_.push(callback);
   } else {
-    callback(this);
+    callback.call(this, this);
   }
 };
 
