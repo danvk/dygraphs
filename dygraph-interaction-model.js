@@ -332,6 +332,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
   }
 
   var e = {
+    cancelable: true,
     xval: g.lastx_,  // closest point by x value
     pts: g.selPoints_,
     canvasx: context.dragEndX,
