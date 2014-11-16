@@ -626,6 +626,128 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   ctx.fill();
 };
 
+
+/**
+ * Proxy for CanvasRenderingContext2D which drops moveTo/lineTo calls which are
+ * superfluous. It accumulates all movements which haven't changed the x-value
+ * and only applies the two with the most extreme y-values.
+ * 
+ * Calls to lineTo/moveTo must have non-decreasing x-values.
+ */
+DygraphCanvasRenderer._fastCanvasProxy = function(context) {
+  var pendingActions = [];  // array of [type, x, y] tuples
+  var lastRoundedX = null;
+  var extremeYs = null;  // [minY, maxY] for lastRoundedX
+
+  var LINE_TO = 1,
+      MOVE_TO = 2;
+
+  var actionCount = 0;  // number of moveTos and lineTos passed to context.
+
+  // Drop superfluous motions
+  // Assumes all pendingActions have the same (rounded) x-value.
+  var compressActions = function(opt_losslessOnly) {
+    if (pendingActions.length <= 1) return;
+
+    // Lossless compression: drop inconsequential moveTos.
+    for (var i = pendingActions.length - 1; i > 0; i--) {
+      var action = pendingActions[i];
+      if (action[0] == MOVE_TO) {
+        var prevAction = pendingActions[i - 1];
+        if (prevAction[1] == action[1] && prevAction[2] == action[2]) {
+          pendingActions.splice(i, 1);
+        }
+      }
+    }
+
+    // Lossless compression: ... drop consecutive moveTos ...
+    for (var i = 0; i < pendingActions.length - 1; /* incremented internally */) {
+      var action = pendingActions[i];
+      if (action[0] == MOVE_TO && pendingActions[i + 1][0] == MOVE_TO) {
+        pendingActions.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+
+    // Lossy compression: ... drop all but the extreme y-values ...
+    if (pendingActions.length > 2 && !opt_losslessOnly) {
+      // keep an initial moveTo, but drop all others.
+      var startIdx = 0;
+      if (pendingActions[0][0] == MOVE_TO) startIdx++;
+      var minIdx = null, maxIdx = null;
+      for (var i = startIdx; i < pendingActions.length; i++) {
+        var action = pendingActions[i];
+        if (action[0] != LINE_TO) continue;
+        if (minIdx === null && maxIdx === null) {
+          minIdx = i;
+          maxIdx = i;
+        } else {
+          var y = action[2];
+          if (y < pendingActions[minIdx][2]) {
+            minIdx = i;
+          } else if (y > pendingActions[maxIdx][2]) {
+            maxIdx = i;
+          }
+        }
+      }
+      var minAction = pendingActions[minIdx],
+          maxAction = pendingActions[maxIdx];
+      pendingActions.splice(startIdx, pendingActions.length - startIdx);
+      if (minIdx < maxIdx) {
+        pendingActions.push(minAction);
+        pendingActions.push(maxAction);
+      } else if (minIdx > maxIdx) {
+        pendingActions.push(maxAction);
+        pendingActions.push(minAction);
+      } else {
+        pendingActions.push(minAction);
+      }
+    }
+  };
+
+  var flushActions = function(opt_noLossyCompression) {
+    compressActions(opt_noLossyCompression);
+    for (var i = 0, len = pendingActions.length; i < len; i++) {
+      var action = pendingActions[i];
+      if (action[0] == LINE_TO) {
+        context.lineTo(action[1], action[2]);
+      } else if (action[0] == MOVE_TO) {
+        context.moveTo(action[1], action[2]);
+      }
+    }
+    actionCount += pendingActions.length;
+    pendingActions = [];
+  };
+
+  var addAction = function(action, x, y) {
+    var rx = Math.round(x);
+    if (lastRoundedX === null || rx != lastRoundedX) {
+      flushActions();
+      lastRoundedX = rx;
+    }
+    pendingActions.push([action, x, y]);
+  };
+
+  return {
+    moveTo: function(x, y) {
+      addAction(MOVE_TO, x, y);
+    },
+    lineTo: function(x, y) {
+      addAction(LINE_TO, x, y);
+    },
+
+    // for major operations like stroke/fill, we skip compression to ensure
+    // that there are no artifacts at the right edge.
+    stroke:    function() { flushActions(true); context.stroke(); },
+    fill:      function() { flushActions(true); context.fill(); },
+    beginPath: function() { flushActions(true); context.beginPath(); },
+    closePath: function() { flushActions(true); context.closePath(); },
+
+    _count: function() { return actionCount; }
+  };
+}
+
 /**
  * Draws the shaded regions when "fillGraph" is set. Not to be confused with
  * error bars.
@@ -662,7 +784,6 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
   if (!anySeriesFilled) return;
 
-  var ctx = e.drawingContext;
   var area = e.plotArea;
   var sets = e.allSeriesPoints;
   var setCount = sets.length;
@@ -684,9 +805,10 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
+    var ctx = e.drawingContext;
     var setName = setNames[setIdx];
     if (!g.getBooleanOption('fillGraph', setName)) continue;
-    
+
     var stepPlot = g.getBooleanOption('stepPlot', setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
@@ -711,9 +833,37 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     ctx.fillStyle = err_color;
     ctx.beginPath();
     var last_x, is_first = true;
+
+    // If the point density is high enough, dropping segments on their way to
+    // the canvas justifies the overhead of doing so.
+    if (points.length > 2 * g.width_) {
+      ctx = DygraphCanvasRenderer._fastCanvasProxy(ctx);
+    }
+
+    // For filled charts, we draw points from left to right, then back along
+    // the x-axis to complete a shape for filling.
+    // For stacked plots, this "back path" is a more complex shape. This array
+    // stores the [x, y] values needed to trace that shape.
+    var pathBack = [];
+
+    var traceBackPath = function(baselineX, baselineY) {
+      ctx.lineTo(baselineX, baselineY);
+      if (stackedGraph) {
+        for (var i = pathBack.length - 1; i >= 0; i--) {
+          var pt = pathBack[i];
+          ctx.lineTo(pt[0], pt[1]);
+        }
+      }
+      pathBack = [];
+    };
+
+    // TODO(danvk): there are a lot of options at play in this loop.
+    //     The logic would be much clearer if some (e.g. stackGraph and
+    //     stepPlot) were split off into separate sub-plotters.
     while (iter.hasNext) {
       var point = iter.next();
       if (!Dygraph.isOK(point.y) && !stepPlot) {
+        traceBackPath(prevX, prevYs[1]);
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -741,10 +891,10 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
         newYs = [ point.canvasy, lastY ];
 
-        if(stepPlot) {
+        if (stepPlot) {
           // Step plots must keep track of the top and bottom of
           // the baseline at each point.
-          if(prevYs[0] === -1) {
+          if (prevYs[0] === -1) {
             baseline[point.canvasx] = [ point.canvasy, axisY ];
           } else {
             baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
@@ -761,29 +911,35 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
       }
       if (!isNaN(prevX)) {
-        ctx.moveTo(prevX, prevYs[0]);
-        
         // Move to top fill point
         if (stepPlot) {
           ctx.lineTo(point.canvasx, prevYs[0]);
+          ctx.lineTo(point.canvasx, newYs[0]);
         } else {
           ctx.lineTo(point.canvasx, newYs[0]);
         }
-        // Move to bottom fill point
-        if (prevStepPlot && currBaseline) {
-          // Draw to the bottom of the baseline
-          ctx.lineTo(point.canvasx, currBaseline[1]);
-        } else {
-          ctx.lineTo(point.canvasx, newYs[1]);
-        }
 
-        ctx.lineTo(prevX, prevYs[1]);
-        ctx.closePath();
+        // Record the baseline for the reverse path.
+        if (stackedGraph) {
+          pathBack.push([prevX, prevYs[1]]);
+          if (prevStepPlot && currBaseline) {
+            // Draw to the bottom of the baseline
+            pathBack.push([point.canvasx, currBaseline[1]]);
+          } else {
+            pathBack.push([point.canvasx, newYs[1]]);
+          }
+        }
+      } else {
+        ctx.moveTo(point.canvasx, newYs[1]);
+        ctx.lineTo(point.canvasx, newYs[0]);
       }
       prevYs = newYs;
       prevX = point.canvasx;
     }
     prevStepPlot = stepPlot;
+    if (newYs) {
+      traceBackPath(point.canvasx, newYs[1]);
+    }
     ctx.fill();
   }
 };
