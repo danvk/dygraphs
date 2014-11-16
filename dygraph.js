@@ -2358,12 +2358,6 @@ Dygraph.prototype.predraw_ = function() {
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
-  // Create a new plotter.
-  if (this.plotter_) {
-    this.cascadeEvents_('clearChart');
-    this.plotter_.clear();
-  }
-
   if (!this.is_initial_draw_) {
     this.canvas_ctx_.restore();
     this.hidden_ctx_.restore();
@@ -2372,6 +2366,7 @@ Dygraph.prototype.predraw_ = function() {
   this.canvas_ctx_.save();
   this.hidden_ctx_.save();
 
+  // Create a new plotter.
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,

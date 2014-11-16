@@ -183,9 +183,8 @@ pluginsTestCase.prototype.testEventSequence = function() {
   events = [];
   g.updateOptions({series: {Y1: {color: 'blue'}}});
   assertEquals([
-   "clearChart",
    "predraw",
-   "clearChart",  // why is clearChart called twice?
+   "clearChart",
    "willDrawChart",
    "didDrawChart"
   ], events);
@@ -207,9 +206,8 @@ pluginsTestCase.prototype.testEventSequence = function() {
   assertEquals([
    "dataWillUpdate",
    "dataDidUpdate",
-   "clearChart",
    "predraw",
-   "clearChart",  // why is clearChart called twice?
+   "clearChart",
    "willDrawChart",
    "didDrawChart"
   ], events);
