@@ -536,8 +536,16 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.plugins_ = [];
   var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
   for (var i = 0; i < plugins.length; i++) {
-    var Plugin = plugins[i];
-    var pluginInstance = new Plugin();
+    // the plugins option may contain either plugin classes or instances.
+    // Plugin instances contain an activate method.
+    var Plugin = plugins[i];  // either a constructor or an instance.
+    var pluginInstance;
+    if (typeof(Plugin.activate) !== 'undefined') {
+      pluginInstance = Plugin;
+    } else {
+      pluginInstance = new Plugin();
+    }
+
     var pluginDict = {
       plugin: pluginInstance,
       events: {},
@@ -578,12 +586,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
 /**
  * Triggers a cascade of events to the various plugins which are interested in them.
- * Returns true if the "default behavior" should be performed, i.e. if none of
- * the event listeners called event.preventDefault().
+ * Returns true if the "default behavior" should be prevented, i.e. if one
+ * of the event listeners called event.preventDefault().
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
-  if (!(name in this.eventListeners_)) return true;
+  if (!(name in this.eventListeners_)) return false;
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
@@ -2278,6 +2286,7 @@ Dygraph.prototype.isSeriesLocked = function() {
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
+  this.cascadeDataDidUpdateEvent_();
   this.predraw_();
 };
 
@@ -2349,12 +2358,6 @@ Dygraph.prototype.predraw_ = function() {
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
-  // Create a new plotter.
-  if (this.plotter_) {
-    this.cascadeEvents_('clearChart');
-    this.plotter_.clear();
-  }
-
   if (!this.is_initial_draw_) {
     this.canvas_ctx_.restore();
     this.hidden_ctx_.restore();
@@ -2363,6 +2366,7 @@ Dygraph.prototype.predraw_ = function() {
   this.canvas_ctx_.save();
   this.hidden_ctx_.save();
 
+  // Create a new plotter.
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
@@ -3393,6 +3397,17 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 };
 
 /**
+ * Signals to plugins that the chart data has updated.
+ * This happens after the data has updated but before the chart has redrawn.
+ */
+Dygraph.prototype.cascadeDataDidUpdateEvent_ = function() {
+  // TODO(danvk): there are some issues checking xAxisRange() and using
+  // toDomCoords from handlers of this event. The visible range should be set
+  // when the chart is drawn, not derived from the data.
+  this.cascadeEvents_('dataDidUpdate', {});
+};
+
+/**
  * Get the CSV data. If it's in a function, call that function. If it's in a
  * file, do an XMLHttpRequest to get it.
  * @private
@@ -3407,11 +3422,13 @@ Dygraph.prototype.start_ = function() {
 
   if (Dygraph.isArrayLike(data)) {
     this.rawData_ = this.parseArray_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'object' &&
              typeof data.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
@@ -3501,6 +3518,10 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   this.attributes_.reparseSeries();
 
   if (file) {
+    // This event indicates that the data is about to change, but hasn't yet.
+    // TODO(danvk): support cancelation of the update via this event.
+    this.cascadeEvents_('dataWillUpdate', {});
+
     this.file_ = file;
     if (!block_redraw) this.start_();
   } else {

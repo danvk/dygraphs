@@ -38,7 +38,7 @@ legend.prototype.toString = function() {
 };
 
 // (defined below)
-var generateLegendHTML, generateLegendDashHTML;
+var generateLegendDashHTML;
 
 /**
  * This is called during the dygraph constructor, after options have been set
@@ -128,7 +128,7 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
-  var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
+  var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
   this.legend_div_.innerHTML = html;
 };
 
@@ -137,7 +137,7 @@ legend.prototype.deselect = function(e) {
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   this.one_em_width_ = oneEmWidth;
 
-  var html = generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
+  var html = legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
   this.legend_div_.innerHTML = html;
 };
 
@@ -187,7 +187,7 @@ legend.prototype.destroy = function() {
  * relevant when displaying a legend with no selection (i.e. {legend:
  * 'always'}) and with dashed lines.
  */
-generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
+legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 

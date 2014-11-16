@@ -281,6 +281,7 @@ Dygraph.Interaction.moveZoom = function(event, g, context) {
 };
 
 /**
+ * TODO(danvk): move this logic into dygraph.js
  * @param {Dygraph} g
  * @param {Event} event
  * @param {Object} context
@@ -291,38 +292,57 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
 
   var selectedPoint = null;
 
-  // Find out if the click occurs on a point. This only matters if there's a
-  // pointClickCallback.
-  if (pointClickCallback) {
-    var closestIdx = -1;
-    var closestDistance = Number.MAX_VALUE;
+  // Find out if the click occurs on a point.
+  var closestIdx = -1;
+  var closestDistance = Number.MAX_VALUE;
 
-    // check if the click was on a particular point.
-    for (var i = 0; i < g.selPoints_.length; i++) {
-      var p = g.selPoints_[i];
-      var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
-                     Math.pow(p.canvasy - context.dragEndY, 2);
-      if (!isNaN(distance) &&
-          (closestIdx == -1 || distance < closestDistance)) {
-        closestDistance = distance;
-        closestIdx = i;
-      }
+  // check if the click was on a particular point.
+  for (var i = 0; i < g.selPoints_.length; i++) {
+    var p = g.selPoints_[i];
+    var distance = Math.pow(p.canvasx - context.dragEndX, 2) +
+                   Math.pow(p.canvasy - context.dragEndY, 2);
+    if (!isNaN(distance) &&
+        (closestIdx == -1 || distance < closestDistance)) {
+      closestDistance = distance;
+      closestIdx = i;
     }
+  }
 
-    // Allow any click within two pixels of the dot.
-    var radius = g.getNumericOption('highlightCircleSize') + 2;
-    if (closestDistance <= radius * radius) {
-      selectedPoint = g.selPoints_[closestIdx];
-    }
+  // Allow any click within two pixels of the dot.
+  var radius = g.getNumericOption('highlightCircleSize') + 2;
+  if (closestDistance <= radius * radius) {
+    selectedPoint = g.selPoints_[closestIdx];
   }
 
   if (selectedPoint) {
-    pointClickCallback.call(g, event, selectedPoint);
+    var e = {
+      cancelable: true,
+      point: selectedPoint,
+      canvasx: context.dragEndX,
+      canvasy: context.dragEndY
+    };
+    var defaultPrevented = g.cascadeEvents_('pointClick', e);
+    if (defaultPrevented) {
+      // Note: this also prevents click / clickCallback from firing.
+      return;
+    }
+    if (pointClickCallback) {
+      pointClickCallback.call(g, event, selectedPoint);
+    }
   }
 
-  // TODO(danvk): pass along more info about the points, e.g. 'x'
-  if (clickCallback) {
-    clickCallback.call(g, event, g.lastx_, g.selPoints_);
+  var e = {
+    cancelable: true,
+    xval: g.lastx_,  // closest point by x value
+    pts: g.selPoints_,
+    canvasx: context.dragEndX,
+    canvasy: context.dragEndY
+  };
+  if (!g.cascadeEvents_('click', e)) {
+    if (clickCallback) {
+      // TODO(danvk): pass along more info about the points, e.g. 'x'
+      clickCallback.call(g, event, g.lastx_, g.selPoints_);
+    }
   }
 };
 
@@ -631,6 +651,16 @@ Dygraph.Interaction.defaultModel = {
       context.cancelNextDblclick = false;
       return;
     }
+
+    // Give plugins a chance to grab this event.
+    var e = {
+      canvasx: context.dragEndX,
+      canvasy: context.dragEndY
+    };
+    if (g.cascadeEvents_('dblclick', e)) {
+      return;
+    }
+
     if (event.altKey || event.shiftKey) {
       return;
     }
