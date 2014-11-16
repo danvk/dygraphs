@@ -536,9 +536,9 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.plugins_ = [];
   var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
   for (var i = 0; i < plugins.length; i++) {
-    var Plugin = plugins[i];
-
     // the plugins option may contain either plugin classes or instances.
+    // Plugin instances contain an activate method.
+    var Plugin = plugins[i];  // either a constructor or an instance.
     var pluginInstance;
     if (typeof(Plugin.activate) !== 'undefined') {
       pluginInstance = Plugin;
