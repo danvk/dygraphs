@@ -7,7 +7,6 @@
     <script type="text/javascript" src="../excanvas.js"></script>
     <![endif]-->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
-    <script type="text/javascript" src="../extras/smooth-plotter.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <style type="text/css">
@@ -17,9 +16,6 @@
       div.chart {
         width: 640px;
         height: 320px;
-      }
-      input[type="range"] {
-        width: 400px;
       }
     </style>
   </head>
@@ -56,9 +52,7 @@
     <div id="mixed-error" class="chart"></div>
 
     <h2>Smooth Lines</h2>
-    <p>This plotter draws smooth lines between points using bezier curves:</p>
-    Smoothing:&nbsp;<input type="range" id="smoothing-amount" min=0 max=0.7 step=0.02 value=0.3><br>
-    <div id="smooth-line" class="chart"></div>
+    <p>See the <a href="smooth-plots.html">smooth-plots demo</a> for an example of a custom plotter which connects points using bezier curves instead of straight lines.</p>
 
     <script type="text/javascript">
       // Darken a color
@@ -329,45 +323,6 @@ var candleData = "Date,Open,Close,High,Low\n" +
               }
             });
 
-
-    // Smooth line plotter
-    var functionData = [];
-    var vs = [10, 20, 40, 0, 30, 15, 25, 60, 35, 45];
-    for (var i = 0; i < 10; i++) {
-      var v = vs[i];
-      functionData.push([i, v, v]);
-    }
-
-    var g6;
-    function drawSmoothPlot() {
-      g6 = new Dygraph(document.getElementById('smooth-line'),
-                       functionData,
-                       {
-                         labels: ['Year', 'Straight', 'Smoothed'],
-                         series: {
-                           Straight: {
-                             color: 'rgba(0,0,0,0.33)',
-                             strokeWidth: 2,
-                             drawPoints: true,
-                             pointSize: 3
-                           },
-                           Smoothed: {
-                             plotter: smoothPlotter,
-                             color: 'red',
-                             strokeWidth: 2
-                           }
-                         },
-                         legend: 'always',
-                         gridLineColor: '#ddd'
-                       });
-    }
-    drawSmoothPlot();
-
-    var smoothRangeEl = document.getElementById('smoothing-amount');
-    smoothRangeEl.addEventListener('input', function() {
-      smoothPlotter.smoothing = parseFloat(smoothRangeEl.value);
-      drawSmoothPlot();
-    });
     </script>
 </body>
 </html>
