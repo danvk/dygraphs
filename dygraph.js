@@ -1230,6 +1230,12 @@ Dygraph.prototype.destroy = function() {
   this.canvas_ctx_.restore();
   this.hidden_ctx_.restore();
 
+  // Destroy any plugins, in the reverse order that they were registered.
+  for (var i = this.plugins_.length - 1; i >= 0; i--) {
+    var p = this.plugins_.pop();
+    if (p.plugin.destroy) p.plugin.destroy();
+  }
+
   var removeRecursive = function(node) {
     while (node.hasChildNodes()) {
       removeRecursive(node.firstChild);
@@ -1244,7 +1250,7 @@ Dygraph.prototype.destroy = function() {
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // remove window handlers
-  Dygraph.removeEvent(window,'resize',this.resizeHandler_);
+  Dygraph.removeEvent(window,'resize', this.resizeHandler_);
   this.resizeHandler_ = null;
 
   removeRecursive(this.maindiv_);

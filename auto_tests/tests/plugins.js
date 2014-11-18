@@ -212,3 +212,24 @@ pluginsTestCase.prototype.testEventSequence = function() {
    "didDrawChart"
   ], events);
 };
+
+pluginsTestCase.prototype.testDestroyCalledInOrder = function() {
+  var destructions = [];
+  var makePlugin = function(name) {
+    return {
+      activate: function(g) { return {} },
+      destroy: function() {
+        destructions.push(name);
+      }
+    };
+  };
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, this.data, {
+    plugins: [makePlugin('p'), makePlugin('q')]
+  });
+
+  assertEquals([], destructions);
+  g.destroy();
+  assertEquals(['q', 'p'], destructions);
+};
