@@ -204,6 +204,7 @@ Some callbacks take a point argument. Its properties are:<br/>
 <li>xval/yval: The data coordinates of the point (with dates/times as millis since epoch)</li>
 <li>canvasx/canvasy: The canvas coordinates at which the point is drawn.</li>
 <li>name: The name of the data series to which the point belongs</li>
+<li>idx: The row number of the point in the data set</li>
 </ul>
 </div> <!-- #content -->
 
