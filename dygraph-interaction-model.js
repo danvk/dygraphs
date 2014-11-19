@@ -652,7 +652,7 @@ Dygraph.Interaction.defaultModel = {
       if (context.isZooming) {
         // When the mouse moves >200px from the chart edge, cancel the zoom.
         var d = distanceFromChart(event, g);
-        if (d < 200) {
+        if (d < DRAG_EDGE_MARGIN) {
           Dygraph.moveZoom(event, g, context);
         } else {
           if (context.dragEndX !== null) {
