@@ -339,8 +339,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "axis": {
     "default": "(none)",
     "labels": ["Axis display"],
-    "type": "string or object",
-    "description": "Set to either an object ({}) filled with options for this axis or to the name of an existing data series with its own axis to re-use that axis. See tests for usage."
+    "type": "string",
+    "description": "Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or secondary). Must be set per-series."
   },
   "pixelsPerXLabel": {
     "default": "",
