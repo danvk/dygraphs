@@ -20,7 +20,9 @@ perSeriesTestCase.prototype.testPerSeriesFill = function() {
     drawYGrid: false,
     drawXAxis: false,
     drawYAxis: false,
-    Y: { fillGraph: true },
+    series: {
+      Y: { fillGraph: true },
+    },
     colors: [ '#FF0000', '#0000FF' ],
     fillAlpha: 0.15
   };

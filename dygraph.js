@@ -46,6 +46,7 @@
 // For "production" code, this gets set to false by uglifyjs.
 if (typeof(DEBUG) === 'undefined') DEBUG=true;
 
+var Dygraph = (function() {
 /*jshint globalstrict: true */
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
 "use strict";
@@ -334,7 +335,6 @@ Dygraph.DEFAULT_ATTRS = {
   axisLineWidth: 0.3,
   gridLineWidth: 0.3,
   axisLabelColor: "black",
-  axisLabelFont: "Arial",  // TODO(danvk): is this implemented?
   axisLabelWidth: 50,
   drawYGrid: true,
   drawXGrid: true,
@@ -3794,3 +3794,7 @@ Dygraph.addAnnotationRule = function() {
 
   console.warn("Unable to add default annotation CSS rule; display may be off.");
 };
+
+return Dygraph;
+
+})();

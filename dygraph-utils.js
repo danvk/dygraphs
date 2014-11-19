@@ -11,7 +11,8 @@
  * search) and generic DOM-manipulation functions.
  */
 
-/*jshint globalstrict: true */
+(function() {
+
 /*global Dygraph:false, G_vmlCanvasManager:false, Node:false */
 "use strict";
 
@@ -894,72 +895,64 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
   })();
 };
 
+// A whitelist of options that do not change pixel positions.
+var pixelSafeOptions = {
+  'annotationClickHandler': true,
+  'annotationDblClickHandler': true,
+  'annotationMouseOutHandler': true,
+  'annotationMouseOverHandler': true,
+  'axisLabelColor': true,
+  'axisLineColor': true,
+  'axisLineWidth': true,
+  'clickCallback': true,
+  'drawCallback': true,
+  'drawHighlightPointCallback': true,
+  'drawPoints': true,
+  'drawPointCallback': true,
+  'drawXGrid': true,
+  'drawYGrid': true,
+  'fillAlpha': true,
+  'gridLineColor': true,
+  'gridLineWidth': true,
+  'hideOverlayOnMouseOut': true,
+  'highlightCallback': true,
+  'highlightCircleSize': true,
+  'interactionModel': true,
+  'isZoomedIgnoreProgrammaticZoom': true,
+  'labelsDiv': true,
+  'labelsDivStyles': true,
+  'labelsDivWidth': true,
+  'labelsKMB': true,
+  'labelsKMG2': true,
+  'labelsSeparateLines': true,
+  'labelsShowZeroValues': true,
+  'legend': true,
+  'panEdgeFraction': true,
+  'pixelsPerYLabel': true,
+  'pointClickCallback': true,
+  'pointSize': true,
+  'rangeSelectorPlotFillColor': true,
+  'rangeSelectorPlotStrokeColor': true,
+  'showLabelsOnHighlight': true,
+  'showRoller': true,
+  'strokeWidth': true,
+  'underlayCallback': true,
+  'unhighlightCallback': true,
+  'zoomCallback': true
+};
+
 /**
  * This function will scan the option list and determine if they
  * require us to recalculate the pixel positions of each point.
+ * TODO: move this into dygraph-options.js
  * @param {!Array.<string>} labels a list of options to check.
  * @param {!Object} attrs
  * @return {boolean} true if the graph needs new points else false.
  * @private
  */
 Dygraph.isPixelChangingOptionList = function(labels, attrs) {
-  // A whitelist of options that do not change pixel positions.
-  var pixelSafeOptions = {
-    'annotationClickHandler': true,
-    'annotationDblClickHandler': true,
-    'annotationMouseOutHandler': true,
-    'annotationMouseOverHandler': true,
-    'axisLabelColor': true,
-    'axisLineColor': true,
-    'axisLineWidth': true,
-    'clickCallback': true,
-    'digitsAfterDecimal': true,
-    'drawCallback': true,
-    'drawHighlightPointCallback': true,
-    'drawPoints': true,
-    'drawPointCallback': true,
-    'drawXGrid': true,
-    'drawYGrid': true,
-    'fillAlpha': true,
-    'gridLineColor': true,
-    'gridLineWidth': true,
-    'hideOverlayOnMouseOut': true,
-    'highlightCallback': true,
-    'highlightCircleSize': true,
-    'interactionModel': true,
-    'isZoomedIgnoreProgrammaticZoom': true,
-    'labelsDiv': true,
-    'labelsDivStyles': true,
-    'labelsDivWidth': true,
-    'labelsKMB': true,
-    'labelsKMG2': true,
-    'labelsSeparateLines': true,
-    'labelsShowZeroValues': true,
-    'legend': true,
-    'maxNumberWidth': true,
-    'panEdgeFraction': true,
-    'pixelsPerYLabel': true,
-    'pointClickCallback': true,
-    'pointSize': true,
-    'rangeSelectorPlotFillColor': true,
-    'rangeSelectorPlotStrokeColor': true,
-    'showLabelsOnHighlight': true,
-    'showRoller': true,
-    'sigFigs': true,
-    'strokeWidth': true,
-    'underlayCallback': true,
-    'unhighlightCallback': true,
-    'xAxisLabelFormatter': true,
-    'xTicker': true,
-    'xValueFormatter': true,
-    'yAxisLabelFormatter': true,
-    'yValueFormatter': true,
-    'zoomCallback': true
-  };
-
   // Assume that we do not require new points.
   // This will change to true if we actually do need new points.
-  var requiresNewPoints = false;
 
   // Create a dictionary of series names for faster lookup.
   // If there are no labels, then the dictionary stays empty.
@@ -970,34 +963,44 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
     }
   }
 
+  // Scan through a flat (i.e. non-nested) object of options.
+  // Returns true/false depending on whether new points are needed.
+  var scanFlatOptions = function(options) {
+    for (var property in options) {
+      if (options.hasOwnProperty(property) &&
+          !pixelSafeOptions[property]) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // Iterate through the list of updated options.
   for (var property in attrs) {
-    // Break early if we already know we need new points from a previous option.
-    if (requiresNewPoints) {
-      break;
-    }
-    if (attrs.hasOwnProperty(property)) {
-      // Find out of this field is actually a series specific options list.
-      if (seriesNamesDictionary[property]) {
-        // This property value is a list of options for this series.
-        // If any of these sub properties are not pixel safe, set the flag.
-        for (var subProperty in attrs[property]) {
-          // Break early if we already know we need new points from a previous option.
-          if (requiresNewPoints) {
-            break;
-          }
-          if (attrs[property].hasOwnProperty(subProperty) && !pixelSafeOptions[subProperty]) {
-            requiresNewPoints = true;
-          }
+    if (!attrs.hasOwnProperty(property)) continue;
+
+    // Find out of this field is actually a series specific options list.
+    if (property == 'highlightSeriesOpts' ||
+        (seriesNamesDictionary[property] && !attrs.series)) {
+      // This property value is a list of options for this series.
+      if (scanFlatOptions(attrs[property])) return true;
+    } else if (property == 'series' || property == 'axes') {
+      // This is twice-nested options list.
+      var perSeries = attrs[property];
+      for (var series in perSeries) {
+        if (perSeries.hasOwnProperty(series) &&
+            scanFlatOptions(perSeries[series])) {
+          return true;
         }
-      // If this was not a series specific option list, check if its a pixel changing property.
-      } else if (!pixelSafeOptions[property]) {
-        requiresNewPoints = true;
       }
+    } else {
+      // If this was not a series specific option list, check if it's a pixel
+      // changing property.
+      if (!pixelSafeOptions[property]) return true;
     }
   }
 
-  return requiresNewPoints;
+  return false;
 };
 
 Dygraph.Circles = {
@@ -1207,3 +1210,5 @@ Dygraph.parseFloat_ = function(x, opt_line_no, opt_line) {
 
   return null;
 };
+
+})();

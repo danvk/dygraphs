@@ -38,6 +38,7 @@ move-combined: generate-combined
 clean-combined-test: clean
 	@echo restoring combined
 	git checkout dygraph-dev.js
+	rm dygraph-combined.js.map
 
 lint:
 	@./lint.sh

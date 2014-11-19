@@ -67,7 +67,7 @@ UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
   var optionsForY1 = { };
 
   optionsForY1['strokeWidth'] = 3;
-  updatedOptions['Y1'] = optionsForY1;
+  updatedOptions['series'] = {'Y1': optionsForY1};
 
   // These options will allow us to jump to renderGraph_()
   // drawGraph_() will be skipped.
@@ -80,17 +80,16 @@ UpdateOptionsTestCase.prototype.testStrokeSingleSeries = function() {
 UpdateOptionsTestCase.prototype.testSingleSeriesRequiresNewPoints = function() {
   var graphDiv = document.getElementById("graph");
   var graph = new Dygraph(graphDiv, this.data, this.opts);
-  var updatedOptions = { };
-  var optionsForY1 = { };
-  var optionsForY2 = { };
-
-  // This will not require new points.
-  optionsForY1['strokeWidth'] = 2;
-  updatedOptions['Y1'] = optionsForY1;
-
-  // This will require new points.
-  optionsForY2['stepPlot'] = true;
-  updatedOptions['Y2'] = optionsForY2;
+  var updatedOptions = {
+    series: {
+      Y1: {
+        strokeWidth: 2
+      },
+      Y2: {
+        stepPlot: true
+      }
+    }
+  };
 
   // These options will not allow us to jump to renderGraph_()
   // drawGraph_() must be called
