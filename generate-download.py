@@ -49,11 +49,11 @@ print '''
 %(current_html)s
 </div>
 
-<p>You can also source a hosted version of dygraphs from <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
+<p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
 <pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph-combined.js"&gt;&lt;/script&gt;</pre>
 
-<p>You can also find dygraphs on <a href="https://www.npmjs.org/package/dygraphs">NPM</a> and <a href="http://bower.io/search/?q=dygraphs">Bower</a>.</p>
+<p>You can install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a> or <a href="http://bower.io/search/?q=dygraphs">Bower</a>.</p>
 
 <p>To install using NPM:</p>
 <pre>$ npm install dygraphs
