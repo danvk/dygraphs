@@ -70,30 +70,32 @@
               {
                 legend: 'always',
                 strokeWidth: 2,
-                'parabola': {
-                  strokePattern: null,
-                  drawPoints: true,
-                  pointSize: 4,
-                  highlightCircleSize: 6
-                },
-                'line': {
-                  strokePattern: Dygraph.DASHED_LINE,
-                  strokeWidth: 1.0,
-                  drawPoints: true,
-                  pointSize: 1.5
-                },
-                'another line': {
-                  strokePattern: [25, 5]
-                },
-                'sine wave': {
-                  strokePattern: Dygraph.DOTTED_LINE,
-                  strokeWidth: 3,
-                  highlightCircleSize: 10
-                },
-                'sine wave2': {
-                  strokePattern: Dygraph.DOT_DASH_LINE,
-                  strokeWidth: 2,
-                  highlightCircleSize: 3
+                series: {
+                  'parabola': {
+                    strokePattern: null,
+                    drawPoints: true,
+                    pointSize: 4,
+                    highlightCircleSize: 6
+                  },
+                  'line': {
+                    strokePattern: Dygraph.DASHED_LINE,
+                    strokeWidth: 1.0,
+                    drawPoints: true,
+                    pointSize: 1.5
+                  },
+                  'another line': {
+                    strokePattern: [25, 5]
+                  },
+                  'sine wave': {
+                    strokePattern: Dygraph.DOTTED_LINE,
+                    strokeWidth: 3,
+                    highlightCircleSize: 10
+                  },
+                  'sine wave2': {
+                    strokePattern: Dygraph.DOT_DASH_LINE,
+                    strokeWidth: 2,
+                    highlightCircleSize: 3
+                  }
                 }
               }
           );
@@ -102,25 +104,27 @@
               data,
               {
                 strokeWidth: 2,
-                'parabola': {
-                  strokeWidth: 0.0,
-                  drawPoints: true,
-                  pointSize: 4,
-                  highlightCircleSize: 6
-                },
-                'line': {
-                  strokeWidth: 1.0,
-                  drawPoints: true,
-                  pointSize: 1.5
-                },
-                'sine wave': {
-                  strokeWidth: 3,
-                  highlightCircleSize: 10
-                },
-                'sine wave2': {
-                  strokePattern: [10, 2, 5, 2],
-                  strokeWidth: 2,
-                  highlightCircleSize: 3
+                series: {
+                  'parabola': {
+                    strokeWidth: 0.0,
+                    drawPoints: true,
+                    pointSize: 4,
+                    highlightCircleSize: 6
+                  },
+                  'line': {
+                    strokeWidth: 1.0,
+                    drawPoints: true,
+                    pointSize: 1.5
+                  },
+                  'sine wave': {
+                    strokeWidth: 3,
+                    highlightCircleSize: 10
+                  },
+                  'sine wave2': {
+                    strokePattern: [10, 2, 5, 2],
+                    strokeWidth: 2,
+                    highlightCircleSize: 3
+                  }
                 }
               }
           );
