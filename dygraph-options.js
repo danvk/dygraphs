@@ -405,6 +405,13 @@ DygraphOptions.prototype.validateOptions_ = function() {
                       this.global_,
                       this.user_,
                       this.highlightSeries_];
+  var names = this.seriesNames();
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    if (this.series_.hasOwnProperty(name)) {
+      optionsDicts.push(this.series_[name].options);
+    }
+  }
   for (var i = 0; i < optionsDicts.length; i++) {
     var dict = optionsDicts[i];
     if (!dict) continue;
@@ -434,6 +441,11 @@ DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
     }
     WARNINGS[optionName] = true;
   }
+};
+
+// Reset list of previously-shown warnings. Used for testing.
+DygraphOptions.resetWarnings_ = function() {
+  WARNINGS = {};
 };
 
 }
