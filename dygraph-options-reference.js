@@ -339,8 +339,8 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "axis": {
     "default": "(none)",
     "labels": ["Axis display"],
-    "type": "string or object",
-    "description": "Set to either an object ({}) filled with options for this axis or to the name of an existing data series with its own axis to re-use that axis. See tests for usage."
+    "type": "string",
+    "description": "Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or secondary). Must be set per-series."
   },
   "pixelsPerXLabel": {
     "default": "",
@@ -424,6 +424,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Grid"],
     "type": "red, blue",
     "description": "The color of the gridlines. This may be set on a per-axis basis to define each axis' grid separately."
+  },
+  "gridLinePattern": {
+    "default": "null",
+    "labels": ["Grid"],
+    "type": "array<integer>",
+    "example": "[10, 2, 5, 2]",
+    "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed gridlines."
   },
   "visibility": {
     "default": "[true, true, ...]",
@@ -816,6 +823,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Line display"],
     "type": "array or function",
     "description": "A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series."
+  },
+  "axes": {
+    "default": "null",
+    "labels": ["Configuration"],
+    "type": "Object",
+    "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='http://dygraphs.com/per-axis.html'>per-series and per-axis options</a>."
   },
   "series": {
     "default": "null",

@@ -115,7 +115,6 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
     showRangeSelector: true,
     rangeSelectorHeight: 30,
     rangeSelectorPlotFillColor: 'lightyellow',
-    rangeSelectorPlotStyleColor: 'yellow',
     labels: ['X', 'Y']
   };
   var data = [

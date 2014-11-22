@@ -96,12 +96,20 @@ SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
  */
 SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   var opts = {
-      drawXGrid: false,
-      drawYGrid: false,
-      drawXAxis: false,
-      drawYAxis: false,
+    axes: {
+      x: {
+        drawGrid: false,
+        drawAxis: false
+      },
+      y: {
+        drawGrid: false,
+        drawAxis: false
+      }
+    },
+    series: {
       'Y1': {strokePattern: [25, 7, 7, 7]},
-      colors: ['#ff0000']
+    },
+    colors: ['#ff0000']
   };
 
   var graph = document.getElementById("graph");

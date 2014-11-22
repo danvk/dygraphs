@@ -246,11 +246,13 @@ var candleData = "Date,Open,Close,High,Low\n" +
             {
               labels: ['Date', 'A', 'B'],
               includeZero: true,
-              "A": {
-                strokeWidth: 2
-              },
-              "B": {
-                plotter: barChartPlotter
+              series: {
+                "A": {
+                  strokeWidth: 2
+                },
+                "B": {
+                  plotter: barChartPlotter
+                }
               }
             });
 
@@ -314,12 +316,14 @@ var candleData = "Date,Open,Close,High,Low\n" +
             NoisyData(),
             {
               errorBars: true,
-              'A': {
-                plotter: Dygraph.Plotters.errorPlotter
-              },
-              'B': {
-                plotter: Dygraph.Plotters.linePlotter,
-                strokePattern: Dygraph.DASHED_LINE
+              series: {
+                'A': {
+                  plotter: Dygraph.Plotters.errorPlotter
+                },
+                'B': {
+                  plotter: Dygraph.Plotters.linePlotter,
+                  strokePattern: Dygraph.DASHED_LINE
+                }
               }
             });
 

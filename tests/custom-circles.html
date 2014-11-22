@@ -98,7 +98,8 @@
         var shapes = [];
         var addShape = function(name, pointFn, highlightPointFn) {
           shapes.push(name);
-          opts[name] = {
+          if (!opts['series']) opts['series'] = {};
+          opts.series[name] = {
             drawPointCallback: pointFn,
             drawHighlightPointCallback: highlightPointFn
           };
