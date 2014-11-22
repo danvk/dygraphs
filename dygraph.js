@@ -1079,7 +1079,7 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   var xRange = this.xAxisRange();
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", 'x') ;
-  if (logscale == true) { // logscale can be null so we test for true explicitly.
+  if (logscale === true) {  // logscale can be null so we test for true explicitly.
     var logr0 = Dygraph.log10(xRange[0]);
     var logr1 = Dygraph.log10(xRange[1]);
     pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);

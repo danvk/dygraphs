@@ -49,7 +49,7 @@ Dygraph.Interaction.maybeTreatMouseOpAsClick = function(event, g, context) {
 
   context.regionWidth = regionWidth;
   context.regionHeight = regionHeight;
-}
+};
 
 /**
  * Called in response to an interaction model operation that

@@ -57,7 +57,7 @@ rangeSelector.prototype.getOption_ = function(name, opt_series) {
 };
 
 rangeSelector.prototype.setDefaultOption_ = function(name, value) {
-  return this.dygraph_.attrs_[name] = value;
+  this.dygraph_.attrs_[name] = value;
 };
 
 /**

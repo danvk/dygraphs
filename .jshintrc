@@ -1,0 +1,8 @@
+{
+  "browser": true,
+  "shadow": true,
+  "devel": true,
+  "globals": {
+  },
+  "maxerr": 100000
+}
