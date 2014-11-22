@@ -43,6 +43,13 @@
                    1e6 * (2 - i * (100 - i) / (50 * 50))]);
       }
 
+      function formatDate(d) {
+        var yyyy = d.getFullYear(),
+            mm = d.getMonth() + 1,
+            dd = d.getDate();
+        return yyyy + '-' + (mm < 10 ? '0' : '') + mm + (dd < 10 ? '0' : '') + dd;
+      }
+
       g = new Dygraph(
           document.getElementById("demodiv"),
           data,
@@ -59,10 +66,10 @@
             axes: {
               x: {
                 valueFormatter: function(ms) {
-                  return 'xvf(' + new Date(ms).strftime('%Y-%m-%d') + ')';
+                  return 'xvf(' + formatDate(new Date(ms)) + ')';
                 },
                 axisLabelFormatter: function(d) {
-                  return 'xalf(' + d.strftime('%Y-%m-%d') + ')';
+                  return 'xalf(' + formatDate(d) + ')';
                 },
                 pixelsPerLabel: 100,
               },
