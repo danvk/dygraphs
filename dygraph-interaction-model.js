@@ -371,6 +371,7 @@ Dygraph.Interaction.treatMouseOpAsClick = function(g, event, context) {
  *     context.
  */
 Dygraph.Interaction.endZoom = function(event, g, context) {
+  g.clearZoomRect_();
   context.isZooming = false;
   Dygraph.Interaction.maybeTreatMouseOpAsClick(event, g, context);
 
@@ -398,8 +399,6 @@ Dygraph.Interaction.endZoom = function(event, g, context) {
       g.doZoomY_(top, bottom);
     }
     context.cancelNextDblclick = true;
-  } else {
-    if (context.zoomMoved) g.clearZoomRect_();
   }
   context.dragStartX = null;
   context.dragStartY = null;

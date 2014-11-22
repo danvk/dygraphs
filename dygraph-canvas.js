@@ -53,8 +53,8 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.element = element;
   this.elementContext = elementContext;
 
-  this.height = this.element.height;
-  this.width = this.element.width;
+  this.height = dygraph.height_;
+  this.width = dygraph.width_;
 
   // --- check whether everything is ok before we return
   // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
@@ -185,7 +185,7 @@ DygraphCanvasRenderer.prototype._createIEClipArea = function() {
   // Right side
   createClipDiv({
     x: plotArea.x + plotArea.w, y: 0,
-    w: this.width-plotArea.x - plotArea.w,
+    w: this.width - plotArea.x - plotArea.w,
     h: this.height
   });
 

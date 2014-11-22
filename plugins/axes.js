@@ -112,8 +112,8 @@ axes.prototype.willDrawChart = function(e) {
 
   var context = e.drawingContext;
   var containerDiv = e.canvas.parentNode;
-  var canvasWidth = e.canvas.width;
-  var canvasHeight = e.canvas.height;
+  var canvasWidth = g.width_;  // e.canvas.width is affected by pixel ratio.
+  var canvasHeight = g.height_;
 
   var label, x, y, tick, i;
 
