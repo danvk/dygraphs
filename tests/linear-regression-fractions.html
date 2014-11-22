@@ -42,7 +42,8 @@
                 drawPoints: true,
                 strokeWidth: 0.0,
                 fractions: true,
-                errorBars: true
+                errorBars: true,
+                pointSize: 1
               }
           );
 
@@ -89,6 +90,10 @@
         g.updateOptions({});
       }
 
+      function toHex(rgb) {
+        return 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+      }
+
       function drawLines(ctx, area, layout) {
         if (typeof(g) == 'undefined') return;  // won't be set on the initial draw.
 
@@ -110,14 +115,14 @@
           var p1 = g.toDomCoords(x1, y1);
           var p2 = g.toDomCoords(x2, y2);
 
-          var c = new RGBColorParser(g.getColors()[i - 1]);
+          var c = Dygraph.toRGB_(g.getColors()[i - 1]);
           c.r = Math.floor(255 - 0.5 * (255 - c.r));
           c.g = Math.floor(255 - 0.5 * (255 - c.g));
           c.b = Math.floor(255 - 0.5 * (255 - c.b));
-          var color = c.toHex();
+          var color = toHex(c);
           ctx.save();
           ctx.strokeStyle = color;
-          ctx.lineWidth = 1.0;
+          ctx.lineWidth = 2.0;
           ctx.beginPath();
           ctx.moveTo(p1[0], p1[1]);
           ctx.lineTo(p2[0], p2[1]);
