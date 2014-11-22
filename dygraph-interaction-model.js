@@ -19,7 +19,7 @@
  * be considered a zoom. This makes it easier to zoom to the exact edge of the
  * chart, a fairly common operation.
  */
-var DRAG_EDGE_MARGIN = 200;
+var DRAG_EDGE_MARGIN = 100;
 
 /**
  * A collection of functions to facilitate build custom interaction models.
