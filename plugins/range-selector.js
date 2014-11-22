@@ -166,13 +166,19 @@ rangeSelector.prototype.updateVisibility_ = function() {
  * Resizes the range selector.
  */
 rangeSelector.prototype.resize_ = function() {
-  function setElementRect(canvas, rect) {
+  function setElementRect(canvas, context, rect) {
+    var canvasScale = Dygraph.getContextPixelRatio(context);
+
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
-    canvas.width = rect.w;
-    canvas.height = rect.h;
-    canvas.style.width = canvas.width + 'px';    // for IE
-    canvas.style.height = canvas.height + 'px';  // for IE
+    canvas.width = rect.w * canvasScale;
+    canvas.height = rect.h * canvasScale;
+    canvas.style.width = rect.w + 'px';
+    canvas.style.height = rect.h + 'px';
+
+    if(canvasScale != 1) {
+      context.scale(canvasScale, canvasScale);
+    }
   }
 
   var plotArea = this.dygraph_.layout_.getPlotArea();
@@ -188,8 +194,8 @@ rangeSelector.prototype.resize_ = function() {
     h: this.getOption_('rangeSelectorHeight')
   };
 
-  setElementRect(this.bgcanvas_, this.canvasRect_);
-  setElementRect(this.fgcanvas_, this.canvasRect_);
+  setElementRect(this.bgcanvas_, this.bgcanvas_ctx_, this.canvasRect_);
+  setElementRect(this.fgcanvas_, this.fgcanvas_ctx_, this.canvasRect_);
 };
 
 /**
