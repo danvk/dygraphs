@@ -64,7 +64,10 @@ var getWarnings = function(div, data, opts) {
   console.warn = function(message) {
     warnings.push(message.replace(/ \(.*/, ''));
   };
-  new Dygraph(graph, data, opts);
+  try {
+    new Dygraph(graph, data, opts);
+  } catch (e) {
+  }
   console.warn = oldWarn;
   return warnings;
 };

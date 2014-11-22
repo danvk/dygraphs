@@ -432,14 +432,14 @@ var WARNINGS = {};  // Only show any particular warning once.
  */
 DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
   if (!WARNINGS[optionName]) {
+    WARNINGS[optionName] = true;
     var isSeries = (this.labels_.indexOf(optionName) >= 0);
     if (isSeries) {
       console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://bit.ly/1tceaJs');
     } else {
       console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
-      // throw "invalid option " + optionName;
+      throw "invalid option " + optionName;
     }
-    WARNINGS[optionName] = true;
   }
 };
 
