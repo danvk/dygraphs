@@ -1489,6 +1489,26 @@ Dygraph.prototype.createDragInterface_ = function() {
       contextB.dragStartY = Dygraph.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
       contextB.tarp.cover();
+    },
+    destroy: function() {
+      var context = this;
+      if (context.isZooming || context.isPanning) {
+        context.isZooming = false;
+        context.dragStartX = null;
+        context.dragStartY = null;
+      }
+
+      if (context.isPanning) {
+        context.isPanning = false;
+        context.draggingDate = null;
+        context.dateRange = null;
+        for (var i = 0; i < self.axes_.length; i++) {
+          delete self.axes_[i].draggingValue;
+          delete self.axes_[i].dragValueRange;
+        }
+      }
+
+      context.tarp.uncover();
     }
   };
 
@@ -1512,27 +1532,13 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  var mouseUpHandler = function(event) {
-    if (context.isZooming || context.isPanning) {
-      context.isZooming = false;
-      context.dragStartX = null;
-      context.dragStartY = null;
-    }
+  if (!interactionModel.willDestroyContextMyself) {
+    var mouseUpHandler = function(event) {
+      context.destroy();
+    };
 
-    if (context.isPanning) {
-      context.isPanning = false;
-      context.draggingDate = null;
-      context.dateRange = null;
-      for (var i = 0; i < self.axes_.length; i++) {
-        delete self.axes_[i].draggingValue;
-        delete self.axes_[i].dragValueRange;
-      }
-    }
-
-    context.tarp.uncover();
-  };
-
-  this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+    this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+  }
 };
 
 /**
