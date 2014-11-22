@@ -24,7 +24,7 @@
  * @constructor
  */
 
-/*jshint globalstrict: true */
+var DygraphCanvasRenderer = (function() {
 /*global Dygraph:false */
 "use strict";
 
@@ -637,7 +637,6 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 DygraphCanvasRenderer._fastCanvasProxy = function(context) {
   var pendingActions = [];  // array of [type, x, y] tuples
   var lastRoundedX = null;
-  var extremeYs = null;  // [minY, maxY] for lastRoundedX
 
   var LINE_TO = 1,
       MOVE_TO = 2;
@@ -946,3 +945,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     ctx.fill();
   }
 };
+
+return DygraphCanvasRenderer;
+
+})();

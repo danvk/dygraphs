@@ -12,7 +12,6 @@
 
 Dygraph.Plugins.RangeSelector = (function() {
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
 

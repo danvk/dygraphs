@@ -47,7 +47,6 @@
 if (typeof(DEBUG) === 'undefined') DEBUG=true;
 
 var Dygraph = (function() {
-/*jshint globalstrict: true */
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
 "use strict";
 
@@ -118,10 +117,8 @@ Dygraph.KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * and maxNumberWidth options.
  * @param {number} x The number to be formatted
  * @param {Dygraph} opts An options view
- * @param {string} name The name of the point's data series
- * @param {Dygraph} g The dygraph object
  */
-Dygraph.numberValueFormatter = function(x, opts, pt, g) {
+Dygraph.numberValueFormatter = function(x, opts) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -192,8 +189,8 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
  * variant for use as an axisLabelFormatter.
  * @private
  */
-Dygraph.numberAxisLabelFormatter = function(x, granularity, opts, g) {
-  return Dygraph.numberValueFormatter(x, opts, g);
+Dygraph.numberAxisLabelFormatter = function(x, granularity, opts) {
+  return Dygraph.numberValueFormatter(x, opts);
 };
 
 /**
@@ -555,6 +552,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
     var handlers = pluginInstance.activate(this);
     for (var eventName in handlers) {
+      if (!handlers.hasOwnProperty(eventName)) continue;
       // TODO(danvk): validate eventName.
       pluginDict.events[eventName] = handlers[eventName];
     }
@@ -3555,6 +3553,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 Dygraph.mapLegacyOptions_ = function(attrs) {
   var my_attrs = {};
   for (var k in attrs) {
+    if (!attrs.hasOwnProperty(k)) continue;
     if (k == 'file') continue;
     if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
   }

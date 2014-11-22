@@ -26,7 +26,6 @@
     "gwt",
     "jsTestDriver.conf",
     "jsdoc-toolkit",
-    "jshint",
     "lint.sh",
     "node_modules",
     "package.json",

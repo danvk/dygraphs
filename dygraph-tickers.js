@@ -58,8 +58,9 @@
  *   middle of the years.
  */
 
-/*jshint globalstrict:true, sub:true */
+/*jshint sub:true */
 /*global Dygraph:false */
+(function() {
 "use strict";
 
 /** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
@@ -285,7 +286,7 @@ Dygraph.TICK_PLACEMENT[Dygraph.CENTENNIAL]      = {datefield: Dygraph.DATEFIELD_
  * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
  * @type {Array.<number>}
  */
-Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
+Dygraph.PREFERRED_LOG_TICK_VALUES = (function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -295,7 +296,7 @@ Dygraph.PREFERRED_LOG_TICK_VALUES = function() {
     }
   }
   return vals;
-}();
+})();
 
 /**
  * Determine the correct granularity of ticks on a date axis.
@@ -437,3 +438,5 @@ if (Dygraph &&
   Dygraph.DEFAULT_ATTRS['axes']['y']['ticker'] = Dygraph.numericTicks;
   Dygraph.DEFAULT_ATTRS['axes']['y2']['ticker'] = Dygraph.numericTicks;
 }
+
+})();

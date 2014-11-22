@@ -11,6 +11,7 @@
  */
 
 var DygraphOptions = (function() {
+/*jshint strict:false */
 
 // For "production" code, this gets set to false by uglifyjs.
 // Need to define it outside of "use strict", hence the nested IIFEs.
@@ -18,6 +19,7 @@ if (typeof(DEBUG) === 'undefined') DEBUG=true;
 
 return (function() {
 
+// TODO: remove this jshint directive & fix the warnings.
 /*jshint sub:true */
 /*global Dygraph:false */
 "use strict";

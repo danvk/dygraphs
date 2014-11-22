@@ -4,6 +4,9 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
+(function() {
+'use strict';
+
 /**
  * @fileoverview Adds support for dashed lines to the HTML5 canvas.
  *
@@ -46,8 +49,6 @@
  * as a smaller even length array.
  */
 CanvasRenderingContext2D.prototype.installPattern = function(pattern) {
-  "use strict";
-
   if (typeof(this.isPatternInstalled) !== 'undefined') {
     throw "Must un-install old line pattern before installing a new one.";
   }
@@ -175,3 +176,5 @@ CanvasRenderingContext2D.prototype.uninstallPattern = function() {
   // This will be replaced by a non-error version when a pattern is installed.
   throw "Must install a line pattern before uninstalling it.";
 };
+
+})();
