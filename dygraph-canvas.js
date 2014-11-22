@@ -24,7 +24,7 @@
  * @constructor
  */
 
-/*jshint globalstrict: true */
+var DygraphCanvasRenderer = (function() {
 /*global Dygraph:false */
 "use strict";
 
@@ -637,7 +637,6 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 DygraphCanvasRenderer._fastCanvasProxy = function(context) {
   var pendingActions = [];  // array of [type, x, y] tuples
   var lastRoundedX = null;
-  var extremeYs = null;  // [minY, maxY] for lastRoundedX
 
   var LINE_TO = 1,
       MOVE_TO = 2;
@@ -746,7 +745,7 @@ DygraphCanvasRenderer._fastCanvasProxy = function(context) {
 
     _count: function() { return actionCount; }
   };
-}
+};
 
 /**
  * Draws the shaded regions when "fillGraph" is set. Not to be confused with
@@ -803,6 +802,17 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var currBaseline;
   var prevStepPlot;  // for different line drawing modes (line/step) per series
 
+  // Helper function to trace a line back along the baseline.
+  var traceBackPath = function(ctx, baselineX, baselineY, pathBack) {
+    ctx.lineTo(baselineX, baselineY);
+    if (stackedGraph) {
+      for (var i = pathBack.length - 1; i >= 0; i--) {
+        var pt = pathBack[i];
+        ctx.lineTo(pt[0], pt[1]);
+      }
+    }
+  };
+
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
     var ctx = e.drawingContext;
@@ -846,24 +856,15 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     // stores the [x, y] values needed to trace that shape.
     var pathBack = [];
 
-    var traceBackPath = function(baselineX, baselineY) {
-      ctx.lineTo(baselineX, baselineY);
-      if (stackedGraph) {
-        for (var i = pathBack.length - 1; i >= 0; i--) {
-          var pt = pathBack[i];
-          ctx.lineTo(pt[0], pt[1]);
-        }
-      }
-      pathBack = [];
-    };
-
     // TODO(danvk): there are a lot of options at play in this loop.
     //     The logic would be much clearer if some (e.g. stackGraph and
     //     stepPlot) were split off into separate sub-plotters.
+    var point;
     while (iter.hasNext) {
-      var point = iter.next();
+      point = iter.next();
       if (!Dygraph.isOK(point.y) && !stepPlot) {
-        traceBackPath(prevX, prevYs[1]);
+        traceBackPath(ctx, prevX, prevYs[1], pathBack);
+        pathBack = [];
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -937,9 +938,14 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
       prevX = point.canvasx;
     }
     prevStepPlot = stepPlot;
-    if (newYs) {
-      traceBackPath(point.canvasx, newYs[1]);
+    if (newYs && point) {
+      traceBackPath(ctx, point.canvasx, newYs[1], pathBack);
+      pathBack = [];
     }
     ctx.fill();
   }
 };
+
+return DygraphCanvasRenderer;
+
+})();

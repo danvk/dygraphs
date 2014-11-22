@@ -1,8 +1,4 @@
-# Run the generate-combined.sh script.
-# This Makefile isn't really necessary, but it serves as a "indicator"
-# to new users that they need to do a "build" of sorts.
-#
-# Dean Wampler <dean@deanwampler.com> March 22, 2010
+# You should run "npm install" before running any commands in this Makefile.
 
 all: test generate-combined generate-documentation
 
@@ -41,7 +37,12 @@ clean-combined-test: clean
 	rm dygraph-combined.js.map
 
 lint:
-	@./lint.sh
+	@./generate-combined.sh ls \
+	    | grep -v 'polyfills' \
+	    | xargs ./node_modules/.bin/jshint
+
+# Commands to run for continuous integration on Travis-CI
+travis: test test-combined lint
 
 publish:
 	./generate-combined.sh

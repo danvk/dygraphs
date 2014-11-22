@@ -7,17 +7,14 @@
 
 Dygraph.Plugins.Legend = (function() {
 /*
-
 Current bits of jankiness:
 - Uses two private APIs:
     1. Dygraph.optionsViewForAxis_
     2. dygraph.plotter_.area
 - Registers for a "predraw" event, which should be renamed.
 - I call calculateEmWidthInDiv more often than needed.
-
 */
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
 

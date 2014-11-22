@@ -7,9 +7,6 @@
     "doc": "docs",
     "test": "tests"
   },
-  "scripts": {
-    "test": "make test"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/danvk/dygraphs.git"
@@ -29,9 +26,10 @@
   },
   "homepage": "https://github.com/danvk/dygraphs",
   "devDependencies": {
-    "phantomjs": "^1.9.7-8",
     "closure-compiler": "^0.2.6",
+    "jshint": "^2.5.10",
     "obvious-closure-library": "^20140401.0.2",
+    "phantomjs": "^1.9.7-8",
     "uglify-js": "^2"
   },
   "scripts": {
