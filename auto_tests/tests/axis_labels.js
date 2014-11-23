@@ -201,6 +201,7 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
     height: 320,
     axes : {
       x : {
+        pixelsPerLabel: 60,
         axisLabelFormatter : function(x, granularity, opts, dg) {
           assertTrue(Dygraph.isDateLike(x));
           assertEquals('number', typeof(granularity));
@@ -287,6 +288,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
     height: 320,
     axes : {
       x : {
+        pixelsPerLabel: 60,
         valueFormatter: function(x, opts, series_name, dg) {
           assertEquals('number', typeof(x));
           assertEquals('function', typeof(opts));
@@ -316,7 +318,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan'], Util.getXLabels());
+  assertEquals(['01 Jan','02 Jan','03 Jan','04 Jan','05 Jan','06 Jan','07 Jan','08 Jan'], Util.getXLabels());
   assertEquals(['2','4','6','8','10','12','14','16','18'], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
@@ -766,7 +768,7 @@ AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
         labelsKMG2: false,
         axes: {
           y2: { labelsKMG2: true },
-          x: { labelsKMG2: true }
+          x: { labelsKMG2: true, pixelsPerLabel: 60 }
         },
         series: {
           b: { axis: "y2" }

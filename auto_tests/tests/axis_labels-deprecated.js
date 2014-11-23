@@ -94,6 +94,9 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
       assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
+    axes: {
+      x: { pixelsPerLabel: 60 }
+    },
     labels: ['x', 'y']
   };
   var data = [];
@@ -168,6 +171,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
       assertEquals('[Dygraph graph]', dg.toString());
       return 'y' + y;
     },
+    axes: { x: { pixelsPerLabel: 60 } },
     labels: ['x', 'y']
   };
 
@@ -179,7 +183,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan'], Util.getXLabels());
+  assertEquals(['01 Jan','02 Jan','03 Jan','04 Jan','05 Jan','06 Jan','07 Jan','08 Jan'], Util.getXLabels());
   assertEquals(['2','4','6','8','10','12','14','16','18'], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.

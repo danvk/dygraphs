@@ -16,7 +16,7 @@ Util.getYLabels = function(axis_num, parent) {
   var y_labels = parent.getElementsByClassName("dygraph-axis-label-y" + axis_num);
   var ary = [];
   for (var i = 0; i < y_labels.length; i++) {
-    ary.push(y_labels[i].innerHTML);
+    ary.push(y_labels[i].innerHTML.replace(/&nbsp;/g, ' '));
   }
   return ary;
 };
@@ -31,7 +31,7 @@ Util.getXLabels = function(parent) {
   var x_labels = parent.getElementsByClassName("dygraph-axis-label-x");
   var ary = [];
   for (var i = 0; i < x_labels.length; i++) {
-    ary.push(x_labels[i].innerHTML);
+    ary.push(x_labels[i].innerHTML.replace(/&nbsp;/g, ' '));
   }
   return ary;
 };

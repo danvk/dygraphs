@@ -226,12 +226,12 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + year;
+    return Dygraph.SHORT_MONTH_NAMES_[month] + '&nbsp;' + year;
   } else {
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
-      // e.g. '21Jan' (%d%b)
-      return Dygraph.zeropad(day) + Dygraph.SHORT_MONTH_NAMES_[month];
+      // e.g. '21 Jan' (%d%b)
+      return Dygraph.zeropad(day) + '&nbsp;' + Dygraph.SHORT_MONTH_NAMES_[month];
     } else {
       return Dygraph.hmsString_(hours, mins, secs);
     }
@@ -290,8 +290,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
-  xAxisLabelWidth: 50,
-  yAxisLabelWidth: 50,
   rightGap: 5,
 
   showRoller: false,
@@ -360,7 +358,8 @@ Dygraph.DEFAULT_ATTRS = {
   // per-axis options
   axes: {
     x: {
-      pixelsPerLabel: 60,
+      pixelsPerLabel: 70,
+      axisLabelWidth: 60,
       axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
       valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
@@ -369,6 +368,7 @@ Dygraph.DEFAULT_ATTRS = {
       ticker: null  // will be set in dygraph-tickers.js
     },
     y: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
@@ -378,10 +378,11 @@ Dygraph.DEFAULT_ATTRS = {
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
-      drawAxis: false,
+      drawAxis: true,  // only applies when there are two axes of data.
       drawGrid: false,
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
@@ -3587,6 +3588,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   map('drawXAxis', 'x', 'drawAxis');
   map('drawYGrid', 'y', 'drawGrid');
   map('drawYAxis', 'y', 'drawAxis');
+  map('xAxisLabelWidth', 'x', 'axisLabelWidth');
+  map('yAxisLabelWidth', 'y', 'axisLabelWidth');
   return my_attrs;
 };
 
