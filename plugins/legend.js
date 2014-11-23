@@ -125,11 +125,41 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
+  if (e.dygraph.getOption("legend") === "follow") {
+    // create floating legend div
+    var area = e.dygraph.plotter_.area;
+    var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
+    var yAxisLabelWidth = e.dygraph.getOption("yAxisLabelWidth");
+    // determine floating [left, top] coordinates of the legend div
+    // within the plotter_ area
+    // offset 20 px to the left and down from the first selection point
+    // 20 px is guess based on mouse cursor size
+    var leftLegend = points[0].x * area.w + 20;
+    var topLegend  = points[0].y * area.h - 20;
+
+    // if legend floats to end of the plotting area, it flips to the other
+    // side of the selection point
+    if ((leftLegend + labelsDivWidth + 1) > (window.scrollX + window.innerWidth)) {
+      leftLegend = leftLegend - 2 * 20 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    }
+
+    e.dygraph.graphDiv.appendChild(this.legend_div_);
+    this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
+    this.legend_div_.style.top = topLegend + "px";
+    this.legend_div_.style.display = "block";
+  }
+
+  var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
   var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
   this.legend_div_.innerHTML = html;
 };
 
 legend.prototype.deselect = function(e) {
+
+  if (e.dygraph.getOption("legend") === "follow") {
+    this.legend_div_.style.display = "none";
+  }
+
   // Have to do this every time, since styles might have changed.
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   this.one_em_width_ = oneEmWidth;

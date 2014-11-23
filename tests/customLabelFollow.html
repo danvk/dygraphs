@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Label styles</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+      .dygraph-legend {
+        background-color: rgba(200, 200, 255, 0.75) !important;
+        padding: 4px;
+        border: 1px solid #000;
+        border-radius: 10px;
+        box-shadow: 4px 4px 4px #888;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Legend follows highlighted points:</p>
+    <div id="div_g14" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g14 = new Dygraph(
+            document.getElementById("div_g14"),
+            NoisyData, {
+              rollPeriod: 14,
+              errorBars: true,
+              labelsDivWidth: 100,
+              labelsSeparateLines: true,
+              legend: "follow",
+              yAxisLabelWidth: 20
+            }
+          );
+    </script>
+  </body>
+</html>
