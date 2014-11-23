@@ -28,11 +28,11 @@ DateTickerTestCase.prototype.createOptionsViewForAxis = function(axis, dict) {
   };
 };
 
-// Change '&nbsp;' to ' ' in all labels. Cleans up expected values.
+// Change '&#160;' (non-breaking space) to ' ' in all labels. Cleans up expected values.
 function changeNbspToSpace(ticks) {
   for (var i = 0; i < ticks.length; i++) {
     if (ticks[i].label) {
-      ticks[i].label = ticks[i].label.replace(/&nbsp;/g, ' ');
+      ticks[i].label = ticks[i].label.replace(/&#160;/g, ' ');
     }
   }
 }

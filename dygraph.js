@@ -226,12 +226,12 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[month] + '&nbsp;' + year;
+    return Dygraph.SHORT_MONTH_NAMES_[month] + '&#160;' + year;
   } else {
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
       // e.g. '21 Jan' (%d%b)
-      return Dygraph.zeropad(day) + '&nbsp;' + Dygraph.SHORT_MONTH_NAMES_[month];
+      return Dygraph.zeropad(day) + '&#160;' + Dygraph.SHORT_MONTH_NAMES_[month];
     } else {
       return Dygraph.hmsString_(hours, mins, secs);
     }
