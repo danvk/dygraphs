@@ -125,7 +125,13 @@ legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
 
-  if (e.dygraph.getOption('legend') === 'follow') {
+  var legendMode = e.dygraph.getOption('legend');
+  if (legendMode === 'never') {
+    this.legend_div_.style.display = 'none';
+    return;
+  }
+
+  if (legendMode === 'follow') {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
     var labelsDivWidth = e.dygraph.getOption('labelsDivWidth');
@@ -146,16 +152,16 @@ legend.prototype.select = function(e) {
     e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
-    this.legend_div_.style.display = '';
   }
 
   var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
   this.legend_div_.innerHTML = html;
+  this.legend_div_.style.display = '';
 };
 
 legend.prototype.deselect = function(e) {
-
-  if (e.dygraph.getOption("legend") === "follow") {
+  var legendMode = e.dygraph.getOption('legend');
+  if (legendMode !== 'always') {
     this.legend_div_.style.display = "none";
   }
 

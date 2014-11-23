@@ -312,8 +312,7 @@ Dygraph.DEFAULT_ATTRS = {
   stackedGraphNaNFill: 'all',
   hideOverlayOnMouseOut: true,
 
-  // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
-  legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
+  legend: 'onmouseover',
   stepPlot: false,
   avoidMinZero: false,
   xRangePad: 0,
