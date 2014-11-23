@@ -38,7 +38,7 @@ else
 fi
 
 # Revert changes to dygraph-combined.js and docs.
-git checkout dygraph-combined.js
+make clean-combined-test
 git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir
