@@ -314,8 +314,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
   legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
-  legendFollow: false,
-
   stepPlot: false,
   avoidMinZero: false,
   xRangePad: 0,
