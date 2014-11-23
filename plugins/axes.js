@@ -17,14 +17,8 @@ Bits of jankiness:
 - Should include calculation of ticks, not just the drawing.
 
 Options left to make axis-friendly.
-  ('axisTickSize')
   ('drawAxesAtZero')
   ('xAxisHeight')
-
-These too. What is the difference between axisLabelWidth and {x,y}AxisLabelWidth?
-  ('axisLabelWidth')
-  ('xAxisLabelWidth')
-  ('yAxisLabelWidth')
 */
 
 /**
