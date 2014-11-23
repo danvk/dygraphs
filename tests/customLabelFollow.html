@@ -22,23 +22,64 @@
         box-shadow: 4px 4px 4px #888;
         pointer-events: none;
       }
+      pre {
+        margin-top: 30px;
+      }
     </style>
   </head>
   <body>
-    <p>Legend follows highlighted points:</p>
-    <div id="div_g14" style="width:600px; height:300px;"></div>
+    <p>This page demonstrates different values for the <code><a href="http://dygraphs.com/options.html#legend">legend</a></code> option. Mouse over the charts to see the different behaviors.</p>
+    <pre>legend: "follow":</pre>
+    <div id="follow" style="width:600px; height:300px;"></div>
+
+    <pre>legend: "always":</pre>
+    <div id="always" style="width:600px; height:300px;"></div>
+
+    <pre>legend: "never":</pre>
+    <div id="never" style="width:600px; height:300px;"></div>
+
+    <pre>legend: "onmouseover" (the default):</pre>
+    <div id="default" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      g14 = new Dygraph(
-            document.getElementById("div_g14"),
-            NoisyData, {
-              rollPeriod: 14,
-              errorBars: true,
-              labelsDivWidth: 100,
-              labelsSeparateLines: true,
-              legend: "follow"
-            }
-          );
+      function extend(obj1, obj2) {
+        var obj = {};
+        for (var k in obj1) {
+          obj[k] = obj1[k];
+        }
+        for (var k in obj2) {
+          obj[k] = obj2[k];
+        }
+        return obj;
+      }
+
+      var baseOpts = {
+        rollPeriod: 14,
+        errorBars: true,
+        labelsDivWidth: 100,
+        labelsSeparateLines: true
+      };
+
+      g_follow = new Dygraph(
+            document.getElementById('follow'),
+            NoisyData,
+            extend(baseOpts, {legend: 'follow'}));
+
+      g_always = new Dygraph(
+            document.getElementById('always'),
+            NoisyData,
+            extend(baseOpts, {legend: 'always'}));
+
+      g_never = new Dygraph(
+            document.getElementById('never'),
+            NoisyData,
+            extend(baseOpts, {legend: 'never'}));
+
+      g_default = new Dygraph(
+            document.getElementById('default'),
+            NoisyData,
+            baseOpts);
+
     </script>
   </body>
 </html>
