@@ -2,6 +2,13 @@
 # Generates a single JS file that's easier to include.
 
 GetSources () {
+  # Include dyraph-options-reference only if DEBUG environment variable is set.
+  if [ ! -z "$DEBUG" ]; then
+    maybe_options_reference=dygraph-options-reference.js
+  else
+    maybe_options_reference=''
+  fi
+
   # This list needs to be kept in sync w/ the one in dygraph-dev.js
   # and the one in jsTestDriver.conf. Order matters, except for the plugins.
   for F in \
@@ -18,6 +25,7 @@ GetSources () {
     dygraph-plugin-base.js \
     plugins/*.js \
     dygraph-plugin-install.js \
+    $maybe_options_reference \
     datahandler/datahandler.js \
     datahandler/default.js \
     datahandler/default-fractions.js \
@@ -56,6 +64,11 @@ ls)
   GetSources
   ;;
 cat)
+  Copyright
+  CatSources
+  ;;
+cat-dev)
+  DEBUG=true
   Copyright
   CatSources
   ;;

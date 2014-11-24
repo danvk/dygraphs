@@ -10,8 +10,9 @@ fi
 set -x
 site=$1
 
-# Produce dygraph-combined.js.
+# Produce dygraph-combined.js and dygraph-combined-dev.js
 ./generate-combined.sh
+./generate-combined.sh cat-dev > dygraph-combined-dev.js
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
@@ -39,6 +40,7 @@ fi
 
 # Revert changes to dygraph-combined.js and docs.
 make clean-combined-test
+rm dygraph-combined-dev.js
 git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir
