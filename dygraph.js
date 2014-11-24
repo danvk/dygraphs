@@ -358,8 +358,8 @@ Dygraph.DEFAULT_ATTRS = {
   // per-axis options
   axes: {
     x: {
-      pixelsPerLabel: 70,
-      axisLabelWidth: 60,
+      pixelsPerLabel: 60,
+      axisLabelWidth: 55,
       axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
       valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
