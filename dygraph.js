@@ -359,7 +359,7 @@ Dygraph.DEFAULT_ATTRS = {
   axes: {
     x: {
       pixelsPerLabel: 60,
-      axisLabelWidth: 55,
+      axisLabelWidth: 58,  // TODO(danvk): make these 10-20px different again.
       axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
       valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
@@ -2318,7 +2318,7 @@ Dygraph.prototype.addXTicks_ = function() {
   var xTicks = xAxisOptionsView('ticker')(
       range[0],
       range[1],
-      this.width_,  // TODO(danvk): should be area.width
+      this.plotter_.area.w,  // TODO(danvk): should be area.width
       xAxisOptionsView,
       this);
   // var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
@@ -2972,7 +2972,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
               axis.computedValueRange[1],
-              this.height_,  // TODO(danvk): should be area.height
+              this.plotter_.area.h,
               opts,
               this);
       // Define the first independent axis as primary axis.
@@ -3003,7 +3003,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       axis.ticks = ticker(axis.computedValueRange[0],
                           axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.height
+                          this.plotter_.area.h,
                           opts,
                           this,
                           tick_values);
