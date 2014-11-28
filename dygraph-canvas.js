@@ -599,12 +599,16 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
       continue;
     }
 
+    newYs = [ point.y_bottom, point.y_top ];
     if (stepPlot) {
-      newYs = [ point.y_bottom, point.y_top ];
       prevY = point.y;
-    } else {
-      newYs = [ point.y_bottom, point.y_top ];
     }
+
+    // The documentation specifically disallows nulls inside the point arrays,
+    // but in case it happens we should do something sensible.
+    if (isNaN(newYs[0])) newYs[0] = point.y;
+    if (isNaN(newYs[1])) newYs[1] = point.y;
+
     newYs[0] = e.plotArea.h * newYs[0] + e.plotArea.y;
     newYs[1] = e.plotArea.h * newYs[1] + e.plotArea.y;
     if (!isNaN(prevX)) {
