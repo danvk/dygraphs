@@ -368,3 +368,36 @@ MissingPointsTestCase.prototype.testEmptySeries = function() {
   g.setSelection(6);
   assertEquals("1381134466: Series 2: 94", Util.getLegend(graphDiv));
 };
+
+// Regression test for issue #485
+MissingPointsTestCase.prototype.testMissingFill = function() {
+  var graphDiv = document.getElementById("graph");
+  var N = null;
+  var g = new Dygraph(
+      graphDiv,
+      [
+        [1, [8, 10, 12]],
+        [2, [3, 5,7]   ],
+        [3,     N,     ],
+        [4, [9, N, 2]  ],  // Note: nulls in arrays are not technically valid.
+        [5, [N, 2, N]  ],  // see dygraphs.com/data.html.
+        [6, [2, 3, 6]  ]
+      ],
+      {
+        customBars: true,
+        connectSeparatedPoints: false,
+        labels: [ "X", "Series1"]
+      }
+  );
+
+  // Make sure there are no 'NaN' line segments.
+  var htx = g.hidden_ctx_;
+  for (var i = 0; i < htx.calls__.length; i++) {
+    var call = htx.calls__[i];
+    if ((call.name == 'moveTo' || call.name == 'lineTo') && call.args) {
+      for (var j = 0; j < call.args.length; j++) {
+        assertFalse(isNaN(call.args[j]));
+      }
+    }
+  }
+};
