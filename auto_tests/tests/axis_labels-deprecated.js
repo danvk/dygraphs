@@ -106,7 +106,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(["x2011/01/02"], Util.getXLabels());
+  assertEquals(["x2011/01/02","x2011/01/04","x2011/01/06","x2011/01/08"], Util.getXLabels());
   assertEquals(["y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(0);
@@ -182,7 +182,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(["02 Jan"], Util.getXLabels());
+  assertEquals(["02 Jan","04 Jan","06 Jan","08 Jan"], Util.getXLabels());
   assertEquals(["5","10","15"], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
