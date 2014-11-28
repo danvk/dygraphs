@@ -70,7 +70,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(2);
   assertEquals("2: y: 4", Util.getLegend());
@@ -106,8 +106,8 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08"], Util.getXLabels());
-  assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["x2011/01/02"], Util.getXLabels());
+  assertEquals(["y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(0);
   assertEquals("2011/01/01: y: 2", Util.getLegend());
@@ -145,8 +145,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedValueFormatter = function (
 
   // the valueFormatter options do not affect the ticks.
   assertEquals(['0','2','4','6','8'], Util.getXLabels());
-  assertEquals(['0','2','4','6','8','10','12','14','16','18'],
-               Util.getYLabels());
+  assertEquals(["0","5","10","15"], Util.getYLabels());
 
   // they do affect the legend, however.
   g.setSelection(2);
@@ -183,8 +182,8 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(['01 Jan','02 Jan','03 Jan','04 Jan','05 Jan','06 Jan','07 Jan','08 Jan'], Util.getXLabels());
-  assertEquals(['2','4','6','8','10','12','14','16','18'], Util.getYLabels());
+  assertEquals(["02 Jan"], Util.getXLabels());
+  assertEquals(["5","10","15"], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
@@ -219,7 +218,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterPrecedenc
   var g = new Dygraph(graph, data, opts);
 
   assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
   assertEquals("xvf9: y: yvf18", Util.getLegend());
@@ -261,7 +260,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterIncrement
   });
 
   assertEquals(["x0","x2","x4","x6","x8"], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
   assertEquals("xvf9: y: yvf18", Util.getLegend());

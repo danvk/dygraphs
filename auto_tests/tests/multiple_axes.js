@@ -55,8 +55,8 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
     }
   );
 
-  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], Util.getYLabels("1"));
-  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], Util.getYLabels("2"));
+  assertEquals(["0","20","40","60","80","100"], Util.getYLabels("1"));
+  assertEquals(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
 };
 
 MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
