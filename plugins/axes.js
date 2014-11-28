@@ -8,7 +8,7 @@
 
 Dygraph.Plugins.Axes = (function() {
 
-"use strict";
+'use strict';
 
 /*
 Bits of jankiness:
@@ -17,14 +17,8 @@ Bits of jankiness:
 - Should include calculation of ticks, not just the drawing.
 
 Options left to make axis-friendly.
-  ('axisTickSize')
   ('drawAxesAtZero')
   ('xAxisHeight')
-
-These too. What is the difference between axisLablelWidth and {x,y}AxisLabelWidth?
-  ('axisLabelWidth')
-  ('xAxisLabelWidth')
-  ('yAxisLabelWidth')
 */
 
 /**
@@ -38,7 +32,7 @@ var axes = function() {
 };
 
 axes.prototype.toString = function() {
-  return "Axes Plugin";
+  return 'Axes Plugin';
 };
 
 axes.prototype.activate = function(g) {
@@ -53,7 +47,7 @@ axes.prototype.layout = function(e) {
   var g = e.dygraph;
 
   if (g.getOptionForAxis('drawAxis', 'y')) {
-    var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
+    var w = g.getOptionForAxis('axisLabelWidth', 'y') + 2 * g.getOptionForAxis('axisTickSize', 'y');
     e.reserveSpaceLeft(w);
   }
 
@@ -65,21 +59,19 @@ axes.prototype.layout = function(e) {
     if (g.getOption('xAxisHeight')) {
       h = g.getOption('xAxisHeight');
     } else {
-      h = g.getOptionForAxis('axisLabelFontSize', 'x') + 2 * g.getOption('axisTickSize');
+      h = g.getOptionForAxis('axisLabelFontSize', 'x') + 2 * g.getOptionForAxis('axisTickSize', 'x');
     }
     e.reserveSpaceBottom(h);
   }
 
   if (g.numAxes() == 2) {
-    // TODO(danvk): introduce a 'drawAxis' per-axis property.
-    if (g.getOptionForAxis('drawAxis', 'y')) {
-      // TODO(danvk): per-axis setting.
-      var w = g.getOption('yAxisLabelWidth') + 2 * g.getOption('axisTickSize');
+    if (g.getOptionForAxis('drawAxis', 'y2')) {
+      var w = g.getOptionForAxis('axisLabelWidth', 'y2') + 2 * g.getOptionForAxis('axisTickSize', 'y2');
       e.reserveSpaceRight(w);
     }
   } else if (g.numAxes() > 2) {
-    g.error("Only two y-axes are supported at this time. (Trying " +
-            "to use " + g.numAxes() + ")");
+    g.error('Only two y-axes are supported at this time. (Trying ' +
+            'to use ' + g.numAxes() + ')');
   }
 };
 
@@ -104,7 +96,11 @@ axes.prototype.clearChart = function(e) {
 axes.prototype.willDrawChart = function(e) {
   var g = e.dygraph;
 
-  if (!g.getOptionForAxis('drawAxis', 'x') && !g.getOptionForAxis('drawAxis', 'y')) return;
+  if (!g.getOptionForAxis('drawAxis', 'x') &&
+      !g.getOptionForAxis('drawAxis', 'y') &&
+      !g.getOptionForAxis('drawAxis', 'y2')) {
+    return;
+  }
   
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x)  { return Math.round(x) + 0.5; }
@@ -119,14 +115,14 @@ axes.prototype.willDrawChart = function(e) {
 
   var makeLabelStyle = function(axis) {
     return {
-      position: "absolute",
-      fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + "px",
+      position: 'absolute',
+      fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + 'px',
       zIndex: 10,
       color: g.getOptionForAxis('axisLabelColor', axis),
-      width: g.getOption('axisLabelWidth') + "px",
+      width: g.getOptionForAxis('axisLabelWidth', axis) + 'px',
       // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
-      lineHeight: "normal",  // Something other than "normal" line-height screws up label positioning.
-      overflow: "hidden"
+      lineHeight: 'normal',  // Something other than "normal" line-height screws up label positioning.
+      overflow: 'hidden'
     };
   };
 
@@ -143,14 +139,14 @@ axes.prototype.willDrawChart = function(e) {
      * y: y1
      * y: y2
      */
-    var div = document.createElement("div");
+    var div = document.createElement('div');
     var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
     for (var name in labelStyle) {
       if (labelStyle.hasOwnProperty(name)) {
         div.style[name] = labelStyle[name];
       }
     }
-    var inner_div = document.createElement("div");
+    var inner_div = document.createElement('div');
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
                           (prec_axis ? ' dygraph-axis-label-' + prec_axis : '');
@@ -165,21 +161,31 @@ axes.prototype.willDrawChart = function(e) {
   var layout = g.layout_;
   var area = e.dygraph.plotter_.area;
 
+  // Helper for repeated axis-option accesses.
+  var makeOptionGetter = function(axis) {
+    return function(option) {
+      return g.getOptionForAxis(option, axis);
+    };
+  };
+
   if (g.getOptionForAxis('drawAxis', 'y')) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
+      var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
       for (i = 0; i < layout.yticks.length; i++) {
         tick = layout.yticks[i];
-        if (typeof(tick) == "function") return;
+        if (typeof(tick) == 'function') return;  // <-- when would this happen?
         x = area.x;
         var sgn = 1;
         var prec_axis = 'y1';
+        var getAxisOption = getOptions[0];
         if (tick[0] == 1) {  // right-side y-axis
           x = area.x + area.w;
           sgn = -1;
           prec_axis = 'y2';
+          getAxisOption = getOptions[1];
         }
-        var fontSize = g.getOptionForAxis('axisLabelFontSize', prec_axis);
+        var fontSize = getAxisOption('axisLabelFontSize');
         y = area.y + tick[1] * area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
@@ -195,19 +201,19 @@ axes.prototype.willDrawChart = function(e) {
         if (top < 0) top = 0;
 
         if (top + fontSize + 3 > canvasHeight) {
-          label.style.bottom = "0px";
+          label.style.bottom = '0';
         } else {
-          label.style.top = top + "px";
+          label.style.top = top + 'px';
         }
         if (tick[0] === 0) {
-          label.style.left = (area.x - g.getOption('yAxisLabelWidth') - g.getOption('axisTickSize')) + "px";
-          label.style.textAlign = "right";
+          label.style.left = (area.x - getAxisOption('axisLabelWidth') - getAxisOption('axisTickSize')) + 'px';
+          label.style.textAlign = 'right';
         } else if (tick[0] == 1) {
           label.style.left = (area.x + area.w +
-                              g.getOption('axisTickSize')) + "px";
-          label.style.textAlign = "left";
+                              getAxisOption('axisTickSize')) + 'px';
+          label.style.textAlign = 'left';
         }
-        label.style.width = g.getOption('yAxisLabelWidth') + "px";
+        label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
       }
@@ -217,11 +223,11 @@ axes.prototype.willDrawChart = function(e) {
       // compensate if necessary.
       var bottomTick = this.ylabels_[0];
       // Interested in the y2 axis also?
-      var fontSize = g.getOptionForAxis('axisLabelFontSize', "y");
+      var fontSize = g.getOptionForAxis('axisLabelFontSize', 'y');
       var bottom = parseInt(bottomTick.style.top, 10) + fontSize;
       if (bottom > canvasHeight - fontSize) {
         bottomTick.style.top = (parseInt(bottomTick.style.top, 10) -
-            fontSize / 2) + "px";
+            fontSize / 2) + 'px';
       }
     }
 
@@ -258,6 +264,7 @@ axes.prototype.willDrawChart = function(e) {
 
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
+      var getAxisOption = makeOptionGetter('x');
       for (i = 0; i < layout.xticks.length; i++) {
         tick = layout.xticks[i];
         x = area.x + tick[0] * area.w;
@@ -272,21 +279,21 @@ axes.prototype.willDrawChart = function(e) {
         */
 
         label = makeDiv(tick[1], 'x');
-        label.style.textAlign = "center";
-        label.style.top = (y + g.getOption('axisTickSize')) + 'px';
+        label.style.textAlign = 'center';
+        label.style.top = (y + getAxisOption('axisTickSize')) + 'px';
 
-        var left = (x - g.getOption('axisLabelWidth')/2);
-        if (left + g.getOption('axisLabelWidth') > canvasWidth) {
-          left = canvasWidth - g.getOption('xAxisLabelWidth');
-          label.style.textAlign = "right";
+        var left = (x - getAxisOption('axisLabelWidth')/2);
+        if (left + getAxisOption('axisLabelWidth') > canvasWidth) {
+          left = canvasWidth - getAxisOption('axisLabelWidth');
+          label.style.textAlign = 'right';
         }
         if (left < 0) {
           left = 0;
-          label.style.textAlign = "left";
+          label.style.textAlign = 'left';
         }
 
-        label.style.left = left + "px";
-        label.style.width = g.getOption('xAxisLabelWidth') + "px";
+        label.style.left = left + 'px';
+        label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.xlabels_.push(label);
       }

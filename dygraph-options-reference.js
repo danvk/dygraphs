@@ -316,10 +316,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "xAxisLabelWidth": {
-    "default": "50",
-    "labels": ["Axis display"],
+    "default": "",
+    "labels": ["Deprecated"],
     "type": "integer",
-    "description": "Width, in pixels, of the x-axis labels."
+    "description": "Prefer axes: { x: { axisLabelWidth } }"
   },
   "xAxisHeight": {
     "default": "(null)",
@@ -346,7 +346,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "Prefer axes { x: { pixelsPerLabel } }"
   },
   "pixelsPerLabel": {
-    "default": "60 (x-axis) or 30 (y-axes)",
+    "default": "70 (x-axis) or 30 (y-axes)",
     "labels": ["Axis display", "Grid"],
     "type": "integer",
     "description": "Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks. This is set on a <a href='per-axis.html'>per-axis</a> basis."
@@ -455,10 +455,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description": "If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors."
   },
   "yAxisLabelWidth": {
-    "default": "50",
-    "labels": ["Axis display"],
+    "default": "",
+    "labels": ["Deprecated"],
     "type": "integer",
-    "description": "Width, in pixels, of the y-axis labels. This also affects the amount of space available for a y-axis chart label."
+    "description": "Prefer axes { y: { axisLabelWidth } }"
   },
   "hideOverlayOnMouseOut": {
     "default": "true",
@@ -744,10 +744,10 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "description" : "Color for x- and y-axis labels. This is a CSS color string."
   },
   "axisLabelWidth": {
-    "default": "50",
+    "default": "50 (y-axis), 60 (x-axis)",
     "labels": ["Axis display", "Chart labels"],
     "type": "integer",
-    "description" : "Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls "
+    "description" : "Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls the width of the y-axis. Note that for the x-axis, this is independent from pixelsPerLabel, which controls the spacing between labels."
   },
   "sigFigs" : {
     "default": "null",

@@ -226,12 +226,12 @@ Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
   if (granularity >= Dygraph.DECADAL) {
     return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[month] + ' ' + year;
+    return Dygraph.SHORT_MONTH_NAMES_[month] + '&#160;' + year;
   } else {
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
-      // e.g. '21Jan' (%d%b)
-      return Dygraph.zeropad(day) + Dygraph.SHORT_MONTH_NAMES_[month];
+      // e.g. '21 Jan' (%d%b)
+      return Dygraph.zeropad(day) + '&#160;' + Dygraph.SHORT_MONTH_NAMES_[month];
     } else {
       return Dygraph.hmsString_(hours, mins, secs);
     }
@@ -290,8 +290,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
-  xAxisLabelWidth: 50,
-  yAxisLabelWidth: 50,
   rightGap: 5,
 
   showRoller: false,
@@ -358,7 +356,8 @@ Dygraph.DEFAULT_ATTRS = {
   // per-axis options
   axes: {
     x: {
-      pixelsPerLabel: 60,
+      pixelsPerLabel: 70,
+      axisLabelWidth: 60,
       axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
       valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
@@ -367,6 +366,7 @@ Dygraph.DEFAULT_ATTRS = {
       ticker: null  // will be set in dygraph-tickers.js
     },
     y: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
@@ -376,10 +376,11 @@ Dygraph.DEFAULT_ATTRS = {
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
-      drawAxis: false,
+      drawAxis: true,  // only applies when there are two axes of data.
       drawGrid: false,
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
@@ -2315,7 +2316,7 @@ Dygraph.prototype.addXTicks_ = function() {
   var xTicks = xAxisOptionsView('ticker')(
       range[0],
       range[1],
-      this.width_,  // TODO(danvk): should be area.width
+      this.plotter_.area.w,  // TODO(danvk): should be area.width
       xAxisOptionsView,
       this);
   // var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
@@ -2969,7 +2970,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
               axis.computedValueRange[1],
-              this.height_,  // TODO(danvk): should be area.height
+              this.plotter_.area.h,
               opts,
               this);
       // Define the first independent axis as primary axis.
@@ -3000,7 +3001,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       axis.ticks = ticker(axis.computedValueRange[0],
                           axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.height
+                          this.plotter_.area.h,
                           opts,
                           this,
                           tick_values);
@@ -3585,6 +3586,8 @@ Dygraph.mapLegacyOptions_ = function(attrs) {
   map('drawXAxis', 'x', 'drawAxis');
   map('drawYGrid', 'y', 'drawGrid');
   map('drawYAxis', 'y', 'drawAxis');
+  map('xAxisLabelWidth', 'x', 'axisLabelWidth');
+  map('yAxisLabelWidth', 'y', 'axisLabelWidth');
   return my_attrs;
 };
 
