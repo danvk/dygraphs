@@ -39,11 +39,13 @@ write:</p>
                   ...,
                   {
                     strokeWidth: 5,  // default stroke width
-                    'Y1': {
-                      strokeWidth: 3  // Y1 gets a special value.
-                    },
-                    'Y3': {
-                      strokeWidth: 1  // so does Y3.
+                    series: {
+                      Y1: {
+                        strokeWidth: 3  // Y1 gets a special value.
+                      },
+                      Y3: {
+                        strokeWidth: 1  // so does Y3.
+                      }
                     }
                   });
 </pre>

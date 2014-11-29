@@ -131,17 +131,24 @@ pre{
 
 /* When you visit dygraphs.com/options.html#errorBars, the fixed top nav
  * obscures the top 100px of content for that anchor. This is a workaround.
- * See http://stackoverflow.com/questions/9047703/fixed-position-navbar-obscures-anchors
+ * See http://stackoverflow.com/questions/10732690/offsetting-an-html-anchor-to-adjust-for-fixed-header
  */
 a[name] {
-  padding-top: 100px;  /* matches body { padding-top } */
-  margin-top: -100px;  /* matches body { padding-top } */
-  display: inline-block; /* required for webkit browsers */
+  display: block;
+  position: relative;
+  top: -100px;
+  visibility: hidden;
 }
 @media screen and (min-width: 768px) and (max-width: 992px) {
   a[name] {
-    padding-top: 130px;  /* matches body { padding-top } */
-    margin-top: -130px;  /* matches body { padding-top } */
-    display: inline-block; /* required for webkit browsers */
+    top: -130px;
   }
+}
+a.link {
+  visibility: hidden;
+  text-decoration: none;
+  color: #777;
+}
+.option:hover a.link {
+  visibility: visible;
 }
