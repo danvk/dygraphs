@@ -38,11 +38,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+grep "$VERSION" releases.json
+if [ $? -ne 0 ]; then
+  echo "Version $VERSION does not appear in releases.json." >&2
+  exit 1
+fi
+
 make lint test test-combined
 if [ $? -ne 0 ]; then
   echo "Tests failed. Won't release!" >&2
   exit 1
 fi
+git reset --hard  # make test-combined deletes the source map
 
 # Push a permanent copy of documentation & generated files to a versioned copy
 # of the site. This is where the downloadable files are generated.
