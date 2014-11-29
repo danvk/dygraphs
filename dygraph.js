@@ -2153,7 +2153,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * legend. The selection can be cleared using clearSelection() and queried
  * using getSelection().
  * @param {number} row Row number that should be highlighted (i.e. appear with
- * hover dots on the chart). Set to false to clear any selection.
+ * hover dots on the chart).
  * @param {seriesName} optional series name to highlight that series with the
  * the highlightSeriesOpts setting.
  * @param { locked } optional If true, keep seriesName selected when mousing
