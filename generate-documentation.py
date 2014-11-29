@@ -150,7 +150,7 @@ def urlify_gallery(f):
 
 
 for label in sorted(labels):
-  print '<a name="%s"><h3>%s</h3>\n' % (label, label)
+  print '<a name="%s"></a><h3>%s</h3>\n' % (label, label)
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -181,7 +181,9 @@ for label in sorted(labels):
     if not opt['description']: opt['description'] = '(missing)'
 
     print """
-  <div class='option'><a name="%(name)s"></a><b>%(name)s</b><br/>
+  <div class='option'><a name="%(name)s"></a><b>%(name)s</b>
+  <a class="link" href="#%(name)s">#</a>
+  <br/>
   <p>%(desc)s</p>
   <i>Type: %(type)s</i><br/>%(parameters)s
   <i>Default: %(default)s</i></p>
