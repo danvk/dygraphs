@@ -1,6 +1,6 @@
 {
   "name": "dygraphs",
-  "version": "v1.0.1+bower",
+  "version": "v1.1.0",
   "main": "dygraph-combined.js",
   "ignore": [
     "Makefile",
