@@ -92,18 +92,6 @@ var createRotatedDiv = function(g, box, axis, classes, html) {
   inner_div.style.OTransform = val;       // Opera
   inner_div.style.msTransform = val;      // IE9
 
-  if (typeof(document.documentMode) !== 'undefined' &&
-      document.documentMode < 9) {
-    // We're dealing w/ an old version of IE, so we have to rotate the text
-    // using a BasicImage transform. This uses a different origin of rotation
-    // than HTML5 rotation (top left of div vs. its center).
-    inner_div.style.filter =
-        'progid:DXImageTransform.Microsoft.BasicImage(rotation=' +
-        (axis == 1 ? '3' : '1') + ')';
-    inner_div.style.left = '0px';
-    inner_div.style.top = '0px';
-  }
-
   var class_div = document.createElement("div");
   class_div.className = classes;
   class_div.innerHTML = html;

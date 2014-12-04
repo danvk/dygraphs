@@ -299,10 +299,6 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
  * @private
  */
 generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
-  // IE 7,8 fail at these divs, so they get boring legend, have not tested 9.
-  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if (isIE) return "&mdash;";
-
   // Easy, common case: a solid line
   if (!strokePattern || strokePattern.length <= 1) {
     return "<div style=\"display: inline-block; position: relative; " +
