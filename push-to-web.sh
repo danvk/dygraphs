@@ -33,7 +33,7 @@ if [ -s docs/options.html ] ; then
   # Copy everything to the site.
   rsync -avzr gallery common tests jsdoc experimental plugins datahandler polyfills extras $site \
   && \
-  rsync -avzr --copy-links dashed-canvas.js dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png $temp_dir/* $site/
+  rsync -avzr --copy-links dashed-canvas.js dygraph*.js gadget.xml thumbnail.png screenshot.png $temp_dir/* $site/
 else
   echo "generate-documentation.py failed"
 fi

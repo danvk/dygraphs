@@ -13,7 +13,7 @@
 
 (function() {
 
-/*global Dygraph:false, G_vmlCanvasManager:false, Node:false */
+/*global Dygraph:false, Node:false */
 "use strict";
 
 Dygraph.LOG_SCALE = 10;
@@ -55,8 +55,7 @@ Dygraph.getContext = function(canvas) {
 };
 
 /**
- * Add an event handler. This smooths a difference between IE and the rest of
- * the world.
+ * Add an event handler.
  * @param {!Node} elem The element to add the event to.
  * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
  * @param {function(Event):(boolean|undefined)} fn The function to call
@@ -64,12 +63,7 @@ Dygraph.getContext = function(canvas) {
  * @private
  */
 Dygraph.addEvent = function addEvent(elem, type, fn) {
-  if (elem.addEventListener) {
-    elem.addEventListener(type, fn, false);
-  } else {
-    elem[type+fn] = function(){fn(window.event);};
-    elem.attachEvent('on'+type, elem[type+fn]);
-  }
+  elem.addEventListener(type, fn, false);
 };
 
 /**
@@ -88,8 +82,7 @@ Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
 };
 
 /**
- * Remove an event handler. This smooths a difference between IE and the rest
- * of the world.
+ * Remove an event handler.
  * @param {!Node} elem The element to remove the event from.
  * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
  * @param {function(Event):(boolean|undefined)} fn The function to call
@@ -97,17 +90,7 @@ Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
  * @private
  */
 Dygraph.removeEvent = function(elem, type, fn) {
-  if (elem.removeEventListener) {
-    elem.removeEventListener(type, fn, false);
-  } else {
-    try {
-      elem.detachEvent('on'+type, elem[type+fn]);
-    } catch(e) {
-      // We only detach event listeners on a "best effort" basis in IE. See:
-      // http://stackoverflow.com/questions/2553632/detachevent-not-working-with-named-inline-functions
-    }
-    elem[type+fn] = null;
-  }
+  elem.removeEventListener(type, fn, false);
 };
 
 Dygraph.prototype.removeTrackedEvents_ = function() {
@@ -201,13 +184,10 @@ Dygraph.findPos = function(obj) {
   if (obj.offsetParent) {
     var copyObj = obj;
     while (1) {
-      // NOTE: the if statement here is for IE8.
       var borderLeft = "0", borderTop = "0";
-      if (window.getComputedStyle) {
-        var computedStyle = window.getComputedStyle(copyObj, null);
-        borderLeft = computedStyle.borderLeft || "0";
-        borderTop = computedStyle.borderTop || "0";
-      }
+      var computedStyle = window.getComputedStyle(copyObj, null);
+      borderLeft = computedStyle.borderLeft || "0";
+      borderTop = computedStyle.borderTop || "0";
       curleft += parseInt(borderLeft, 10) ;
       curtop += parseInt(borderTop, 10) ;
       curleft += copyObj.offsetLeft;
@@ -700,22 +680,13 @@ Dygraph.clone = function(o) {
 };
 
 /**
- * Create a new canvas element. This is more complex than a simple
- * document.createElement("canvas") because of IE and excanvas.
+ * Create a new canvas element.
  *
  * @return {!HTMLCanvasElement}
  * @private
  */
 Dygraph.createCanvas = function() {
-  var canvas = document.createElement("canvas");
-
-  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if (isIE && (typeof(G_vmlCanvasManager) != 'undefined')) {
-    canvas = G_vmlCanvasManager.initElement(
-        /**@type{!HTMLCanvasElement}*/(canvas));
-  }
-
-  return canvas;
+  return document.createElement('canvas');
 };
 
 /**
@@ -1148,13 +1119,7 @@ Dygraph.toRGB_ = function(colorStr) {
   div.style.backgroundColor = colorStr;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
-  var rgbStr;
-  if (window.getComputedStyle) {
-    rgbStr = window.getComputedStyle(div, null).backgroundColor;
-  } else {
-    // IE8
-    rgbStr = div.currentStyle.backgroundColor;
-  }
+  var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgbStr);
   return {
@@ -1171,17 +1136,11 @@ Dygraph.toRGB_ = function(colorStr) {
  * @return {boolean} Whether the browser supports canvas.
  */
 Dygraph.isCanvasSupported = function(opt_canvasElement) {
-  var canvas;
   try {
-    canvas = opt_canvasElement || document.createElement("canvas");
+    var canvas = opt_canvasElement || document.createElement("canvas");
     canvas.getContext("2d");
-  }
-  catch (e) {
-    var ie = navigator.appVersion.match(/MSIE (\d\.\d)/);
-    var opera = (navigator.userAgent.toLowerCase().indexOf("opera") != -1);
-    if ((!ie) || (ie[1] < 6) || (opera))
-      return false;
-    return true;
+  } catch (e) {
+    return false;
   }
   return true;
 };

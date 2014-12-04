@@ -57,31 +57,27 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.width = dygraph.width_;
 
   // --- check whether everything is ok before we return
-  // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
-  if (!this.isIE && !(Dygraph.isCanvasSupported(this.element)))
-      throw "Canvas is not supported.";
+  if (!Dygraph.isCanvasSupported(this.element)) {
+    throw "Canvas is not supported.";
+  }
 
   // internal state
   this.area = layout.getPlotArea();
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  if (this.dygraph_.isUsingExcanvas_) {
-    this._createIEClipArea();
-  } else {
-    // on Android 3 and 4, setting a clipping area on a canvas prevents it from
-    // displaying anything.
-    if (!Dygraph.isAndroid()) {
-      var ctx = this.dygraph_.canvas_ctx_;
-      ctx.beginPath();
-      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-      ctx.clip();
+  // on Android 3 and 4, setting a clipping area on a canvas prevents it from
+  // displaying anything.
+  if (!Dygraph.isAndroid()) {
+    var ctx = this.dygraph_.canvas_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
 
-      ctx = this.dygraph_.hidden_ctx_;
-      ctx.beginPath();
-      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-      ctx.clip();
-    }
+    ctx = this.dygraph_.hidden_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
   }
 };
 
@@ -92,26 +88,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
  * @private
  */
 DygraphCanvasRenderer.prototype.clear = function() {
-  var context;
-  if (this.isIE) {
-    // VML takes a while to start up, so we just poll every this.IEDelay
-    try {
-      if (this.clearDelay) {
-        this.clearDelay.cancel();
-        this.clearDelay = null;
-      }
-      context = this.elementContext;
-    }
-    catch (e) {
-      // TODO(danvk): this is broken, since MochiKit.Async is gone.
-      // this.clearDelay = MochiKit.Async.wait(this.IEDelay);
-      // this.clearDelay.addCallback(bind(this.clear, this));
-      return;
-    }
-  }
-
-  context = this.elementContext;
-  context.clearRect(0, 0, this.width, this.height);
+  this.elementContext.clearRect(0, 0, this.width, this.height);
 };
 
 /**
@@ -128,76 +105,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   // actually draws the chart.
   this._renderLineChart();
 };
-
-DygraphCanvasRenderer.prototype._createIEClipArea = function() {
-  var className = 'dygraph-clip-div';
-  var graphDiv = this.dygraph_.graphDiv;
-
-  // Remove old clip divs.
-  for (var i = graphDiv.childNodes.length-1; i >= 0; i--) {
-    if (graphDiv.childNodes[i].className == className) {
-      graphDiv.removeChild(graphDiv.childNodes[i]);
-    }
-  }
-
-  // Determine background color to give clip divs.
-  var backgroundColor = document.bgColor;
-  var element = this.dygraph_.graphDiv;
-  while (element != document) {
-    var bgcolor = element.currentStyle.backgroundColor;
-    if (bgcolor && bgcolor != 'transparent') {
-      backgroundColor = bgcolor;
-      break;
-    }
-    element = element.parentNode;
-  }
-
-  function createClipDiv(area) {
-    if (area.w === 0 || area.h === 0) {
-      return;
-    }
-    var elem = document.createElement('div');
-    elem.className = className;
-    elem.style.backgroundColor = backgroundColor;
-    elem.style.position = 'absolute';
-    elem.style.left = area.x + 'px';
-    elem.style.top = area.y + 'px';
-    elem.style.width = area.w + 'px';
-    elem.style.height = area.h + 'px';
-    graphDiv.appendChild(elem);
-  }
-
-  var plotArea = this.area;
-  // Left side
-  createClipDiv({
-    x:0, y:0,
-    w:plotArea.x,
-    h:this.height
-  });
-
-  // Top
-  createClipDiv({
-    x: plotArea.x, y: 0,
-    w: this.width - plotArea.x,
-    h: plotArea.y
-  });
-
-  // Right side
-  createClipDiv({
-    x: plotArea.x + plotArea.w, y: 0,
-    w: this.width - plotArea.x - plotArea.w,
-    h: this.height
-  });
-
-  // Bottom
-  createClipDiv({
-    x: plotArea.x,
-    y: plotArea.y + plotArea.h,
-    w: this.width - plotArea.x,
-    h: this.height - plotArea.h - plotArea.y
-  });
-};
-
 
 /**
  * Returns a predicate to be used with an iterator, which will

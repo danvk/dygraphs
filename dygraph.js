@@ -423,17 +423,6 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
-  // Hack for IE: if we're using excanvas and the document hasn't finished
-  // loading yet (and hence may not have initialized whatever it needs to
-  // initialize), then keep calling this routine periodically until it has.
-  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
-      typeof(G_vmlCanvasManager) != 'undefined' &&
-      document.readyState != 'complete') {
-    var self = this;
-    setTimeout(function() { self.__init__(div, file, attrs); }, 100);
-    return;
-  }
-
   // Support two-argument constructor
   if (attrs === null || attrs === undefined) { attrs = {}; }
 
@@ -447,8 +436,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
     console.error("Constructing dygraph with a non-existent div!");
     return;
   }
-
-  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
 
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
@@ -1294,18 +1281,7 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
  * @private
  */
 Dygraph.prototype.createMouseEventElement_ = function() {
-  if (this.isUsingExcanvas_) {
-    var elem = document.createElement("div");
-    elem.style.position = 'absolute';
-    elem.style.backgroundColor = 'white';
-    elem.style.filter = 'alpha(opacity=0)';
-    elem.style.width = this.width_ + "px";
-    elem.style.height = this.height_ + "px";
-    this.graphDiv.appendChild(elem);
-    return elem;
-  } else {
-    return this.canvas_;
-  }
+  return this.canvas_;
 };
 
 /**
@@ -1587,10 +1563,6 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
       ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
                    this.layout_.getPlotArea().w, Math.abs(endY - startY));
     }
-  }
-
-  if (this.isUsingExcanvas_) {
-    this.currentZoomRectArgs_ = [direction, startX, endX, startY, endY, 0, 0, 0];
   }
 };
 
@@ -2116,10 +2088,6 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
     var px = this.previousVerticalX_;
     ctx.clearRect(px - maxCircleSize - 1, 0,
                   2 * maxCircleSize + 2, this.height_);
-  }
-
-  if (this.isUsingExcanvas_ && this.currentZoomRectArgs_) {
-    Dygraph.prototype.drawZoomRect_.apply(this, this.currentZoomRectArgs_);
   }
 
   if (this.selPoints_.length > 0) {
