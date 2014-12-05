@@ -2,7 +2,7 @@
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series:
 
-(image)
+<img src="https://cloud.githubusercontent.com/assets/98301/5311286/eb760eea-7c10-11e4-9a59-1d144e51a15b.png" width="618" height="322">
 
 Learn more about it at [dygraphs.com](http://www.dygraphs.com).
 
@@ -13,7 +13,7 @@ Get help with dygraphs on
 ## Features
 * Plots time series without using an external server or Flash
 * Supports [error bands](http://dygraphs.com/tests/legend-values.html) around data series
-* [Interactive zoom](http://dygraphs.com/tests/link-interaction.html)
+* Interactive [pan and zoom](http://dygraphs.com/tests/link-interaction.html)
 * Displays values [on mouseover](http://dygraphs.com/tests/legend-values.html)
 * Adjustable [averaging period](http://dygraphs.com/tests/temperature-sf-ny.html)
 * Extensive set of [options](http://www.dygraphs.com/options.html) for customization.
