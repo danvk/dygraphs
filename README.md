@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/danvk/dygraphs.svg?branch=markdown-readme)](https://travis-ci.org/danvk/dygraphs)
 # dygraphs JavaScript charting library
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series:
