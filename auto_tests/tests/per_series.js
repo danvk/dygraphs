@@ -49,20 +49,6 @@ perSeriesTestCase.prototype.testPerSeriesFill = function() {
   assertEquals([255,0,0,38], sampler.colorAtCoordinate(6.5, 0.5));
 };
 
-perSeriesTestCase.prototype.testOldStyleSeries = function() {
-  var opts = {
-    pointSize : 5,
-    Y: { pointSize : 4 },
-  };
-  var graph = document.getElementById("graph");
-  var data = "X,Y,Z\n1,0,0\n";
-  g = new Dygraph(graph, data, opts);
-
-  assertEquals(5, g.getOption("pointSize"));
-  assertEquals(4, g.getOption("pointSize", "Y"));
-  assertEquals(5, g.getOption("pointSize", "Z"));
-};
-
 perSeriesTestCase.prototype.testNewStyleSeries = function() {
   var opts = {
     pointSize : 5,
@@ -77,29 +63,6 @@ perSeriesTestCase.prototype.testNewStyleSeries = function() {
   assertEquals(5, g.getOption("pointSize"));
   assertEquals(4, g.getOption("pointSize", "Y"));
   assertEquals(5, g.getOption("pointSize", "Z"));
-};
-
-perSeriesTestCase.prototype.testNewStyleSeriesTrumpsOldStyle = function() {
-  var opts = {
-    pointSize : 5,
-    Z : { pointSize : 6 },
-    series : {
-      Y: { pointSize : 4 }
-    },
-  };
-  var graph = document.getElementById("graph");
-  var data = "X,Y,Z\n1,0,0\n";
-  g = new Dygraph(graph, data, opts);
-
-  assertEquals(5, g.getOption("pointSize"));
-  assertEquals(4, g.getOption("pointSize", "Y"));
-  assertEquals(5, g.getOption("pointSize", "Z"));
-
-  // Erase the series object, and Z will become visible again.
-  g.updateOptions({ series : undefined });
-  assertEquals(5, g.getOption("pointSize"));
-  assertEquals(6, g.getOption("pointSize", "Z"));
-  assertEquals(5, g.getOption("pointSize", "Y"));
 };
 
 // TODO(konigsberg): move to multiple_axes.js
