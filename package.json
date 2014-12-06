@@ -27,6 +27,7 @@
   "homepage": "https://github.com/danvk/dygraphs",
   "devDependencies": {
     "closure-compiler": "^0.2.6",
+    "coveralls": "^2.11.2",
     "jshint": "^2.5.10",
     "obvious-closure-library": "^20140401.0.2",
     "phantomjs": "^1.9.7-8",
