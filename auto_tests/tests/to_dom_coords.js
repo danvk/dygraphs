@@ -69,13 +69,19 @@ ToDomCoordsTestCase.prototype.testPlainChart = function() {
 
 ToDomCoordsTestCase.prototype.testChartWithAxes = function() {
   var opts = {
-    drawXAxis: true,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: true,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: true,
+        axisLabelWidth: 100
+      }
+    },
     xAxisHeight: 50,
-    drawYAxis: true,
-    yAxisLabelWidth: 100,
     axisTickSize: 0,
-    drawXGrid: false,
-    drawYGrid: false,
     rightGap: 0,
     valueRange: [0, 100],
     dateWindow: [0, 100],
@@ -97,13 +103,19 @@ ToDomCoordsTestCase.prototype.testChartWithAxes = function() {
 
 ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
   var opts = {
-    drawXAxis: true,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: true,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: true,
+        axisLabelWidth: 100
+      }
+    },
     xAxisHeight: 50,
-    drawYAxis: true,
-    yAxisLabelWidth: 100,
     axisTickSize: 0,
-    drawXGrid: false,
-    drawYGrid: false,
     rightGap: 0,
     valueRange: [0, 100],
     dateWindow: [0, 100],
@@ -130,7 +142,7 @@ ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
 
 ToDomCoordsTestCase.prototype.testYAxisLabelWidth = function() {
   var opts = {
-    yAxisLabelWidth: 100,
+    axes: { y: { axisLabelWidth: 100 } },
     axisTickSize: 0,
     rightGap: 0,
     valueRange: [0, 100],
@@ -145,14 +157,16 @@ ToDomCoordsTestCase.prototype.testYAxisLabelWidth = function() {
   assertEquals([100, 0], g.toDomCoords(0, 100));
   assertEquals([500, 486], g.toDomCoords(100, 0));
 
-  g.updateOptions({ yAxisLabelWidth: 50 });
+  g.updateOptions({     
+    axes: { y: { axisLabelWidth: 50 }},
+  });
   assertEquals([50, 0], g.toDomCoords(0, 100));
   assertEquals([500, 486], g.toDomCoords(100, 0));
 }
 
 ToDomCoordsTestCase.prototype.testAxisTickSize = function() {
   var opts = {
-    yAxisLabelWidth: 100,
+    axes: { y: { axisLabelWidth: 100 } },
     axisTickSize: 0,
     rightGap: 0,
     valueRange: [0, 100],

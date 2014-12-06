@@ -236,7 +236,8 @@ MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
       },
       axes: {
         y: {
-          valueRange: [40, 70]
+          valueRange: [40, 70],
+          axisLabelWidth: 60
         },
         y2: {
           // set axis-related properties here
@@ -245,7 +246,6 @@ MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
       },
       ylabel: 'Primary y-axis',
       y2label: 'Secondary y-axis',
-      yAxisLabelWidth: 60
     }
   );
   assertEquals(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));

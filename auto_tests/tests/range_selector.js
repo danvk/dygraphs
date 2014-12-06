@@ -332,7 +332,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
     width: 480,
     height: 100,
     xAxisHeight: 30,
-    drawXAxis: false,
+    axes : { x : { drawAxis: false }},
     showRangeSelector: true,
     rangeSelectorHeight: 30,
     labels: ['X', 'Y']
@@ -370,7 +370,7 @@ RangeSelectorTestCase.prototype.testMiniPlotDrawn = function() {
     width: 480,
     height: 100,
     xAxisHeight: 30,
-    drawXAxis: false,
+    axes : { x : { drawAxis: false }},
     showRangeSelector: true,
     rangeSelectorHeight: 30,
     rangeSelectorPlotStrokeColor: '#ff0000',
