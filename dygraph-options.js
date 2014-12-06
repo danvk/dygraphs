@@ -135,16 +135,7 @@ DygraphOptions.prototype.reparseSeries = function() {
   this.xAxis_ = { options : {} };
   this.series_ = {};
 
-  // Traditionally, per-series options were specified right up there with the options. For instance
-  // {
-  //   labels: [ "X", "foo", "bar" ],
-  //   pointSize: 3,
-  //   foo : {}, // options for foo
-  //   bar : {} // options for bar
-  // }
-  //
-  // Moving forward, series really should be specified in the series element, separating them.
-  // like so:
+  // Series are specified in the series element:
   //
   // {
   //   labels: [ "X", "foo", "bar" ],
@@ -155,67 +146,23 @@ DygraphOptions.prototype.reparseSeries = function() {
   //   }
   // }
   //
-  // So, if series is found, it's expected to contain per-series data, otherwise we fall
-  // back.
-  var oldStyleSeries = !this.user_["series"];
+  // So, if series is found, it's expected to contain per-series data, otherwise set a
+  // default.
+  var seriesDict = this.user_.series || {};
+  for (var idx = 0; idx < this.labels_.length; idx++) {
+    var seriesName = this.labels_[idx];
+    var optionsForSeries = seriesDict[seriesName] || {};
+    var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
 
-  if (oldStyleSeries) {
-    var axisId = 0; // 0-offset; there's always one.
-    // Go through once, add all the series, and for those with {} axis options, add a new axis.
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
+    this.series_[seriesName] = {
+      idx: idx,
+      yAxis: yAxis,
+      options : optionsForSeries };
 
-      var optionsForSeries = this.user_[seriesName] || {};
-
-      var yAxis = 0;
-      var axis = optionsForSeries["axis"];
-      if (typeof(axis) == 'object') {
-        yAxis = ++axisId;
-        this.yAxes_[yAxis] = { series : [ seriesName ], options : axis };
-      }
-
-      // Associate series without axis options with axis 0.
-      if (!axis) { // undefined
-        this.yAxes_[0].series.push(seriesName);
-      }
-
-      this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
-    }
-
-    // Go through one more time and assign series to an axis defined by another
-    // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
-      var optionsForSeries = this.series_[seriesName]["options"];
-      var axis = optionsForSeries["axis"];
-
-      if (typeof(axis) == 'string') {
-        if (!this.series_.hasOwnProperty(axis)) {
-          console.error("Series " + seriesName + " wants to share a y-axis with " +
-                     "series " + axis + ", which does not define its own axis.");
-          return;
-        }
-        var yAxis = this.series_[axis].yAxis;
-        this.series_[seriesName].yAxis = yAxis;
-        this.yAxes_[yAxis].series.push(seriesName);
-      }
-    }
-  } else {
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
-      var optionsForSeries = this.user_.series[seriesName] || {};
-      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
-
-      this.series_[seriesName] = {
-        idx: idx,
-        yAxis: yAxis,
-        options : optionsForSeries };
-
-      if (!this.yAxes_[yAxis]) {
-        this.yAxes_[yAxis] =  { series : [ seriesName ], options : {} };
-      } else {
-        this.yAxes_[yAxis].series.push(seriesName);
-      }
+    if (!this.yAxes_[yAxis]) {
+      this.yAxes_[yAxis] =  { series : [ seriesName ], options : {} };
+    } else {
+      this.yAxes_[yAxis].series.push(seriesName);
     }
   }
 
