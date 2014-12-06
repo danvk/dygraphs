@@ -148,10 +148,10 @@ DygraphOptions.prototype.reparseSeries = function() {
   //
   // So, if series is found, it's expected to contain per-series data, otherwise set a
   // default.
-  var series_dict = this.user_.series || {};
+  var seriesDict = this.user_.series || {};
   for (var idx = 0; idx < this.labels_.length; idx++) {
     var seriesName = this.labels_[idx];
-    var optionsForSeries = series_dict[seriesName] || {};
+    var optionsForSeries = seriesDict[seriesName] || {};
     var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
 
     this.series_[seriesName] = {
