@@ -4,13 +4,13 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-var MultipleAxesTestCase = TestCase("multiple-axes-tests");
+var MultipleAxesOldTestCase = TestCase("multiple-axes-old-tests");
 
-MultipleAxesTestCase.prototype.setUp = function() {
+MultipleAxesOldTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-MultipleAxesTestCase.getData = function() {
+MultipleAxesOldTestCase.getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
     var m = "01", d = i;
@@ -28,7 +28,7 @@ MultipleAxesTestCase.getData = function() {
   return data;
 };
 
-MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
+MultipleAxesOldTestCase.prototype.testOldBasicMultipleAxes = function() {
   var data = MultipleAxesTestCase.getData();
 
   var g = new Dygraph(
@@ -38,17 +38,40 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       width: 640,
       height: 350,
-      series : {
-        'Y3': {
-          axis: 'y2'
-        },
-        'Y4': {
-          axis: 'y2'
+      'Y3': {
+        axis: {
+          // set axis-related properties here
+          labelsKMB: true
         }
       },
-      axes : {
-        y2 : {
-          // set axis-related properties here
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      }
+    }
+  );
+
+  assertEquals(["0","20","40","60","80","100"], Util.getYLabels("1"));
+  assertEquals(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
+};
+
+MultipleAxesOldTestCase.prototype.testOldNewStylePerAxisOptions = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      axes: {
+        y2: {
           labelsKMB: true
         }
       }
@@ -59,7 +82,45 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
   assertEquals(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
 };
 
-MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
+MultipleAxesOldTestCase.prototype.testOldMultiAxisLayout = function() {
+  var data = MultipleAxesTestCase.getData();
+
+  var el = document.getElementById("graph");
+
+  var g = new Dygraph(
+    el,
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      width: 640,
+      height: 350,
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
+      },
+      axes: {
+        y2: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  // Test that all elements are inside the bounds of the graph, set above
+  var innerDiv = el.firstChild;
+  for (var child = innerDiv.firstChild; child != null; child = child.nextSibling) {
+    assertTrue(child.offsetLeft >= 0);
+    assertTrue((child.offsetLeft + child.offsetWidth) <= 640);
+    assertTrue(child.offsetTop >= 0);
+    // TODO(flooey@google.com): Text sometimes linebreaks,
+    // causing the labels to appear outside the allocated area.
+    // assertTrue((child.offsetTop + child.offsetHeight) <= 350);
+  }
+};
+
+MultipleAxesOldTestCase.prototype.testOldTwoAxisVisibility = function() {
   var data = [];
   data.push([0,0,0]);
   data.push([1,2,2000]);
@@ -70,13 +131,8 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
     data,
     {
       labels: [ 'X', 'bar', 'zot' ],
-      series : {
-        zot : {
-          axis : 'y2'
-        }
-      },
-      axes : {
-        y2: {
+      'zot': {
+        axis: {
           labelsKMB: true
         }
       }
@@ -100,7 +156,7 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
 
 // verifies that all four chart labels (title, x-, y-, y2-axis label) can be
 // used simultaneously.
-MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
+MultipleAxesOldTestCase.prototype.testOldMultiChartLabels = function() {
   var data = MultipleAxesTestCase.getData();
 
   var el = document.getElementById("graph");
@@ -115,13 +171,11 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       width: 640,
       height: 350,
-      series : {
-        'Y3': {
-          axis: 'y2'
-        },
-        'Y4': {
-          axis: 'y2'
-        }
+      'Y3': {
+        axis: { }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
       },
       xlabel: 'x-axis',
       ylabel: 'y-axis',
@@ -142,7 +196,7 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
 
 // Check that a chart w/o a secondary y-axis will not get a y2label, even if one
 // is specified.
-MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
+MultipleAxesOldTestCase.prototype.testOldNoY2LabelWithoutSecondaryAxis = function() {
   var g = new Dygraph(
     document.getElementById("graph"),
     MultipleAxesTestCase.getData(),
@@ -165,7 +219,7 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
   assertEquals([], Util.getClassTexts("dygraph-y2label"));
 };
 
-MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
+MultipleAxesOldTestCase.prototype.testOldValueRangePerAxisOptions = function() {
   var data = MultipleAxesTestCase.getData();
 
   g = new Dygraph(
@@ -173,18 +227,17 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
     data,
     {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-      series : {
-        'Y3': {
-          axis: 'y2'
-        },
-        'Y4': {
-          axis: 'y2'
+      'Y3': {
+        axis: {
         }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
       },
       axes: {
         y: {
-          axisLabelWidth: 60,
-          valueRange: [40, 70]
+          valueRange: [40, 70],
+          axisLabelWidth: 60
         },
         y2: {
           // set axis-related properties here
@@ -214,7 +267,7 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
   assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
 };
 
-MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
+MultipleAxesOldTestCase.prototype.testOldDrawPointCallback = function() {
   var data = MultipleAxesTestCase.getData();
 
   var results = { y : {}, y2 : {}};
@@ -235,13 +288,12 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       drawPoints : true,
       pointSize : 3,
-      series : {
-        'Y3': {
-          axis: 'y2'
-        },
-        'Y4': {
-          axis: 'y2'
+      'Y3': {
+        axis: {
         }
+      },
+      'Y4': {
+        axis: 'Y3'  // use the same y-axis as series Y3
       },
       axes: {
         y2: {
@@ -256,28 +308,4 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
   assertEquals(1, results.y["Y2"]);
   assertEquals(1, results.y2["Y3"]);
   assertEquals(1, results.y2["Y4"]);
-};
-
-// Test for http://code.google.com/p/dygraphs/issues/detail?id=436
-MultipleAxesTestCase.prototype.testRemovingSecondAxis = function() {
-  var data = MultipleAxesTestCase.getData();
-
-  var results = { y : {}, y2 : {}};
-
-  g = new Dygraph(
-    document.getElementById("graph"),
-    data,
-    {
-      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-      drawPoints : true,
-      pointSize : 3,
-      series : {
-        'Y4': {
-          axis: 'y2'
-        }
-      },
-    }
-  );
-
- g.updateOptions({ series : { Y4 : { axis : 'y' } } });
 };

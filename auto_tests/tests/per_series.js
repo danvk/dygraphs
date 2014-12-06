@@ -16,10 +16,16 @@ perSeriesTestCase.prototype.testPerSeriesFill = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     series: {
       Y: { fillGraph: true },
     },

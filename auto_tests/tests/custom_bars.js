@@ -99,10 +99,16 @@ CustomBarsTestCase.prototype.testCustomBarsAtTop = function() {
         width: 500, height: 350,
         customBars: true,
         errorBars: true,
-        drawXGrid: false,
-        drawYGrid: false,
-        drawXAxis: false,
-        drawYAxis: false,
+        axes : {
+          x : {
+            drawGrid: false,
+            drawAxis: false,
+          },
+          y : {
+            drawGrid: false,
+            drawAxis: false,
+          }
+        },
         valueRange: [0, 120],
         fillAlpha: 0.15,
         colors: [ '#00FF00' ]
@@ -124,10 +130,16 @@ CustomBarsTestCase.prototype.testCustomBarsLogScale = function() {
         customBars: true,
         errorBars: true,
         valueRange: [1, 120],
-        drawXGrid: false,
-        drawYGrid: false,
-        drawXAxis: false,
-        drawYAxis: false,
+        axes : {
+          x : {
+            drawGrid: false,
+            drawAxis: false,
+          },
+          y : {
+            drawGrid: false,
+            drawAxis: false,
+          }
+        },
         fillAlpha: 1.0,
         logscale: true,
         colors: [ '#00FF00' ]

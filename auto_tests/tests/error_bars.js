@@ -25,10 +25,16 @@ errorBarsTestCase.prototype.testErrorBarsDrawn = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     customBars: true,
     errorBars: true
   };
@@ -102,10 +108,16 @@ errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
     sigma: 1.0,
     fillAlpha: 0.15,
     colors: ['#00ff00', '#0000ff'],
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     width: 400,
     height: 300,
     valueRange: [0, 300],

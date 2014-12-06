@@ -190,23 +190,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>."
   },
-  "xValueFormatter": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "",
-    "description": "Prefer axes: { x: { valueFormatter } }"
-  },
   "valueFormatter": {
     "default": "Depends on the type of your data.",
     "labels": ["Legend", "Value display/formatting"],
     "type": "function(num or millis, opts, dygraph)",
     "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. For date axes, you can call new Date(millis) to get a Date object. opts is a function you can call to access various options (e.g. opts('labelsKMB'))."
-  },
-  "pixelsPerYLabel": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "integer",
-    "description": "Prefer axes: { y: { pixelsPerLabel } }"
   },
   "annotationMouseOverHandler": {
     "default": "null",
@@ -315,12 +303,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     ],
     "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis."
   },
-  "xAxisLabelWidth": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "integer",
-    "description": "Prefer axes: { x: { axisLabelWidth } }"
-  },
   "xAxisHeight": {
     "default": "(null)",
     "labels": ["Axis display"],
@@ -338,12 +320,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Axis display"],
     "type": "string",
     "description": "Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or secondary). Must be set per-series."
-  },
-  "pixelsPerXLabel": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "integer",
-    "description": "Prefer axes { x: { pixelsPerLabel } }"
   },
   "pixelsPerLabel": {
     "default": "70 (x-axis) or 30 (y-axes)",
@@ -454,23 +430,11 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float (0.0 - 1.0)",
     "description": "If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors."
   },
-  "yAxisLabelWidth": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "integer",
-    "description": "Prefer axes { y: { axisLabelWidth } }"
-  },
   "hideOverlayOnMouseOut": {
     "default": "true",
     "labels": ["Interactive Elements", "Legend"],
     "type": "boolean",
     "description": "Whether to hide the legend when the mouse leaves the chart area."
-  },
-  "yValueFormatter": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "",
-    "description": "Prefer axes: { y: { valueFormatter } }"
   },
   "legend": {
     "default": "onmouseover",
@@ -532,12 +496,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float",
     "description": "If set, add the specified amount of extra space (in pixels) around the Y-axis value range to ensure points at the edges remain visible. If unset, use the traditional Y padding algorithm."
   },
-  "xAxisLabelFormatter": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "",
-    "description": "Prefer axes { x: { axisLabelFormatter } }"
-  },
   "axisLabelFormatter": {
     "default": "Depends on the data type",
     "labels": ["Axis display"],
@@ -561,12 +519,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "points" , "The closest points along that date. See <a href='#point_properties'>Point properties</a> for details." ]
     ],
     "description": "A function to call when the canvas is clicked."
-  },
-  "yAxisLabelFormatter": {
-    "default": "",
-    "labels": ["Deprecated"],
-    "type": "",
-    "description": "Prefer axes: { y: { axisLabelFormatter } }"
   },
   "labels": {
     "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
@@ -671,18 +623,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
   },
-  "drawXGrid": {
-    "default": "true",
-    "labels": ["Grid","Deprecated"],
-    "type": "boolean",
-    "description" : "Use the per-axis option drawGrid instead. Whether to display vertical gridlines under the chart."
-  },
-  "drawYGrid": {
-    "default": "true",
-    "labels": ["Grid","Deprecated"],
-    "type": "boolean",
-    "description" : "Use the per-axis option drawGrid instead. Whether to display horizontal gridlines under the chart."
-  },
   "drawGrid": {
     "default": "true for x and y, false for y2",
     "labels": ["Grid"],
@@ -695,18 +635,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description" : "Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: 1.) y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) 2.) y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) 3.) y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) 4.) y=false, y2=false: Invalid configuration causes an error."
   },
-  "drawXAxis": {
-    "default": "true",
-    "labels": ["Axis display"],
-    "type": "boolean",
-    "description" : "Deprecated. Use axes : { x : { drawAxis } }."
-  },
-  "drawYAxis": {
-    "default": "true",
-    "labels": ["Axis display"],
-    "type": "boolean",
-    "description" : "Deprecated. Use axes : { y : { drawAxis } }."
-  },
   "drawAxis": {
     "default": "true for x and y, false for y2",
     "labels": ["Axis display"],
@@ -717,7 +645,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "default": "0.3",
     "labels": ["Grid"],
     "type": "float",
-    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawXGrid and drawYGrid options. This may be set on a per-axis basis to define each axis' grid separately."
+    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawGrid option. This may be set on a per-axis basis to define each axis' grid separately."
   },
   "axisLineWidth": {
     "default": "0.3",

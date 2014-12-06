@@ -31,10 +31,16 @@ StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     errorBars: false,
     labels: ["X", "Idle", "Used"],
     series: {
@@ -94,10 +100,16 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     errorBars: false,
     labels: ["X", "Idle", "Used", "NotUsed", "Active"],
     series: {
@@ -243,10 +255,16 @@ StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     errorBars: true,
     sigma: 1,
     labels: ["X", "Data1", "Data2"],
@@ -336,10 +354,16 @@ StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
   var opts = {
     width: 480,
     height: 320,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     customBars: true,
 	labels: ["X", "Data1", "Data2"],
     series: {

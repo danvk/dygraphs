@@ -23,10 +23,16 @@ stackedTestCase.prototype.testCorrectColors = function() {
     width: 400,
     height: 300,
     stackedGraph: true,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     valueRange: [0, 3],
     colors: ['#00ff00', '#0000ff'],
     fillAlpha: 0.15

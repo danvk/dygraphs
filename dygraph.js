@@ -322,15 +322,11 @@ Dygraph.DEFAULT_ATTRS = {
   xLabelHeight: 18,
   yLabelWidth: 18,
 
-  drawXAxis: true,
-  drawYAxis: true,
   axisLineColor: "black",
   axisLineWidth: 0.3,
   gridLineWidth: 0.3,
   axisLabelColor: "black",
   axisLabelWidth: 50,
-  drawYGrid: true,
-  drawXGrid: true,
   gridLineColor: "rgb(128,128,128)",
 
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
@@ -426,7 +422,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Support two-argument constructor
   if (attrs === null || attrs === undefined) { attrs = {}; }
 
-  attrs = Dygraph.mapLegacyOptions_(attrs);
+  attrs = Dygraph.copyUserAttrs_(attrs);
 
   if (typeof(div) == 'string') {
     div = document.getElementById(div);
@@ -3461,9 +3457,9 @@ Dygraph.prototype.start_ = function() {
 Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   if (typeof(block_redraw) == 'undefined') block_redraw = false;
 
-  // mapLegacyOptions_ drops the "file" parameter as a convenience to us.
+  // copyUserAttrs_ drops the "file" parameter as a convenience to us.
   var file = input_attrs.file;
-  var attrs = Dygraph.mapLegacyOptions_(input_attrs);
+  var attrs = Dygraph.copyUserAttrs_(input_attrs);
 
   // TODO(danvk): this is a mess. Move these options into attr_.
   if ('rollPeriod' in attrs) {
@@ -3512,50 +3508,15 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 };
 
 /**
- * Returns a copy of the options with deprecated names converted into current
- * names. Also drops the (potentially-large) 'file' attribute. If the caller is
- * interested in that, they should save a copy before calling this.
- * @private
+ * Make a copy of input attributes, removing file as a convenience.
  */
-Dygraph.mapLegacyOptions_ = function(attrs) {
+Dygraph.copyUserAttrs_ = function(attrs) {
   var my_attrs = {};
   for (var k in attrs) {
     if (!attrs.hasOwnProperty(k)) continue;
     if (k == 'file') continue;
     if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
   }
-
-  var set = function(axis, opt, value) {
-    if (!my_attrs.axes) my_attrs.axes = {};
-    if (!my_attrs.axes[axis]) my_attrs.axes[axis] = {};
-    my_attrs.axes[axis][opt] = value;
-  };
-  var map = function(opt, axis, new_opt) {
-    if (typeof(attrs[opt]) != 'undefined') {
-      console.warn("Option " + opt + " is deprecated. Use the " +
-          new_opt + " option for the " + axis + " axis instead. " +
-          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } } " +
-          "(see http://dygraphs.com/per-axis.html for more information.");
-      set(axis, new_opt, attrs[opt]);
-      delete my_attrs[opt];
-    }
-  };
-
-  // This maps, e.g., xValueFormater -> axes: { x: { valueFormatter: ... } }
-  map('xValueFormatter', 'x', 'valueFormatter');
-  map('pixelsPerXLabel', 'x', 'pixelsPerLabel');
-  map('xAxisLabelFormatter', 'x', 'axisLabelFormatter');
-  map('xTicker', 'x', 'ticker');
-  map('yValueFormatter', 'y', 'valueFormatter');
-  map('pixelsPerYLabel', 'y', 'pixelsPerLabel');
-  map('yAxisLabelFormatter', 'y', 'axisLabelFormatter');
-  map('yTicker', 'y', 'ticker');
-  map('drawXGrid', 'x', 'drawGrid');
-  map('drawXAxis', 'x', 'drawAxis');
-  map('drawYGrid', 'y', 'drawGrid');
-  map('drawYAxis', 'y', 'drawAxis');
-  map('xAxisLabelWidth', 'x', 'axisLabelWidth');
-  map('yAxisLabelWidth', 'y', 'axisLabelWidth');
   return my_attrs;
 };
 

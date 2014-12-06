@@ -257,9 +257,6 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
     width : 120,
     height : 320,
     errorBars : false,
-    drawXGrid : false,
-    drawXAxis : false,
-    drawYAxis : false,
     labels : [ "X", "Left", "Right" ],
     colors : [ "rgba(0,0,0,0)", "rgba(0,0,0,0)" ],
     series : {
@@ -271,7 +268,12 @@ GridPerAxisTestCase.prototype.testGridLinePattern = function() {
       }
     },
     axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
       y : {
+        drawAxis : false,
         gridLineColor : "#0000ff",
         gridLinePattern : [ 10, 10 ]
       }
