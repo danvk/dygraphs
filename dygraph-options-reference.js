@@ -199,8 +199,16 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "valueFormatter": {
     "default": "Depends on the type of your data.",
     "labels": ["Legend", "Value display/formatting"],
-    "type": "function(num or millis, opts, dygraph)",
-    "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. For date axes, you can call new Date(millis) to get a Date object. opts is a function you can call to access various options (e.g. opts('labelsKMB'))."
+    "type": "function(num or millis, opts, seriesName, dygraph, row, col)",
+    "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. .",
+    "parameters": [
+      ["num_or_millis", "The value to be formatted. This is always a number. For date axes, it's millis since epoch. You can call new Date(millis) to get a Date object."],
+      ["opts", "This is a function you can call to access various options (e.g. opts('labelsKMB')). It returns per-axis values for the option when available."],
+      ["seriesName", "The name of the series from which the point came, e.g. 'X', 'Y', 'A', etc."],
+      ["dygraph", "The dygraph object for which the formatting is being done"],
+      ["row", "The row of the data from which this point comes. g.getValue(row, 0) will return the x-value for this point."],
+      ["col", "The column of the data from which this point comes. g.getValue(row, col) will return the original y-value for this point. This can be used to get the full confidence interval for the point, or access un-rolled values for the point."]
+    ]
   },
   "pixelsPerYLabel": {
     "default": "",

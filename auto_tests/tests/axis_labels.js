@@ -295,7 +295,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
     axes : {
       x : {
         pixelsPerLabel: 60,
-        valueFormatter: function(x, opts, series_name, dg) {
+        valueFormatter: function(x, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(x));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
@@ -307,7 +307,7 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
         }
       },
       y : {
-        valueFormatter: function(y, opts, series_name, dg) {
+        valueFormatter: function(y, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(y));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
