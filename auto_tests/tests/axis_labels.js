@@ -501,9 +501,17 @@ AxisLabelsTestCase.prototype.testValueFormatterParameters = function() {
   g.setSelection(0);
   assertEquals([
     // num or millis, opts, series, dygraph, row, col
-    [ 'x', 0, 'fn',  'x', g],
-    [ 'y', 1, 'fn', 'y1', g],
-    ['y2', 2, 'fn', 'y2', g]
+    [ 'x', 0, 'fn',  'x', g, 0, 0],
+    [ 'y', 1, 'fn', 'y1', g, 0, 1],
+    ['y2', 2, 'fn', 'y2', g, 0, 2]
+  ], calls);
+
+  calls = [];
+  g.setSelection(1);
+  assertEquals([
+    [ 'x', 1, 'fn',  'x', g, 1, 0],
+    [ 'y', 3, 'fn', 'y1', g, 1, 1],
+    ['y2', 4, 'fn', 'y2', g, 1, 2]
   ], calls);
 };
 

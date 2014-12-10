@@ -124,6 +124,7 @@ var escapeHTML = function(str) {
 legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
+  var row = e.selectedRow;
 
   var legendMode = e.dygraph.getOption('legend');
   if (legendMode === 'never') {
@@ -154,7 +155,7 @@ legend.prototype.select = function(e) {
     this.legend_div_.style.top = topLegend + "px";
   }
 
-  var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
+  var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
   this.legend_div_.innerHTML = html;
   this.legend_div_.style.display = '';
 };
@@ -169,7 +170,7 @@ legend.prototype.deselect = function(e) {
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   this.one_em_width_ = oneEmWidth;
 
-  var html = legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
+  var html = legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth, null);
   this.legend_div_.innerHTML = html;
 };
 
@@ -212,14 +213,15 @@ legend.prototype.destroy = function() {
  * Generates HTML for the legend which is displayed when hovering over the
  * chart. If no selected points are specified, a default legend is returned
  * (this may just be the empty string).
- * @param { Number } [x] The x-value of the selected points.
- * @param { [Object] } [sel_points] List of selected points for the given
- * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
- * @param { Number } [oneEmWidth] The pixel width for 1em in the legend. Only
- * relevant when displaying a legend with no selection (i.e. {legend:
- * 'always'}) and with dashed lines.
+ * @param {number} x The x-value of the selected points.
+ * @param {Object} sel_points List of selected points for the given
+ *   x-value. Should have properties like 'name', 'yval' and 'canvasy'.
+ * @param {number} oneEmWidth The pixel width for 1em in the legend. Only
+ *   relevant when displaying a legend with no selection (i.e. {legend:
+ *   'always'}) and with dashed lines.
+ * @param {number} row The selected row index.
  */
-legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
+legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 
@@ -252,7 +254,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // TODO(danvk): remove this use of a private API
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
-  html = xvf(x, xOptView, labels[0], g);
+  html = xvf(x, xOptView, labels[0], g, row, 0);
   if (html !== '') {
     html += ':';
   }
@@ -275,7 +277,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
     var series = g.getPropertiesForSeries(pt.name);
     var yOptView = yOptViews[series.axis - 1];
     var fmtFunc = yOptView('valueFormatter');
-    var yval = fmtFunc(pt.yval, yOptView, pt.name, g);
+    var yval = fmtFunc(pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
 
     var cls = (pt.name == highlightSeries) ? " class='highlight'" : "";
 

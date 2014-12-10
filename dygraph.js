@@ -2042,6 +2042,7 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   /*var defaultPrevented = */
   this.cascadeEvents_('select', {
+    selectedRow: this.lastRow_,
     selectedX: this.lastx_,
     selectedPoints: this.selPoints_
   });
