@@ -193,7 +193,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   "valueFormatter": {
     "default": "Depends on the type of your data.",
     "labels": ["Legend", "Value display/formatting"],
-    "type": "function(num or millis, opts, dygraph)",
+    "type": "function(num or millis, opts, seriesName, dygraph)",
     "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. For date axes, you can call new Date(millis) to get a Date object. opts is a function you can call to access various options (e.g. opts('labelsKMB'))."
   },
   "annotationMouseOverHandler": {
