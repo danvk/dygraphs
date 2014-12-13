@@ -254,7 +254,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   // TODO(danvk): remove this use of a private API
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
-  html = xvf(x, xOptView, labels[0], g, row, 0);
+  html = xvf.call(g, x, xOptView, labels[0], g, row, 0);
   if (html !== '') {
     html += ':';
   }
@@ -277,7 +277,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
     var series = g.getPropertiesForSeries(pt.name);
     var yOptView = yOptViews[series.axis - 1];
     var fmtFunc = yOptView('valueFormatter');
-    var yval = fmtFunc(pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
+    var yval = fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
 
     var cls = (pt.name == highlightSeries) ? " class='highlight'" : "";
 
