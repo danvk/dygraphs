@@ -245,20 +245,24 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
     height: 320,
     axes : {
       x : {
-        valueFormatter: function(x, opts, series_name, dg) {
+        valueFormatter: function(x, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(x));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
           assertEquals('[Dygraph graph]', dg.toString());
+          assertEquals('number', typeof(row));
+          assertEquals('number', typeof(col));
           return 'x' + x;
         }
       },
       y : {
-        valueFormatter: function(y, opts, series_name, dg) {
+        valueFormatter: function(y, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(y));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
           assertEquals('[Dygraph graph]', dg.toString());
+          assertEquals('number', typeof(row));
+          assertEquals('number', typeof(col));
           return 'y' + y;
         }
       }
@@ -289,20 +293,24 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
     axes : {
       x : {
         pixelsPerLabel: 60,
-        valueFormatter: function(x, opts, series_name, dg) {
+        valueFormatter: function(x, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(x));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
           assertEquals('[Dygraph graph]', dg.toString());
+          assertEquals('number', typeof(row));
+          assertEquals('number', typeof(col));
           return 'x' + Util.formatDate(x);
         }
       },
       y : {
-        valueFormatter: function(y, opts, series_name, dg) {
+        valueFormatter: function(y, opts, series_name, dg, row, col) {
           assertEquals('number', typeof(y));
           assertEquals('function', typeof(opts));
           assertEquals('string', typeof(series_name));
           assertEquals('[Dygraph graph]', dg.toString());
+          assertEquals('number', typeof(row));
+          assertEquals('number', typeof(col));
           return 'y' + y;
         }
       }
@@ -448,6 +456,63 @@ AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
 
   g.setSelection(9);
   assertEquals("vf9: y: vf18", Util.getLegend());
+};
+
+AxisLabelsTestCase.prototype.testValueFormatterParameters = function() {
+  var calls = [];
+  // change any functions in list to 'fn' -- functions can't be asserted.
+  var killFunctions = function(list) {
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      if (typeof(list[i]) == 'function') {
+        out[i] = 'fn';
+      } else {
+        out[i] = list[i];
+      }
+    }
+    return out;
+  };
+  var taggedRecorder = function(tag) {
+    return function() {
+      calls.push([tag].concat(killFunctions(arguments)));
+      return '';
+    }
+  };
+  var opts = {
+    axes: {
+      x:  { valueFormatter: taggedRecorder('x') },
+      y:  { valueFormatter: taggedRecorder('y') },
+      y2: { valueFormatter: taggedRecorder('y2') }
+    },
+    series: {
+      'y1': { axis: 'y1'},
+      'y2': { axis: 'y2'}
+    },
+    labels: ['x', 'y1', 'y2']
+  };
+  var data = [
+    [0, 1, 2],
+    [1, 3, 4]
+  ];
+  var graph = document.getElementById('graph');
+  var g = new Dygraph(graph, data, opts);
+
+  assertEquals([], calls);
+  g.setSelection(0);
+  assertEquals([
+    // num or millis, opts, series, dygraph, row, col
+    [ 'x', 0, 'fn',  'x', g, 0, 0],
+    [ 'y', 1, 'fn', 'y1', g, 0, 1],
+    ['y2', 2, 'fn', 'y2', g, 0, 2]
+  ], calls);
+
+  calls = [];
+  g.setSelection(1);
+  assertEquals([
+    [ 'x', 1, 'fn',  'x', g, 1, 0],
+    [ 'y', 3, 'fn', 'y1', g, 1, 1],
+    ['y2', 4, 'fn', 'y2', g, 1, 2]
+  ], calls);
 };
 
 AxisLabelsTestCase.prototype.testSeriesOrder = function() {
