@@ -198,7 +198,7 @@ Dygraph.numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   for (i = 0; i < ticks.length; i++) {
     if (ticks[i].label !== undefined) continue;  // Use current label.
     // TODO(danvk): set granularity to something appropriate here.
-    ticks[i].label = formatter(ticks[i].v, 0, opts, dygraph);
+    ticks[i].label = formatter.call(dygraph, ticks[i].v, 0, opts, dygraph);
   }
 
   return ticks;
@@ -414,7 +414,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
     while (tick_time <= end_time) {
       ticks.push({ v: tick_time,
-                   label: formatter(tick_date, granularity, opts, dg)
+                   label: formatter.call(dg, tick_date, granularity, opts, dg)
                  });
       tick_time += spacing;
       tick_date = new Date(tick_time);
@@ -429,7 +429,7 @@ Dygraph.getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       if (granularity >= Dygraph.DAILY ||
           accessors.getHours(tick_date) % step === 0) {
         ticks.push({ v: tick_time,
-                     label: formatter(tick_date, granularity, opts, dg)
+                     label: formatter.call(dg, tick_date, granularity, opts, dg)
                    });
       }
       date_array[datefield] += step;
