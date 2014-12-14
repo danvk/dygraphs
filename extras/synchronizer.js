@@ -37,10 +37,11 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
 
-  var OPTIONS = ['selection', 'zoom'];
+  var OPTIONS = ['selection', 'zoom', 'syncrange'];
   var opts = {
     selection: true,
-    zoom: true
+    zoom: true,
+    syncrange: true
   };
   var dygraphs = [];
 
@@ -93,7 +94,12 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
 
   // Listen for draw, highlight, unhighlight callbacks.
   if (opts.zoom) {
-    attachZoomHandlers(dygraphs);
+    if (opts.syncrange) {
+      attachZoomHandlers(dygraphs,true);
+    }
+    else {      
+      attachZoomHandlers(dygraphs,false);
+    }
   }
 
   if (opts.selection) {
@@ -122,7 +128,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
 };
 
 // TODO: call any `drawCallback`s that were set before this.
-function attachZoomHandlers(gs) {
+function attachZoomHandlers(gs,syncrange) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
@@ -134,10 +140,17 @@ function attachZoomHandlers(gs) {
         var yrange = me.yAxisRange();
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) continue;
-          gs[j].updateOptions( {
-            dateWindow: range,
-            valueRange: yrange
-          });
+          if(syncrange){
+            gs[j].updateOptions( {
+              dateWindow: range,
+              valueRange: yrange
+            });
+	  }
+          else{
+            gs[j].updateOptions( {
+              dateWindow: range
+            });
+          }
         }
         block = false;
       }
