@@ -140,13 +140,13 @@ function attachZoomHandlers(gs,syncrange) {
         var yrange = me.yAxisRange();
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) continue;
-          if(syncrange){
+          if (syncrange) {
             gs[j].updateOptions( {
               dateWindow: range,
               valueRange: yrange
             });
-	  }
-          else{
+          }
+          else {
             gs[j].updateOptions( {
               dateWindow: range
             });
