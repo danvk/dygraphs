@@ -37,6 +37,7 @@
       Synchronize what?
       <input type=checkbox id='chk-zoom' checked onChange='update()'><label for='chk-zoom'> Zoom</label>
       <input type=checkbox id='chk-selection' checked onChange='update()'><label for='chk-selection'> Selection</label>
+      <input type=checkbox id='chk-range' checked onChange='update()'><label for='chk-range'> Range (y-axis)</label>
     </p>
 
     <script type="text/javascript">
@@ -56,12 +57,16 @@
       var sync = Dygraph.synchronize(gs);
       
       function update() {
-        var zoom = document.getElementById('chk-zoom').checked;
-        var selection = document.getElementById('chk-selection').checked;
+        var zoom = document.getElementById('chk-zoom').checked,
+            selection = document.getElementById('chk-selection').checked,
+            syncRange = document.getElementById('chk-range').checked;
+        document.getElementById('chk-range').disabled = !zoom;
+
         sync.detach();
         sync = Dygraph.synchronize(gs, {
           zoom: zoom,
-          selection: selection
+          selection: selection,
+          range: syncRange
         });
       }
     </script>

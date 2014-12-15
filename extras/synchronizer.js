@@ -20,13 +20,16 @@
  *
  * The default is to synchronize both of these.
  *
- * Instead of passing one Dygraph objet as each parameter, you may also pass an
+ * Instead of passing one Dygraph object as each parameter, you may also pass an
  * array of dygraphs:
  *
  *   var sync = Dygraph.synchronize([g1, g2, g3], {
  *      selection: false,
  *      zoom: true
  *   });
+ *
+ * You may also set `range: false` if you wish to only sync the x-axis.
+ * The `range` option has no effect unless `zoom` is true (the default).
  */
 (function() {
 /* global Dygraph:false */
@@ -37,11 +40,11 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
 
-  var OPTIONS = ['selection', 'zoom', 'syncRange'];
+  var OPTIONS = ['selection', 'zoom', 'range'];
   var opts = {
     selection: true,
     zoom: true,
-    syncRange: true
+    range: true
   };
   var dygraphs = [];
 
@@ -94,12 +97,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
 
   // Listen for draw, highlight, unhighlight callbacks.
   if (opts.zoom) {
-    if (opts.syncRange) {
-      attachZoomHandlers(dygraphs,true);
-    }
-    else {      
-      attachZoomHandlers(dygraphs,false);
-    }
+    attachZoomHandlers(dygraphs, opts);
   }
 
   if (opts.selection) {
@@ -128,7 +126,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
 };
 
 // TODO: call any `drawCallback`s that were set before this.
-function attachZoomHandlers(gs,syncRange) {
+function attachZoomHandlers(gs, syncOpts) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
@@ -136,21 +134,14 @@ function attachZoomHandlers(gs,syncRange) {
       drawCallback: function(me, initial) {
         if (block || initial) return;
         block = true;
-        var range = me.xAxisRange();
-        var yrange = me.yAxisRange();
+        var opts = {
+          dateWindow: me.xAxisRange()
+        };
+        if (syncOpts.range) opts.valueRange = me.yAxisRange();
+
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) continue;
-          if (syncRange) {
-            gs[j].updateOptions( {
-              dateWindow: range,
-              valueRange: yrange
-            });
-          }
-          else {
-            gs[j].updateOptions( {
-              dateWindow: range
-            });
-          }
+          gs[j].updateOptions(opts);
         }
         block = false;
       }
