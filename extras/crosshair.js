@@ -46,11 +46,11 @@ crosshair.prototype.select = function(e) {
   var ctx = this.canvas_.getContext("2d");
   var width = e.dygraph.width_;
   var height = e.dygraph.height_;
-  var canvasx = e.dygraph.selPoints_[0].canvasx;
+  var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
   var options = this.options;
 
   if (options === false) return;
-  
+
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(0, 0, 0,0.3)";
   ctx.beginPath();
@@ -62,7 +62,7 @@ crosshair.prototype.select = function(e) {
 
   if (options === "horizontal" || options === "both" || options === true) {
     for (var i = 0; i < e.dygraph.selPoints_.length; i++) {
-      var canvasy = e.dygraph.selPoints_[i].canvasy;
+      var canvasy = Math.floor(e.dygraph.selPoints_[i].canvasy) + 0.5; // crisper rendering
       ctx.moveTo(0, canvasy);
       ctx.lineTo(width, canvasy);
     }
