@@ -16,7 +16,6 @@ Dygraph.Plugins.Crosshair = (function() {
  */
 
 var crosshair = function() {
-  this.options = null;
   this.canvas_ = document.createElement("canvas");
 };
 
@@ -29,7 +28,6 @@ crosshair.prototype.toString = function() {
  * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
  */
 crosshair.prototype.activate = function(g) {
-  this.options = g.getOption('crosshair');
   this.canvas_.width = g.width_;
   this.canvas_.height = g.height_;
   this.canvas_.style.width = g.width_ + "px";    // for IE
@@ -47,7 +45,7 @@ crosshair.prototype.select = function(e) {
   var width = e.dygraph.width_;
   var height = e.dygraph.height_;
   var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
-  var options = this.options;
+  var options = e.dygraph.getOption('crosshair');
 
   if (options === false) return;
 
