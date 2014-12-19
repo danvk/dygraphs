@@ -3,10 +3,10 @@
  * Copyright 2014 Petr Shevtsov (petr.shevtsov@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
+
 /*global Dygraph:false */
-Dygraph.Plugins.Crosshair = (function() {
 /*jshint globalstrict: true */
-/*global Dygraph:false */
+Dygraph.Plugins.Crosshair = (function() {
 "use strict";
 
 /**
