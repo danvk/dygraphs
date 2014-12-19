@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>dygraphs unboxed</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -28,10 +24,16 @@
       g = new Dygraph(
             document.getElementById("div_g"),
             data, {
-              drawXAxis: show_box,
-              drawYAxis: show_box,
-              drawXGrid: show_box,
-              drawYGrid: show_box
+              axes : {
+                x : {
+                  drawGrid: show_box,
+                  drawAxis : show_box,
+                },
+                y : {
+                  drawGrid: show_box,
+                  drawAxis : show_box,
+                }
+              }
             }
           );
 
@@ -57,10 +59,16 @@
       var g2 = new Dygraph(
             document.getElementById("div_spark"),
             data, {
-              drawXAxis: false,
-              drawYAxis: false,
-              drawXGrid: false,
-              drawYGrid: false,
+              axes : {
+                x : {
+                  drawGrid: false,
+                  drawAxis : false,
+                },
+                y : {
+                  drawGrid: false,
+                  drawAxis : false,
+                }
+              },
               strokeWidth: 1.0,
               rollPeriod: 7,
               labelsDiv: '',

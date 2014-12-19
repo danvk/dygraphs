@@ -1,0 +1,18 @@
+{
+  "newcap": true,
+  "noarg": true,
+  "shadow": true,
+  "strict": true,
+  "forin": true,
+  "immed": true,
+  "latedef": true,
+  "nonbsp": true,
+  "undef": true,
+
+  "browser": true,
+  "devel": true,
+  "globals": {
+    "DEBUG": true
+  },
+  "maxerr": 100000
+}

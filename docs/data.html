@@ -118,9 +118,13 @@ column:</p>
               "1247382000,100,200\n" +
               "1247986800,150,201\n",
               {
-                xValueFormatter: Dygraph.dateString_,
-                xValueParser: function(x) { return 1000*parseInt(x); },
-                xTicker: Dygraph.dateTicker
+                axis : {
+                  x : {
+                    valueFormatter: Dygraph.dateString_,
+                    valueParser: function(x) { return 1000*parseInt(x); },
+                    ticker: Dygraph.dateTicker                
+                  }
+                }
               });
 </code>
 

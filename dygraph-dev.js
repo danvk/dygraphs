@@ -16,7 +16,7 @@
   // This list needs to be kept in sync w/ the one in generate-combined.sh
   // and the one in jsTestDriver.conf.
   var source_files = [
-    "stacktrace.js",
+    "polyfills/console.js",
     "dashed-canvas.js",
     "dygraph-options.js",
     "dygraph-layout.js",

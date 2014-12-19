@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Linear Regression</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -88,6 +84,10 @@
         updateChart();
       }
 
+      function toHex(rgb) {
+        return 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+      }
+
       function updateChart() {
         // Generate a new data set with the regression lines.
         var new_labels = [];
@@ -100,11 +100,11 @@
             // Darken the series by 50% to generate its regression.
             var label = labels[i] + " Regression";
             new_labels.push(label);
-            var c = new RGBColorParser(orig_colors[i - 1]);
+            var c = Dygraph.toRGB_(orig_colors[i - 1]);
             c.r = Math.floor(255 - 0.5 * (255 - c.r));
             c.g = Math.floor(255 - 0.5 * (255 - c.g));
             c.b = Math.floor(255 - 0.5 * (255 - c.b));
-            new_colors.push(c.toHex());
+            new_colors.push(toHex(c));
             new_opts[label] = {
               drawPoints: false,
               strokeWidth: 1.0

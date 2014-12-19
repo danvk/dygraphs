@@ -133,6 +133,8 @@ print """
 
 <p>Some options can be set on a per-axis and per-series basis. See the docs on <a href="per-axis.html">per-axis and per-series options</a> to learn how to do this. The options which may be set in this way are marked as such on this page.</p>
 
+<p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
+
 <p>And, without further ado, here's the complete list of options:</p>
 """
 
@@ -150,7 +152,7 @@ def urlify_gallery(f):
 
 
 for label in sorted(labels):
-  print '<a name="%s"><h3>%s</h3>\n' % (label, label)
+  print '<a name="%s"></a><h3>%s</h3>\n' % (label, label)
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -181,7 +183,9 @@ for label in sorted(labels):
     if not opt['description']: opt['description'] = '(missing)'
 
     print """
-  <div class='option'><a name="%(name)s"></a><b>%(name)s</b><br/>
+  <div class='option'><a name="%(name)s"></a><b>%(name)s</b>
+  <a class="link" href="#%(name)s">#</a>
+  <br/>
   <p>%(desc)s</p>
   <i>Type: %(type)s</i><br/>%(parameters)s
   <i>Default: %(default)s</i></p>
@@ -204,6 +208,7 @@ Some callbacks take a point argument. Its properties are:<br/>
 <li>xval/yval: The data coordinates of the point (with dates/times as millis since epoch)</li>
 <li>canvasx/canvasy: The canvas coordinates at which the point is drawn.</li>
 <li>name: The name of the data series to which the point belongs</li>
+<li>idx: The row number of the point in the data set</li>
 </ul>
 </div> <!-- #content -->
 

@@ -11,7 +11,15 @@
  */
 
 var DygraphOptions = (function() {
+/*jshint strict:false */
 
+// For "production" code, this gets set to false by uglifyjs.
+// Need to define it outside of "use strict", hence the nested IIFEs.
+if (typeof(DEBUG) === 'undefined') DEBUG=true;
+
+return (function() {
+
+// TODO: remove this jshint directive & fix the warnings.
 /*jshint sub:true */
 /*global Dygraph:false */
 "use strict";
@@ -127,16 +135,7 @@ DygraphOptions.prototype.reparseSeries = function() {
   this.xAxis_ = { options : {} };
   this.series_ = {};
 
-  // Traditionally, per-series options were specified right up there with the options. For instance
-  // {
-  //   labels: [ "X", "foo", "bar" ],
-  //   pointSize: 3,
-  //   foo : {}, // options for foo
-  //   bar : {} // options for bar
-  // }
-  //
-  // Moving forward, series really should be specified in the series element, separating them.
-  // like so:
+  // Series are specified in the series element:
   //
   // {
   //   labels: [ "X", "foo", "bar" ],
@@ -147,67 +146,23 @@ DygraphOptions.prototype.reparseSeries = function() {
   //   }
   // }
   //
-  // So, if series is found, it's expected to contain per-series data, otherwise we fall
-  // back.
-  var oldStyleSeries = !this.user_["series"];
+  // So, if series is found, it's expected to contain per-series data, otherwise set a
+  // default.
+  var seriesDict = this.user_.series || {};
+  for (var idx = 0; idx < this.labels_.length; idx++) {
+    var seriesName = this.labels_[idx];
+    var optionsForSeries = seriesDict[seriesName] || {};
+    var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
 
-  if (oldStyleSeries) {
-    var axisId = 0; // 0-offset; there's always one.
-    // Go through once, add all the series, and for those with {} axis options, add a new axis.
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
+    this.series_[seriesName] = {
+      idx: idx,
+      yAxis: yAxis,
+      options : optionsForSeries };
 
-      var optionsForSeries = this.user_[seriesName] || {};
-
-      var yAxis = 0;
-      var axis = optionsForSeries["axis"];
-      if (typeof(axis) == 'object') {
-        yAxis = ++axisId;
-        this.yAxes_[yAxis] = { series : [ seriesName ], options : axis };
-      }
-
-      // Associate series without axis options with axis 0.
-      if (!axis) { // undefined
-        this.yAxes_[0].series.push(seriesName);
-      }
-
-      this.series_[seriesName] = { idx: idx, yAxis: yAxis, options : optionsForSeries };
-    }
-
-    // Go through one more time and assign series to an axis defined by another
-    // series, e.g. { 'Y1: { axis: {} }, 'Y2': { axis: 'Y1' } }
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
-      var optionsForSeries = this.series_[seriesName]["options"];
-      var axis = optionsForSeries["axis"];
-
-      if (typeof(axis) == 'string') {
-        if (!this.series_.hasOwnProperty(axis)) {
-          Dygraph.error("Series " + seriesName + " wants to share a y-axis with " +
-                     "series " + axis + ", which does not define its own axis.");
-          return;
-        }
-        var yAxis = this.series_[axis].yAxis;
-        this.series_[seriesName].yAxis = yAxis;
-        this.yAxes_[yAxis].series.push(seriesName);
-      }
-    }
-  } else {
-    for (var idx = 0; idx < this.labels_.length; idx++) {
-      var seriesName = this.labels_[idx];
-      var optionsForSeries = this.user_.series[seriesName] || {};
-      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
-
-      this.series_[seriesName] = {
-        idx: idx,
-        yAxis: yAxis,
-        options : optionsForSeries };
-
-      if (!this.yAxes_[yAxis]) {
-        this.yAxes_[yAxis] =  { series : [ seriesName ], options : {} };
-      } else {
-        this.yAxes_[yAxis].series.push(seriesName);
-      }
+    if (!this.yAxes_[yAxis]) {
+      this.yAxes_[yAxis] =  { series : [ seriesName ], options : {} };
+    } else {
+      this.yAxes_[yAxis].series.push(seriesName);
     }
   }
 
@@ -217,6 +172,8 @@ DygraphOptions.prototype.reparseSeries = function() {
     Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});
   }
   Dygraph.update(this.xAxis_.options, axis_opts["x"] || {});
+
+  if (DEBUG) this.validateOptions_();
 };
 
 /**
@@ -290,11 +247,13 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
   }
 
   // User-specified global options second.
-  var result = this.getGlobalUser_(name);
-  if (result !== null) {
-    return result;
+  // But, hack, ignore globally-specified 'logscale' for 'x' axis declaration.
+  if (!(axis === 'x' && name === 'logscale')) {
+    var result = this.getGlobalUser_(name);
+    if (result !== null) {
+      return result;
+    }
   }
-
   // Default axis options third.
   var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {
@@ -370,6 +329,77 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
+if (DEBUG) {
+
+/**
+ * Validate all options.
+ * This requires Dygraph.OPTIONS_REFERENCE, which is only available in debug builds.
+ * @private
+ */
+DygraphOptions.prototype.validateOptions_ = function() {
+  if (typeof Dygraph.OPTIONS_REFERENCE === 'undefined') {
+    throw 'Called validateOptions_ in prod build.';
+  }
+
+  var that = this;
+  var validateOption = function(optionName) {
+    if (!Dygraph.OPTIONS_REFERENCE[optionName]) {
+      that.warnInvalidOption_(optionName);
+    }
+  };
+
+  var optionsDicts = [this.xAxis_.options,
+                      this.yAxes_[0].options,
+                      this.yAxes_[1] && this.yAxes_[1].options,
+                      this.global_,
+                      this.user_,
+                      this.highlightSeries_];
+  var names = this.seriesNames();
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    if (this.series_.hasOwnProperty(name)) {
+      optionsDicts.push(this.series_[name].options);
+    }
+  }
+  for (var i = 0; i < optionsDicts.length; i++) {
+    var dict = optionsDicts[i];
+    if (!dict) continue;
+    for (var optionName in dict) {
+      if (dict.hasOwnProperty(optionName)) {
+        validateOption(optionName);
+      }
+    }
+  }
+};
+
+var WARNINGS = {};  // Only show any particular warning once.
+
+/**
+ * Logs a warning about invalid options.
+ * TODO: make this throw for testing
+ * @private
+ */
+DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
+  if (!WARNINGS[optionName]) {
+    WARNINGS[optionName] = true;
+    var isSeries = (this.labels_.indexOf(optionName) >= 0);
+    if (isSeries) {
+      console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://bit.ly/1tceaJs');
+    } else {
+      console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
+      throw "invalid option " + optionName;
+    }
+  }
+};
+
+// Reset list of previously-shown warnings. Used for testing.
+DygraphOptions.resetWarnings_ = function() {
+  WARNINGS = {};
+};
+
+}
+
 return DygraphOptions;
 
+})();
 })();

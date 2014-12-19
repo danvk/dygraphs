@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Multiple y-axes</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -48,12 +44,13 @@
           data,
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
-            'Y3': {
-              axis: {
-              }
-            },
-            'Y4': {
-              axis: 'Y3'  // use the same y-axis as series Y3
+            series: {
+              'Y3': {
+                axis: 'y2'
+              },
+              'Y4': {
+                axis: 'y2'
+              },
             },
             axes: {
               y2: {

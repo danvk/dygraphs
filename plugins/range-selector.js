@@ -12,7 +12,6 @@
 
 Dygraph.Plugins.RangeSelector = (function() {
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
 
@@ -29,7 +28,6 @@ rangeSelector.prototype.toString = function() {
 
 rangeSelector.prototype.activate = function(dygraph) {
   this.dygraph_ = dygraph;
-  this.isUsingExcanvas_ = dygraph.isUsingExcanvas_;
   if (this.getOption_('showRangeSelector')) {
     this.createInterface_();
   }
@@ -45,19 +43,18 @@ rangeSelector.prototype.destroy = function() {
   this.fgcanvas_ = null;
   this.leftZoomHandle_ = null;
   this.rightZoomHandle_ = null;
-  this.iePanOverlay_ = null;
 };
 
 //------------------------------------------------------------------
 // Private methods
 //------------------------------------------------------------------
 
-rangeSelector.prototype.getOption_ = function(name) {
-  return this.dygraph_.getOption(name);
+rangeSelector.prototype.getOption_ = function(name, opt_series) {
+  return this.dygraph_.getOption(name, opt_series);
 };
 
 rangeSelector.prototype.setDefaultOption_ = function(name, value) {
-  return this.dygraph_.attrs_[name] = value;
+  this.dygraph_.attrs_[name] = value;
 };
 
 /**
@@ -66,15 +63,12 @@ rangeSelector.prototype.setDefaultOption_ = function(name, value) {
  */
 rangeSelector.prototype.createInterface_ = function() {
   this.createCanvases_();
-  if (this.isUsingExcanvas_) {
-    this.createIEPanOverlay_();
-  }
   this.createZoomHandles_();
   this.initInteraction_();
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
   if (this.getOption_('animatedZooms')) {
-    Dygraph.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
+    console.warn('Animated zooms and range selector are not compatible; disabling animatedZooms.');
     this.dygraph_.updateOptions({animatedZooms: false}, true);
   }
 
@@ -166,13 +160,19 @@ rangeSelector.prototype.updateVisibility_ = function() {
  * Resizes the range selector.
  */
 rangeSelector.prototype.resize_ = function() {
-  function setElementRect(canvas, rect) {
+  function setElementRect(canvas, context, rect) {
+    var canvasScale = Dygraph.getContextPixelRatio(context);
+
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
-    canvas.width = rect.w;
-    canvas.height = rect.h;
-    canvas.style.width = canvas.width + 'px';    // for IE
-    canvas.style.height = canvas.height + 'px';  // for IE
+    canvas.width = rect.w * canvasScale;
+    canvas.height = rect.h * canvasScale;
+    canvas.style.width = rect.w + 'px';
+    canvas.style.height = rect.h + 'px';
+
+    if(canvasScale != 1) {
+      context.scale(canvasScale, canvasScale);
+    }
   }
 
   var plotArea = this.dygraph_.layout_.getPlotArea();
@@ -188,8 +188,8 @@ rangeSelector.prototype.resize_ = function() {
     h: this.getOption_('rangeSelectorHeight')
   };
 
-  setElementRect(this.bgcanvas_, this.canvasRect_);
-  setElementRect(this.fgcanvas_, this.canvasRect_);
+  setElementRect(this.bgcanvas_, this.bgcanvas_ctx_, this.canvasRect_);
+  setElementRect(this.fgcanvas_, this.fgcanvas_ctx_, this.canvasRect_);
 };
 
 /**
@@ -209,20 +209,6 @@ rangeSelector.prototype.createCanvases_ = function() {
   this.fgcanvas_.style.zIndex = 9;
   this.fgcanvas_.style.cursor = 'default';
   this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
-};
-
-/**
- * @private
- * Creates overlay divs for IE/Excanvas so that mouse events are handled properly.
- */
-rangeSelector.prototype.createIEPanOverlay_ = function() {
-  this.iePanOverlay_ = document.createElement("div");
-  this.iePanOverlay_.style.position = 'absolute';
-  this.iePanOverlay_.style.backgroundColor = 'white';
-  this.iePanOverlay_.style.filter = 'alpha(opacity=0)';
-  this.iePanOverlay_.style.display = 'none';
-  this.iePanOverlay_.style.cursor = 'move';
-  this.fgcanvas_.appendChild(this.iePanOverlay_);
 };
 
 /**
@@ -273,7 +259,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   var handle = null;
   var isZooming = false;
   var isPanning = false;
-  var dynamic = !this.isMobileDevice_ && !this.isUsingExcanvas_;
+  var dynamic = !this.isMobileDevice_;
 
   // We cover iframes during mouse interactions. See comments in
   // dygraph-utils.js for more info on why this is a good idea.
@@ -338,7 +324,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     handle.style.left = (newPos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
 
-    // Zoom on the fly (if not using excanvas).
+    // Zoom on the fly.
     if (dynamic) {
       doZoom();
     }
@@ -355,7 +341,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     Dygraph.removeEvent(topElem, 'mouseup', onZoomEnd);
     self.fgcanvas_.style.cursor = 'default';
 
-    // If using excanvas, Zoom now.
+    // If on a slower device, zoom now.
     if (!dynamic) {
       doZoom();
     }
@@ -378,15 +364,11 @@ rangeSelector.prototype.initInteraction_ = function() {
   };
 
   isMouseInPanZone = function(e) {
-    if (self.isUsingExcanvas_) {
-        return e.srcElement == self.iePanOverlay_;
-    } else {
-      var rect = self.leftZoomHandle_.getBoundingClientRect();
-      var leftHandleClientX = rect.left + rect.width/2;
-      rect = self.rightZoomHandle_.getBoundingClientRect();
-      var rightHandleClientX = rect.left + rect.width/2;
-      return (e.clientX > leftHandleClientX && e.clientX < rightHandleClientX);
-    }
+    var rect = self.leftZoomHandle_.getBoundingClientRect();
+    var leftHandleClientX = rect.left + rect.width/2;
+    rect = self.rightZoomHandle_.getBoundingClientRect();
+    var rightHandleClientX = rect.left + rect.width/2;
+    return (e.clientX > leftHandleClientX && e.clientX < rightHandleClientX);
   };
 
   onPanStart = function(e) {
@@ -436,7 +418,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     self.rightZoomHandle_.style.left = (rightHandlePos - halfHandleWidth) + 'px';
     self.drawInteractiveLayer_();
 
-    // Do pan on the fly (if not using excanvas).
+    // Do pan on the fly.
     if (dynamic) {
       doPan();
     }
@@ -450,7 +432,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     isPanning = false;
     Dygraph.removeEvent(topElem, 'mousemove', onPan);
     Dygraph.removeEvent(topElem, 'mouseup', onPanEnd);
-    // If using excanvas, do pan now.
+    // If on a slower device, do pan now.
     if (!dynamic) {
       doPan();
     }
@@ -519,12 +501,8 @@ rangeSelector.prototype.initInteraction_ = function() {
   this.dygraph_.addAndTrackEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
   this.dygraph_.addAndTrackEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
 
-  if (this.isUsingExcanvas_) {
-    this.dygraph_.addAndTrackEvent(this.iePanOverlay_, 'mousedown', onPanStart);
-  } else {
-    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart);
-    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
-  }
+  this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart);
+  this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
 
   // Touch events
   if (this.hasTouchInterface_) {
@@ -544,7 +522,7 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   try {
     this.drawMiniPlot_();
   } catch(ex) {
-    Dygraph.warn(ex);
+    console.warn(ex);
   }
 
   var margin = 0.5;
@@ -594,6 +572,13 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
     var dataPoint = combinedSeriesData.data[i];
     var x = ((dataPoint[0] !== null) ? ((dataPoint[0] - xExtremes[0])*xFact) : NaN);
     var y = ((dataPoint[1] !== null) ? (canvasHeight - (dataPoint[1] - combinedSeriesData.yMin)*yFact) : NaN);
+
+    // Skip points that don't change the x-value. Overly fine-grained points
+    // can cause major slowdowns with the ctx.fill() call below.
+    if (!stepPlot && prevX !== null && Math.round(x) == Math.round(prevX)) {
+      continue;
+    }
+
     if (isFinite(x) && isFinite(y)) {
       if(prevX === null) {
         ctx.lineTo(x, canvasHeight);
@@ -646,15 +631,29 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var g = this.dygraph_;
   var logscale = this.getOption_('logscale');
-
-  // Create a combined series (average of all series values).
   var i;
 
+  // Select series to combine. By default, all series are combined.
+  var numColumns = g.numColumns();
+  var labels = g.getLabels();
+  var includeSeries = new Array(numColumns);
+  var anySet = false;
+  for (i = 1; i < numColumns; i++) {
+    var include = this.getOption_('showInRangeSelector', labels[i]);
+    includeSeries[i] = include;
+    if (include !== null) anySet = true;  // it's set explicitly for this series
+  }
+  if (!anySet) {
+    for (i = 0; i < includeSeries.length; i++) includeSeries[i] = true;
+  }
+
+  // Create a combined series (average of selected series values).
   // TODO(danvk): short-circuit if there's only one series.
   var rolledSeries = [];
   var dataHandler = g.dataHandler_;
   var options = g.attributes_;
   for (i = 1; i < g.numColumns(); i++) {
+    if (!includeSeries[i]) continue;
     var series = dataHandler.extractSeries(g.rawData_, i, options);
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
@@ -755,9 +754,6 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
     ctx.lineTo(width, height);
     ctx.lineTo(width, margin);
     ctx.stroke();
-    if (this.iePanOverlay_) {
-      this.iePanOverlay_.style.display = 'none';
-    }
   } else {
     var leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
     var rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
@@ -774,13 +770,6 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
     ctx.lineTo(rightHandleCanvasPos, margin);
     ctx.lineTo(width, margin);
     ctx.stroke();
-
-    if (this.isUsingExcanvas_) {
-      this.iePanOverlay_.style.width = (rightHandleCanvasPos - leftHandleCanvasPos) + 'px';
-      this.iePanOverlay_.style.left = leftHandleCanvasPos + 'px';
-      this.iePanOverlay_.style.height = height + 'px';
-      this.iePanOverlay_.style.display = 'inline';
-    }
   }
 };
 

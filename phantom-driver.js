@@ -63,9 +63,6 @@ page.open(url, function(status) {
   results = page.evaluate(function() {
     var num_passing = 0, num_failing = 0;
     var failures = [];
-    // Phantom doesn't like stacktrace.js using the "arguments" object
-    // in stacktrace.js, which it interprets in strict mode.
-    printStackTrace = undefined;
 
     jstestdriver.attachListener({
       finish : function(tc, name, result, e) {

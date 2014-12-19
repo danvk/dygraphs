@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>valueFormatter and axisLabelFormatter</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -43,6 +39,13 @@
                    1e6 * (2 - i * (100 - i) / (50 * 50))]);
       }
 
+      function formatDate(d) {
+        var yyyy = d.getFullYear(),
+            mm = d.getMonth() + 1,
+            dd = d.getDate();
+        return yyyy + '-' + (mm < 10 ? '0' : '') + mm + (dd < 10 ? '0' : '') + dd;
+      }
+
       g = new Dygraph(
           document.getElementById("demodiv"),
           data,
@@ -50,22 +53,19 @@
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
             width: 640,
             height: 350,
-            'Y3': {
-              axis: {
-              }
-            },
-            'Y4': {
-              axis: 'Y3'  // use the same y-axis as series Y3
+            series: {
+              'Y3': { axis: 'y2' },
+              'Y4': { axis: 'y2' }
             },
             xAxisLabelWidth: 100,
             yAxisLabelWidth: 100,
             axes: {
               x: {
                 valueFormatter: function(ms) {
-                  return 'xvf(' + new Date(ms).strftime('%Y-%m-%d') + ')';
+                  return 'xvf(' + formatDate(new Date(ms)) + ')';
                 },
                 axisLabelFormatter: function(d) {
-                  return 'xalf(' + d.strftime('%Y-%m-%d') + ')';
+                  return 'xalf(' + formatDate(d) + ')';
                 },
                 pixelsPerLabel: 100,
               },

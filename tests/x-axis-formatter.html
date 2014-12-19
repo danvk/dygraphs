@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>X Axis Label Formatting</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -47,8 +43,8 @@
             { 
               axes: {
                 x: {
-                  axisLabelFormatter: function(d, gran) {
-                      return Dygraph.dateAxisFormatter(new Date(d.getTime() + 7200*1000), gran);
+                  axisLabelFormatter: function(d, gran, opts) {
+                      return Dygraph.dateAxisLabelFormatter(new Date(d.getTime() + 7200*1000), gran, opts);
                   }
                 }
               }

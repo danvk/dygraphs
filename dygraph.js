@@ -43,7 +43,10 @@
 
  */
 
-/*jshint globalstrict: true */
+// For "production" code, this gets set to false by uglifyjs.
+if (typeof(DEBUG) === 'undefined') DEBUG=true;
+
+var Dygraph = (function() {
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
 "use strict";
 
@@ -72,7 +75,7 @@ var Dygraph = function(div, data, opts, opt_fourth_param) {
     // Old versions of dygraphs took in the series labels as a constructor
     // parameter. This doesn't make sense anymore, but it's easy to continue
     // to support this usage.
-    Dygraph.warn("Using deprecated four-argument dygraph constructor");
+    console.warn("Using deprecated four-argument dygraph constructor");
     this.__old_init__(div, data, opts, opt_fourth_param);
   } else {
     this.__init__(div, data, opts);
@@ -80,7 +83,7 @@ var Dygraph = function(div, data, opts, opt_fourth_param) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "1.0.1";
+Dygraph.VERSION = "1.1.0";
 Dygraph.__repr__ = function() {
   return "[" + Dygraph.NAME + " " + Dygraph.VERSION + "]";
 };
@@ -114,10 +117,8 @@ Dygraph.KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * and maxNumberWidth options.
  * @param {number} x The number to be formatted
  * @param {Dygraph} opts An options view
- * @param {string} name The name of the point's data series
- * @param {Dygraph} g The dygraph object
  */
-Dygraph.numberValueFormatter = function(x, opts, pt, g) {
+Dygraph.numberValueFormatter = function(x, opts) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -151,7 +152,7 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
       k_labels = Dygraph.KMB_LABELS;
     }
     if (kmg2) {
-      if (kmb) Dygraph.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
+      if (kmb) console.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
       k_labels = Dygraph.KMG2_BIG_LABELS;
       m_labels = Dygraph.KMG2_SMALL_LABELS;
@@ -188,8 +189,8 @@ Dygraph.numberValueFormatter = function(x, opts, pt, g) {
  * variant for use as an axisLabelFormatter.
  * @private
  */
-Dygraph.numberAxisLabelFormatter = function(x, granularity, opts, g) {
-  return Dygraph.numberValueFormatter(x, opts, g);
+Dygraph.numberAxisLabelFormatter = function(x, granularity, opts) {
+  return Dygraph.numberValueFormatter.call(this, x, opts);
 };
 
 /**
@@ -202,27 +203,52 @@ Dygraph.SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', '
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
- * is displaying values at the stated granularity.
+ * is displaying values at the stated granularity. This respects the 
+ * labelsUTC option.
  * @param {Date} date The date to format
  * @param {number} granularity One of the Dygraph granularity constants
- * @return {string} The formatted date
+ * @param {Dygraph} opts An options view
+ * @return {string} The date formatted as local time
  * @private
  */
-Dygraph.dateAxisFormatter = function(date, granularity) {
+Dygraph.dateAxisLabelFormatter = function(date, granularity, opts) {
+  var utc = opts('labelsUTC');
+  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+
+  var year = accessors.getFullYear(date),
+      month = accessors.getMonth(date),
+      day = accessors.getDate(date),
+      hours = accessors.getHours(date),
+      mins = accessors.getMinutes(date),
+      secs = accessors.getSeconds(date),
+      millis = accessors.getSeconds(date);
+
   if (granularity >= Dygraph.DECADAL) {
-    return '' + date.getFullYear();
+    return '' + year;
   } else if (granularity >= Dygraph.MONTHLY) {
-    return Dygraph.SHORT_MONTH_NAMES_[date.getMonth()] + ' ' + date.getFullYear();
+    return Dygraph.SHORT_MONTH_NAMES_[month] + '&#160;' + year;
   } else {
-    var frac = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds();
+    var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= Dygraph.DAILY) {
-      // e.g. '21Jan' (%d%b)
-      var nd = new Date(date.getTime() + 3600*1000);
-      return Dygraph.zeropad(nd.getDate()) + Dygraph.SHORT_MONTH_NAMES_[nd.getMonth()];
+      // e.g. '21 Jan' (%d%b)
+      return Dygraph.zeropad(day) + '&#160;' + Dygraph.SHORT_MONTH_NAMES_[month];
     } else {
-      return Dygraph.hmsString_(date.getTime());
+      return Dygraph.hmsString_(hours, mins, secs);
     }
   }
+};
+// alias in case anyone is referencing the old method.
+Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
+
+/**
+ * Return a string version of a JS date for a value label. This respects the 
+ * labelsUTC option.
+ * @param {Date} date The date to be formatted
+ * @param {Dygraph} opts An options view
+ * @private
+ */
+Dygraph.dateValueFormatter = function(d, opts) {
+  return Dygraph.dateString_(d, opts('labelsUTC'));
 };
 
 /**
@@ -264,8 +290,6 @@ Dygraph.DEFAULT_ATTRS = {
 
   axisTickSize: 3,
   axisLabelFontSize: 14,
-  xAxisLabelWidth: 50,
-  yAxisLabelWidth: 50,
   rightGap: 5,
 
   showRoller: false,
@@ -286,10 +310,7 @@ Dygraph.DEFAULT_ATTRS = {
   stackedGraphNaNFill: 'all',
   hideOverlayOnMouseOut: true,
 
-  // TODO(danvk): support 'onmouseover' and 'never', and remove synonyms.
-  legend: 'onmouseover',  // the only relevant value at the moment is 'always'.
-  legendFollow: false,
-
+  legend: 'onmouseover',
   stepPlot: false,
   avoidMinZero: false,
   xRangePad: 0,
@@ -301,16 +322,11 @@ Dygraph.DEFAULT_ATTRS = {
   xLabelHeight: 18,
   yLabelWidth: 18,
 
-  drawXAxis: true,
-  drawYAxis: true,
   axisLineColor: "black",
   axisLineWidth: 0.3,
   gridLineWidth: 0.3,
   axisLabelColor: "black",
-  axisLabelFont: "Arial",  // TODO(danvk): is this implemented?
   axisLabelWidth: 50,
-  drawYGrid: true,
-  drawXGrid: true,
   gridLineColor: "rgb(128,128,128)",
 
   interactionModel: null,  // will be set to Dygraph.Interaction.defaultModel
@@ -321,6 +337,7 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorHeight: 40,
   rangeSelectorPlotStrokeColor: "#808FAB",
   rangeSelectorPlotFillColor: "#A7B1C4",
+  showInRangeSelector: null,
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
@@ -335,15 +352,17 @@ Dygraph.DEFAULT_ATTRS = {
   // per-axis options
   axes: {
     x: {
-      pixelsPerLabel: 60,
-      axisLabelFormatter: Dygraph.dateAxisFormatter,
-      valueFormatter: Dygraph.dateString_,
+      pixelsPerLabel: 70,
+      axisLabelWidth: 60,
+      axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
+      valueFormatter: Dygraph.dateValueFormatter,
       drawGrid: true,
       drawAxis: true,
       independentTicks: true,
       ticker: null  // will be set in dygraph-tickers.js
     },
     y: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
@@ -353,10 +372,11 @@ Dygraph.DEFAULT_ATTRS = {
       ticker: null  // will be set in dygraph-tickers.js
     },
     y2: {
+      axisLabelWidth: 50,
       pixelsPerLabel: 30,
       valueFormatter: Dygraph.numberValueFormatter,
       axisLabelFormatter: Dygraph.numberAxisLabelFormatter,
-      drawAxis: false,
+      drawAxis: true,  // only applies when there are two axes of data.
       drawGrid: false,
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
@@ -401,32 +421,19 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
-  // Hack for IE: if we're using excanvas and the document hasn't finished
-  // loading yet (and hence may not have initialized whatever it needs to
-  // initialize), then keep calling this routine periodically until it has.
-  if (/MSIE/.test(navigator.userAgent) && !window.opera &&
-      typeof(G_vmlCanvasManager) != 'undefined' &&
-      document.readyState != 'complete') {
-    var self = this;
-    setTimeout(function() { self.__init__(div, file, attrs); }, 100);
-    return;
-  }
-
   // Support two-argument constructor
   if (attrs === null || attrs === undefined) { attrs = {}; }
 
-  attrs = Dygraph.mapLegacyOptions_(attrs);
+  attrs = Dygraph.copyUserAttrs_(attrs);
 
   if (typeof(div) == 'string') {
     div = document.getElementById(div);
   }
 
   if (!div) {
-    Dygraph.error("Constructing dygraph with a non-existent div!");
+    console.error("Constructing dygraph with a non-existent div!");
     return;
   }
-
-  this.isUsingExcanvas_ = typeof(G_vmlCanvasManager) != 'undefined';
 
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
@@ -510,8 +517,16 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.plugins_ = [];
   var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
   for (var i = 0; i < plugins.length; i++) {
-    var Plugin = plugins[i];
-    var pluginInstance = new Plugin();
+    // the plugins option may contain either plugin classes or instances.
+    // Plugin instances contain an activate method.
+    var Plugin = plugins[i];  // either a constructor or an instance.
+    var pluginInstance;
+    if (typeof(Plugin.activate) !== 'undefined') {
+      pluginInstance = Plugin;
+    } else {
+      pluginInstance = new Plugin();
+    }
+
     var pluginDict = {
       plugin: pluginInstance,
       events: {},
@@ -521,6 +536,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
     var handlers = pluginInstance.activate(this);
     for (var eventName in handlers) {
+      if (!handlers.hasOwnProperty(eventName)) continue;
       // TODO(danvk): validate eventName.
       pluginDict.events[eventName] = handlers[eventName];
     }
@@ -552,12 +568,12 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
 /**
  * Triggers a cascade of events to the various plugins which are interested in them.
- * Returns true if the "default behavior" should be performed, i.e. if none of
- * the event listeners called event.preventDefault().
+ * Returns true if the "default behavior" should be prevented, i.e. if one
+ * of the event listeners called event.preventDefault().
  * @private
  */
 Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
-  if (!(name in this.eventListeners_)) return true;
+  if (!(name in this.eventListeners_)) return false;
 
   // QUESTION: can we use objects & prototypes to speed this up?
   var e = {
@@ -642,16 +658,16 @@ Dygraph.prototype.toString = function() {
  * @return { ... } The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
-// <REMOVE_FOR_COMBINED>
-  if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
-    Dygraph.error('Must include options reference JS for testing');
-  } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
-    Dygraph.error('Dygraphs is using property ' + name + ', which has no ' +
-                  'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
-    // Only log this error once.
-    Dygraph.OPTIONS_REFERENCE[name] = true;
+  if (DEBUG) {
+    if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
+      console.error('Must include options reference JS for testing');
+    } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
+      console.error('Dygraphs is using property ' + name + ', which has no ' +
+                    'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
+      // Only log this error once.
+      Dygraph.OPTIONS_REFERENCE[name] = true;
+    }
   }
-// </REMOVE_FOR_COMBINED>
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 
@@ -737,6 +753,14 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
+
+    // I don't like that this is in a second spot.
+    if (axis === 'x' && opt === 'logscale') {
+      // return the default value.
+      // TODO(konigsberg): pull the default from a global default.
+      return false;
+    }
+
     // user-specified attributes always trump defaults, even if they're less
     // specific.
     if (typeof(self.user_attrs_[opt]) != 'undefined') {
@@ -895,7 +919,37 @@ Dygraph.prototype.toDataXCoord = function(x) {
 
   var area = this.plotter_.area;
   var xRange = this.xAxisRange();
-  return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+
+  if (!this.attributes_.getForAxis("logscale", 'x')) {
+    return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
+  } else {
+    // TODO: remove duplicate code?
+    // Computing the inverse of toDomCoord.
+    var pct = (x - area.x) / area.w;
+
+    // Computing the inverse of toPercentXCoord. The function was arrived at with
+    // the following steps:
+    //
+    // Original calcuation:
+    // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
+    //
+    // Multiply both sides by the right-side demoninator.
+    // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
+    //
+    // add log(xRange[0]) to both sides
+    // log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])) = log(x);
+    //
+    // Swap both sides of the equation,
+    // log(x) = log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0]))
+    //
+    // Use both sides as the exponent in 10^exp and we're done.
+    // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
+    var logr0 = Dygraph.log10(xRange[0]);
+    var logr1 = Dygraph.log10(xRange[1]);
+    var exponent = logr0 + (pct * (logr1 - logr0));
+    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
+    return value;
+  }
 };
 
 /**
@@ -923,21 +977,25 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
     // the following steps:
     //
     // Original calcuation:
-    // pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
+    // pct = (log(yRange[1]) - log(y)) / (log(yRange[1]) - log(yRange[0]));
     //
-    // Move denominator to both sides:
-    // pct * (logr1 - Dygraph.log10(yRange[0])) = logr1 - Dygraph.log10(y);
+    // Multiply both sides by the right-side demoninator.
+    // pct * (log(yRange[1]) - log(yRange[0])) = log(yRange[1]) - log(y);
     //
-    // subtract logr1, and take the negative value.
-    // logr1 - (pct * (logr1 - Dygraph.log10(yRange[0]))) = Dygraph.log10(y);
+    // subtract log(yRange[1]) from both sides.
+    // (pct * (log(yRange[1]) - log(yRange[0]))) - log(yRange[1]) = -log(y);
     //
-    // Swap both sides of the equation, and we can compute the log of the
-    // return value. Which means we just need to use that as the exponent in
-    // e^exponent.
-    // Dygraph.log10(y) = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
-
+    // and multiply both sides by -1.
+    // log(yRange[1]) - (pct * (logr1 - log(yRange[0])) = log(y);
+    //
+    // Swap both sides of the equation,
+    // log(y) = log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0])));
+    //
+    // Use both sides as the exponent in 10^exp and we're done.
+    // y = 10 ^ (log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0]))));
+    var logr0 = Dygraph.log10(yRange[0]);
     var logr1 = Dygraph.log10(yRange[1]);
-    var exponent = logr1 - (pct * (logr1 - Dygraph.log10(yRange[0])));
+    var exponent = logr1 - (pct * (logr1 - logr0));
     var value = Math.pow(Dygraph.LOG_SCALE, exponent);
     return value;
   }
@@ -969,14 +1027,15 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
 
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", axis);
-  if (!logscale) {
+  if (logscale) {
+    var logr0 = Dygraph.log10(yRange[0]);
+    var logr1 = Dygraph.log10(yRange[1]);
+    pct = (logr1 - Dygraph.log10(y)) / (logr1 - logr0);
+  } else {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
     // (yRange[1] - y) / (yRange[1] - yRange[0]) is the % from the bottom.
     pct = (yRange[1] - y) / (yRange[1] - yRange[0]);
-  } else {
-    var logr1 = Dygraph.log10(yRange[1]);
-    pct = (logr1 - Dygraph.log10(y)) / (logr1 - Dygraph.log10(yRange[0]));
   }
   return pct;
 };
@@ -1000,7 +1059,19 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   }
 
   var xRange = this.xAxisRange();
-  return (x - xRange[0]) / (xRange[1] - xRange[0]);
+  var pct;
+  var logscale = this.attributes_.getForAxis("logscale", 'x') ;
+  if (logscale === true) {  // logscale can be null so we test for true explicitly.
+    var logr0 = Dygraph.log10(xRange[0]);
+    var logr1 = Dygraph.log10(xRange[1]);
+    pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);
+  } else {
+    // x - xRange[0] is unit distance from the left.
+    // xRange[1] - xRange[0] is the scale of the range.
+    // The full expression below is the % from the left.
+    pct = (x - xRange[0]) / (xRange[1] - xRange[0]);
+  }
+  return pct;
 };
 
 /**
@@ -1052,6 +1123,7 @@ Dygraph.prototype.createInterface_ = function() {
 
   // TODO(danvk): any other styles that are useful to set here?
   this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
+  this.graphDiv.style.position = 'relative';
   enclosing.appendChild(this.graphDiv);
 
   // Create the canvas for interactive parts of the chart.
@@ -1140,6 +1212,12 @@ Dygraph.prototype.destroy = function() {
   this.canvas_ctx_.restore();
   this.hidden_ctx_.restore();
 
+  // Destroy any plugins, in the reverse order that they were registered.
+  for (var i = this.plugins_.length - 1; i >= 0; i--) {
+    var p = this.plugins_.pop();
+    if (p.plugin.destroy) p.plugin.destroy();
+  }
+
   var removeRecursive = function(node) {
     while (node.hasChildNodes()) {
       removeRecursive(node.firstChild);
@@ -1154,7 +1232,7 @@ Dygraph.prototype.destroy = function() {
   Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // remove window handlers
-  Dygraph.removeEvent(window,'resize',this.resizeHandler_);
+  Dygraph.removeEvent(window,'resize', this.resizeHandler_);
   this.resizeHandler_ = null;
 
   removeRecursive(this.maindiv_);
@@ -1201,18 +1279,7 @@ Dygraph.prototype.createPlotKitCanvas_ = function(canvas) {
  * @private
  */
 Dygraph.prototype.createMouseEventElement_ = function() {
-  if (this.isUsingExcanvas_) {
-    var elem = document.createElement("div");
-    elem.style.position = 'absolute';
-    elem.style.backgroundColor = 'white';
-    elem.style.filter = 'alpha(opacity=0)';
-    elem.style.width = this.width_ + "px";
-    elem.style.height = this.height_ + "px";
-    this.graphDiv.appendChild(elem);
-    return elem;
-  } else {
-    return this.canvas_;
-  }
+  return this.canvas_;
 };
 
 /**
@@ -1393,6 +1460,26 @@ Dygraph.prototype.createDragInterface_ = function() {
       contextB.dragStartY = Dygraph.dragGetY_(event, contextB);
       contextB.cancelNextDblclick = false;
       contextB.tarp.cover();
+    },
+    destroy: function() {
+      var context = this;
+      if (context.isZooming || context.isPanning) {
+        context.isZooming = false;
+        context.dragStartX = null;
+        context.dragStartY = null;
+      }
+
+      if (context.isPanning) {
+        context.isPanning = false;
+        context.draggingDate = null;
+        context.dateRange = null;
+        for (var i = 0; i < self.axes_.length; i++) {
+          delete self.axes_[i].draggingValue;
+          delete self.axes_[i].dragValueRange;
+        }
+      }
+
+      context.tarp.uncover();
     }
   };
 
@@ -1416,27 +1503,13 @@ Dygraph.prototype.createDragInterface_ = function() {
 
   // If the user releases the mouse button during a drag, but not over the
   // canvas, then it doesn't count as a zooming action.
-  var mouseUpHandler = function(event) {
-    if (context.isZooming || context.isPanning) {
-      context.isZooming = false;
-      context.dragStartX = null;
-      context.dragStartY = null;
-    }
+  if (!interactionModel.willDestroyContextMyself) {
+    var mouseUpHandler = function(event) {
+      context.destroy();
+    };
 
-    if (context.isPanning) {
-      context.isPanning = false;
-      context.draggingDate = null;
-      context.dateRange = null;
-      for (var i = 0; i < self.axes_.length; i++) {
-        delete self.axes_[i].draggingValue;
-        delete self.axes_[i].dragValueRange;
-      }
-    }
-
-    context.tarp.uncover();
-  };
-
-  this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+    this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+  }
 };
 
 /**
@@ -1489,10 +1562,6 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
                    this.layout_.getPlotArea().w, Math.abs(endY - startY));
     }
   }
-
-  if (this.isUsingExcanvas_) {
-    this.currentZoomRectArgs_ = [direction, startX, endX, startY, endY, 0, 0, 0];
-  }
 };
 
 /**
@@ -1501,7 +1570,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
  */
 Dygraph.prototype.clearZoomRect_ = function() {
   this.currentZoomRectArgs_ = null;
-  this.canvas_ctx_.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+  this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
 };
 
 /**
@@ -1524,16 +1593,6 @@ Dygraph.prototype.doZoomX_ = function(lowX, highX) {
 };
 
 /**
- * Transition function to use in animations. Returns values between 0.0
- * (totally old values) and 1.0 (totally new values) for each frame.
- * @private
- */
-Dygraph.zoomAnimationFunction = function(frame, numFrames) {
-  var k = 1.5;
-  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
-};
-
-/**
  * Zoom to something containing [minDate, maxDate] values. Don't confuse this
  * method with doZoomX which accepts pixel coordinates. This function redraws
  * the graph.
@@ -1543,8 +1602,8 @@ Dygraph.zoomAnimationFunction = function(frame, numFrames) {
  * @private
  */
 Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
-  // TODO(danvk): when yAxisRange is null (i.e. "fit to data", the animation
-  // can produce strange effects. Rather than the y-axis transitioning slowly
+  // TODO(danvk): when xAxisRange is null (i.e. "fit to data", the animation
+  // can produce strange effects. Rather than the x-axis transitioning slowly
   // between values, it can jerk around.)
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
@@ -1552,7 +1611,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   var that = this;
   this.doAnimatedZoom(old_window, new_window, null, null, function() {
     if (that.getFunctionOption("zoomCallback")) {
-      that.getFunctionOption("zoomCallback")(
+      that.getFunctionOption("zoomCallback").call(that,
           minDate, maxDate, that.yAxisRanges());
     }
   });
@@ -1585,10 +1644,20 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
     if (that.getFunctionOption("zoomCallback")) {
       var xRange = that.xAxisRange();
-      that.getFunctionOption("zoomCallback")(
+      that.getFunctionOption("zoomCallback").call(that,
           xRange[0], xRange[1], that.yAxisRanges());
     }
   });
+};
+
+/**
+ * Transition function to use in animations. Returns values between 0.0
+ * (totally old values) and 1.0 (totally new values) for each frame.
+ * @private
+ */
+Dygraph.zoomAnimationFunction = function(frame, numFrames) {
+  var k = 1.5;
+  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
 };
 
 /**
@@ -1630,7 +1699,7 @@ Dygraph.prototype.resetZoom = function() {
       }
       this.drawGraph_();
       if (this.getFunctionOption("zoomCallback")) {
-        this.getFunctionOption("zoomCallback")(
+        this.getFunctionOption("zoomCallback").call(this,
             minDate, maxDate, this.yAxisRanges());
       }
       return;
@@ -1673,7 +1742,7 @@ Dygraph.prototype.resetZoom = function() {
             }
           }
           if (that.getFunctionOption("zoomCallback")) {
-            that.getFunctionOption("zoomCallback")(
+            that.getFunctionOption("zoomCallback").call(that,
                 minDate, maxDate, that.yAxisRanges());
           }
         });
@@ -1910,7 +1979,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
 
   var callback = this.getFunctionOption("highlightCallback");
   if (callback && selectionChanged) {
-    callback(event,
+    callback.call(this, event,
         this.lastx_,
         this.selPoints_,
         this.lastRow_,
@@ -1975,6 +2044,7 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   /*var defaultPrevented = */
   this.cascadeEvents_('select', {
+    selectedRow: this.lastRow_,
     selectedX: this.lastx_,
     selectedPoints: this.selPoints_
   });
@@ -2019,10 +2089,6 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
                   2 * maxCircleSize + 2, this.height_);
   }
 
-  if (this.isUsingExcanvas_ && this.currentZoomRectArgs_) {
-    Dygraph.prototype.drawZoomRect_.apply(this, this.currentZoomRectArgs_);
-  }
-
   if (this.selPoints_.length > 0) {
     // Draw colored circles over the center of each selected point
     var canvasx = this.selPoints_[0].canvasx;
@@ -2040,7 +2106,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.lineWidth = this.getNumericOption('strokeWidth', pt.name);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
-      callback(this, pt.name, ctx, canvasx, pt.canvasy,
+      callback.call(this, this, pt.name, ctx, canvasx, pt.canvasy,
           color, circleSize, pt.idx);
     }
     ctx.restore();
@@ -2054,7 +2120,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * legend. The selection can be cleared using clearSelection() and queried
  * using getSelection().
  * @param {number} row Row number that should be highlighted (i.e. appear with
- * hover dots on the chart). Set to false to clear any selection.
+ * hover dots on the chart).
  * @param {seriesName} optional series name to highlight that series with the
  * the highlightSeriesOpts setting.
  * @param { locked } optional If true, keep seriesName selected when mousing
@@ -2071,10 +2137,23 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
     this.lastRow_ = row;
     for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
       var points = this.layout_.points[setIdx];
+      // Check if the point at the appropriate index is the point we're looking
+      // for.  If it is, just use it, otherwise search the array for a point
+      // in the proper place.
       var setRow = row - this.getLeftBoundary_(setIdx);
-      if (setRow < points.length) {
+      if (setRow < points.length && points[setRow].idx == row) {
         var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
+      } else {
+        for (var pointIdx = 0; pointIdx < points.length; ++pointIdx) {
+          var point = points[pointIdx];
+          if (point.idx == row) {
+            if (point.yval !== null) {
+              this.selPoints_.push(point);
+            }
+            break;
+          }
+        }
       }
     }
   } else {
@@ -2110,10 +2189,10 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
  */
 Dygraph.prototype.mouseOut_ = function(event) {
   if (this.getFunctionOption("unhighlightCallback")) {
-    this.getFunctionOption("unhighlightCallback")(event);
+    this.getFunctionOption("unhighlightCallback").call(this, event);
   }
 
-  if (this.getFunctionOption("hideOverlayOnMouseOut") && !this.lockedSet_) {
+  if (this.getBooleanOption("hideOverlayOnMouseOut") && !this.lockedSet_) {
     this.clearSelection();
   }
 };
@@ -2183,6 +2262,7 @@ Dygraph.prototype.isSeriesLocked = function() {
  */
 Dygraph.prototype.loadedEvent_ = function(data) {
   this.rawData_ = this.parseCSV_(data);
+  this.cascadeDataDidUpdateEvent_();
   this.predraw_();
 };
 
@@ -2203,7 +2283,7 @@ Dygraph.prototype.addXTicks_ = function() {
   var xTicks = xAxisOptionsView('ticker')(
       range[0],
       range[1],
-      this.width_,  // TODO(danvk): should be area.width
+      this.plotter_.area.w,  // TODO(danvk): should be area.width
       xAxisOptionsView,
       this);
   // var msg = 'ticker(' + range[0] + ', ' + range[1] + ', ' + this.width_ + ', ' + this.attr_('pixelsPerXLabel') + ') -> ' + JSON.stringify(xTicks);
@@ -2254,12 +2334,6 @@ Dygraph.prototype.predraw_ = function() {
   // TODO(danvk): move more computations out of drawGraph_ and into here.
   this.computeYAxes_();
 
-  // Create a new plotter.
-  if (this.plotter_) {
-    this.cascadeEvents_('clearChart');
-    this.plotter_.clear();
-  }
-
   if (!this.is_initial_draw_) {
     this.canvas_ctx_.restore();
     this.hidden_ctx_.restore();
@@ -2268,6 +2342,7 @@ Dygraph.prototype.predraw_ = function() {
   this.canvas_ctx_.save();
   this.hidden_ctx_.save();
 
+  // Create a new plotter.
   this.plotter_ = new DygraphCanvasRenderer(this,
                                             this.hidden_,
                                             this.hidden_ctx_,
@@ -2446,6 +2521,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
   var extremes = {};  // series name -> [low, high]
   var seriesIdx, sampleIdx;
   var firstIdx, lastIdx;
+  var axisIdx;
   
   // Loop over the fields (series).  Go from the last to the first,
   // because if they're stacked that's how we accumulate the values.
@@ -2516,7 +2592,11 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
         seriesName, boundaryIds[seriesIdx-1][0]);
 
     if (this.getBooleanOption("stackedGraph")) {
-      Dygraph.stackPoints_(seriesPoints, cumulativeYval, seriesExtremes,
+      axisIdx = this.attributes_.axisForSeries(seriesName);
+      if (cumulativeYval[axisIdx] === undefined) {
+        cumulativeYval[axisIdx] = [];
+      }
+      Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
                            this.getBooleanOption("stackedGraphNaNFill"));
     }
 
@@ -2577,7 +2657,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   if (this.getStringOption("timingName")) {
     var end = new Date();
-    Dygraph.info(this.getStringOption("timingName") + " - drawGraph: " + (end - start) + "ms");
+    console.log(this.getStringOption("timingName") + " - drawGraph: " + (end - start) + "ms");
   }
 };
 
@@ -2594,7 +2674,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   if (this.getFunctionOption('underlayCallback')) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.getFunctionOption('underlayCallback')(
+    this.getFunctionOption('underlayCallback').call(this,
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
@@ -2609,8 +2689,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
 
   // TODO(danvk): is this a performance bottleneck when panning?
   // The interaction canvas should already be empty in that situation.
-  this.canvas_.getContext('2d').clearRect(0, 0, this.canvas_.width,
-                                          this.canvas_.height);
+  this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
 
   if (this.getFunctionOption("drawCallback") !== null) {
     this.getFunctionOption("drawCallback")(this, is_initial_draw);
@@ -2858,7 +2937,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
               axis.computedValueRange[1],
-              this.height_,  // TODO(danvk): should be area.height
+              this.plotter_.area.h,
               opts,
               this);
       // Define the first independent axis as primary axis.
@@ -2889,7 +2968,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       axis.ticks = ticker(axis.computedValueRange[0],
                           axis.computedValueRange[1],
-                          this.height_,  // TODO(danvk): should be area.height
+                          this.plotter_.area.h,
                           opts,
                           this,
                           tick_values);
@@ -2921,16 +3000,16 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
 Dygraph.prototype.setXAxisOptions_ = function(isDate) {
   if (isDate) {
     this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
   } else {
     /** @private (shut up, jsdoc!) */
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     // TODO(danvk): use Dygraph.numberValueFormatter here?
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   }
 };
@@ -2999,7 +3078,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
         // TODO(danvk): figure out an appropriate way to flag parse errors.
         vals = inFields[j].split("/");
         if (vals.length != 2) {
-          Dygraph.error('Expected fractional "num/den" values in CSV data ' +
+          console.error('Expected fractional "num/den" values in CSV data ' +
                         "but found a value '" + inFields[j] + "' on line " +
                         (1 + i) + " ('" + line + "') which is not of this form.");
           fields[j] = [0, 0];
@@ -3011,7 +3090,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     } else if (this.getBooleanOption("errorBars")) {
       // If there are error bars, values are (value, stddev) pairs
       if (inFields.length % 2 != 1) {
-        Dygraph.error('Expected alternating (value, stdev.) pairs in CSV data ' +
+        console.error('Expected alternating (value, stdev.) pairs in CSV data ' +
                       'but line ' + (1 + i) + ' has an odd number of values (' +
                       (inFields.length - 1) + "): '" + line + "'");
       }
@@ -3032,7 +3111,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
                           Dygraph.parseFloat_(vals[1], i, line),
                           Dygraph.parseFloat_(vals[2], i, line) ];
           } else {
-            Dygraph.warn('When using customBars, values must be either blank ' +
+            console.warn('When using customBars, values must be either blank ' +
                          'or "low;center;high" tuples (got "' + val +
                          '" on line ' + (1+i));
           }
@@ -3049,7 +3128,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
     }
 
     if (fields.length != expectedCols) {
-      Dygraph.error("Number of columns in line " + i + " (" + fields.length +
+      console.error("Number of columns in line " + i + " (" + fields.length +
                     ") does not agree with number of labels (" + expectedCols +
                     ") " + line);
     }
@@ -3064,7 +3143,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
         if (fields[j]) all_null = false;
       }
       if (all_null) {
-        Dygraph.warn("The dygraphs 'labels' option is set, but the first row " +
+        console.warn("The dygraphs 'labels' option is set, but the first row " +
                      "of CSV data ('" + line + "') appears to also contain " +
                      "labels. Will drop the CSV labels and use the option " +
                      "labels.");
@@ -3075,7 +3154,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
   }
 
   if (outOfOrder) {
-    Dygraph.warn("CSV is out of order; order it correctly to speed loading.");
+    console.warn("CSV is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0]; });
   }
 
@@ -3093,17 +3172,17 @@ Dygraph.prototype.parseCSV_ = function(data) {
 Dygraph.prototype.parseArray_ = function(data) {
   // Peek at the first x value to see if it's numeric.
   if (data.length === 0) {
-    Dygraph.error("Can't plot empty data set");
+    console.error("Can't plot empty data set");
     return null;
   }
   if (data[0].length === 0) {
-    Dygraph.error("Data set cannot contain an empty row");
+    console.error("Data set cannot contain an empty row");
     return null;
   }
 
   var i;
   if (this.attr_("labels") === null) {
-    Dygraph.warn("Using default labels. Set labels explicitly via 'labels' " +
+    console.warn("Using default labels. Set labels explicitly via 'labels' " +
                  "in the options parameter");
     this.attrs_.labels = [ "X" ];
     for (i = 1; i < data[0].length; i++) {
@@ -3113,7 +3192,7 @@ Dygraph.prototype.parseArray_ = function(data) {
   } else {
     var num_labels = this.attr_("labels");
     if (num_labels.length != data[0].length) {
-      Dygraph.error("Mismatch between number of labels (" + num_labels + ")" +
+      console.error("Mismatch between number of labels (" + num_labels + ")" +
                     " and number of columns in array (" + data[0].length + ")");
       return null;
     }
@@ -3121,21 +3200,21 @@ Dygraph.prototype.parseArray_ = function(data) {
 
   if (Dygraph.isDateLike(data[0][0])) {
     // Some intelligent defaults for a date x-axis.
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
 
     // Assume they're all dates.
     var parsedData = Dygraph.clone(data);
     for (i = 0; i < data.length; i++) {
       if (parsedData[i].length === 0) {
-        Dygraph.error("Row " + (1 + i) + " of data is empty");
+        console.error("Row " + (1 + i) + " of data is empty");
         return null;
       }
       if (parsedData[i][0] === null ||
           typeof(parsedData[i][0].getTime) != 'function' ||
           isNaN(parsedData[i][0].getTime())) {
-        Dygraph.error("x value in row " + (1 + i) + " is not a Date");
+        console.error("x value in row " + (1 + i) + " is not a Date");
         return null;
       }
       parsedData[i][0] = parsedData[i][0].getTime();
@@ -3145,7 +3224,7 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Some intelligent defaults for a numeric x-axis.
     /** @private (shut up, jsdoc!) */
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = Dygraph.numberAxisLabelFormatter;
     return data;
   }
@@ -3180,16 +3259,16 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   var indepType = data.getColumnType(0);
   if (indepType == 'date' || indepType == 'datetime') {
     this.attrs_.xValueParser = Dygraph.dateParser;
-    this.attrs_.axes.x.valueFormatter = Dygraph.dateString_;
+    this.attrs_.axes.x.valueFormatter = Dygraph.dateValueFormatter;
     this.attrs_.axes.x.ticker = Dygraph.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisFormatter;
+    this.attrs_.axes.x.axisLabelFormatter = Dygraph.dateAxisLabelFormatter;
   } else if (indepType == 'number') {
     this.attrs_.xValueParser = function(x) { return parseFloat(x); };
     this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = Dygraph.numericLinearTicks;
+    this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
-    Dygraph.error("only 'date', 'datetime' and 'number' types are supported " +
+    console.error("only 'date', 'datetime' and 'number' types are supported " +
                   "for column 1 of DataTable input (Got '" + indepType + "')");
     return null;
   }
@@ -3213,7 +3292,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       }
       hasAnnotations = true;
     } else {
-      Dygraph.error("Only 'number' is supported as a dependent type with Gviz." +
+      console.error("Only 'number' is supported as a dependent type with Gviz." +
                     " 'string' is only supported if displayAnnotations is true");
     }
   }
@@ -3235,7 +3314,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     var row = [];
     if (typeof(data.getValue(i, 0)) === 'undefined' ||
         data.getValue(i, 0) === null) {
-      Dygraph.warn("Ignoring row " + i +
+      console.warn("Ignoring row " + i +
                    " of DataTable because of undefined or null first column.");
       continue;
     }
@@ -3281,7 +3360,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
   }
 
   if (outOfOrder) {
-    Dygraph.warn("DataTable is out of order; order it correctly to speed loading.");
+    console.warn("DataTable is out of order; order it correctly to speed loading.");
     ret.sort(function(a,b) { return a[0] - b[0]; });
   }
   this.rawData_ = ret;
@@ -3290,6 +3369,17 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.setAnnotations(annotations, true);
   }
   this.attributes_.reparseSeries();
+};
+
+/**
+ * Signals to plugins that the chart data has updated.
+ * This happens after the data has updated but before the chart has redrawn.
+ */
+Dygraph.prototype.cascadeDataDidUpdateEvent_ = function() {
+  // TODO(danvk): there are some issues checking xAxisRange() and using
+  // toDomCoords from handlers of this event. The visible range should be set
+  // when the chart is drawn, not derived from the data.
+  this.cascadeEvents_('dataDidUpdate', {});
 };
 
 /**
@@ -3307,11 +3397,13 @@ Dygraph.prototype.start_ = function() {
 
   if (Dygraph.isArrayLike(data)) {
     this.rawData_ = this.parseArray_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'object' &&
              typeof data.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(data);
+    this.cascadeDataDidUpdateEvent_();
     this.predraw_();
   } else if (typeof data == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
@@ -3343,7 +3435,7 @@ Dygraph.prototype.start_ = function() {
       req.send(null);
     }
   } else {
-    Dygraph.error("Unknown data format: " + (typeof data));
+    console.error("Unknown data format: " + (typeof data));
   }
 };
 
@@ -3368,9 +3460,9 @@ Dygraph.prototype.start_ = function() {
 Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   if (typeof(block_redraw) == 'undefined') block_redraw = false;
 
-  // mapLegacyOptions_ drops the "file" parameter as a convenience to us.
+  // copyUserAttrs_ drops the "file" parameter as a convenience to us.
   var file = input_attrs.file;
-  var attrs = Dygraph.mapLegacyOptions_(input_attrs);
+  var attrs = Dygraph.copyUserAttrs_(input_attrs);
 
   // TODO(danvk): this is a mess. Move these options into attr_.
   if ('rollPeriod' in attrs) {
@@ -3401,6 +3493,10 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   this.attributes_.reparseSeries();
 
   if (file) {
+    // This event indicates that the data is about to change, but hasn't yet.
+    // TODO(danvk): support cancelation of the update via this event.
+    this.cascadeEvents_('dataWillUpdate', {});
+
     this.file_ = file;
     if (!block_redraw) this.start_();
   } else {
@@ -3415,47 +3511,15 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 };
 
 /**
- * Returns a copy of the options with deprecated names converted into current
- * names. Also drops the (potentially-large) 'file' attribute. If the caller is
- * interested in that, they should save a copy before calling this.
- * @private
+ * Make a copy of input attributes, removing file as a convenience.
  */
-Dygraph.mapLegacyOptions_ = function(attrs) {
+Dygraph.copyUserAttrs_ = function(attrs) {
   var my_attrs = {};
   for (var k in attrs) {
+    if (!attrs.hasOwnProperty(k)) continue;
     if (k == 'file') continue;
     if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
   }
-
-  var set = function(axis, opt, value) {
-    if (!my_attrs.axes) my_attrs.axes = {};
-    if (!my_attrs.axes[axis]) my_attrs.axes[axis] = {};
-    my_attrs.axes[axis][opt] = value;
-  };
-  var map = function(opt, axis, new_opt) {
-    if (typeof(attrs[opt]) != 'undefined') {
-      Dygraph.warn("Option " + opt + " is deprecated. Use the " +
-          new_opt + " option for the " + axis + " axis instead. " +
-          "(e.g. { axes : { " + axis + " : { " + new_opt + " : ... } } } " +
-          "(see http://dygraphs.com/per-axis.html for more information.");
-      set(axis, new_opt, attrs[opt]);
-      delete my_attrs[opt];
-    }
-  };
-
-  // This maps, e.g., xValueFormater -> axes: { x: { valueFormatter: ... } }
-  map('xValueFormatter', 'x', 'valueFormatter');
-  map('pixelsPerXLabel', 'x', 'pixelsPerLabel');
-  map('xAxisLabelFormatter', 'x', 'axisLabelFormatter');
-  map('xTicker', 'x', 'ticker');
-  map('yValueFormatter', 'y', 'valueFormatter');
-  map('pixelsPerYLabel', 'y', 'pixelsPerLabel');
-  map('yAxisLabelFormatter', 'y', 'axisLabelFormatter');
-  map('yTicker', 'y', 'ticker');
-  map('drawXGrid', 'x', 'drawGrid');
-  map('drawXAxis', 'x', 'drawAxis');
-  map('drawYGrid', 'y', 'drawGrid');
-  map('drawYAxis', 'y', 'drawAxis');
   return my_attrs;
 };
 
@@ -3477,7 +3541,7 @@ Dygraph.prototype.resize = function(width, height) {
   this.resize_lock = true;
 
   if ((width === null) != (height === null)) {
-    Dygraph.warn("Dygraph.resize() should be called with zero parameters or " +
+    console.warn("Dygraph.resize() should be called with zero parameters or " +
                  "two non-NULL parameters. Pretending it was zero.");
     width = height = null;
   }
@@ -3540,7 +3604,7 @@ Dygraph.prototype.visibility = function() {
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
   if (num < 0 || num >= x.length) {
-    Dygraph.warn("invalid series number in setVisibility: " + num);
+    console.warn("invalid series number in setVisibility: " + num);
   } else {
     x[num] = value;
     this.predraw_();
@@ -3568,7 +3632,7 @@ Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   Dygraph.addAnnotationRule();
   this.annotations_ = ann;
   if (!this.layout_) {
-    Dygraph.warn("Tried to setAnnotations before dygraph was ready. " +
+    console.warn("Tried to setAnnotations before dygraph was ready. " +
                  "Try setting them in a ready() block. See " +
                  "dygraphs.com/tests/annotation.html");
     return;
@@ -3622,7 +3686,7 @@ Dygraph.prototype.ready = function(callback) {
   if (this.is_initial_draw_) {
     this.readyFns_.push(callback);
   } else {
-    callback(this);
+    callback.call(this, this);
   }
 };
 
@@ -3665,5 +3729,9 @@ Dygraph.addAnnotationRule = function() {
     }
   }
 
-  Dygraph.warn("Unable to add default annotation CSS rule; display may be off.");
+  console.warn("Unable to add default annotation CSS rule; display may be off.");
 };
+
+return Dygraph;
+
+})();

@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>dygraph</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -131,7 +127,11 @@
         labels: ["Date","GapSeries1","GapSeries2"],
         showRoller: true,
         stepPlot: true,
-        GapSeries2: { axis: {} }
+        series: {
+          GapSeries2: {
+            axis: 'y2'
+          }
+        }
       }
     );
     </script>

@@ -16,4 +16,9 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
-phantomjs phantom-driver.js $*
+phantomjs phantom-driver.js $* | tee /tmp/test-results.txt
+trap "rm -f /tmp/test-results.txt" EXIT
+if grep -q 'FAIL' /tmp/test-results.txt; then
+  echo One or more tests failed.
+  exit 1
+fi

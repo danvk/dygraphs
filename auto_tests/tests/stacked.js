@@ -23,10 +23,16 @@ stackedTestCase.prototype.testCorrectColors = function() {
     width: 400,
     height: 300,
     stackedGraph: true,
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     valueRange: [0, 3],
     colors: ['#00ff00', '#0000ff'],
     fillAlpha: 0.15
@@ -263,4 +269,75 @@ stackedTestCase.prototype.testInterpolationOptions = function() {
           {strokeStyle: '#ff0000'});
     }
   }
+};
+
+stackedTestCase.prototype.testMultiAxisInterpolation = function() {
+  // Setting 2 axes to test that each axis stacks separately 
+  var opts = {
+    colors: ['#ff0000', '#00ff00', '#0000ff'],
+    stackedGraph: true,
+    series: {
+        "Y1": {
+            axis: 'y',
+        },
+        "Y2": {
+            axis: 'y',
+        },
+        "Y3": {
+            axis: 'y2',
+        },
+        "Y4": {
+            axis: 'y2',
+        }
+    }
+  };
+
+  // The last series is all-NaN, it ought to be treated as all zero
+  // for stacking purposes.
+  var N = NaN;
+  var data = [
+    [100, 1, 2, N, N],
+    [101, 1, 2, 2, N],
+    [102, 1, N, N, N],
+    [103, 1, 2, 4, N],
+    [104, N, N, N, N],
+    [105, 1, 2, N, N],
+    [106, 1, 2, 7, N],
+    [107, 1, 2, 8, N],
+    [108, 1, 2, 9, N],
+    [109, 1, N, N, N]];
+
+  var graph = document.getElementById("graph");
+  g = new Dygraph(graph, data, opts);
+
+  var htx = g.hidden_ctx_;
+  var attrs = {};
+
+  // Check that lines are drawn at the expected positions, using
+  // interpolated values for missing data.
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(100, 2), g.toDomCoords(101, 2), {strokeStyle: '#00ff00'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(102, 3), g.toDomCoords(103, 3), {strokeStyle: '#ff0000'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(107, 2.71), g.toDomCoords(108, 3), {strokeStyle: '#0000ff'});
+  CanvasAssertions.assertLineDrawn(
+      htx, g.toDomCoords(108, 3), g.toDomCoords(109, 3), {strokeStyle: '#ff0000'});
+
+  // Check that the expected number of line segments gets drawn
+  // for each series. Gaps don't get a line.
+  assertEquals(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assertEquals(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
+  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+
+  // Check that the selection returns the original (non-stacked)
+  // values and skips gaps.
+  g.setSelection(1);
+  assertEquals("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
+
+  g.setSelection(8);
+  assertEquals("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
+
+  g.setSelection(9);
+  assertEquals("109: Y1: 1", Util.getLegend());
 };

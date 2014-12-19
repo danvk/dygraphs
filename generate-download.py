@@ -49,7 +49,21 @@ print '''
 %(current_html)s
 </div>
 
-<p>For dev (non-minified) JS, see <a href="https://github.com/danvk/dygraphs/blob/master/dygraph-dev.js">dygraph-dev.js</a> on <a href="https://github.com/danvk/dygraphs/">github</a>.</a>
+<p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
+
+<pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph-combined.js"&gt;&lt;/script&gt;</pre>
+
+<p>You can install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a> or <a href="http://bower.io/search/?q=dygraphs">Bower</a>.</p>
+
+<p>To install using NPM:</p>
+<pre>$ npm install dygraphs
+# dygraphs is now in node_modules/dygraphs/dygraph-combined.js</pre>
+
+<p>To install using bower:</p>
+<pre>$ bower install dygraphs
+# dygraphs is now in bower_components/dygraphs/dygraph-combined.js</pre>
+
+<p>Most distributions include a source map. For non-concatenated JS, see <a href="https://github.com/danvk/dygraphs/blob/master/dygraph-dev.js">dygraph-dev.js</a> on <a href="https://github.com/danvk/dygraphs/">github</a>.</a>
 
 <p>To generate your own minified JS, run:</p>
 

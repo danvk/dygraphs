@@ -24,7 +24,7 @@
  * @constructor
  */
 
-/*jshint globalstrict: true */
+var DygraphCanvasRenderer = (function() {
 /*global Dygraph:false */
 "use strict";
 
@@ -52,39 +52,32 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.layout = layout;
   this.element = element;
   this.elementContext = elementContext;
-  this.container = this.element.parentNode;
 
-  this.height = this.element.height;
-  this.width = this.element.width;
+  this.height = dygraph.height_;
+  this.width = dygraph.width_;
 
   // --- check whether everything is ok before we return
-  // NOTE(konigsberg): isIE is never defined in this object. Bug of some sort.
-  if (!this.isIE && !(Dygraph.isCanvasSupported(this.element)))
-      throw "Canvas is not supported.";
+  if (!Dygraph.isCanvasSupported(this.element)) {
+    throw "Canvas is not supported.";
+  }
 
   // internal state
   this.area = layout.getPlotArea();
-  this.container.style.position = "relative";
-  this.container.style.width = this.width + "px";
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  if (this.dygraph_.isUsingExcanvas_) {
-    this._createIEClipArea();
-  } else {
-    // on Android 3 and 4, setting a clipping area on a canvas prevents it from
-    // displaying anything.
-    if (!Dygraph.isAndroid()) {
-      var ctx = this.dygraph_.canvas_ctx_;
-      ctx.beginPath();
-      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-      ctx.clip();
+  // on Android 3 and 4, setting a clipping area on a canvas prevents it from
+  // displaying anything.
+  if (!Dygraph.isAndroid()) {
+    var ctx = this.dygraph_.canvas_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
 
-      ctx = this.dygraph_.hidden_ctx_;
-      ctx.beginPath();
-      ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-      ctx.clip();
-    }
+    ctx = this.dygraph_.hidden_ctx_;
+    ctx.beginPath();
+    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+    ctx.clip();
   }
 };
 
@@ -95,26 +88,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
  * @private
  */
 DygraphCanvasRenderer.prototype.clear = function() {
-  var context;
-  if (this.isIE) {
-    // VML takes a while to start up, so we just poll every this.IEDelay
-    try {
-      if (this.clearDelay) {
-        this.clearDelay.cancel();
-        this.clearDelay = null;
-      }
-      context = this.elementContext;
-    }
-    catch (e) {
-      // TODO(danvk): this is broken, since MochiKit.Async is gone.
-      // this.clearDelay = MochiKit.Async.wait(this.IEDelay);
-      // this.clearDelay.addCallback(bind(this.clear, this));
-      return;
-    }
-  }
-
-  context = this.elementContext;
-  context.clearRect(0, 0, this.width, this.height);
+  this.elementContext.clearRect(0, 0, this.width, this.height);
 };
 
 /**
@@ -131,76 +105,6 @@ DygraphCanvasRenderer.prototype.render = function() {
   // actually draws the chart.
   this._renderLineChart();
 };
-
-DygraphCanvasRenderer.prototype._createIEClipArea = function() {
-  var className = 'dygraph-clip-div';
-  var graphDiv = this.dygraph_.graphDiv;
-
-  // Remove old clip divs.
-  for (var i = graphDiv.childNodes.length-1; i >= 0; i--) {
-    if (graphDiv.childNodes[i].className == className) {
-      graphDiv.removeChild(graphDiv.childNodes[i]);
-    }
-  }
-
-  // Determine background color to give clip divs.
-  var backgroundColor = document.bgColor;
-  var element = this.dygraph_.graphDiv;
-  while (element != document) {
-    var bgcolor = element.currentStyle.backgroundColor;
-    if (bgcolor && bgcolor != 'transparent') {
-      backgroundColor = bgcolor;
-      break;
-    }
-    element = element.parentNode;
-  }
-
-  function createClipDiv(area) {
-    if (area.w === 0 || area.h === 0) {
-      return;
-    }
-    var elem = document.createElement('div');
-    elem.className = className;
-    elem.style.backgroundColor = backgroundColor;
-    elem.style.position = 'absolute';
-    elem.style.left = area.x + 'px';
-    elem.style.top = area.y + 'px';
-    elem.style.width = area.w + 'px';
-    elem.style.height = area.h + 'px';
-    graphDiv.appendChild(elem);
-  }
-
-  var plotArea = this.area;
-  // Left side
-  createClipDiv({
-    x:0, y:0,
-    w:plotArea.x,
-    h:this.height
-  });
-
-  // Top
-  createClipDiv({
-    x: plotArea.x, y: 0,
-    w: this.width - plotArea.x,
-    h: plotArea.y
-  });
-
-  // Right side
-  createClipDiv({
-    x: plotArea.x + plotArea.w, y: 0,
-    w: this.width-plotArea.x - plotArea.w,
-    h: this.height
-  });
-
-  // Bottom
-  createClipDiv({
-    x: plotArea.x,
-    y: plotArea.y + plotArea.h,
-    w: this.width - plotArea.x,
-    h: this.height - plotArea.h - plotArea.y
-  });
-};
-
 
 /**
  * Returns a predicate to be used with an iterator, which will
@@ -369,7 +273,7 @@ DygraphCanvasRenderer._drawPointsOnLine = function(
   for (var idx = 0; idx < pointsOnLine.length; idx++) {
     var cb = pointsOnLine[idx];
     ctx.save();
-    drawPointCallback(
+    drawPointCallback.call(e.dygraph,
         e.dygraph, e.setName, ctx, cb[0], cb[1], color, pointSize, cb[2]);
     ctx.restore();
   }
@@ -562,7 +466,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 
   var fillGraph = g.getBooleanOption("fillGraph", setName);
   if (fillGraph) {
-    Dygraph.warn("Can't use fillGraph option with error bars");
+    console.warn("Can't use fillGraph option with error bars");
   }
 
   var ctx = e.drawingContext;
@@ -602,12 +506,16 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
       continue;
     }
 
+    newYs = [ point.y_bottom, point.y_top ];
     if (stepPlot) {
-      newYs = [ point.y_bottom, point.y_top ];
       prevY = point.y;
-    } else {
-      newYs = [ point.y_bottom, point.y_top ];
     }
+
+    // The documentation specifically disallows nulls inside the point arrays,
+    // but in case it happens we should do something sensible.
+    if (isNaN(newYs[0])) newYs[0] = point.y;
+    if (isNaN(newYs[1])) newYs[1] = point.y;
+
     newYs[0] = e.plotArea.h * newYs[0] + e.plotArea.y;
     newYs[1] = e.plotArea.h * newYs[1] + e.plotArea.y;
     if (!isNaN(prevX)) {
@@ -627,6 +535,127 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
     prevX = point.canvasx;
   }
   ctx.fill();
+};
+
+
+/**
+ * Proxy for CanvasRenderingContext2D which drops moveTo/lineTo calls which are
+ * superfluous. It accumulates all movements which haven't changed the x-value
+ * and only applies the two with the most extreme y-values.
+ * 
+ * Calls to lineTo/moveTo must have non-decreasing x-values.
+ */
+DygraphCanvasRenderer._fastCanvasProxy = function(context) {
+  var pendingActions = [];  // array of [type, x, y] tuples
+  var lastRoundedX = null;
+
+  var LINE_TO = 1,
+      MOVE_TO = 2;
+
+  var actionCount = 0;  // number of moveTos and lineTos passed to context.
+
+  // Drop superfluous motions
+  // Assumes all pendingActions have the same (rounded) x-value.
+  var compressActions = function(opt_losslessOnly) {
+    if (pendingActions.length <= 1) return;
+
+    // Lossless compression: drop inconsequential moveTos.
+    for (var i = pendingActions.length - 1; i > 0; i--) {
+      var action = pendingActions[i];
+      if (action[0] == MOVE_TO) {
+        var prevAction = pendingActions[i - 1];
+        if (prevAction[1] == action[1] && prevAction[2] == action[2]) {
+          pendingActions.splice(i, 1);
+        }
+      }
+    }
+
+    // Lossless compression: ... drop consecutive moveTos ...
+    for (var i = 0; i < pendingActions.length - 1; /* incremented internally */) {
+      var action = pendingActions[i];
+      if (action[0] == MOVE_TO && pendingActions[i + 1][0] == MOVE_TO) {
+        pendingActions.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+
+    // Lossy compression: ... drop all but the extreme y-values ...
+    if (pendingActions.length > 2 && !opt_losslessOnly) {
+      // keep an initial moveTo, but drop all others.
+      var startIdx = 0;
+      if (pendingActions[0][0] == MOVE_TO) startIdx++;
+      var minIdx = null, maxIdx = null;
+      for (var i = startIdx; i < pendingActions.length; i++) {
+        var action = pendingActions[i];
+        if (action[0] != LINE_TO) continue;
+        if (minIdx === null && maxIdx === null) {
+          minIdx = i;
+          maxIdx = i;
+        } else {
+          var y = action[2];
+          if (y < pendingActions[minIdx][2]) {
+            minIdx = i;
+          } else if (y > pendingActions[maxIdx][2]) {
+            maxIdx = i;
+          }
+        }
+      }
+      var minAction = pendingActions[minIdx],
+          maxAction = pendingActions[maxIdx];
+      pendingActions.splice(startIdx, pendingActions.length - startIdx);
+      if (minIdx < maxIdx) {
+        pendingActions.push(minAction);
+        pendingActions.push(maxAction);
+      } else if (minIdx > maxIdx) {
+        pendingActions.push(maxAction);
+        pendingActions.push(minAction);
+      } else {
+        pendingActions.push(minAction);
+      }
+    }
+  };
+
+  var flushActions = function(opt_noLossyCompression) {
+    compressActions(opt_noLossyCompression);
+    for (var i = 0, len = pendingActions.length; i < len; i++) {
+      var action = pendingActions[i];
+      if (action[0] == LINE_TO) {
+        context.lineTo(action[1], action[2]);
+      } else if (action[0] == MOVE_TO) {
+        context.moveTo(action[1], action[2]);
+      }
+    }
+    actionCount += pendingActions.length;
+    pendingActions = [];
+  };
+
+  var addAction = function(action, x, y) {
+    var rx = Math.round(x);
+    if (lastRoundedX === null || rx != lastRoundedX) {
+      flushActions();
+      lastRoundedX = rx;
+    }
+    pendingActions.push([action, x, y]);
+  };
+
+  return {
+    moveTo: function(x, y) {
+      addAction(MOVE_TO, x, y);
+    },
+    lineTo: function(x, y) {
+      addAction(LINE_TO, x, y);
+    },
+
+    // for major operations like stroke/fill, we skip compression to ensure
+    // that there are no artifacts at the right edge.
+    stroke:    function() { flushActions(true); context.stroke(); },
+    fill:      function() { flushActions(true); context.fill(); },
+    beginPath: function() { flushActions(true); context.beginPath(); },
+    closePath: function() { flushActions(true); context.closePath(); },
+
+    _count: function() { return actionCount; }
+  };
 };
 
 /**
@@ -665,7 +694,6 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
   if (!anySeriesFilled) return;
 
-  var ctx = e.drawingContext;
   var area = e.plotArea;
   var sets = e.allSeriesPoints;
   var setCount = sets.length;
@@ -685,11 +713,23 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var currBaseline;
   var prevStepPlot;  // for different line drawing modes (line/step) per series
 
+  // Helper function to trace a line back along the baseline.
+  var traceBackPath = function(ctx, baselineX, baselineY, pathBack) {
+    ctx.lineTo(baselineX, baselineY);
+    if (stackedGraph) {
+      for (var i = pathBack.length - 1; i >= 0; i--) {
+        var pt = pathBack[i];
+        ctx.lineTo(pt[0], pt[1]);
+      }
+    }
+  };
+
   // process sets in reverse order (needed for stacked graphs)
   for (var setIdx = setCount - 1; setIdx >= 0; setIdx--) {
+    var ctx = e.drawingContext;
     var setName = setNames[setIdx];
     if (!g.getBooleanOption('fillGraph', setName)) continue;
-    
+
     var stepPlot = g.getBooleanOption('stepPlot', setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
@@ -714,9 +754,28 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     ctx.fillStyle = err_color;
     ctx.beginPath();
     var last_x, is_first = true;
+
+    // If the point density is high enough, dropping segments on their way to
+    // the canvas justifies the overhead of doing so.
+    if (points.length > 2 * g.width_) {
+      ctx = DygraphCanvasRenderer._fastCanvasProxy(ctx);
+    }
+
+    // For filled charts, we draw points from left to right, then back along
+    // the x-axis to complete a shape for filling.
+    // For stacked plots, this "back path" is a more complex shape. This array
+    // stores the [x, y] values needed to trace that shape.
+    var pathBack = [];
+
+    // TODO(danvk): there are a lot of options at play in this loop.
+    //     The logic would be much clearer if some (e.g. stackGraph and
+    //     stepPlot) were split off into separate sub-plotters.
+    var point;
     while (iter.hasNext) {
-      var point = iter.next();
-      if (!Dygraph.isOK(point.y)) {
+      point = iter.next();
+      if (!Dygraph.isOK(point.y) && !stepPlot) {
+        traceBackPath(ctx, prevX, prevYs[1], pathBack);
+        pathBack = [];
         prevX = NaN;
         if (point.y_stacked !== null && !isNaN(point.y_stacked)) {
           baseline[point.canvasx] = area.h * point.y_stacked + area.y;
@@ -744,10 +803,10 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
         newYs = [ point.canvasy, lastY ];
 
-        if(stepPlot) {
+        if (stepPlot) {
           // Step plots must keep track of the top and bottom of
           // the baseline at each point.
-          if(prevYs[0] === -1) {
+          if (prevYs[0] === -1) {
             baseline[point.canvasx] = [ point.canvasy, axisY ];
           } else {
             baseline[point.canvasx] = [ point.canvasy, prevYs[0] ];
@@ -757,32 +816,47 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
         }
 
       } else {
-        newYs = [ point.canvasy, axisY ];
+        if (isNaN(point.canvasy) && stepPlot) {
+          newYs = [ area.y + area.h, axisY ];
+        } else {
+          newYs = [ point.canvasy, axisY ];
+        }
       }
       if (!isNaN(prevX)) {
-        ctx.moveTo(prevX, prevYs[0]);
-        
         // Move to top fill point
         if (stepPlot) {
           ctx.lineTo(point.canvasx, prevYs[0]);
+          ctx.lineTo(point.canvasx, newYs[0]);
         } else {
           ctx.lineTo(point.canvasx, newYs[0]);
         }
-        // Move to bottom fill point
-        if (prevStepPlot && currBaseline) {
-          // Draw to the bottom of the baseline
-          ctx.lineTo(point.canvasx, currBaseline[1]);
-        } else {
-          ctx.lineTo(point.canvasx, newYs[1]);
-        }
 
-        ctx.lineTo(prevX, prevYs[1]);
-        ctx.closePath();
+        // Record the baseline for the reverse path.
+        if (stackedGraph) {
+          pathBack.push([prevX, prevYs[1]]);
+          if (prevStepPlot && currBaseline) {
+            // Draw to the bottom of the baseline
+            pathBack.push([point.canvasx, currBaseline[1]]);
+          } else {
+            pathBack.push([point.canvasx, newYs[1]]);
+          }
+        }
+      } else {
+        ctx.moveTo(point.canvasx, newYs[1]);
+        ctx.lineTo(point.canvasx, newYs[0]);
       }
       prevYs = newYs;
       prevX = point.canvasx;
     }
     prevStepPlot = stepPlot;
+    if (newYs && point) {
+      traceBackPath(ctx, point.canvasx, newYs[1], pathBack);
+      pathBack = [];
+    }
     ctx.fill();
   }
 };
+
+return DygraphCanvasRenderer;
+
+})();

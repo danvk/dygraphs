@@ -22,16 +22,20 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDeprecatedXAxisTimeLabelFor
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({
-    xAxisLabelFormatter: function (totalMinutes) {
-      var hours   = Math.floor( totalMinutes / 60);
-      var minutes = Math.floor((totalMinutes - (hours * 60)));
-      var seconds = Math.round((totalMinutes * 60) - (hours * 3600) - (minutes * 60));
+    axes : {
+      x : {
+        axisLabelFormatter: function (totalMinutes) {
+          var hours   = Math.floor( totalMinutes / 60);
+          var minutes = Math.floor((totalMinutes - (hours * 60)));
+          var seconds = Math.round((totalMinutes * 60) - (hours * 3600) - (minutes * 60));
 
-      if (hours   < 10) hours   = "0" + hours;
-      if (minutes < 10) minutes = "0" + minutes;
-      if (seconds < 10) seconds = "0" + seconds;
+          if (hours   < 10) hours   = "0" + hours;
+          if (minutes < 10) minutes = "0" + minutes;
+          if (seconds < 10) seconds = "0" + seconds;
 
-      return hours + ':' + minutes + ':' + seconds;
+          return hours + ':' + minutes + ':' + seconds;
+        }
+      }
     }
   });
 
@@ -46,19 +50,25 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = functi
   var opts = {
     width: 480,
     height: 320,
-    xAxisLabelFormatter: function(x, granularity, opts, dg) {
-      assertEquals('number', typeof(x));
-      assertEquals('number', typeof(granularity));
-      assertEquals('function', typeof(opts));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'x' + x;
-    },
-    yAxisLabelFormatter: function(y, granularity, opts, dg) {
-      assertEquals('number', typeof(y));
-      assertEquals('number', typeof(granularity));
-      assertEquals('function', typeof(opts));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'y' + y;
+    axes : {
+      x : {
+        axisLabelFormatter: function(x, granularity, opts, dg) {
+          assertEquals('number', typeof(x));
+          assertEquals('number', typeof(granularity));
+          assertEquals('function', typeof(opts));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'x' + x;
+        }
+      },
+      y : {
+        axisLabelFormatter: function(y, granularity, opts, dg) {
+          assertEquals('number', typeof(y));
+          assertEquals('number', typeof(granularity));
+          assertEquals('function', typeof(opts));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'y' + y;
+        }
+      }
     },
     labels: ['x', 'y']
   };
@@ -70,7 +80,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(2);
   assertEquals("2: y: 4", Util.getLegend());
@@ -80,19 +90,26 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
   var opts = {
     width: 480,
     height: 320,
-    xAxisLabelFormatter: function(x, granularity, opts, dg) {
-      assertTrue(Dygraph.isDateLike(x));
-      assertEquals('number', typeof(granularity));
-      assertEquals('function', typeof(opts));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'x' + Util.formatDate(x);
-    },
-    yAxisLabelFormatter: function(y, granularity, opts, dg) {
-      assertEquals('number', typeof(y));
-      assertEquals('number', typeof(granularity));
-      assertEquals('function', typeof(opts));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'y' + y;
+    axes : {
+      x : {
+        axisLabelFormatter: function(x, granularity, opts, dg) {
+          assertTrue(Dygraph.isDateLike(x));
+          assertEquals('number', typeof(granularity));
+          assertEquals('function', typeof(opts));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'x' + Util.formatDate(x);
+        },
+        pixelsPerLabel: 60
+      },
+      y : {
+        axisLabelFormatter: function(y, granularity, opts, dg) {
+          assertEquals('number', typeof(y));
+          assertEquals('number', typeof(granularity));
+          assertEquals('function', typeof(opts));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'y' + y;
+        }
+      }
     },
     labels: ['x', 'y']
   };
@@ -103,8 +120,8 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateAxisLabelFormatter = fu
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(["x2011/01/01", "x2011/01/02", "x2011/01/03", "x2011/01/04", "x2011/01/05", "x2011/01/06", "x2011/01/07", "x2011/01/08"], Util.getXLabels());
-  assertEquals(['y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["x2011/01/02","x2011/01/04","x2011/01/06","x2011/01/08"], Util.getXLabels());
+  assertEquals(["y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(0);
   assertEquals("2011/01/01: y: 2", Util.getLegend());
@@ -117,19 +134,25 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedValueFormatter = function (
   var opts = {
     width: 480,
     height: 320,
-    xValueFormatter: function(x, opts, series_name, dg) {
-      assertEquals('number', typeof(x));
-      assertEquals('function', typeof(opts));
-      assertEquals('string', typeof(series_name));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'x' + x;
-    },
-    yValueFormatter: function(y, opts, series_name, dg) {
-      assertEquals('number', typeof(y));
-      assertEquals('function', typeof(opts));
-      assertEquals('string', typeof(series_name));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'y' + y;
+    axes : {
+      x : {
+        valueFormatter: function(x, opts, series_name, dg) {
+          assertEquals('number', typeof(x));
+          assertEquals('function', typeof(opts));
+          assertEquals('string', typeof(series_name));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'x' + x;
+        }
+      },
+      y : {
+        valueFormatter: function(y, opts, series_name, dg) {
+          assertEquals('number', typeof(y));
+          assertEquals('function', typeof(opts));
+          assertEquals('string', typeof(series_name));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'y' + y;
+        }
+      }
     },
     labels: ['x', 'y']
   };
@@ -142,8 +165,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedValueFormatter = function (
 
   // the valueFormatter options do not affect the ticks.
   assertEquals(['0','2','4','6','8'], Util.getXLabels());
-  assertEquals(['0','2','4','6','8','10','12','14','16','18'],
-               Util.getYLabels());
+  assertEquals(["0","5","10","15"], Util.getYLabels());
 
   // they do affect the legend, however.
   g.setSelection(2);
@@ -154,19 +176,26 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
   var opts = {
     width: 480,
     height: 320,
-    xValueFormatter: function(x, opts, series_name, dg) {
-      assertEquals('number', typeof(x));
-      assertEquals('function', typeof(opts));
-      assertEquals('string', typeof(series_name));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'x' + Util.formatDate(x);
-    },
-    yValueFormatter: function(y, opts, series_name, dg) {
-      assertEquals('number', typeof(y));
-      assertEquals('function', typeof(opts));
-      assertEquals('string', typeof(series_name));
-      assertEquals('[Dygraph graph]', dg.toString());
-      return 'y' + y;
+    axes : {
+      x : {
+        valueFormatter: function(x, opts, series_name, dg) {
+          assertEquals('number', typeof(x));
+          assertEquals('function', typeof(opts));
+          assertEquals('string', typeof(series_name));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'x' + Util.formatDate(x);
+        },
+        pixelsPerLabel: 60
+      },
+      y : {
+        valueFormatter: function(y, opts, series_name, dg) {
+          assertEquals('number', typeof(y));
+          assertEquals('function', typeof(opts));
+          assertEquals('string', typeof(series_name));
+          assertEquals('[Dygraph graph]', dg.toString());
+          return 'y' + y;
+        }
+      }
     },
     labels: ['x', 'y']
   };
@@ -179,8 +208,8 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedDateValueFormatter = functi
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(['01Jan','02Jan','03Jan','04Jan','05Jan','06Jan','07Jan','08Jan'], Util.getXLabels());
-  assertEquals(['2','4','6','8','10','12','14','16','18'], Util.getYLabels());
+  assertEquals(["02 Jan","04 Jan","06 Jan","08 Jan"], Util.getXLabels());
+  assertEquals(["5","10","15"], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
@@ -193,17 +222,23 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterPrecedenc
   var opts = {
     width: 480,
     height: 320,
-    xValueFormatter: function(x) {
-      return 'xvf' + x;
-    },
-    yValueFormatter: function(y) {
-      return 'yvf' + y;
-    },
-    xAxisLabelFormatter: function(x, granularity) {
-      return 'x' + x;
-    },
-    yAxisLabelFormatter: function(y) {
-      return 'y' + y;
+    axes : {
+      x : {
+        valueFormatter: function(x) {
+          return 'xvf' + x;
+        },
+        axisLabelFormatter: function(x, granularity) {
+          return 'x' + x;
+        },
+      },
+      y : {
+        valueFormatter: function(y) {
+          return 'yvf' + y;
+        },
+        axisLabelFormatter: function(y) {
+          return 'y' + y;
+        },
+      }
     },
     labels: ['x', 'y']
   };
@@ -215,7 +250,7 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterPrecedenc
   var g = new Dygraph(graph, data, opts);
 
   assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
   assertEquals("xvf9: y: yvf18", Util.getLegend());
@@ -236,28 +271,44 @@ DeprecatedAxisLabelsTestCase.prototype.testDeprecatedAxisLabelFormatterIncrement
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({
-    xValueFormatter: function(x) {
-      return 'xvf' + x;
+    axes : {
+      x : { 
+        valueFormatter: function(x) {
+          return 'xvf' + x;
+        }
+      }
     }
   });
   g.updateOptions({
-    yValueFormatter: function(y) {
-      return 'yvf' + y;
+    axes : {
+      y : { 
+        valueFormatter: function(y) {
+          return 'yvf' + y;
+        }
+      }
     }
   });
   g.updateOptions({
-    xAxisLabelFormatter: function(x, granularity) {
-      return 'x' + x;
+    axes : {
+      x : { 
+        axisLabelFormatter: function(x) {
+          return 'x' + x;
+        }
+      }
     }
   });
   g.updateOptions({
-    yAxisLabelFormatter: function(y) {
-      return 'y' + y;
+    axes : {
+      y : { 
+        axisLabelFormatter: function(y) {
+          return 'y' + y;
+        }
+      }
     }
   });
 
   assertEquals(["x0","x2","x4","x6","x8"], Util.getXLabels());
-  assertEquals(['y0','y2','y4','y6','y8','y10','y12','y14','y16','y18'], Util.getYLabels());
+  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
   assertEquals("xvf9: y: yvf18", Util.getLegend());

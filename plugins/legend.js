@@ -7,17 +7,14 @@
 
 Dygraph.Plugins.Legend = (function() {
 /*
-
 Current bits of jankiness:
 - Uses two private APIs:
     1. Dygraph.optionsViewForAxis_
     2. dygraph.plotter_.area
 - Registers for a "predraw" event, which should be renamed.
 - I call calculateEmWidthInDiv more often than needed.
-
 */
 
-/*jshint globalstrict: true */
 /*global Dygraph:false */
 "use strict";
 
@@ -38,7 +35,7 @@ legend.prototype.toString = function() {
 };
 
 // (defined below)
-var generateLegendHTML, generateLegendDashHTML;
+var generateLegendDashHTML;
 
 /**
  * This is called during the dygraph constructor, after options have been set
@@ -88,7 +85,7 @@ legend.prototype.activate = function(g) {
       try {
         div.style[name] = messagestyle[name];
       } catch (e) {
-        Dygraph.warn("You are using unsupported css properties for your " +
+        console.warn("You are using unsupported css properties for your " +
             "browser in labelsDivStyles");
       }
     }
@@ -127,23 +124,30 @@ var escapeHTML = function(str) {
 legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
+  var row = e.selectedRow;
 
-  if(e.dygraph.getOption("legendFollow")) {
+  var legendMode = e.dygraph.getOption('legend');
+  if (legendMode === 'never') {
+    this.legend_div_.style.display = 'none';
+    return;
+  }
+
+  if (legendMode === 'follow') {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
-    var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
-    var yAxisLabelWidth = e.dygraph.getOption("yAxisLabelWidth");
+    var labelsDivWidth = e.dygraph.getOption('labelsDivWidth');
+    var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
-    // offset 20 px to the left and down from the first selection point
+    // offset 20 px to the right and down from the first selection point
     // 20 px is guess based on mouse cursor size
     var leftLegend = points[0].x * area.w + 20;
     var topLegend  = points[0].y * area.h - 20;
 
-    // if legend floats to end of the plotting area, it flips to the other
+    // if legend floats to end of the window area, it flips to the other
     // side of the selection point
-    if((leftLegend + labelsDivWidth + 1) > area.w) {
-      leftLegend = leftLegend - 2*20 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    if ((leftLegend + labelsDivWidth + 1) > (window.scrollX + window.innerWidth)) {
+      leftLegend = leftLegend - 2 * 20 - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
@@ -151,22 +155,22 @@ legend.prototype.select = function(e) {
     this.legend_div_.style.top = topLegend + "px";
   }
 
-  var html = generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_);
+  var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
   this.legend_div_.innerHTML = html;
+  this.legend_div_.style.display = '';
 };
 
 legend.prototype.deselect = function(e) {
-
-  if(e.dygraph.getOption("legendFollow")) {
-    // return legend to the default non-floating position
-    this.predraw(e);
+  var legendMode = e.dygraph.getOption('legend');
+  if (legendMode !== 'always') {
+    this.legend_div_.style.display = "none";
   }
 
   // Have to do this every time, since styles might have changed.
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   this.one_em_width_ = oneEmWidth;
 
-  var html = generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth);
+  var html = legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth, null);
   this.legend_div_.innerHTML = html;
 };
 
@@ -209,14 +213,15 @@ legend.prototype.destroy = function() {
  * Generates HTML for the legend which is displayed when hovering over the
  * chart. If no selected points are specified, a default legend is returned
  * (this may just be the empty string).
- * @param { Number } [x] The x-value of the selected points.
- * @param { [Object] } [sel_points] List of selected points for the given
- * x-value. Should have properties like 'name', 'yval' and 'canvasy'.
- * @param { Number } [oneEmWidth] The pixel width for 1em in the legend. Only
- * relevant when displaying a legend with no selection (i.e. {legend:
- * 'always'}) and with dashed lines.
+ * @param {number} x The x-value of the selected points.
+ * @param {Object} sel_points List of selected points for the given
+ *   x-value. Should have properties like 'name', 'yval' and 'canvasy'.
+ * @param {number} oneEmWidth The pixel width for 1em in the legend. Only
+ *   relevant when displaying a legend with no selection (i.e. {legend:
+ *   'always'}) and with dashed lines.
+ * @param {number} row The selected row index.
  */
-generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
+legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 
@@ -249,7 +254,7 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
   // TODO(danvk): remove this use of a private API
   var xOptView = g.optionsViewForAxis_('x');
   var xvf = xOptView('valueFormatter');
-  html = xvf(x, xOptView, labels[0], g);
+  html = xvf.call(g, x, xOptView, labels[0], g, row, 0);
   if (html !== '') {
     html += ':';
   }
@@ -272,13 +277,13 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
     var series = g.getPropertiesForSeries(pt.name);
     var yOptView = yOptViews[series.axis - 1];
     var fmtFunc = yOptView('valueFormatter');
-    var yval = fmtFunc(pt.yval, yOptView, pt.name, g);
+    var yval = fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
 
     var cls = (pt.name == highlightSeries) ? " class='highlight'" : "";
 
     // TODO(danvk): use a template string here and make it an attribute.
     html += "<span" + cls + ">" + " <b><span style='color: " + series.color + ";'>" +
-        escapeHTML(pt.name) + "</span></b>:&nbsp;" + yval + "</span>";
+        escapeHTML(pt.name) + "</span></b>:&#160;" + yval + "</span>";
   }
   return html;
 };
@@ -296,10 +301,6 @@ generateLegendHTML = function(g, x, sel_points, oneEmWidth) {
  * @private
  */
 generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
-  // IE 7,8 fail at these divs, so they get boring legend, have not tested 9.
-  var isIE = (/MSIE/.test(navigator.userAgent) && !window.opera);
-  if (isIE) return "&mdash;";
-
   // Easy, common case: a solid line
   if (!strokePattern || strokePattern.length <= 1) {
     return "<div style=\"display: inline-block; position: relative; " +

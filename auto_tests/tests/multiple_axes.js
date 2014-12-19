@@ -55,8 +55,8 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
     }
   );
 
-  assertEquals(["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"], Util.getYLabels("1"));
-  assertEquals(["900K", "1.01M", "1.12M", "1.23M", "1.34M", "1.45M", "1.55M", "1.66M", "1.77M", "1.88M", "1.99M"], Util.getYLabels("2"));
+  assertEquals(["0","20","40","60","80","100"], Util.getYLabels("1"));
+  assertEquals(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
 };
 
 MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
@@ -183,6 +183,7 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
       },
       axes: {
         y: {
+          axisLabelWidth: 60,
           valueRange: [40, 70]
         },
         y2: {
@@ -192,7 +193,6 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
       },
       ylabel: 'Primary y-axis',
       y2label: 'Secondary y-axis',
-      yAxisLabelWidth: 60
     }
   );
   assertEquals(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));

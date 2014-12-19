@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Dygraphs Drawing Demo</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
-
-    <script type="text/javascript">
+    <script>
     var start_date = new Date("2002/12/29").getTime();
     var end_date = new Date().getTime();
     data = [];
     for (var d = start_date; d < end_date; d += 604800 * 1000) {
       var millis = d + 2 * 3600 * 1000;
-      data.push( [ new Date(new Date(millis).strftime("%Y/%m/%d")), 50 ]);
+      var date = new Date(millis);
+      var yyyy = date.getFullYear(),
+          mm = date.getMonth(),
+          dd = date.getDate();
+      data.push( [ new Date(Date.UTC(yyyy, mm, dd)), 50 ]);
     }
     </script>
-    <style type="text/css">
+
+    <style>
     #tool_zoom {
       background: url('drawing/tool-palette.png');
       background-position: 0px 0px;
@@ -64,8 +64,9 @@
     var valueRange = [0, 100];
 
     function setPoint(event, g, context) {
-      var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(g.graphDiv);
-      var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(g.graphDiv);
+      var pos = Dygraph.findPos(g.graphDiv);
+      var canvasx = Dygraph.pageX(event) - pos.x;
+      var canvasy = Dygraph.pageY(event) - pos.y;
       var xy = g.toDataCoords(canvasx, canvasy);
       var x = xy[0], value = xy[1];
       var rows = g.numRows();
@@ -140,6 +141,7 @@
         {
           valueRange: valueRange,
           labels: [ 'Date', 'Value' ],
+          labelsUTC: true,
           interactionModel: {
             mousedown: function (event, g, context) {
               if (tool == 'zoom') {
@@ -158,7 +160,6 @@
             },
             mousemove: function (event, g, context) {
               if (tool == 'zoom') {
-                Dygraph.defaultInteractionModel.mousemove(event, g, context);
               } else {
                 if (!isDrawing) return;
                 setPoint(event, g, context);
@@ -166,14 +167,12 @@
             },
             mouseup: function(event, g, context) {
               if (tool == 'zoom') {
-                Dygraph.defaultInteractionModel.mouseup(event, g, context);
               } else {
                 finishDraw();
               }
             },
             mouseout: function(event, g, context) {
               if (tool == 'zoom') {
-                Dygraph.defaultInteractionModel.mouseout(event, g, context);
               }
             },
             dblclick: function(event, g, context) {
@@ -201,8 +200,12 @@
           },
           strokeWidth: 1.5,
           gridLineColor: 'rgb(196, 196, 196)',
-          drawYGrid: false,
-          drawYAxis: false
+          axes: {
+            y: {
+              drawAxis: false,
+              drawGrid: false
+            }
+          }
         });
         window.onmouseup = finishDraw;
   </script>

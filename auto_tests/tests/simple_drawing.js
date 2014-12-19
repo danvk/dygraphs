@@ -41,10 +41,16 @@ SimpleDrawingTestCase.prototype.tearDown = function() {
 
 SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
   var opts = {
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     valueRange: [0,51] }
 
   var graph = document.getElementById("graph");
@@ -62,10 +68,16 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
 // See http://code.google.com/p/dygraphs/issues/detail?id=185
 SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
   var opts = {
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     valueRange: [0,50] }
 
   var graph = document.getElementById("graph");
@@ -96,12 +108,20 @@ SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
  */
 SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   var opts = {
-      drawXGrid: false,
-      drawYGrid: false,
-      drawXAxis: false,
-      drawYAxis: false,
+    axes: {
+      x: {
+        drawGrid: false,
+        drawAxis: false
+      },
+      y: {
+        drawGrid: false,
+        drawAxis: false
+      }
+    },
+    series: {
       'Y1': {strokePattern: [25, 7, 7, 7]},
-      colors: ['#ff0000']
+    },
+    colors: ['#ff0000']
   };
 
   var graph = document.getElementById("graph");
@@ -123,10 +143,16 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
  */
 SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
   var opts = {
-    drawXGrid: false,
-    drawYGrid: false,
-    drawXAxis: false,
-    drawYAxis: false,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
     strokeWidth: 15,
     colors: ['#ff0000']
   };

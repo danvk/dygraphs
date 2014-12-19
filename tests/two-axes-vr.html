@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Multiple y-axes with valueRange</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -43,13 +39,8 @@
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
             series : {
-              'Y3': {
-                axis: {
-                }
-              },
-              'Y4': {
-                axis: 'Y3'  // use the same y-axis as series Y3
-              }
+              'Y3': { axis: 'y2' },
+              'Y4': { axis: 'y2' }
             },
             valueRange: [40, 70],
             axes: {
@@ -59,8 +50,7 @@
               }
             },
             ylabel: 'Primary y-axis',
-            y2label: 'Secondary y-axis',
-            yAxisLabelWidth: 60
+            y2label: 'Secondary y-axis'
           }
       );
 
@@ -70,13 +60,8 @@
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
             series : {
-              'Y3': {
-                axis: {
-                }
-              },
-              'Y4': {
-                axis: 'Y3'  // use the same y-axis as series Y3
-              }
+              'Y3': { axis: 'y2' },
+              'Y4': { axis: 'y2' }
             },
             axes: {
               y: {
@@ -93,19 +78,14 @@
           }
       );
 
-      g2 = new Dygraph(
+      g3 = new Dygraph(
           document.getElementById("demodiv_two"),
           data,
           {
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
             series : {
-              'Y3': {
-                axis: {
-                }
-              },
-              'Y4': {
-                axis: 'Y3'  // use the same y-axis as series Y3
-              }
+              'Y3': { axis: 'y2' },
+              'Y4': { axis: 'y2' }
             },
             axes: {
               y: {

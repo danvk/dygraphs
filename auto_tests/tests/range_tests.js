@@ -228,45 +228,6 @@ RangeTestCase.prototype.testIncludeZeroPerAxis = function() {
   assertEquals([44, 116], g.yAxisRange(1));
 }
 
-
-/**
- * Verify that includeZero range is properly specified per axis with old axis options.
- */
-RangeTestCase.prototype.testIncludeZeroPerAxisOld = function() {
-  var g = new Dygraph("graph",
-    'X,A,B\n' +
-    '0,50,50\n' +
-    '50,110,110\n',
-    {
-      drawPoints: true,
-      pointSize: 5,
-     
-        A: {
-          pointSize: 10
-        },
-        B: {
-          axis: {}
-        },
-      axes: {
-        'y': { includeZero: true },
-        'y2': { includeZero: false }
-      }
-    });
-
-  assertEquals([0, 121], g.yAxisRange(0));
-  assertEquals([44, 116], g.yAxisRange(1));
-
-  g.updateOptions({
-    axes: {
-      'y': { includeZero: false },
-      'y2': { includeZero: true }
-    }
-  });
-
-  assertEquals([44, 116], g.yAxisRange(0));
-  assertEquals([0, 121], g.yAxisRange(1));
-}
-
 /**
  * Verify that very large Y ranges don't break things.
  */ 

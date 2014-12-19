@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** 
+/**
  * @fileoverview Test cases for drawing lines with missing points.
  *
  * @author konigsberg@google.com (Robert Konigsberg)
@@ -85,7 +85,7 @@ MissingPointsTestCase.prototype.testSeparatedPointsDontDraw_expanded_connected =
   var num_lines = 0;
 
   assertEquals(3, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [[56, 275], [161, 212], [370, 87], [475, 25]],
       { strokeStyle: '#0000ff' });
 };
@@ -114,12 +114,12 @@ MissingPointsTestCase.prototype.testConnectSeparatedPoints = function() {
   var htx = g.hidden_ctx_;
 
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [[56, 225], [223, 25], [391, 125]],
       { strokeStyle: '#0000ff' });
 
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [[140, 275], [307, 125], [475, 225]],
       { strokeStyle: '#ff0000' });
 };
@@ -155,12 +155,12 @@ MissingPointsTestCase.prototype.testConnectSeparatedPointsWithNan = function() {
 
   // Blue's lines are consecutive, however.
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [[56, 244], [149, 181], [242, 118]],
       { strokeStyle: '#0000ff' });
 };
 
-/* These lines contain awesome powa!  
+/* These lines contain awesome powa!
   var lines = CanvasAssertions.getLinesDrawn(htx, {strokeStyle: "#0000ff"});
   for (var idx = 0; idx < lines.length; idx++) {
     var line = lines[idx];
@@ -194,9 +194,9 @@ MissingPointsTestCase.prototype.testErrorBarsWithMissingPoints = function() {
   var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
   var p2 = g.toDomCoords(data[3][0], data[3][1][0]);
   var p3 = g.toDomCoords(data[4][0], data[4][1][0]);
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [p0, p1], { strokeStyle: '#ff0000' });
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [p2, p3], { strokeStyle: '#ff0000' });
 };
 
@@ -221,13 +221,13 @@ MissingPointsTestCase.prototype.testErrorBarsWithMissingPointsConnected = functi
   );
 
   var htx = g.hidden_ctx_;
-  
+
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p1 = g.toDomCoords(data[1][0], data[1][1][0]);
   var p2 = g.toDomCoords(data[3][0], data[3][1][0]);
   var p3 = g.toDomCoords(data[5][0], data[5][1][0]);
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [p1, p2, p3],
       { strokeStyle: '#ff0000' });
 };
@@ -262,7 +262,7 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPoints = function() {
   var p0 = g.toDomCoords(data[0][0], data[0][1][1]);
   var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
   CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });
-  
+
   p0 = g.toDomCoords(data[3][0], data[3][1][1]);
   p1 = g.toDomCoords(data[4][0], data[4][1][1]);
   CanvasAssertions.assertLineDrawn(htx, p0, p1, { strokeStyle: '#ff0000' });
@@ -297,16 +297,17 @@ MissingPointsTestCase.prototype.testCustomBarsWithMissingPointsConnected = funct
   );
 
   var htx = g.hidden_ctx_;
-  
+
   assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
 
   var p1 = g.toDomCoords(data[1][0], data[1][1][1]);
   var p2 = g.toDomCoords(data[3][0], data[3][1][1]);
   var p3 = g.toDomCoords(data[5][0], data[5][1][1]);
-  CanvasAssertions.assertConsecutiveLinesDrawn(htx, 
+  CanvasAssertions.assertConsecutiveLinesDrawn(htx,
       [p1, p2, p3],
       { strokeStyle: '#ff0000' });
 };
+
 MissingPointsTestCase.prototype.testLeftBoundaryWithMisingPoints = function() {
   var data = [
               [1, null, 3],
@@ -336,11 +337,67 @@ MissingPointsTestCase.prototype.testLeftBoundaryWithMisingPoints = function() {
   g.setSelection(closestRow);
   assertEquals(1, g.selPoints_.length);
   assertEquals(1, g.selPoints_[0].yval);
-  
 
   g.setSelection(3);
   assertEquals(2, g.selPoints_.length);
   assertEquals(g.selPoints_[0].xval, g.selPoints_[1].xval);
   assertEquals(2, g.selPoints_[0].yval);
   assertEquals(1, g.selPoints_[1].yval);
+};
+
+// Regression test for issue #411
+MissingPointsTestCase.prototype.testEmptySeries = function() {
+  var graphDiv = document.getElementById("graph");
+  var g = new Dygraph(
+       graphDiv,
+       "Time,Empty Series,Series 1,Series 2\n" +
+       "1381134460,,0,100\n" +
+       "1381134461,,1,99\n" +
+       "1381134462,,2,98\n" +
+       "1381134463,,3,97\n" +
+       "1381134464,,4,96\n" +
+       "1381134465,,5,95\n" +
+       "1381134466,,6,94\n" +
+       "1381134467,,7,93\n" +
+       "1381134468,,8,92\n" +
+       "1381134469,,9,91\n", {
+           visibility: [true, false, true],
+           dateWindow: [1381134465, 1381134467]
+       });
+
+  g.setSelection(6);
+  assertEquals("1381134466: Series 2: 94", Util.getLegend(graphDiv));
+};
+
+// Regression test for issue #485
+MissingPointsTestCase.prototype.testMissingFill = function() {
+  var graphDiv = document.getElementById("graph");
+  var N = null;
+  var g = new Dygraph(
+      graphDiv,
+      [
+        [1, [8, 10, 12]],
+        [2, [3, 5,7]   ],
+        [3,     N,     ],
+        [4, [9, N, 2]  ],  // Note: nulls in arrays are not technically valid.
+        [5, [N, 2, N]  ],  // see dygraphs.com/data.html.
+        [6, [2, 3, 6]  ]
+      ],
+      {
+        customBars: true,
+        connectSeparatedPoints: false,
+        labels: [ "X", "Series1"]
+      }
+  );
+
+  // Make sure there are no 'NaN' line segments.
+  var htx = g.hidden_ctx_;
+  for (var i = 0; i < htx.calls__.length; i++) {
+    var call = htx.calls__[i];
+    if ((call.name == 'moveTo' || call.name == 'lineTo') && call.args) {
+      for (var j = 0; j < call.args.length; j++) {
+        assertFalse(isNaN(call.args[j]));
+      }
+    }
+  }
 };

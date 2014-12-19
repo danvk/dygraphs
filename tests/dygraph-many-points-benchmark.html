@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Benchmarking for Plots with Many Points</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -23,10 +19,13 @@
         <input type="radio" id="rand" name="group1" value="rand"
           onclick="setDataType(this);"> random points <br></p>
       <p>Timestamps:
-        <input type="radio" id="aligned" name="timestamps" value="aligned"
-          onclick="setTimestampType(this);" checked> aligned
-        <input type="radio" id="unaligned" name="timestamps" value="unaligned"
-          onclick="setTimestampType(this);"> unaligned</p>
+        <input type="radio" id="aligned" name="timestamps" value="aligned" checked> aligned
+        <input type="radio" id="unaligned" name="timestamps" value="unaligned"> unaligned
+      </p>
+      <p>x-axis type:
+        <input type="radio" id="numeric" name="x-axis-type" value="numeric" onclick="setXAxisType(this)" checked> numeric
+        <input type="radio" id="dates" name="x-axis-type" value="date" onclick="setXAxisType(this)"> date/time
+      <p><input type="checkbox" id="fill"><label for="fill"> Fill?</label></p>
       <p>Number of points per series (points):
          <input type="text" id="points" size="20"></p>
       <p>Number of series (series):
@@ -49,12 +48,14 @@
       var metrics = null;
       var dataType = "sine";
       var timestamps = "aligned";
+      var numRuns = 0;
 
       var durations = [];
       updatePlot = function() {
         document.getElementById('message').innerHTML = "";
         var plotDiv = document.getElementById('plot');
         plotDiv.innerHTML = 'Redrawing...';
+        var numeric = document.getElementById('numeric').checked;
         var numPoints =
             parseInt(document.getElementById('points').value);
         var numSeries =
@@ -63,8 +64,8 @@
             parseInt(document.getElementById('repetitions').value);
 
         var data = [];
-        var xmin = 0.0;
-        var xmax = 2.0 * Math.PI;
+        var xmin = numeric ? 0.0 : Date.parse("2014/01/01");
+        var xmax = numeric ? 2.0 * Math.PI : Date.parse("2014/12/31");
         var adj = .5;
         var delta = (xmax - xmin) / (numPoints - 1);
         var unalignmentDelta = delta / numSeries;
@@ -90,6 +91,7 @@
               data[i*numSeries + j] = elemCopy;
             }
           }
+          if (!numeric) data[i][0] = new Date(data[i][0]);
         }
         var labels = [ "x" ];
         for (var j = 0; j < numSeries; j++) {
@@ -98,6 +100,7 @@
         var rollPeriod = parseInt(
             document.getElementById('rollPeriod').value);
         var opts = {labels: labels, rollPeriod: rollPeriod, timingName: "x"};
+        opts['fillGraph'] = document.getElementById('fill').checked;
         var millisecondss = [];
         for (var i = 0; i < repetitions; i++) {
           if (graph != null) {
@@ -106,7 +109,7 @@
           var start = new Date();
           graph = new Dygraph(plotDiv, data, opts);
           var end = new Date();
-          durations.push([start, end - start]);
+          durations.push([numRuns++, end - start]);
           millisecondss.push(end - start);
         }
         if (repetitions == 1) {
@@ -119,7 +122,7 @@
           }
           avg/=millisecondss.length; 
           document.getElementById('message').innerHTML =
-              "Durations: " + millisecondss + " Average: " + avg;
+              "Durations: " + millisecondss + "<br>Average: " + avg;
         }
 
         if (durations.length > 0) {

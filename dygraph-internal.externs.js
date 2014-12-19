@@ -1,30 +1,6 @@
 // This file:
-// - declares symbols that are provided outisde of dygraphs (e.g. by excanvas)
+// - declares symbols that are provided outisde of dygraphs
 // - defines custom types used internally
-
-/**
- * @param {Object} dict
- * @return {!Array.<string>}
- */
-function printStackTrace(dict) {}
-
-
-/**
- * @constructor
- */
-function G_vmlCanvasManager() {}
-
-/**
- * @param {!HTMLCanvasElement} canvas
- */
-G_vmlCanvasManager.initElement = function(canvas) {};
-
-// For IE
-/**
- * @param {string} type
- * @param {Object} fn
- */
-Element.prototype.detachEvent = function(type, fn) {};
 
 
 /**

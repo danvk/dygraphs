@@ -56,3 +56,37 @@ reference for ensuring Dygraphs automated tests pass.
 http://code.google.com/p/js-test-driver/wiki/GettingStarted.
 They're listed as a courtesy, but you really should get to understand
 js-test-driver, which has lots of powerful features.)
+
+
+Code Coverage
+-------------
+
+To generate code coverage data, start the jstd test server:
+
+   $ java -jar ./auto_tests/lib/JsTestDriver-1.3.3c.jar --port 9876
+
+Then run the tests with the --outputCoverage option:
+
+   $ java -jar ./auto_tests/lib/JsTestDriver-1.3.3c.jar --tests all --testOutput .
+
+This can take a few minutes. It will spew out gobs of XML files, which should
+be deleted. The one file you care about is jsTestDriver.conf-coverage.dat. It
+contains LCOV-format coverage data. It contains coverage data for _all_ JS
+files, including the tests themselves and library code which is irrelevant for
+coverage analysis. So you need to filter it down:
+
+  $ cat jsTestDriver.conf-coverage.dat | ./auto_tests/misc/filter-lcov.py
+
+To post the coverage data to coveralls, you'll need to export a few environment
+variables and install node-coveralls:
+
+  $ npm install  # installs node-coveralls, which is listed in package.json
+  $ export COVERALLS_SERVICE_NAME=jstd
+  $ export COVERALLS_REPO_TOKEN=...  # get this by visiting http://coveralls.io
+  $ export COVERALLS_GIT_COMMIT=$(git rev-parse HEAD)
+  $ cat jsTestDriver.conf-coverage.dat \
+      | ./auto_tests/misc/filter-lcov.py \
+      | ./node_modules/coveralls/bin/coveralls.js 
+
+If all goes well, you should see your coverage data posted at
+https://coveralls.io/r/danvk/dygraphs.

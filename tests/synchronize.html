@@ -1,38 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>synchronize</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../extras/synchronizer.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
-    <style type="text/css">
-      #div1 { position: absolute; left: 10px; top: 30px; }
-      #div2 { position: absolute; left: 520px; top: 30px; }
-      #div3 { position: absolute; left: 10px; top: 340px; }
-      #div4 { position: absolute; left: 520px; top: 340px; }
+    <style>
+      .chart { width: 500px; height: 300px; }
+      .chart-container { overflow: hidden; }
+      #div1 { float: left; }
+      #div2 { float: left; }
+      #div3 { float: left; clear: left; }
+      #div4 { float: left; }
     </style>
   </head>
   <body>
     <p>Zooming and panning on any of the charts will zoom and pan all the
-    others.</p>
+    others. Selecting points on one will select points on the others.</p>
 
-    <div id="div1" style="width:500px; height:300px;"></div>
-    <div id="div2" style="width:500px; height:300px;"></div>
-    <div id="div3" style="width:500px; height:300px;"></div>
-    <div id="div4" style="width:500px; height:300px;"></div>
+    <p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.
+    See the comments in that file for usage.</p>
+
+    <div class="chart-container">
+      <div id="div1" class="chart"></div>
+      <div id="div2" class="chart"></div>
+      <div id="div3" class="chart"></div>
+      <div id="div4" class="chart"></div>
+    </div>
+
+    <p>
+      Synchronize what?
+      <input type=checkbox id='chk-zoom' checked onChange='update()'><label for='chk-zoom'> Zoom</label>
+      <input type=checkbox id='chk-selection' checked onChange='update()'><label for='chk-selection'> Selection</label>
+      <input type=checkbox id='chk-range' checked onChange='update()'><label for='chk-range'> Range (y-axis)</label>
+    </p>
 
     <script type="text/javascript">
       gs = [];
       var blockRedraw = false;
-      var initialized = false;
       for (var i = 1; i <= 4; i++) {
         gs.push(
           new Dygraph(
@@ -40,23 +50,24 @@
             NoisyData, {
               rollPeriod: 7,
               errorBars: true,
-              drawCallback: function(me, initial) {
-                if (blockRedraw || initial) return;
-                blockRedraw = true;
-                var range = me.xAxisRange();
-                var yrange = me.yAxisRange();
-                for (var j = 0; j < 4; j++) {
-                  if (gs[j] == me) continue;
-                  gs[j].updateOptions( {
-                    dateWindow: range,
-                    valueRange: yrange
-                  } );
-                }
-                blockRedraw = false;
-              }
             }
           )
         );
+      }
+      var sync = Dygraph.synchronize(gs);
+      
+      function update() {
+        var zoom = document.getElementById('chk-zoom').checked,
+            selection = document.getElementById('chk-selection').checked,
+            syncRange = document.getElementById('chk-range').checked;
+        document.getElementById('chk-range').disabled = !zoom;
+
+        sync.detach();
+        sync = Dygraph.synchronize(gs, {
+          zoom: zoom,
+          selection: selection,
+          range: syncRange
+        });
       }
     </script>
   </body>

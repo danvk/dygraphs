@@ -10,8 +10,9 @@ fi
 set -x
 site=$1
 
-# Produce dygraph-combined.js.
+# Produce dygraph-combined.js and dygraph-combined-dev.js
 ./generate-combined.sh
+./generate-combined.sh cat-dev > dygraph-combined-dev.js
 
 # Generate documentation.
 ./generate-documentation.py > docs/options.html
@@ -30,15 +31,16 @@ if [ -s docs/options.html ] ; then
   find . -path ./.git -prune -o -print | xargs chmod a+rX
 
   # Copy everything to the site.
-  rsync -avzr gallery common tests jsdoc experimental plugins datahandler $site \
+  rsync -avzr gallery common tests jsdoc experimental plugins datahandler polyfills extras $site \
   && \
-  rsync -avzr --copy-links dashed-canvas.js stacktrace.js dygraph*.js gadget.xml excanvas.js thumbnail.png screenshot.png $temp_dir/* $site/
+  rsync -avzr --copy-links dashed-canvas.js dygraph*.js gadget.xml thumbnail.png screenshot.png $temp_dir/* $site/
 else
   echo "generate-documentation.py failed"
 fi
 
 # Revert changes to dygraph-combined.js and docs.
-git checkout dygraph-combined.js
+make clean-combined-test
+rm dygraph-combined-dev.js
 git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir

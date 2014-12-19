@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>Plotters demo</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -50,6 +46,9 @@
     be difficult otherwise, e.g. drawing series with only confidence intervals
     and showing error bars only for some series.</p>
     <div id="mixed-error" class="chart"></div>
+
+    <h2>Smooth Lines</h2>
+    <p>See the <a href="smooth-plots.html">smooth-plots demo</a> for an example of a custom plotter which connects points using bezier curves instead of straight lines.</p>
 
     <script type="text/javascript">
       // Darken a color
@@ -243,11 +242,13 @@ var candleData = "Date,Open,Close,High,Low\n" +
             {
               labels: ['Date', 'A', 'B'],
               includeZero: true,
-              "A": {
-                strokeWidth: 2
-              },
-              "B": {
-                plotter: barChartPlotter
+              series: {
+                "A": {
+                  strokeWidth: 2
+                },
+                "B": {
+                  plotter: barChartPlotter
+                }
               }
             });
 
@@ -311,12 +312,14 @@ var candleData = "Date,Open,Close,High,Low\n" +
             NoisyData(),
             {
               errorBars: true,
-              'A': {
-                plotter: Dygraph.Plotters.errorPlotter
-              },
-              'B': {
-                plotter: Dygraph.Plotters.linePlotter,
-                strokePattern: Dygraph.DASHED_LINE
+              series: {
+                'A': {
+                  plotter: Dygraph.Plotters.errorPlotter
+                },
+                'B': {
+                  plotter: Dygraph.Plotters.linePlotter,
+                  strokePattern: Dygraph.DASHED_LINE
+                }
               }
             });
 
