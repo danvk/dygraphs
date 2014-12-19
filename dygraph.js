@@ -381,9 +381,7 @@ Dygraph.DEFAULT_ATTRS = {
       independentTicks: false,
       ticker: null  // will be set in dygraph-tickers.js
     }
-  },
-
-  crosshair: false
+  }
 };
 
 // Directions for panning and zooming. Use bit operations when combined

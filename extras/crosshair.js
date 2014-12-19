@@ -28,10 +28,6 @@ crosshair.prototype.toString = function() {
  * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
  */
 crosshair.prototype.activate = function(g) {
-  this.canvas_.width = g.width_;
-  this.canvas_.height = g.height_;
-  this.canvas_.style.width = g.width_ + "px";    // for IE
-  this.canvas_.style.height = g.height_ + "px";  // for IE
   g.graphDiv.appendChild(this.canvas_);
 
   return {
@@ -41,17 +37,24 @@ crosshair.prototype.activate = function(g) {
 };
 
 crosshair.prototype.select = function(e) {
-  var ctx = this.canvas_.getContext("2d");
+  var options = e.dygraph.getOption('crosshair');
+  if (options === null) {
+    return;
+  }
+
   var width = e.dygraph.width_;
   var height = e.dygraph.height_;
-  var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
-  var options = e.dygraph.getOption('crosshair');
+  this.canvas_.width = width;
+  this.canvas_.height = height;
+  this.canvas_.style.width = width + "px";    // for IE
+  this.canvas_.style.height = height + "px";  // for IE
 
-  if (options === false) return;
-
+  var ctx = this.canvas_.getContext("2d");
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(0, 0, 0,0.3)";
   ctx.beginPath();
+
+  var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
 
   if (options === "vertical" || options === "both" || options === true) {
     ctx.moveTo(canvasx, 0);
