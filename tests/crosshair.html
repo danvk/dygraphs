@@ -8,6 +8,7 @@
     -->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
+    <script type="text/javascript" src="../extras/crosshair.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -25,29 +26,45 @@
 
     <script type="text/javascript">
       gv = new Dygraph(
-            document.getElementById("div_g_v"),
-            NoisyData, {
-              rollPeriod: 7,
-              showRoller: true,
-              errorBars: true,
-              crosshair: "vertical"
-            });
+        document.getElementById("div_g_v"),
+        NoisyData,
+        {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+          crosshair: "vertical",
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair()
+          ]
+        }
+      );
       gh = new Dygraph(
-            document.getElementById("div_g_h"),
-            NoisyData, {
-              rollPeriod: 7,
-              showRoller: true,
-              errorBars: true,
-              crosshair: "horizontal"
-            });
+        document.getElementById("div_g_h"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+          crosshair: "horizontal",
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair()
+          ]
+        }
+      );
       gb = new Dygraph(
-            document.getElementById("div_g_b"),
-            NoisyData, {
-              rollPeriod: 7,
-              showRoller: true,
-              errorBars: true,
-              crosshair: "both"
-            });
+        document.getElementById("div_g_b"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+          crosshair: "both",
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair()
+          ]
+        }
+      );
     </script>
   </body>
 </html>
