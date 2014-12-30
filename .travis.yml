@@ -2,4 +2,8 @@ language: node_js
 node_js:
   - "0.10"
 
-script: "make travis"
+before_script:
+  - npm install -g bower
+  - bower install
+
+script: "gulp travis"
