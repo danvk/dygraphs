@@ -63,7 +63,7 @@ print '''
 <pre>$ bower install dygraphs
 # dygraphs is now in bower_components/dygraphs/dygraph-combined.js</pre>
 
-<p>Most distributions include a source map. For non-concatenated JS, see <a href="https://github.com/danvk/dygraphs/blob/master/dygraph-dev.js">dygraph-dev.js</a> on <a href="https://github.com/danvk/dygraphs/">github</a>.</a>
+<p>Most distributions include a source map. For non-concatenated JS, see <a href="https://github.com/danvk/dygraphs/blob/master/dist/scratch/dygraph-combined.js">dygraph-combined.js</a> on <a href="https://github.com/danvk/dygraphs/">github</a>.</a>
 
 <p>To generate your own minified JS, run:</p>
 

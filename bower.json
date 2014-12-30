@@ -1,11 +1,12 @@
 {
   "name": "dygraphs",
   "version": "v1.1.0",
-  "main": "dygraph-combined.js",
+  "main": "dist/bower/dygraph-combined.js",
   "ignore": [
     "Makefile",
     "NOTES",
     "auto_tests",
+    "bower_components",
     "closure-todo.txt",
     "common",
     "compile-with-closure.sh",
@@ -35,8 +36,13 @@
     "release.sh",
     "releases.json",
     "screenshot.png",
+    "specs",
+    "src",
     "test.sh",
     "tests",
-    "thumbnail.png",
-  ]
+    "thumbnail.png"
+  ],
+  "devDependencies": {
+    "jquery": "~2.1.3"
+  }
 }
