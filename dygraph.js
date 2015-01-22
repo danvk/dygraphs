@@ -2019,6 +2019,14 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 
   var thisId = ++this.animateId;
   var that = this;
+  var cleanupIfClearing = function() {
+    // if we haven't reached fadeLevel 0 in the max frame time,
+    // ensure that the clear happens and just go to 0
+    if (that.fadeLevel !== 0 && direction < 0) {
+      that.fadeLevel = 0;
+      that.clearSelection();
+    }
+  };
   Dygraph.repeatAndCleanup(
     function(n) {
       // ignore simultaneous animations
@@ -2031,7 +2039,7 @@ Dygraph.prototype.animateSelection_ = function(direction) {
         that.updateSelection_(that.fadeLevel / totalSteps);
       }
     },
-    steps, millis, function() {});
+    steps, millis, cleanupIfClearing);
 };
 
 /**
