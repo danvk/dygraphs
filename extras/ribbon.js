@@ -2,6 +2,25 @@
  * @license
  * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
+ *
+ * Plugin options:
+ *
+ *  `data`: Array of numeric values (0-1) corresponding to the position
+ *  in the pallete interval.
+ *
+ *  `parser`: Function (`function (data, dygraph)`) returning the array of numeric
+ *  values. Function arguments: raw data, dygraph instance.
+ *
+ *  `options`: Object with the following properties:
+ *
+ *    `palette`: Colors Array. Default: ["transparent", "#ef2929", "#8ae234"]
+ *
+ *    `height`: Value (0-1) representing the height of the ribbon: 1 - full height,
+ *    0.5 - 50% height and so on.
+ *
+ *    `position`: Value (0-1) representing the start position of the ribbon:
+ *    0 - start from the bottom of chart, 0.25 - start from the 25% of the chart
+ *    height and so on.
  */
 
 /*global Dygraph:false */
