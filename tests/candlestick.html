@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Candlestick Chart Demo</title>
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../extras/candlestick-plotter.js"></script>
+
+    <style type="text/css">
+      body {
+        max-width: 750px;
+      }
+      div.chart {
+        width: 640px;
+        height: 320px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="candlechart" class=chart></div>
+    <script type="text/javascript">
+      var candleData =
+      "Date,Open,Close,High,Low\n";
+      for (var i = 0; i <= 365 * 10; i++) {
+        var d = new Date(i
+                         * 1000 // ms
+                         * 60   // sec
+                         * 60   // min
+                         * 24   // hr
+                        );
+        var dateStr = d.toISOString().match(/^\d{4}-\d{2}-\d{2}/)[0];
+        var min = 100;
+        var max = 400;
+        var open = Math.random() * (max - min) + min;
+        var close = Math.random() * (max - min) + min;
+        var high = Math.max(open, close) * 1.25;
+        var low = Math.min(open, close) * 0.75;
+
+        candleData += [dateStr, open, close, high, low].join(",") + "\n";
+      }
+      g = new Dygraph(
+        document.getElementById("candlechart"),
+        candleData,
+        {
+          plotter: Dygraph.Plotters.candlePlotter,
+          dataHandler: Dygraph.DataHandlers.CompressHandler
+        }
+      );
+    </script>
+  </body>
+</html>
