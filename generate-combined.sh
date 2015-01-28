@@ -32,7 +32,8 @@ GetSources () {
     datahandler/bars.js \
     datahandler/bars-custom.js \
     datahandler/bars-error.js \
-    datahandler/bars-fractions.js 
+    datahandler/bars-fractions.js \
+    datahandler/compress.js 
   do
       echo "$F"
   done
