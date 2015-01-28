@@ -15,12 +15,11 @@
  *
  *    `palette`: Colors Array. Default: ["transparent", "#ef2929", "#8ae234"]
  *
- *    `height`: Value (0-1) representing the height of the ribbon: 1 - full height,
- *    0.5 - 50% height and so on.
+ *    `top`: Value (0-1) representing the top of the ribbon: 1 - height of the chart,
+ *    0.5 - 50% height of the chart and so on.
  *
- *    `position`: Value (0-1) representing the start position of the ribbon:
- *    0 - start from the bottom of chart, 0.25 - start from the 25% of the chart
- *    height and so on.
+ *    `bottom`: Value (0-1) representing the bottom of the ribbon:
+ *    0 - the bottom of chart, 0.25 - 25% of the chart height and so on.
  */
 
 /*global Dygraph:false */
@@ -41,15 +40,18 @@ Dygraph.Plugins.Ribbon = (function() {
         "#ef2929",
         "#8ae234"
       ],
-      height: 1,
-      position: 0
+      top: 1,
+      bottom: 0
     };
 
     this.ribbonOptions_ = Dygraph.update(defaultOptions, this.ribbonOptions_);
-    this.ribbonOptions_.height = Math.min(this.ribbonOptions_.height, 1);
-    this.ribbonOptions_.height = Math.max(this.ribbonOptions_.height, 0);
-    this.ribbonOptions_.position = Math.min(this.ribbonOptions_.position, 1);
-    this.ribbonOptions_.position = Math.max(this.ribbonOptions_.position, 0);
+    this.ribbonOptions_.top = Math.min(this.ribbonOptions_.top, 1);
+    this.ribbonOptions_.top = Math.max(this.ribbonOptions_.top, 0);
+    this.ribbonOptions_.bottom = Math.min(this.ribbonOptions_.bottom, 1);
+    this.ribbonOptions_.bottom = Math.max(this.ribbonOptions_.bottom, 0);
+
+    this.ribbonOptions_.top = Math.max(this.ribbonOptions_.top, this.ribbonOptions_.bottom);
+    this.ribbonOptions_.bottom = Math.min(this.ribbonOptions_.top, this.ribbonOptions_.bottom);
   };
 
   ribbon.prototype.toString = function() {
@@ -87,8 +89,8 @@ Dygraph.Plugins.Ribbon = (function() {
       var left = g.toDomCoords(point.xval, 0)[0];
       var right = (nextpoint === undefined) ? g.canvas_.width : g.toDomCoords(nextpoint.xval, 0)[0];
       var color = this.decodeColor(this.ribbonData_[point.idx]);
-      var y = area.h * (1 - this.ribbonOptions_.height) + area.y;
-      var h = (area.h - area.h * this.ribbonOptions_.position) - y;
+      var y = area.h * (1 - this.ribbonOptions_.top) + area.y;
+      var h = (area.h - area.h * this.ribbonOptions_.bottom) - y;
       g.hidden_ctx_.fillStyle = color;
       g.hidden_ctx_.fillRect(left, y, right - left, h);
     }
