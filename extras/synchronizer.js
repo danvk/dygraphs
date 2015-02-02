@@ -165,7 +165,9 @@ function attachSelectionHandlers(gs, prevCallbacks) {
     prevCallbacks.unhighlight = g.getFunctionOption('unhighlightCallback');
     g.updateOptions({
       highlightCallback: function(event, x, points, row, seriesName) {
-        if (prevCallbacks.highlight) prevCallbacks.highlight(event, x, points, row, seriesName);
+        if (prevCallbacks.highlight) {
+            prevCallbacks.highlight(event, x, points, row, seriesName);
+        }
         if (block) return;
         block = true;
         var me = this;
