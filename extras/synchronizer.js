@@ -125,13 +125,14 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
   };
 };
 
-// TODO: call any `drawCallback`s that were set before this.
 function attachZoomHandlers(gs, syncOpts) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
+    var oldDC = g.getFunctionOption('drawCallback');
     g.updateOptions({
       drawCallback: function(me, initial) {
+        if (oldDC) oldDC(me, initial);
         if (block || initial) return;
         block = true;
         var opts = {
@@ -153,8 +154,11 @@ function attachSelectionHandlers(gs) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
+    var oldHC = g.getFunctionOption('highlightCallback');
+    var oldUHC = g.getFunctionOption('unhighlightCallback');
     g.updateOptions({
       highlightCallback: function(event, x, points, row, seriesName) {
+        if (oldHC) oldHC(event, x, points, row, seriesName);
         if (block) return;
         block = true;
         var me = this;
@@ -168,6 +172,7 @@ function attachSelectionHandlers(gs) {
         block = false;
       },
       unhighlightCallback: function(event) {
+        if (oldUHC) oldUHC(event);
         if (block) return;
         block = true;
         var me = this;
