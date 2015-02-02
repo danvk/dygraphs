@@ -48,6 +48,12 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
   };
   var dygraphs = [];
 
+  var prevCallbacks = {
+    draw: null,
+    highlight: null,
+    unhighlight: null
+  };
+
   var parseOpts = function(obj) {
     if (!(obj instanceof Object)) {
       throw 'Last argument must be either Dygraph or Object.';
@@ -97,11 +103,11 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
 
   // Listen for draw, highlight, unhighlight callbacks.
   if (opts.zoom) {
-    attachZoomHandlers(dygraphs, opts);
+    attachZoomHandlers(dygraphs, opts, prevCallbacks);
   }
 
   if (opts.selection) {
-    attachSelectionHandlers(dygraphs);
+    attachSelectionHandlers(dygraphs, prevCallbacks);
   }
 
   return {
@@ -109,12 +115,12 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
       for (var i = 0; i < dygraphs.length; i++) {
         var g = dygraphs[i];
         if (opts.zoom) {
-          g.updateOptions({drawCallback: null});
+          g.updateOptions({drawCallback: prevCallbacks.draw});
         }
         if (opts.selection) {
           g.updateOptions({
-            highlightCallback: null,
-            unhighlightCallback: null
+            highlightCallback: prevCallbacks.highlight,
+            unhighlightCallback: prevCallbacks.unhighlight
           });
         }
       }
@@ -125,14 +131,14 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
   };
 };
 
-function attachZoomHandlers(gs, syncOpts) {
+function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
-    var oldDC = g.getFunctionOption('drawCallback');
+    prevCallbacks.draw = g.getFunctionOption('drawCallback');
     g.updateOptions({
       drawCallback: function(me, initial) {
-        if (oldDC) oldDC(me, initial);
+        if (prevCallbacks.draw) prevCallbacks.draw(me, initial);
         if (block || initial) return;
         block = true;
         var opts = {
@@ -150,15 +156,15 @@ function attachZoomHandlers(gs, syncOpts) {
   }
 }
 
-function attachSelectionHandlers(gs) {
+function attachSelectionHandlers(gs, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
-    var oldHC = g.getFunctionOption('highlightCallback');
-    var oldUHC = g.getFunctionOption('unhighlightCallback');
+    prevCallbacks.highlight = g.getFunctionOption('highlightCallback');
+    prevCallbacks.unhighlight = g.getFunctionOption('unhighlightCallback');
     g.updateOptions({
       highlightCallback: function(event, x, points, row, seriesName) {
-        if (oldHC) oldHC(event, x, points, row, seriesName);
+        if (prevCallbacks.highlight) prevCallbacks.highlight(event, x, points, row, seriesName);
         if (block) return;
         block = true;
         var me = this;
@@ -172,7 +178,7 @@ function attachSelectionHandlers(gs) {
         block = false;
       },
       unhighlightCallback: function(event) {
-        if (oldUHC) oldUHC(event);
+        if (prevCallbacks.unhighlight) prevCallbacks.unhighlight(event);
         if (block) return;
         block = true;
         var me = this;
