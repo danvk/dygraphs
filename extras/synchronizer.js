@@ -127,6 +127,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
       // release references & make subsequent calls throw.
       dygraphs = null;
       opts = null;
+      prevCallbacks = null;
     }
   };
 };
