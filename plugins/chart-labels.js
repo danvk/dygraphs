@@ -15,8 +15,7 @@ Dygraph.Plugins.ChartLabels = (function() {
 var chart_labels = function() {
   this.title_div_ = null;
   this.xlabel_div_ = null;
-  this.ylabel_div_ = null;
-  this.y2label_div_ = null;
+  this.ylabels_div_ = [];
 };
 
 chart_labels.prototype.toString = function() {
@@ -27,7 +26,8 @@ chart_labels.prototype.activate = function(g) {
   return {
     layout: this.layout,
     // clearChart: this.clearChart,
-    didDrawChart: this.didDrawChart
+    didDrawChart: this.didDrawChart,
+    willDrawChart: this.willDrawChart
   };
 };
 
@@ -46,8 +46,7 @@ var createDivInRect = function(r) {
 chart_labels.prototype.detachLabels_ = function() {
   var els = [ this.title_div_,
               this.xlabel_div_,
-              this.ylabel_div_,
-              this.y2label_div_ ];
+            ].concat(this.ylabels_div_);
   for (var i = 0; i < els.length; i++) {
     var el = els[i];
     if (!el) continue;
@@ -56,8 +55,7 @@ chart_labels.prototype.detachLabels_ = function() {
 
   this.title_div_ = null;
   this.xlabel_div_ = null;
-  this.ylabel_div_ = null;
-  this.y2label_div_ = null;
+  this.ylabels_div_ = [];
 };
 
 var createRotatedDiv = function(g, box, axis, classes, html) {
@@ -105,11 +103,33 @@ chart_labels.prototype.layout = function(e) {
   this.detachLabels_();
 
   var g = e.dygraph;
-  var div = e.chart_div;
+  if (g.getOption('title')) {
+    this.title_rect_ = e.reserveSpaceTop(g.getOption('titleHeight'));
+  }
+
+  if (g.getOption('xlabel')) {
+    this.x_rect_ = e.reserveSpaceBottom(g.getOption('xLabelHeight'));
+  }
+
+  for(var i=0; i < g.numAxes(); i++) {
+    var width = g.getOptionForAxis('axisLabelWidth', i);
+    if(g.getOptionForAxis('position', i) === 'left') {
+      e.reserveSpaceLeft(width, i); 
+    } else {
+      e.reserveSpaceRight(width, i);
+    }
+  }
+};
+
+chart_labels.prototype.willDrawChart = function(e) {
+  this.detachLabels_();
+  
+  var g = e.dygraph;
+  var layout = g.layout_;
+  var div = e.canvas.parentNode;
   if (g.getOption('title')) {
     // QUESTION: should this return an absolutely-positioned div instead?
-    var title_rect = e.reserveSpaceTop(g.getOption('titleHeight'));
-    this.title_div_ = createDivInRect(title_rect);
+    this.title_div_ = createDivInRect(this.title_rect_);
     this.title_div_.style.textAlign = 'center';
     this.title_div_.style.fontSize = (g.getOption('titleHeight') - 8) + 'px';
     this.title_div_.style.fontWeight = 'bold';
@@ -123,8 +143,7 @@ chart_labels.prototype.layout = function(e) {
   }
 
   if (g.getOption('xlabel')) {
-    var x_rect = e.reserveSpaceBottom(g.getOption('xLabelHeight'));
-    this.xlabel_div_ = createDivInRect(x_rect);
+    this.xlabel_div_ = createDivInRect(this.x_rect_);
     this.xlabel_div_.style.textAlign = 'center';
     this.xlabel_div_.style.fontSize = (g.getOption('xLabelHeight') - 2) + 'px';
 
@@ -135,32 +154,22 @@ chart_labels.prototype.layout = function(e) {
     div.appendChild(this.xlabel_div_);
   }
 
-  if (g.getOption('ylabel')) {
-    // It would make sense to shift the chart here to make room for the y-axis
-    // label, but the default yAxisLabelWidth is large enough that this results
-    // in overly-padded charts. The y-axis label should fit fine. If it
-    // doesn't, the yAxisLabelWidth option can be increased.
-    var y_rect = e.reserveSpaceLeft(0);
-
-    this.ylabel_div_ = createRotatedDiv(
-        g, y_rect,
-        1,  // primary (left) y-axis
-        'dygraph-label dygraph-ylabel',
-        g.getOption('ylabel'));
-    div.appendChild(this.ylabel_div_);
+  for(var i=0; i < g.numAxes(); i++) {
+    var box = layout.getAxisArea(i);
+    var labelName = (i === 0 ? 'ylabel' : 'y' + (i+1) + 'label'); 
+    var label = g.getOption(labelName);
+    if(label) {
+      var ele = createRotatedDiv(
+        g, box,
+        (i+1),
+        'dygraph-label dygraph-' + labelName.toLowerCase(),
+        label
+      );
+      this.ylabels_div_.push(ele);
+      div.appendChild(ele);
+    }
   }
-
-  if (g.getOption('y2label') && g.numAxes() == 2) {
-    // same logic applies here as for ylabel.
-    var y2_rect = e.reserveSpaceRight(0);
-    this.y2label_div_ = createRotatedDiv(
-        g, y2_rect,
-        2,  // secondary (right) y-axis
-        'dygraph-label dygraph-y2label',
-        g.getOption('y2label'));
-    div.appendChild(this.y2label_div_);
-  }
-};
+}
 
 chart_labels.prototype.didDrawChart = function(e) {
   var g = e.dygraph;

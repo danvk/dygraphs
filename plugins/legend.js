@@ -277,7 +277,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
     var series = g.getPropertiesForSeries(pt.name);
     var yOptView = yOptViews[series.axis - 1];
     var fmtFunc = yOptView('valueFormatter');
-    var yval = fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
+    var yval = fmtFunc? fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name)) : pt.yval;
 
     var cls = (pt.name == highlightSeries) ? " class='highlight'" : "";
 

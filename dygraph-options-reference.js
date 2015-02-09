@@ -667,6 +667,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description" : "Color of the x- and y-axis lines. Accepts any value which the HTML canvas strokeStyle attribute understands, e.g. 'black' or 'rgb(0, 100, 255)'."
   },
+  "position": {
+    "default": "left",
+    "labels": ["Axis display"],
+    "type": "string (left or right)",
+    "description" : "Position of the yAxis."
+  },
   "fillAlpha": {
     "default": "0.15",
     "labels": ["Error Bars", "Data Series Colors"],

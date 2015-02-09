@@ -75,6 +75,10 @@ DygraphLayout.prototype.getPlotArea = function() {
   return this.area_;
 };
 
+DygraphLayout.prototype.getAxisArea = function(axis) {
+  return this.axisArea_[axis];
+};
+
 // Compute the box which the chart should be drawn in. This is the canvas's
 // box, less space needed for axis, chart labels, and other plug-ins.
 // NOTE: This should only be called by Dygraph.predraw_().
@@ -85,13 +89,17 @@ DygraphLayout.prototype.computePlotArea = function() {
     y: 0
   };
 
+  var axisWidth = [];
+  for(var i = 0; i < this.dygraph_.numAxes(); i++) {
+    axisWidth[i] = 0;
+  }
   area.w = this.dygraph_.width_ - area.x - this.dygraph_.getOption('rightGap');
   area.h = this.dygraph_.height_;
 
   // Let plugins reserve space.
   var e = {
     chart_div: this.dygraph_.graphDiv,
-    reserveSpaceLeft: function(px) {
+    reserveSpaceLeft: function(px, axis) {
       var r = {
         x: area.x,
         y: area.y,
@@ -100,9 +108,12 @@ DygraphLayout.prototype.computePlotArea = function() {
       };
       area.x += px;
       area.w -= px;
+      if(typeof(axis) !== 'undefined') {
+        axisWidth[axis] += px;
+      }
       return r;
     },
-    reserveSpaceRight: function(px) {
+    reserveSpaceRight: function(px, axis) {
       var r = {
         x: area.x + area.w - px,
         y: area.y,
@@ -110,6 +121,9 @@ DygraphLayout.prototype.computePlotArea = function() {
         h: area.h
       };
       area.w -= px;
+      if(typeof(axis) !== 'undefined') {
+        axisWidth[axis] += px;
+      }
       return r;
     },
     reserveSpaceTop: function(px) {
@@ -138,8 +152,26 @@ DygraphLayout.prototype.computePlotArea = function() {
     }
   };
   this.dygraph_.cascadeEvents_('layout', e);
-
+  
   this.area_ = area;
+  this.axisArea_ = [];
+  var offsets = [];
+  var left = 0;
+  var right = area.x + area.w;
+  for(var i=0; i < this.dygraph_.numAxes(); i++) {
+    var width = axisWidth[i];
+    if(this.dygraph_.getOptionForAxis('position', i) === 'left') {
+      this.axisArea_[i] = {
+        x: left, y: area.y, w: width, h: area.h
+      };
+      left += width;
+    } else {
+      this.axisArea_[i] = {
+        x: right, y: area.y, w: width, h: area.h
+      };
+      right += width;
+    }
+  }
 };
 
 DygraphLayout.prototype.setAnnotations = function(ann) {
