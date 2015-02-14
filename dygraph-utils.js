@@ -355,7 +355,7 @@ Dygraph.zeropad = function(x) {
 };
 
 /**
- * Date accessors to get the parts of a calendar date (year, month, 
+ * Date accessors to get the parts of a calendar date (year, month,
  * day, hour, minute, second and millisecond) according to local time,
  * and factory method to call the Date constructor with an array of arguments.
  */
@@ -374,7 +374,7 @@ Dygraph.DateAccessorsLocal = {
 };
 
 /**
- * Date accessors to get the parts of a calendar date (year, month, 
+ * Date accessors to get the parts of a calendar date (year, month,
  * day of month, hour, minute, second and millisecond) according to UTC time,
  * and factory method to call the Date constructor with an array of arguments.
  */
@@ -903,6 +903,13 @@ var pixelSafeOptions = {
   'pointSize': true,
   'rangeSelectorPlotFillColor': true,
   'rangeSelectorPlotStrokeColor': true,
+  'rangeSelectorBGStrokeColor': true,
+  'rangeSelectorBGLineWidth': true,
+  'rangeSelectorPlotLineWidth': true,
+  'rangeSelectorPlotGradientColor': true,
+  'rangeSelectorFGStrokeColor': true,
+  'rangeSelectorFGLineWidth': true,
+  'rangeSelectorAlpha': true,
   'showLabelsOnHighlight': true,
   'showRoller': true,
   'strokeWidth': true,

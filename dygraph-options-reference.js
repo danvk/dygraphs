@@ -739,6 +739,48 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
   },
+  "rangeSelectorBGStrokeColor": {
+    "default": "gray",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "The color of the lines below and on both sides of the range selector mini plot. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
+  },
+  "rangeSelectorBGLineWidth": {
+    "default": "1",
+    "labels": ["Interactive Elements"],
+    "type": "float",
+    "description": "The width of the lines below and on both sides of the range selector mini plot."
+  },
+  "rangeSelectorPlotLineWidth": {
+    "default": "1.5",
+    "labels": ["Interactive Elements"],
+    "type": "float",
+    "description": "The width of the range selector mini plot line."
+  },
+  "rangeSelectorPlotGradientColor": {
+    "default": "white",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "The color that along with rangeSelectorPlotFillColor defines the linear gradient in the range selector mini plot. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify \"\" to turn off gradient."
+  },
+  "rangeSelectorFGStrokeColor": {
+    "default": "black",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "The color of the lines in the interactive layer of the range selector. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
+  },
+  "rangeSelectorFGLineWidth": {
+    "default": "1",
+    "labels": ["Interactive Elements"],
+    "type": "float",
+    "description": "The width the lines in the interactive layer of the range selector."
+  },
+  "rangeSelectorAlpha": {
+    "default": "0.6",
+    "labels": ["Interactive Elements"],
+    "type": "float (0.0 - 1.0)",
+    "description": "The transparency of the veil that is drawn over the unselected portions of the range selector mini plot. A value of 0 represents full transparency and the unselected portions of the mini plot will appear as normal. A value of 1 represents full opacity and the unselected portions of the mini plot will be hidden."
+  },
   "showInRangeSelector": {
     "default": "null",
     "labels": ["Interactive Elements"],
