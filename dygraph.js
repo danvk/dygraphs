@@ -340,7 +340,6 @@ Dygraph.DEFAULT_ATTRS = {
   rangeSelectorBGStrokeColor: "gray",
   rangeSelectorBGLineWidth: 1,
   rangeSelectorPlotLineWidth:1.5,
-  rangeSelectorPlotGradientColor: "white",
   rangeSelectorFGStrokeColor: "black",
   rangeSelectorFGLineWidth: 1,
   rangeSelectorAlpha: 0.6,

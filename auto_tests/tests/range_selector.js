@@ -142,7 +142,6 @@ RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() 
     rangeSelectorBGStrokeColor: 'blue',
     rangeSelectorBGLineWidth: 3,
     rangeSelectorPlotLineWidth: 0.5,
-    rangeSelectorPlotGradientColor: 'gray',
     rangeSelectorFGStrokeColor: 'red',
     rangeSelectorFGLineWidth: 2,
     rangeSelectorAlpha: 0.8,

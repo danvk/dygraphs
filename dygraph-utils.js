@@ -906,7 +906,6 @@ var pixelSafeOptions = {
   'rangeSelectorBGStrokeColor': true,
   'rangeSelectorBGLineWidth': true,
   'rangeSelectorPlotLineWidth': true,
-  'rangeSelectorPlotGradientColor': true,
   'rangeSelectorFGStrokeColor': true,
   'rangeSelectorFGLineWidth': true,
   'rangeSelectorAlpha': true,

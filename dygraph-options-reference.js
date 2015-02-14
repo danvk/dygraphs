@@ -757,12 +757,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float",
     "description": "The width of the range selector mini plot line."
   },
-  "rangeSelectorPlotGradientColor": {
-    "default": "white",
-    "labels": ["Interactive Elements"],
-    "type": "string",
-    "description": "The color that along with rangeSelectorPlotFillColor defines the linear gradient in the range selector mini plot. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify \"\" to turn off gradient."
-  },
   "rangeSelectorFGStrokeColor": {
     "default": "black",
     "labels": ["Interactive Elements"],

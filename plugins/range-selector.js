@@ -547,8 +547,6 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
   if (!fillStyle && !strokeStyle) {
     return;
   }
-  var gradientFillStyle = this.getOption_('rangeSelectorPlotGradientColor');
-  if (!gradientFillStyle) { gradientFillStyle = fillStyle; }
 
   var stepPlot = this.getOption_('stepPlot');
 
@@ -610,7 +608,7 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
   if (fillStyle) {
     var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
-    lingrad.addColorStop(0, gradientFillStyle);
+    lingrad.addColorStop(0, 'white');
     lingrad.addColorStop(1, fillStyle);
     this.bgcanvas_ctx_.fillStyle = lingrad;
     ctx.fill();
