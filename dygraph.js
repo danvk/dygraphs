@@ -777,16 +777,25 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
+    var index = -1;
+    if(axis !== 'x') {
+      index = DygraphOptions.axisToIndex_(axis);
+      console.log(index, axis_opts);
+      if(index > 1) {
+          if (axis_opts && axis_opts['y2'] && axis_opts['y2'].hasOwnProperty(opt)) {
+          return axis_opts['y2'][opt];
+        }
+      }
+    }
     // check old-style axis options
     // TODO(danvk): add a deprecation warning if either of these match.
     if(axis !== 'x') {
-      var index = DygraphOptions.axisToIndex_(axis);
       if (self.axes_[index].hasOwnProperty(opt)) {
         return self.axes_[index][opt];
       } else {
         if(index > 1) {
-          if (self.axes_[1].hasOwnProperty(opt)) {
-            return self.axes_[1][opt];
+          if (self.axes_[0].hasOwnProperty(opt)) {
+            return self.axes_[0][opt];
           }
         }
       }
@@ -2771,7 +2780,7 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
-      opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
+      opts = this.optionsViewForAxis_('y' + (axis ? (axis+1) : ''));
       v = opts("valueRange");
       if (v) this.axes_[axis].valueRange = v;
     } else {  // To keep old behavior
@@ -2946,7 +2955,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     
     if (independentTicks) {
       axis.independentTicks = independentTicks;
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var opts = this.optionsViewForAxis_('y' + (i ? (i+1) : ''));
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
               axis.computedValueRange[1],
@@ -2967,7 +2976,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var axis = this.axes_[i];
     
     if (!axis.independentTicks) {
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var opts = this.optionsViewForAxis_('y' + (i ? (i+1) : ''));
       var ticker = opts('ticker');
       var p_ticks = p_axis.ticks;
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
