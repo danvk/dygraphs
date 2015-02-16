@@ -780,7 +780,6 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     var index = -1;
     if(axis !== 'x') {
       index = DygraphOptions.axisToIndex_(axis);
-      console.log(index, axis_opts);
       if(index > 1) {
           if (axis_opts && axis_opts['y2'] && axis_opts['y2'].hasOwnProperty(opt)) {
           return axis_opts['y2'][opt];
@@ -2163,6 +2162,11 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
       // for.  If it is, just use it, otherwise search the array for a point
       // in the proper place.
       var setRow = row - this.getLeftBoundary_(setIdx);
+      if(setRow == -1) {
+        this.lastRow = -1;
+        changed = false;
+        break;
+      }
       if (setRow < points.length && points[setRow].idx == row) {
         var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
