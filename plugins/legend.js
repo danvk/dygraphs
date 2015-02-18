@@ -141,13 +141,13 @@ legend.prototype.select = function(e) {
     // within the plotter_ area
     // offset 20 px to the right and down from the first selection point
     // 20 px is guess based on mouse cursor size
-    var leftLegend = points[0].x * area.w + 20;
-    var topLegend  = points[0].y * area.h - 20;
+    var leftLegend = points[0].x * area.w + 50;
+    var topLegend  = points[0].y * area.h - 50;
 
-    // if legend floats to end of the window area, it flips to the other
+    // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
-    if ((leftLegend + labelsDivWidth + 1) > (window.scrollX + window.innerWidth)) {
-      leftLegend = leftLegend - 2 * 20 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    if ((leftLegend + labelsDivWidth + 1) > area.w) {
+      leftLegend = leftLegend - 2 * 50 - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
