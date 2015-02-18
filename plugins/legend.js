@@ -139,8 +139,8 @@ legend.prototype.select = function(e) {
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
-    // offset 20 px to the right and down from the first selection point
-    // 20 px is guess based on mouse cursor size
+    // offset 50 px to the right and down from the first selection point
+    // 50 px is guess based on mouse cursor size
     var leftLegend = points[0].x * area.w + 50;
     var topLegend  = points[0].y * area.h - 50;
 
