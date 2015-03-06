@@ -173,7 +173,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         var me = this;
         for (var i = 0; i < gs.length; i++) {
           if (me == gs[i]) continue;
-          var idx = dygraphsBinarySearch(gs[i], x);
+          var idx = gs[i].getRowForX(x);
           if (idx !== null) {
             gs[i].setSelection(idx, seriesName);
           }
@@ -193,27 +193,6 @@ function attachSelectionHandlers(gs, prevCallbacks) {
       }
     });
   }
-}
-
-// Returns the index corresponding to xVal, or null if there is none.
-function dygraphsBinarySearch(g, xVal) {
-  var low = 0,
-      high = g.numRows() - 1;
-
-  while (low <= high) {
-    var idx = (high + low) >> 1;
-    var x = g.getValue(idx, 0);
-    if (x < xVal) {
-      low = idx + 1;
-    } else if (x > xVal) {
-      high = idx - 1;
-    } else {
-      return idx;
-    }
-  }
-
-  // TODO: give an option to find the closest point, i.e. not demand an exact match.
-  return null;
 }
 
 })();

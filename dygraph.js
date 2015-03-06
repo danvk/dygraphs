@@ -3669,6 +3669,35 @@ Dygraph.prototype.indexFromSetName = function(name) {
 };
 
 /**
+ * Find the row number corresponding to the given x-value.
+ * Returns null if there is no such x-value in the data.
+ * If there are multiple rows with the same x-value, this will return the
+ * first one.
+ * @param {number} xVal The x-value to look for (e.g. millis since epoch).
+ * @return {?number} The row number, which you can pass to getValue(), or null.
+ */
+Dygraph.prototype.getRowForX = function(xVal) {
+  var low = 0,
+      high = this.numRows() - 1;
+
+  while (low <= high) {
+    var idx = (high + low) >> 1;
+    var x = this.getValue(idx, 0);
+    if (x < xVal) {
+      low = idx + 1;
+    } else if (x > xVal) {
+      high = idx - 1;
+    } else if (low != idx) {  // equal, but there may be an earlier match.
+      high = idx;
+    } else {
+      return idx;
+    }
+  }
+
+  return null;
+};
+
+/**
  * Trigger a callback when the dygraph has drawn itself and is ready to be
  * manipulated. This is primarily useful when dygraphs has to do an XHR for the
  * data (i.e. a URL is passed as the data source) and the chart is drawn
