@@ -100,16 +100,24 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). ' +
           'Need two or more dygraphs to synchronize.';
   }
+  
+  var readycount = dygraphs.length;
+  for (var i = 0; i < dygraphs.length; i++) {
+    var g = dygraphs[i];
+    g.ready( function() {
+      if (--readycount == 0) {
+        // Listen for draw, highlight, unhighlight callbacks.
+        if (opts.zoom) {
+          attachZoomHandlers(dygraphs, opts, prevCallbacks);
+        }
 
-  // Listen for draw, highlight, unhighlight callbacks.
-  if (opts.zoom) {
-    attachZoomHandlers(dygraphs, opts, prevCallbacks);
+        if (opts.selection) {
+          attachSelectionHandlers(dygraphs, prevCallbacks);
+        }
+      }
+    });
   }
-
-  if (opts.selection) {
-    attachSelectionHandlers(dygraphs, prevCallbacks);
-  }
-
+ 
   return {
     detach: function() {
       for (var i = 0; i < dygraphs.length; i++) {
