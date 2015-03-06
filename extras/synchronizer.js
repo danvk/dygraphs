@@ -204,7 +204,7 @@ function dygraphsBinarySearch(g, xVal) {
   var low = 0,
       high = g.numRows() - 1;
 
-  while (low < high) {
+  while (low <= high) {
     var idx = (high + low) >> 1;
     var x = g.getValue(idx, 0);
     if (x < xVal) {
