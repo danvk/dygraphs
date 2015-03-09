@@ -176,7 +176,7 @@ rangeSelector.prototype.resize_ = function() {
   }
 
   var plotArea = this.dygraph_.layout_.getPlotArea();
-  
+
   var xAxisLabelHeight = 0;
   if (this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
     xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
@@ -543,6 +543,7 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
  */
 rangeSelector.prototype.drawMiniPlot_ = function() {
   var fillStyle = this.getOption_('rangeSelectorPlotFillColor');
+  var fillGradientStyle = this.getOption_('rangeSelectorPlotFillGradientColor');
   var strokeStyle = this.getOption_('rangeSelectorPlotStrokeColor');
   if (!fillStyle && !strokeStyle) {
     return;
@@ -608,7 +609,9 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
   if (fillStyle) {
     var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
-    lingrad.addColorStop(0, 'white');
+    if (fillGradientStyle) {
+      lingrad.addColorStop(0, fillGradientStyle);
+    }
     lingrad.addColorStop(1, fillStyle);
     this.bgcanvas_ctx_.fillStyle = lingrad;
     ctx.fill();
@@ -658,7 +661,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
     }
-    
+
     rolledSeries.push(series);
   }
 

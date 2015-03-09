@@ -115,6 +115,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
     showRangeSelector: true,
     rangeSelectorHeight: 30,
     rangeSelectorPlotFillColor: 'lightyellow',
+    rangeSelectorPlotFillGradientColor: 'rgba(200, 200, 42, 10)',
     labels: ['X', 'Y']
   };
   var data = [
@@ -343,7 +344,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  
+
   //assert, that the range selector is at top position 70 since the 30px of the
   // xAxis shouldn't be reserved since it isn't drawn.
   this.assertGraphExistence(g, graph);
