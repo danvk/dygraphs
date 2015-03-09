@@ -526,8 +526,8 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   }
 
   var margin = 0.5;
-  this.bgcanvas_ctx_.lineWidth = this.getOption_('rangeSelectorBGLineWidth');
-  ctx.strokeStyle = this.getOption_('rangeSelectorBGStrokeColor');
+  this.bgcanvas_ctx_.lineWidth = this.getOption_('rangeSelectorBackgroundLineWidth');
+  ctx.strokeStyle = this.getOption_('rangeSelectorBackgroundStrokeColor');
   ctx.beginPath();
   ctx.moveTo(margin, margin);
   ctx.lineTo(margin, this.canvasRect_.h-margin);
@@ -749,8 +749,8 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
   var height = this.canvasRect_.h - margin;
   var zoomHandleStatus = this.getZoomHandleStatus_();
 
-  ctx.strokeStyle = this.getOption_('rangeSelectorFGStrokeColor');
-  ctx.lineWidth = this.getOption_('rangeSelectorFGLineWidth');
+  ctx.strokeStyle = this.getOption_('rangeSelectorForegroundStrokeColor');
+  ctx.lineWidth = this.getOption_('rangeSelectorForegroundLineWidth');
   if (!zoomHandleStatus.isZoomed) {
     ctx.beginPath();
     ctx.moveTo(margin, margin);

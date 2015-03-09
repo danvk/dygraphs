@@ -745,13 +745,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "The top color for the range selector mini plot fill color gradient. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"rgba(255,100,200,42)\" or \"yellow\". You can also specify null or \"\" to disable the gradient and fill with one single color."
   },
-  "rangeSelectorBGStrokeColor": {
+  "rangeSelectorBackgroundStrokeColor": {
     "default": "gray",
     "labels": ["Interactive Elements"],
     "type": "string",
     "description": "The color of the lines below and on both sides of the range selector mini plot. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
   },
-  "rangeSelectorBGLineWidth": {
+  "rangeSelectorBackgroundLineWidth": {
     "default": "1",
     "labels": ["Interactive Elements"],
     "type": "float",
@@ -763,13 +763,13 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "type": "float",
     "description": "The width of the range selector mini plot line."
   },
-  "rangeSelectorFGStrokeColor": {
+  "rangeSelectorForegroundStrokeColor": {
     "default": "black",
     "labels": ["Interactive Elements"],
     "type": "string",
     "description": "The color of the lines in the interactive layer of the range selector. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
   },
-  "rangeSelectorFGLineWidth": {
+  "rangeSelectorForegroundLineWidth": {
     "default": "1",
     "labels": ["Interactive Elements"],
     "type": "float",

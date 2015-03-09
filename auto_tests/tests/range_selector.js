@@ -140,11 +140,11 @@ RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() 
     height: 320,
     showRangeSelector: true,
     rangeSelectorHeight: 30,
-    rangeSelectorBGStrokeColor: 'blue',
-    rangeSelectorBGLineWidth: 3,
+    rangeSelectorBackgroundStrokeColor: 'blue',
+    rangeSelectorBackgroundLineWidth: 3,
     rangeSelectorPlotLineWidth: 0.5,
-    rangeSelectorFGStrokeColor: 'red',
-    rangeSelectorFGLineWidth: 2,
+    rangeSelectorForegroundStrokeColor: 'red',
+    rangeSelectorForegroundLineWidth: 2,
     rangeSelectorAlpha: 0.8,
     labels: ['X', 'Y']
   };
