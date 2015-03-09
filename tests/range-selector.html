@@ -13,6 +13,10 @@
     #bordered {
       border: 1px solid red;
     }
+    #dark-background {
+      background-color: #101015;
+      color: white;
+    }
     </style>
   </head>
   <body>
@@ -34,6 +38,11 @@
       Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
     </p>
     <div id="nochart" style="width:800px; height:30px;"></div>
+    <div id="dark-background">
+      <p>Demo of range selector on dark background, with (left) and without (right) custom range selector gradient color.</p>
+      <div id="darkbg1" style="width:400px; height:300px;display:inline-block;"></div>
+      <div id="darkbg2" style="width:400px; height:300px;display:inline-block;"></div>
+    </div>
     <p>Demo of range selector with stepPlot</p>
     <div id="stepplot" style="width:800px; height:320px;"></div>
 
@@ -100,7 +109,44 @@
             rangeSelectorHeight: 30
           }
       );
-      g5 = new Dygraph(document.getElementById("stepplot"),
+      g5 = new Dygraph(
+          document.getElementById("darkbg1"),
+          data_temp,
+          {
+              rollPeriod: 14,
+              showRoller: true,
+              customBars: true,
+              title: 'Nightly Temperatures in NY vs. SF',
+              ylabel: 'Temperature (F)',
+              legend: 'always',
+              labelsDivStyles: { 'textAlign': 'right', 'backgroundColor': '#101015' },
+              showRangeSelector: true,
+              rangeSelectorPlotFillColor: 'MediumSlateBlue',
+              rangeSelectorPlotFillGradientColor: 'rgba(123, 104, 238, 0)',
+              axisLabelColor: 'white',
+              colorValue: 0.9,
+              fillAlpha: 0.4
+          }
+      );
+      g6 = new Dygraph(
+          document.getElementById("darkbg2"),
+          data_temp,
+          {
+              rollPeriod: 14,
+              showRoller: true,
+              customBars: true,
+              title: 'Nightly Temperatures in NY vs. SF',
+              ylabel: 'Temperature (F)',
+              legend: 'always',
+              labelsDivStyles: { 'textAlign': 'right', 'backgroundColor': '#101015' },
+              showRangeSelector: true,
+              rangeSelectorPlotFillColor: 'MediumSlateBlue',
+              axisLabelColor: 'white',
+              colorValue: 0.9,
+              fillAlpha: 0.4
+          }
+      );
+      g7 = new Dygraph(document.getElementById("stepplot"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
                       "2008-05-08,42,88\n" +

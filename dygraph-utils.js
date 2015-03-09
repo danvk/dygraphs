@@ -902,6 +902,7 @@ var pixelSafeOptions = {
   'pointClickCallback': true,
   'pointSize': true,
   'rangeSelectorPlotFillColor': true,
+  'rangeSelectorPlotFillGradientColor': true,
   'rangeSelectorPlotStrokeColor': true,
   'rangeSelectorBGStrokeColor': true,
   'rangeSelectorBGLineWidth': true,
