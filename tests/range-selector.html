@@ -26,7 +26,7 @@
     </p>
     <div id="noroll" style="width:800px; height:320px;"></div>
     <p>
-      Roll period of 14 timesteps, custom range selector height and plot color.
+      Roll period of 14 timesteps, various custom range selector options.
     </p>
     <div id="roll14" style="width:800px; height:320px;"></div>
     <p>
@@ -74,7 +74,14 @@
             showRangeSelector: true,
             rangeSelectorHeight: 30,
             rangeSelectorPlotStrokeColor: 'yellow',
-            rangeSelectorPlotFillColor: 'lightyellow'
+            rangeSelectorPlotFillColor: 'black',
+            rangeSelectorBackgroundStrokeColor: 'lightyellow',
+            rangeSelectorBackgroundLineWidth: 4,
+            rangeSelectorPlotLineWidth: 1.5,
+            rangeSelectorForegroundStrokeColor: 'brown',
+            rangeSelectorForegroundLineWidth: 2,
+            rangeSelectorAlpha: 1,
+            rangeSelectorPlotFillGradientColor: 'yellow'
           }
       );
       g3 = new Dygraph(
