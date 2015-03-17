@@ -3602,19 +3602,25 @@ Dygraph.prototype.visibility = function() {
 };
 
 /**
- * Changes the visiblity of a series.
+ * Changes the visibility of one or more series.
  *
- * @param {number} num the series index
+ * @param {number|number[]} num the series index or an array of series indices
  * @param {boolean} value true or false, identifying the visibility.
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
-  if (num < 0 || num >= x.length) {
-    console.warn("invalid series number in setVisibility: " + num);
-  } else {
-    x[num] = value;
-    this.predraw_();
+
+  if (num.constructor !== Array) num = [num];
+
+  for (var i = 0; i < num.length; i++) {
+    if (num[i] < 0 || num[i] >= x.length) {
+      console.warn("invalid series number in setVisibility: " + num[i]);
+    } else {
+      x[num[i]] = value;
+    }
   }
+
+  this.predraw_();
 };
 
 /**
