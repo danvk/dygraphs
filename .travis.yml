@@ -1,6 +1,9 @@
 language: node_js
 node_js:
   - "0.10"
-sudo: false  # use container-based architecture
 
-script: "make travis"
+before_script:
+  - npm install -g bower
+  - bower install
+
+script: "gulp travis"

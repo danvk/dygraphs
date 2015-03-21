@@ -29,11 +29,11 @@ test:
 test-combined: move-combined test clean-combined-test
 
 move-combined: generate-combined
-	mv dygraph-combined.js dygraph-dev.js
+	mv dygraph-combined.js dygraph-autoloader.js
 
 clean-combined-test: clean
 	@echo restoring combined
-	git checkout dygraph-dev.js
+	git checkout dygraph-autoloader.js
 	rm dygraph-combined.js.map
 
 lint:
