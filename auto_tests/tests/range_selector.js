@@ -115,6 +115,37 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
     showRangeSelector: true,
     rangeSelectorHeight: 30,
     rangeSelectorPlotFillColor: 'lightyellow',
+    rangeSelectorPlotFillGradientColor: 'rgba(200, 200, 42, 10)',
+    labels: ['X', 'Y']
+  };
+  var data = [
+               [1, 10],
+               [2, 15],
+               [3, 10],
+               [4, 15],
+               [5, 10],
+               [6, 15],
+               [7, 10],
+               [8, 15],
+               [9, 10]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  this.assertGraphExistence(g, graph);
+};
+
+RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    showRangeSelector: true,
+    rangeSelectorHeight: 30,
+    rangeSelectorBackgroundStrokeColor: 'blue',
+    rangeSelectorBackgroundLineWidth: 3,
+    rangeSelectorPlotLineWidth: 0.5,
+    rangeSelectorForegroundStrokeColor: 'red',
+    rangeSelectorForegroundLineWidth: 2,
+    rangeSelectorAlpha: 0.8,
     labels: ['X', 'Y']
   };
   var data = [
@@ -343,7 +374,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  
+
   //assert, that the range selector is at top position 70 since the 30px of the
   // xAxis shouldn't be reserved since it isn't drawn.
   this.assertGraphExistence(g, graph);

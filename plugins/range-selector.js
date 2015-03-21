@@ -176,7 +176,7 @@ rangeSelector.prototype.resize_ = function() {
   }
 
   var plotArea = this.dygraph_.layout_.getPlotArea();
-  
+
   var xAxisLabelHeight = 0;
   if (this.dygraph_.getOptionForAxis('drawAxis', 'x')) {
     xAxisLabelHeight = this.getOption_('xAxisHeight') || (this.getOption_('axisLabelFontSize') + 2 * this.getOption_('axisTickSize'));
@@ -222,7 +222,7 @@ rangeSelector.prototype.createZoomHandles_ = function() {
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
-
+//TODO: change image to more options
   if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
     img.width = 7;
     img.height = 14;
@@ -526,8 +526,8 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   }
 
   var margin = 0.5;
-  this.bgcanvas_ctx_.lineWidth = 1;
-  ctx.strokeStyle = 'gray';
+  this.bgcanvas_ctx_.lineWidth = this.getOption_('rangeSelectorBackgroundLineWidth');
+  ctx.strokeStyle = this.getOption_('rangeSelectorBackgroundStrokeColor');
   ctx.beginPath();
   ctx.moveTo(margin, margin);
   ctx.lineTo(margin, this.canvasRect_.h-margin);
@@ -543,6 +543,7 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
  */
 rangeSelector.prototype.drawMiniPlot_ = function() {
   var fillStyle = this.getOption_('rangeSelectorPlotFillColor');
+  var fillGradientStyle = this.getOption_('rangeSelectorPlotFillGradientColor');
   var strokeStyle = this.getOption_('rangeSelectorPlotStrokeColor');
   if (!fillStyle && !strokeStyle) {
     return;
@@ -608,7 +609,9 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
   if (fillStyle) {
     var lingrad = this.bgcanvas_ctx_.createLinearGradient(0, 0, 0, canvasHeight);
-    lingrad.addColorStop(0, 'white');
+    if (fillGradientStyle) {
+      lingrad.addColorStop(0, fillGradientStyle);
+    }
     lingrad.addColorStop(1, fillStyle);
     this.bgcanvas_ctx_.fillStyle = lingrad;
     ctx.fill();
@@ -616,7 +619,7 @@ rangeSelector.prototype.drawMiniPlot_ = function() {
 
   if (strokeStyle) {
     this.bgcanvas_ctx_.strokeStyle = strokeStyle;
-    this.bgcanvas_ctx_.lineWidth = 1.5;
+    this.bgcanvas_ctx_.lineWidth = this.getOption_('rangeSelectorPlotLineWidth');
     ctx.stroke();
   }
 };
@@ -658,7 +661,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     if (g.rollPeriod() > 1) {
       series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
     }
-    
+
     rolledSeries.push(series);
   }
 
@@ -746,7 +749,8 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
   var height = this.canvasRect_.h - margin;
   var zoomHandleStatus = this.getZoomHandleStatus_();
 
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = this.getOption_('rangeSelectorForegroundStrokeColor');
+  ctx.lineWidth = this.getOption_('rangeSelectorForegroundLineWidth');
   if (!zoomHandleStatus.isZoomed) {
     ctx.beginPath();
     ctx.moveTo(margin, margin);
@@ -758,7 +762,7 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
     var leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
     var rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
 
-    ctx.fillStyle = 'rgba(240, 240, 240, 0.6)';
+    ctx.fillStyle = 'rgba(240, 240, 240, ' + this.getOption_('rangeSelectorAlpha').toString() + ')';
     ctx.fillRect(0, 0, leftHandleCanvasPos, this.canvasRect_.h);
     ctx.fillRect(rightHandleCanvasPos, 0, this.canvasRect_.w - rightHandleCanvasPos, this.canvasRect_.h);
 
