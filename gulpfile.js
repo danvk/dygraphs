@@ -145,7 +145,7 @@ gulp.task('gwt-dist', ['concat'], function() {
   // Generate jar
   gulp.src('')
     .pipe(plugins.shell([
-      'bash -c "jar -cf dygraph-gwt.jar -C dist/gwt org"'
+      'bash -c "jar -cf dist/dygraph-gwt.jar -C dist/gwt org"'
     ]))
 });
 
