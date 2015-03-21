@@ -717,73 +717,73 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
   },
   "showRangeSelector": {
     "default": "false",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "boolean",
     "description": "Show or hide the range selector widget."
   },
   "rangeSelectorHeight": {
     "default": "40",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "integer",
     "description": "Height, in pixels, of the range selector widget. This option can only be specified at Dygraph creation time."
   },
   "rangeSelectorPlotStrokeColor": {
     "default": "#808FAB",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "string",
     "description": "The range selector mini plot stroke color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off stroke."
   },
   "rangeSelectorPlotFillColor": {
     "default": "#A7B1C4",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "string",
     "description": "The range selector mini plot fill color. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\". You can also specify null or \"\" to turn off fill."
   },
   "rangeSelectorPlotFillGradientColor": {
     "default": "white",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "string",
     "description": "The top color for the range selector mini plot fill color gradient. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"rgba(255,100,200,42)\" or \"yellow\". You can also specify null or \"\" to disable the gradient and fill with one single color."
   },
   "rangeSelectorBackgroundStrokeColor": {
     "default": "gray",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "string",
     "description": "The color of the lines below and on both sides of the range selector mini plot. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
   },
   "rangeSelectorBackgroundLineWidth": {
     "default": "1",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "float",
     "description": "The width of the lines below and on both sides of the range selector mini plot."
   },
   "rangeSelectorPlotLineWidth": {
     "default": "1.5",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "float",
     "description": "The width of the range selector mini plot line."
   },
   "rangeSelectorForegroundStrokeColor": {
     "default": "black",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "string",
     "description": "The color of the lines in the interactive layer of the range selector. This can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\"."
   },
   "rangeSelectorForegroundLineWidth": {
     "default": "1",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "float",
     "description": "The width the lines in the interactive layer of the range selector."
   },
   "rangeSelectorAlpha": {
     "default": "0.6",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "float (0.0 - 1.0)",
     "description": "The transparency of the veil that is drawn over the unselected portions of the range selector mini plot. A value of 0 represents full transparency and the unselected portions of the mini plot will appear as normal. A value of 1 represents full opacity and the unselected portions of the mini plot will be hidden."
   },
   "showInRangeSelector": {
     "default": "null",
-    "labels": ["Interactive Elements"],
+    "labels": ["Range Selector"],
     "type": "boolean",
     "description": "Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the series. Setting it for one series will result in that series being charted alone in the range selector."
   },
@@ -847,6 +847,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
    'Error Bars',
    'Grid',
    'Interactive Elements',
+   'Range Selector',
    'Legend',
    'Overall display',
    'Rolling Averages',
