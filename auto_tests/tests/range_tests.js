@@ -53,8 +53,8 @@ var createGraph = function(opts, data, expectRangeX, expectRangeY) {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assert.equalsDelta(expectRangeX, g.xAxisRange(), 0.01);
-  assert.equalsDelta(expectRangeY, g.yAxisRange(0), 0.01);
+  assertDeepCloseTo(expectRangeX, g.xAxisRange(), 0.01);
+  assertDeepCloseTo(expectRangeY, g.yAxisRange(0), 0.01);
 
   return g;
 };
@@ -123,16 +123,16 @@ var zoom = function(g, xRange, yRange) {
   DygraphOps.dispatchMouseMove(g, xRange[1], yRange[0]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, xRange[1], yRange[0]);
 
-  assert.equalsDelta(xRange, g.xAxisRange(), 0.2);
-  // assert.equalsDelta(originalYRange, g.yAxisRange(0), 0.2); // Not true, it's something in the middle.
+  assertDeepCloseTo(xRange, g.xAxisRange(), 0.2);
+  // assert.closeTo(originalYRange, g.yAxisRange(0), 0.2); // Not true, it's something in the middle.
 
   var midX = (xRange[1] - xRange[0]) / 2;
   DygraphOps.dispatchMouseDown(g, midX, yRange[0]);
   DygraphOps.dispatchMouseMove(g, midX, yRange[1]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, midX, yRange[1]);
 
-  assert.equalsDelta(xRange, g.xAxisRange(), 0.2);
-  assert.equalsDelta(yRange, g.yAxisRange(0), 0.2);
+  assertDeepCloseTo(xRange, g.xAxisRange(), 0.2);
+  assertDeepCloseTo(yRange, g.yAxisRange(0), 0.2);
 }
 
 
@@ -144,13 +144,13 @@ it('testEmptyUpdateOptions_doesntUnzoom', function() {
   var g = createGraph();
   zoom(g, [ 11, 18 ], [ 35, 40 ]);
 
-  assert.equalsDelta([11, 18], g.xAxisRange(), 0.1);
-  assert.equalsDelta([35, 40], g.yAxisRange(0), 0.2);
+  assertDeepCloseTo([11, 18], g.xAxisRange(), 0.1);
+  assertDeepCloseTo([35, 40], g.yAxisRange(0), 0.2);
 
   g.updateOptions({});
 
-  assert.equalsDelta([11, 18], g.xAxisRange(), 0.1);
-  assert.equalsDelta([35, 40], g.yAxisRange(0), 0.2);
+  assertDeepCloseTo([11, 18], g.xAxisRange(), 0.1);
+  assertDeepCloseTo([35, 40], g.yAxisRange(0), 0.2);
 });
 
 /**
@@ -234,8 +234,8 @@ it('testIncludeZeroPerAxis', function() {
  */ 
 it('testHugeRange', function() {
   var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], { includeZero : true });
-  assert.equalsDelta(1, -1e229 / g.yAxisRange(0)[0], 0.001);
-  assert.equalsDelta(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
+  assert.closeTo(1, -1e229 / g.yAxisRange(0)[0], 0.001);
+  assert.closeTo(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
 });
 
 /**

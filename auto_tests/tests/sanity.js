@@ -99,7 +99,7 @@ it('testToDomYCoord', function() {
   assert.equal(0, g.toDomYCoord(50));
 
   for (var x = 0; x <= 50; x++) {
-    assert.equalsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    assert.closeTo(50 - x, g.toDomYCoord(x), 0.00001);
   }
   g.updateOptions({valueRange: null, axes: {y: {valueRange: [0, 50]}}});
 
@@ -107,7 +107,7 @@ it('testToDomYCoord', function() {
   assert.equal(0, g.toDomYCoord(50));
 
   for (var x = 0; x <= 50; x++) {
-    assert.equalsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    assert.closeTo(50 - x, g.toDomYCoord(x), 0.00001);
   }
 });
 

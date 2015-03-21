@@ -45,7 +45,7 @@ it('testBasicNumericTicker', function() {
     {"v":3.5,"label":"3.5"},
     {"v":4,"label":"4"},
     {"v":4.5,"label":"4.5"}];
-  assert.equal(expected_ticks, ticks);
+  assert.deepEqual(expected_ticks, ticks);
 
   ticks = Dygraph.numericTicks(1, 84, 540, options);
   var expected_ticks = [
@@ -68,7 +68,7 @@ it('testBasicNumericTicker', function() {
     {"v":80,"label":"80"},
     {"v":85,"label":"85"}
   ];
-  assert.equal(expected_ticks, ticks);
+  assert.deepEqual(expected_ticks, ticks);
 });
 
 /*

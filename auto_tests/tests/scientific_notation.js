@@ -32,7 +32,7 @@ it('testScientificInput', function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assert.equalsDelta([10, 20, 30, 40], getXValues(g), 1e-6);
+  assertDeepCloseTo([10, 20, 30, 40], getXValues(g), 1e-6);
 });
 
 it('testScientificInputPlus', function() {
@@ -45,7 +45,7 @@ it('testScientificInputPlus', function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assert.equalsDelta([10, 20, 30, 40], getXValues(g), 1e-6);
+  assertDeepCloseTo([10, 20, 30, 40], getXValues(g), 1e-6);
 });
 
 it('testScientificInputMinus', function() {
@@ -58,7 +58,7 @@ it('testScientificInputMinus', function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assert.equalsDelta([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
+  assertDeepCloseTo([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
 });
 
 it('testScientificInputMinusCap', function() {
@@ -71,7 +71,7 @@ it('testScientificInputMinusCap', function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assert.equalsDelta([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
+  assertDeepCloseTo([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
 });
 
 });

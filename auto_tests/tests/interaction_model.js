@@ -47,16 +47,16 @@ it('testPan', function() {
   DygraphOps.dispatchMouseMove(g, xRange[1], yRange[0]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, xRange[1], yRange[0]);
 
-  assert.equalsDelta(xRange, g.xAxisRange(), 0.2);
-  // assert.equalsDelta(originalYRange, g.yAxisRange(0), 0.2); // Not true, it's something in the middle.
+  assert.closeTo(xRange, g.xAxisRange(), 0.2);
+  // assert.closeTo(originalYRange, g.yAxisRange(0), 0.2); // Not true, it's something in the middle.
 
   var midX = (xRange[1] - xRange[0]) / 2;
   DygraphOps.dispatchMouseDown(g, midX, yRange[0]);
   DygraphOps.dispatchMouseMove(g, midX, yRange[1]); // this is really necessary.
   DygraphOps.dispatchMouseUp(g, midX, yRange[1]);
 
-  assert.equalsDelta(xRange, g.xAxisRange(), 0.2);
-  assert.equalsDelta(yRange, g.yAxisRange(0), 0.2);
+  assert.closeTo(xRange, g.xAxisRange(), 0.2);
+  assert.closeTo(yRange, g.yAxisRange(0), 0.2);
 });
 */
 

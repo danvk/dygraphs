@@ -97,8 +97,8 @@ it('testHiddenDivWithResize', function() {
   g.resize();
   var x = Math.floor(g.toDomXCoord(2));
   var y = Math.floor(g.toDomYCoord(200));
-  assert.equal("Unexpected grid color found at pixel: x: " + x + " y: " + y,
-               [0, 128, 128, 255], Util.samplePixel(g.hidden_, x, y));
+  assert.deepEqual([0, 128, 128, 255], Util.samplePixel(g.hidden_, x, y),
+                   "Unexpected grid color found at pixel: x: " + x + " y: " + y);
 });
 
 });

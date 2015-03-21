@@ -1,15 +1,22 @@
 module.exports = function (config) {
     config.set({
         basePath: '../',
-        frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon-chai', 'chai-things', 'dirty-chai'],
+        frameworks: [
+          'mocha',
+          'chai',
+          'chai-as-promised',
+          'sinon-chai',
+          'chai-things',
+          'dirty-chai'
+        ],
         files: [
-            'auto_tests/**/*.js',
             'dist/dygraph-combined.dev.js',
             'src/extras/smooth-plotter.js',
+            'auto_tests/**/*.js',
         ],
         autoWatch: false,
         singleRun: true,
-        reporters: ['spec', 'coverage'],
+        reporters: ['mocha'], // ['spec', 'coverage'],
         preprocessors: {
             'dist/dygraph-combined.dev.js': ['coverage']
         },
@@ -23,7 +30,8 @@ module.exports = function (config) {
             'karma-chai-plugins',
             'karma-phantomjs-launcher',
             'karma-coverage',
-            'karma-spec-reporter'
+            'karma-spec-reporter',
+            'karma-mocha-reporter'
         ]
     });
 };

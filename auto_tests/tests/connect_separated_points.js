@@ -359,7 +359,7 @@ it('testConnectSeparatedPointsPerSeries', function() {
         CanvasAssertions.numLinesDrawn(htx, "#ff0000"),
         CanvasAssertions.numLinesDrawn(htx, "#00ff00"),
         CanvasAssertions.numLinesDrawn(htx, "#0000ff")];
-    assert.equal(expected, actual);
+    assert.deepEqual(expected, actual);
   }
 
   var g = new Dygraph(document.getElementById("graph"),

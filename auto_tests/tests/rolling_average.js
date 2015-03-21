@@ -98,7 +98,7 @@ it('testRollShortFractions', function() {
   var rolled1 = g.dataHandler_.rollingAverage(data1, 1, g);
   var rolled2 = g.dataHandler_.rollingAverage(data2, 1, g);
 
-  assert.equal(rolled1[0], rolled2[0]);
+  assert.deepEqual(rolled1[0], rolled2[0]);
 });
 
 it('testRollCustomBars', function() {
@@ -143,9 +143,9 @@ it('testRollErrorBars', function() {
   var variance = Math.sqrt(2);
   for (var i=1;i<data.length;i++) {
     var value = data[i][1][0] - 5;
-    assert.equal("unexpected rolled average", value, rolled[i][1]);
-    assert.equal("unexpected rolled min", value - variance, rolled[i][2][0]);
-    assert.equal("unexpected rolled max", value + variance, rolled[i][2][1]);
+    assert.equal(value, rolled[i][1], "unexpected rolled average");
+    assert.equal(value - variance, rolled[i][2][0], "unexpected rolled min");
+    assert.equal(value + variance, rolled[i][2][1], "unexpected rolled max");
   }
 });
 
@@ -194,9 +194,9 @@ it('testRollFractionsBars', function() {
   var highs = [29, 31, 44, 56];
 
   for (var i=0;i<data.length;i++) {
-    assert.equal("unexpected rolled average", values[i], Math.round(rolled[i][1]));
-    assert.equal("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
-    assert.equal("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+    assert.equal(values[i], Math.round(rolled[i][1]), "unexpected rolled average");
+    assert.equal(lows[i], Math.round(rolled[i][2][0]), "unexpected rolled min");
+    assert.equal(highs[i], Math.round(rolled[i][2][1]), "unexpected rolled max");
   }
 });
 
@@ -224,9 +224,9 @@ it('testRollFractionsBarsWilson', function() {
   var highs = [41, 37, 47, 57];
 
   for (var i=0;i<data.length;i++) {
-    assert.equal("unexpected rolled average", values[i], Math.round(rolled[i][1]));
-    assert.equal("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
-    assert.equal("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+    assert.equal(values[i], Math.round(rolled[i][1]), "unexpected rolled average");
+    assert.equal(lows[i], Math.round(rolled[i][2][0]), "unexpected rolled min");
+    assert.equal(highs[i], Math.round(rolled[i][2][1]), "unexpected rolled max");
   }
 });
 

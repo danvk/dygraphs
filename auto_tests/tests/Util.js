@@ -63,9 +63,10 @@ Util.getLegend = function(parent) {
  */
 Util.assertStyleOfChildren = function(selector, property, expectedValue) {
   assert.isTrue(selector.length > 0);
-  $.each(selector, function(idx, child) {
-    assert.isEqual(expectedValue,  $(child).css(property));
-  });
+  for (var idx = 0; idx < selector.length; idx++) {
+    var child = selector[idx];
+    assert.equal(expectedValue, window.getComputedStyle(child)[property]);
+  }
 };
 
 

@@ -289,7 +289,7 @@ it('testRangeSelectorInteraction', function() {
 
   var newXRange = g.xAxisRange().slice();
   assert('left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0], newXRange[0] > xRange[0]);
-  assert.equal('right zoomhandle should not have moved', xRange[1], newXRange[1]);
+  assert.equal(xRange[1], newXRange[1], 'right zoomhandle should not have moved');
 
   // Move right zoomhandle in
   xRange = newXRange;
@@ -318,8 +318,8 @@ it('testRangeSelectorInteraction', function() {
   zoomhandles[1].dispatchEvent(mouseUpEvent);
 
   var newXRange = g.xAxisRange().slice();
-  assert('right zoomhandle should have moved: '+newXRange[1]+'<'+xRange[1], newXRange[1] < xRange[1]);
-  assert.equal('left zoomhandle should not have moved', xRange[0], newXRange[0]);
+  assert(newXRange[1] < xRange[1], 'right zoomhandle should have moved: '+newXRange[1]+'<'+xRange[1]);
+  assert.equal(xRange[0], newXRange[0], 'left zoomhandle should not have moved');
 
   // Pan left
   xRange = newXRange;
@@ -379,9 +379,9 @@ it('testRangeSelectorPositionIfXAxisNotDrawn', function() {
   // xAxis shouldn't be reserved since it isn't drawn.
   assertGraphExistence(g, graph);
   var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas')[0];
-  assert.equal("Range selector is not at the expected position.","70px", bgcanvas.style.top);
+  assert.equal("70px", bgcanvas.style.top, "Range selector is not at the expected position.");
   var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0];
-  assert.equal("Range selector is not at the expected position.","70px", fgcanvas.style.top);
+  assert.equal("70px", fgcanvas.style.top, "Range selector is not at the expected position.");
 });
 
 it('testMiniPlotDrawn', function() {

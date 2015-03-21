@@ -43,8 +43,8 @@ var LOREM_IPSUM =
             labels : ['a', 'b'],
             drawPoints : true,
             highlightCircleSize : 6,
-            pointClickCallback : function(evt, point) {
-              point = point;
+            pointClickCallback : function(evt, p) {
+              point = p;
             }
           }
       );

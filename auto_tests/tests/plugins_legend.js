@@ -40,8 +40,8 @@ it('testLegendEscape', function() {
   }
   legendPlugin.select(e);
 
-  var legendSpan = $(legendPlugin.legend_div_).find("span b span");
-  assert.equal("&lt;script&gt;alert('XSS')&lt;/script&gt;", legendSpan.html());
+  var legendSpan = legendPlugin.legend_div_.querySelector("span b span");
+  assert.equal(legendSpan.innerHTML, "&lt;script&gt;alert('XSS')&lt;/script&gt;");
 });
 
 

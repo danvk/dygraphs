@@ -53,7 +53,7 @@ it('testBasicDateTicker', function() {
       {"v": 631152000000, "label":"1990"},
       {"v": 946684800000, "label":"2000"}
   ];
-  assert.equal(expected_ticks, ticks);
+  assert.deepEqual(expected_ticks, ticks);
   
   var start = Date.UTC(1999, 11, 31, 14, 0, 0);
   var end = Date.UTC(2000,  0,  1, 12, 0, 0);
@@ -74,7 +74,7 @@ it('testBasicDateTicker', function() {
       {v: Date.UTC(2000,  0,  1, 10, 0, 0), label: '10:00'},
       {v: Date.UTC(2000,  0,  1, 12, 0, 0), label: '12:00'}
   ];
-  assert.equal(expected_ticks, ticks);
+  assert.deepEqual(expected_ticks, ticks);
 });
 
 it('testAllDateTickers', function() {

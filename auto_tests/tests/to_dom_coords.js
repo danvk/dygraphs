@@ -211,11 +211,11 @@ it('testChartLogarithmic_YAxis', function() {
   var g = new Dygraph(graph, [ [1,1], [4,4] ], opts);
 
   var epsilon = 1e-8;
-  assert.equalsDelta([0, 4], g.toDataCoords(0, 0), epsilon);
-  assert.equalsDelta([0, 1], g.toDataCoords(0, 400), epsilon);
-  assert.equalsDelta([10, 4], g.toDataCoords(400, 0), epsilon);
-  assert.equalsDelta([10, 1], g.toDataCoords(400, 400), epsilon);
-  assert.equalsDelta([10, 2], g.toDataCoords(400, 200), epsilon);
+  assertDeepCloseTo([0, 4], g.toDataCoords(0, 0), epsilon);
+  assertDeepCloseTo([0, 1], g.toDataCoords(0, 400), epsilon);
+  assertDeepCloseTo([10, 4], g.toDataCoords(400, 0), epsilon);
+  assertDeepCloseTo([10, 1], g.toDataCoords(400, 400), epsilon);
+  assertDeepCloseTo([10, 2], g.toDataCoords(400, 200), epsilon);
   
   assert.deepEqual([0, 0], g.toDomCoords(0, 4));
   assert.deepEqual([0, 400], g.toDomCoords(0, 1));
@@ -249,40 +249,40 @@ it('testChartLogarithmic_XAxis', function() {
   var g = new Dygraph(graph, [ [1,1], [10, 10], [100,100], [1000,1000] ], opts);
 
   var epsilon = 1e-8;
-  assert.equalsDelta(1, g.toDataXCoord(0), epsilon);
-  assert.equalsDelta(5.623413251903489, g.toDataXCoord(100), epsilon);
-  assert.equalsDelta(31.62277660168378, g.toDataXCoord(200), epsilon);
-  assert.equalsDelta(177.8279410038921, g.toDataXCoord(300), epsilon);
-  assert.equalsDelta(1000, g.toDataXCoord(400), epsilon);
+  assert.closeTo(1, g.toDataXCoord(0), epsilon);
+  assert.closeTo(5.623413251903489, g.toDataXCoord(100), epsilon);
+  assert.closeTo(31.62277660168378, g.toDataXCoord(200), epsilon);
+  assert.closeTo(177.8279410038921, g.toDataXCoord(300), epsilon);
+  assert.closeTo(1000, g.toDataXCoord(400), epsilon);
 
-  assert.equalsDelta(0, g.toDomXCoord(1), epsilon);
-  assert.equalsDelta(3.6036036036036037, g.toDomXCoord(10), epsilon);
-  assert.equalsDelta(39.63963963963964, g.toDomXCoord(100), epsilon);
-  assert.equalsDelta(400, g.toDomXCoord(1000), epsilon);
+  assert.closeTo(0, g.toDomXCoord(1), epsilon);
+  assert.closeTo(3.6036036036036037, g.toDomXCoord(10), epsilon);
+  assert.closeTo(39.63963963963964, g.toDomXCoord(100), epsilon);
+  assert.closeTo(400, g.toDomXCoord(1000), epsilon);
 
-  assert.equalsDelta(0, g.toPercentXCoord(1), epsilon);
-  assert.equalsDelta(0.3333333333, g.toPercentXCoord(10), epsilon);
-  assert.equalsDelta(0.6666666666, g.toPercentXCoord(100), epsilon);
-  assert.equalsDelta(1, g.toPercentXCoord(1000), epsilon);
+  assert.closeTo(0, g.toPercentXCoord(1), epsilon);
+  assert.closeTo(0.3333333333, g.toPercentXCoord(10), epsilon);
+  assert.closeTo(0.6666666666, g.toPercentXCoord(100), epsilon);
+  assert.closeTo(1, g.toPercentXCoord(1000), epsilon);
  
   // Now zoom in and ensure that the methods return reasonable values.
   g.updateOptions({dateWindow: [ 10, 100 ]});
 
-  assert.equalsDelta(10, g.toDataXCoord(0), epsilon);
-  assert.equalsDelta(17.78279410038923, g.toDataXCoord(100), epsilon);
-  assert.equalsDelta(31.62277660168379, g.toDataXCoord(200), epsilon);
-  assert.equalsDelta(56.23413251903491, g.toDataXCoord(300), epsilon);
-  assert.equalsDelta(100, g.toDataXCoord(400), epsilon);
+  assert.closeTo(10, g.toDataXCoord(0), epsilon);
+  assert.closeTo(17.78279410038923, g.toDataXCoord(100), epsilon);
+  assert.closeTo(31.62277660168379, g.toDataXCoord(200), epsilon);
+  assert.closeTo(56.23413251903491, g.toDataXCoord(300), epsilon);
+  assert.closeTo(100, g.toDataXCoord(400), epsilon);
 
-  assert.equalsDelta(-40, g.toDomXCoord(1), epsilon);
-  assert.equalsDelta(0, g.toDomXCoord(10), epsilon);
-  assert.equalsDelta(400, g.toDomXCoord(100), epsilon);
-  assert.equalsDelta(4400, g.toDomXCoord(1000), epsilon);
+  assert.closeTo(-40, g.toDomXCoord(1), epsilon);
+  assert.closeTo(0, g.toDomXCoord(10), epsilon);
+  assert.closeTo(400, g.toDomXCoord(100), epsilon);
+  assert.closeTo(4400, g.toDomXCoord(1000), epsilon);
 
-  assert.equalsDelta(-1, g.toPercentXCoord(1), epsilon);
-  assert.equalsDelta(0, g.toPercentXCoord(10), epsilon);
-  assert.equalsDelta(1, g.toPercentXCoord(100), epsilon);
-  assert.equalsDelta(2, g.toPercentXCoord(1000), epsilon);
+  assert.closeTo(-1, g.toPercentXCoord(1), epsilon);
+  assert.closeTo(0, g.toPercentXCoord(10), epsilon);
+  assert.closeTo(1, g.toPercentXCoord(100), epsilon);
+  assert.closeTo(2, g.toPercentXCoord(1000), epsilon);
 });
 
 });

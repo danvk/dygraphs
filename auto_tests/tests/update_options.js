@@ -133,7 +133,7 @@ it('testUpdateColors', function() {
 
   var colors1 = [ "#aaa", "#bbb" ];
   graph.updateOptions({ colors: colors1 });
-  assert.equal(colors1, graph.getColors());
+  assert.deepEqual(colors1, graph.getColors());
 
   // extra colors are ignored until you add additional data series.
   var colors2 = [ "#ddd", "#eee", "#fff" ];
@@ -145,10 +145,10 @@ it('testUpdateColors', function() {
       "2011-01-01,2,3,4\n" +
       "2011-02-02,5,3,2\n"
   });
-  assert.equal(colors2, graph.getColors());
+  assert.deepEqual(colors2, graph.getColors());
 
   graph.updateOptions({ colors: null, file: data });
-  assert.equal(defaultColors, graph.getColors());
+  assert.deepEqual(defaultColors, graph.getColors());
 });
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=249

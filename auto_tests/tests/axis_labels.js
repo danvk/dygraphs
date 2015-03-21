@@ -74,18 +74,18 @@ it('testSmallRangeNearZero', function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  assert.equalsDelta([-0.1,-0.05,0,0.05],
+  assertDeepCloseTo([-0.1,-0.05,0,0.05],
                     Util.makeNumbers(Util.getYLabels()), kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
   assert.deepEqual([-0.04,-0.02,0,0.02,0.04],
-               Util.makeNumbers(Util.getYLabels()));
+                   Util.makeNumbers(Util.getYLabels()));
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
   assert.deepEqual([-0.01,-0.005,0,0.005],
-               Util.makeNumbers(Util.getYLabels()));
+                   Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
   assert.equal('1: Y: 0', Util.getLegend());
@@ -593,9 +593,8 @@ it('testLabelKMG2', function() {
     }
   );
 
-  assert.equal(
-      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
-      Util.getYLabels());
+  assert.deepEqual(["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+                   Util.getYLabels());
 });
 
 // Same as testLabelKMG2 but specifies the option at the
@@ -615,7 +614,7 @@ it('testLabelKMG2_top', function() {
     }
   );
 
-  assert.equal(
+  assert.deepEqual(
       ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
       Util.getYLabels());
 });
@@ -654,12 +653,12 @@ it('testAxisLabelFontSize', function() {
     Util.assertStyleOfChildren(selector, "font-size", expected);
   }
   
-  assertFontSize($(".dygraph-axis-label-x"), "14px");
-  assertFontSize($(".dygraph-axis-label-y") , "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y") , "14px");
 
   g.updateOptions({ axisLabelFontSize : 8});
-  assertFontSize($(".dygraph-axis-label-x"), "8px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px"); 
 
   g.updateOptions({
     axisLabelFontSize : null,
@@ -668,8 +667,8 @@ it('testAxisLabelFontSize', function() {
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
     axes : { 
@@ -677,8 +676,8 @@ it('testAxisLabelFontSize', function() {
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px"); 
 
   g.updateOptions({
     series : { 
@@ -689,9 +688,9 @@ it('testAxisLabelFontSize', function() {
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y1"), "20px"); 
-  assertFontSize($(".dygraph-axis-label-y2"), "12px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px"); 
 });
 
 it('testAxisLabelFontSizeNull', function() {
@@ -708,8 +707,8 @@ it('testAxisLabelFontSizeNull', function() {
   // Be sure we're dealing with a 14-point default.
   assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  assertFontSize($(".dygraph-axis-label-x"), "14px");
-  assertFontSize($(".dygraph-axis-label-y"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 });
 
 it('testAxisLabelColor', function() {
@@ -723,12 +722,12 @@ it('testAxisLabelColor', function() {
     Util.assertStyleOfChildren(selector, "color", expected);
   }
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 
   g.updateOptions({ axisLabelColor : "red"});
-  assertColor($(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
 
   g.updateOptions({
     axisLabelColor : null,
@@ -737,8 +736,8 @@ it('testAxisLabelColor', function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 
   g.updateOptions({
     axes : { 
@@ -746,8 +745,8 @@ it('testAxisLabelColor', function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
 
   g.updateOptions({
     series : { 
@@ -758,9 +757,9 @@ it('testAxisLabelColor', function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
-  assertColor($(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
 });
 
 it('testAxisLabelColorNull', function() {
@@ -777,8 +776,8 @@ it('testAxisLabelColorNull', function() {
   // Be sure we're dealing with a 14-point default.
   assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 });
 
 /*
@@ -825,7 +824,7 @@ it('testLabelsKMBPerAxis', function() {
   // labelsKMB doesn't apply to the x axis. This value should be different.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
-  assert.equal( ["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
 });
 
@@ -855,7 +854,7 @@ it('testLabelsKMBG2IPerAxis', function() {
   // bits of code.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
-  assert.equal( ["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
 });
 

@@ -72,7 +72,7 @@ it('testIndependentGrids', function() {
     for ( var i = 0; i < gridlines[axis].length; i++) {
       // Check the labels:
       var labels = Util.getYLabels(axis + 1);
-      assert.equal("Expected label not found.", gridlines[axis][i], labels[i]);
+      assert.equal(gridlines[axis][i], labels[i], "Expected label not found.");
 
       // Check that the grid was drawn.
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
@@ -136,8 +136,8 @@ it('testPerAxisGridColors', function() {
     for ( var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Check the grid colors.
-      assert.equal("Unexpected grid color found at pixel: x: " + x + "y: " + y,
-          gridColors[axis], Util.samplePixel(g.hidden_, x, y));
+      assert.deepEqual(gridColors[axis], Util.samplePixel(g.hidden_, x, y),
+          "Unexpected grid color found at pixel: x: " + x + "y: " + y);
     }
   }
 });
@@ -208,24 +208,16 @@ it('testPerAxisGridWidth', function() {
       // Check the grid width.
       switch (axis) {
       case 0: // y with 2 pixels width
-        assert.equal("Unexpected y-grid color found at pixel: x: " + x + "y: "
-            + y, emptyColor, drawnPixeldown2);
-        assert.equal("Unexpected y-grid color found at pixel: x: " + x + "y: "
-            + y, gridColor, drawnPixeldown1);
-        assert.equal("Unexpected y-grid color found at pixel: x: " + x + "y: "
-            + y, gridColor, drawnPixel);
-        assert.equal("Unexpected y-grid color found at pixel: x: " + x + "y: "
-            + y, gridColor, drawnPixelup1);
-        assert.equal("Unexpected y-grid color found at pixel: x: " + x + "y: "
-            + y, emptyColor, drawnPixelup2);
+        assert.deepEqual(emptyColor, drawnPixeldown2, "Unexpected y-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(gridColor, drawnPixeldown1, "Unexpected y-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(gridColor, drawnPixel, "Unexpected y-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(gridColor, drawnPixelup1, "Unexpected y-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(emptyColor, drawnPixelup2, "Unexpected y-grid color found at pixel: x: " + x + "y: " + y);
         break;
       case 1: // y2 with 1 pixel width
-        assert.equal("Unexpected y2-grid color found at pixel: x: " + x + "y: "
-            + y, emptyColor, drawnPixeldown1);
-        assert.equal("Unexpected y2-grid color found at pixel: x: " + x + "y: "
-            + y, gridColor, drawnPixel);
-        assert.equal("Unexpected y2-grid color found at pixel: x: " + x + "y: "
-            + y, emptyColor, drawnPixelup1);
+        assert.deepEqual(emptyColor, drawnPixeldown1, "Unexpected y2-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(gridColor, drawnPixel, "Unexpected y2-grid color found at pixel: x: " + x + "y: " + y);
+        assert.deepEqual(emptyColor, drawnPixelup1, "Unexpected y2-grid color found at pixel: x: " + x + "y: " + y);
         break;
       }
     }
@@ -235,20 +227,20 @@ it('testPerAxisGridWidth', function() {
   y = halfDown(g.plotter_.area.y) + 10;
   for ( var i = 0; i < xGridlines.length; i++) {
     x = halfUp(g.toDomXCoord(xGridlines[i]));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 3, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 2, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x - 1, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        gridColor, Util.samplePixel(g.hidden_, x + 1, y).slice(0, 3));
-    assert.equal("Unexpected x-grid color found at pixel: x: " + x + "y: " + y,
-        emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3));
+    assert.deepEqual(emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 3, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 2, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 1, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x + 1, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
+    assert.deepEqual(emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3),
+                     "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
   }
 });
 
@@ -309,12 +301,12 @@ it('testGridLinePattern', function() {
       var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill
-        assert.equal("Unexpected filled grid-pattern color found at pixel: x: " + x + " y: "
-            + y, [ 0, 0, 255 ], drawnPixel);
+        assert.deepEqual([ 0, 0, 255 ], drawnPixel,
+                         "Unexpected filled grid-pattern color found at pixel: x: " + x + " y: " + y);
         break;
       case 1: // no fill
-        assert.equal("Unexpected empty grid-pattern color found at pixel: x: " + x + " y: "
-            + y, [ 0, 0, 0 ], drawnPixel);
+        assert.deepEqual([ 0, 0, 0 ], drawnPixel,
+                         "Unexpected empty grid-pattern color found at pixel: x: " + x + " y: " + y);
         break;
       }
     }
