@@ -98,10 +98,11 @@ gulp.task('create-loader', function() {
 
 gulp.task('create-dev', function() {
   var dest = 'dist';
-  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.devOptions, src.datahandlers))
-    .pipe(plugins.sourcemaps.init())
+  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.devOptions, src.datahandlers), {base: '.'})
+    .pipe(plugins.sourcemaps.init({debug:true}))
     .pipe(plugins.concat('dygraph-combined.dev.js'))
     .pipe(plugins.header(copyright))
+    .pipe(plugins.sourcemaps.write('.'))  // '.' = external sourcemap
     .pipe(gulp.dest(dest));
 });
 
@@ -156,6 +157,13 @@ gulp.task('test', ['concat', 'create-dev'], function(done) {
   }, done);
 });
 
+gulp.task('coveralls', ['test'], plugins.shell.task([
+  './scripts/transform-coverage.js ' +
+      'dist/dygraph-combined.dev.js.map ' +
+      'dist/coverage/report-lcov/lcov.info ' +
+  '| ./node_modules/.bin/coveralls'
+]));
+
 gulp.task('watch', function() {
   gulp.watch('src/**', ['concat']);
 });
@@ -165,5 +173,5 @@ gulp.task('watch-test', function() {
 });
 
 gulp.task('dist', ['gwt-dist', 'bower-dist']);
-gulp.task('travis', ['test']);
+gulp.task('travis', ['test', 'coveralls']);
 gulp.task('default', ['test', 'dist']);

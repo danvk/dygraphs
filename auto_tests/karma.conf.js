@@ -16,13 +16,16 @@ module.exports = function (config) {
         ],
         autoWatch: false,
         singleRun: true,
-        reporters: ['mocha'], // ['spec', 'coverage'],
+        reporters: ['dots', 'coverage'],  // or 'mocha', 'spec'
         preprocessors: {
             'dist/dygraph-combined.dev.js': ['coverage']
         },
         coverageReporter: {
-            type: 'html',
-            dir: 'dist/coverage'
+            dir: 'dist/coverage',
+            reporters: [
+              { type: 'html', subdir: 'report-html' },
+              { type: 'lcovonly', subdir: 'report-lcov' },
+            ]
         },
         browsers: ['PhantomJS'],
         plugins: [
