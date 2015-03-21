@@ -6,158 +6,162 @@ var path = require('path');
 
 var dev = false;
 var src = {
+  base: "src",
+  polyfills: {
+    base: "src/polyfills",
+    files: [
+      "console.js",
+      "dashed-canvas.js"
+    ]
+  },
+  main: {
     base: "src",
-    lib: {
-        base: "src/lib",
-        files: [
-            "console.js",
-            "dashed-canvas.js"
-        ]
-    },
-    main: {
-        base: "src/dygraph",
-        files: [
-            "dygraph-options.js",
-            "dygraph-layout.js",
-            "dygraph-canvas.js",
-            "dygraph.js",
-            "dygraph-utils.js",
-            "dygraph-gviz.js",
-            "dygraph-interaction-model.js",
-            "dygraph-tickers.js",
-            "dygraph-plugin-base.js"
-        ]
-    } ,
-    plugins: {
-        base: "src/dygraph/plugins",
-        files: [
-            "annotations.js",
-            "axes.js",
-            "chart-labels.js",
-            "grid.js",
-            "legend.js",
-            "range-selector.js",
-            "../dygraph-plugin-install.js"
-        ]
-    },
-    // Only used by dynamic loader
-    devOptions: {
-        base: "src/dygraph",
-        files: ["dygraph-options-reference.js"]
-    },
-    datahandlers: {
-        base: "src/dygraph/datahandler",
-        files: [
-            "datahandler.js",
-            "default.js",
-            "default-fractions.js",
-            "bars.js",
-            "bars-error.js",
-            "bars-custom.js",
-            "bars-fractions.js"
-        ]
-    }
+    files: [
+      "dygraph-options.js",
+      "dygraph-layout.js",
+      "dygraph-canvas.js",
+      "dygraph.js",
+      "dygraph-utils.js",
+      "dygraph-gviz.js",
+      "dygraph-interaction-model.js",
+      "dygraph-tickers.js",
+      "dygraph-plugin-base.js"
+    ]
+  } ,
+  plugins: {
+    base: "src/plugins",
+    files: [
+      "annotations.js",
+      "axes.js",
+      "chart-labels.js",
+      "grid.js",
+      "legend.js",
+      "range-selector.js",
+      "../dygraph-plugin-install.js"
+    ]
+  },
+  // Only used by dynamic loader
+  devOptions: {
+    base: "src",
+    files: ["dygraph-options-reference.js"]
+  },
+  datahandlers: {
+    base: "src/datahandler",
+    files: [
+      "datahandler.js",
+      "default.js",
+      "default-fractions.js",
+      "bars.js",
+      "bars-error.js",
+      "bars-custom.js",
+      "bars-fractions.js"
+    ]
+  }
 };
 
 // Convenience function to merge multiple arrays into one
 var mergePaths = function() {
-    var paths = [];
-    var pathobj = null;
-    if (arguments.length > 0) {
-        for (var i = 0; i < arguments.length; i++) {
-            pathObj = arguments[i];
-            pathObj.files.map(function(filename) {
-                paths.push(path.join(pathObj.base, filename));
-            });
-        }
-
-        return paths;
-    } else {
-        return [];
+  var paths = [];
+  var pathobj = null;
+  if (arguments.length > 0) {
+    for (var i = 0; i < arguments.length; i++) {
+      pathObj = arguments[i];
+      pathObj.files.map(function(filename) {
+        paths.push(path.join(pathObj.base, filename));
+      });
     }
+
+    return paths;
+  } else {
+    return [];
+  }
 };
 
-var copyright = '/*! @license Copyright 2014 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */';
+var copyright = '/*! @license Copyright 2015 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */';
 
+/*
 // Creates the dygraph-autoloader
 gulp.task('create-loader', function() {
-    // Create string ready for javascript array
-    var files = mergePaths(src.lib, src.main, src.plugins, src.devOptions, src.datahandlers)
-        .map(function(filename) {
-            // Make the path relative to dist file and add quotes
-            return "'" + filename.replace(src.base, '../../' + src.base) + "'";
-        })
-        .join(",");
+  // Create string ready for javascript array
+  var files = mergePaths(src.lib, src.main, src.plugins, src.devOptions, src.datahandlers)
+    .map(function(filename) {
+      // Make the path relative to dist file and add quotes
+      return "'" + filename.replace(src.base, '../../' + src.base) + "'";
+    })
+    .join(",");
 
-    return gulp.src(src.base + '/dygraph/dygraph-autoloader.js')
-        .pipe(plugins.replace(/\/\* REPLACEME \*\//, files))
-        .pipe(gulp.dest('dist/scratch'));
+  return gulp.src(src.base + '../dygraph/dygraph-autoloader.js')
+    .pipe(plugins.replace(/\/\* REPLACEME \*\//, files))
+    .pipe(gulp.dest('dist/scratch'));
 });
+*/
 
 gulp.task('create-dev', function() {
-    var dest = 'dist/scratch';
-    return gulp.src(mergePaths(src.lib, src.main, src.plugins, src.devOptions, src.datahandlers))
-        .pipe(plugins.sourcemaps.init())
-        .pipe(plugins.concat('dygraph-combined.dev.js'))
-        .pipe(plugins.header(copyright))
-        .pipe(gulp.dest(dest));
+  var dest = 'dist';
+  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.devOptions, src.datahandlers))
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.concat('dygraph-combined.dev.js'))
+    .pipe(plugins.header(copyright))
+    .pipe(gulp.dest(dest));
 });
 
 gulp.task('concat', function() {
-    var dest = 'dist/scratch';
-    return gulp.src(mergePaths(src.lib, src.main, src.plugins, src.datahandlers))
-       .pipe(plugins.sourcemaps.init())
-       .pipe(plugins.concat('dygraph-combined.js'))
-       .pipe(plugins.header(copyright))
-       .pipe(gulp.dest(dest))
-       .pipe(plugins.uglify({
-            define: "DEBUG=false",
-            warnings: false,
-            preserveComments: "none"
-        }))
-        .pipe(plugins.header(copyright))
-       .pipe(plugins.rename('dygraph-combined.min.js'))
-       .pipe(plugins.sourcemaps.write('.'))
-       .pipe(gulp.dest(dest));
+  var dest = 'dist';
+  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.datahandlers))
+     .pipe(plugins.sourcemaps.init())
+     .pipe(plugins.concat('dygraph-combined.js'))
+     .pipe(plugins.header(copyright))
+     .pipe(gulp.dest(dest))
+     .pipe(plugins.uglify({
+      compress: {
+        global_defs: { DEBUG: false }
+      },
+      warnings: false,
+      preserveComments: "none"
+     }))
+     .pipe(plugins.header(copyright))
+     .pipe(plugins.rename('dygraph-combined.min.js'))
+     .pipe(plugins.sourcemaps.write('.'))
+     .pipe(gulp.dest(dest));
 
 });
 
 gulp.task("bower-dist", ['concat'], function() {
-    gulp.src('src/dygraph/extras/**', {base: 'src/dygraph'})
-        .pipe(gulp.dest('dist/bower'));
+  gulp.src('src/dygraph/extras/**', {base: 'src/dygraph'})
+    .pipe(gulp.dest('dist/bower'));
 
-    return gulp.src('dist/scratch/dygraph-combined*')
-        .pipe(gulp.dest('dist/bower'));
+  return gulp.src('dist/dygraph-combined*')
+    .pipe(gulp.dest('dist/bower'));
 });
 
 gulp.task('gwt-dist', ['concat'], function() {
-    // Copy package structure to dist folder
-    gulp.src('gwt/**', {'base': '.'})
-        .pipe(gulp.dest('dist'));
+  // Copy package structure to dist folder
+  gulp.src('gwt/**', {'base': '.'})
+    .pipe(gulp.dest('dist'));
 
-    gulp.src('scratch/dygraph-combined.min.js')
-        .pipe(gulp.dest('dist/gwt/org/danvk'));
+  gulp.src('dygraph-combined.min.js')
+    .pipe(gulp.dest('dist/gwt/org/danvk'));
 
-    // Generate jar
-    gulp.src('')
-        .pipe(plugins.shell([
-            'bash -c "jar -cf dygraph-gwt.jar -C dist/gwt org"'
-        ]))
+  // Generate jar
+  gulp.src('')
+    .pipe(plugins.shell([
+      'bash -c "jar -cf dygraph-gwt.jar -C dist/gwt org"'
+    ]))
 });
 
 gulp.task('test', ['concat', 'create-dev'], function(done) {
-    karma.start({
-        configFile: process.cwd() + '/specs/karma.conf.js',
-        singleRun: true
-    }, done);
+  karma.start({
+    configFile: process.cwd() + '/auto_tests/karma.conf.js',
+    singleRun: true
+  }, done);
 });
 
 gulp.task('watch', function() {
-    gulp.watch('src/dygraph/**', ['concat']);
+  gulp.watch('src/**', ['concat']);
 });
 
 gulp.task('watch-test', function() {
-    gulp.watch(['src/dygraph/**', 'specs/unit/**'], ['test']);
+  gulp.watch(['src/**', 'auto_tests/tests/**'], ['test']);
 });
 
 gulp.task('dist', ['gwt-dist', 'bower-dist']);

@@ -3,17 +3,15 @@ module.exports = function (config) {
         basePath: '../',
         frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon-chai', 'chai-things', 'dirty-chai'],
         files: [
-            'bower_components/jquery/dist/jquery.min.js',
-            'specs/utils/*.js',
-            'dist/scratch/dygraph-combined.dev.js',
-            'src/dygraph/extras/smooth-plotter.js',
-            'specs/unit/**/*.spec.js'
+            'auto_tests/**.js',
+            'dist/dygraph-combined.dev.js',
+            'src/extras/smooth-plotter.js',
         ],
         autoWatch: false,
         singleRun: true,
         reporters: ['spec', 'coverage'],
         preprocessors: {
-            'dist/scratch/dygraph-combined.dev.js': ['coverage']
+            'dist/dygraph-combined.dev.js': ['coverage']
         },
         coverageReporter: {
             type: 'html',
