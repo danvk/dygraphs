@@ -3,14 +3,14 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var FormatsTestCase = TestCase("formats");
+describe("formats", function() {
 
-FormatsTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-FormatsTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 var dataString =
   "X,Y\n" +
@@ -25,21 +25,21 @@ var dataArray =
   [2,1],
   [3,0]];
 
-FormatsTestCase.prototype.testCsv = function() {
+it('testCsv', function() {
   var data = dataString;
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
   assertData(g);
-};
+});
 
-FormatsTestCase.prototype.testArray = function() {
+it('testArray', function() {
   var data = dataArray;
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
   assertData(g);
-};
+});
 
-FormatsTestCase.prototype.testFunctionReturnsCsv = function() {
+it('testFunctionReturnsCsv', function() {
   var string = dataString;
   var data = function() { return string; };
 
@@ -47,18 +47,18 @@ FormatsTestCase.prototype.testFunctionReturnsCsv = function() {
   var g = new Dygraph(graph, data, {});
   // assertData(g);
   console.log("x");
-};
+});
 
-FormatsTestCase.prototype.testFunctionDefinesArray = function() {
+it('testFunctionDefinesArray', function() {
   var array = dataArray;
   var data = function() { return array; }
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
   assertData(g);
-};
+});
 
-FormatsTestCase.prototype.testXValueParser = function() {
+it('testXValueParser', function() {
   var data =
     "X,Y\n" +
     "d,-1\n" +
@@ -69,26 +69,28 @@ FormatsTestCase.prototype.testXValueParser = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {
     xValueParser : function(str) {
-      assertEquals(1, str.length);
+      assert.equal(1, str.length);
       return str.charCodeAt(0) - "a".charCodeAt(0);
     }
   });
 
-  assertEquals(3, g.getValue(0, 0));
-  assertEquals(4, g.getValue(1, 0));
-  assertEquals(5, g.getValue(2, 0));
-  assertEquals(6, g.getValue(3, 0));
-};
+  assert.equal(3, g.getValue(0, 0));
+  assert.equal(4, g.getValue(1, 0));
+  assert.equal(5, g.getValue(2, 0));
+  assert.equal(6, g.getValue(3, 0));
+});
 
 var assertData = function(g) {
   var expected = dataArray;
 
-  assertEquals(4, g.numRows());
-  assertEquals(2, g.numColumns());
+  assert.equal(4, g.numRows());
+  assert.equal(2, g.numColumns());
 
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 2; j++) {
-      assertEquals(expected[i][j], g.getValue(i, j));
+      assert.equal(expected[i][j], g.getValue(i, j));
     }
   }
 };
+
+});

@@ -4,16 +4,16 @@
  * @fileoverview Regression tests for range selector.
  * @author paul.eric.felix@gmail.com (Paul Felix)
  */
-var RangeSelectorTestCase = TestCase("range-selector");
+describe("range-selector", function() {
 
-RangeSelectorTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-RangeSelectorTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-RangeSelectorTestCase.prototype.testRangeSelector = function() {
+it('testRangeSelector', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -34,9 +34,9 @@ RangeSelectorTestCase.prototype.testRangeSelector = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorWithErrorBars = function() {
+it('testRangeSelectorWithErrorBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -58,9 +58,9 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithErrorBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorWithCustomBars = function() {
+it('testRangeSelectorWithCustomBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -82,9 +82,9 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithCustomBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorWithLogScale = function() {
+it('testRangeSelectorWithLogScale', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -106,9 +106,9 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithLogScale = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
+it('testRangeSelectorOptions', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -132,9 +132,9 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() {
+it('testAdditionalRangeSelectorOptions', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -162,9 +162,9 @@ RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-};
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorEnablingAfterCreation = function() {
+it('testRangeSelectorEnablingAfterCreation', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -185,10 +185,10 @@ RangeSelectorTestCase.prototype.testRangeSelectorEnablingAfterCreation = functio
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({showRangeSelector: true});
   assertGraphExistence(g, graph);
-};
+});
 
 // The animatedZooms option does not work with the range selector. Make sure it gets turned off.
-RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption = function() {
+it('testRangeSelectorWithAnimatedZoomsOption', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -210,10 +210,10 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption = funct
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
-  assertFalse(g.getOption('animatedZooms'));
-};
+  assert.isFalse(g.getOption('animatedZooms'));
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption2 = function() {
+it('testRangeSelectorWithAnimatedZoomsOption2', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -235,10 +235,10 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption2 = func
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({showRangeSelector: true});
   assertGraphExistence(g, graph);
-  assertFalse(g.getOption('animatedZooms'));
-};
+  assert.isFalse(g.getOption('animatedZooms'));
+});
 
-RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
+it('testRangeSelectorInteraction', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -289,7 +289,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
 
   var newXRange = g.xAxisRange().slice();
   assert('left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0], newXRange[0] > xRange[0]);
-  assertEquals('right zoomhandle should not have moved', xRange[1], newXRange[1]);
+  assert.equal('right zoomhandle should not have moved', xRange[1], newXRange[1]);
 
   // Move right zoomhandle in
   xRange = newXRange;
@@ -319,7 +319,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
 
   var newXRange = g.xAxisRange().slice();
   assert('right zoomhandle should have moved: '+newXRange[1]+'<'+xRange[1], newXRange[1] < xRange[1]);
-  assertEquals('left zoomhandle should not have moved', xRange[0], newXRange[0]);
+  assert.equal('left zoomhandle should not have moved', xRange[0], newXRange[0]);
 
   // Pan left
   xRange = newXRange;
@@ -355,10 +355,10 @@ RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
   var newXRange = g.xAxisRange().slice();
   assert(newXRange[0]+'<'+xRange[0], newXRange[0] < xRange[0]);
   assert(newXRange[1]+'<'+xRange[1], newXRange[1] < xRange[1]);
-};
+});
 
 
-RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = function() {
+it('testRangeSelectorPositionIfXAxisNotDrawn', function() {
   var opts = {
     width: 480,
     height: 100,
@@ -379,12 +379,12 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
   // xAxis shouldn't be reserved since it isn't drawn.
   assertGraphExistence(g, graph);
   var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas')[0];
-  assertEquals("Range selector is not at the expected position.","70px", bgcanvas.style.top);
+  assert.equal("Range selector is not at the expected position.","70px", bgcanvas.style.top);
   var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0];
-  assertEquals("Range selector is not at the expected position.","70px", fgcanvas.style.top);
-};
+  assert.equal("Range selector is not at the expected position.","70px", fgcanvas.style.top);
+});
 
-RangeSelectorTestCase.prototype.testMiniPlotDrawn = function() {
+it('testMiniPlotDrawn', function() {
   // Install Proxy to track canvas calls.
   var origFunc = Dygraph.getContext;
   var miniHtx;
@@ -416,14 +416,14 @@ RangeSelectorTestCase.prototype.testMiniPlotDrawn = function() {
   var g = new Dygraph(graph, data, opts);
 
   // TODO(danvk): more precise tests.
-  assertNotNull(miniHtx);
-  assertTrue(0 < CanvasAssertions.numLinesDrawn(miniHtx, '#ff0000'));
+  assert.isNotNull(miniHtx);
+  assert.isTrue(0 < CanvasAssertions.numLinesDrawn(miniHtx, '#ff0000'));
 
   Dygraph.getContext = origFunc;
-};
+});
 
 // Tests data computation for the mini plot with a single series.
-RangeSelectorTestCase.prototype.testSingleCombinedSeries = function() {
+it('testSingleCombinedSeries', function() {
   var opts = {
     showRangeSelector: true,
     labels: ['X', 'Y1']
@@ -437,10 +437,10 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeries = function() {
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 1 - 7 * 0.25,  // 25% padding
     yMax: 8 + 7 * 0.25,
     data: [
@@ -449,11 +449,11 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeries = function() {
       [10, 8]
     ]
   }, combinedSeries);
-};
+});
 
 
 // Tests that multiple series are averaged for the miniplot.
-RangeSelectorTestCase.prototype.testCombinedSeries = function() {
+it('testCombinedSeries', function() {
   var opts = {
     showRangeSelector: true,
     labels: ['X', 'Y1', 'Y2']
@@ -467,10 +467,10 @@ RangeSelectorTestCase.prototype.testCombinedSeries = function() {
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 2 - 6 * 0.25,  // 25% padding on combined series range.
     yMax: 8 + 6 * 0.25,
     data: [
@@ -479,10 +479,10 @@ RangeSelectorTestCase.prototype.testCombinedSeries = function() {
       [10, 8]
     ]
   }, combinedSeries);
-};
+});
 
 // Tests selection of a specific series to average for the mini plot.
-RangeSelectorTestCase.prototype.testSelectedCombinedSeries = function() {
+it('testSelectedCombinedSeries', function() {
   var opts = {
     showRangeSelector: true,
     labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4'],
@@ -500,10 +500,10 @@ RangeSelectorTestCase.prototype.testSelectedCombinedSeries = function() {
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 4 - 5 * 0.25,  // 25% padding on combined series range.
     yMax: 9 + 5 * 0.25,
     data: [
@@ -512,10 +512,10 @@ RangeSelectorTestCase.prototype.testSelectedCombinedSeries = function() {
       [10, 5]
     ]
   }, combinedSeries);
-};
+});
 
 // Tests data computation for the mini plot with a single error bar series.
-RangeSelectorTestCase.prototype.testSingleCombinedSeriesCustomBars = function() {
+it('testSingleCombinedSeriesCustomBars', function() {
   var opts = {
     customBars: true,
     showRangeSelector: true,
@@ -530,10 +530,10 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeriesCustomBars = function() 
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 1 - 7 * 0.25,  // 25% padding
     yMax: 8 + 7 * 0.25,
     data: [
@@ -542,9 +542,9 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeriesCustomBars = function() 
       [10, 8]
     ]
   }, combinedSeries);
-};
+});
 
-RangeSelectorTestCase.prototype.testSingleCombinedSeriesErrorBars = function() {
+it('testSingleCombinedSeriesErrorBars', function() {
   var opts = {
     errorBars: true,
     showRangeSelector: true,
@@ -559,10 +559,10 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeriesErrorBars = function() {
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 1 - 7 * 0.25,  // 25% padding
     yMax: 8 + 7 * 0.25,
     data: [
@@ -571,10 +571,10 @@ RangeSelectorTestCase.prototype.testSingleCombinedSeriesErrorBars = function() {
       [10, 8]
     ]
   }, combinedSeries);
-};
+});
 
 // Tests data computation for the mini plot with two custom bar series.
-RangeSelectorTestCase.prototype.testTwoCombinedSeriesCustomBars = function() {
+it('testTwoCombinedSeriesCustomBars', function() {
   var opts = {
     customBars: true,
     showRangeSelector: true,
@@ -589,10 +589,10 @@ RangeSelectorTestCase.prototype.testTwoCombinedSeriesCustomBars = function() {
   var g = new Dygraph(graph, data, opts);
 
   var rangeSelector = g.getPluginInstance_(Dygraph.Plugins.RangeSelector);
-  assertNotNull(rangeSelector);
+  assert.isNotNull(rangeSelector);
 
   var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
-  assertEquals({
+  assert.deepEqual({
     yMin: 3 - 7 * 0.25,  // 25% padding
     yMax: 10 + 7 * 0.25,
     data: [
@@ -601,15 +601,17 @@ RangeSelectorTestCase.prototype.testTwoCombinedSeriesCustomBars = function() {
       [10, 10]
     ]
   }, combinedSeries);
-};
+});
 
 
 var assertGraphExistence = function(g, graph) {
-  assertNotNull(g);
+  assert.isNotNull(g);
   var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
-  assertEquals(2, zoomhandles.length);
+  assert.equal(2, zoomhandles.length);
   var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas');
-  assertEquals(1, bgcanvas.length);
+  assert.equal(1, bgcanvas.length);
   var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas');
-  assertEquals(1, fgcanvas.length);
+  assert.equal(1, fgcanvas.length);
 };
+
+});

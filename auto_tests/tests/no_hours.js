@@ -5,16 +5,16 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var noHoursTestCase = TestCase("no-hours");
+describe("no-hours", function() {
 
-noHoursTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-noHoursTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-noHoursTestCase.prototype.testNoHours = function() {
+it('testNoHours', function() {
   var opts = {
     width: 480,
     height: 320
@@ -30,19 +30,19 @@ noHoursTestCase.prototype.testNoHours = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("2012/03/13: Y: -1", Util.getLegend());
+  assert.equal("2012/03/13: Y: -1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("2012/03/14: Y: 0", Util.getLegend());
+  assert.equal("2012/03/14: Y: 0", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2012/03/15: Y: 1", Util.getLegend());
+  assert.equal("2012/03/15: Y: 1", Util.getLegend());
 
   g.setSelection(3);
-  assertEquals("2012/03/16: Y: 0", Util.getLegend());
-};
+  assert.equal("2012/03/16: Y: 0", Util.getLegend());
+});
 
-noHoursTestCase.prototype.testNoHoursDashed = function() {
+it('testNoHoursDashed', function() {
   var opts = {
     width: 480,
     height: 320
@@ -58,15 +58,17 @@ noHoursTestCase.prototype.testNoHoursDashed = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("2012/03/13: Y: -1", Util.getLegend());
+  assert.equal("2012/03/13: Y: -1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("2012/03/14: Y: 0", Util.getLegend());
+  assert.equal("2012/03/14: Y: 0", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2012/03/15: Y: 1", Util.getLegend());
+  assert.equal("2012/03/15: Y: 1", Util.getLegend());
 
   g.setSelection(3);
-  assertEquals("2012/03/16: Y: 0", Util.getLegend());
-};
+  assert.equal("2012/03/16: Y: 0", Util.getLegend());
+});
 
+
+});

@@ -3,14 +3,14 @@
  * @author sergeyslepian@gmail.com
  */
 
-var VisibilityTestCase = TestCase("visibility");
+describe("visibility", function() {
 
-VisibilityTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-VisibilityTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 /**
  * Does a bunch of the shared busywork of setting up a graph and changing its visibility.
@@ -46,23 +46,25 @@ var getVisibleSeries = function(startingVisibility, setVisibilityArgs) {
   return Util.getLegend();
 };
 
-VisibilityTestCase.prototype.testDefaultCases = function() {
-  assertEquals(' A  B  C  D  E', getVisibleSeries(true, [[], true]));
-  assertEquals('', getVisibleSeries(false, [[], true]));
-};
+it('testDefaultCases', function() {
+  assert.equal(' A  B  C  D  E', getVisibleSeries(true, [[], true]));
+  assert.equal('', getVisibleSeries(false, [[], true]));
+});
 
-VisibilityTestCase.prototype.testSingleSeriesHide = function() {
-  assertEquals(' A  C  D  E', getVisibleSeries(true, [1, false]));
-};
+it('testSingleSeriesHide', function() {
+  assert.equal(' A  C  D  E', getVisibleSeries(true, [1, false]));
+});
 
-VisibilityTestCase.prototype.testSingleSeriesShow = function() {
-  assertEquals(' E', getVisibleSeries(false, [4, true]));
-};
+it('testSingleSeriesShow', function() {
+  assert.equal(' E', getVisibleSeries(false, [4, true]));
+});
 
-VisibilityTestCase.prototype.testMultiSeriesHide = function() {
-  assertEquals(' A  E', getVisibleSeries(true, [[1,2,3], false]));
-};
+it('testMultiSeriesHide', function() {
+  assert.equal(' A  E', getVisibleSeries(true, [[1,2,3], false]));
+});
 
-VisibilityTestCase.prototype.testMultiSeriesShow = function() {
-  assertEquals(' B  D', getVisibleSeries(false, [[1,3], true]));
-};
+it('testMultiSeriesShow', function() {
+  assert.equal(' B  D', getVisibleSeries(false, [[1,3], true]));
+});
+
+});

@@ -3,11 +3,11 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
-var ScrollingDivTestCase = TestCase("scrolling-div");
+describe("scrolling-div", function() {
 
 var point, g; 
 
-ScrollingDivTestCase.prototype.setUp = function() {
+beforeEach(function() {
 
 var LOREM_IPSUM =
     "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n" +
@@ -49,7 +49,7 @@ var LOREM_IPSUM =
           }
       );
   
-};
+});
 
 // This is usually something like 15, but for OS X Lion and its auto-hiding
 // scrollbars, it's 0. This is a large enough difference that we need to
@@ -74,13 +74,13 @@ var detectScrollbarWidth = function() {
   return scrollbarWidth;
 };
 
-ScrollingDivTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 /**
  * This tests that when the nested div is unscrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
+it('testUnscrolledDiv', function() {
 
   document.getElementById('scroller').scrollTop = 0;
 
@@ -95,14 +95,14 @@ ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
   DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
   DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, point.xval);
-  assertEquals(4, point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
 
 /**
  * This tests that when the nested div is scrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testScrolledDiv = function() {
+it('testScrolledDiv', function() {
   document.getElementById('scroller').scrollTop = 117;
 
   var clickOn4_40 = {
@@ -116,6 +116,8 @@ ScrollingDivTestCase.prototype.testScrolledDiv = function() {
   DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
   DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, point.xval);
-  assertEquals(4, point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
+
+});

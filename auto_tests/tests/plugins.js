@@ -3,11 +3,11 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var pluginsTestCase = TestCase("plugins");
+describe("plugins", function() {
 
 var data;
 
-pluginsTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
 
   data = "X,Y1,Y2\n" +
@@ -16,12 +16,12 @@ pluginsTestCase.prototype.setUp = function() {
       "2,1,2\n" +
       "3,2,1\n"
   ;
-};
+});
 
-pluginsTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-pluginsTestCase.prototype.testWillDrawChart = function() {
+it('testWillDrawChart', function() {
   var draw = 0;
 
   var plugin = (function() {
@@ -44,10 +44,10 @@ pluginsTestCase.prototype.testWillDrawChart = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {plugins: [plugin]});
 
-  assertEquals(1, draw);
-};
+  assert.equal(1, draw);
+});
 
-pluginsTestCase.prototype.testPassingInstance = function() {
+it('testPassingInstance', function() {
   // You can also pass an instance of a plugin instead of a Plugin class.
   var draw = 0;
   var p = {
@@ -64,10 +64,10 @@ pluginsTestCase.prototype.testPassingInstance = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {plugins: [p]});
 
-  assertEquals(1, draw);
-};
+  assert.equal(1, draw);
+});
 
-pluginsTestCase.prototype.testPreventDefault = function() {
+it('testPreventDefault', function() {
   var data1 = "X,Y\n" +
       "20,-1\n" +
       "21,0\n" +
@@ -121,7 +121,7 @@ pluginsTestCase.prototype.testPreventDefault = function() {
   p.pointClickPreventDefault = false;
   p.clickPreventDefault = false;
   clickOnPoint();
-  assertEquals([
+  assert.deepEqual([
     ['plugin.pointClick', 20, -1],
     ['pointClickCallback', 20, -1],
     ['plugin.click', 20],
@@ -132,7 +132,7 @@ pluginsTestCase.prototype.testPreventDefault = function() {
   p.pointClickPreventDefault = true;
   p.clickPreventDefault = false;
   clickOnPoint();
-  assertEquals([
+  assert.deepEqual([
     ['plugin.pointClick', 20, -1]
   ], events);
 
@@ -140,14 +140,14 @@ pluginsTestCase.prototype.testPreventDefault = function() {
   p.pointClickPreventDefault = false;
   p.clickPreventDefault = true;
   clickOnPoint();
-  assertEquals([
+  assert.deepEqual([
     ['plugin.pointClick', 20, -1],
     ['pointClickCallback', 20, -1],
     ['plugin.click', 20]
   ], events);
-};
+});
 
-pluginsTestCase.prototype.testEventSequence = function() {
+it('testEventSequence', function() {
   var events = [];
 
   var eventLogger = function(name) {
@@ -173,7 +173,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
   var g = new Dygraph(graph, data, {plugins: [p]});
 
   // Initial draw sequence
-  assertEquals([
+  assert.deepEqual([
    "dataDidUpdate",  // should dataWillUpdate be called here, too?
    "predraw",
    "clearChart",
@@ -184,7 +184,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
   // An options change triggers a redraw, but doesn't change the data.
   events = [];
   g.updateOptions({series: {Y1: {color: 'blue'}}});
-  assertEquals([
+  assert.deepEqual([
    "predraw",
    "clearChart",
    "willDrawChart",
@@ -196,7 +196,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
   DygraphOps.dispatchMouseDown_Point(g, 100, 100, {shiftKey: true});
   DygraphOps.dispatchMouseMove_Point(g, 200, 100, {shiftKey: true});
   DygraphOps.dispatchMouseUp_Point(g, 200, 100, {shiftKey: true});
-  assertEquals([
+  assert.deepEqual([
    "clearChart",
    "willDrawChart",
    "didDrawChart"
@@ -205,7 +205,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
   // New data triggers the full sequence.
   events = [];
   g.updateOptions({file: data + '\n4,1,2'});
-  assertEquals([
+  assert.deepEqual([
    "dataWillUpdate",
    "dataDidUpdate",
    "predraw",
@@ -213,9 +213,9 @@ pluginsTestCase.prototype.testEventSequence = function() {
    "willDrawChart",
    "didDrawChart"
   ], events);
-};
+});
 
-pluginsTestCase.prototype.testDestroyCalledInOrder = function() {
+it('testDestroyCalledInOrder', function() {
   var destructions = [];
   var makePlugin = function(name) {
     return {
@@ -231,7 +231,9 @@ pluginsTestCase.prototype.testDestroyCalledInOrder = function() {
     plugins: [makePlugin('p'), makePlugin('q')]
   });
 
-  assertEquals([], destructions);
+  assert.deepEqual([], destructions);
   g.destroy();
-  assertEquals(['q', 'p'], destructions);
-};
+  assert.deepEqual(['q', 'p'], destructions);
+});
+
+});

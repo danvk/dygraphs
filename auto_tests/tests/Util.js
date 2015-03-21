@@ -62,9 +62,9 @@ Util.getLegend = function(parent) {
  * Assert that all elements have a certain style property.
  */
 Util.assertStyleOfChildren = function(selector, property, expectedValue) {
-  assertTrue(selector.length > 0);
+  assert.isTrue(selector.length > 0);
   $.each(selector, function(idx, child) {
-    assertEquals(expectedValue,  $(child).css(property));
+    assert.isEqual(expectedValue,  $(child).css(property));
   });
 };
 
@@ -121,7 +121,7 @@ Util.overrideXMLHttpRequest = function(data) {
     this.responseText = data;
   };
   FakeXMLHttpRequest.restore = function() {
-    XMLHttpRequest = originalXMLHttpRequest;
+    window.XMLHttpRequest = originalXMLHttpRequest;
   };
   FakeXMLHttpRequest.respond = function() {
     for (var i = 0; i < requests.length; i++) {
@@ -129,7 +129,7 @@ Util.overrideXMLHttpRequest = function(data) {
     }
     FakeXMLHttpRequest.restore();
   };
-  XMLHttpRequest = FakeXMLHttpRequest;
+  window.XMLHttpRequest = FakeXMLHttpRequest;
   return FakeXMLHttpRequest;
 };
 

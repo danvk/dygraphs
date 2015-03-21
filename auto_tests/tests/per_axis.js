@@ -3,7 +3,7 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var perAxisTestCase = TestCase("per-axis");
+describe("per-axis", function() {
 
 var _origGetContext = Dygraph.getContext;
 
@@ -12,7 +12,7 @@ var yAxisLineColor = "#ffff00";
 
 var g, graph;
 
-perAxisTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
     return new Proxy(_origGetContext(canvas));
@@ -40,34 +40,36 @@ perAxisTestCase.prototype.setUp = function() {
   ;
   graph = document.getElementById('graph');
   g = new Dygraph(graph, data, opts);
-};
+});
 
-perAxisTestCase.prototype.tearDown = function() {
+afterEach(function() {
   Dygraph.getContext = _origGetContext;
-};
+});
 
-perAxisTestCase.prototype.testDrawXAxis = function() {
+it('testDrawXAxis', function() {
   g.updateOptions({ axes : { x : { drawAxis: true }} });
-  assertTrue(graph.getElementsByClassName('dygraph-axis-label-x').length > 0);
-  assertTrue(graph.getElementsByClassName('dygraph-axis-label-y').length == 0);
-}
+  assert.isTrue(graph.getElementsByClassName('dygraph-axis-label-x').length > 0);
+  assert.isTrue(graph.getElementsByClassName('dygraph-axis-label-y').length == 0);
+});
 
-perAxisTestCase.prototype.testDrawYAxis = function() {
+it('testDrawYAxis', function() {
   g.updateOptions({ axes : { y : { drawAxis: true }} });
-  assertTrue(graph.getElementsByClassName('dygraph-axis-label-x').length ==0);
-  assertTrue(graph.getElementsByClassName('dygraph-axis-label-y').length > 0);
-}
+  assert.isTrue(graph.getElementsByClassName('dygraph-axis-label-x').length ==0);
+  assert.isTrue(graph.getElementsByClassName('dygraph-axis-label-y').length > 0);
+});
 
-perAxisTestCase.prototype.testDrawXGrid = function() {
+it('testDrawXGrid', function() {
   g.updateOptions({ axes : { x : { drawGrid : true }}});
   var htx = g.hidden_ctx_;
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) > 0);
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) == 0);
-}
+  assert.isTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) > 0);
+  assert.isTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) == 0);
+});
 
-perAxisTestCase.prototype.testDrawYGrid = function() {
+it('testDrawYGrid', function() {
   g.updateOptions({ axes : { y : { drawGrid : true }}});
   var htx = g.hidden_ctx_;
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) == 0);
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) > 0);
-}
+  assert.isTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) == 0);
+  assert.isTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) > 0);
+});
+
+});

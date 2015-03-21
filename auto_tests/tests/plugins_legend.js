@@ -3,16 +3,16 @@
  *
  * @author akiya.mizukoshi@gmail.com (Akiyah)
  */
-var pluginsLegendTestCase = TestCase("plugins-legend");
+describe("plugins-legend", function() {
 
-pluginsLegendTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-pluginsLegendTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-pluginsLegendTestCase.prototype.testLegendEscape = function() {
+it('testLegendEscape', function() {
   var opts = {
     width: 480,
     height: 320
@@ -41,6 +41,8 @@ pluginsLegendTestCase.prototype.testLegendEscape = function() {
   legendPlugin.select(e);
 
   var legendSpan = $(legendPlugin.legend_div_).find("span b span");
-  assertEquals("&lt;script&gt;alert('XSS')&lt;/script&gt;", legendSpan.html());
-};
+  assert.equal("&lt;script&gt;alert('XSS')&lt;/script&gt;", legendSpan.html());
+});
 
+
+});

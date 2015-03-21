@@ -3,7 +3,7 @@ module.exports = function (config) {
         basePath: '../',
         frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon-chai', 'chai-things', 'dirty-chai'],
         files: [
-            'auto_tests/**.js',
+            'auto_tests/**/*.js',
             'dist/dygraph-combined.dev.js',
             'src/extras/smooth-plotter.js',
         ],
