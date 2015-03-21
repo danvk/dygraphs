@@ -6,13 +6,15 @@
  */
 var CssTestCase = TestCase("css");
 
-CssTestCase.data = "X,Y,Z\n1,2,3\n4,5,6\n";
+var data = "X,Y,Z\n1,2,3\n4,5,6\n";
+
+var styleSheet;
 
 CssTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
-  this.styleSheet = document.createElement("style");
-  this.styleSheet.type = "text/css";
-  document.getElementsByTagName("head")[0].appendChild(this.styleSheet);
+  styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheet);
 };
 
 CssTestCase.prototype.tearDown = function() {
@@ -23,7 +25,7 @@ CssTestCase.prototype.testDefaultSize = function() {
   var opts = {
   };
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   assertEquals(480, graph.offsetWidth);
   assertEquals(320, graph.offsetHeight);
@@ -37,7 +39,7 @@ CssTestCase.prototype.testExplicitParamSize = function() {
     height: 480
   };
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   assertEquals(640, graph.offsetWidth);
   assertEquals(480, graph.offsetHeight);
@@ -52,7 +54,7 @@ CssTestCase.prototype.testExplicitStyleSize = function() {
   graph.style.width = '600px';
   graph.style.height = '400px';
 
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
   assertEquals(600, graph.offsetWidth);
   assertEquals(400, graph.offsetHeight);
   assertEquals({width: 600, height: 400}, g.size());
@@ -68,7 +70,7 @@ CssTestCase.prototype.testPixelStyleWins = function() {
   graph.style.width = '600px';
   graph.style.height = '400px';
 
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
   assertEquals(600, graph.offsetWidth);
   assertEquals(400, graph.offsetHeight);
   assertEquals({width: 600, height: 400}, g.size());
@@ -85,7 +87,7 @@ CssTestCase.prototype.testPercentageSize = function() {
   graph.style.width = '50%';
   graph.style.height = '50%';
 
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
   assertEquals(300, graph.offsetWidth);
   assertEquals(200, graph.offsetHeight);
   assertEquals({width: 300, height: 200}, g.size());
@@ -93,13 +95,13 @@ CssTestCase.prototype.testPercentageSize = function() {
 
 // Verifies that a CSS class size works.
 CssTestCase.prototype.testClassPixelSize = function() {
-  this.styleSheet.innerHTML = '.chart { width: 456px; height: 345px; }';
+  styleSheet.innerHTML = '.chart { width: 456px; height: 345px; }';
 
   var opts = {
   };
   var graph = document.getElementById("graph");
   graph.className = "chart";
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
   assertEquals(456, graph.offsetWidth);
   assertEquals(345, graph.offsetHeight);
   assertEquals({width: 456, height: 345}, g.size());
@@ -112,7 +114,7 @@ CssTestCase.prototype.testInvisibleChart = function() {
       '<div id="graph" style="width: 640px; height: 480px;"></div>' +
       '</div>';
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, CssTestCase.data, {});
+  g = new Dygraph(graph, data, {});
 };
 
 // An invisible chart div shouldn't produce an error.
@@ -172,7 +174,7 @@ CssTestCase.prototype.testDivResize = function() {
   var graph = document.getElementById("graph");
   graph.style.width = '640px';
   graph.style.height = '480px';
-  var g = new Dygraph(graph, CssTestCase.data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   assertEquals(640, graph.offsetWidth);
   assertEquals(480, graph.offsetHeight);

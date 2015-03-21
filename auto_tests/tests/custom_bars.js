@@ -6,16 +6,16 @@
  */
 var CustomBarsTestCase = TestCase("custom-bars");
 
-CustomBarsTestCase._origFunc = Dygraph.getContext;
+_origFunc = Dygraph.getContext;
 CustomBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(CustomBarsTestCase._origFunc(canvas));
+    return new Proxy(_origFunc(canvas));
   }
 };
 
 CustomBarsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = CustomBarsTestCase._origFunc;
+  Dygraph.getContext = _origFunc;
 };
 
 // This test used to reliably produce an infinite loop.

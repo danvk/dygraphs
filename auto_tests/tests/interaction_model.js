@@ -38,7 +38,7 @@ function getXLabels() {
   return ary;
 }
 
-InteractionModelTestCase.prototype.pan = function(g, xRange, yRange) {
+InteractionModelTestCase.prototype.testPan = function(g, xRange, yRange) {
   var originalXRange = g.xAxisRange();
   var originalYRange = g.yAxisRange(0);
 
@@ -129,11 +129,11 @@ InteractionModelTestCase.prototype.testClickCallbackIsCalledOnCustomPan = functi
   assertEquals(20, clicked);
 };
 
-InteractionModelTestCase.clickAt = function(g, x, y) {
+var clickAt = function(g, x, y) {
   DygraphOps.dispatchMouseDown(g, x, y);
   DygraphOps.dispatchMouseMove(g, x, y);
   DygraphOps.dispatchMouseUp(g, x, y);
-}
+};
 
 /**
  * This tests that clickCallback is still called with the nonInteractiveModel.
@@ -174,7 +174,7 @@ InteractionModelTestCase.prototype.testPointClickCallback = function() {
     }
   });
 
-  InteractionModelTestCase.clickAt(g, 4, 40);
+  clickAt(g, 4, 40);
 
   assertEquals(4, clicked.xval);
   assertEquals(40, clicked.yval);
@@ -191,7 +191,7 @@ InteractionModelTestCase.prototype.testNoPointClickCallbackWhenOffPoint = functi
     }
   });
 
-  InteractionModelTestCase.clickAt(g, 5, 40);
+  clickAt(g, 5, 40);
 
   assertUndefined(clicked);
 };
@@ -221,7 +221,7 @@ InteractionModelTestCase.prototype.testPointClickCallbackCalledPriorToClickCallb
     }
   });
 
-  InteractionModelTestCase.clickAt(g, 4, 40);
+  clickAt(g, 4, 40);
   assertEquals(1, pointClicked);
   assertEquals(2, clicked);
 };
@@ -238,7 +238,7 @@ InteractionModelTestCase.prototype.testClickCallback_clickOnPoint = function() {
     }
   });
 
-  InteractionModelTestCase.clickAt(g, 4, 40);
+  clickAt(g, 4, 40);
   assertEquals(1, clicked);
 };
 
@@ -397,7 +397,7 @@ InteractionModelTestCase.prototype.testPointClickCallback_missingData = function
     }
   });
 
-  InteractionModelTestCase.clickAt(g, 2, 110);
+  clickAt(g, 2, 110);
 
   assertEquals(2, clicked.xval);
   assertEquals(110, clicked.yval);

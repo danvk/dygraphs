@@ -12,50 +12,50 @@ FormatsTestCase.prototype.setUp = function() {
 FormatsTestCase.prototype.tearDown = function() {
 };
 
-FormatsTestCase.prototype.dataString =
+var dataString =
   "X,Y\n" +
   "0,-1\n" +
   "1,0\n" +
   "2,1\n" +
   "3,0\n";
 
-FormatsTestCase.prototype.dataArray =
+var dataArray =
   [[0,-1],
   [1,0],
   [2,1],
   [3,0]];
 
 FormatsTestCase.prototype.testCsv = function() {
-  var data = this.dataString;
+  var data = dataString;
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  this.assertData(g);
+  assertData(g);
 };
 
 FormatsTestCase.prototype.testArray = function() {
-  var data = this.dataArray;
+  var data = dataArray;
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  this.assertData(g);
+  assertData(g);
 };
 
 FormatsTestCase.prototype.testFunctionReturnsCsv = function() {
-  var string = this.dataString;
+  var string = dataString;
   var data = function() { return string; };
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  // this.assertData(g);
+  // assertData(g);
   console.log("x");
 };
 
 FormatsTestCase.prototype.testFunctionDefinesArray = function() {
-  var array = this.dataArray;
+  var array = dataArray;
   var data = function() { return array; }
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  this.assertData(g);
+  assertData(g);
 };
 
 FormatsTestCase.prototype.testXValueParser = function() {
@@ -80,8 +80,8 @@ FormatsTestCase.prototype.testXValueParser = function() {
   assertEquals(6, g.getValue(3, 0));
 };
 
-FormatsTestCase.prototype.assertData = function(g) {
-  var expected = this.dataArray;
+var assertData = function(g) {
+  var expected = dataArray;
 
   assertEquals(4, g.numRows());
   assertEquals(2, g.numColumns());
@@ -91,4 +91,4 @@ FormatsTestCase.prototype.assertData = function(g) {
       assertEquals(expected[i][j], g.getValue(i, j));
     }
   }
-}
+};

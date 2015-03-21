@@ -14,17 +14,17 @@ StepTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-StepTestCase.origFunc = Dygraph.getContext;
+origFunc = Dygraph.getContext;
 
 StepTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(StepTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
 };
 
 StepTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = StepTestCase.origFunc;
+  Dygraph.getContext = origFunc;
 };
 
 StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {

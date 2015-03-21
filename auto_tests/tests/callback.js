@@ -6,16 +6,18 @@
 
 var CallbackTestCase = TestCase("callback");
 
+var xhr, styleSheet;
+
 CallbackTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div><div id='selection'></div>";
-  this.xhr = XMLHttpRequest;
-  this.styleSheet = document.createElement("style");
-  this.styleSheet.type = "text/css";
-  document.getElementsByTagName("head")[0].appendChild(this.styleSheet);
+  xhr = XMLHttpRequest;
+  styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheet);
 };
 
 CallbackTestCase.prototype.tearDown = function() {
-  XMLHttpRequest = this.xhr;
+  XMLHttpRequest = xhr;
 };
 
 var data = "X,a\,b,c\n" +
@@ -295,9 +297,9 @@ CallbackTestCase.prototype.testClosestPointStackedCallback = function() {
 CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
   var css = "div.dygraph-legend > span { display: block; }\n" +
       "div.dygraph-legend > span.highlight { border: 1px solid grey; }\n";
-  this.styleSheet.innerHTML = css;
+  styleSheet.innerHTML = css;
   runClosestTest(false, 2, 4);
-  this.styleSheet.innerHTML = '';
+  styleSheet.innerHTML = '';
 }
 
 /**
@@ -306,9 +308,9 @@ CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
 CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
   var css = "div.dygraph-legend > span { display: none; }\n" +
       "div.dygraph-legend > span.highlight { display: inline; }\n";
-  this.styleSheet.innerHTML = css;
+  styleSheet.innerHTML = css;
   runClosestTest(false, 10, 15);
-  this.styleSheet.innerHTML = '';
+  styleSheet.innerHTML = '';
   // TODO(klausw): verify that the highlighted line is drawn on top?
 }
 
@@ -589,7 +591,7 @@ CallbackTestCase.prototype.testHighlightCallbackRow = function() {
  * Test that underlay callback is called even when there are no series,
  * and that the y axis ranges are not NaN.
  */
-CallbackTestCase.prototype.underlayCallback_noSeries = function() {
+CallbackTestCase.prototype.testUnderlayCallback_noSeries = function() {
   var called = false;
   var yMin, yMax;
 
@@ -613,7 +615,7 @@ CallbackTestCase.prototype.underlayCallback_noSeries = function() {
 /**
  * Test that underlay callback receives the correct y-axis range.
  */
-CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
+CallbackTestCase.prototype.testUnderlayCallback_yAxisRange = function() {
   var called = false;
   var yMin, yMax;
 

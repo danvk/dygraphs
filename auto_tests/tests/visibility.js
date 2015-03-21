@@ -18,7 +18,7 @@ VisibilityTestCase.prototype.tearDown = function() {
  * @param {*[]} setVisibilityArgs An array of arguments to be passed directly to setVisibility()
  * @returns {string} The output of Util.getLegend() called after the visibility is set
  */
-VisibilityTestCase.prototype.getVisibleSeries = function(startingVisibility, setVisibilityArgs) {
+var getVisibleSeries = function(startingVisibility, setVisibilityArgs) {
   var opts = {
     width: 480,
     height: 320,
@@ -47,22 +47,22 @@ VisibilityTestCase.prototype.getVisibleSeries = function(startingVisibility, set
 };
 
 VisibilityTestCase.prototype.testDefaultCases = function() {
-  assertEquals(' A  B  C  D  E', this.getVisibleSeries(true, [[], true]));
-  assertEquals('', this.getVisibleSeries(false, [[], true]));
+  assertEquals(' A  B  C  D  E', getVisibleSeries(true, [[], true]));
+  assertEquals('', getVisibleSeries(false, [[], true]));
 };
 
 VisibilityTestCase.prototype.testSingleSeriesHide = function() {
-  assertEquals(' A  C  D  E', this.getVisibleSeries(true, [1, false]));
+  assertEquals(' A  C  D  E', getVisibleSeries(true, [1, false]));
 };
 
 VisibilityTestCase.prototype.testSingleSeriesShow = function() {
-  assertEquals(' E', this.getVisibleSeries(false, [4, true]));
+  assertEquals(' E', getVisibleSeries(false, [4, true]));
 };
 
 VisibilityTestCase.prototype.testMultiSeriesHide = function() {
-  assertEquals(' A  E', this.getVisibleSeries(true, [[1,2,3], false]));
+  assertEquals(' A  E', getVisibleSeries(true, [[1,2,3], false]));
 };
 
 VisibilityTestCase.prototype.testMultiSeriesShow = function() {
-  assertEquals(' B  D', this.getVisibleSeries(false, [[1,3], true]));
+  assertEquals(' B  D', getVisibleSeries(false, [[1,3], true]));
 };

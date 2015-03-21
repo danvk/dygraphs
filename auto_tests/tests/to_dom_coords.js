@@ -6,20 +6,20 @@
 
 var ToDomCoordsTestCase = TestCase("to-dom-coords");
 
-ToDomCoordsTestCase._origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 ToDomCoordsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(ToDomCoordsTestCase._origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   }
 };
 
 ToDomCoordsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = ToDomCoordsTestCase._origFunc;
+  Dygraph.getContext = origFunc;
 };
 
 // Checks that toDomCoords and toDataCoords are inverses of one another.
-ToDomCoordsTestCase.prototype.checkForInverses = function(g) {
+var checkForInverses = function(g) {
   var x_range = g.xAxisRange();
   var y_range = g.yAxisRange();
   for (var i = 0; i <= 10; i++) {
@@ -30,7 +30,7 @@ ToDomCoordsTestCase.prototype.checkForInverses = function(g) {
       assertEquals(y, g.toDataYCoord(g.toDomYCoord(y)));
     }
   }
-}
+};
 
 ToDomCoordsTestCase.prototype.testPlainChart = function() {
   var opts = {
@@ -60,7 +60,7 @@ ToDomCoordsTestCase.prototype.testPlainChart = function() {
   assertEquals([100, 100], g.toDataCoords(400, 0));
   assertEquals([100, 0], g.toDataCoords(400, 400));
 
-  this.checkForInverses(g);
+  checkForInverses(g);
 
   // TODO(konigsberg): This doesn't really belong here. Move to its own test.
   var htx = g.hidden_ctx_;
@@ -98,7 +98,7 @@ ToDomCoordsTestCase.prototype.testChartWithAxes = function() {
   assertEquals([100, 100], g.toDataCoords(500, 0));
   assertEquals([100, 0], g.toDataCoords(500, 400));
 
-  this.checkForInverses(g);
+  checkForInverses(g);
 }
 
 ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
@@ -137,7 +137,7 @@ ToDomCoordsTestCase.prototype.testChartWithAxesAndLabels = function() {
   assertEquals([100, 100], g.toDataCoords(500, 25));
   assertEquals([100, 0], g.toDataCoords(500, 425));
 
-  this.checkForInverses(g);
+  checkForInverses(g);
 }
 
 ToDomCoordsTestCase.prototype.testYAxisLabelWidth = function() {

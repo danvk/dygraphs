@@ -5,10 +5,12 @@
  */
 var pluginsTestCase = TestCase("plugins");
 
+var data;
+
 pluginsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 
-  this.data = "X,Y1,Y2\n" +
+  data = "X,Y1,Y2\n" +
       "0,1,2\n" +
       "1,2,1\n" +
       "2,1,2\n" +
@@ -40,7 +42,7 @@ pluginsTestCase.prototype.testWillDrawChart = function() {
   })();
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, this.data, {plugins: [plugin]});
+  var g = new Dygraph(graph, data, {plugins: [plugin]});
 
   assertEquals(1, draw);
 };
@@ -60,7 +62,7 @@ pluginsTestCase.prototype.testPassingInstance = function() {
   };
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, this.data, {plugins: [p]});
+  var g = new Dygraph(graph, data, {plugins: [p]});
 
   assertEquals(1, draw);
 };
@@ -168,7 +170,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
   };
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, this.data, {plugins: [p]});
+  var g = new Dygraph(graph, data, {plugins: [p]});
 
   // Initial draw sequence
   assertEquals([
@@ -202,7 +204,7 @@ pluginsTestCase.prototype.testEventSequence = function() {
 
   // New data triggers the full sequence.
   events = [];
-  g.updateOptions({file: this.data + '\n4,1,2'});
+  g.updateOptions({file: data + '\n4,1,2'});
   assertEquals([
    "dataWillUpdate",
    "dataDidUpdate",
@@ -225,7 +227,7 @@ pluginsTestCase.prototype.testDestroyCalledInOrder = function() {
   };
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, this.data, {
+  var g = new Dygraph(graph, data, {
     plugins: [makePlugin('p'), makePlugin('q')]
   });
 

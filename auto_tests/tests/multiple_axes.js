@@ -10,7 +10,7 @@ MultipleAxesTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-MultipleAxesTestCase.getData = function() {
+var getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
     var m = "01", d = i;
@@ -29,7 +29,7 @@ MultipleAxesTestCase.getData = function() {
 };
 
 MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
-  var data = MultipleAxesTestCase.getData();
+  var data = getData();
 
   var g = new Dygraph(
     document.getElementById("graph"),
@@ -101,7 +101,7 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
 // verifies that all four chart labels (title, x-, y-, y2-axis label) can be
 // used simultaneously.
 MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
-  var data = MultipleAxesTestCase.getData();
+  var data = getData();
 
   var el = document.getElementById("graph");
   el.style.border = '1px solid black';
@@ -145,7 +145,7 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
 MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
   var g = new Dygraph(
     document.getElementById("graph"),
-    MultipleAxesTestCase.getData(),
+    getData(),
     {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       width: 640,
@@ -166,7 +166,7 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
 };
 
 MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
-  var data = MultipleAxesTestCase.getData();
+  var data = getData();
 
   g = new Dygraph(
     document.getElementById("graph"),
@@ -215,7 +215,7 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
 };
 
 MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
-  var data = MultipleAxesTestCase.getData();
+  var data = getData();
 
   var results = { y : {}, y2 : {}};
   var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
@@ -260,7 +260,7 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
 
 // Test for http://code.google.com/p/dygraphs/issues/detail?id=436
 MultipleAxesTestCase.prototype.testRemovingSecondAxis = function() {
-  var data = MultipleAxesTestCase.getData();
+  var data = getData();
 
   var results = { y : {}, y2 : {}};
 

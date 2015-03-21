@@ -5,28 +5,30 @@
  */
 var perAxisTestCase = TestCase("per-axis");
 
-perAxisTestCase._origGetContext = Dygraph.getContext;
+var _origGetContext = Dygraph.getContext;
+
+var xAxisLineColor = "#00ffff";
+var yAxisLineColor = "#ffff00";
+
+var g, graph;
 
 perAxisTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(perAxisTestCase._origGetContext(canvas));
+    return new Proxy(_origGetContext(canvas));
   }
-
-  this.xAxisLineColor = "#00ffff";
-  this.yAxisLineColor = "#ffff00";
 
   var opts = {
     axes : {
       x : {
         drawAxis : false,
         drawGrid : false,
-        gridLineColor : this.xAxisLineColor
+        gridLineColor : xAxisLineColor
       },
       y : {
         drawAxis : false,
         drawGrid : false,
-        gridLineColor : this.yAxisLineColor
+        gridLineColor : yAxisLineColor
       }
     },
     colors: [ '#ff0000', '#0000ff' ]
@@ -36,36 +38,36 @@ perAxisTestCase.prototype.setUp = function() {
       "1,1,0\n" +
       "8,0,1\n"
   ;
-  this.graph = document.getElementById('graph');
-  this.g = new Dygraph(this.graph, data, opts);
+  graph = document.getElementById('graph');
+  g = new Dygraph(graph, data, opts);
 };
 
 perAxisTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = perAxisTestCase._origGetContext;
+  Dygraph.getContext = _origGetContext;
 };
 
 perAxisTestCase.prototype.testDrawXAxis = function() {
-  this.g.updateOptions({ axes : { x : { drawAxis: true }} });
-  assertTrue(this.graph.getElementsByClassName('dygraph-axis-label-x').length > 0);
-  assertTrue(this.graph.getElementsByClassName('dygraph-axis-label-y').length == 0);
+  g.updateOptions({ axes : { x : { drawAxis: true }} });
+  assertTrue(graph.getElementsByClassName('dygraph-axis-label-x').length > 0);
+  assertTrue(graph.getElementsByClassName('dygraph-axis-label-y').length == 0);
 }
 
 perAxisTestCase.prototype.testDrawYAxis = function() {
-  this.g.updateOptions({ axes : { y : { drawAxis: true }} });
-  assertTrue(this.graph.getElementsByClassName('dygraph-axis-label-x').length ==0);
-  assertTrue(this.graph.getElementsByClassName('dygraph-axis-label-y').length > 0);
+  g.updateOptions({ axes : { y : { drawAxis: true }} });
+  assertTrue(graph.getElementsByClassName('dygraph-axis-label-x').length ==0);
+  assertTrue(graph.getElementsByClassName('dygraph-axis-label-y').length > 0);
 }
 
 perAxisTestCase.prototype.testDrawXGrid = function() {
-  this.g.updateOptions({ axes : { x : { drawGrid : true }}});
-  var htx = this.g.hidden_ctx_;
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, this.xAxisLineColor) > 0);
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, this.yAxisLineColor) == 0);
+  g.updateOptions({ axes : { x : { drawGrid : true }}});
+  var htx = g.hidden_ctx_;
+  assertTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) > 0);
+  assertTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) == 0);
 }
 
 perAxisTestCase.prototype.testDrawYGrid = function() {
-  this.g.updateOptions({ axes : { y : { drawGrid : true }}});
-  var htx = this.g.hidden_ctx_;
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, this.xAxisLineColor) == 0);
-  assertTrue(CanvasAssertions.numLinesDrawn(htx, this.yAxisLineColor) > 0);
+  g.updateOptions({ axes : { y : { drawGrid : true }}});
+  var htx = g.hidden_ctx_;
+  assertTrue(CanvasAssertions.numLinesDrawn(htx, xAxisLineColor) == 0);
+  assertTrue(CanvasAssertions.numLinesDrawn(htx, yAxisLineColor) > 0);
 }

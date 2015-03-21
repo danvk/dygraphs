@@ -5,17 +5,17 @@
  */
 var stackedTestCase = TestCase("stacked");
 
-stackedTestCase._origGetContext = Dygraph.getContext;
+var _origGetContext = Dygraph.getContext;
 
 stackedTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(stackedTestCase._origGetContext(canvas));
+    return new Proxy(_origGetContext(canvas));
   }
 };
 
 stackedTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = stackedTestCase._origGetContext;
+  Dygraph.getContext = _origGetContext;
 };
 
 stackedTestCase.prototype.testCorrectColors = function() {

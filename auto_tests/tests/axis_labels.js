@@ -12,14 +12,14 @@ AxisLabelsTestCase.prototype.setUp = function() {
 AxisLabelsTestCase.prototype.tearDown = function() {
 };
 
-AxisLabelsTestCase.simpleData =
+var simpleData =
     "X,Y,Y2\n" +
     "0,-1,.5\n" +
     "1,0,.7\n" +
     "2,1,.4\n" +
     "3,0,.98\n";
 
-AxisLabelsTestCase.prototype.kCloseFloat = 1.0e-10;
+var kCloseFloat = 1.0e-10;
 
 AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   var opts = {
@@ -75,7 +75,7 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   assertEqualsDelta([-0.1,-0.05,0,0.05],
-                    Util.makeNumbers(Util.getYLabels()), this.kCloseFloat);
+                    Util.makeNumbers(Util.getYLabels()), kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
@@ -645,7 +645,7 @@ AxisLabelsTestCase.prototype.testIncludeZero = function() {
 
 AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a 14-point default.
   assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
@@ -696,7 +696,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
 
 AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+  var g = new Dygraph(graph, simpleData,
     {
       axisLabelFontSize: null
     });
@@ -714,7 +714,7 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
 
 AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a black default.
   assertEquals("black", Dygraph.DEFAULT_ATTRS.axisLabelColor);
@@ -765,7 +765,7 @@ AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
 
 AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+  var g = new Dygraph(graph, simpleData,
     {
       axisLabelColor: null
     });

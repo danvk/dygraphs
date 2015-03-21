@@ -5,7 +5,7 @@
  */
 var ResizeTestCase = TestCase("resize");
 
-ResizeTestCase.data =
+var data =
       "X,Y\n" +
       "1,100\n" +
       "2,200\n" +
@@ -41,7 +41,7 @@ ResizeTestCase.prototype.testResizeMaintainsMouseOperations = function() {
     DygraphOps.dispatchMouseUp_Point(g, x2 - 1, y);
   }
 
-  g = new Dygraph(graph, ResizeTestCase.data, {highlightCallback: callback});
+  g = new Dygraph(graph, data, {highlightCallback: callback});
 
   strum(g, 300, 640);
   assertEquals(6, callbackCount);
@@ -62,7 +62,7 @@ ResizeTestCase.prototype.testHiddenDivWithSizedGraph = function() {
   var div = document.getElementById("graph");
 
   div.style.display = 'none';
-  var g = new Dygraph(div, ResizeTestCase.data, {width: 400, height: 300});
+  var g = new Dygraph(div, data, {width: 400, height: 300});
   div.style.display = '';
 
   var area = g.getArea();
@@ -85,7 +85,7 @@ ResizeTestCase.prototype.testHiddenDivWithResize = function() {
 
   // Setting strokeWidth 3 removes any ambiguitiy from the pixel sampling
   // request, below.
-  var g = new Dygraph(div, ResizeTestCase.data, {strokeWidth: 3});
+  var g = new Dygraph(div, data, {strokeWidth: 3});
   div.style.display = '';
 
   g.resize();

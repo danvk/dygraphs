@@ -5,6 +5,8 @@
  */
 var ScrollingDivTestCase = TestCase("scrolling-div");
 
+var point, g; 
+
 ScrollingDivTestCase.prototype.setUp = function() {
 
 var LOREM_IPSUM =
@@ -35,15 +37,14 @@ var LOREM_IPSUM =
 
   var graph = document.getElementById("graph");
 
-  this.point = null;
-  var self = this;
-  this.g = new Dygraph(graph, data,
+  point = null;
+  g = new Dygraph(graph, data,
           {
             labels : ['a', 'b'],
             drawPoints : true,
             highlightCircleSize : 6,
             pointClickCallback : function(evt, point) {
-              self.point = point;
+              point = point;
             }
           }
       );
@@ -54,7 +55,7 @@ var LOREM_IPSUM =
 // scrollbars, it's 0. This is a large enough difference that we need to
 // consider it when synthesizing clicks.
 // Adapted from http://davidwalsh.name/detect-scrollbar-width
-ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
+var detectScrollbarWidth = function() {
   // Create the measurement node
   var scrollDiv = document.createElement("div");
   scrollDiv.style.width = "100px";
@@ -90,12 +91,12 @@ ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
     screenY: 320
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
+  assertEquals(40, point.xval);
+  assertEquals(4, point.yval);
 };
 
 /**
@@ -106,15 +107,15 @@ ScrollingDivTestCase.prototype.testScrolledDiv = function() {
 
   var clickOn4_40 = {
     clientX: 244,
-    clientY: 30 - this.detectScrollbarWidth(),
+    clientY: 30 - detectScrollbarWidth(),
     screenX: 416,
     screenY: 160
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
+  assertEquals(40, point.xval);
+  assertEquals(4, point.yval);
 };

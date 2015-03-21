@@ -10,17 +10,17 @@ GridPerAxisTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-GridPerAxisTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
 GridPerAxisTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(GridPerAxisTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
 };
 
 GridPerAxisTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = GridPerAxisTestCase.origFunc;
+  Dygraph.getContext = origFunc;
 };
 
 GridPerAxisTestCase.prototype.testIndependentGrids = function() {

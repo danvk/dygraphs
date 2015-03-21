@@ -33,7 +33,7 @@ RangeSelectorTestCase.prototype.testRangeSelector = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testRangeSelectorWithErrorBars = function() {
@@ -57,7 +57,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithErrorBars = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testRangeSelectorWithCustomBars = function() {
@@ -81,7 +81,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithCustomBars = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testRangeSelectorWithLogScale = function() {
@@ -105,7 +105,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithLogScale = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
@@ -131,7 +131,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorOptions = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() {
@@ -161,7 +161,7 @@ RangeSelectorTestCase.prototype.testAdditionalRangeSelectorOptions = function() 
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 RangeSelectorTestCase.prototype.testRangeSelectorEnablingAfterCreation = function() {
@@ -184,7 +184,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorEnablingAfterCreation = functio
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({showRangeSelector: true});
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
 };
 
 // The animatedZooms option does not work with the range selector. Make sure it gets turned off.
@@ -209,7 +209,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption = funct
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
   assertFalse(g.getOption('animatedZooms'));
 };
 
@@ -234,7 +234,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorWithAnimatedZoomsOption2 = func
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   g.updateOptions({showRangeSelector: true});
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
   assertFalse(g.getOption('animatedZooms'));
 };
 
@@ -258,7 +258,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorInteraction = function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
   var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
 
   // Move left zoomhandle in
@@ -377,7 +377,7 @@ RangeSelectorTestCase.prototype.testRangeSelectorPositionIfXAxisNotDrawn = funct
 
   //assert, that the range selector is at top position 70 since the 30px of the
   // xAxis shouldn't be reserved since it isn't drawn.
-  this.assertGraphExistence(g, graph);
+  assertGraphExistence(g, graph);
   var bgcanvas = graph.getElementsByClassName('dygraph-rangesel-bgcanvas')[0];
   assertEquals("Range selector is not at the expected position.","70px", bgcanvas.style.top);
   var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0];
@@ -604,7 +604,7 @@ RangeSelectorTestCase.prototype.testTwoCombinedSeriesCustomBars = function() {
 };
 
 
-RangeSelectorTestCase.prototype.assertGraphExistence = function(g, graph) {
+var assertGraphExistence = function(g, graph) {
   assertNotNull(g);
   var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
   assertEquals(2, zoomhandles.length);
@@ -612,4 +612,4 @@ RangeSelectorTestCase.prototype.assertGraphExistence = function(g, graph) {
   assertEquals(1, bgcanvas.length);
   var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas');
   assertEquals(1, fgcanvas.length);
-}
+};

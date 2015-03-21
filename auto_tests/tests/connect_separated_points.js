@@ -9,17 +9,17 @@ ConnectSeparatedPointsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-ConnectSeparatedPointsTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
 ConnectSeparatedPointsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(ConnectSeparatedPointsTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
 };
 
 ConnectSeparatedPointsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = ConnectSeparatedPointsTestCase.origFunc;
+  Dygraph.getContext = origFunc;
 };
 
 ConnectSeparatedPointsTestCase.prototype.testEdgePointsSimple = function() {

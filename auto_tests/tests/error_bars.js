@@ -9,16 +9,16 @@ errorBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-errorBarsTestCase._origFunc = Dygraph.getContext;
+var _origFunc = Dygraph.getContext;
 errorBarsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(errorBarsTestCase._origFunc(canvas));
+    return new Proxy(_origFunc(canvas));
   }
 };
 
 errorBarsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = errorBarsTestCase._origFunc;
+  Dygraph.getContext = _origFunc;
 };
 
 errorBarsTestCase.prototype.testErrorBarsDrawn = function() {

@@ -45,7 +45,7 @@ RangeTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-RangeTestCase.prototype.createGraph = function(opts, data, expectRangeX, expectRangeY) {
+var createGraph = function(opts, data, expectRangeX, expectRangeY) {
   if (data === undefined) data = ZERO_TO_FIFTY_STEPS;
   if (expectRangeX === undefined) expectRangeX = [10, 20];
   if (expectRangeY === undefined) expectRangeY = [0, 55];
@@ -63,7 +63,7 @@ RangeTestCase.prototype.createGraph = function(opts, data, expectRangeX, expectR
  * appropriately.
  */
 RangeTestCase.prototype.testRangeSetOperations = function() {
-  var g = this.createGraph({valueRange : [ 0, 55 ]});
+  var g = createGraph({valueRange : [ 0, 55 ]});
 
   g.updateOptions({ dateWindow : [ 12, 18 ] });
   assertEquals([12, 18], g.xAxisRange());
@@ -114,7 +114,7 @@ RangeTestCase.prototype.testRangeSetOperations = function() {
  * Verify that when zoomed in by mouse operations, an empty call to
  * updateOptions doesn't change the displayed ranges.
  */
-RangeTestCase.prototype.zoom = function(g, xRange, yRange) {
+var zoom = function(g, xRange, yRange) {
   var originalXRange = g.xAxisRange();
   var originalYRange = g.yAxisRange(0);
 
@@ -140,8 +140,8 @@ RangeTestCase.prototype.zoom = function(g, xRange, yRange) {
  * updateOptions doesn't change the displayed ranges.
  */
 RangeTestCase.prototype.testEmptyUpdateOptions_doesntUnzoom = function() {
-  var g = this.createGraph();
-  this.zoom(g, [ 11, 18 ], [ 35, 40 ]);
+  var g = createGraph();
+  zoom(g, [ 11, 18 ], [ 35, 40 ]);
 
   assertEqualsDelta([11, 18], g.xAxisRange(), 0.1);
   assertEqualsDelta([35, 40], g.yAxisRange(0), 0.2);
@@ -158,8 +158,8 @@ RangeTestCase.prototype.testEmptyUpdateOptions_doesntUnzoom = function() {
  * unzooms.
  */
 RangeTestCase.prototype.testRestoreOriginalRanges_viaUpdateOptions = function() {
-  var g = this.createGraph();
-  this.zoom(g, [ 11, 18 ], [ 35, 40 ]);
+  var g = createGraph();
+  zoom(g, [ 11, 18 ], [ 35, 40 ]);
 
   g.updateOptions({ dateWindow : null, valueRange : null });
 
@@ -241,7 +241,7 @@ RangeTestCase.prototype.testHugeRange = function() {
  * Verify old-style avoidMinZero option.
  */
 RangeTestCase.prototype.testAvoidMinZero = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       avoidMinZero: true,
     }, ZERO_TO_FIFTY_STEPS, [10, 20], [-5, 55]);
 };
@@ -250,7 +250,7 @@ RangeTestCase.prototype.testAvoidMinZero = function() {
  * Verify ranges with user-specified padding, implicit avoidMinZero.
  */
 RangeTestCase.prototype.testPaddingAuto = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       xRangePad: 42,
       yRangePad: 30
     }, ZERO_TO_FIFTY_STEPS, [9, 21], [-5, 55]);
@@ -260,7 +260,7 @@ RangeTestCase.prototype.testPaddingAuto = function() {
  * Verify auto range with drawAxesAtZero.
  */
 RangeTestCase.prototype.testPaddingAutoAxisAtZero = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       drawAxesAtZero: true,
     }, ZERO_TO_FIFTY_STEPS, [10, 20], [0, 55]);
 };
@@ -270,7 +270,7 @@ RangeTestCase.prototype.testPaddingAutoAxisAtZero = function() {
  * Try explicit range matching the auto range, should have identical results.
  */
 RangeTestCase.prototype.testPaddingRange1 = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       valueRange: [0, 50],
       xRangePad: 42,
       yRangePad: 30,
@@ -283,7 +283,7 @@ RangeTestCase.prototype.testPaddingRange1 = function() {
  * User-supplied range differs from the auto range.
  */
 RangeTestCase.prototype.testPaddingRange2 = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       valueRange: [10, 60],
       xRangePad: 42,
       yRangePad: 30,
@@ -295,7 +295,7 @@ RangeTestCase.prototype.testPaddingRange2 = function() {
  * Verify drawAxesAtZero and includeZero.
  */
 RangeTestCase.prototype.testPaddingYAtZero = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       includeZero: true,
       xRangePad: 42,
       yRangePad: 30,
@@ -311,7 +311,7 @@ RangeTestCase.prototype.testPaddingYAtZero = function() {
  * Verify logscale, compat mode.
  */
 RangeTestCase.prototype.testLogscaleCompat = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       logscale: true
     },
     [[-10, 10], [10, 10], [30, 1000]],
@@ -322,7 +322,7 @@ RangeTestCase.prototype.testLogscaleCompat = function() {
  * Verify logscale, new mode.
  */
 RangeTestCase.prototype.testLogscalePad = function() {
-  var g = this.createGraph({
+  var g = createGraph({
       logscale: true,
       yRangePad: 30
     },

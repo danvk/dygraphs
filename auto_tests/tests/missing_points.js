@@ -27,16 +27,16 @@ var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 var MissingPointsTestCase = TestCase("missing-points");
 
-MissingPointsTestCase._origFunc = Dygraph.getContext;
+var _origFunc = Dygraph.getContext;
 MissingPointsTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(MissingPointsTestCase._origFunc(canvas));
+    return new Proxy(_origFunc(canvas));
   }
 };
 
 MissingPointsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = MissingPointsTestCase._origFunc;
+  Dygraph.getContext = _origFunc;
 };
 
 MissingPointsTestCase.prototype.testSeparatedPointsDontDraw = function() {

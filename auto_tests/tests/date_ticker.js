@@ -12,7 +12,7 @@ DateTickerTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-DateTickerTestCase.prototype.createOptionsViewForAxis = function(axis, dict) {
+var createOptionsViewForAxis = function(axis, dict) {
   return function (x) {
     if (dict && dict.hasOwnProperty(x)) {
       return dict[x];
@@ -39,7 +39,7 @@ function changeNbspToSpace(ticks) {
 
 DateTickerTestCase.prototype.testBasicDateTicker = function() {
   var opts = {labelsUTC: true};
-  var options = this.createOptionsViewForAxis('x', opts);
+  var options = createOptionsViewForAxis('x', opts);
   
   var ticks = Dygraph.dateTicker(-1797534000000, 1255579200000, 800, options);
   var expected_ticks = [
@@ -79,7 +79,7 @@ DateTickerTestCase.prototype.testBasicDateTicker = function() {
 
 DateTickerTestCase.prototype.testAllDateTickers = function() {
   var opts = {labelsUTC: true, pixelsPerLabel: 60};
-  var options = this.createOptionsViewForAxis('x', opts);
+  var options = createOptionsViewForAxis('x', opts);
 
   // For granularities finer than MONTHLY, the first tick returned tick 
   // could lie outside [start_time, end_time] range in the original code.

@@ -10,17 +10,17 @@ fillStepPlotTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
 };
 
-fillStepPlotTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
 fillStepPlotTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(fillStepPlotTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
 };
 
 fillStepPlotTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = fillStepPlotTestCase.origFunc;
+  Dygraph.getContext = origFunc;
 };
 
 

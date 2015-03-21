@@ -115,7 +115,7 @@ rollingAverageTestCase.prototype.testRollCustomBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
   assertEquals([1, 10, [1, 20]], rolled[0]);
   assertEquals([2, 15, [1, 25]], rolled[1]);
   assertEquals([3, 25, [1, 35]], rolled[2]);
@@ -136,7 +136,7 @@ rollingAverageTestCase.prototype.testRollErrorBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
   assertEquals([1, 10, [8, 12]], rolled[0]);
  
   // variance = sqrt( pow(error) * rollPeriod)
@@ -163,7 +163,7 @@ rollingAverageTestCase.prototype.testRollFractions = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
   assertEquals([1, 10], rolled[0]);
   assertEquals([2, 15], rolled[1]);
   assertEquals([3, 25], rolled[2]);
@@ -186,7 +186,7 @@ rollingAverageTestCase.prototype.testRollFractionsBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
 
   // precalculated rounded values expected
   var values = [10, 15, 25, 35];
@@ -216,7 +216,7 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
 
   //precalculated rounded values expected
   var values = [10, 15, 25, 35];
@@ -230,7 +230,7 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
   }
 };
 
-rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod){
+var getRolledData = function(g, data, seriesIdx, rollPeriod){
   var options = g.attributes_;
   return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options);
 };

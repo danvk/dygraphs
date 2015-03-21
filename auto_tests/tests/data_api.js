@@ -5,21 +5,23 @@
  */
 var dataApiTestCase = TestCase("data-api");
 
+var opts, graphDiv;
+
 dataApiTestCase.prototype.setUp = function() {
   document.body.innerHTML = "<div id='graph'></div>";
-  this.opts = {
+  opts = {
     width: 480,
     height: 320
   };
 
-  this.graphDiv = document.getElementById("graph");
+  graphDiv = document.getElementById("graph");
 };
 
 dataApiTestCase.prototype.tearDown = function() {
 };
 
 dataApiTestCase.prototype.testBasicAccessors = function() {
-  var g = new Dygraph(this.graphDiv, temperature_data, this.opts);
+  var g = new Dygraph(graphDiv, temperature_data, opts);
 
   assertEquals(365, g.numRows());
   assertEquals(3, g.numColumns());
@@ -35,7 +37,7 @@ dataApiTestCase.prototype.testBasicAccessors = function() {
 
 
 dataApiTestCase.prototype.testAccessorsCustomBars = function() {
-  var g = new Dygraph(this.graphDiv, data_temp_high_low, {
+  var g = new Dygraph(graphDiv, data_temp_high_low, {
     customBars: true
   });
 
@@ -54,14 +56,14 @@ dataApiTestCase.prototype.testAccessorsCustomBars = function() {
 
 // Regression test for #554.
 dataApiTestCase.prototype.testGetRowForX = function() {
-  var g = new Dygraph(this.graphDiv, [
+  var g = new Dygraph(graphDiv, [
     "x,y",
     "1,2",
     "3,4",
     "5,6",
     "7,8",
     "9,10"
-  ].join('\n'), this.opts);
+  ].join('\n'), opts);
 
   assertEquals(null, g.getRowForX(0));
   assertEquals(0, g.getRowForX(1));
@@ -79,7 +81,7 @@ dataApiTestCase.prototype.testGetRowForX = function() {
 // If there are rows with identical x-values, getRowForX promises that it will
 // return the first one.
 dataApiTestCase.prototype.testGetRowForXDuplicates = function() {
-  var g = new Dygraph(this.graphDiv, [
+  var g = new Dygraph(graphDiv, [
     "x,y",
     "1,2",  // 0
     "1,4",  // 1
@@ -91,7 +93,7 @@ dataApiTestCase.prototype.testGetRowForXDuplicates = function() {
     "9,6",
     "9,8",
     "9,10"
-  ].join('\n'), this.opts);
+  ].join('\n'), opts);
 
   assertEquals(0, g.getRowForX(1));
   assertEquals(null, g.getRowForX(2));
