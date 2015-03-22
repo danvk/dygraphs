@@ -18,4 +18,4 @@ do this:
 
 This makes error messages and debugging simpler. The jsfiddle does this automatically.
 
-Sending a Pull Request? See our [guide to making dygraphs contributions](http://dygraphs.com/changes.html).
+Sending a Pull Request? See our [guide to making dygraphs contributions](/DEVELOP.md).

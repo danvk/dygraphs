@@ -46,10 +46,14 @@ Learn more by reading [the tutorial](http://www.dygraphs.com/tutorial.html) and
 seeing demonstrations of what dygraphs can do in the
 [gallery](http://www.dygraphs.com/gallery).
 
-## Making Changes
-If you've made a change to dygraphs and would like to contribute it back to the
-community, please follow the [Guide to making dygraphs
-changes](http://dygraphs.com/changes.html).
+## Development
+
+To get going, clone the repo and run:
+
+    npm install
+    gulp dist
+
+Read more about the dygraphs development process in the [developer guide](/DEVELOP.md).
 
 ## License(s)
 dygraphs uses:
