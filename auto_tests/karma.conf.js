@@ -6,15 +6,15 @@ module.exports = function (config) {
           'chai'
         ],
         files: [
-            'dist/dygraph-combined.dev.js',
+            'dist/dygraph-combined-dev.js',
             'src/extras/smooth-plotter.js',
             'auto_tests/**/*.js',
         ],
         autoWatch: false,
         singleRun: true,
-        reporters: ['dots', 'coverage'],  // or 'mocha', 'spec'
+        reporters: ['mocha', 'coverage'],  // or 'dots', 'mocha', 'spec'
         preprocessors: {
-            'dist/dygraph-combined.dev.js': ['coverage']
+            'dist/dygraph-combined-dev.js': ['coverage']
         },
         coverageReporter: {
             dir: 'dist/coverage',

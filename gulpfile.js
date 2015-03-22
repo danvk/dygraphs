@@ -99,7 +99,7 @@ gulp.task('create-dev', function() {
   var dest = 'dist';
   return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.devOptions, src.datahandlers), {base: '.'})
     .pipe(plugins.sourcemaps.init({debug:true}))
-    .pipe(plugins.concat('dygraph-combined.dev.js'))
+    .pipe(plugins.concat('dygraph-combined-dev.js'))
     .pipe(plugins.header(copyright))
     .pipe(plugins.sourcemaps.write('.'))  // '.' = external sourcemap
     .pipe(gulp.dest(dest));
@@ -107,9 +107,9 @@ gulp.task('create-dev', function() {
 
 gulp.task('concat', function() {
   var dest = 'dist';
-  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.datahandlers))
+  return gulp.src(mergePaths(src.polyfills, src.main, src.plugins, src.datahandlers), {base: '.'})
      .pipe(plugins.sourcemaps.init())
-     .pipe(plugins.concat('dygraph-combined.js'))
+     .pipe(plugins.concat('scratch'))
      .pipe(plugins.header(copyright))
      .pipe(gulp.dest(dest))
      .pipe(plugins.uglify({
@@ -120,7 +120,7 @@ gulp.task('concat', function() {
       preserveComments: "none"
      }))
      .pipe(plugins.header(copyright))
-     .pipe(plugins.rename('dygraph-combined.min.js'))
+     .pipe(plugins.rename('dygraph-combined.js'))
      .pipe(plugins.sourcemaps.write('.'))
      .pipe(gulp.dest(dest));
 
@@ -131,7 +131,7 @@ gulp.task('gwt-dist', ['concat'], function() {
   gulp.src('gwt/**', {'base': '.'})
     .pipe(gulp.dest('dist'));
 
-  gulp.src('dygraph-combined.min.js')
+  gulp.src('dygraph-combined.js')
     .pipe(gulp.dest('dist/gwt/org/danvk'));
 
   // Generate jar
@@ -150,7 +150,7 @@ gulp.task('test', ['concat', 'create-dev'], function(done) {
 
 gulp.task('coveralls', ['test'], plugins.shell.task([
   './scripts/transform-coverage.js ' +
-      'dist/dygraph-combined.dev.js.map ' +
+      'dist/dygraph-combined-dev.js.map ' +
       'dist/coverage/report-lcov/lcov.info ' +
   '| ./node_modules/.bin/coveralls'
 ]));
@@ -163,6 +163,6 @@ gulp.task('watch-test', function() {
   gulp.watch(['src/**', 'auto_tests/tests/**'], ['test']);
 });
 
-gulp.task('dist', ['gwt-dist', 'concat']);
+gulp.task('dist', ['gwt-dist', 'concat', 'create-dev']);
 gulp.task('travis', ['test', 'coveralls']);
 gulp.task('default', ['test', 'dist']);
