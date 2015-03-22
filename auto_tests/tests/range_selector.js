@@ -288,7 +288,7 @@ it('testRangeSelectorInteraction', function() {
   zoomhandles[0].dispatchEvent(mouseUpEvent);
 
   var newXRange = g.xAxisRange().slice();
-  assert('left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0], newXRange[0] > xRange[0]);
+  assert(newXRange[0] > xRange[0], 'left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0]);
   assert.equal(xRange[1], newXRange[1], 'right zoomhandle should not have moved');
 
   // Move right zoomhandle in
@@ -353,8 +353,8 @@ it('testRangeSelectorInteraction', function() {
   fgcanvas.dispatchEvent(mouseUpEvent);
 
   var newXRange = g.xAxisRange().slice();
-  assert(newXRange[0]+'<'+xRange[0], newXRange[0] < xRange[0]);
-  assert(newXRange[1]+'<'+xRange[1], newXRange[1] < xRange[1]);
+  assert(newXRange[0] < xRange[0], newXRange[0]+'<'+xRange[0]);
+  assert(newXRange[1] < xRange[1], newXRange[1]+'<'+xRange[1]);
 });
 
 

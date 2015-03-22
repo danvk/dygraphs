@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var karma = require('karma').server;
-var lazypipe = require('lazypipe');
 var path = require('path');
 
 var dev = false;
@@ -127,14 +126,6 @@ gulp.task('concat', function() {
 
 });
 
-gulp.task("bower-dist", ['concat'], function() {
-  gulp.src('src/dygraph/extras/**', {base: 'src/dygraph'})
-    .pipe(gulp.dest('dist/bower'));
-
-  return gulp.src('dist/dygraph-combined*')
-    .pipe(gulp.dest('dist/bower'));
-});
-
 gulp.task('gwt-dist', ['concat'], function() {
   // Copy package structure to dist folder
   gulp.src('gwt/**', {'base': '.'})
@@ -172,6 +163,6 @@ gulp.task('watch-test', function() {
   gulp.watch(['src/**', 'auto_tests/tests/**'], ['test']);
 });
 
-gulp.task('dist', ['gwt-dist', 'bower-dist']);
+gulp.task('dist', ['gwt-dist', 'concat']);
 gulp.task('travis', ['test', 'coveralls']);
 gulp.task('default', ['test', 'dist']);

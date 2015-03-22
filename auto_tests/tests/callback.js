@@ -539,7 +539,7 @@ it('testFailedResponse', function() {
 
   DygraphOps.dispatchMouseOut_Point(g, 800, 800); // This call should not throw an exception.
 
-  assert.isFalse("exception thrown during mouseout", failed);
+  assert.isFalse(failed, "exception thrown during mouseout");
 });
 
 

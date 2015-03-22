@@ -3,11 +3,7 @@ module.exports = function (config) {
         basePath: '../',
         frameworks: [
           'mocha',
-          'chai',
-          'chai-as-promised',
-          'sinon-chai',
-          'chai-things',
-          'dirty-chai'
+          'chai'
         ],
         files: [
             'dist/dygraph-combined.dev.js',

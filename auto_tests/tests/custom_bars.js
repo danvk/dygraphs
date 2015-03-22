@@ -77,8 +77,8 @@ it('testCustomBarsZero', function() {
   var g = new Dygraph(graph, data, opts);
 
   var range = g.yAxisRange();
-  assert.isTrue('y-axis must include 0', range[0] <= 0);
-  assert.isTrue('y-axis must include 5', range[1] >= 5);
+  assert.isTrue(range[0] <= 0, 'y-axis must include 0');
+  assert.isTrue(range[1] >= 5, 'y-axis must include 5');
 });
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=229
