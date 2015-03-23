@@ -6,7 +6,7 @@
  * Plugin options:
  *
  *  `data`: Array of numeric values (0-1) corresponding to the position
- *  in the pallete interval.
+ *  in the palette interval.
  *
  *  `parser`: Function (`function (data, dygraph)`) returning the array of numeric
  *  values. Function arguments: raw data, dygraph instance.
