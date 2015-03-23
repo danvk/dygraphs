@@ -115,8 +115,8 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
     }
     return s + "}";
   };
-  fail("Can't find a line drawn between " + p1 +
-      " and " + p2 + " with attributes " + toString(predicate));
+  throw "Can't find a line drawn between " + p1 +
+      " and " + p2 + " with attributes " + toString(predicate);
 };
 
 /**

@@ -8,6 +8,7 @@
   "latedef": true,
   "nonbsp": true,
   "undef": true,
+  "sub": true,
 
   "browser": true,
   "devel": true,

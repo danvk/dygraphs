@@ -4,16 +4,16 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var pathologicalCasesTestCase = TestCase("pathological-cases");
+describe("pathological-cases", function() {
 
-pathologicalCasesTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-pathologicalCasesTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-pathologicalCasesTestCase.prototype.testZeroPoint = function() {
+it('testZeroPoint', function() {
   var opts = {
     width: 480,
     height: 320
@@ -22,9 +22,9 @@ pathologicalCasesTestCase.prototype.testZeroPoint = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-};
+});
 
-pathologicalCasesTestCase.prototype.testOnePoint = function() {
+it('testOnePoint', function() {
   var opts = {
     width: 480,
     height: 320
@@ -34,9 +34,9 @@ pathologicalCasesTestCase.prototype.testOnePoint = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-};
+});
 
-pathologicalCasesTestCase.prototype.testCombinations = function() {
+it('testCombinations', function() {
   var dataSets = {
     empty: [],
     onePoint: [[10, 2]],
@@ -114,9 +114,9 @@ pathologicalCasesTestCase.prototype.testCombinations = function() {
       }
     }
   }
-};
+});
 
-pathologicalCasesTestCase.prototype.testNullLegend = function() {
+it('testNullLegend', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -127,35 +127,37 @@ pathologicalCasesTestCase.prototype.testNullLegend = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-};
+});
 
-pathologicalCasesTestCase.prototype.testDivAsString = function() {
+it('testDivAsString', function() {
   var data = "X,Y\n" +
              "1,2\n";
 
   var g = new Dygraph('graph', data, {});
-};
+});
 
 
-pathologicalCasesTestCase.prototype.testConstantSeriesNegative = function() {
+it('testConstantSeriesNegative', function() {
   var data = "X,Y\n" +
              "1,-1\n" +
              "2,-1\n";
 
-  g = new Dygraph('graph', data, {});
+  var g = new Dygraph('graph', data, {});
   // This check could be loosened to
   // g.yAxisRange()[0] < g.yAxisRange()[1] if it breaks in the future.
-  assertEquals([-1.1, -0.9], g.yAxisRange());
-};
+  assert.deepEqual([-1.1, -0.9], g.yAxisRange());
+});
 
 
-pathologicalCasesTestCase.prototype.testConstantSeriesNegativeIncludeZero = function() {
+it('testConstantSeriesNegativeIncludeZero', function() {
   var data = "X,Y\n" +
              "1,-1\n" +
              "2,-1\n";
 
-  g = new Dygraph('graph', data, {includeZero: true});
+  var g = new Dygraph('graph', data, {includeZero: true});
   // This check could be loosened to
   // g.yAxisRange()[0] < g.yAxisRange()[1] if it breaks in the future.
-  assertEquals([-1.1, 0], g.yAxisRange());
-};
+  assert.deepEqual([-1.1, 0], g.yAxisRange());
+});
+
+});

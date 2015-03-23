@@ -25,21 +25,21 @@
  */
 var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
-var SimpleDrawingTestCase = TestCase("simple-drawing");
+describe("simple-drawing", function() {
 
-SimpleDrawingTestCase._origFunc = Dygraph.getContext;
-SimpleDrawingTestCase.prototype.setUp = function() {
+var _origFunc = Dygraph.getContext;
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(SimpleDrawingTestCase._origFunc(canvas));
+    return new Proxy(_origFunc(canvas));
   }
-};
+});
 
-SimpleDrawingTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = SimpleDrawingTestCase._origFunc;
-};
+afterEach(function() {
+  Dygraph.getContext = _origFunc;
+});
 
-SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
+it('testDrawSimpleRangePlusOne', function() {
   var opts = {
     axes : {
       x : {
@@ -63,10 +63,10 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangePlusOne = function() {
   });
   g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
-};
+});
 
 // See http://code.google.com/p/dygraphs/issues/detail?id=185
-SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
+it('testDrawSimpleRangeZeroToFifty', function() {
   var opts = {
     axes : {
       x : {
@@ -88,25 +88,25 @@ SimpleDrawingTestCase.prototype.testDrawSimpleRangeZeroToFifty = function() {
     strokeStyle: "#008080",
     lineWidth: 1
   });
-  assertEquals(1, lines.length);
+  assert.equal(1, lines.length);
   g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
-};
+});
 
-SimpleDrawingTestCase.prototype.testDrawWithAxis = function() {
+it('testDrawWithAxis', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY);
 
   var htx = g.hidden_ctx_;
   g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
-};
+});
 
 /**
  * Tests that it is drawing dashes, and it remember the dash history between
  * points.
  */
-SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
+it('testDrawSimpleDash', function() {
   var opts = {
     axes: {
       x: {
@@ -129,19 +129,19 @@ SimpleDrawingTestCase.prototype.testDrawSimpleDash = function() {
   graph.style.width='480px';
   graph.style.height='320px';
   var g = new Dygraph(graph, [[1, 4], [2, 5], [3, 3], [4, 7], [5, 9]], opts);
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   // TODO(danvk): figure out a good way to restore this test.
-  // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  // assert.equal(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
   g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
-};
+});
 
 /**
  * Tests that thick lines are drawn continuously.
  * Regression test for http://code.google.com/p/dygraphs/issues/detail?id=328
  */
-SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
+it('testDrawThickLine', function() {
   var opts = {
     axes : {
       x : {
@@ -162,7 +162,7 @@ SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
   graph.style.width='480px';
   graph.style.height='320px';
   var g = new Dygraph(graph, [[1, 2], [2, 5], [3, 2], [4, 7], [5, 0]], opts);
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   // There's a big gap in the line at (2, 5)
   // If the bug is fixed, then there should be some red going up from here.
@@ -170,12 +170,14 @@ SimpleDrawingTestCase.prototype.testDrawThickLine = function() {
   var x = Math.round(xy[0]), y = Math.round(xy[1]);
 
   var sampler = new PixelSampler(g);
-  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y));
-  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y - 1));
-  assertEquals([255,0,0,255], sampler.colorAtPixel(x, y - 2));
+  assert.deepEqual([255,0,0,255], sampler.colorAtPixel(x, y));
+  assert.deepEqual([255,0,0,255], sampler.colorAtPixel(x, y - 1));
+  assert.deepEqual([255,0,0,255], sampler.colorAtPixel(x, y - 2));
 
   // TODO(danvk): figure out a good way to restore this test.
-  // assertEquals(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
+  // assert.equal(29, CanvasAssertions.numLinesDrawn(htx, "#ff0000"));
   g.destroy(); // to balance context saves and destroys.
   CanvasAssertions.assertBalancedSaveRestore(htx);
-};
+});
+
+});
