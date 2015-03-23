@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2014 Petr Shevtsov (petr.shevtsov@gmail.com)
+ * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
