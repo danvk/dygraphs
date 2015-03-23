@@ -204,12 +204,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       ["col", "The column of the data from which this point comes. g.getValue(row, col) will return the original y-value for this point. This can be used to get the full confidence interval for the point, or access un-rolled values for the point."]
     ]
   },
-  "annotationDataParser": {
-    "default": "null",
-    "labels": ["Annotations"],
-    "type": "function(data, dygraph)",
-    "description": "If provided, this function parses Dygraph data for annotations data."
-  },
   "annotationMouseOverHandler": {
     "default": "null",
     "labels": ["Annotations"],
@@ -786,12 +780,6 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
-  },
-  "crosshair": {
-    "default": "false",
-    "labels": ["Configuration"],
-    "type": "boolean or string",
-    "description": "Defines crosshair visibility. May be 'horizontal', 'vertical' or 'both'."
   }
 }
 ;  // </JSON>
