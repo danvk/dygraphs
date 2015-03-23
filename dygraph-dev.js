@@ -41,8 +41,7 @@
     "datahandler/bars.js",
     "datahandler/bars-error.js",
     "datahandler/bars-custom.js",
-    "datahandler/bars-fractions.js",
-    "datahandler/compress.js"
+    "datahandler/bars-fractions.js"
   ];
 
   for (var i = 0; i < source_files.length; i++) {
