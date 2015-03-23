@@ -78,34 +78,25 @@ var DygraphOptions = function(dygraph) {
 };
 
 /**
- * Not optimal, but does the trick when you're only using two axes.
- * If we move to more axes, this can just become a function.
- *
- * @type {Object.<number>}
- * @private
- */
-DygraphOptions.AXIS_STRING_MAPPINGS_ = {
-  'y' : 0,
-  'Y' : 0,
-  'y1' : 0,
-  'Y1' : 0,
-  'y2' : 1,
-  'Y2' : 1
-};
-
-/**
+ * If axis is an string this converts it to its index: 
+ * y, y1 => 0
+ * y2 => 2, ...
  * @param {string|number} axis
  * @private
  */
 DygraphOptions.axisToIndex_ = function(axis) {
   if (typeof(axis) == "string") {
-    if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
-      return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
+    if (axis.length > 0 && axis.length <= 2 && axis[0].toLowerCase() === 'y') {
+      if(axis.length == 1) {
+        return 0;
+      } else {
+        return parseInt(axis[1], 10) - 1;
+      }
     }
     throw "Unknown axis : " + axis;
   }
   if (typeof(axis) == "number") {
-    if (axis === 0 || axis === 1) {
+    if (axis >= 0) {
       return axis;
     }
     throw "Dygraphs only supports two y-axes, indexed from 0-1.";
@@ -167,9 +158,10 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
 
   var axis_opts = this.user_["axes"] || {};
+  
   Dygraph.update(this.yAxes_[0].options, axis_opts["y"] || {});
-  if (this.yAxes_.length > 1) {
-    Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});
+  for(var i = 0; i < this.yAxes_.length; i++) {
+    Dygraph.update(this.yAxes_[i].options, axis_opts["y"+(i+1)] || {});
   }
   Dygraph.update(this.xAxis_.options, axis_opts["x"] || {});
 
@@ -224,14 +216,10 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
     axisString = axisIdx === 0 ? "y" : "y2";
   } else {
     if (axis == "y1") { axis = "y"; } // Standardize on 'y'. Is this bad? I think so.
-    if (axis == "y") {
-      axisIdx = 0;
-    } else if (axis == "y2") {
-      axisIdx = 1;
-    } else if (axis == "x") {
+    if (axis == "x") {
       axisIdx = -1; // simply a placeholder for below.
     } else {
-      throw "Unknown axis " + axis;
+      axisIdx = DygraphOptions.axisToIndex_(axis);
     }
     axisString = axis;
   }

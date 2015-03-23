@@ -376,7 +376,8 @@ Dygraph.DEFAULT_ATTRS = {
       drawGrid: true,
       drawAxis: true,
       independentTicks: true,
-      ticker: null  // will be set in dygraph-tickers.js
+      ticker: null,  // will be set in dygraph-tickers.js
+      position: 'left'
     },
     y2: {
       axisLabelWidth: 50,
@@ -386,7 +387,8 @@ Dygraph.DEFAULT_ATTRS = {
       drawAxis: true,  // only applies when there are two axes of data.
       drawGrid: false,
       independentTicks: false,
-      ticker: null  // will be set in dygraph-tickers.js
+      ticker: null,  // will be set in dygraph-tickers.js
+      position: 'right'
     }
   }
 };
@@ -667,10 +669,16 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
     if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
       console.error('Must include options reference JS for testing');
     } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
-      console.error('Dygraphs is using property ' + name + ', which has no ' +
-                    'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
-      // Only log this error once.
-      Dygraph.OPTIONS_REFERENCE[name] = true;
+      // this is a little bit hacky, so that "y3" and more must not specific in the config
+      var normalizedName = name.replace(/y[0-9]/, 'y2');
+      if(!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(normalizedName)) {
+        console.error('Dygraphs is using property ' + name + ', which has no ' +
+                      'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
+        // Only log this error once.
+        Dygraph.OPTIONS_REFERENCE[name] = true;
+      } else {
+        name = normalizedName;
+      }
     }
   }
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
@@ -776,12 +784,27 @@ Dygraph.prototype.optionsViewForAxis_ = function(axis) {
     if (axis_opts && axis_opts[axis] && axis_opts[axis].hasOwnProperty(opt)) {
       return axis_opts[axis][opt];
     }
+    var index = -1;
+    if(axis !== 'x') {
+      index = DygraphOptions.axisToIndex_(axis);
+      if(index > 1) {
+          if (axis_opts && axis_opts['y2'] && axis_opts['y2'].hasOwnProperty(opt)) {
+          return axis_opts['y2'][opt];
+        }
+      }
+    }
     // check old-style axis options
     // TODO(danvk): add a deprecation warning if either of these match.
-    if (axis == 'y' && self.axes_[0].hasOwnProperty(opt)) {
-      return self.axes_[0][opt];
-    } else if (axis == 'y2' && self.axes_[1].hasOwnProperty(opt)) {
-      return self.axes_[1][opt];
+    if(axis !== 'x') {
+      if (self.axes_[index].hasOwnProperty(opt)) {
+        return self.axes_[index][opt];
+      } else {
+        if(index > 1) {
+          if (self.axes_[0].hasOwnProperty(opt)) {
+            return self.axes_[0][opt];
+          }
+        }
+      }
     }
     return self.attr_(opt);
   };
@@ -2154,6 +2177,11 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
       // for.  If it is, just use it, otherwise search the array for a point
       // in the proper place.
       var setRow = row - this.getLeftBoundary_(setIdx);
+      if(setRow == -1) {
+        this.lastRow = -1;
+        changed = false;
+        break;
+      }
       if (setRow < points.length && points[setRow].idx == row) {
         var point = points[setRow];
         if (point.yval !== null) this.selPoints_.push(point);
@@ -2771,7 +2799,7 @@ Dygraph.prototype.computeYAxes_ = function() {
 
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
-      opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
+      opts = this.optionsViewForAxis_('y' + (axis ? (axis+1) : ''));
       v = opts("valueRange");
       if (v) this.axes_[axis].valueRange = v;
     } else {  // To keep old behavior
@@ -2946,7 +2974,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
     if (independentTicks) {
       axis.independentTicks = independentTicks;
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var opts = this.optionsViewForAxis_('y' + (i ? (i+1) : ''));
       var ticker = opts('ticker');
       axis.ticks = ticker(axis.computedValueRange[0],
               axis.computedValueRange[1],
@@ -2967,7 +2995,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     var axis = this.axes_[i];
 
     if (!axis.independentTicks) {
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+      var opts = this.optionsViewForAxis_('y' + (i ? (i+1) : ''));
       var ticker = opts('ticker');
       var p_ticks = p_axis.ticks;
       var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
