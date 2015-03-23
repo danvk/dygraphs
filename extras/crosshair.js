@@ -15,8 +15,10 @@ Dygraph.Plugins.Crosshair = (function() {
    * @constructor
    */
 
-  var crosshair = function() {
+  var crosshair = function(opt_options) {
     this.canvas_ = document.createElement("canvas");
+    opt_options = opt_options || {};
+    this.direction_ = opt_options.direction || null;
   };
 
   crosshair.prototype.toString = function() {
@@ -37,8 +39,7 @@ Dygraph.Plugins.Crosshair = (function() {
   };
 
   crosshair.prototype.select = function(e) {
-    var options = e.dygraph.getOption('crosshair');
-    if (options === null) {
+    if (this.direction_ === null) {
       return;
     }
 
@@ -56,12 +57,12 @@ Dygraph.Plugins.Crosshair = (function() {
 
     var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
 
-    if (options === "vertical" || options === "both" || options === true) {
+    if (this.direction_ === "vertical" || this.direction_ === "both") {
       ctx.moveTo(canvasx, 0);
       ctx.lineTo(canvasx, height);
     }
 
-    if (options === "horizontal" || options === "both" || options === true) {
+    if (this.direction_ === "horizontal" || this.direction_ === "both") {
       for (var i = 0; i < e.dygraph.selPoints_.length; i++) {
         var canvasy = Math.floor(e.dygraph.selPoints_[i].canvasy) + 0.5; // crisper rendering
         ctx.moveTo(0, canvasy);

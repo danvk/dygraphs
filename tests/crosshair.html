@@ -32,10 +32,11 @@
           rollPeriod: 7,
           showRoller: true,
           errorBars: true,
-          crosshair: "vertical",
 
           plugins: [
-            new Dygraph.Plugins.Crosshair()
+            new Dygraph.Plugins.Crosshair({
+              direction: "vertical"
+            })
           ]
         }
       );
@@ -45,10 +46,11 @@
           rollPeriod: 7,
           showRoller: true,
           errorBars: true,
-          crosshair: "horizontal",
 
           plugins: [
-            new Dygraph.Plugins.Crosshair()
+            new Dygraph.Plugins.Crosshair({
+              direction: "horizontal"
+            })
           ]
         }
       );
@@ -58,10 +60,11 @@
           rollPeriod: 7,
           showRoller: true,
           errorBars: true,
-          crosshair: "both",
 
           plugins: [
-            new Dygraph.Plugins.Crosshair()
+            new Dygraph.Plugins.Crosshair({
+              direction: "both"
+            })
           ]
         }
       );
