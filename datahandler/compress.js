@@ -14,16 +14,22 @@
 (function() {
   "use strict";
 
-  Date.prototype.getWeek = function() {
-    var d = new Date(+this);
+  /**
+   * Get week number for date
+   */
+  var getWeek = function(d) {
+    var d = new Date(+d);
     d.setHours(0,0,0);
     d.setDate(d.getDate()+4-(d.getDay()||7));
     return Math.ceil((((d-new Date(d.getFullYear(),0,1))/8.64e7)+1)/7);
   };
-  Date.prototype.getWeekEndPoints = function(start) {
-    start = start || 0;
-    var today = new Date(this.setHours(0, 0, 0, 0));
-    var day = today.getDay() - start;
+  /**
+   * Get week endpoints (i.e. start of the week and end of the week dates) for date
+   */
+  var getWeekEndPoints = function(d) {
+    var d = new Date(+d);
+    var today = new Date(d.setHours(0, 0, 0, 0));
+    var day = today.getDay();
     var date = today.getDate() - day;
 
     var StartDate = new Date(today.setDate(date));
@@ -31,8 +37,11 @@
 
     return [StartDate, EndDate];
   };
-  Date.prototype.getQuarter = function() {
-    var d = new Date(+this);
+  /**
+   * Get quarter for date
+   */
+  var getQuarter = function(d) {
+    var d = new Date(+d);
     var m = Math.floor(d.getMonth()/3) + 2;
     return m > 4 ? m - 5 : m;
   };
@@ -118,7 +127,7 @@
           endpoints.push(new Date(currentYear, 11, 31));
           break;
           case "quarterly":
-            currentPeriod = new Date(item[0]).getQuarter();
+            currentPeriod = getQuarter(new Date(item[0]));
           if (currentPeriod === 0) {
             endpoints.push(new Date(currentYear, 0, 1));
             endpoints.push(new Date(currentYear, 2, 31));
@@ -139,7 +148,7 @@
           endpoints.push(new Date(currentYear, currentPeriod + 1, 0));
           break;
           case "weekly":
-            endpoints = new Date(item[0]).getWeekEndPoints();
+            endpoints = getWeekEndPoints(new Date(item[0]));
           break;
           case "daily":
             endpoints = [new Date(item[0]), new Date(item[0])];
@@ -154,13 +163,13 @@
             currentPeriod = new Date(item[0]).getFullYear();
           break;
           case "quarterly":
-            currentPeriod = new Date(item[0]).getQuarter();
+            currentPeriod = getQuarter(new Date(item[0]));
           break;
           case "monthly":
             currentPeriod = new Date(item[0]).getMonth();
           break;
           case "weekly":
-            currentPeriod = new Date(item[0]).getWeek();
+            currentPeriod = getWeek(new Date(item[0]));
           break;
           case "daily":
             currentPeriod = new Date(item[0]).getDay();
