@@ -112,22 +112,6 @@ Dygraph.update(Dygraph.Circles, {
     ctx.lineTo(cx - radius, cy + radius);
     ctx.closePath();
     ctx.stroke();
-  },
-  ARROW : function(g, name, ctx, cx, cy, color, radius) {
-    ctx.strokeStyle = color;
-
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + radius / 2, cy + radius);
-    ctx.lineTo(cx + radius / 6, cy + radius * 0.8);
-    ctx.lineTo(cx + radius / 6, cy + radius * 2);
-    ctx.lineTo(cx - radius / 6, cy + radius * 2);
-    ctx.lineTo(cx - radius / 6, cy + radius * 0.8);
-    ctx.lineTo(cx - radius / 2, cy + radius);
-    ctx.lineTo(cx, cy);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
   }
 });
 
