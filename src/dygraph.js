@@ -84,16 +84,6 @@ var Dygraph = function(div, data, opts, opt_fourth_param) {
 
 Dygraph.NAME = "Dygraph";
 Dygraph.VERSION = "1.1.0";
-Dygraph.__repr__ = function() {
-  return "[" + Dygraph.NAME + " " + Dygraph.VERSION + "]";
-};
-
-/**
- * Returns information about the Dygraph class.
- */
-Dygraph.toString = function() {
-  return Dygraph.__repr__();
-};
 
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
