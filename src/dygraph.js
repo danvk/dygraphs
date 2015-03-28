@@ -403,7 +403,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   }
 
   if (!div) {
-    throw 'Constructing dygraph with a non-existent div!';
+    throw new Error('Constructing dygraph with a non-existent div!');
   }
 
   // Copy the important bits into the object
