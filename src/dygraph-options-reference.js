@@ -83,7 +83,7 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
       [ "maxDate" , "milliseconds since epoch." ],
       [ "yRanges" , "is an array of [bottom, top] pairs, one for each y-axis." ]
     ],
-    "description": "A function to call when the zoom window is changed (either by zooming in or out)."
+    "description": "A function to call when the zoom window is changed (either by zooming in or out). When animatedZooms is set, zoomCallback is called once at the end of the transition (it will not be called for intermediate frames)."
   },
   "pointClickCallback": {
     "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
