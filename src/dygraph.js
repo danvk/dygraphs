@@ -65,12 +65,6 @@ var Dygraph = (function() {
  * options, see http://dygraphs.com/options.html.
  */
 var Dygraph = function(div, data, opts) {
-  // These have to go above the "Hack for IE" in __init__ since .ready() can be
-  // called as soon as the constructor returns. Once support for OldIE is
-  // dropped, this can go down with the rest of the initializers.
-  this.is_initial_draw_ = true;
-  this.readyFns_ = [];
-
   this.__init__(div, data, opts);
 };
 
@@ -396,6 +390,9 @@ Dygraph.addedAnnotationCSS = false;
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
+  this.is_initial_draw_ = true;
+  this.readyFns_ = [];
+
   // Support two-argument constructor
   if (attrs === null || attrs === undefined) { attrs = {}; }
 
