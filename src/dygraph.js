@@ -64,22 +64,14 @@ var Dygraph = (function() {
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts, opt_fourth_param) {
+var Dygraph = function(div, data, opts) {
   // These have to go above the "Hack for IE" in __init__ since .ready() can be
   // called as soon as the constructor returns. Once support for OldIE is
   // dropped, this can go down with the rest of the initializers.
   this.is_initial_draw_ = true;
   this.readyFns_ = [];
 
-  if (opt_fourth_param !== undefined) {
-    // Old versions of dygraphs took in the series labels as a constructor
-    // parameter. This doesn't make sense anymore, but it's easy to continue
-    // to support this usage.
-    console.warn("Using deprecated four-argument dygraph constructor");
-    this.__old_init__(div, data, opts, opt_fourth_param);
-  } else {
-    this.__init__(div, data, opts);
-  }
+  this.__init__(div, data, opts);
 };
 
 Dygraph.NAME = "Dygraph";
@@ -394,18 +386,6 @@ Dygraph.PLUGINS = [
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
-Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
-  // Labels is no longer a constructor parameter, since it's typically set
-  // directly from the data source. It also conains a name for the x-axis,
-  // which the previous constructor form did not.
-  if (labels !== null) {
-    var new_labels = ["Date"];
-    for (var i = 0; i < labels.length; i++) new_labels.push(labels[i]);
-    Dygraph.update(attrs, { 'labels': new_labels });
-  }
-  this.__init__(div, file, attrs);
-};
-
 /**
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
  * and context &lt;canvas&gt; inside of it. See the constructor for details.
@@ -426,8 +406,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   }
 
   if (!div) {
-    console.error("Constructing dygraph with a non-existent div!");
-    return;
+    throw 'Constructing dygraph with a non-existent div!';
   }
 
   // Copy the important bits into the object
