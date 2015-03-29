@@ -1,12 +1,7 @@
-/**
- * @fileoverview FILL THIS IN
- *
- * @author akiya.mizukoshi@gmail.com (Akiyah)
- */
 describe("plugins-legend", function() {
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
+  document.body.innerHTML = "<div id='graph'></div><div id='label'></div>";
 });
 
 afterEach(function() {
@@ -42,6 +37,23 @@ it('testLegendEscape', function() {
 
   var legendSpan = legendPlugin.legend_div_.querySelector("span b span");
   assert.equal(legendSpan.innerHTML, "&lt;script&gt;alert('XSS')&lt;/script&gt;");
+});
+
+
+it('should let labelsDiv be a string', function() {
+  var labelsDiv = document.getElementById('label');
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', {labelsDiv: 'label'});
+null
+  g.setSelection(0);
+  assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
+});
+
+it('should let labelsDiv be an Element', function() {
+  var labelsDiv = document.getElementById('label');
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', { labelsDiv: labelsDiv });
+  assert.isNull(labelsDiv.getAttribute('class'));  // dygraph-legend not added.
+  g.setSelection(0);
+  assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
 });
 
 

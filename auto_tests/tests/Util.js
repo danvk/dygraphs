@@ -51,11 +51,16 @@ Util.getClassTexts = function(css_class, parent) {
   return texts;
 };
 
+// Convert &nbsp; to a normal space
+Util.nbspToSpace = function(str) {
+  var re = new RegExp(String.fromCharCode(160), 'g');
+  return str.replace(re, ' ');
+};
+
 Util.getLegend = function(parent) {
   parent = parent || document;
   var legend = parent.getElementsByClassName("dygraph-legend")[0];
-  var re = new RegExp(String.fromCharCode(160), 'g');
-  return legend.textContent.replace(re, ' ');
+  return Util.nbspToSpace(legend.textContent);
 };
 
 /**
