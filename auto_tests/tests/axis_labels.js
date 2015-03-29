@@ -663,7 +663,7 @@ it('testSmallLabelKMG2', function() {
   );
 
   // TODO(danvk): this is strange--the values aren't on powers of two, and are
-  // these units really used for powers of two in <1?
+  // these units really used for powers of two in <1? See issue #571.
   assert.deepEqual(['0', '0.48u', '0.95u', '1.43u', '1.91u'],
                    Util.getYLabels());
 });
