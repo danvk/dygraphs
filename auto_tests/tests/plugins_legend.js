@@ -56,5 +56,19 @@ it('should let labelsDiv be an Element', function() {
   assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
 });
 
+it('should render dashed patterns', function() {
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', {
+    strokePattern: [5, 5],
+    color: 'red',
+    legend: 'always'
+  });
+
+  // The legend has a dashed line and a label.
+  var legendEl = document.querySelector('.dygraph-legend > span');
+  assert.equal(' Y', legendEl.textContent);
+  var dashEl = document.querySelector('.dygraph-legend > span > div');
+  assert.equal(window.getComputedStyle(dashEl)['border-bottom-color'],
+               'rgb(255, 0, 0)');
+});
 
 });
