@@ -3247,9 +3247,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
-    console.error("only 'date', 'datetime' and 'number' types are supported " +
-                  "for column 1 of DataTable input (Got '" + indepType + "')");
-    return null;
+    throw new Error(
+          "only 'date', 'datetime' and 'number' types are supported " +
+          "for column 1 of DataTable input (Got '" + indepType + "')");
   }
 
   // Array of the column indices which contain data (and not annotations).
@@ -3271,8 +3271,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       }
       hasAnnotations = true;
     } else {
-      console.error("Only 'number' is supported as a dependent type with Gviz." +
-                    " 'string' is only supported if displayAnnotations is true");
+      throw new Error(
+          "Only 'number' is supported as a dependent type with Gviz." +
+          " 'string' is only supported if displayAnnotations is true");
     }
   }
 
