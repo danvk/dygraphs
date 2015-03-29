@@ -619,6 +619,55 @@ it('testLabelKMG2_top', function() {
       Util.getYLabels());
 });
 
+it('testSmallLabelKMB', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1e-6]);
+  data.push([2, 2e-6]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  // TODO(danvk): use prefixes here (e.g. m, µ, n)
+  assert.deepEqual(['0', '5.00e-7', '1.00e-6', '1.50e-6', '2.00e-6'],
+                   Util.getYLabels());
+});
+
+it('testSmallLabelKMG2', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1e-6]);
+  data.push([2, 2e-6]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMG2: true
+        }
+      }
+    }
+  );
+
+  // TODO(danvk): this is strange--the values aren't on powers of two, and are
+  // these units really used for powers of two in <1? See issue #571.
+  assert.deepEqual(['0', '0.48u', '0.95u', '1.43u', '1.91u'],
+                   Util.getYLabels());
+});
+
 /**
  * Verify that log scale axis range is properly specified.
  */

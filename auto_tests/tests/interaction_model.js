@@ -405,4 +405,54 @@ it('testPointClickCallback_missingData', function() {
   assert.equal(110, clicked.yval);
 });
 
+describe('animated zooms', function() {
+  var oldDuration;
+
+  before(function() {
+    oldDuration = Dygraph.ANIMATION_DURATION;
+    Dygraph.ANIMATION_DURATION = 100;  // speed up the animation for testing
+  });
+  after(function() {
+    Dygraph.ANIMATION_DURATION = oldDuration;
+  });
+
+  it('should support animated zooms', function(done) {
+    var data =
+      "X,A,B\n" +
+      "1,120,100\n"+
+      "2,110,110\n"+
+      "3,140,120\n"+
+      "4,130,110\n";
+
+    var ranges = [];
+
+    var g = new Dygraph('graph', data, {
+      animatedZooms: true,
+    });
+
+    // updating the dateWindow does not result in an animation.
+    assert.deepEqual([1, 4], g.xAxisRange());
+    g.updateOptions({dateWindow: [2, 4]});
+    assert.deepEqual([2, 4], g.xAxisRange());
+
+    g.updateOptions({
+      // zoomCallback is called once when the animation is complete.
+      zoomCallback: function(xMin, xMax) {
+        assert.equal(1, xMin);
+        assert.equal(4, xMax);
+        assert.deepEqual([1, 4], g.xAxisRange());
+        done();
+      }
+    }, false);
+
+    // Zoom out -- resetZoom() _does_ produce an animation.
+    g.resetZoom();
+    assert.notDeepEqual([2, 4], g.xAxisRange());  // first frame is synchronous
+    assert.notDeepEqual([1, 4], g.xAxisRange());
+
+    // at this point control flow goes up to zoomCallback
+  });
+
+});
+
 });

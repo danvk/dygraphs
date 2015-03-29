@@ -16,7 +16,7 @@ To run the tests, run:
 
 To iterate on the code, open `tests/demo.html` (or one of the other demos) in your browser.
 
-To iterate on a unit test, change `it` to `it.only` in the Mocha test, change the browser from `PhantomJS` to `Chrome` (or whatever you like) in `auto_tests/karma.conf.js`, run
+To iterate on a unit test, change `it` to `it.only` in the Mocha test, change the browser from `PhantomJS` to `Chrome` (or whatever you like) and set `singleRun` to `false` in `auto_tests/karma.conf.js`. Then run
 
     ./node_modules/karma/bin/karma start auto_tests/karma.conf.js
 

@@ -160,4 +160,18 @@ it('testConstantSeriesNegativeIncludeZero', function() {
   assert.deepEqual([-1.1, 0], g.yAxisRange());
 });
 
+it('should throw with non-existent divs', function() {
+  var data = "X,Y\n" +
+             "1,-1\n" +
+             "2,1\n";
+
+  assert.throws(function() {
+    new Dygraph(null, data);
+  }, /non-existent div/);
+
+  assert.throws(function() {
+    new Dygraph('non-existent-div-id', data);
+  }, /non-existent div/);
+});
+
 });

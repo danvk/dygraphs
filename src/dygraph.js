@@ -64,36 +64,12 @@ var Dygraph = (function() {
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts, opt_fourth_param) {
-  // These have to go above the "Hack for IE" in __init__ since .ready() can be
-  // called as soon as the constructor returns. Once support for OldIE is
-  // dropped, this can go down with the rest of the initializers.
-  this.is_initial_draw_ = true;
-  this.readyFns_ = [];
-
-  if (opt_fourth_param !== undefined) {
-    // Old versions of dygraphs took in the series labels as a constructor
-    // parameter. This doesn't make sense anymore, but it's easy to continue
-    // to support this usage.
-    console.warn("Using deprecated four-argument dygraph constructor");
-    this.__old_init__(div, data, opts, opt_fourth_param);
-  } else {
-    this.__init__(div, data, opts);
-  }
+var Dygraph = function(div, data, opts) {
+  this.__init__(div, data, opts);
 };
 
 Dygraph.NAME = "Dygraph";
 Dygraph.VERSION = "1.1.0";
-Dygraph.__repr__ = function() {
-  return "[" + Dygraph.NAME + " " + Dygraph.VERSION + "]";
-};
-
-/**
- * Returns information about the Dygraph class.
- */
-Dygraph.toString = function() {
-  return Dygraph.__repr__();
-};
 
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
@@ -404,18 +380,6 @@ Dygraph.PLUGINS = [
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
-Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
-  // Labels is no longer a constructor parameter, since it's typically set
-  // directly from the data source. It also conains a name for the x-axis,
-  // which the previous constructor form did not.
-  if (labels !== null) {
-    var new_labels = ["Date"];
-    for (var i = 0; i < labels.length; i++) new_labels.push(labels[i]);
-    Dygraph.update(attrs, { 'labels': new_labels });
-  }
-  this.__init__(div, file, attrs);
-};
-
 /**
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
  * and context &lt;canvas&gt; inside of it. See the constructor for details.
@@ -426,6 +390,9 @@ Dygraph.prototype.__old_init__ = function(div, file, labels, attrs) {
  * @private
  */
 Dygraph.prototype.__init__ = function(div, file, attrs) {
+  this.is_initial_draw_ = true;
+  this.readyFns_ = [];
+
   // Support two-argument constructor
   if (attrs === null || attrs === undefined) { attrs = {}; }
 
@@ -436,8 +403,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   }
 
   if (!div) {
-    console.error("Constructing dygraph with a non-existent div!");
-    return;
+    throw new Error('Constructing dygraph with a non-existent div!');
   }
 
   // Copy the important bits into the object
@@ -3281,9 +3247,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
     this.attrs_.axes.x.ticker = Dygraph.numericTicks;
     this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
   } else {
-    console.error("only 'date', 'datetime' and 'number' types are supported " +
-                  "for column 1 of DataTable input (Got '" + indepType + "')");
-    return null;
+    throw new Error(
+          "only 'date', 'datetime' and 'number' types are supported " +
+          "for column 1 of DataTable input (Got '" + indepType + "')");
   }
 
   // Array of the column indices which contain data (and not annotations).
@@ -3305,8 +3271,9 @@ Dygraph.prototype.parseDataTable_ = function(data) {
       }
       hasAnnotations = true;
     } else {
-      console.error("Only 'number' is supported as a dependent type with Gviz." +
-                    " 'string' is only supported if displayAnnotations is true");
+      throw new Error(
+          "Only 'number' is supported as a dependent type with Gviz." +
+          " 'string' is only supported if displayAnnotations is true");
     }
   }
 
