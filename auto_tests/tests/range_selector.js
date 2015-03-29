@@ -183,8 +183,13 @@ it('testRangeSelectorEnablingAfterCreation', function() {
              ];
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
+  var initialChartHeight = g.getArea().h;
   g.updateOptions({showRangeSelector: true});
   assertGraphExistence(g, graph);
+  assert(g.getArea().h < initialChartHeight);  // range selector shown
+
+  g.updateOptions({showRangeSelector: false});
+  assert.equal(g.getArea().h, initialChartHeight);  // range selector hidden
 });
 
 // The animatedZooms option does not work with the range selector. Make sure it gets turned off.
@@ -389,7 +394,6 @@ it('testMiniPlotDrawn', function() {
   var origFunc = Dygraph.getContext;
   var miniHtx;
   Dygraph.getContext = function(canvas) {
-    console.log(canvas.className);
     if (canvas.className != 'dygraph-rangesel-bgcanvas') {
       return origFunc(canvas);
     }
