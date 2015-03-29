@@ -16,7 +16,6 @@ Dygraph.Plugins.RangeSelector = (function() {
 "use strict";
 
 var rangeSelector = function() {
-  this.isIE_ = /MSIE/.test(navigator.userAgent) && !window.opera;
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
   this.isMobileDevice_ = /mobile|android/gi.test(navigator.appVersion);
   this.interfaceCreated_ = false;
@@ -222,22 +221,15 @@ rangeSelector.prototype.createZoomHandles_ = function() {
   img.style.zIndex = 10;
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
-//TODO: change image to more options
-  if (/MSIE 7/.test(navigator.userAgent)) { // IE7 doesn't support embedded src data.
-    img.width = 7;
-    img.height = 14;
-    img.style.backgroundColor = 'white';
-    img.style.border = '1px solid #333333'; // Just show box in IE7.
-  } else {
-    img.width = 9;
-    img.height = 16;
-    img.src = 'data:image/png;base64,' +
+  // TODO: change image to more options
+  img.width = 9;
+  img.height = 16;
+  img.src = 'data:image/png;base64,' +
 'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
 'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
 'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
 '6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
 'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
-  }
 
   if (this.isMobileDevice_) {
     img.width *= 2;

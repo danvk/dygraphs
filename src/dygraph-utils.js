@@ -197,10 +197,6 @@ Dygraph.findPos = function(obj) {
       }
       copyObj = copyObj.offsetParent;
     }
-  } else {
-    // TODO(danvk): why would obj ever have these properties?
-    if (obj.x) curleft += obj.x;
-    if (obj.y) curtop += obj.y;
   }
 
   // This handles the case where the object is inside a scrolled div.
@@ -221,15 +217,7 @@ Dygraph.findPos = function(obj) {
  * @private
  */
 Dygraph.pageX = function(e) {
-  if (e.pageX) {
-    return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
-  } else {
-    var de = document.documentElement;
-    var b = document.body;
-    return e.clientX +
-        (de.scrollLeft || b.scrollLeft) -
-        (de.clientLeft || 0);
-  }
+  return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
 };
 
 /**
@@ -241,15 +229,7 @@ Dygraph.pageX = function(e) {
  * @private
  */
 Dygraph.pageY = function(e) {
-  if (e.pageY) {
-    return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
-  } else {
-    var de = document.documentElement;
-    var b = document.body;
-    return e.clientY +
-        (de.scrollTop || b.scrollTop) -
-        (de.clientTop || 0);
-  }
+  return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
 };
 
 /**
