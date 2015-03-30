@@ -46,7 +46,10 @@ it('testSeparatedPointsDontDraw', function() {
       [[1, 10, 11],
        [2, 11, null],
        [3, 12, 13]],
-      { colors: ['red', 'blue']});
+      {
+        colors: ['red', 'blue'],
+        labels: ['X', 'Y1', 'Y2']
+      });
   var htx = g.hidden_ctx_;
   assert.equal(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
   assert.equal(0, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
@@ -61,7 +64,7 @@ it('testSeparatedPointsDontDraw_expanded', function() {
        [2, null],
        [3, 13],
        [4, 14]],
-      { colors: ['blue']});
+      { colors: ['blue'], labels: ['X', 'Y']});
   var htx = g.hidden_ctx_;
 
   assert.equal(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
@@ -80,7 +83,11 @@ it('testSeparatedPointsDontDraw_expanded_connected', function() {
        [2, null],
        [3, 13],
        [4, 14]],
-      { colors: ['blue'], connectSeparatedPoints: true});
+      {
+        colors: ['blue'],
+        connectSeparatedPoints: true,
+        labels: ['X', 'Y']
+      });
   var htx = g.hidden_ctx_;
   var num_lines = 0;
 
@@ -107,7 +114,8 @@ it('testConnectSeparatedPoints', function() {
     {
       connectSeparatedPoints: true,
       drawPoints: true,
-      colors: ['red', 'blue']
+      colors: ['red', 'blue'],
+      labels: ['X', 'Y1', 'Y2']
     }
   );
 
@@ -182,7 +190,8 @@ it('testErrorBarsWithMissingPoints', function() {
     data,
     {
       errorBars: true,
-      colors: ['red']
+      colors: ['red'],
+      labels: ['X', 'Y']
     }
   );
 
@@ -216,7 +225,8 @@ it('testErrorBarsWithMissingPointsConnected', function() {
       connectSeparatedPoints: true,
       drawPoints: true,
       errorBars: true,
-      colors: ['red']
+      colors: ['red'],
+      labels: ['X', 'Y']
     }
   );
 
@@ -251,7 +261,8 @@ it('testCustomBarsWithMissingPoints', function() {
     data,
     {
       customBars: true,
-      colors: ['red']
+      colors: ['red'],
+      labels: ['X', 'Y']
     }
   );
 
@@ -292,7 +303,8 @@ it('testCustomBarsWithMissingPointsConnected', function() {
       connectSeparatedPoints: true,
       drawPoints: true,
       customBars: true,
-      colors: ['red']
+      colors: ['red'],
+      labels: ['X', 'Y']
     }
   );
 
@@ -323,7 +335,8 @@ it('testLeftBoundaryWithMisingPoints', function() {
     {
       connectSeparatedPoints: true,
       drawPoints: true,
-      colors: ['red','blue']
+      colors: ['red','blue'],
+      labels: ['X', 'Y1', 'Y2']
     }
   );
   g.updateOptions({ dateWindow : [ 2.5, 4.5 ] });

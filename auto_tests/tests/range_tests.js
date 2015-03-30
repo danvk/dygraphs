@@ -50,8 +50,9 @@ var createGraph = function(opts, data, expectRangeX, expectRangeY) {
   if (data === undefined) data = ZERO_TO_FIFTY_STEPS;
   if (expectRangeX === undefined) expectRangeX = [10, 20];
   if (expectRangeY === undefined) expectRangeY = [0, 55];
-  var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, data, opts);
+  if (!opts) opts = {};
+  opts['labels'] = ['X', 'Y'];
+  var g = new Dygraph('graph', data, opts);
 
   assertDeepCloseTo(expectRangeX, g.xAxisRange(), 0.01);
   assertDeepCloseTo(expectRangeY, g.yAxisRange(0), 0.01);
@@ -172,7 +173,10 @@ it('testRestoreOriginalRanges_viaUpdateOptions', function() {
  * Verify that log scale axis range is properly specified.
  */
 it('testLogScaleExcludesZero', function() {
-  var g = new Dygraph("graph", FIVE_TO_ONE_THOUSAND, { logscale : true });
+  var g = new Dygraph("graph", FIVE_TO_ONE_THOUSAND, {
+    logscale: true,
+    labels: ['X', 'Y']
+  });
   assert.deepEqual([10, 1099], g.yAxisRange(0));
  
   g.updateOptions({ logscale : false });
@@ -183,7 +187,10 @@ it('testLogScaleExcludesZero', function() {
  * Verify that includeZero range is properly specified.
  */
 it('testIncludeZeroIncludesZero', function() {
-  var g = new Dygraph("graph", [[0, 500], [500, 1000]], { includeZero : true });
+  var g = new Dygraph("graph", [[0, 500], [500, 1000]], {
+    includeZero: true,
+    labels: ['X', 'Y']
+  });
   assert.deepEqual([0, 1100], g.yAxisRange(0));
  
   g.updateOptions({ includeZero : false });
@@ -233,7 +240,10 @@ it('testIncludeZeroPerAxis', function() {
  * Verify that very large Y ranges don't break things.
  */ 
 it('testHugeRange', function() {
-  var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], { includeZero : true });
+  var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], {
+    includeZero: true,
+    labels: ['X', 'Y']
+  });
   assert.closeTo(1, -1e229 / g.yAxisRange(0)[0], 0.001);
   assert.closeTo(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
 });

@@ -6,11 +6,15 @@
  */
 describe("range-selector", function() {
 
+var restoreConsole;
+var logs = {};
 beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
+  restoreConsole = Util.captureConsole(logs);
 });
 
 afterEach(function() {
+  restoreConsole();
 });
 
 it('testRangeSelector', function() {
@@ -216,6 +220,10 @@ it('testRangeSelectorWithAnimatedZoomsOption', function() {
   var g = new Dygraph(graph, data, opts);
   assertGraphExistence(g, graph);
   assert.isFalse(g.getOption('animatedZooms'));
+  assert.deepEqual(logs, {
+    log: [], error: [],
+    warn: ["Animated zooms and range selector are not compatible; disabling animatedZooms."]
+  });
 });
 
 it('testRangeSelectorWithAnimatedZoomsOption2', function() {
@@ -241,6 +249,10 @@ it('testRangeSelectorWithAnimatedZoomsOption2', function() {
   g.updateOptions({showRangeSelector: true});
   assertGraphExistence(g, graph);
   assert.isFalse(g.getOption('animatedZooms'));
+  assert.deepEqual(logs, {
+    log: [], error: [],
+    warn: ["Animated zooms and range selector are not compatible; disabling animatedZooms."]
+  });
 });
 
 it('testRangeSelectorInteraction', function() {

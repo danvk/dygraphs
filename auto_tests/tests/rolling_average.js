@@ -85,7 +85,7 @@ it('testRollBoxDoesntDisapper', function() {
 it('testRollShortFractions', function() {
   var opts = {
     customBars: true,
-    labels: ['x', 'A']
+    labels: ['x', 'A', 'B']
   };
   var data1 = [ [1, 10, [1, 20]] ];
   var data2 = [ [1, 10, [1, 20]],

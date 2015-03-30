@@ -19,15 +19,16 @@ var data1 = "X,Y\n" +
     "23,0\n";
 
 var data2 =
-    [[1, 10],
-    [2, 20],
-    [3, 30],
-    [4, 40],
-    [5, 120],
-    [6, 50],
-    [7, 70],
-    [8, 90],
-    [9, 50]];
+    "X,Y\n" +
+    "1,10\n" +
+    "2,20\n" +
+    "3,30\n" +
+    "4,40\n" +
+    "5,120\n" +
+    "6,50\n" +
+    "7,70\n" +
+    "8,90\n" +
+    "9,50\n";
 
 function getXLabels() {
   var x_labels = document.getElementsByClassName("dygraph-axis-label-x");
@@ -169,15 +170,16 @@ it('testClickCallbackIsCalledWithNonInteractiveModel', function() {
  * A sanity test to ensure pointClickCallback is called.
  */
 it('testPointClickCallback', function() {
-  var clicked;
-  var g = new Dygraph(document.getElementById("graph"), data2, {
-    pointClickCallback : function(event, point) {
+  var clicked = null;
+  var g = new Dygraph('graph', data2, {
+    pointClickCallback: function(event, point) {
       clicked = point;
     }
   });
 
   clickAt(g, 4, 40);
 
+  assert.isNotNull(clicked);
   assert.equal(4, clicked.xval);
   assert.equal(40, clicked.yval);
 });

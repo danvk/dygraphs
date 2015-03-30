@@ -23,9 +23,10 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 describe("simple-drawing", function() {
+
+var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
 
 var _origFunc = Dygraph.getContext;
 beforeEach(function() {
@@ -41,17 +42,18 @@ afterEach(function() {
 
 it('testDrawSimpleRangePlusOne', function() {
   var opts = {
-    axes : {
-      x : {
+    axes: {
+      x: {
         drawGrid: false,
-        drawAxis: false,
+        drawAxis: false
       },
-      y : {
+      y: {
         drawGrid: false,
-        drawAxis: false,
+        drawAxis: false
       }
     },
-    valueRange: [0,51] }
+    valueRange: [0,51]
+  };
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, opts);
@@ -121,7 +123,8 @@ it('testDrawSimpleDash', function() {
     series: {
       'Y1': {strokePattern: [25, 7, 7, 7]},
     },
-    colors: ['#ff0000']
+    colors: ['#ff0000'],
+    labels: ['X', 'Y']
   };
 
   var graph = document.getElementById("graph");
@@ -143,18 +146,19 @@ it('testDrawSimpleDash', function() {
  */
 it('testDrawThickLine', function() {
   var opts = {
-    axes : {
-      x : {
+    axes: {
+      x: {
         drawGrid: false,
-        drawAxis: false,
+        drawAxis: false
       },
-      y : {
+      y: {
         drawGrid: false,
-        drawAxis: false,
+        drawAxis: false
       }
     },
     strokeWidth: 15,
-    colors: ['#ff0000']
+    colors: ['#ff0000'],
+    labels: ['X', 'Y']
   };
 
   var graph = document.getElementById("graph");
