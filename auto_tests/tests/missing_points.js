@@ -46,7 +46,10 @@ it('testSeparatedPointsDontDraw', function() {
       [[1, 10, 11],
        [2, 11, null],
        [3, 12, 13]],
-      { colors: ['red', 'blue']});
+      {
+        colors: ['red', 'blue'],
+        labels: ['X', 'Y1', 'Y2']
+      });
   var htx = g.hidden_ctx_;
   assert.equal(2, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
   assert.equal(0, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));

@@ -73,9 +73,9 @@ it('testSetGetSelectionMissingPoints', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,A,B,C\n" +
-    "1,1,null,null\n" +
-    "2,null,2,null\n" +
-    "3,null,null,3\n",
+    "1,1,,\n" +
+    "2,,2,\n" +
+    "3,,,3\n",
     {
       dataHandler: dataHandler
     }

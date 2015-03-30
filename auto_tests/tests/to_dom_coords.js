@@ -34,14 +34,14 @@ var checkForInverses = function(g) {
 
 it('testPlainChart', function() {
   var opts = {
-    axes : {
-      x : {
+    axes: {
+      x: {
         drawAxis : false,
-        drawGrid : false,
+        drawGrid : false
       },
-      y : {
+      y: {
         drawAxis : false,
-        drawGrid : false,
+        drawGrid : false
       }
     },
     rightGap: 0,
@@ -49,7 +49,8 @@ it('testPlainChart', function() {
     dateWindow: [0, 100],
     width: 400,
     height: 400,
-    colors: ['#ff0000']
+    colors: ['#ff0000'],
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -69,12 +70,12 @@ it('testPlainChart', function() {
 
 it('testChartWithAxes', function() {
   var opts = {
-    axes : {
-      x : {
+    axes: {
+      x: {
         drawGrid: false,
         drawAxis: true,
       },
-      y : {
+      y: {
         drawGrid: false,
         drawAxis: true,
         axisLabelWidth: 100
@@ -87,7 +88,8 @@ it('testChartWithAxes', function() {
     dateWindow: [0, 100],
     width: 500,
     height: 450,
-    colors: ['#ff0000']
+    colors: ['#ff0000'],
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -103,16 +105,16 @@ it('testChartWithAxes', function() {
 
 it('testChartWithAxesAndLabels', function() {
   var opts = {
-    axes : {
-      x : {
+    axes: {
+      x: {
         drawGrid: false,
         drawAxis: true,
       },
-      y : {
+      y: {
         drawGrid: false,
         drawAxis: true,
         axisLabelWidth: 100
-      }
+      },
     },
     xAxisHeight: 50,
     axisTickSize: 0,
@@ -126,7 +128,8 @@ it('testChartWithAxesAndLabels', function() {
     xlabel: 'This is the x-axis',
     xLabelHeight: 25,
     title: 'This is the title of the chart',
-    titleHeight: 25
+    titleHeight: 25,
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -148,7 +151,8 @@ it('testYAxisLabelWidth', function() {
     valueRange: [0, 100],
     dateWindow: [0, 100],
     width: 500,
-    height: 500
+    height: 500,
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -172,7 +176,8 @@ it('testAxisTickSize', function() {
     valueRange: [0, 100],
     dateWindow: [0, 100],
     width: 500,
-    height: 500
+    height: 500,
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -204,7 +209,8 @@ it('testChartLogarithmic_YAxis', function() {
         drawAxis: false,
         logscale: true
       }
-    }
+    },
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");
@@ -242,7 +248,8 @@ it('testChartLogarithmic_XAxis', function() {
         drawGrid: false,
         drawAxis: false
       }
-    }
+    },
+    labels: ['X', 'Y']
   }
 
   var graph = document.getElementById("graph");

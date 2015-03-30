@@ -6,11 +6,15 @@
  */
 describe("pathological-cases", function() {
 
+var restoreConsole;
+var logs = {};
 beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
+  restoreConsole = Util.captureConsole(logs);
 });
 
 afterEach(function() {
+  restoreConsole();
 });
 
 it('testZeroPoint', function() {
@@ -111,6 +115,16 @@ it('testCombinations', function() {
         opts.labels = ['X', 'A', 'B', 'C'].slice(0, cols);
 
         var g = new Dygraph(gdiv, data, opts);
+
+        if (dataName == 'empty') {
+          assert.deepEqual(logs, {
+            log: [], warn: [],
+            error: ["Can't plot empty data set"]
+          });
+          logs.error = [];  // reset
+        } else {
+          assert.deepEqual(logs, {log: [], warn: [], error: []});
+        }
       }
     }
   }

@@ -180,7 +180,8 @@ it('testMissingValueAtZero', function() {
 it('testInterpolation', function() {
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
-    stackedGraph: true
+    stackedGraph: true,
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
   };
 
   // The last series is all-NaN, it ought to be treated as all zero
@@ -236,7 +237,8 @@ it('testInterpolation', function() {
 it('testInterpolationOptions', function() {
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
-    stackedGraph: true
+    stackedGraph: true,
+    labels: ['X', 'Y1', 'Y2', 'Y3']
   };
 
   var data = [
@@ -277,19 +279,20 @@ it('testMultiAxisInterpolation', function() {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
     stackedGraph: true,
     series: {
-        "Y1": {
-            axis: 'y',
-        },
-        "Y2": {
-            axis: 'y',
-        },
-        "Y3": {
-            axis: 'y2',
-        },
-        "Y4": {
-            axis: 'y2',
-        }
-    }
+      'Y1': {
+        axis: 'y',
+      },
+      'Y2': {
+        axis: 'y',
+      },
+      'Y3': {
+        axis: 'y2',
+      },
+      'Y4': {
+        axis: 'y2',
+      }
+    },
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
   };
 
   // The last series is all-NaN, it ought to be treated as all zero

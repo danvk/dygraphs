@@ -41,13 +41,11 @@ it('testArray', function() {
 });
 
 it('testFunctionReturnsCsv', function() {
-  var string = dataString;
-  var data = function() { return string; };
+  var data = function() { return dataString; };
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  // assertData(g);
-  console.log("x");
+  assertData(g);
 });
 
 it('testFunctionDefinesArray', function() {

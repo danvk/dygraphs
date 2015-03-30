@@ -147,3 +147,24 @@ Util.overrideXMLHttpRequest = function(data) {
 Util.formatDate = function(dateMillis) {
   return Dygraph.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
 };
+
+/**
+ * Capture console.{log,warn,error} statements into obj.
+ * obj will look like {log:[], warn:[], error:[]}
+ * This returns a function which will restore the original console.
+ */
+Util.captureConsole = function(obj) {
+  obj.log = [];
+  obj.warn = [];
+  obj.error = [];
+  var orig = [console.log, console.warn, console.error];
+  console.log = function(text) { obj.log.push(text); };
+  console.warn = function(text) { obj.warn.push(text); };
+  console.error = function(text) { obj.error.push(text); };
+
+  return function() {
+    console.log = orig[0];
+    console.warn = orig[1];
+    console.error = orig[2];
+  };
+};

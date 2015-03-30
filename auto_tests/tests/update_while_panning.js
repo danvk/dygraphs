@@ -30,7 +30,8 @@ it('testUpdateWhilePanning', function() {
   var opts = {
     width: 480,
     height: 320,
-    valueRange: [-2, 2]
+    valueRange: [-2, 2],
+    labels: ['X', 'Y']
   };
 
   var graph = document.getElementById("graph");
