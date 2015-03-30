@@ -99,19 +99,20 @@ it('testCustomBarsAtTop', function() {
         width: 500, height: 350,
         customBars: true,
         errorBars: true,
-        axes : {
-          x : {
+        axes: {
+          x: {
             drawGrid: false,
             drawAxis: false,
           },
-          y : {
+          y: {
             drawGrid: false,
             drawAxis: false,
           }
         },
         valueRange: [0, 120],
         fillAlpha: 0.15,
-        colors: [ '#00FF00' ]
+        colors: ['#00FF00'],
+        labels: ['X', 'Y']
       });
 
   var sampler = new PixelSampler(g);
@@ -142,7 +143,8 @@ it('testCustomBarsLogScale', function() {
         },
         fillAlpha: 1.0,
         logscale: true,
-        colors: [ '#00FF00' ]
+        colors: ['#00FF00'],
+        labels: ['X', 'Y']
       });
 
   // The following assertions describe the sides of the custom bars, which are
@@ -180,8 +182,9 @@ it('testCustomBarsWithNegativeValuesInLogScale', function() {
       ],
       {
         drawPoints: true,
-        drawPointCallback : drawPointCallback,
-        customBars: true
+        drawPointCallback: drawPointCallback,
+        customBars: true,
+        labels: ['X', 'Y']
       });
 
   // Normally all three points would be drawn.

@@ -696,9 +696,9 @@ it('testDrawHighlightPointCallback_idx', function() {
   };
   var testdata = [[1, 2], [2, 3], [3, NaN], [4, 2], [5, NaN], [6, 3]];
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, testdata,
-      {
-          drawHighlightPointCallback : drawHighlightPointCallback
+  var g = new Dygraph(graph, testdata, {
+        drawHighlightPointCallback: drawHighlightPointCallback,
+        labels: ['X', 'Y']
       });
 
   assert.isNull(idxToCheck);

@@ -36,7 +36,8 @@ it('testErrorBarsDrawn', function() {
       }
     },
     customBars: true,
-    errorBars: true
+    errorBars: true,
+    labels: ['X', 'Y']
   };
   var data = [
                [1, [10,  10, 100]],

@@ -24,8 +24,8 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var DEAD_SIMPLE_DATA = [[ 10, 2100 ]];
-var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
+var DEAD_SIMPLE_DATA = 'X,Y\n10,2100';
+var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
 
 describe("dygraphs-sanity", function() {
 

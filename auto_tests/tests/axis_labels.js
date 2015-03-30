@@ -125,7 +125,8 @@ it('testSmallRangeAwayFromZero', function() {
 it('testXAxisTimeLabelFormatter', function() {
   var opts = {
     width: 480,
-    height: 320
+    height: 320,
+    labels: ['X', 'Y1']
   };
   var data = [[5.0,0],[5.1,1],[5.2,2],[5.3,3],[5.4,4],[5.5,5],[5.6,6],[5.7,7],[5.8,8],[5.9,9]];
   var graph = document.getElementById("graph");
@@ -672,7 +673,11 @@ it('testSmallLabelKMG2', function() {
  * Verify that log scale axis range is properly specified.
  */
 it('testLogScale', function() {
-  var g = new Dygraph("graph", [[0, 5], [1, 1000]], { logscale : true });
+  var g = new Dygraph("graph",
+                      [[0, 5], [1, 1000]], {
+                        logscale: true,
+                        labels: ['X', 'Y']
+                      });
   var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
   assert.deepEqual(["5","10","20","50","100","200","500","1000"], nonEmptyLabels);
  
@@ -684,7 +689,11 @@ it('testLogScale', function() {
  * Verify that include zero range is properly specified.
  */
 it('testIncludeZero', function() {
-  var g = new Dygraph("graph", [[0, 500], [1, 1000]], { includeZero : true });
+  var g = new Dygraph("graph",
+                      [[0, 500], [1, 1000]], {
+                        includeZero: true,
+                        labels: ['X', 'Y1']
+                      });
   assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
  
   g.updateOptions({ includeZero : false });
@@ -701,18 +710,18 @@ it('testAxisLabelFontSize', function() {
   var assertFontSize = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "font-size", expected);
   }
-  
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y") , "14px");
 
-  g.updateOptions({ axisLabelFontSize : 8});
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
+
+  g.updateOptions({axisLabelFontSize : 8});
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px"); 
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px"); 
 
   g.updateOptions({
     axisLabelFontSize : null,
-    axes : { 
-      x : { axisLabelFontSize : 5 },
+    axes: { 
+      x: { axisLabelFontSize : 5 },
     }   
   }); 
 
@@ -720,8 +729,8 @@ it('testAxisLabelFontSize', function() {
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
-    axes : { 
-      y : { axisLabelFontSize : 20 },
+    axes: { 
+      y: { axisLabelFontSize : 20 },
     }   
   }); 
 
@@ -729,11 +738,11 @@ it('testAxisLabelFontSize', function() {
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px"); 
 
   g.updateOptions({
-    series : { 
-      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    series: { 
+      Y2: { axis : "y2" } // copy y2 series to y2 axis.
     },  
-    axes : { 
-      y2 : { axisLabelFontSize : 12 },
+    axes: { 
+      y2: { axisLabelFontSize : 12 },
     }   
   }); 
 

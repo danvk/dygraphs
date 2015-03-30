@@ -24,6 +24,7 @@ var dataArray =
   [1,0],
   [2,1],
   [3,0]];
+var BASE_OPTS = {labels: ['X', 'Y']};
 
 it('testCsv', function() {
   var data = dataString;
@@ -35,7 +36,7 @@ it('testCsv', function() {
 it('testArray', function() {
   var data = dataArray;
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, data, {});
+  var g = new Dygraph(graph, data, BASE_OPTS);
   assertData(g);
 });
 
@@ -54,7 +55,7 @@ it('testFunctionDefinesArray', function() {
   var data = function() { return array; }
 
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, data, {});
+  var g = new Dygraph(graph, data, BASE_OPTS);
   assertData(g);
 });
 
