@@ -179,8 +179,8 @@ Dygraph.findPos = function(obj) {
       d = document.documentElement;
 
   return {
-    x: p.left + (w.pageXOffset || d.scrollLeft) - (d.clientLeft || 0),
-    y: p.top  + (w.pageYOffset || d.scrollTop)  - (d.clientTop  || 0)
+    x: p.left + (w.pageXOffset || d.scrollLeft),
+    y: p.top  + (w.pageYOffset || d.scrollTop)
   }
 };
 
