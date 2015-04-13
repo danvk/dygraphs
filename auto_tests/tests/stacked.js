@@ -3,22 +3,22 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var stackedTestCase = TestCase("stacked");
+describe("stacked", function() {
 
-stackedTestCase._origGetContext = Dygraph.getContext;
+var _origGetContext = Dygraph.getContext;
 
-stackedTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(stackedTestCase._origGetContext(canvas));
+    return new Proxy(_origGetContext(canvas));
   }
-};
+});
 
-stackedTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = stackedTestCase._origGetContext;
-};
+afterEach(function() {
+  Dygraph.getContext = _origGetContext;
+});
 
-stackedTestCase.prototype.testCorrectColors = function() {
+it('testCorrectColors', function() {
   var opts = {
     width: 400,
     height: 300,
@@ -54,12 +54,12 @@ stackedTestCase.prototype.testCorrectColors = function() {
   // y pixels 0-99 = nothing (white)
 
   // 38 = round(0.15 * 255)
-  assertEquals([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 250));
-  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 150));
-};
+  assert.deepEqual([0, 0, 255, 38], Util.samplePixel(g.hidden_, 200, 250));
+  assert.deepEqual([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 150));
+});
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=358
-stackedTestCase.prototype.testSelectionValues = function() {
+it('testSelectionValues', function() {
   var opts = {
     stackedGraph: true
   };
@@ -71,11 +71,11 @@ stackedTestCase.prototype.testSelectionValues = function() {
   ;
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
 
-  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
+  assert.equal("0: Y1: 1 Y2: 1", Util.getLegend());
 
   // Verify that the behavior is correct with highlightSeriesOpts as well.
   g.updateOptions({
@@ -84,17 +84,17 @@ stackedTestCase.prototype.testSelectionValues = function() {
     }
   });
   g.setSelection(0);
-  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
+  assert.equal("0: Y1: 1 Y2: 1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("1: Y1: 1 Y2: 1", Util.getLegend());
+  assert.equal("1: Y1: 1 Y2: 1", Util.getLegend());
 
   g.setSelection(0, 'Y2');
-  assertEquals("0: Y1: 1 Y2: 1", Util.getLegend());
-};
+  assert.equal("0: Y1: 1 Y2: 1", Util.getLegend());
+});
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=176
-stackedTestCase.prototype.testDuplicatedXValue = function() {
+it('testDuplicatedXValue', function() {
   var opts = {
     stackedGraph: true,
     fillAlpha: 0.15,
@@ -111,17 +111,17 @@ stackedTestCase.prototype.testDuplicatedXValue = function() {
   ;
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   assert(g.yAxisRange()[1] < 2);
 
-  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 250));
-  assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 317, 250));
-}
+  assert.deepEqual([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 250));
+  assert.deepEqual([0, 255, 0, 38], Util.samplePixel(g.hidden_, 317, 250));
+});
 
 // Validates regression when null values in stacked graphs show up
 // incorrectly in the legend.
-stackedTestCase.prototype.testNullValues = function() {
+it('testNullValues', function() {
   var opts = {
     stackedGraph: true,
     stepPlot:true
@@ -135,26 +135,26 @@ stackedTestCase.prototype.testNullValues = function() {
   ;
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("0: Y1: -5 Y2: -1 Y3: 1", Util.getLegend());
+  assert.equal("0: Y1: -5 Y2: -1 Y3: 1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("1: Y1: 1 Y3: 1", Util.getLegend());
+  assert.equal("1: Y1: 1 Y3: 1", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2: Y1: 1 Y2: 2 Y3: 3", Util.getLegend());
+  assert.equal("2: Y1: 1 Y2: 2 Y3: 3", Util.getLegend());
 
   g.setSelection(3);
-  assertEquals("3: Y1: 3 Y3: 4", Util.getLegend());
+  assert.equal("3: Y1: 3 Y3: 4", Util.getLegend());
 
   g.setSelection(4);
-  assertEquals("4: Y1: 3 Y2: 2 Y3: 3", Util.getLegend());
-};
+  assert.equal("4: Y1: 3 Y2: 2 Y3: 3", Util.getLegend());
+});
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=438
-stackedTestCase.prototype.testMissingValueAtZero = function() {
+it('testMissingValueAtZero', function() {
   var opts = {
     stackedGraph: true
   };
@@ -165,22 +165,23 @@ stackedTestCase.prototype.testMissingValueAtZero = function() {
   ;
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   g.setSelection(0);
-  assertEquals("0: Y2: 1", Util.getLegend());
+  assert.equal("0: Y2: 1", Util.getLegend());
 
   g.setSelection(1);
-  assertEquals("1: Y1: 1 Y2: 2", Util.getLegend());
+  assert.equal("1: Y1: 1 Y2: 2", Util.getLegend());
 
   g.setSelection(2);
-  assertEquals("2: Y2: 3", Util.getLegend());
-};
+  assert.equal("2: Y2: 3", Util.getLegend());
+});
 
-stackedTestCase.prototype.testInterpolation = function() {
+it('testInterpolation', function() {
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
-    stackedGraph: true
+    stackedGraph: true,
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
   };
 
   // The last series is all-NaN, it ought to be treated as all zero
@@ -199,7 +200,7 @@ stackedTestCase.prototype.testInterpolation = function() {
     [109, 1, N, N, N]];
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   var htx = g.hidden_ctx_;
   var attrs = {};
@@ -217,26 +218,27 @@ stackedTestCase.prototype.testInterpolation = function() {
 
   // Check that the expected number of line segments gets drawn
   // for each series. Gaps don't get a line.
-  assertEquals(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
-  assertEquals(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
-  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  assert.equal(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assert.equal(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
+  assert.equal(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
 
   // Check that the selection returns the original (non-stacked)
   // values and skips gaps.
   g.setSelection(1);
-  assertEquals("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
+  assert.equal("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
 
   g.setSelection(8);
-  assertEquals("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
+  assert.equal("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
 
   g.setSelection(9);
-  assertEquals("109: Y1: 1", Util.getLegend());
-};
+  assert.equal("109: Y1: 1", Util.getLegend());
+});
 
-stackedTestCase.prototype.testInterpolationOptions = function() {
+it('testInterpolationOptions', function() {
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
-    stackedGraph: true
+    stackedGraph: true,
+    labels: ['X', 'Y1', 'Y2', 'Y3']
   };
 
   var data = [
@@ -255,7 +257,7 @@ stackedTestCase.prototype.testInterpolationOptions = function() {
   for (var i = 0; i < choices.length; ++i) {
     var graph = document.getElementById("graph");
     opts['stackedGraphNaNFill'] = choices[i];
-    g = new Dygraph(graph, data, opts);
+    var g = new Dygraph(graph, data, opts);
 
     var htx = g.hidden_ctx_;
     var attrs = {};
@@ -269,27 +271,28 @@ stackedTestCase.prototype.testInterpolationOptions = function() {
           {strokeStyle: '#ff0000'});
     }
   }
-};
+});
 
-stackedTestCase.prototype.testMultiAxisInterpolation = function() {
+it('testMultiAxisInterpolation', function() {
   // Setting 2 axes to test that each axis stacks separately 
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
     stackedGraph: true,
     series: {
-        "Y1": {
-            axis: 'y',
-        },
-        "Y2": {
-            axis: 'y',
-        },
-        "Y3": {
-            axis: 'y2',
-        },
-        "Y4": {
-            axis: 'y2',
-        }
-    }
+      'Y1': {
+        axis: 'y',
+      },
+      'Y2': {
+        axis: 'y',
+      },
+      'Y3': {
+        axis: 'y2',
+      },
+      'Y4': {
+        axis: 'y2',
+      }
+    },
+    labels: ['X', 'Y1', 'Y2', 'Y3', 'Y4']
   };
 
   // The last series is all-NaN, it ought to be treated as all zero
@@ -308,7 +311,7 @@ stackedTestCase.prototype.testMultiAxisInterpolation = function() {
     [109, 1, N, N, N]];
 
   var graph = document.getElementById("graph");
-  g = new Dygraph(graph, data, opts);
+  var g = new Dygraph(graph, data, opts);
 
   var htx = g.hidden_ctx_;
   var attrs = {};
@@ -326,18 +329,20 @@ stackedTestCase.prototype.testMultiAxisInterpolation = function() {
 
   // Check that the expected number of line segments gets drawn
   // for each series. Gaps don't get a line.
-  assertEquals(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
-  assertEquals(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
-  assertEquals(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
+  assert.equal(7, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+  assert.equal(4, CanvasAssertions.numLinesDrawn(htx, '#00ff00'));
+  assert.equal(2, CanvasAssertions.numLinesDrawn(htx, '#0000ff'));
 
   // Check that the selection returns the original (non-stacked)
   // values and skips gaps.
   g.setSelection(1);
-  assertEquals("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
+  assert.equal("101: Y1: 1 Y2: 2 Y3: 2", Util.getLegend());
 
   g.setSelection(8);
-  assertEquals("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
+  assert.equal("108: Y1: 1 Y2: 2 Y3: 9", Util.getLegend());
 
   g.setSelection(9);
-  assertEquals("109: Y1: 1", Util.getLegend());
-};
+  assert.equal("109: Y1: 1", Util.getLegend());
+});
+
+});

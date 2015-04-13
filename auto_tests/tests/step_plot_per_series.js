@@ -8,26 +8,26 @@
  *
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
-var StepTestCase = TestCase("step-plot-per-series");
+describe("step-plot-per-series", function() {
 
-StepTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-StepTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
-StepTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(StepTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
-};
+});
 
-StepTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = StepTestCase.origFunc;
-};
+afterEach(function() {
+  Dygraph.getContext = origFunc;
+});
 
-StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
+it('testMixedModeStepAndLineFilled', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -63,7 +63,7 @@ StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -94,9 +94,9 @@ StepTestCase.prototype.testMixedModeStepAndLineFilled = function() {
     xy2 = g.toDomCoords(x2, y2);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
   }
-};
+});
 
-StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
+it('testMixedModeStepAndLineStackedAndFilled', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -134,7 +134,7 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -249,9 +249,9 @@ StepTestCase.prototype.testMixedModeStepAndLineStackedAndFilled = function() {
     // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
     // But a rectangle is completely tested with three of its four edges.
   }
-};
+});
 
-StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
+it('testMixedModeStepAndLineErrorBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -284,7 +284,7 @@ StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -348,9 +348,9 @@ StepTestCase.prototype.testMixedModeStepAndLineErrorBars = function() {
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
   }
 
-};
+});
 
-StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
+it('testMixedModeStepAndLineCustomBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -382,7 +382,7 @@ StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -447,4 +447,6 @@ StepTestCase.prototype.testMixedModeStepAndLineCustomBars = function() {
     xy2 = g.toDomCoords(data[i + 1][0], data[i + 1][2][1]);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
   }
-};
+});
+
+});

@@ -3,9 +3,9 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var ResizeTestCase = TestCase("resize");
+describe("resize", function() {
 
-ResizeTestCase.data =
+var data =
       "X,Y\n" +
       "1,100\n" +
       "2,200\n" +
@@ -14,14 +14,14 @@ ResizeTestCase.data =
       "5,300\n" +
       "6,100\n";
 
-ResizeTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-ResizeTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-ResizeTestCase.prototype.testResizeMaintainsMouseOperations = function() {
+it('testResizeMaintainsMouseOperations', function() {
   document.body.innerHTML =
       '<div id="graph" style="width: 640px; height: 480px;"></div>' +
       '</div>';
@@ -41,34 +41,34 @@ ResizeTestCase.prototype.testResizeMaintainsMouseOperations = function() {
     DygraphOps.dispatchMouseUp_Point(g, x2 - 1, y);
   }
 
-  g = new Dygraph(graph, ResizeTestCase.data, {highlightCallback: callback});
+  var g = new Dygraph(graph, data, {highlightCallback: callback});
 
   strum(g, 300, 640);
-  assertEquals(6, callbackCount);
+  assert.equal(6, callbackCount);
 
   document.getElementById("graph").style.width = "500px";
   g.resize();
 
   callbackCount = 0;
   strum(g, 300, 500);
-  assertEquals(6, callbackCount);
-};
+  assert.equal(6, callbackCount);
+});
 
 /**
  * Tests that a graph created in a not-displayed div works as expected
  * if the graph options include height and width. Resize not needed.
  */
-ResizeTestCase.prototype.testHiddenDivWithSizedGraph = function() {
+it('testHiddenDivWithSizedGraph', function() {
   var div = document.getElementById("graph");
 
   div.style.display = 'none';
-  var g = new Dygraph(div, ResizeTestCase.data, {width: 400, height: 300});
+  var g = new Dygraph(div, data, {width: 400, height: 300});
   div.style.display = '';
 
   var area = g.getArea();
-  assertTrue(area.w > 0);
-  assertTrue(area.h > 0);
-};
+  assert.isTrue(area.w > 0);
+  assert.isTrue(area.h > 0);
+});
 
 /**
  * Tests that a graph created in a not-displayed div with
@@ -76,7 +76,7 @@ ResizeTestCase.prototype.testHiddenDivWithSizedGraph = function() {
  * expected. The user needs to call resize() on it after displaying
  * it.
  */
-ResizeTestCase.prototype.testHiddenDivWithResize = function() {
+it('testHiddenDivWithResize', function() {
   var div = document.getElementById("graph");
 
   div.style.display = 'none';
@@ -85,18 +85,20 @@ ResizeTestCase.prototype.testHiddenDivWithResize = function() {
 
   // Setting strokeWidth 3 removes any ambiguitiy from the pixel sampling
   // request, below.
-  var g = new Dygraph(div, ResizeTestCase.data, {strokeWidth: 3});
+  var g = new Dygraph(div, data, {strokeWidth: 3});
   div.style.display = '';
 
   g.resize();
-  area = g.getArea();
-  assertTrue(area.w > 0);
-  assertTrue(area.h > 0);
+  var area = g.getArea();
+  assert.isTrue(area.w > 0);
+  assert.isTrue(area.h > 0);
 
   // Regression test: check that graph remains visible after no-op resize.
   g.resize();
   var x = Math.floor(g.toDomXCoord(2));
   var y = Math.floor(g.toDomYCoord(200));
-  assertEquals("Unexpected grid color found at pixel: x: " + x + " y: " + y,
-               [0, 128, 128, 255], Util.samplePixel(g.hidden_, x, y));
-};
+  assert.deepEqual([0, 128, 128, 255], Util.samplePixel(g.hidden_, x, y),
+                   "Unexpected grid color found at pixel: x: " + x + " y: " + y);
+});
+
+});

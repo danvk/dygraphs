@@ -3,16 +3,16 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var rollingAverageTestCase = TestCase("rolling-average");
+describe("rolling-average", function() {
 
-rollingAverageTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-rollingAverageTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-rollingAverageTestCase.prototype.testRollingAverage = function() {
+it('testRollingAverage', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -29,35 +29,35 @@ rollingAverageTestCase.prototype.testRollingAverage = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
-  g.setSelection(1); assertEquals("1: Y: 1", Util.getLegend());
-  g.setSelection(2); assertEquals("2: Y: 2", Util.getLegend());
-  g.setSelection(3); assertEquals("3: Y: 3", Util.getLegend());
-  assertEquals(1, g.rollPeriod());
+  g.setSelection(0); assert.equal("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assert.equal("1: Y: 1", Util.getLegend());
+  g.setSelection(2); assert.equal("2: Y: 2", Util.getLegend());
+  g.setSelection(3); assert.equal("3: Y: 3", Util.getLegend());
+  assert.equal(1, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 2});
-  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
-  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
-  g.setSelection(2); assertEquals("2: Y: 1.5", Util.getLegend());
-  g.setSelection(3); assertEquals("3: Y: 2.5", Util.getLegend());
-  assertEquals(2, g.rollPeriod());
+  g.setSelection(0); assert.equal("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assert.equal("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assert.equal("2: Y: 1.5", Util.getLegend());
+  g.setSelection(3); assert.equal("3: Y: 2.5", Util.getLegend());
+  assert.equal(2, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 3});
-  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
-  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
-  g.setSelection(2); assertEquals("2: Y: 1", Util.getLegend());
-  g.setSelection(3); assertEquals("3: Y: 2", Util.getLegend());
-  assertEquals(3, g.rollPeriod());
+  g.setSelection(0); assert.equal("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assert.equal("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assert.equal("2: Y: 1", Util.getLegend());
+  g.setSelection(3); assert.equal("3: Y: 2", Util.getLegend());
+  assert.equal(3, g.rollPeriod());
 
   g.updateOptions({rollPeriod: 4});
-  g.setSelection(0); assertEquals("0: Y: 0", Util.getLegend());
-  g.setSelection(1); assertEquals("1: Y: 0.5", Util.getLegend());
-  g.setSelection(2); assertEquals("2: Y: 1", Util.getLegend());
-  g.setSelection(3); assertEquals("3: Y: 1.5", Util.getLegend());
-  assertEquals(4, g.rollPeriod());
-};
+  g.setSelection(0); assert.equal("0: Y: 0", Util.getLegend());
+  g.setSelection(1); assert.equal("1: Y: 0.5", Util.getLegend());
+  g.setSelection(2); assert.equal("2: Y: 1", Util.getLegend());
+  g.setSelection(3); assert.equal("3: Y: 1.5", Util.getLegend());
+  assert.equal(4, g.rollPeriod());
+});
 
-rollingAverageTestCase.prototype.testRollBoxDoesntDisapper = function() {
+it('testRollBoxDoesntDisapper', function() {
   var opts = {
     showRoller: true
   };
@@ -72,20 +72,20 @@ rollingAverageTestCase.prototype.testRollBoxDoesntDisapper = function() {
   var g = new Dygraph(graph, data, opts);
 
   var roll_box = graph.getElementsByTagName("input");
-  assertEquals(1, roll_box.length);
-  assertEquals("1", roll_box[0].value);
+  assert.equal(1, roll_box.length);
+  assert.equal("1", roll_box[0].value);
 
   graph.style.width = "500px";
   g.resize();
-  assertEquals(1, roll_box.length);
-  assertEquals("1", roll_box[0].value);
-};
+  assert.equal(1, roll_box.length);
+  assert.equal("1", roll_box[0].value);
+});
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=426
-rollingAverageTestCase.prototype.testRollShortFractions = function() {
+it('testRollShortFractions', function() {
   var opts = {
     customBars: true,
-    labels: ['x', 'A']
+    labels: ['x', 'A', 'B']
   };
   var data1 = [ [1, 10, [1, 20]] ];
   var data2 = [ [1, 10, [1, 20]],
@@ -98,10 +98,10 @@ rollingAverageTestCase.prototype.testRollShortFractions = function() {
   var rolled1 = g.dataHandler_.rollingAverage(data1, 1, g);
   var rolled2 = g.dataHandler_.rollingAverage(data2, 1, g);
 
-  assertEquals(rolled1[0], rolled2[0]);
-};
+  assert.deepEqual(rolled1[0], rolled2[0]);
+});
 
-rollingAverageTestCase.prototype.testRollCustomBars = function() {
+it('testRollCustomBars', function() {
   var opts = {
     customBars: true,
     rollPeriod: 2,
@@ -115,14 +115,14 @@ rollingAverageTestCase.prototype.testRollCustomBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
-  assertEquals([1, 10, [1, 20]], rolled[0]);
-  assertEquals([2, 15, [1, 25]], rolled[1]);
-  assertEquals([3, 25, [1, 35]], rolled[2]);
-  assertEquals([4, 35, [1, 45]], rolled[3]);
-};
+  var rolled = getRolledData(g, data, 1, 2);
+  assert.deepEqual([1, 10, [1, 20]], rolled[0]);
+  assert.deepEqual([2, 15, [1, 25]], rolled[1]);
+  assert.deepEqual([3, 25, [1, 35]], rolled[2]);
+  assert.deepEqual([4, 35, [1, 45]], rolled[3]);
+});
 
-rollingAverageTestCase.prototype.testRollErrorBars = function() {
+it('testRollErrorBars', function() {
   var opts = {
     errorBars: true,
     rollPeriod: 2,
@@ -136,20 +136,20 @@ rollingAverageTestCase.prototype.testRollErrorBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
-  assertEquals([1, 10, [8, 12]], rolled[0]);
+  var rolled = getRolledData(g, data, 1, 2);
+  assert.deepEqual([1, 10, [8, 12]], rolled[0]);
  
   // variance = sqrt( pow(error) * rollPeriod)
   var variance = Math.sqrt(2);
   for (var i=1;i<data.length;i++) {
     var value = data[i][1][0] - 5;
-    assertEquals("unexpected rolled average", value, rolled[i][1]);
-    assertEquals("unexpected rolled min", value - variance, rolled[i][2][0]);
-    assertEquals("unexpected rolled max", value + variance, rolled[i][2][1]);
+    assert.equal(value, rolled[i][1], "unexpected rolled average");
+    assert.equal(value - variance, rolled[i][2][0], "unexpected rolled min");
+    assert.equal(value + variance, rolled[i][2][1], "unexpected rolled max");
   }
-};
+});
 
-rollingAverageTestCase.prototype.testRollFractions = function() {
+it('testRollFractions', function() {
   var opts = {
     fractions: true,
     rollPeriod: 2,
@@ -163,14 +163,14 @@ rollingAverageTestCase.prototype.testRollFractions = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
-  assertEquals([1, 10], rolled[0]);
-  assertEquals([2, 15], rolled[1]);
-  assertEquals([3, 25], rolled[2]);
-  assertEquals([4, 35], rolled[3]);
-};
+  var rolled = getRolledData(g, data, 1, 2);
+  assert.deepEqual([1, 10], rolled[0]);
+  assert.deepEqual([2, 15], rolled[1]);
+  assert.deepEqual([3, 25], rolled[2]);
+  assert.deepEqual([4, 35], rolled[3]);
+});
 
-rollingAverageTestCase.prototype.testRollFractionsBars = function() {
+it('testRollFractionsBars', function() {
   var opts = {
     fractions: true,
     errorBars: true,
@@ -186,7 +186,7 @@ rollingAverageTestCase.prototype.testRollFractionsBars = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
 
   // precalculated rounded values expected
   var values = [10, 15, 25, 35];
@@ -194,13 +194,13 @@ rollingAverageTestCase.prototype.testRollFractionsBars = function() {
   var highs = [29, 31, 44, 56];
 
   for (var i=0;i<data.length;i++) {
-    assertEquals("unexpected rolled average", values[i], Math.round(rolled[i][1]));
-    assertEquals("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
-    assertEquals("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+    assert.equal(values[i], Math.round(rolled[i][1]), "unexpected rolled average");
+    assert.equal(lows[i], Math.round(rolled[i][2][0]), "unexpected rolled min");
+    assert.equal(highs[i], Math.round(rolled[i][2][1]), "unexpected rolled max");
   }
-};
+});
 
-rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
+it('testRollFractionsBarsWilson', function() {
   var opts = {
     fractions: true,
     errorBars: true,
@@ -216,7 +216,7 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  var rolled = this.getRolledData(g, data, 1, 2);
+  var rolled = getRolledData(g, data, 1, 2);
 
   //precalculated rounded values expected
   var values = [10, 15, 25, 35];
@@ -224,13 +224,15 @@ rollingAverageTestCase.prototype.testRollFractionsBarsWilson = function() {
   var highs = [41, 37, 47, 57];
 
   for (var i=0;i<data.length;i++) {
-    assertEquals("unexpected rolled average", values[i], Math.round(rolled[i][1]));
-    assertEquals("unexpected rolled min", lows[i], Math.round(rolled[i][2][0]));
-    assertEquals("unexpected rolled max", highs[i], Math.round(rolled[i][2][1]));
+    assert.equal(values[i], Math.round(rolled[i][1]), "unexpected rolled average");
+    assert.equal(lows[i], Math.round(rolled[i][2][0]), "unexpected rolled min");
+    assert.equal(highs[i], Math.round(rolled[i][2][1]), "unexpected rolled max");
   }
-};
+});
 
-rollingAverageTestCase.prototype.getRolledData = function(g, data, seriesIdx, rollPeriod){
+var getRolledData = function(g, data, seriesIdx, rollPeriod){
   var options = g.attributes_;
   return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options);
 };
+
+});

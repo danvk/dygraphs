@@ -4,13 +4,13 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-var MultipleAxesTestCase = TestCase("multiple-axes-tests");
+describe("multiple-axes-tests", function() {
 
-MultipleAxesTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-MultipleAxesTestCase.getData = function() {
+var getData = function() {
   var data = [];
   for (var i = 1; i <= 100; i++) {
     var m = "01", d = i;
@@ -28,8 +28,8 @@ MultipleAxesTestCase.getData = function() {
   return data;
 };
 
-MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
-  var data = MultipleAxesTestCase.getData();
+it('testBasicMultipleAxes', function() {
+  var data = getData();
 
   var g = new Dygraph(
     document.getElementById("graph"),
@@ -55,11 +55,11 @@ MultipleAxesTestCase.prototype.testBasicMultipleAxes = function() {
     }
   );
 
-  assertEquals(["0","20","40","60","80","100"], Util.getYLabels("1"));
-  assertEquals(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
-};
+  assert.deepEqual(["0","20","40","60","80","100"], Util.getYLabels("1"));
+  assert.deepEqual(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
+});
 
-MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
+it('testTwoAxisVisibility', function() {
   var data = [];
   data.push([0,0,0]);
   data.push([1,2,2000]);
@@ -83,25 +83,25 @@ MultipleAxesTestCase.prototype.testTwoAxisVisibility = function() {
     }
   );
 
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
 
   g.setVisibility(0, false);
 
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
 
   g.setVisibility(0, true);
   g.setVisibility(1, false);
 
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
-  assertTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
-};
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+});
 
 // verifies that all four chart labels (title, x-, y-, y2-axis label) can be
 // used simultaneously.
-MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
-  var data = MultipleAxesTestCase.getData();
+it('testMultiChartLabels', function() {
+  var data = getData();
 
   var el = document.getElementById("graph");
   el.style.border = '1px solid black';
@@ -130,22 +130,22 @@ MultipleAxesTestCase.prototype.testMultiChartLabels = function() {
     }
   );
 
-  assertEquals(["Chart title", "x-axis", "y-axis", "y2-axis"],
+  assert.deepEqual(["Chart title", "x-axis", "y-axis", "y2-axis"],
                Util.getClassTexts("dygraph-label"));
-  assertEquals(["Chart title"], Util.getClassTexts("dygraph-title"));
-  assertEquals(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
-  assertEquals(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
-  assertEquals(["y2-axis"], Util.getClassTexts("dygraph-y2label"));
+  assert.deepEqual(["Chart title"], Util.getClassTexts("dygraph-title"));
+  assert.deepEqual(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
+  assert.deepEqual(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
+  assert.deepEqual(["y2-axis"], Util.getClassTexts("dygraph-y2label"));
 
   // TODO(danvk): check relative positioning here: title on top, y left of y2.
-};
+});
 
 // Check that a chart w/o a secondary y-axis will not get a y2label, even if one
 // is specified.
-MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
+it('testNoY2LabelWithoutSecondaryAxis', function() {
   var g = new Dygraph(
     document.getElementById("graph"),
-    MultipleAxesTestCase.getData(),
+    getData(),
     {
       labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
       width: 640,
@@ -157,18 +157,18 @@ MultipleAxesTestCase.prototype.testNoY2LabelWithoutSecondaryAxis = function() {
     }
   );
 
-  assertEquals(["Chart title", "x-axis", "y-axis"],
+  assert.deepEqual(["Chart title", "x-axis", "y-axis"],
                Util.getClassTexts("dygraph-label"));
-  assertEquals(["Chart title"], Util.getClassTexts("dygraph-title"));
-  assertEquals(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
-  assertEquals(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
-  assertEquals([], Util.getClassTexts("dygraph-y2label"));
-};
+  assert.deepEqual(["Chart title"], Util.getClassTexts("dygraph-title"));
+  assert.deepEqual(["x-axis"], Util.getClassTexts("dygraph-xlabel"));
+  assert.deepEqual(["y-axis"], Util.getClassTexts("dygraph-ylabel"));
+  assert.deepEqual([], Util.getClassTexts("dygraph-y2label"));
+});
 
-MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
-  var data = MultipleAxesTestCase.getData();
+it('testValueRangePerAxisOptions', function() {
+  var data = getData();
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {
@@ -195,8 +195,8 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
       y2label: 'Secondary y-axis',
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
-  assertEquals(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
+  assert.deepEqual(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
+  assert.deepEqual(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
   
   g.updateOptions(
     {
@@ -210,12 +210,12 @@ MultipleAxesTestCase.prototype.testValueRangePerAxisOptions = function() {
      }
     }
   );
-  assertEquals(["40", "45", "50", "55", "60", "65", "70", "75"], Util.getYLabels("1"));
-  assertEquals(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
-};
+  assert.deepEqual(["40", "45", "50", "55", "60", "65", "70", "75"], Util.getYLabels("1"));
+  assert.deepEqual(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
+});
 
-MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
-  var data = MultipleAxesTestCase.getData();
+it('testDrawPointCallback', function() {
+  var data = getData();
 
   var results = { y : {}, y2 : {}};
   var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
@@ -228,7 +228,7 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
     Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {
@@ -252,19 +252,19 @@ MultipleAxesTestCase.prototype.testDrawPointCallback = function() {
     }
   );
 
-  assertEquals(1, results.y["Y1"]);
-  assertEquals(1, results.y["Y2"]);
-  assertEquals(1, results.y2["Y3"]);
-  assertEquals(1, results.y2["Y4"]);
-};
+  assert.equal(1, results.y["Y1"]);
+  assert.equal(1, results.y["Y2"]);
+  assert.equal(1, results.y2["Y3"]);
+  assert.equal(1, results.y2["Y4"]);
+});
 
 // Test for http://code.google.com/p/dygraphs/issues/detail?id=436
-MultipleAxesTestCase.prototype.testRemovingSecondAxis = function() {
-  var data = MultipleAxesTestCase.getData();
+it('testRemovingSecondAxis', function() {
+  var data = getData();
 
   var results = { y : {}, y2 : {}};
 
-  g = new Dygraph(
+  var g = new Dygraph(
     document.getElementById("graph"),
     data,
     {
@@ -280,4 +280,6 @@ MultipleAxesTestCase.prototype.testRemovingSecondAxis = function() {
   );
 
  g.updateOptions({ series : { Y4 : { axis : 'y' } } });
-};
+});
+
+});

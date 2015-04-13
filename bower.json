@@ -11,7 +11,6 @@
     "compile-with-closure.sh",
     "dashed-canvas.js",
     "data.js",
-    "datahandler",
     "docs",
     "experimental",
     "file-size-stats.sh",
@@ -37,6 +36,6 @@
     "screenshot.png",
     "test.sh",
     "tests",
-    "thumbnail.png",
+    "thumbnail.png"
   ]
 }
