@@ -51,21 +51,27 @@ Util.getClassTexts = function(css_class, parent) {
   return texts;
 };
 
+// Convert &nbsp; to a normal space
+Util.nbspToSpace = function(str) {
+  var re = new RegExp(String.fromCharCode(160), 'g');
+  return str.replace(re, ' ');
+};
+
 Util.getLegend = function(parent) {
   parent = parent || document;
   var legend = parent.getElementsByClassName("dygraph-legend")[0];
-  var re = new RegExp(String.fromCharCode(160), 'g');
-  return legend.textContent.replace(re, ' ');
+  return Util.nbspToSpace(legend.textContent);
 };
 
 /**
  * Assert that all elements have a certain style property.
  */
 Util.assertStyleOfChildren = function(selector, property, expectedValue) {
-  assertTrue(selector.length > 0);
-  $.each(selector, function(idx, child) {
-    assertEquals(expectedValue,  $(child).css(property));
-  });
+  assert.isTrue(selector.length > 0);
+  for (var idx = 0; idx < selector.length; idx++) {
+    var child = selector[idx];
+    assert.equal(expectedValue, window.getComputedStyle(child)[property]);
+  }
 };
 
 
@@ -121,7 +127,7 @@ Util.overrideXMLHttpRequest = function(data) {
     this.responseText = data;
   };
   FakeXMLHttpRequest.restore = function() {
-    XMLHttpRequest = originalXMLHttpRequest;
+    window.XMLHttpRequest = originalXMLHttpRequest;
   };
   FakeXMLHttpRequest.respond = function() {
     for (var i = 0; i < requests.length; i++) {
@@ -129,7 +135,7 @@ Util.overrideXMLHttpRequest = function(data) {
     }
     FakeXMLHttpRequest.restore();
   };
-  XMLHttpRequest = FakeXMLHttpRequest;
+  window.XMLHttpRequest = FakeXMLHttpRequest;
   return FakeXMLHttpRequest;
 };
 
@@ -140,4 +146,25 @@ Util.overrideXMLHttpRequest = function(data) {
  */
 Util.formatDate = function(dateMillis) {
   return Dygraph.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
+};
+
+/**
+ * Capture console.{log,warn,error} statements into obj.
+ * obj will look like {log:[], warn:[], error:[]}
+ * This returns a function which will restore the original console.
+ */
+Util.captureConsole = function(obj) {
+  obj.log = [];
+  obj.warn = [];
+  obj.error = [];
+  var orig = [console.log, console.warn, console.error];
+  console.log = function(text) { obj.log.push(text); };
+  console.warn = function(text) { obj.warn.push(text); };
+  console.error = function(text) { obj.error.push(text); };
+
+  return function() {
+    console.log = orig[0];
+    console.warn = orig[1];
+    console.error = orig[2];
+  };
 };

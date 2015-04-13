@@ -3,14 +3,14 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var MultiCsvTestCase = TestCase("multi-csv");
+describe("multi-csv", function() {
 
-MultiCsvTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-MultiCsvTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 function getXLabels() {
   var x_labels = document.getElementsByClassName("dygraph-axis-label-x");
@@ -21,7 +21,7 @@ function getXLabels() {
   return ary;
 }
 
-MultiCsvTestCase.prototype.testOneCSV = function() {
+it('testOneCSV', function() {
   var opts = {
     width: 480,
     height: 320
@@ -36,10 +36,10 @@ MultiCsvTestCase.prototype.testOneCSV = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['0', '1', '2'], getXLabels());
-};
+  assert.deepEqual(['0', '1', '2'], getXLabels());
+});
 
-MultiCsvTestCase.prototype.testTwoCSV = function() {
+it('testTwoCSV', function() {
   var opts = {
     width: 480,
     height: 320
@@ -54,9 +54,11 @@ MultiCsvTestCase.prototype.testTwoCSV = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['0', '1', '2'], getXLabels());
+  assert.deepEqual(['0', '1', '2'], getXLabels());
 
   g.updateOptions({file: data});
 
-  assertEquals(['0', '1', '2'], getXLabels());
-};
+  assert.deepEqual(['0', '1', '2'], getXLabels());
+});
+
+});

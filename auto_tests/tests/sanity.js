@@ -24,29 +24,30 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-var DEAD_SIMPLE_DATA = [[ 10, 2100 ]];
-var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
-var SanityTestCase = TestCase("dygraphs-sanity");
+describe("dygraphs-sanity", function() {
 
-SanityTestCase.prototype.setUp = function() {
+var DEAD_SIMPLE_DATA = 'X,Y\n10,2100';
+var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
+
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
 /**
  * The sanity test of sanity tests.
  */
-SanityTestCase.prototype.testTrue = function() {
-  assertTrue(true);
-};
+it('testTrue', function() {
+  assert.isTrue(true);
+});
 
 /**
  * Sanity test that ensures the graph element exists.
  */
-SanityTestCase.prototype.testGraphExists = function() {
+it('testGraphExists', function() {
   var graph = document.getElementById("graph");
-  assertNotNull(graph);
-};
+  assert.isNotNull(graph);
+});
 
 // TODO(konigsberg): Move the following tests to a new package that
 // tests all kinds of toDomCoords, toDataCoords, toPercent, et cetera.
@@ -55,34 +56,34 @@ SanityTestCase.prototype.testGraphExists = function() {
  * A sanity test of sorts, by ensuring the dygraph is created, and
  * isn't just some piece of junk object.
  */
-SanityTestCase.prototype.testToString = function() {
+it('testToString', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, DEAD_SIMPLE_DATA, {});
-  assertNotNull(g);
-  assertEquals("[Dygraph graph]", g.toString());
-};
+  assert.isNotNull(g);
+  assert.equal("[Dygraph graph]", g.toString());
+});
 
 /**
  * Test that when no valueRange is specified, the y axis range is
  * adjusted by 10% on top.
  */
-SanityTestCase.prototype.testYAxisRange_default = function() {
+it('testYAxisRange_default', function() {
   var graph = document.getElementById("graph");
-  assertEquals(0, graph.style.length);
+  assert.equal(0, graph.style.length);
   var g = new Dygraph(graph, ZERO_TO_FIFTY, {});
-  assertEquals([0, 55], g.yAxisRange(0));
-};
+  assert.deepEqual([0, 55], g.yAxisRange(0));
+});
 
 /**
  * Test that valueRange matches the y-axis range specifically.
  */
-SanityTestCase.prototype.testYAxisRange_custom = function() {
+it('testYAxisRange_custom', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, { valueRange: [0,50] });
-  assertEquals([0, 50], g.yAxisRange(0));
+  assert.deepEqual([0, 50], g.yAxisRange(0));
   g.updateOptions({valueRange: null, axes: {y: {valueRange: [10, 40]}}});
-  assertEquals([10, 40], g.yAxisRange(0));
-};
+  assert.deepEqual([10, 40], g.yAxisRange(0));
+});
 
 /**
  * Test that valueRange matches the y-axis range specifically.
@@ -91,48 +92,50 @@ SanityTestCase.prototype.testYAxisRange_custom = function() {
  * axis label and tick marks.
  * TODO(konigsberg): change yAxisLabelWidth to 0 (or 20) and try again.
  */
-SanityTestCase.prototype.testToDomYCoord = function() {
+it('testToDomYCoord', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, ZERO_TO_FIFTY, { height: 70, valueRange: [0,50] });
 
-  assertEquals(50, g.toDomYCoord(0));
-  assertEquals(0, g.toDomYCoord(50));
+  assert.equal(50, g.toDomYCoord(0));
+  assert.equal(0, g.toDomYCoord(50));
 
   for (var x = 0; x <= 50; x++) {
-    assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    assert.closeTo(50 - x, g.toDomYCoord(x), 0.00001);
   }
   g.updateOptions({valueRange: null, axes: {y: {valueRange: [0, 50]}}});
 
-  assertEquals(50, g.toDomYCoord(0));
-  assertEquals(0, g.toDomYCoord(50));
+  assert.equal(50, g.toDomYCoord(0));
+  assert.equal(0, g.toDomYCoord(50));
 
   for (var x = 0; x <= 50; x++) {
-    assertEqualsDelta(50 - x, g.toDomYCoord(x), 0.00001);
+    assert.closeTo(50 - x, g.toDomYCoord(x), 0.00001);
   }
-};
+});
 
 /**
  * Test that the two-argument form of the constructor (no options) works.
  */
-SanityTestCase.prototype.testTwoArgumentConstructor = function() {
+it('testTwoArgumentConstructor', function() {
   var graph = document.getElementById("graph");
   new Dygraph(graph, ZERO_TO_FIFTY);
-};
+});
 
 // Here is the first of a series of tests that just ensure the graph is drawn
 // without exception.
 //TODO(konigsberg): Move to its own test case.
-SanityTestCase.prototype.testFillStack1 = function() {
+it('testFillStack1', function() {
   var graph = document.getElementById("graph");
   new Dygraph(graph, ZERO_TO_FIFTY, { stackedGraph: true });
-}
+});
 
-SanityTestCase.prototype.testFillStack2 = function() {
+it('testFillStack2', function() {
   var graph = document.getElementById("graph");
   new Dygraph(graph, ZERO_TO_FIFTY, { stackedGraph: true, fillGraph: true });
-}
+});
 
-SanityTestCase.prototype.testFillStack3 = function() {
+it('testFillStack3', function() {
   var graph = document.getElementById("graph");
   new Dygraph(graph, ZERO_TO_FIFTY, { fillGraph: true });
-}
+});
+
+});

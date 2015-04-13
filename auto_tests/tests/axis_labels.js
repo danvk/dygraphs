@@ -3,25 +3,25 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var AxisLabelsTestCase = TestCase("axis-labels");
+describe("axis-labels", function() {
 
-AxisLabelsTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-AxisLabelsTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-AxisLabelsTestCase.simpleData =
+var simpleData =
     "X,Y,Y2\n" +
     "0,-1,.5\n" +
     "1,0,.7\n" +
     "2,1,.4\n" +
     "3,0,.98\n";
 
-AxisLabelsTestCase.prototype.kCloseFloat = 1.0e-10;
+var kCloseFloat = 1.0e-10;
 
-AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
+it('testMinusOneToOne', function() {
   var opts = {
     width: 480,
     height: 320
@@ -37,28 +37,28 @@ AxisLabelsTestCase.prototype.testMinusOneToOne = function() {
   var g = new Dygraph(graph, data, opts);
 
   // TODO(danvk): would ['-1.0','-0.5','0.0','0.5','1.0'] be better?
-  assertEquals(['-1','-0.5','0','0.5','1'], Util.getYLabels());
+  assert.deepEqual(['-1','-0.5','0','0.5','1'], Util.getYLabels());
 
   // Go up to 2
   data += "4,2\n";
   g.updateOptions({file: data});
-  assertEquals(['-1','-0.5','0','0.5','1','1.5','2'], Util.getYLabels());
+  assert.deepEqual(['-1','-0.5','0','0.5','1','1.5','2'], Util.getYLabels());
 
   // Now 10
   data += "5,10\n";
   g.updateOptions({file: data});
-  assertEquals(['-2','0','2','4','6','8','10'], Util.getYLabels());
+  assert.deepEqual(['-2','0','2','4','6','8','10'], Util.getYLabels());
 
   // Now 100
   data += "6,100\n";
   g.updateOptions({file: data});
-  assertEquals(['0','20','40','60','80','100'], Util.getYLabels());
+  assert.deepEqual(['0','20','40','60','80','100'], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals('0: Y: -1', Util.getLegend());
-};
+  assert.equal('0: Y: -1', Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
+it('testSmallRangeNearZero', function() {
   var opts = {
     drawAxesAtZero: true,
     width: 480,
@@ -74,24 +74,24 @@ AxisLabelsTestCase.prototype.testSmallRangeNearZero = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-  assertEqualsDelta([-0.1,-0.05,0,0.05],
-                    Util.makeNumbers(Util.getYLabels()), this.kCloseFloat);
+  assertDeepCloseTo([-0.1,-0.05,0,0.05],
+                    Util.makeNumbers(Util.getYLabels()), kCloseFloat);
 
   opts.valueRange = [-0.05, 0.05];
   g.updateOptions(opts);
-  assertEquals([-0.04,-0.02,0,0.02,0.04],
-               Util.makeNumbers(Util.getYLabels()));
+  assert.deepEqual([-0.04,-0.02,0,0.02,0.04],
+                   Util.makeNumbers(Util.getYLabels()));
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assertEquals([-0.01,-0.005,0,0.005],
-               Util.makeNumbers(Util.getYLabels()));
+  assert.deepEqual([-0.01,-0.005,0,0.005],
+                   Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
-  assertEquals('1: Y: 0', Util.getLegend());
-};
+  assert.equal('1: Y: 0', Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
+it('testSmallRangeAwayFromZero', function() {
   var opts = {
     width: 480,
     height: 320
@@ -106,26 +106,27 @@ AxisLabelsTestCase.prototype.testSmallRangeAwayFromZero = function() {
 
   opts.valueRange = [9.9, 10.1];
   var g = new Dygraph(graph, data, opts);
-  assertEquals(["9.9","9.92","9.94","9.96","9.98","10","10.02","10.04","10.06","10.08"], Util.getYLabels());
+  assert.deepEqual(["9.9","9.92","9.94","9.96","9.98","10","10.02","10.04","10.06","10.08"], Util.getYLabels());
 
   opts.valueRange = [9.99, 10.01];
   g.updateOptions(opts);
   // TODO(danvk): this is bad
-  assertEquals(["9.99","9.99","9.99","10","10","10","10","10","10.01","10.01"], Util.getYLabels());
+  assert.deepEqual(["9.99","9.99","9.99","10","10","10","10","10","10.01","10.01"], Util.getYLabels());
 
   opts.valueRange = [9.999, 10.001];
   g.updateOptions(opts);
   // TODO(danvk): this is even worse!
-  assertEquals(["10","10","10","10"], Util.getYLabels());
+  assert.deepEqual(["10","10","10","10"], Util.getYLabels());
 
   g.setSelection(1);
-  assertEquals('1: Y: 0', Util.getLegend());
-};
+  assert.equal('1: Y: 0', Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
+it('testXAxisTimeLabelFormatter', function() {
   var opts = {
     width: 480,
-    height: 320
+    height: 320,
+    labels: ['X', 'Y1']
   };
   var data = [[5.0,0],[5.1,1],[5.2,2],[5.3,3],[5.4,4],[5.5,5],[5.6,6],[5.7,7],[5.8,8],[5.9,9]];
   var graph = document.getElementById("graph");
@@ -148,33 +149,33 @@ AxisLabelsTestCase.prototype.testXAxisTimeLabelFormatter = function() {
     }
   });
 
-  assertEquals(["00:05:00","00:05:12","00:05:24","00:05:36","00:05:48"], Util.getXLabels());
+  assert.deepEqual(["00:05:00","00:05:12","00:05:24","00:05:36","00:05:48"], Util.getXLabels());
 
   // The legend does not use the axisLabelFormatter:
   g.setSelection(1);
-  assertEquals('5.1: Y1: 1', Util.getLegend());
-};
+  assert.equal('5.1: Y1: 1', Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
+it('testAxisLabelFormatter', function() {
   var opts = {
     width: 480,
     height: 320,
     axes : {
       x : {
         axisLabelFormatter : function(x, granularity, opts, dg) {
-          assertEquals('number', typeof(x));
-          assertEquals('number', typeof(granularity));
-          assertEquals('function', typeof(opts));
-          assertEquals('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(x));
+          assert.equal('number', typeof(granularity));
+          assert.equal('function', typeof(opts));
+          assert.equal('[Dygraph graph]', dg.toString());
           return 'x' + x;
         }
       },
       y : {
         axisLabelFormatter : function(y, granularity, opts, dg) {
-          assertEquals('number', typeof(y));
-          assertEquals('number', typeof(granularity));
-          assertEquals('function', typeof(opts));
-          assertEquals('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(y));
+          assert.equal('number', typeof(granularity));
+          assert.equal('function', typeof(opts));
+          assert.equal('[Dygraph graph]', dg.toString());
           return 'y' + y;
         }
       }
@@ -188,14 +189,14 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatter = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
+  assert.deepEqual(['x0','x2','x4','x6','x8'], Util.getXLabels());
+  assert.deepEqual(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(2);
-  assertEquals("2: y: 4", Util.getLegend());
-};
+  assert.equal("2: y: 4", Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
+it('testDateAxisLabelFormatter', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -203,19 +204,19 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
       x : {
         pixelsPerLabel: 60,
         axisLabelFormatter : function(x, granularity, opts, dg) {
-          assertTrue(Dygraph.isDateLike(x));
-          assertEquals('number', typeof(granularity));
-          assertEquals('function', typeof(opts));
-          assertEquals('[Dygraph graph]', dg.toString());
+          assert.isTrue(Dygraph.isDateLike(x));
+          assert.equal('number', typeof(granularity));
+          assert.equal('function', typeof(opts));
+          assert.equal('[Dygraph graph]', dg.toString());
           return 'x' + Util.formatDate(x);
         }
       },
       y : {
         axisLabelFormatter : function(y, granularity, opts, dg) {
-          assertEquals('number', typeof(y));
-          assertEquals('number', typeof(granularity));
-          assertEquals('function', typeof(opts));
-          assertEquals('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(y));
+          assert.equal('number', typeof(granularity));
+          assert.equal('function', typeof(opts));
+          assert.equal('[Dygraph graph]', dg.toString());
           return 'y' + y;
         }
       }
@@ -229,42 +230,42 @@ AxisLabelsTestCase.prototype.testDateAxisLabelFormatter = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(["x2011/01/02","x2011/01/04","x2011/01/06","x2011/01/08"], Util.getXLabels());
-  assertEquals(["y5","y10","y15"], Util.getYLabels());
+  assert.deepEqual(["x2011/01/02","x2011/01/04","x2011/01/06","x2011/01/08"], Util.getXLabels());
+  assert.deepEqual(["y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(0);
-  assertEquals("2011/01/01: y: 2", Util.getLegend());
-};
+  assert.equal("2011/01/01: y: 2", Util.getLegend());
+});
 
 // This test verifies that when a valueFormatter is set (but not an
 // axisLabelFormatter), then the valueFormatter is used to format the axis
 // labels.
-AxisLabelsTestCase.prototype.testValueFormatter = function () {
+it('testValueFormatter', function() {
   var opts = {
     width: 480,
     height: 320,
     axes: {
       x: {
         valueFormatter: function(x, opts, series_name, dg, row, col) {
-          assertEquals('number', typeof(x));
-          assertEquals('function', typeof(opts));
-          assertEquals('string', typeof(series_name));
-          assertEquals('[Dygraph graph]', dg.toString());
-          assertEquals('number', typeof(row));
-          assertEquals('number', typeof(col));
-          assertEquals(dg, this);
+          assert.equal('number', typeof(x));
+          assert.equal('function', typeof(opts));
+          assert.equal('string', typeof(series_name));
+          assert.equal('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(row));
+          assert.equal('number', typeof(col));
+          assert.equal(dg, this);
           return 'x' + x;
         }
       },
       y: {
         valueFormatter: function(y, opts, series_name, dg, row, col) {
-          assertEquals('number', typeof(y));
-          assertEquals('function', typeof(opts));
-          assertEquals('string', typeof(series_name));
-          assertEquals('[Dygraph graph]', dg.toString());
-          assertEquals('number', typeof(row));
-          assertEquals('number', typeof(col));
-          assertEquals(dg, this);
+          assert.equal('number', typeof(y));
+          assert.equal('function', typeof(opts));
+          assert.equal('string', typeof(series_name));
+          assert.equal('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(row));
+          assert.equal('number', typeof(col));
+          assert.equal(dg, this);
           return 'y' + y;
         }
       }
@@ -279,16 +280,16 @@ AxisLabelsTestCase.prototype.testValueFormatter = function () {
   var g = new Dygraph(graph, data, opts);
 
   // the valueFormatter options do not affect the ticks.
-  assertEquals(['0','2','4','6','8'], Util.getXLabels());
-  assertEquals(["0","5","10","15"],
+  assert.deepEqual(['0','2','4','6','8'], Util.getXLabels());
+  assert.deepEqual(["0","5","10","15"],
                Util.getYLabels());
 
   // they do affect the legend, however.
   g.setSelection(2);
-  assertEquals("x2: y: y4", Util.getLegend());
-};
+  assert.equal("x2: y: y4", Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
+it('testDateValueFormatter', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -296,25 +297,25 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
       x : {
         pixelsPerLabel: 60,
         valueFormatter: function(x, opts, series_name, dg, row, col) {
-          assertEquals('number', typeof(x));
-          assertEquals('function', typeof(opts));
-          assertEquals('string', typeof(series_name));
-          assertEquals('[Dygraph graph]', dg.toString());
-          assertEquals('number', typeof(row));
-          assertEquals('number', typeof(col));
-          assertEquals(dg, this);
+          assert.equal('number', typeof(x));
+          assert.equal('function', typeof(opts));
+          assert.equal('string', typeof(series_name));
+          assert.equal('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(row));
+          assert.equal('number', typeof(col));
+          assert.equal(dg, this);
           return 'x' + Util.formatDate(x);
         }
       },
       y : {
         valueFormatter: function(y, opts, series_name, dg, row, col) {
-          assertEquals('number', typeof(y));
-          assertEquals('function', typeof(opts));
-          assertEquals('string', typeof(series_name));
-          assertEquals('[Dygraph graph]', dg.toString());
-          assertEquals('number', typeof(row));
-          assertEquals('number', typeof(col));
-          assertEquals(dg, this);
+          assert.equal('number', typeof(y));
+          assert.equal('function', typeof(opts));
+          assert.equal('string', typeof(series_name));
+          assert.equal('[Dygraph graph]', dg.toString());
+          assert.equal('number', typeof(row));
+          assert.equal('number', typeof(col));
+          assert.equal(dg, this);
           return 'y' + y;
         }
       }
@@ -330,38 +331,38 @@ AxisLabelsTestCase.prototype.testDateValueFormatter = function () {
   var g = new Dygraph(graph, data, opts);
 
   // valueFormatters do not affect ticks.
-  assertEquals(["02 Jan","04 Jan","06 Jan","08 Jan"], Util.getXLabels());
-  assertEquals(["5","10","15"], Util.getYLabels());
+  assert.deepEqual(["02 Jan","04 Jan","06 Jan","08 Jan"], Util.getXLabels());
+  assert.deepEqual(["5","10","15"], Util.getYLabels());
 
   // the valueFormatter options also affect the legend.
   g.setSelection(2);
-  assertEquals('x2011/01/03: y: y6', Util.getLegend());
-};
+  assert.equal('x2011/01/03: y: y6', Util.getLegend());
+});
 
 // This test verifies that when both a valueFormatter and an axisLabelFormatter
 // are specified, the axisLabelFormatter takes precedence.
-AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
+it('testAxisLabelFormatterPrecedence', function() {
   var opts = {
     width: 480,
     height: 320,
     axes : {
       x : {
         valueFormatter: function(x) {
-          assertEquals('[Dygraph graph]', this.toString());
+          assert.equal('[Dygraph graph]', this.toString());
           return 'xvf' + x;
         },
         axisLabelFormatter: function(x, granularity) {
-          assertEquals('[Dygraph graph]', this.toString());
+          assert.equal('[Dygraph graph]', this.toString());
           return 'x' + x;
         }
       },
       y : {
         valueFormatter: function(y) {
-          assertEquals('[Dygraph graph]', this.toString());
+          assert.equal('[Dygraph graph]', this.toString());
           return 'yvf' + y;
         },
         axisLabelFormatter: function(y) {
-          assertEquals('[Dygraph graph]', this.toString());
+          assert.equal('[Dygraph graph]', this.toString());
           return 'y' + y;
         }
       }
@@ -375,16 +376,16 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterPrecedence = function () {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['x0','x2','x4','x6','x8'], Util.getXLabels());
-  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
+  assert.deepEqual(['x0','x2','x4','x6','x8'], Util.getXLabels());
+  assert.deepEqual(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y: yvf18", Util.getLegend());
-};
+  assert.equal("xvf9: y: yvf18", Util.getLegend());
+});
 
 // This is the same as the previous test, except that options are added
 // one-by-one.
-AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
+it('testAxisLabelFormatterIncremental', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -433,24 +434,24 @@ AxisLabelsTestCase.prototype.testAxisLabelFormatterIncremental = function () {
     }
   });
 
-  assertEquals(["x0","x2","x4","x6","x8"], Util.getXLabels());
-  assertEquals(["y0","y5","y10","y15"], Util.getYLabels());
+  assert.deepEqual(["x0","x2","x4","x6","x8"], Util.getXLabels());
+  assert.deepEqual(["y0","y5","y10","y15"], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("xvf9: y: yvf18", Util.getLegend());
-};
+  assert.equal("xvf9: y: yvf18", Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
+it('testGlobalFormatters', function() {
   var opts = {
     width: 480,
     height: 320,
     labels: ['x', 'y'],
     valueFormatter: function(x) {
-      assertEquals('[Dygraph graph]', this);
+      assert.equal('[Dygraph graph]', this);
       return 'vf' + x;
     },
     axisLabelFormatter: function(x) {
-      assertEquals('[Dygraph graph]', this);
+      assert.equal('[Dygraph graph]', this);
       return 'alf' + x;
     }
   };
@@ -461,14 +462,14 @@ AxisLabelsTestCase.prototype.testGlobalFormatters = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals(['alf0','alf2','alf4','alf6','alf8'], Util.getXLabels());
-  assertEquals(["alf0","alf5","alf10","alf15"], Util.getYLabels());
+  assert.deepEqual(['alf0','alf2','alf4','alf6','alf8'], Util.getXLabels());
+  assert.deepEqual(["alf0","alf5","alf10","alf15"], Util.getYLabels());
 
   g.setSelection(9);
-  assertEquals("vf9: y: vf18", Util.getLegend());
-};
+  assert.equal("vf9: y: vf18", Util.getLegend());
+});
 
-AxisLabelsTestCase.prototype.testValueFormatterParameters = function() {
+it('testValueFormatterParameters', function() {
   var calls = [];
   // change any functions in list to 'fn' -- functions can't be asserted.
   var killFunctions = function(list) {
@@ -507,9 +508,9 @@ AxisLabelsTestCase.prototype.testValueFormatterParameters = function() {
   var graph = document.getElementById('graph');
   var g = new Dygraph(graph, data, opts);
 
-  assertEquals([], calls);
+  assert.deepEqual([], calls);
   g.setSelection(0);
-  assertEquals([
+  assert.deepEqual([
     // num or millis, opts, series, dygraph, row, col
     [ 'x', g, 0, 'fn',  'x', g, 0, 0],
     [ 'y', g, 1, 'fn', 'y1', g, 0, 1],
@@ -518,14 +519,14 @@ AxisLabelsTestCase.prototype.testValueFormatterParameters = function() {
 
   calls = [];
   g.setSelection(1);
-  assertEquals([
+  assert.deepEqual([
     [ 'x', g, 1, 'fn',  'x', g, 1, 0],
     [ 'y', g, 3, 'fn', 'y1', g, 1, 1],
     ['y2', g, 4, 'fn', 'y2', g, 1, 2]
   ], calls);
-};
+});
 
-AxisLabelsTestCase.prototype.testSeriesOrder = function() {
+it('testSeriesOrder', function() {
   var opts = {
     width: 480,
     height: 320
@@ -541,18 +542,18 @@ AxisLabelsTestCase.prototype.testSeriesOrder = function() {
   var g = new Dygraph(graph, data, opts);
 
   g.setSelection(2);
-  assertEquals('2: 00: 103 01: 203 10: 303 11: 403', Util.getLegend());
+  assert.equal('2: 00: 103 01: 203 10: 303 11: 403', Util.getLegend());
 
   // Sanity checks for indexFromSetName
-  assertEquals(0, g.indexFromSetName("x"));
-  assertEquals(1, g.indexFromSetName("00"));
-  assertEquals(null, g.indexFromSetName("abcde"));
+  assert.equal(0, g.indexFromSetName("x"));
+  assert.equal(1, g.indexFromSetName("00"));
+  assert.equal(null, g.indexFromSetName("abcde"));
 
   // Verify that we get the label list back in the right order
-  assertEquals(["x", "00", "01", "10", "11"], g.getLabels());
-};
+  assert.deepEqual(["x", "00", "01", "10", "11"], g.getLabels());
+});
 
-AxisLabelsTestCase.prototype.testLabelKMB = function() {
+it('testLabelKMB', function() {
   var data = [];
   data.push([0,0]);
   data.push([1,2000]);
@@ -571,10 +572,10 @@ AxisLabelsTestCase.prototype.testLabelKMB = function() {
     }
   );
 
-  assertEquals(["0", "500", "1K", "1.5K", "2K"], Util.getYLabels());
-};
+  assert.deepEqual(["0", "500", "1K", "1.5K", "2K"], Util.getYLabels());
+});
 
-AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
+it('testLabelKMG2', function() {
   var data = [];
   data.push([0,0]);
   data.push([1,2000]);
@@ -593,14 +594,13 @@ AxisLabelsTestCase.prototype.testLabelKMG2 = function() {
     }
   );
 
-  assertEquals(
-      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
-      Util.getYLabels());
-};
+  assert.deepEqual(["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+                   Util.getYLabels());
+});
 
 // Same as testLabelKMG2 but specifies the option at the
 // top of the option dictionary.
-AxisLabelsTestCase.prototype.testLabelKMG2_top = function() {
+it('testLabelKMG2_top', function() {
   var data = [];
   data.push([0,0]);
   data.push([1,2000]);
@@ -615,88 +615,145 @@ AxisLabelsTestCase.prototype.testLabelKMG2_top = function() {
     }
   );
 
-  assertEquals(
+  assert.deepEqual(
       ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
       Util.getYLabels());
-};
+});
+
+it('testSmallLabelKMB', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1e-6]);
+  data.push([2, 2e-6]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMB: true
+        }
+      }
+    }
+  );
+
+  // TODO(danvk): use prefixes here (e.g. m, µ, n)
+  assert.deepEqual(['0', '5.00e-7', '1.00e-6', '1.50e-6', '2.00e-6'],
+                   Util.getYLabels());
+});
+
+it('testSmallLabelKMG2', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1e-6]);
+  data.push([2, 2e-6]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMG2: true
+        }
+      }
+    }
+  );
+
+  // TODO(danvk): this is strange--the values aren't on powers of two, and are
+  // these units really used for powers of two in <1? See issue #571.
+  assert.deepEqual(['0', '0.48u', '0.95u', '1.43u', '1.91u'],
+                   Util.getYLabels());
+});
 
 /**
  * Verify that log scale axis range is properly specified.
  */
-AxisLabelsTestCase.prototype.testLogScale = function() {
-  var g = new Dygraph("graph", [[0, 5], [1, 1000]], { logscale : true });
+it('testLogScale', function() {
+  var g = new Dygraph("graph",
+                      [[0, 5], [1, 1000]], {
+                        logscale: true,
+                        labels: ['X', 'Y']
+                      });
   var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
-  assertEquals(["5","10","20","50","100","200","500","1000"], nonEmptyLabels);
+  assert.deepEqual(["5","10","20","50","100","200","500","1000"], nonEmptyLabels);
  
   g.updateOptions({ logscale : false });
-  assertEquals(['0','200','400','600','800','1000'], Util.getYLabels());
-}
+  assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
+});
 
 /**
  * Verify that include zero range is properly specified.
  */
-AxisLabelsTestCase.prototype.testIncludeZero = function() {
-  var g = new Dygraph("graph", [[0, 500], [1, 1000]], { includeZero : true });
-  assertEquals(['0','200','400','600','800','1000'], Util.getYLabels());
+it('testIncludeZero', function() {
+  var g = new Dygraph("graph",
+                      [[0, 500], [1, 1000]], {
+                        includeZero: true,
+                        labels: ['X', 'Y1']
+                      });
+  assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
  
   g.updateOptions({ includeZero : false });
-  assertEquals(['500','600','700','800','900','1000'], Util.getYLabels());
-}
+  assert.deepEqual(['500','600','700','800','900','1000'], Util.getYLabels());
+});
 
-AxisLabelsTestCase.prototype.testAxisLabelFontSize = function() {
+it('testAxisLabelFontSize', function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a 14-point default.
-  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
   var assertFontSize = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "font-size", expected);
   }
-  
-  assertFontSize($(".dygraph-axis-label-x"), "14px");
-  assertFontSize($(".dygraph-axis-label-y") , "14px");
 
-  g.updateOptions({ axisLabelFontSize : 8});
-  assertFontSize($(".dygraph-axis-label-x"), "8px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
+
+  g.updateOptions({axisLabelFontSize : 8});
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px"); 
 
   g.updateOptions({
     axisLabelFontSize : null,
-    axes : { 
-      x : { axisLabelFontSize : 5 },
+    axes: { 
+      x: { axisLabelFontSize : 5 },
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
-    axes : { 
-      y : { axisLabelFontSize : 20 },
+    axes: { 
+      y: { axisLabelFontSize : 20 },
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px"); 
 
   g.updateOptions({
-    series : { 
-      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
+    series: { 
+      Y2: { axis : "y2" } // copy y2 series to y2 axis.
     },  
-    axes : { 
-      y2 : { axisLabelFontSize : 12 },
+    axes: { 
+      y2: { axisLabelFontSize : 12 },
     }   
   }); 
 
-  assertFontSize($(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize($(".dygraph-axis-label-y1"), "20px"); 
-  assertFontSize($(".dygraph-axis-label-y2"), "12px"); 
-}
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px"); 
+});
 
-AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
+it('testAxisLabelFontSizeNull', function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+  var g = new Dygraph(graph, simpleData,
     {
       axisLabelFontSize: null
     });
@@ -706,29 +763,29 @@ AxisLabelsTestCase.prototype.testAxisLabelFontSizeNull = function() {
   };
 
   // Be sure we're dealing with a 14-point default.
-  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  assertFontSize($(".dygraph-axis-label-x"), "14px");
-  assertFontSize($(".dygraph-axis-label-y"), "14px");
-}
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
+});
 
-AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
+it('testAxisLabelColor', function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData, {});
+  var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a black default.
-  assertEquals("black", Dygraph.DEFAULT_ATTRS.axisLabelColor);
+  assert.equal("black", Dygraph.DEFAULT_ATTRS.axisLabelColor);
 
   var assertColor = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "color", expected);
   }
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 
   g.updateOptions({ axisLabelColor : "red"});
-  assertColor($(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
 
   g.updateOptions({
     axisLabelColor : null,
@@ -737,8 +794,8 @@ AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 
   g.updateOptions({
     axes : { 
@@ -746,8 +803,8 @@ AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
 
   g.updateOptions({
     series : { 
@@ -758,14 +815,14 @@ AxisLabelsTestCase.prototype.testAxisLabelColor = function() {
     }   
   }); 
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor($(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
-  assertColor($(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
-}
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
+});
 
-AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
+it('testAxisLabelColorNull', function() {
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, AxisLabelsTestCase.simpleData,
+  var g = new Dygraph(graph, simpleData,
     {
       axisLabelColor: null
     });
@@ -775,16 +832,16 @@ AxisLabelsTestCase.prototype.testAxisLabelColorNull = function() {
   }
 
   // Be sure we're dealing with a 14-point default.
-  assertEquals(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
 
-  assertColor($(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor($(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
-}
+  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
+  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
+});
 
 /*
  * This test shows that the label formatter overrides labelsKMB for all values.
  */
-AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
+it('testLabelFormatterOverridesLabelsKMB', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "X,a,b\n" +
@@ -797,14 +854,14 @@ AxisLabelsTestCase.prototype.testLabelFormatterOverridesLabelsKMB = function() {
           return v + ":X";
         }
       });
-  assertEquals(["0:X","500:X","1000:X","1500:X","2000:X"], Util.getYLabels());
-  assertEquals(["1:X","2:X","3:X"], Util.getXLabels());
-}
+  assert.deepEqual(["0:X","500:X","1000:X","1500:X","2000:X"], Util.getYLabels());
+  assert.deepEqual(["1:X","2:X","3:X"], Util.getXLabels());
+});
 
 /*
  * This test shows that you can override labelsKMB on the axis level.
  */
-AxisLabelsTestCase.prototype.testLabelsKMBPerAxis = function() {
+it('testLabelsKMBPerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -824,15 +881,15 @@ AxisLabelsTestCase.prototype.testLabelsKMBPerAxis = function() {
 
   // labelsKMB doesn't apply to the x axis. This value should be different.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
-  assertEquals(["1000","2000","3000"], Util.getXLabels());
-  assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assertEquals(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
-};
+  assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
+  assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assert.deepEqual(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
+});
 
 /*
  * This test shows that you can override labelsKMG2 on the axis level.
  */
-AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
+it('testLabelsKMBG2IPerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -854,15 +911,15 @@ AxisLabelsTestCase.prototype.testLabelsKMBG2IPerAxis = function() {
   // Plus I can't be sure they're doing the same thing as they're done in different
   // bits of code.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
-  assertEquals(["1024","2048","3072"], Util.getXLabels());
-  assertEquals( ["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assertEquals(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
-};
+  assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
+  assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
+  assert.deepEqual(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
+});
 
 /**
  * This test shows you can override sigFigs on the axis level.
  */
-AxisLabelsTestCase.prototype.testSigFigsPerAxis = function() {
+it('testSigFigsPerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -882,15 +939,15 @@ AxisLabelsTestCase.prototype.testSigFigsPerAxis = function() {
       });
   // sigFigs doesn't apply to the x axis. This value should be different.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
-  assertEquals(["1000","2000","3000"], Util.getXLabels());
-  assertEquals(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
-  assertEquals(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
-}
+  assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
+  assert.deepEqual(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
+  assert.deepEqual(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
+});
 
 /**
  * This test shows you can override digitsAfterDecimal on the axis level.
  */
-AxisLabelsTestCase.prototype.testDigitsAfterDecimalPerAxis = function() {
+it('testDigitsAfterDecimalPerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -906,40 +963,40 @@ AxisLabelsTestCase.prototype.testDigitsAfterDecimalPerAxis = function() {
       });
 
   g.updateOptions({ axes: { y: { digitsAfterDecimal: 3 }}});
-  assertEquals(["0.001","0.002","0.002","0.003","0.003","0.004","0.004"], Util.getYLabels(1));
+  assert.deepEqual(["0.001","0.002","0.002","0.003","0.003","0.004","0.004"], Util.getYLabels(1));
   g.updateOptions({ axes: { y: { digitsAfterDecimal: 4 }}});
-  assertEquals(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
+  assert.deepEqual(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
   g.updateOptions({ axes: { y: { digitsAfterDecimal: 5 }}});
-  assertEquals(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
+  assert.deepEqual(["0.001","0.0015","0.002","0.0025","0.003","0.0035","0.004"], Util.getYLabels(1));
   g.updateOptions({ axes: { y: { digitsAfterDecimal: null }}});
-  assertEquals(["1e-3","2e-3","2e-3","3e-3","3e-3","4e-3","4e-3"], Util.getYLabels(1));
+  assert.deepEqual(["1e-3","2e-3","2e-3","3e-3","3e-3","4e-3","4e-3"], Util.getYLabels(1));
 
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: 3 }}});
-  assertEquals(["0.005","0.006","0.006","0.007","0.007","0.008","0.008"], Util.getYLabels(2));
+  assert.deepEqual(["0.005","0.006","0.006","0.007","0.007","0.008","0.008"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: 4 }}});
-  assertEquals(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
+  assert.deepEqual(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: 5 }}});
-  assertEquals(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
+  assert.deepEqual(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: null }}});
-  assertEquals(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
+  assert.deepEqual(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
 
 
   // digitsAfterDecimal is ignored for the x-axis.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 3 }}});
-  assertEquals(["0.006","0.007","0.008"], Util.getXLabels());
+  assert.deepEqual(["0.006","0.007","0.008"], Util.getXLabels());
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 4 }}});
-  assertEquals(["0.006","0.007","0.008"], Util.getXLabels());
+  assert.deepEqual(["0.006","0.007","0.008"], Util.getXLabels());
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 5 }}});
-  assertEquals(["0.006","0.007","0.008"], Util.getXLabels());
+  assert.deepEqual(["0.006","0.007","0.008"], Util.getXLabels());
   g.updateOptions({ axes: { x: { digitsAfterDecimal: null }}});
-  assertEquals(["0.006","0.007","0.008"], Util.getXLabels());
-}
+  assert.deepEqual(["0.006","0.007","0.008"], Util.getXLabels());
+});
 
 /**
  * This test shows you can override digitsAfterDecimal on the axis level.
  */
-AxisLabelsTestCase.prototype.testMaxNumberWidthPerAxis = function() {
+it('testMaxNumberWidthPerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -954,33 +1011,33 @@ AxisLabelsTestCase.prototype.testMaxNumberWidthPerAxis = function() {
       });
 
   g.updateOptions({ axes: { y: { maxNumberWidth: 4 }}});
-  assertEquals(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
+  assert.deepEqual(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
   g.updateOptions({ axes: { y: { maxNumberWidth: 5 }}});
-  assertEquals(["12601","12601.5","12602","12602.5","12603","12603.5","12604"] , Util.getYLabels(1));
+  assert.deepEqual(["12601","12601.5","12602","12602.5","12603","12603.5","12604"] , Util.getYLabels(1));
   g.updateOptions({ axes: { y: { maxNumberWidth: null }}});
-  assertEquals(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
+  assert.deepEqual(["1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4","1.26e+4"] , Util.getYLabels(1));
 
   g.updateOptions({ axes: { y2: { maxNumberWidth: 4 }}});
-  assertEquals(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
+  assert.deepEqual(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { maxNumberWidth: 5 }}});
-  assertEquals(["12801","12801.5","12802","12802.5","12803","12803.5","12804"], Util.getYLabels(2));
+  assert.deepEqual(["12801","12801.5","12802","12802.5","12803","12803.5","12804"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { maxNumberWidth: null }}});
-  assertEquals(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
+  assert.deepEqual(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
 
   // maxNumberWidth is ignored for the x-axis.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   g.updateOptions({ axes: { x: { maxNumberWidth: 4 }}});
-  assertEquals(["12401","12402","12403"], Util.getXLabels());
+  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: 5 }}});
-  assertEquals(["12401","12402","12403"], Util.getXLabels());
+  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: null }}});
-  assertEquals(["12401","12402","12403"], Util.getXLabels());
-}
+  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
+});
 
 /*
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
 // Checks that axis labels stay sane across a DST change.
-AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
+it('testLabelsCrossDstChange', function() {
   // (From tests/daylight-savings.html)
   var g = new Dygraph(
       document.getElementById("graph"),
@@ -1007,7 +1064,7 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
 
   var xLabels = Util.getXLabels();
   for (var i = 0; i < xLabels.length; i++) {
-    assertTrue(okLabels[xLabels[i]]);
+    assert.isTrue(okLabels[xLabels[i]]);
   }
 
   // This range had issues of its own on tests/daylight-savings.html.
@@ -1016,14 +1073,14 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChange = function() {
   });
   xLabels = Util.getXLabels();
   for (var i = 0; i < xLabels.length; i++) {
-    assertTrue(okLabels[xLabels[i]]);
+    assert.isTrue(okLabels[xLabels[i]]);
   }
-};
+});
 
 
 // Tests data which crosses a "fall back" at a high enough frequency that you
 // can see both 1:00 A.M.s.
-AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
+it('testLabelsCrossDstChangeHighFreq', function() {
   // Generate data which crosses the EST/EDT boundary.
   var dst_data = [];
   var base_ms = 1383454200000;
@@ -1037,7 +1094,7 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
       { width: 1024, labels: ['Date', 'Value'] }
       );
 
-  assertEquals([
+  assert.deepEqual([
     '00:50', '00:55',
     '01:00', '01:05', '01:10', '01:15', '01:20', '01:25',
     '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
@@ -1048,17 +1105,17 @@ AxisLabelsTestCase.prototype.testLabelsCrossDstChangeHighFreq = function() {
   g.updateOptions({
     dateWindow: [1383454200000 + 15*60*1000, g.xAxisExtremes()[1]]}
   );
-  assertEquals([
+  assert.deepEqual([
     '01:05', '01:10', '01:15', '01:20', '01:25',
     '01:30', '01:35', '01:40', '01:45', '01:50', '01:55',
     '01:00', '01:05'  // 1 AM number two!
   ], Util.getXLabels());
-};
+});
 
 
 // Tests data which crosses a "spring forward" at a low frequency.
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433
-AxisLabelsTestCase.prototype.testLabelsCrossSpringForward = function() {
+it('testLabelsCrossSpringForward', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "Date/Time,Purchases\n" +
@@ -1090,11 +1147,11 @@ AxisLabelsTestCase.prototype.testLabelsCrossSpringForward = function() {
 
   var xLabels = Util.getXLabels();
   for (var i = 0; i < xLabels.length; i++) {
-    assertTrue(okLabels[xLabels[i]]);
+    assert.isTrue(okLabels[xLabels[i]]);
   }
-};
+});
 
-AxisLabelsTestCase.prototype.testLabelsCrossSpringForwardHighFreq = function() {
+it('testLabelsCrossSpringForwardHighFreq', function() {
   var base_ms_spring = 1299999000000;
   var dst_data_spring = [];
   for (var x = base_ms_spring; x < base_ms_spring + 1000 * 60 * 80; x += 1000) {
@@ -1107,11 +1164,13 @@ AxisLabelsTestCase.prototype.testLabelsCrossSpringForwardHighFreq = function() {
       { width: 1024, labels: ['Date', 'Value'] }
   );
 
-  assertEquals([
+  assert.deepEqual([
     '01:50', '01:55',
     '03:00', '03:05', '03:10', '03:15', '03:20', '03:25',
     '03:30', '03:35', '03:40', '03:45', '03:50', '03:55',
     '04:00', '04:05'
   ], Util.getXLabels());
-};
+});
 */
+
+});

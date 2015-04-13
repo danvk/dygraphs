@@ -6,13 +6,13 @@
  * @author danvk@google.com (Dan Vanderkam)
  */
 
-var SelectionTestCase = TestCase("selection");
+describe("selection", function() {
 
-SelectionTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-SelectionTestCase.prototype.testSetGetSelection = function() {
+it('testSetGetSelection', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,Y\n" +
@@ -22,14 +22,14 @@ SelectionTestCase.prototype.testSetGetSelection = function() {
   );
 
   g.setSelection(0);
-  assertEquals(0, g.getSelection());
+  assert.equal(0, g.getSelection());
   g.setSelection(1);
-  assertEquals(1, g.getSelection());
+  assert.equal(1, g.getSelection());
   g.setSelection(2);
-  assertEquals(2, g.getSelection());
-};
+  assert.equal(2, g.getSelection());
+});
 
-SelectionTestCase.prototype.testSetGetSelectionDense = function() {
+it('testSetGetSelectionDense', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,Y\n" +
@@ -40,17 +40,17 @@ SelectionTestCase.prototype.testSetGetSelectionDense = function() {
   );
 
   g.setSelection(0);
-  assertEquals(0, g.getSelection());
+  assert.equal(0, g.getSelection());
   g.setSelection(1);
-  assertEquals(1, g.getSelection());
+  assert.equal(1, g.getSelection());
   g.setSelection(2);
-  assertEquals(2, g.getSelection());
+  assert.equal(2, g.getSelection());
   g.setSelection(3);
-  assertEquals(3, g.getSelection());
-};
+  assert.equal(3, g.getSelection());
+});
 
-SelectionTestCase.prototype.testSetGetSelectionMissingPoints = function() {
-  dataHandler = function() {};
+it('testSetGetSelectionMissingPoints', function() {
+  var dataHandler = function() {};
   dataHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
   dataHandler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
     var val = null;
@@ -73,18 +73,20 @@ SelectionTestCase.prototype.testSetGetSelectionMissingPoints = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,A,B,C\n" +
-    "1,1,null,null\n" +
-    "2,null,2,null\n" +
-    "3,null,null,3\n",
+    "1,1,,\n" +
+    "2,,2,\n" +
+    "3,,,3\n",
     {
       dataHandler: dataHandler
     }
   );
 
   g.setSelection(0);
-  assertEquals(0, g.getSelection());
+  assert.equal(0, g.getSelection());
   g.setSelection(1);
-  assertEquals(1, g.getSelection());
+  assert.equal(1, g.getSelection());
   g.setSelection(2);
-  assertEquals(2, g.getSelection());
-};
+  assert.equal(2, g.getSelection());
+});
+
+});

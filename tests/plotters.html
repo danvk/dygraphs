@@ -107,8 +107,12 @@
                 includeZero: true,
                 dateWindow: [ Date.parse("2012/07/20"), Date.parse("2012/07/26") ],
                 animatedZooms: true,
-                drawXGrid: false,
-                plotter: barChartPlotter
+                plotter: barChartPlotter,
+                axes: {
+                  x: {
+                    drawGrid: false
+                  }
+                }
               }
           );
 

@@ -1,0 +1,22 @@
+{
+  "extends": "../.jshintrc",
+
+  "asi": true,
+  "mocha": true,
+  "strict": false,
+
+  "laxbreak": true,
+
+  "globals": {
+    "assert": true,
+    "Dygraph": true,
+    "DygraphOps": true,
+    "Util": true,
+    "CanvasAssertions": true,
+    "PixelSampler": true,
+    "smoothPlotter": true,
+    "$": true,
+    "DygraphCanvasRenderer": true,
+    "DygraphOptions": true
+  }
+}
