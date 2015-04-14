@@ -5,6 +5,7 @@
     <script type="text/javascript" src="../dygraph-dev.js"></script>
     <script type="text/javascript" src="data.js"></script>
 
+    <script type="text/javascript" src="../src/extras/synchronizer.js"></script>
     <script type="text/javascript" src="../src/extras/rebase.js"></script>
 
     <style type="text/css">
@@ -41,8 +42,6 @@
 
     <script type="text/javascript">
       var gs = [];
-      var blockRedraw = false;
-      var initialized = false;
       var rebaseOpts = [100, 'percent', null];
       for (var i = 1; i <= 3; i++) {
         var baseOpt = rebaseOpts.shift();
@@ -51,24 +50,11 @@
           new Dygraph(
             document.getElementById("g" + i),
             data,
-            {
-              plugins: [rebase],
-              drawCallback: function(me, initial) {
-                if (blockRedraw || initial) return;
-                blockRedraw = true;
-                var range = me.xAxisRange();
-                for (var j = 0; j < 3; j++) {
-                  if (gs[j] == me) continue;
-                  gs[j].updateOptions( {
-                    dateWindow: range
-                  } );
-                }
-                blockRedraw = false;
-              }
-            }
+            { plugins: [rebase] }
           )
         );
       }
+      Dygraph.synchronize(gs, { range: false });
     </script>
   </body>
 </html>
