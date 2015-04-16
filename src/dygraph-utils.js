@@ -201,8 +201,8 @@ Dygraph.findPos = function(obj) {
 
   // This handles the case where the object is inside a scrolled div.
   while (obj && obj != document.body) {
-    curleft -= obj.scrollLeft;
-    curtop -= obj.scrollTop;
+    curleft -= isNaN(obj.scrollLeft) ? 0 : obj.scrollLeft;
+    curtop -= isNaN(obj.scrollTop) ? 0 :obj.scrollTop;
     obj = obj.parentNode;
   }
   return {x: curleft, y: curtop};
