@@ -43,11 +43,7 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
     // Extract to the unified data format.
     if (point !== null) {
       y = point[1];
-      if (y !== null && !isNaN(y)) {
-        series.push([ x, y, [ point[0], point[2] ] ]);
-      } else {
-        series.push([ x, y, [ y, y ] ]);
-      }
+      series.push([ x, y, [ point[0], point[2] ] ]);
     } else {
       series.push([ x, null, [ null, null ] ]);
     }
