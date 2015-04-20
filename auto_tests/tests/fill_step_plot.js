@@ -4,27 +4,27 @@
  *
  * @author benoitboivin.pro@gmail.com (Benoit Boivin)
  */
-var fillStepPlotTestCase = TestCase("fill-step-plot");
+describe("fill-step-plot", function() {
 
-fillStepPlotTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-fillStepPlotTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
-fillStepPlotTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(fillStepPlotTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
-};
+});
 
-fillStepPlotTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = fillStepPlotTestCase.origFunc;
-};
+afterEach(function() {
+  Dygraph.getContext = origFunc;
+});
 
 
-fillStepPlotTestCase.prototype.testFillStepPlotNullValues = function() {
+it('testFillStepPlotNullValues', function() {
   var opts = {
     labels: ["x","y"],
     width: 480,
@@ -45,7 +45,7 @@ fillStepPlotTestCase.prototype.testFillStepPlotNullValues = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
   var x1 = data[3][0];
   var y1 = data[2][1];
   var x2 = data[3][0];
@@ -55,4 +55,6 @@ fillStepPlotTestCase.prototype.testFillStepPlotNullValues = function() {
   
   // Check if a line is drawn between the previous y and the bottom of the chart
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, {});
-};
+});
+
+});

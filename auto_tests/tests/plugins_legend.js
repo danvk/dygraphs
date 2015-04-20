@@ -1,18 +1,13 @@
-/**
- * @fileoverview FILL THIS IN
- *
- * @author akiya.mizukoshi@gmail.com (Akiyah)
- */
-var pluginsLegendTestCase = TestCase("plugins-legend");
+describe("plugins-legend", function() {
 
-pluginsLegendTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-};
+beforeEach(function() {
+  document.body.innerHTML = "<div id='graph'></div><div id='label'></div>";
+});
 
-pluginsLegendTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-pluginsLegendTestCase.prototype.testLegendEscape = function() {
+it('testLegendEscape', function() {
   var opts = {
     width: 480,
     height: 320
@@ -40,7 +35,40 @@ pluginsLegendTestCase.prototype.testLegendEscape = function() {
   }
   legendPlugin.select(e);
 
-  var legendSpan = $(legendPlugin.legend_div_).find("span b span");
-  assertEquals("&lt;script&gt;alert('XSS')&lt;/script&gt;", legendSpan.html());
-};
+  var legendSpan = legendPlugin.legend_div_.querySelector("span b span");
+  assert.equal(legendSpan.innerHTML, "&lt;script&gt;alert('XSS')&lt;/script&gt;");
+});
 
+
+it('should let labelsDiv be a string', function() {
+  var labelsDiv = document.getElementById('label');
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', {labelsDiv: 'label'});
+null
+  g.setSelection(0);
+  assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
+});
+
+it('should let labelsDiv be an Element', function() {
+  var labelsDiv = document.getElementById('label');
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', { labelsDiv: labelsDiv });
+  assert.isNull(labelsDiv.getAttribute('class'));  // dygraph-legend not added.
+  g.setSelection(0);
+  assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
+});
+
+it('should render dashed patterns', function() {
+  var g = new Dygraph('graph', 'X,Y\n1,2\n', {
+    strokePattern: [5, 5],
+    color: 'red',
+    legend: 'always'
+  });
+
+  // The legend has a dashed line and a label.
+  var legendEl = document.querySelector('.dygraph-legend > span');
+  assert.equal(' Y', legendEl.textContent);
+  var dashEl = document.querySelector('.dygraph-legend > span > div');
+  assert.equal(window.getComputedStyle(dashEl)['border-bottom-color'],
+               'rgb(255, 0, 0)');
+});
+
+});

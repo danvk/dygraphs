@@ -3,15 +3,15 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
-var dateFormatsTestCase = TestCase("date-formats");
+describe("date-formats", function() {
 
-dateFormatsTestCase.prototype.setUp = function() {
-};
+beforeEach(function() {
+});
 
-dateFormatsTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
-dateFormatsTestCase.prototype.testISO8601 = function() {
+it('testISO8601', function() {
   // Format: YYYY-MM-DDTHH:MM:SS.ddddddZ
   // The "Z" indicates UTC, so this test should pass regardless of the time
   // zone of the machine on which it is run.
@@ -19,11 +19,11 @@ dateFormatsTestCase.prototype.testISO8601 = function() {
   // Firefox <4 does not support this format:
   // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/parse
   if (navigator.userAgent.indexOf("Firefox/3.5") == -1) {
-    assertEquals(946816496789, Dygraph.dateParser("2000-01-02T12:34:56.789012Z"));
+    assert.equal(946816496789, Dygraph.dateParser("2000-01-02T12:34:56.789012Z"));
   }
-};
+});
 
-dateFormatsTestCase.prototype.testHyphenatedDate = function() {
+it('testHyphenatedDate', function() {
   // Format: YYYY-MM-DD HH:MM
 
   // Midnight February 2, 2000, UTC
@@ -36,5 +36,7 @@ dateFormatsTestCase.prototype.testHyphenatedDate = function() {
             zp(d.getDate()) + ' ' +
             zp(d.getHours()) + ':' +
             zp(d.getMinutes());
-  assertEquals(Date.UTC(2000, 1, 2), Dygraph.dateParser(str));
-};
+  assert.equal(Date.UTC(2000, 1, 2), Dygraph.dateParser(str));
+});
+
+});

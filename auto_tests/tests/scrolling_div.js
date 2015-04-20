@@ -3,9 +3,11 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
-var ScrollingDivTestCase = TestCase("scrolling-div");
+describe("scrolling-div", function() {
 
-ScrollingDivTestCase.prototype.setUp = function() {
+var point, g; 
+
+beforeEach(function() {
 
 var LOREM_IPSUM =
     "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n" +
@@ -35,26 +37,25 @@ var LOREM_IPSUM =
 
   var graph = document.getElementById("graph");
 
-  this.point = null;
-  var self = this;
-  this.g = new Dygraph(graph, data,
+  point = null;
+  g = new Dygraph(graph, data,
           {
             labels : ['a', 'b'],
             drawPoints : true,
             highlightCircleSize : 6,
-            pointClickCallback : function(evt, point) {
-              self.point = point;
+            pointClickCallback : function(evt, p) {
+              point = p;
             }
           }
       );
   
-};
+});
 
 // This is usually something like 15, but for OS X Lion and its auto-hiding
 // scrollbars, it's 0. This is a large enough difference that we need to
 // consider it when synthesizing clicks.
 // Adapted from http://davidwalsh.name/detect-scrollbar-width
-ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
+var detectScrollbarWidth = function() {
   // Create the measurement node
   var scrollDiv = document.createElement("div");
   scrollDiv.style.width = "100px";
@@ -73,13 +74,13 @@ ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
   return scrollbarWidth;
 };
 
-ScrollingDivTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 /**
  * This tests that when the nested div is unscrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
+it('testUnscrolledDiv', function() {
 
   document.getElementById('scroller').scrollTop = 0;
 
@@ -90,31 +91,33 @@ ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
     screenY: 320
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
 
 /**
  * This tests that when the nested div is scrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testScrolledDiv = function() {
+it('testScrolledDiv', function() {
   document.getElementById('scroller').scrollTop = 117;
 
   var clickOn4_40 = {
     clientX: 244,
-    clientY: 30 - this.detectScrollbarWidth(),
+    clientY: 30 - detectScrollbarWidth(),
     screenX: 416,
     screenY: 160
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
+
+});

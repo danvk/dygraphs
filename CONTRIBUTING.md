@@ -13,9 +13,9 @@ page. For instance, instead of doing this:
 do this:
 
 ```html
-<script type="text/javascript" src="dygraph-dev.js"></script>
+<script type="text/javascript" src="dygraph-combined.dev.js"></script>
 ```
 
 This makes error messages and debugging simpler. The jsfiddle does this automatically.
 
-Sending a Pull Request? See our [guide to making dygraphs contributions](http://dygraphs.com/changes.html).
+Sending a Pull Request? See our [guide to making dygraphs contributions](/DEVELOP.md).
