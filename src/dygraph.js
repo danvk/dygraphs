@@ -3747,6 +3747,10 @@ Dygraph.addAnnotationRule = function() {
   console.warn("Unable to add default annotation CSS rule; display may be off.");
 };
 
+if (typeof exports === "object" && typeof module !== "undefined") {
+  module.exports = Dygraph;
+}
+
 return Dygraph;
 
 })();
