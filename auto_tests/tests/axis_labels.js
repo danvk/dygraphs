@@ -1034,6 +1034,26 @@ it('testMaxNumberWidthPerAxis', function() {
   assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
 });
 
+// Regression test for https://github.com/danvk/dygraphs/issues/506
+it('should draw top and bottom ticks', function() {
+  var firstLastTicker = function(a, b, pixels, opts, dygraph) {
+    assert.isTrue(this == dygraph, 'this not set correctly');
+    var formatter = opts('axisLabelFormatter');
+    return [
+      {v: a, label: formatter(a, 0, opts, this)},
+      {v: b, label: formatter(b, 0, opts, this)}
+    ];
+  };
+
+  var g = new Dygraph('graph', simpleData, {
+    valueRange: [0.0, 1.2],
+    axes: {
+      x: { ticker: firstLastTicker },
+      y: { ticker: firstLastTicker }
+    }
+  });
+});
+
 /*
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
 // Checks that axis labels stay sane across a DST change.

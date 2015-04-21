@@ -2259,7 +2259,8 @@ Dygraph.prototype.addXTicks_ = function() {
   }
 
   var xAxisOptionsView = this.optionsViewForAxis_('x');
-  var xTicks = xAxisOptionsView('ticker')(
+  var xTicks = xAxisOptionsView('ticker').call(
+      this,
       range[0],
       range[1],
       this.plotter_.area.w,  // TODO(danvk): should be area.width
@@ -2914,7 +2915,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       axis.independentTicks = independentTicks;
       var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
       var ticker = opts('ticker');
-      axis.ticks = ticker(axis.computedValueRange[0],
+      axis.ticks = ticker.call(this, axis.computedValueRange[0],
               axis.computedValueRange[1],
               this.plotter_.area.h,
               opts,
@@ -2945,12 +2946,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         tick_values.push(y_val);
       }
 
-      axis.ticks = ticker(axis.computedValueRange[0],
-                          axis.computedValueRange[1],
-                          this.plotter_.area.h,
-                          opts,
-                          this,
-                          tick_values);
+      axis.ticks = ticker.call(this,
+                               axis.computedValueRange[0],
+                               axis.computedValueRange[1],
+                               this.plotter_.area.h,
+                               opts,
+                               this,
+                               tick_values);
     }
   }
 };
