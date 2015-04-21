@@ -195,9 +195,9 @@ it('testValueRangePerAxisOptions', function() {
       y2label: 'Secondary y-axis',
     }
   );
-  assert.deepEqual(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
-  assert.deepEqual(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
-  
+  assert.deepEqual(["40", "45", "50", "55", "60", "65", "70"], Util.getYLabels("1"));
+  assert.deepEqual(["900K","1.1M","1.3M","1.5M","1.7M","1.9M","2.1M"], Util.getYLabels("2"));
+
   g.updateOptions(
     {
       axes: {
@@ -210,8 +210,8 @@ it('testValueRangePerAxisOptions', function() {
      }
     }
   );
-  assert.deepEqual(["40", "45", "50", "55", "60", "65", "70", "75"], Util.getYLabels("1"));
-  assert.deepEqual(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M"], Util.getYLabels("2"));
+  assert.deepEqual(["40", "45", "50", "55", "60", "65", "70", "75", "80"], Util.getYLabels("1"));
+  assert.deepEqual(["1M", "1.02M", "1.05M", "1.08M", "1.1M", "1.13M", "1.15M", "1.18M", "1.2M"], Util.getYLabels("2"));
 });
 
 it('testDrawPointCallback', function() {
