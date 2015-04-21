@@ -175,6 +175,8 @@ UtilsTestCase.prototype.testToRGB = function() {
   assertEquals({r: 255, g: 200, b: 150}, Dygraph.toRGB_('rgb(255,200,150)'));
   assertEquals({r: 255, g: 200, b: 150}, Dygraph.toRGB_('#FFC896'));
   assertEquals({r: 255, g: 0, b: 0}, Dygraph.toRGB_('red'));
+  assertEquals({r: 255, g: 200, b: 150, a: 0.6},
+                   Dygraph.toRGB_('rgba(255, 200, 150, 0.6)'));
 };
 
 UtilsTestCase.prototype.testIsPixelChangingOptionList = function() {

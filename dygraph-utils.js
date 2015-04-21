@@ -1135,15 +1135,41 @@ Dygraph.pow = function(base, exp) {
   return Math.pow(base, exp);
 };
 
+var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
+
+/**
+ * Helper for Dygraph.toRGB_ which parses strings of the form:
+ * rgb(123, 45, 67)
+ * rgba(123, 45, 67, 0.5)
+ * @return parsed {r,g,b,a?} tuple or null.
+ */
+function parseRGBA(rgbStr) {
+  var bits = RGBA_RE.exec(rgbStr);
+  if (!bits) return null;
+  var r = parseInt(bits[1], 10),
+      g = parseInt(bits[2], 10),
+      b = parseInt(bits[3], 10);
+  if (bits[4]) {
+    return {r: r, g: g, b: b, a: parseFloat(bits[4])};
+  } else {
+    return {r: r, g: g, b: b};
+  }
+}
+
 /**
  * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
  *
  * @param {!string} colorStr Any valid CSS color string.
- * @return {{r:number,g:number,b:number}} Parsed RGB tuple.
+ * @return {{r:number,g:number,b:number,a:number?}} Parsed RGB tuple.
  * @private
  */
 Dygraph.toRGB_ = function(colorStr) {
-  // TODO(danvk): cache color parses to avoid repeated DOM manipulation.
+  // Strategy: First try to parse colorStr directly. This is fast & avoids DOM
+  // manipulation.  If that fails (e.g. for named colors like 'red'), then
+  // create a hidden DOM element and parse its computed color.
+  var rgb = parseRGBA(colorStr);
+  if (rgb) return rgb;
+
   var div = document.createElement('div');
   div.style.backgroundColor = colorStr;
   div.style.visibility = 'hidden';
@@ -1156,12 +1182,7 @@ Dygraph.toRGB_ = function(colorStr) {
     rgbStr = div.currentStyle.backgroundColor;
   }
   document.body.removeChild(div);
-  var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgbStr);
-  return {
-    r: parseInt(bits[1], 10),
-    g: parseInt(bits[2], 10),
-    b: parseInt(bits[3], 10)
-  };
+  return parseRGBA(rgbStr);
 };
 
 /**
