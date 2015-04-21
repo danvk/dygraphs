@@ -166,46 +166,22 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
   return 'rgb(' + red + ',' + green + ',' + blue + ')';
 };
 
-// The following functions are from quirksmode.org with a modification for Safari from
-// http://blog.firetree.net/2005/07/04/javascript-find-position/
-// http://www.quirksmode.org/js/findpos.html
-// ... and modifications to support scrolling divs.
-
 /**
  * Find the coordinates of an object relative to the top left of the page.
  *
- * TODO(danvk): change obj type from Node -&gt; !Node
  * @param {Node} obj
  * @return {{x:number,y:number}}
  * @private
  */
 Dygraph.findPos = function(obj) {
-  var curleft = 0, curtop = 0;
-  if (obj.offsetParent) {
-    var copyObj = obj;
-    while (1) {
-      var borderLeft = "0", borderTop = "0";
-      var computedStyle = window.getComputedStyle(copyObj, null);
-      borderLeft = computedStyle.borderLeft || "0";
-      borderTop = computedStyle.borderTop || "0";
-      curleft += parseInt(borderLeft, 10) ;
-      curtop += parseInt(borderTop, 10) ;
-      curleft += copyObj.offsetLeft;
-      curtop += copyObj.offsetTop;
-      if (!copyObj.offsetParent) {
-        break;
-      }
-      copyObj = copyObj.offsetParent;
-    }
-  }
+  var p = obj.getBoundingClientRect(),
+      w = window,
+      d = document.documentElement;
 
-  // This handles the case where the object is inside a scrolled div.
-  while (obj && obj != document.body) {
-    curleft -= obj.scrollLeft;
-    curtop -= obj.scrollTop;
-    obj = obj.parentNode;
+  return {
+    x: p.left + (w.pageXOffset || d.scrollLeft),
+    y: p.top  + (w.pageYOffset || d.scrollTop)
   }
-  return {x: curleft, y: curtop};
 };
 
 /**
