@@ -245,7 +245,7 @@ Dygraph.DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
   highlightSeriesBackgroundAlpha: 0.5,
-
+  highlightSeriesBackgroundColor: 'rgb(255,255,255)',
   labelsDivWidth: 250,
   labelsDivStyles: {
     // TODO(danvk): move defaults from createStatusMessage_ here.
@@ -2035,6 +2035,8 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   if (this.getOption('highlightSeriesOpts')) {
     ctx.clearRect(0, 0, this.width_, this.height_);
     var alpha = 1.0 - this.getNumericOption('highlightSeriesBackgroundAlpha');
+    var backgroundColor = Dygraph.toRGB_(this.getOption('highlightSeriesBackgroundColor'));
+
     if (alpha) {
       // Activating background fade includes an animation effect for a gradual
       // fade. TODO(klausw): make this independently configurable if it causes
@@ -2048,7 +2050,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
         }
         alpha *= opt_animFraction;
       }
-      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      ctx.fillStyle = 'rgba(' + backgroundColor.r + ',' + backgroundColor.g + ',' + backgroundColor.b + ',' + alpha + ')';
       ctx.fillRect(0, 0, this.width_, this.height_);
     }
 
