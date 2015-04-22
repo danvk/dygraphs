@@ -84,7 +84,7 @@ it('testSmallRangeNearZero', function() {
 
   opts.valueRange = [-0.01, 0.01];
   g.updateOptions(opts);
-  assert.deepEqual([-0.01,-0.005,0,0.005],
+  assert.deepEqual([-0.01,-0.005,0,0.005,0.01],
                    Util.makeNumbers(Util.getYLabels()));
 
   g.setSelection(1);
@@ -855,7 +855,7 @@ it('testLabelFormatterOverridesLabelsKMB', function() {
         }
       });
   assert.deepEqual(["0:X","500:X","1000:X","1500:X","2000:X"], Util.getYLabels());
-  assert.deepEqual(["1:X","2:X","3:X"], Util.getXLabels());
+  assert.deepEqual(["1:X","2:X","3:X","4:X"], Util.getXLabels());
 });
 
 /*
@@ -880,8 +880,8 @@ it('testLabelsKMBPerAxis', function() {
       });
 
   // labelsKMB doesn't apply to the x axis. This value should be different.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
-  assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
+  // BUG : https://github.com/danvk/dygraphs/issues/409
+  assert.deepEqual(["1000","2000","3000","4000"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
 });
@@ -910,7 +910,7 @@ it('testLabelsKMBG2IPerAxis', function() {
   // It is weird that labelsKMG2 does something on the x axis but KMB does not.
   // Plus I can't be sure they're doing the same thing as they're done in different
   // bits of code.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // BUG : https://github.com/danvk/dygraphs/issues/409
   assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
@@ -939,7 +939,7 @@ it('testSigFigsPerAxis', function() {
       });
   // sigFigs doesn't apply to the x axis. This value should be different.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
-  assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
+  assert.deepEqual(["1000","2000","3000","4000"], Util.getXLabels());
   assert.deepEqual(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
   assert.deepEqual(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
 });
@@ -1025,13 +1025,36 @@ it('testMaxNumberWidthPerAxis', function() {
   assert.deepEqual(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
 
   // maxNumberWidth is ignored for the x-axis.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // BUG : https://github.com/danvk/dygraphs/issues/409
   g.updateOptions({ axes: { x: { maxNumberWidth: 4 }}});
-  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
+  assert.deepEqual(["12401","12402","12403","12404"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: 5 }}});
-  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
+  assert.deepEqual(["12401","12402","12403","12404"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: null }}});
-  assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
+  assert.deepEqual(["12401","12402","12403","12404"], Util.getXLabels());
+});
+
+// Regression test for https://github.com/danvk/dygraphs/issues/506
+it('should draw top and bottom ticks', function() {
+  var firstLastTicker = function(a, b, pixels, opts, dygraph) {
+    assert.isTrue(this == dygraph, 'this not set correctly');
+    var formatter = opts('axisLabelFormatter');
+    return [
+      {v: a, label: formatter(a, 0, opts, this)},
+      {v: b, label: formatter(b, 0, opts, this)}
+    ];
+  };
+
+  var g = new Dygraph('graph', simpleData, {
+    valueRange: [0.0, 1.2],
+    axes: {
+      x: { ticker: firstLastTicker },
+      y: { ticker: firstLastTicker }
+    }
+  });
+
+  assert.deepEqual(['0', '3'], Util.getXLabels());
+  assert.deepEqual(['0', '1.2'], Util.getYLabels());
 });
 
 /*

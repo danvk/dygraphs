@@ -36,7 +36,7 @@ it('testOneCSV', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assert.deepEqual(['0', '1', '2'], getXLabels());
+  assert.deepEqual(['0', '1', '2', '3'], getXLabels());
 });
 
 it('testTwoCSV', function() {
@@ -54,11 +54,11 @@ it('testTwoCSV', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  assert.deepEqual(['0', '1', '2'], getXLabels());
+  assert.deepEqual(['0', '1', '2', '3'], getXLabels());
 
   g.updateOptions({file: data});
 
-  assert.deepEqual(['0', '1', '2'], getXLabels());
+  assert.deepEqual(['0', '1', '2', '3'], getXLabels());
 });
 
 });
