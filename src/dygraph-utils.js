@@ -166,46 +166,22 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
   return 'rgb(' + red + ',' + green + ',' + blue + ')';
 };
 
-// The following functions are from quirksmode.org with a modification for Safari from
-// http://blog.firetree.net/2005/07/04/javascript-find-position/
-// http://www.quirksmode.org/js/findpos.html
-// ... and modifications to support scrolling divs.
-
 /**
  * Find the coordinates of an object relative to the top left of the page.
  *
- * TODO(danvk): change obj type from Node -&gt; !Node
  * @param {Node} obj
  * @return {{x:number,y:number}}
  * @private
  */
 Dygraph.findPos = function(obj) {
-  var curleft = 0, curtop = 0;
-  if (obj.offsetParent) {
-    var copyObj = obj;
-    while (1) {
-      var borderLeft = "0", borderTop = "0";
-      var computedStyle = window.getComputedStyle(copyObj, null);
-      borderLeft = computedStyle.borderLeft || "0";
-      borderTop = computedStyle.borderTop || "0";
-      curleft += parseInt(borderLeft, 10) ;
-      curtop += parseInt(borderTop, 10) ;
-      curleft += copyObj.offsetLeft;
-      curtop += copyObj.offsetTop;
-      if (!copyObj.offsetParent) {
-        break;
-      }
-      copyObj = copyObj.offsetParent;
-    }
-  }
+  var p = obj.getBoundingClientRect(),
+      w = window,
+      d = document.documentElement;
 
-  // This handles the case where the object is inside a scrolled div.
-  while (obj && obj != document.body) {
-    curleft -= obj.scrollLeft;
-    curtop -= obj.scrollTop;
-    obj = obj.parentNode;
+  return {
+    x: p.left + (w.pageXOffset || d.scrollLeft),
+    y: p.top  + (w.pageYOffset || d.scrollTop)
   }
-  return {x: curleft, y: curtop};
 };
 
 /**
@@ -1092,27 +1068,48 @@ Dygraph.pow = function(base, exp) {
   return Math.pow(base, exp);
 };
 
+var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
+
+/**
+ * Helper for Dygraph.toRGB_ which parses strings of the form:
+ * rgb(123, 45, 67)
+ * rgba(123, 45, 67, 0.5)
+ * @return parsed {r,g,b,a?} tuple or null.
+ */
+function parseRGBA(rgbStr) {
+  var bits = RGBA_RE.exec(rgbStr);
+  if (!bits) return null;
+  var r = parseInt(bits[1], 10),
+      g = parseInt(bits[2], 10),
+      b = parseInt(bits[3], 10);
+  if (bits[4]) {
+    return {r: r, g: g, b: b, a: parseFloat(bits[4])};
+  } else {
+    return {r: r, g: g, b: b};
+  }
+}
+
 /**
  * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
  *
  * @param {!string} colorStr Any valid CSS color string.
- * @return {{r:number,g:number,b:number}} Parsed RGB tuple.
+ * @return {{r:number,g:number,b:number,a:number?}} Parsed RGB tuple.
  * @private
  */
 Dygraph.toRGB_ = function(colorStr) {
-  // TODO(danvk): cache color parses to avoid repeated DOM manipulation.
+  // Strategy: First try to parse colorStr directly. This is fast & avoids DOM
+  // manipulation.  If that fails (e.g. for named colors like 'red'), then
+  // create a hidden DOM element and parse its computed color.
+  var rgb = parseRGBA(colorStr);
+  if (rgb) return rgb;
+
   var div = document.createElement('div');
   div.style.backgroundColor = colorStr;
   div.style.visibility = 'hidden';
   document.body.appendChild(div);
   var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
-  var bits = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/.exec(rgbStr);
-  return {
-    r: parseInt(bits[1], 10),
-    g: parseInt(bits[2], 10),
-    b: parseInt(bits[3], 10)
-  };
+  return parseRGBA(rgbStr);
 };
 
 /**

@@ -8,7 +8,8 @@ module.exports = function (config) {
         files: [
             'dist/dygraph-combined-dev.js',
             'src/extras/smooth-plotter.js',
-            'auto_tests/**/*.js',
+            'auto_tests/data/*.js',
+            'auto_tests/tests/*.js',
         ],
         autoWatch: false,
         singleRun: true,
