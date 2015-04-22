@@ -548,6 +548,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
 DygraphCanvasRenderer._fastCanvasProxy = function(context) {
   var pendingActions = [];  // array of [type, x, y] tuples
   var lastRoundedX = null;
+  var lastFlushedX = null;
 
   var LINE_TO = 1,
       MOVE_TO = 2;
@@ -626,6 +627,9 @@ DygraphCanvasRenderer._fastCanvasProxy = function(context) {
         context.moveTo(action[1], action[2]);
       }
     }
+    if (pendingActions.length) {
+      lastFlushedX = pendingActions[pendingActions.length - 1][1];
+    }
     actionCount += pendingActions.length;
     pendingActions = [];
   };
@@ -633,7 +637,12 @@ DygraphCanvasRenderer._fastCanvasProxy = function(context) {
   var addAction = function(action, x, y) {
     var rx = Math.round(x);
     if (lastRoundedX === null || rx != lastRoundedX) {
-      flushActions();
+      // if there are large gaps on the x-axis, it's essential to keep the
+      // first and last point as well.
+      var hasGapOnLeft = (lastRoundedX - lastFlushedX > 1),
+          hasGapOnRight = (rx - lastRoundedX > 1),
+          hasGap = hasGapOnLeft || hasGapOnRight;
+      flushActions(hasGap);
       lastRoundedX = rx;
     }
     pendingActions.push([action, x, y]);
@@ -757,7 +766,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
 
     // If the point density is high enough, dropping segments on their way to
     // the canvas justifies the overhead of doing so.
-    if (points.length > 2 * g.width_) {
+    if (points.length > 2 * g.width_ || Dygraph.FORCE_FAST_PROXY) {
       ctx = DygraphCanvasRenderer._fastCanvasProxy(ctx);
     }
 

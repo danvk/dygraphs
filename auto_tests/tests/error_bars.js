@@ -144,6 +144,53 @@ it('testErrorBarsCorrectColors', function() {
   assert.deepEqual([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 225));
 });
 
+// Regression test for https://github.com/danvk/dygraphs/issues/517
+// This verifies that the error bars have alpha=fillAlpha, even if the series
+// color has its own alpha value.
+it('testErrorBarsForAlphaSeriesCorrectColors', function() {
+  var data = [
+    [0, [100, 50]],
+    [2, [100, 50]]
+  ];
+
+  var opts = {
+    errorBars: true,
+    sigma: 1.0,
+    fillAlpha: 0.15,
+    strokeWidth: 10,
+    colors: ['rgba(0, 255, 0, 0.5)'],
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
+    width: 400,
+    height: 300,
+    valueRange: [0, 300],
+    labels: ['X', 'Y']
+  };
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  // y-pixels (0=top, 299=bottom)
+  //   0-148: empty (white)
+  // 149-198: Y error bar
+  // 199:     Y center line
+  // 200-248: Y error bar
+  // 249-299: empty (white)
+
+  //  38 = 255 * 0.15 (fillAlpha)
+  // 146 = 255 * (0.15 * 0.5 + 1 * 0.5) (fillAlpha from error bar + alpha from series line)
+  assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 175));
+  assert.deepEqual([0, 255, 0, 146], Util.samplePixel(g.hidden_, 200, 199));
+  assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 225));
+});
+
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=392
 it('testRollingAveragePreservesNaNs', function() {
