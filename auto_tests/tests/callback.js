@@ -686,7 +686,7 @@ it('testDrawPointCallback_idx', function() {
 
 /**
  * Test that the correct idx is returned for the point in the onHiglightCallback.
-  */
+ */
 it('testDrawHighlightPointCallback_idx', function() {
   var idxToCheck = null;
 
@@ -710,6 +710,18 @@ it('testDrawHighlightPointCallback_idx', function() {
   assert.equal(0,idxToCheck);
   DygraphOps.dispatchMouseMove(g, 6, 3);
   assert.equal(5,idxToCheck);
+});
+
+/**
+ * Test that drawCallback is called with the correct value for `this`.
+ */
+it('should set this in drawCallback', function() {
+  var g = new Dygraph('graph', data, {
+    drawCallback: function(g, is_initial) {
+      assert.isTrue(is_initial);
+      assert.equal(g, this);
+    }
+  });
 });
 
 });

@@ -2671,7 +2671,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
 
   if (this.getFunctionOption("drawCallback") !== null) {
-    this.getFunctionOption("drawCallback")(this, is_initial_draw);
+    this.getFunctionOption("drawCallback").call(this, this, is_initial_draw);
   }
   if (is_initial_draw) {
     this.readyFired_ = true;
@@ -3746,6 +3746,10 @@ Dygraph.addAnnotationRule = function() {
 
   console.warn("Unable to add default annotation CSS rule; display may be off.");
 };
+
+if (typeof exports === "object" && typeof module !== "undefined") {
+  module.exports = Dygraph;
+}
 
 return Dygraph;
 
