@@ -52,7 +52,7 @@
       price = prices[p];
       var topY = area.h * price.highY + area.y;
       var bottomY = area.h * price.lowY + area.y;
-      var centerX = area.x + sets[0][p].x * area.w;
+      var centerX = Math.floor(area.x + sets[0][p].x * area.w) + 0.5; // crisper rendering
       ctx.moveTo(centerX, topY);
       ctx.lineTo(centerX, bottomY);
       ctx.closePath();
