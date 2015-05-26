@@ -317,9 +317,9 @@ annotations.prototype.getTemplateHTML = function(div, a) {
   var yOptView = g.optionsViewForAxis_('y1');  // TODO: support secondary, too
   var xvf = g.getOptionForAxis('valueFormatter', 'x');
 
-  var x = xvf(a.xval);
-  var y = g.getOption('valueFormatter', a.series)(
-      g.getValue(row, col), yOptView);
+  var x = xvf.call(g, a.xval);
+  var y = g.getOption('valueFormatter', a.series).call(
+      g, g.getValue(row, col), yOptView);
 
   var displayAnnotation = this.createPublicAnnotation_(a, {x:x, y:y});
   var html = div.innerHTML;

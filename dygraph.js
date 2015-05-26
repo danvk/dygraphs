@@ -190,7 +190,7 @@ Dygraph.numberValueFormatter = function(x, opts) {
  * @private
  */
 Dygraph.numberAxisLabelFormatter = function(x, granularity, opts) {
-  return Dygraph.numberValueFormatter(x, opts);
+  return Dygraph.numberValueFormatter.call(this, x, opts);
 };
 
 /**

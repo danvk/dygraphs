@@ -133,6 +133,8 @@ print """
 
 <p>Some options can be set on a per-axis and per-series basis. See the docs on <a href="per-axis.html">per-axis and per-series options</a> to learn how to do this. The options which may be set in this way are marked as such on this page.</p>
 
+<p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
+
 <p>And, without further ado, here's the complete list of options:</p>
 """
 
