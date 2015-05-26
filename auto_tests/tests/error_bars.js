@@ -131,6 +131,8 @@ errorBarsTestCase.prototype.testErrorBarsCorrectColors = function() {
   assertEquals([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 225));
 };
 
+/*
+
 // Regression test for https://github.com/danvk/dygraphs/issues/517
 // This verifies that the error bars have alpha=fillAlpha, even if the series
 // color has its own alpha value.
@@ -177,6 +179,8 @@ it('testErrorBarsForAlphaSeriesCorrectColors', function() {
   assert.deepEqual([0, 255, 0, 146], Util.samplePixel(g.hidden_, 200, 199));
   assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 225));
 });
+
+*/
 
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=392
