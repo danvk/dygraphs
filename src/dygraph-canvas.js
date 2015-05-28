@@ -707,7 +707,6 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   var sets = e.allSeriesPoints;
   var setCount = sets.length;
 
-  var fillAlpha = g.getNumericOption('fillAlpha');
   var stackedGraph = g.getBooleanOption("stackedGraph");
   var colors = g.getColors();
 
@@ -739,6 +738,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var setName = setNames[setIdx];
     if (!g.getBooleanOption('fillGraph', setName)) continue;
 
+    var fillAlpha = g.getNumericOption('fillAlpha', setName);
     var stepPlot = g.getBooleanOption('stepPlot', setName);
     var color = colors[setIdx];
     var axis = g.axisPropertiesForSeries(setName);
