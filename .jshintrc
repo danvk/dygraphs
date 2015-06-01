@@ -12,7 +12,8 @@
   "browser": true,
   "devel": true,
   "globals": {
-    "DEBUG": true
+    "DEBUG": true,
+    "module": true
   },
   "maxerr": 100000
 }
