@@ -3,23 +3,40 @@
  * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
  * MIT-licensed (http://opensource.org/licenses/MIT)
  *
+ * Ribbon is a horizontal band of colors that runs through the chart. It can be useful
+ * to visualize categorical variables (http://en.wikipedia.org/wiki/Categorical_variable)
+ * that change over time (along the x-axis). For example multiple states of economy
+ * like "bust", "recession", "recovery", "boom" can be encoded as [0, 1, 2, 3]
+ * respectively (or normalized as [0, 0.33, 0.66, 1]) and assigned colors
+ * ["red","orange","green","purple"].
+ *
  * Plugin options:
  *
- *  `data`: Array of numeric values (0-1) corresponding to the position
- *  in the palette interval.
+ * `data`: Array of numeric values in the range from 0 to 1. Ribbon data array
+ * must be of same length as number of rows of Dygraph raw data table.
+ * Each of the values (0-1) scales to a position in the palette array scale
+ * (see palette argument below). For example, if palette is defined as
+ * ["transparent", "#ef2929", "#8ae234"], then 0 is the leftmost position ("#ef2929")
+ * on the palette scale, 1 is the rightmost position ("#8ae234") and 0.5 is the middle
+ * position ("#ef2929").
  *
- *  `parser`: Function (`function (data, dygraph)`) returning the array of numeric
- *  values. Function arguments: raw data, dygraph instance.
+ * `parser`: Function (function (data, dygraph)) returning the array of numeric values.
+ * Function arguments: raw data, dygraph instance. Provide it if the ribbon data,
+ * i.e. encodings are part of the dygraph raw data table rather than supplied separately
+ * through ribbon data argument.
  *
- *  `options`: Object with the following properties:
+ * `options`: Object with the following properties:
  *
- *    `palette`: Colors Array. Default: ["transparent", "#ef2929", "#8ae234"]
+ *  - `palette`: array of hexadecimal color codes.
+ *    Default: ["transparent", "#ef2929", "#8ae234"].
+ *    Pick colors from e.g. http://www.w3schools.com/tags/ref_colorpicker.asp
  *
- *    `top`: Value (0-1) representing the top of the ribbon: 1 - height of the chart,
- *    0.5 - 50% height of the chart and so on.
+ *  - `top`: vertical position of the top edge of the ribbon relative to chart height.
+ *    Value in the range from 0 (bottom edge of the chart) to 1 (top edge of the chart).
+ *    E.g. 0.5 places the top edge of the ribbon at the 50% height of the chart.
  *
- *    `bottom`: Value (0-1) representing the bottom of the ribbon:
- *    0 - the bottom of chart, 0.25 - 25% of the chart height and so on.
+ *  - `bottom`: vertical position of the bottom edge of the ribbon relative to chart
+ *    height. See top.
  */
 
 /*global Dygraph:false */
