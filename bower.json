@@ -9,9 +9,7 @@
     "closure-todo.txt",
     "common",
     "compile-with-closure.sh",
-    "dashed-canvas.js",
     "data.js",
-    "datahandler",
     "docs",
     "experimental",
     "file-size-stats.sh",
@@ -22,7 +20,6 @@
     "generate-download.py",
     "generate-jar.sh",
     "generate-jsdoc.sh",
-    "gviz-api.js",
     "gwt",
     "jsTestDriver.conf",
     "jsdoc-toolkit",
@@ -37,6 +34,6 @@
     "screenshot.png",
     "test.sh",
     "tests",
-    "thumbnail.png",
+    "thumbnail.png"
   ]
 }

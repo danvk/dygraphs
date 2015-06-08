@@ -3,21 +3,21 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
-var hidpiTestCase = TestCase("hidpi");
+describe("hidpi", function() {
 
 var savePixelRatio;
-hidpiTestCase.prototype.setUp = function() {
+beforeEach(function() {
   savePixelRatio = window.devicePixelRatio;
   window.devicePixelRatio = 2;
 
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-hidpiTestCase.prototype.tearDown = function() {
+afterEach(function() {
   window.devicePixelRatio = savePixelRatio;
-};
+});
 
-hidpiTestCase.prototype.testDoesntCreateScrollbars = function() {
+it('testDoesntCreateScrollbars', function() {
   var sw = document.body.scrollWidth;
   var cw = document.body.clientWidth;
 
@@ -38,7 +38,9 @@ hidpiTestCase.prototype.testDoesntCreateScrollbars = function() {
   // Adding the graph shouldn't cause the width of the page to change.
   // (essentially, we're checking that we don't end up with a scrollbar)
   // See http://stackoverflow.com/a/2146905/388951
-  assertEquals(cw, document.body.clientWidth);
-  assertEquals(sw, document.body.scrollWidth);
-};
+  assert.equal(cw, document.body.clientWidth);
+  assert.equal(sw, document.body.scrollWidth);
+});
 
+
+});

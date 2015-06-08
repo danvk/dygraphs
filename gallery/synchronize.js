@@ -18,7 +18,7 @@ Gallery.register(
         '</style>',
         '<p>Zooming and panning on any of the charts will zoom and pan all the',
         'others. Selecting points on one will select points on the others.</p>',
-        '<p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
+        '<p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
         'See the comments in that file for usage.</p>',
         '<div class="chart-container">',
         '  <div id="div1" class="chart"></div>',

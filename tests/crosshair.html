@@ -8,69 +8,66 @@
     -->
     <script type="text/javascript" src="../dygraph-dev.js"></script>
 
+    <script type="text/javascript" src="../src/extras/crosshair.js"></script>
     <script type="text/javascript" src="data.js"></script>
-    <style type="text/css">
-      .line {
-        visibility: hidden;
-        background-color: black;
-        position: absolute;
-        pointer-events: none;  /* let mouse events fall through to the chart */
-      }
-      .yline {
-        width: 100%;
-        height: 1px;
-      }
-      .xline {
-        height: 100%;
-        width: 1px;
-      }
-    </style>
   </head>
   <body>
-    <p>Hover, click and zoom to test the callbacks:</p>
-    <div id="div_g" style="width:600px; height:300px; position:relative;">
+    <p>Vertical crosshair:</p>
+    <div id="div_g_v" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <p>Horizontal crosshairs:</p>
+    <div id="div_g_h" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <p>Both crosshairs:</p>
+    <div id="div_g_b" style="width:600px; height:300px; position:relative;">
     </div>
 
     <script type="text/javascript">
-      var lines = [];
-      var xline;
-      g = new Dygraph(
-            document.getElementById("div_g"),
-            NoisyData, {
-              rollPeriod: 7,
-              showRoller: true,
-              errorBars: true,
+      gv = new Dygraph(
+        document.getElementById("div_g_v"),
+        NoisyData,
+        {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
 
-              highlightCallback: function(e, x, pts) {
-                for (var i = 0; i < pts.length; i++) {
-                  var y = pts[i].canvasy;
-                  lines[i].style.visibility = "visible";
-                  lines[i].style.top = y + "px";
-                  if (i == 0) xline.style.left = pts[i].canvasx + "px";
-                }
-                xline.style.visibility = "visible";
-              },
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "vertical"
+            })
+          ]
+        }
+      );
+      gh = new Dygraph(
+        document.getElementById("div_g_h"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
 
-              unhighlightCallback: function(e) {
-                for (var i = 0; i < 2; i++) {
-                  lines[i].style.visibility = "hidden";
-                }
-                xline.style.visibility = "hidden";
-              }
-            }
-          );
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "horizontal"
+            })
+          ]
+        }
+      );
+      gb = new Dygraph(
+        document.getElementById("div_g_b"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
 
-      for (var i = 0; i < 2; i++) {
-        var line = document.createElement("div");
-        line.className = "line yline";
-        document.getElementById("div_g").appendChild(line);
-        lines.push(line);
-      }
-
-      xline = document.createElement("div");
-      xline.className = "line xline";
-      xline.style.top = "0px";
-      document.getElementById("div_g").appendChild(xline);
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "both"
+            })
+          ]
+        }
+      );
     </script>
   </body>
 </html>

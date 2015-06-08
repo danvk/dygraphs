@@ -3,26 +3,26 @@
  *
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
-var ConnectSeparatedPointsTestCase = TestCase("connect-separated-points");
+describe("connect-separated-points", function() {
 
-ConnectSeparatedPointsTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
-};
+});
 
-ConnectSeparatedPointsTestCase.origFunc = Dygraph.getContext;
+var origFunc = Dygraph.getContext;
 
-ConnectSeparatedPointsTestCase.prototype.setUp = function() {
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div>";
   Dygraph.getContext = function(canvas) {
-    return new Proxy(ConnectSeparatedPointsTestCase.origFunc(canvas));
+    return new Proxy(origFunc(canvas));
   };
-};
+});
 
-ConnectSeparatedPointsTestCase.prototype.tearDown = function() {
-  Dygraph.getContext = ConnectSeparatedPointsTestCase.origFunc;
-};
+afterEach(function() {
+  Dygraph.getContext = origFunc;
+});
 
-ConnectSeparatedPointsTestCase.prototype.testEdgePointsSimple = function() {
+it('testEdgePointsSimple', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -47,7 +47,7 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsSimple = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -84,9 +84,9 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsSimple = function() {
   // Check if both points are connected at the right edge of the canvas and if the option "connectSeparatedPoints" works properly
   // even if the point is outside the visible range and only one series has a valid value for this point.
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-};
+});
 
-ConnectSeparatedPointsTestCase.prototype.testEdgePointsCustomBars = function() {
+it('testEdgePointsCustomBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -113,7 +113,7 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsCustomBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -213,9 +213,9 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsCustomBars = function() {
   // Check if both points are connected at the right edge of the canvas and if the option "connectSeparatedPoints" works properly
   // even if the point is outside the visible range and only one series has a valid value for this point.
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-};
+});
 
-ConnectSeparatedPointsTestCase.prototype.testEdgePointsErrorBars = function() {
+it('testEdgePointsErrorBars', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -243,7 +243,7 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsErrorBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
 
@@ -350,16 +350,16 @@ ConnectSeparatedPointsTestCase.prototype.testEdgePointsErrorBars = function() {
   // Check if both points are connected at the right edge of the canvas and if the option "connectSeparatedPoints" works properly
   // even if the point is outside the visible range and only one series has a valid value for this point.
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-};
+});
 
-ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = function() {
+it('testConnectSeparatedPointsPerSeries', function() {
   var assertExpectedLinesDrawnPerSeries = function(htx, expectedSeries1, expectedSeries2, expectedSeries3) {
     var expected = [expectedSeries1, expectedSeries2, expectedSeries3];    
     var actual = [ 
         CanvasAssertions.numLinesDrawn(htx, "#ff0000"),
         CanvasAssertions.numLinesDrawn(htx, "#00ff00"),
         CanvasAssertions.numLinesDrawn(htx, "#0000ff")];
-    assertEquals(expected, actual);
+    assert.deepEqual(expected, actual);
   }
 
   var g = new Dygraph(document.getElementById("graph"),
@@ -378,7 +378,7 @@ ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = f
         colors: ["#ff0000", "#00ff00", "#0000ff"]
       });
 
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
   assertExpectedLinesDrawnPerSeries(htx, 4, 1, 2);
 
   Proxy.reset(htx);
@@ -405,9 +405,9 @@ ConnectSeparatedPointsTestCase.prototype.testConnectSeparatedPointsPerSeries = f
     }
   });
   assertExpectedLinesDrawnPerSeries(htx, 4, 3, 3);
-}
+});
 
-ConnectSeparatedPointsTestCase.prototype.testNaNErrorBars = function() {
+it('testNaNErrorBars', function() {
   var data = [
     [0,[1,2,3]],
     [1,[2,3,4]],
@@ -433,7 +433,7 @@ ConnectSeparatedPointsTestCase.prototype.testNaNErrorBars = function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
   
-  htx = g.hidden_ctx_;
+  var htx = g.hidden_ctx_;
 
   var attrs = {};  
   
@@ -445,5 +445,7 @@ ConnectSeparatedPointsTestCase.prototype.testNaNErrorBars = function() {
 
   // No line across the NaN gap, and a single line (not two)
   // across the null gap.
-  assertEquals(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
-};
+  assert.equal(8, CanvasAssertions.numLinesDrawn(htx, '#ff0000'));
+});
+
+});

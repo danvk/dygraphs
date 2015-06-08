@@ -4,21 +4,23 @@
  * @author uemit.seren@gmail.com (Ümit Seren)
  */
 
-var CallbackTestCase = TestCase("callback");
+describe("callback", function() {
 
-CallbackTestCase.prototype.setUp = function() {
+var xhr, styleSheet;
+
+beforeEach(function() {
   document.body.innerHTML = "<div id='graph'></div><div id='selection'></div>";
-  this.xhr = XMLHttpRequest;
-  this.styleSheet = document.createElement("style");
-  this.styleSheet.type = "text/css";
-  document.getElementsByTagName("head")[0].appendChild(this.styleSheet);
-};
+  xhr = XMLHttpRequest;
+  styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  document.getElementsByTagName("head")[0].appendChild(styleSheet);
+});
 
-CallbackTestCase.prototype.tearDown = function() {
-  XMLHttpRequest = this.xhr;
-};
+afterEach(function() {
+  window.XMLHttpRequest = xhr;
+});
 
-var data = "X,a\,b,c\n" +
+var data = "X,a,b,c\n" +
  "10,-1,1,2\n" +
  "11,0,3,1\n" +
  "12,1,4,2\n" +
@@ -30,12 +32,12 @@ var data = "X,a\,b,c\n" +
  * is properly called when the  first series is hidden (setVisibility = false)
  *
  */
-CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
+it('testHighlightCallbackIsCalled', function() {
   var h_row;
   var h_pts;
 
   var highlightCallback = function(e, x, pts, row) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     h_row = row;
     h_pts = pts;
   };
@@ -52,20 +54,20 @@ CallbackTestCase.prototype.testHighlightCallbackIsCalled = function() {
   DygraphOps.dispatchMouseMove(g, 13, 10);
 
   //check correct row is returned
-  assertEquals(3, h_row);
+  assert.equal(3, h_row);
   //check there are only two points (because first series is hidden)
-  assertEquals(2, h_pts.length);
-};
+  assert.equal(2, h_pts.length);
+});
 
 
 /**
  * Test that drawPointCallback isn't called when drawPoints is false
  */
-CallbackTestCase.prototype.testDrawPointCallback_disabled = function() {
+it('testDrawPointCallback_disabled', function() {
   var called = false;
 
   var callback = function() {
-    assertEquals(g, this);
+    assert.equal(g, this);
     called = true;
   };
 
@@ -74,13 +76,13 @@ CallbackTestCase.prototype.testDrawPointCallback_disabled = function() {
       drawPointCallback: callback,
     });
 
-  assertFalse(called);
-};
+  assert.isFalse(called);
+});
 
 /**
  * Test that drawPointCallback is called when drawPoints is true
  */
-CallbackTestCase.prototype.testDrawPointCallback_enabled = function() {
+it('testDrawPointCallback_enabled', function() {
   var called = false;
   var callbackThis = null;
 
@@ -95,19 +97,19 @@ CallbackTestCase.prototype.testDrawPointCallback_enabled = function() {
       drawPointCallback: callback
     });
 
-  assertTrue(called);
-  assertEquals(g, callbackThis);
-};
+  assert.isTrue(called);
+  assert.equal(g, callbackThis);
+});
 
 /**
  * Test that drawPointCallback is called when drawPoints is true
  */
-CallbackTestCase.prototype.testDrawPointCallback_pointSize = function() {
+it('testDrawPointCallback_pointSize', function() {
   var pointSize = 0;
   var count = 0;
 
   var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     pointSize = pointSizeParam;
     count++;
   };
@@ -118,8 +120,8 @@ CallbackTestCase.prototype.testDrawPointCallback_pointSize = function() {
       drawPointCallback: callback
     });
 
-  assertEquals(1.5, pointSize);
-  assertEquals(12, count); // one call per data point.
+  assert.equal(1.5, pointSize);
+  assert.equal(12, count); // one call per data point.
 
   var g = new Dygraph(graph, data, {
       drawPoints: true,
@@ -127,19 +129,19 @@ CallbackTestCase.prototype.testDrawPointCallback_pointSize = function() {
       pointSize: 8
     });
 
-  assertEquals(8, pointSize);
-};
+  assert.equal(8, pointSize);
+});
 
 /**
  * Test that drawPointCallback is called for isolated points when
  * drawPoints is false, and also for gap points if that's enabled.
  */
-CallbackTestCase.prototype.testDrawPointCallback_isolated = function() {
+it('testDrawPointCallback_isolated', function() {
   var xvalues = [];
 
   var g;
   var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     var dx = g.toDataXCoord(cx);
     xvalues.push(dx);
     Dygraph.Circles.DEFAULT.apply(this, arguments);
@@ -157,9 +159,9 @@ CallbackTestCase.prototype.testDrawPointCallback_isolated = function() {
 
   // Test that isolated points get drawn
   g = new Dygraph(graph, testdata, graphOpts);
-  assertEquals(2, xvalues.length);
-  assertEquals(13, xvalues[0]);
-  assertEquals(15, xvalues[1]);
+  assert.equal(2, xvalues.length);
+  assert.equal(13, xvalues[0]);
+  assert.equal(15, xvalues[1]);
 
   // Test that isolated points + gap points get drawn when
   // drawGapEdgePoints is set.  This should add one point at the right
@@ -167,22 +169,22 @@ CallbackTestCase.prototype.testDrawPointCallback_isolated = function() {
   xvalues = []; // Reset for new test
   graphOpts.drawGapEdgePoints = true;
   g = new Dygraph(graph, testdata, graphOpts);
-  assertEquals(3, xvalues.length);
-  assertEquals(11, xvalues[0]);
-  assertEquals(13, xvalues[1]);
-  assertEquals(15, xvalues[2]);
-};
+  assert.equal(3, xvalues.length);
+  assert.equal(11, xvalues[0]);
+  assert.equal(13, xvalues[1]);
+  assert.equal(15, xvalues[2]);
+});
 
 /**
  * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
  * is properly called when the first series is hidden (setVisibility = false)
  *
  */
-CallbackTestCase.prototype.testDrawHighlightPointCallbackIsCalled = function() {
+it('testDrawHighlightPointCallbackIsCalled', function() {
   var called = false;
 
   var drawHighlightPointCallback = function() {
-    assertEquals(g, this);
+    assert.equal(g, this);
     called = true;
   };
 
@@ -194,10 +196,10 @@ CallbackTestCase.prototype.testDrawHighlightPointCallbackIsCalled = function() {
         drawHighlightPointCallback: drawHighlightPointCallback
       });
 
-  assertFalse(called);
+  assert.isFalse(called);
   DygraphOps.dispatchMouseMove(g, 13, 10);
-  assertTrue(called);
-};
+  assert.isTrue(called);
+});
 
 /**
  * Test the closest-series highlighting methods for normal and stacked modes.
@@ -228,7 +230,7 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
       });
 
   var highlightCallback = function(e, x, pts, row, set) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     h_row = row;
     h_pts = pts;
     h_series = set;
@@ -239,27 +241,27 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
 
   if (isStacked) {
     DygraphOps.dispatchMouseMove(g, 11.45, 1.4);
-    assertEquals(1, h_row);
-    assertEquals('c', h_series);
+    assert.equal(1, h_row);
+    assert.equal('c', h_series);
 
     //now move up in the same row
     DygraphOps.dispatchMouseMove(g, 11.45, 1.5);
-    assertEquals(1, h_row);
-    assertEquals('b', h_series);
+    assert.equal(1, h_row);
+    assert.equal('b', h_series);
 
     //and a bit to the right
     DygraphOps.dispatchMouseMove(g, 11.55, 1.5);
-    assertEquals(2, h_row);
-    assertEquals('c', h_series);
+    assert.equal(2, h_row);
+    assert.equal('c', h_series);
   } else {
     DygraphOps.dispatchMouseMove(g, 11, 1.5);
-    assertEquals(1, h_row);
-    assertEquals('c', h_series);
+    assert.equal(1, h_row);
+    assert.equal('c', h_series);
 
     //now move up in the same row
     DygraphOps.dispatchMouseMove(g, 11, 2.5);
-    assertEquals(1, h_row);
-    assertEquals('b', h_series);
+    assert.equal(1, h_row);
+    assert.equal('b', h_series);
   }
 
   return g;
@@ -268,70 +270,70 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
 /**
  * Test basic closest-point highlighting.
  */
-CallbackTestCase.prototype.testClosestPointCallback = function() {
+it('testClosestPointCallback', function() {
   runClosestTest(false, 1, 3);
-}
+});
 
 /**
  * Test setSelection() with series name
  */
-CallbackTestCase.prototype.testSetSelection = function() {
+it('testSetSelection', function() {
   var g = runClosestTest(false, 1, 3);
-  assertEquals(1, g.attr_('strokeWidth', 'c'));
+  assert.equal(1, g.attr_('strokeWidth', 'c'));
   g.setSelection(false, 'c');
-  assertEquals(3, g.attr_('strokeWidth', 'c'));
-}
+  assert.equal(3, g.attr_('strokeWidth', 'c'));
+});
 
 /**
  * Test closest-point highlighting for stacked graph
  */
-CallbackTestCase.prototype.testClosestPointStackedCallback = function() {
+it('testClosestPointStackedCallback', function() {
   runClosestTest(true, 1, 3);
-}
+});
 
 /**
  * Closest-point highlighting with legend CSS - border around active series.
  */
-CallbackTestCase.prototype.testClosestPointCallbackCss1 = function() {
+it('testClosestPointCallbackCss1', function() {
   var css = "div.dygraph-legend > span { display: block; }\n" +
       "div.dygraph-legend > span.highlight { border: 1px solid grey; }\n";
-  this.styleSheet.innerHTML = css;
+  styleSheet.innerHTML = css;
   runClosestTest(false, 2, 4);
-  this.styleSheet.innerHTML = '';
-}
+  styleSheet.innerHTML = '';
+});
 
 /**
  * Closest-point highlighting with legend CSS - show only closest series.
  */
-CallbackTestCase.prototype.testClosestPointCallbackCss2 = function() {
+it('testClosestPointCallbackCss2', function() {
   var css = "div.dygraph-legend > span { display: none; }\n" +
       "div.dygraph-legend > span.highlight { display: inline; }\n";
-  this.styleSheet.innerHTML = css;
+  styleSheet.innerHTML = css;
   runClosestTest(false, 10, 15);
-  this.styleSheet.innerHTML = '';
+  styleSheet.innerHTML = '';
   // TODO(klausw): verify that the highlighted line is drawn on top?
-}
+});
 
 /**
  * Closest-point highlighting with locked series.
  */
-CallbackTestCase.prototype.testSetSelectionLocking = function() {
+it('testSetSelectionLocking', function() {
   var g = runClosestTest(false, 2, 4);
 
   // Default behavior, 'b' is closest
   DygraphOps.dispatchMouseMove(g, 11, 4);
-  assertEquals('b', g.getHighlightSeries());
+  assert.equal('b', g.getHighlightSeries());
 
   // Now lock selection to 'c'
   g.setSelection(false, 'c', true);
   DygraphOps.dispatchMouseMove(g, 11, 4);
-  assertEquals('c', g.getHighlightSeries());
+  assert.equal('c', g.getHighlightSeries());
 
   // Unlock, should be back to 'b'
   g.clearSelection();
   DygraphOps.dispatchMouseMove(g, 11, 4);
-  assertEquals('b', g.getHighlightSeries());
-}
+  assert.equal('b', g.getHighlightSeries());
+});
 
 /**
  * This tests that closest point searches work for data containing NaNs.
@@ -339,7 +341,7 @@ CallbackTestCase.prototype.testSetSelectionLocking = function() {
  * It's intended to catch a regression where a NaN Y value confuses the
  * closest-point algorithm, treating it as closer as any previous point.
  */
-CallbackTestCase.prototype.testNaNData = function() {
+it('testNaNData', function() {
   var dataNaN = [
     [9, -1, NaN, NaN],
     [10, -1, 1, 2],
@@ -352,7 +354,7 @@ CallbackTestCase.prototype.testNaNData = function() {
   var h_pts;
 
   var highlightCallback = function(e, x, pts, row) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     h_row = row;
     h_pts = pts;
   };
@@ -369,25 +371,25 @@ CallbackTestCase.prototype.testNaNData = function() {
 
   DygraphOps.dispatchMouseMove(g, 10.1, 0.9);
   //check correct row is returned
-  assertEquals(1, h_row);
+  assert.equal(1, h_row);
 
   // Explicitly test closest point algorithms
   var dom = g.toDomCoords(10.1, 0.9);
-  assertEquals(1, g.findClosestRow(dom[0]));
+  assert.equal(1, g.findClosestRow(dom[0]));
 
   var res = g.findClosestPoint(dom[0], dom[1]);
-  assertEquals(1, res.row);
-  assertEquals('b', res.seriesName);
+  assert.equal(1, res.row);
+  assert.equal('b', res.seriesName);
 
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(1, res.row);
-  assertEquals('c', res.seriesName);
-};
+  assert.equal(1, res.row);
+  assert.equal('c', res.seriesName);
+});
 
 /**
  * This tests that stacked point searches work for data containing NaNs.
  */
-CallbackTestCase.prototype.testNaNDataStack = function() {
+it('testNaNDataStack', function() {
   var dataNaN = [
     [9, -1, NaN, NaN],
     [10, -1, 1, 2],
@@ -405,7 +407,7 @@ CallbackTestCase.prototype.testNaNDataStack = function() {
   var h_pts;
 
   var highlightCallback = function(e, x, pts, row) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     h_row = row;
     h_pts = pts;
   };
@@ -423,40 +425,40 @@ CallbackTestCase.prototype.testNaNDataStack = function() {
 
   DygraphOps.dispatchMouseMove(g, 10.1, 0.9);
   //check correct row is returned
-  assertEquals(1, h_row);
+  assert.equal(1, h_row);
 
   // Explicitly test stacked point algorithm.
   var dom = g.toDomCoords(10.1, 0.9);
   var res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(1, res.row);
-  assertEquals('c', res.seriesName);
+  assert.equal(1, res.row);
+  assert.equal('c', res.seriesName);
 
   // All-NaN area at left, should get no points.
   dom = g.toDomCoords(9.1, 0.9);
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(0, res.row);
-  assertEquals(undefined, res.seriesName);
+  assert.equal(0, res.row);
+  assert.equal(undefined, res.seriesName);
 
   // First gap, get 'c' since it's non-NaN.
   dom = g.toDomCoords(12.1, 0.9);
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(3, res.row);
-  assertEquals('c', res.seriesName);
+  assert.equal(3, res.row);
+  assert.equal('c', res.seriesName);
 
   // Second gap, get 'b' since 'c' is NaN.
   dom = g.toDomCoords(15.1, 0.9);
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(6, res.row);
-  assertEquals('b', res.seriesName);
+  assert.equal(6, res.row);
+  assert.equal('b', res.seriesName);
 
   // Isolated points should work, finding series b in this case.
   dom = g.toDomCoords(15.9, 3.1);
   res = g.findStackedPoint(dom[0], dom[1]);
-  assertEquals(7, res.row);
-  assertEquals('b', res.seriesName);
-};
+  assert.equal(7, res.row);
+  assert.equal('b', res.seriesName);
+});
 
-CallbackTestCase.prototype.testGapHighlight = function() {
+it('testGapHighlight', function() {
   var dataGap = [
     [1, null, 3],
     [2, 2, null],
@@ -471,7 +473,7 @@ CallbackTestCase.prototype.testGapHighlight = function() {
   var h_pts;
 
   var highlightCallback = function(e, x, pts, row) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     h_row = row;
     h_pts = pts;
   };
@@ -489,26 +491,26 @@ CallbackTestCase.prototype.testGapHighlight = function() {
 
   DygraphOps.dispatchMouseMove(g, 1.1, 10);
   //point from series B
-  assertEquals(0, h_row);
-  assertEquals(1, h_pts.length);
-  assertEquals(3, h_pts[0].yval);
-  assertEquals('B', h_pts[0].name);
+  assert.equal(0, h_row);
+  assert.equal(1, h_pts.length);
+  assert.equal(3, h_pts[0].yval);
+  assert.equal('B', h_pts[0].name);
 
   DygraphOps.dispatchMouseMove(g, 6.1, 10);
   // A is NaN at x=6
-  assertEquals(1, h_pts.length);
+  assert.equal(1, h_pts.length);
   assert(isNaN(h_pts[0].yval));
-  assertEquals('A', h_pts[0].name);
+  assert.equal('A', h_pts[0].name);
 
   DygraphOps.dispatchMouseMove(g, 8.1, 10);
   //point from series A
-  assertEquals(6, h_row);
-  assertEquals(1, h_pts.length);
-  assertEquals(8, h_pts[0].yval);
-  assertEquals('A', h_pts[0].name);
-};
+  assert.equal(6, h_row);
+  assert.equal(1, h_pts.length);
+  assert.equal(8, h_pts[0].yval);
+  assert.equal('A', h_pts[0].name);
+});
 
-CallbackTestCase.prototype.testFailedResponse = function() {
+it('testFailedResponse', function() {
 
   // Fake out the XMLHttpRequest so it doesn't do anything.
   XMLHttpRequest = function () {};
@@ -516,7 +518,7 @@ CallbackTestCase.prototype.testFailedResponse = function() {
   XMLHttpRequest.prototype.send = function () {};
 
   var highlightCallback = function(e, x, pts, row) {
-    fail("should not reach here");
+    throw "should not reach here";
   };
 
   var graph = document.getElementById("graph");
@@ -537,15 +539,15 @@ CallbackTestCase.prototype.testFailedResponse = function() {
 
   DygraphOps.dispatchMouseOut_Point(g, 800, 800); // This call should not throw an exception.
 
-  assertFalse("exception thrown during mouseout", failed);
-};
+  assert.isFalse(failed, "exception thrown during mouseout");
+});
 
 
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355 
-CallbackTestCase.prototype.testHighlightCallbackRow = function() {
+it('testHighlightCallbackRow', function() {
   var highlightRow;
   var highlightCallback = function(e, x, pts, row) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     highlightRow = row;
   };
 
@@ -566,35 +568,35 @@ CallbackTestCase.prototype.testHighlightCallbackRow = function() {
   // Mouse over each of the points
   DygraphOps.dispatchMouseOver_Point(g, 0, 0);
   DygraphOps.dispatchMouseMove_Point(g, 0, 0);
-  assertEquals(0, highlightRow);
+  assert.equal(0, highlightRow);
   DygraphOps.dispatchMouseMove_Point(g, 100, 0);
-  assertEquals(1, highlightRow);
+  assert.equal(1, highlightRow);
   DygraphOps.dispatchMouseMove_Point(g, 200, 0);
-  assertEquals(2, highlightRow);
+  assert.equal(2, highlightRow);
   DygraphOps.dispatchMouseMove_Point(g, 300, 0);
-  assertEquals(3, highlightRow);
+  assert.equal(3, highlightRow);
   DygraphOps.dispatchMouseMove_Point(g, 400, 0);
-  assertEquals(4, highlightRow);
+  assert.equal(4, highlightRow);
 
   // Now zoom and verify that the row numbers still refer to rows in the data
   // array.
   g.updateOptions({dateWindow: [2, 4]});
   DygraphOps.dispatchMouseOver_Point(g, 0, 0);
   DygraphOps.dispatchMouseMove_Point(g, 0, 0);
-  assertEquals(2, highlightRow);
-  assertEquals('2: Y: 3 Z: 4', Util.getLegend());
-};
+  assert.equal(2, highlightRow);
+  assert.equal('2: Y: 3 Z: 4', Util.getLegend());
+});
 
 /**
  * Test that underlay callback is called even when there are no series,
  * and that the y axis ranges are not NaN.
  */
-CallbackTestCase.prototype.underlayCallback_noSeries = function() {
+it('testUnderlayCallback_noSeries', function() {
   var called = false;
   var yMin, yMax;
 
   var callback = function(canvas, area, g) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     called = true;
     yMin = g.yAxisRange(0)[0];
     yMax = g.yAxisRange(0)[1];
@@ -605,20 +607,20 @@ CallbackTestCase.prototype.underlayCallback_noSeries = function() {
       underlayCallback: callback
     });
 
-  assertTrue(called);
-  assertFalse(isNaN(yMin));
-  assertFalse(isNaN(yMax));
-};
+  assert.isTrue(called);
+  assert.isFalse(isNaN(yMin));
+  assert.isFalse(isNaN(yMax));
+});
 
 /**
  * Test that underlay callback receives the correct y-axis range.
  */
-CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
+it('testUnderlayCallback_yAxisRange', function() {
   var called = false;
   var yMin, yMax;
 
   var callback = function(canvas, area, g) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     yMin = g.yAxisRange(0)[0];
     yMax = g.yAxisRange(0)[1];
   };
@@ -629,19 +631,19 @@ CallbackTestCase.prototype.underlayCallback_yAxisRange = function() {
       underlayCallback: callback
     });
 
-  assertEquals(0, yMin);
-  assertEquals(10, yMax);
-};
+  assert.equal(0, yMin);
+  assert.equal(10, yMax);
+});
 
 /**
  * Test that drawPointCallback is called for isolated points and correct idx for the point is returned.
  */
-CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
+it('testDrawPointCallback_idx', function() {
   var indices = [];
 
   var g;
   var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     indices.push(idx);
     Dygraph.Circles.DEFAULT.apply(this, arguments);
   };
@@ -659,8 +661,8 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
 
   // Test that correct idx for isolated points are passed to the callback.
   g = new Dygraph(graph, testdata, graphOpts);
-  assertEquals(2, indices.length);
-  assertEquals([3, 5],indices);
+  assert.equal(2, indices.length);
+  assert.deepEqual([3, 5],indices);
 
   // Test that correct indices for isolated points + gap points are passed to the callback when
   // drawGapEdgePoints is set.  This should add one point at the right
@@ -668,8 +670,8 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
   indices = []; // Reset for new test
   graphOpts.drawGapEdgePoints = true;
   g = new Dygraph(graph, testdata, graphOpts);
-  assertEquals(3, indices.length);
-  assertEquals([1, 3, 5],indices);
+  assert.equal(3, indices.length);
+  assert.deepEqual([1, 3, 5],indices);
 
 
   //Test that correct indices are passed to the callback when zoomed in.
@@ -678,34 +680,48 @@ CallbackTestCase.prototype.testDrawPointCallback_idx = function() {
   graphOpts.drawPoints = true;
   testdata = [[10, 2], [11, 3], [12, 4], [13, 2], [14, 5], [15, 3]];
   g = new Dygraph(graph, testdata, graphOpts);
-  assertEquals(3, indices.length);
-  assertEquals([2, 3, 4],indices);
-};
+  assert.equal(3, indices.length);
+  assert.deepEqual([2, 3, 4],indices);
+});
 
 /**
  * Test that the correct idx is returned for the point in the onHiglightCallback.
-  */
-CallbackTestCase.prototype.testDrawHighlightPointCallback_idx = function() {
+ */
+it('testDrawHighlightPointCallback_idx', function() {
   var idxToCheck = null;
 
   var drawHighlightPointCallback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
-    assertEquals(g, this);
+    assert.equal(g, this);
     idxToCheck = idx;
   };
   var testdata = [[1, 2], [2, 3], [3, NaN], [4, 2], [5, NaN], [6, 3]];
   var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, testdata,
-      {
-          drawHighlightPointCallback : drawHighlightPointCallback
+  var g = new Dygraph(graph, testdata, {
+        drawHighlightPointCallback: drawHighlightPointCallback,
+        labels: ['X', 'Y']
       });
 
-  assertNull(idxToCheck);
+  assert.isNull(idxToCheck);
   DygraphOps.dispatchMouseMove(g, 3, 0);
   // check that NaN point is not highlighted
-  assertNull(idxToCheck);
+  assert.isNull(idxToCheck);
   DygraphOps.dispatchMouseMove(g, 1, 2);
   // check that correct index is returned
-  assertEquals(0,idxToCheck);
+  assert.equal(0,idxToCheck);
   DygraphOps.dispatchMouseMove(g, 6, 3);
-  assertEquals(5,idxToCheck);
-};
+  assert.equal(5,idxToCheck);
+});
+
+/**
+ * Test that drawCallback is called with the correct value for `this`.
+ */
+it('should set this in drawCallback', function() {
+  var g = new Dygraph('graph', data, {
+    drawCallback: function(g, is_initial) {
+      assert.isTrue(is_initial);
+      assert.equal(g, this);
+    }
+  });
+});
+
+});

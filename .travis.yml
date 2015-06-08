@@ -2,4 +2,5 @@ language: node_js
 node_js:
   - "0.10"
 
-script: "make travis"
+sudo: false  # Use container-based architecture
+script: "gulp travis"

@@ -3,13 +3,13 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
-var fastCanvasProxyTestCase = TestCase("fast-canvas-proxy");
+describe("fast-canvas-proxy", function() {
 
-fastCanvasProxyTestCase.prototype.setUp = function() {
-};
+beforeEach(function() {
+});
 
-fastCanvasProxyTestCase.prototype.tearDown = function() {
-};
+afterEach(function() {
+});
 
 var fakeCanvasContext = {
   moveTo: function() {},
@@ -32,7 +32,7 @@ function extractMoveToAndLineToCalls(proxy) {
   return out;
 }
 
-fastCanvasProxyTestCase.prototype.testExtraMoveTosElided = function() {
+it('testExtraMoveTosElided', function() {
   var htx = new Proxy(fakeCanvasContext);
   var fastProxy = DygraphCanvasRenderer._fastCanvasProxy(htx);
 
@@ -43,12 +43,12 @@ fastCanvasProxyTestCase.prototype.testExtraMoveTosElided = function() {
   fastProxy.moveTo(3, 1);
   fastProxy.stroke();
 
-  assertEquals([['moveTo', 1, 1],
+  assert.deepEqual([['moveTo', 1, 1],
                 ['lineTo', 2, 1],
                 ['lineTo', 3, 1]], extractMoveToAndLineToCalls(htx));
-};
+});
 
-fastCanvasProxyTestCase.prototype.testConsecutiveMoveTosElided = function() {
+it('testConsecutiveMoveTosElided', function() {
   var htx = new Proxy(fakeCanvasContext);
   var fastProxy = DygraphCanvasRenderer._fastCanvasProxy(htx);
 
@@ -59,12 +59,12 @@ fastCanvasProxyTestCase.prototype.testConsecutiveMoveTosElided = function() {
   fastProxy.moveTo(3.2, 3);
   fastProxy.stroke();
 
-  assertEquals([['moveTo', 1, 1],
+  assert.deepEqual([['moveTo', 1, 1],
                 ['lineTo', 2, 1],
                 ['moveTo', 3.2, 3]], extractMoveToAndLineToCalls(htx));
-};
+});
 
-fastCanvasProxyTestCase.prototype.testSuperfluousSegmentsElided = function() {
+it('testSuperfluousSegmentsElided', function() {
   var htx = new Proxy(fakeCanvasContext);
   var fastProxy = DygraphCanvasRenderer._fastCanvasProxy(htx);
 
@@ -90,10 +90,69 @@ fastCanvasProxyTestCase.prototype.testSuperfluousSegmentsElided = function() {
   fastProxy.moveTo(3, 0);  // dodge the "don't touch the last pixel" rule.
   fastProxy.stroke();
 
-  assertEquals([['moveTo', 0.6, 1],
+  assert.deepEqual([['moveTo', 0.6, 1],
                 ['lineTo', 1.0, 5],
                 ['lineTo', 1.2, 0],
                 ['lineTo', 1.7, 30],
                 ['lineTo', 1.8, -30],
                 ['moveTo', 3, 0]], extractMoveToAndLineToCalls(htx));
-};
+});
+
+
+// For a more visual version of this test, see
+// https://gist.github.com/danvk/e98dbb24253c9b153696
+// The drawing commands in the following two tests are taken from there.
+it('should handle gaps on the left', function() {
+  var htx = new Proxy(fakeCanvasContext);
+  var fastProxy = DygraphCanvasRenderer._fastCanvasProxy(htx);
+
+  fastProxy.moveTo(0, 320);
+  fastProxy.lineTo(0, 320);
+  fastProxy.lineTo(53.21, 187);
+  fastProxy.lineTo(53.23, 29);
+  fastProxy.lineTo(53.41, 320);
+  fastProxy.lineTo(54.15, 320);
+  fastProxy.lineTo(475, 320);
+  fastProxy.lineTo(475, 320);
+  fastProxy.fill();
+
+  assert.deepEqual([
+    ['moveTo', 0, 320],
+    ['lineTo', 0, 320],
+    ['lineTo', 53.21, 187],
+    ['lineTo', 53.23, 29],
+    ['lineTo', 53.41, 320],
+    ['lineTo', 54.15, 320],
+    ['lineTo', 475, 320],
+    ['lineTo', 475, 320]
+  ], extractMoveToAndLineToCalls(htx));
+});
+
+it('should handle gaps on the right', function() {
+  var htx = new Proxy(fakeCanvasContext);
+  var fastProxy = DygraphCanvasRenderer._fastCanvasProxy(htx);
+  fastProxy.moveTo(240.2, 320);
+  fastProxy.lineTo(240.2, 320);
+  fastProxy.lineTo(240.2, 174);
+  fastProxy.lineTo(240.7, 145);
+  fastProxy.lineTo(240.8, 320);
+  fastProxy.lineTo(241.3, 29);
+  fastProxy.lineTo(241.4, 320);
+  fastProxy.lineTo(715.9, 320);
+  fastProxy.lineTo(715.9, 320);
+  fastProxy.fill();
+
+  assert.deepEqual([
+    ['moveTo', 240.2, 320],
+    ['lineTo', 240.2, 320],
+    ['lineTo', 240.2, 174],
+    ['lineTo', 240.7, 145],
+    ['lineTo', 240.8, 320],
+    ['lineTo', 241.3, 29],
+    ['lineTo', 241.4, 320],
+    ['lineTo', 715.9, 320],
+    ['lineTo', 715.9, 320]
+  ], extractMoveToAndLineToCalls(htx));
+});
+
+});

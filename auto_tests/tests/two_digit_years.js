@@ -3,9 +3,9 @@
  *
  * @author gmadrid@gmail.com (George Madrid)
  */
-var TwoDigitYearsTestCase = TestCase("two-digit-years");
+describe("two-digit-years", function() {
 
-TwoDigitYearsTestCase.prototype.testTwoDigitYears = function() {
+it('testTwoDigitYears', function() {
   // A date with a one digit year: '9 AD'.
   var start = new Date(9, 2, 3);
   // A date with a two digit year: '11 AD'.
@@ -21,5 +21,7 @@ TwoDigitYearsTestCase.prototype.testTwoDigitYears = function() {
   });
 
   // This breaks in Firefox & Safari:
-  // assertEquals([{"v":-61875345600000,"label":"Apr 9"},{"v":-61867483200000,"label":"Jul 9"},{"v":-61859534400000,"label":"Oct 9"},{"v":-61851582000000,"label":"Jan 10"},{"v":-61843809600000,"label":"Apr 10"},{"v":-61835947200000,"label":"Jul 10"},{"v":-61827998400000,"label":"Oct 10"},{"v":-61820046000000,"label":"Jan 11"},{"v":-61812273600000,"label":"Apr 11"}], ticks);
-};
+  // assert.deepEqual([{"v":-61875345600000,"label":"Apr 9"},{"v":-61867483200000,"label":"Jul 9"},{"v":-61859534400000,"label":"Oct 9"},{"v":-61851582000000,"label":"Jan 10"},{"v":-61843809600000,"label":"Apr 10"},{"v":-61835947200000,"label":"Jul 10"},{"v":-61827998400000,"label":"Oct 10"},{"v":-61820046000000,"label":"Jan 11"},{"v":-61812273600000,"label":"Apr 11"}], ticks);
+});
+
+});
