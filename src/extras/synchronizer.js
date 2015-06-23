@@ -47,12 +47,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
     range: true
   };
   var dygraphs = [];
-
-  var prevCallbacks = {
-    draw: null,
-    highlight: null,
-    unhighlight: null
-  };
+  var prevCallbacks = [];
 
   var parseOpts = function(obj) {
     if (!(obj instanceof Object)) {
@@ -100,12 +95,23 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). ' +
           'Need two or more dygraphs to synchronize.';
   }
-  
+
   var readycount = dygraphs.length;
   for (var i = 0; i < dygraphs.length; i++) {
     var g = dygraphs[i];
     g.ready( function() {
       if (--readycount == 0) {
+        // store original callbacks
+        var callBackTypes = ['drawCallback', 'highlightCallback', 'unhighlightCallback'];
+        for (var j = 0; j < dygraphs.length; j++) {
+          if (!prevCallbacks[j]) {
+            prevCallbacks[j] = {};
+          }
+          for (var k in callBackTypes) {
+            prevCallbacks[j][callBackTypes[k]] = dygraphs[j].getFunctionOption(callBackTypes[k]);
+          }
+        }
+
         // Listen for draw, highlight, unhighlight callbacks.
         if (opts.zoom) {
           attachZoomHandlers(dygraphs, opts, prevCallbacks);
@@ -117,18 +123,18 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
       }
     });
   }
- 
+
   return {
     detach: function() {
       for (var i = 0; i < dygraphs.length; i++) {
         var g = dygraphs[i];
         if (opts.zoom) {
-          g.updateOptions({drawCallback: prevCallbacks.draw});
+          g.updateOptions({drawCallback: prevCallbacks[i].drawCallback});
         }
         if (opts.selection) {
           g.updateOptions({
-            highlightCallback: prevCallbacks.highlight,
-            unhighlightCallback: prevCallbacks.unhighlight
+            highlightCallback: prevCallbacks[i].highlightCallback,
+            unhighlightCallback: prevCallbacks[i].unhighlightCallback
           });
         }
       }
@@ -144,10 +150,8 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
-    prevCallbacks.draw = g.getFunctionOption('drawCallback');
     g.updateOptions({
       drawCallback: function(me, initial) {
-        if (prevCallbacks.draw) prevCallbacks.draw(me, initial);
         if (block || initial) return;
         block = true;
         var opts = {
@@ -156,7 +160,12 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         if (syncOpts.range) opts.valueRange = me.yAxisRange();
 
         for (var j = 0; j < gs.length; j++) {
-          if (gs[j] == me) continue;
+          if (gs[j] == me) {
+            if (prevCallbacks[j] && prevCallbacks[j].drawCallback) {
+              prevCallbacks[j].drawCallback(me, initial);
+            }
+            continue;
+          }
           gs[j].updateOptions(opts);
         }
         block = false;
@@ -169,18 +178,19 @@ function attachSelectionHandlers(gs, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
-    prevCallbacks.highlight = g.getFunctionOption('highlightCallback');
-    prevCallbacks.unhighlight = g.getFunctionOption('unhighlightCallback');
+
     g.updateOptions({
       highlightCallback: function(event, x, points, row, seriesName) {
-        if (prevCallbacks.highlight) {
-            prevCallbacks.highlight(event, x, points, row, seriesName);
-        }
         if (block) return;
         block = true;
         var me = this;
         for (var i = 0; i < gs.length; i++) {
-          if (me == gs[i]) continue;
+          if (me == gs[i]) {
+            if (prevCallbacks[i] && prevCallbacks[i].highlightCallback) {
+              prevCallbacks[i].highlightCallback(event, x, points, row, seriesName);
+            }
+            continue;
+          }
           var idx = gs[i].getRowForX(x);
           if (idx !== null) {
             gs[i].setSelection(idx, seriesName);
@@ -189,12 +199,16 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         block = false;
       },
       unhighlightCallback: function(event) {
-        if (prevCallbacks.unhighlight) prevCallbacks.unhighlight(event);
         if (block) return;
         block = true;
         var me = this;
         for (var i = 0; i < gs.length; i++) {
-          if (me == gs[i]) continue;
+          if (me == gs[i]) {
+            if (prevCallbacks[i] && prevCallbacks[i].unhighlightCallback) {
+              prevCallbacks[i].unhighlightCallback(event);
+            }
+            continue;
+          }
           gs[i].clearSelection();
         }
         block = false;
