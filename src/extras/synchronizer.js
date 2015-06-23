@@ -107,7 +107,7 @@ Dygraph.synchronize = function(/* dygraphs..., opts */) {
           if (!prevCallbacks[j]) {
             prevCallbacks[j] = {};
           }
-          for (var k in callBackTypes) {
+          for (var k = callBackTypes.length - 1; k >= 0; k--) {
             prevCallbacks[j][callBackTypes[k]] = dygraphs[j].getFunctionOption(callBackTypes[k]);
           }
         }
