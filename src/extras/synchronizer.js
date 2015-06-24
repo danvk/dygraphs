@@ -162,7 +162,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) {
             if (prevCallbacks[j] && prevCallbacks[j].drawCallback) {
-              prevCallbacks[j].drawCallback(me, initial);
+              prevCallbacks[j].drawCallback.apply(this, arguments);
             }
             continue;
           }
@@ -187,7 +187,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         for (var i = 0; i < gs.length; i++) {
           if (me == gs[i]) {
             if (prevCallbacks[i] && prevCallbacks[i].highlightCallback) {
-              prevCallbacks[i].highlightCallback(event, x, points, row, seriesName);
+              prevCallbacks[i].highlightCallback.apply(this, arguments);
             }
             continue;
           }
@@ -205,7 +205,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         for (var i = 0; i < gs.length; i++) {
           if (me == gs[i]) {
             if (prevCallbacks[i] && prevCallbacks[i].unhighlightCallback) {
-              prevCallbacks[i].unhighlightCallback(event);
+              prevCallbacks[i].unhighlightCallback.apply(this, arguments);
             }
             continue;
           }
