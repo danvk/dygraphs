@@ -99,7 +99,7 @@ describe("synchronize", function() {
 
     DygraphOps.dispatchMouseMove(gs[0], 13, 10);
 
-    //check that both callbacks were re-attached
+    //check that original callback was re-attached
     assert.equal(originalCallbackCalled, true);
 
     //check that selection isn't synchronized anymore
