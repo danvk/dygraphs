@@ -1833,21 +1833,34 @@ Dygraph.prototype.findClosestRow = function(domX) {
  * @private
  */
 Dygraph.prototype.findClosestPoint = function(domX, domY) {
-  var minDist = Infinity;
-  var dist, dx, dy, point, closestPoint, closestSeries, closestRow;
+  var minXDist = Infinity;
+  var minYDist = Infinity;
+  var xdist, ydist, dx, dy, point, closestPoint, closestSeries, closestRow;
+
   for ( var setIdx = this.layout_.points.length - 1 ; setIdx >= 0 ; --setIdx ) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       point = points[i];
       if (!Dygraph.isValidPoint(point)) continue;
+
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
-      dist = dx * dx + dy * dy;
-      if (dist < minDist) {
-        minDist = dist;
+
+      xdist = dx * dx;
+      ydist = dy * dy;
+
+      if (xdist < minXDist) {
+        minXDist = xdist;
+        minYDist = ydist;
+        closestRow = point.idx;
         closestPoint = point;
         closestSeries = setIdx;
+      } else if (xdist === minXDist && ydist < minYDist) {
+        minXDist = xdist;
+        minYDist = ydist;
         closestRow = point.idx;
+        closestPoint = point;
+        closestSeries = setIdx;
       }
     }
   }
