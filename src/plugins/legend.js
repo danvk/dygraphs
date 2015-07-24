@@ -268,6 +268,24 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   var showZeros = g.getOption("labelsShowZeroValues");
   sepLines = g.getOption("labelsSeparateLines");
   var highlightSeries = g.getHighlightSeries();
+
+  //
+  // Sort values by yval if labelsSortByValue is set
+  var sortByValue=g.getOption("labelsSortByValue");
+  if (sortByValue) {
+    sel_points=sel_points.sort(function(a, b) {
+      var first = Math.round(parseFloat(a.yval)*100);
+      var second = Math.round(parseFloat(b.yval)*100);
+      if (isNaN(first)) {
+        first = 0
+      }
+      if (isNaN(second)) {
+        second = 0
+      }
+      return(second - first);
+    })
+  }
+
   for (i = 0; i < sel_points.length; i++) {
     var pt = sel_points[i];
     if (pt.yval === 0 && !showZeros) continue;

@@ -822,6 +822,12 @@ Dygraph.OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
+  },
+  "labelsSortByValue": {
+    "default" : "false",
+    "labels": ["Legend"],
+    "type" : "boolean",
+    "description" : "If set, then entries in the legend are sorted by their y-value instead of by the series name."
   }
 }
 ;  // </JSON>
