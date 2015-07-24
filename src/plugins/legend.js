@@ -269,7 +269,6 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   sepLines = g.getOption("labelsSeparateLines");
   var highlightSeries = g.getHighlightSeries();
 
-  //
   // Sort values by yval if labelsSortByValue is set
   var sortByValue=g.getOption("labelsSortByValue");
   if (sortByValue) {
