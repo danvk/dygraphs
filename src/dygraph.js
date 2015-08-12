@@ -3579,18 +3579,29 @@ Dygraph.prototype.visibility = function() {
  * Changes the visibility of one or more series.
  *
  * @param {number|number[]} num the series index or an array of series indices
- * @param {boolean} value true or false, identifying the visibility.
+ * @param {boolean|boolean[]} value the visibility state expressed as a single 
+ *                                  boolean or an array of boolean equally 
+ *                                  sized to the num argument array
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
+  var valueIsArray = Array.isArray(value);
 
-  if (num.constructor !== Array) num = [num];
+  if (!Array.isArray(num)) num = [num];
+  
+  // check if second argument is an array and, if so, is of the same length
+  if (valueIsArray) {
+    if (value.length != num.length) {
+      throw new Error("The value argument of setVisibility must have the same" +
+                      " length of the num argument when passed as an array.");
+    }
+  }
 
   for (var i = 0; i < num.length; i++) {
     if (num[i] < 0 || num[i] >= x.length) {
-      console.warn("invalid series number in setVisibility: " + num[i]);
+      console.warn("Invalid series number in setVisibility: " + num[i]);
     } else {
-      x[num[i]] = value;
+      x[num[i]] = valueIsArray ? value[i] : value;
     }
   }
 

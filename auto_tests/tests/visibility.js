@@ -67,4 +67,14 @@ it('testMultiSeriesShow', function() {
   assert.equal(' B  D', getVisibleSeries(false, [[1,3], true]));
 });
 
+it('testValueAsArray', function() {
+  assert.equal(' B  D', getVisibleSeries(false, [[1,2,3], [true,false,true]]));
+});
+
+it('testValueArgumentOfDifferentLength', function() {
+  assert.throws(function(){ getVisibleSeries(false, [[1,2,3], [true, true]]) },
+    Error, "The value argument of setVisibility must have the same " +
+           "length of the num argument when passed as an array.");
+});
+
 });
