@@ -3578,30 +3578,41 @@ Dygraph.prototype.visibility = function() {
 /**
  * Changes the visibility of one or more series.
  *
- * @param {number|number[]} num the series index or an array of series indices
- * @param {boolean|boolean[]} value the visibility state expressed as a single 
- *                                  boolean or an array of boolean equally 
- *                                  sized to the num argument array
+ * @param {number|number[]|object} num the series index  or an array of series indices
+                                       or an object mapping series numbers, as keys, to 
+                                       visibility state (boolean values)
+ *                                      
+ * @param {boolean} value the visibility state expressed as a boolean
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
-  var valueIsArray = Array.isArray(value);
+  var numIsObject = false;
 
-  if (!Array.isArray(num)) num = [num];
-  
-  // check if second argument is an array and, if so, is of the same length
-  if (valueIsArray) {
-    if (value.length != num.length) {
-      throw new Error("The value argument of setVisibility must have the same" +
-                      " length of the num argument when passed as an array.");
+  if (!Array.isArray(num)) {
+    if (num !== null && typeof num === 'object') {
+      numIsObject = true;
+    } else {
+      num = [num];
     }
   }
 
-  for (var i = 0; i < num.length; i++) {
-    if (num[i] < 0 || num[i] >= x.length) {
-      console.warn("Invalid series number in setVisibility: " + num[i]);
-    } else {
-      x[num[i]] = valueIsArray ? value[i] : value;
+  if (numIsObject) {
+    for (var i in num) {
+      if (num.hasOwnProperty(i)) {
+        if (i < 0 || i >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + i);
+        } else {
+          x[i] = num[i];
+        }
+      }
+    }
+  } else {
+    for (var i = 0; i < num.length; i++) {
+     if (num[i] < 0 || num[i] >= x.length) {
+        console.warn("Invalid series number in setVisibility: " + num[i]);
+      } else {
+        x[num[i]] = value;
+      }
     }
   }
 
