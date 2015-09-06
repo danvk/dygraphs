@@ -71,4 +71,8 @@ it('testObjectSeriesShowAndHide', function() {
   assert.equal(' B  D', getVisibleSeries(false, [{1:true, 2:false, 3:true}, null]));
 });
 
+it('testBooleanArraySeriesShowAndHide', function() {
+  assert.equal(' B  D', getVisibleSeries(false, [[false, true, false, true], null]));
+});
+
 });

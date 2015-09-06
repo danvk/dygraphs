@@ -3578,10 +3578,10 @@ Dygraph.prototype.visibility = function() {
 /**
  * Changes the visibility of one or more series.
  *
- * @param {number|number[]|object} num the series index  or an array of series indices
-                                       or an object mapping series numbers, as keys, to 
-                                       visibility state (boolean values)
- *                                      
+ * @param {number|number[]|object} num the series index or an array of series indices
+ *                                     or a boolean array of visibility states by index
+ *                                     or an object mapping series numbers, as keys, to 
+ *                                     visibility state (boolean values)
  * @param {boolean} value the visibility state expressed as a boolean
  */
 Dygraph.prototype.setVisibility = function(num, value) {
@@ -3608,10 +3608,18 @@ Dygraph.prototype.setVisibility = function(num, value) {
     }
   } else {
     for (var i = 0; i < num.length; i++) {
-     if (num[i] < 0 || num[i] >= x.length) {
-        console.warn("Invalid series number in setVisibility: " + num[i]);
+      if (typeof num[i] === 'boolean') {
+        if (i >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + i);
+        } else {
+          x[i] = num[i];
+        }
       } else {
-        x[num[i]] = value;
+        if (num[i] < 0 || num[i] >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + num[i]);
+        } else {
+          x[num[i]] = value;
+        }
       }
     }
   }
