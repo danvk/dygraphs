@@ -457,6 +457,8 @@ describe('animated zooms', function() {
 
 });
 
+//bulk copied from "testCorrectAxisValueRangeAfterUnzoom"
+//tests if the xRangePad is taken into account after unzoom.
 it('testCorrectAxisPaddingAfterUnzoom', function() {
   var g = new Dygraph(document.getElementById("graph"),
       data2, {
@@ -494,9 +496,7 @@ it('testCorrectAxisPaddingAfterUnzoom', function() {
   DygraphOps.dispatchMouseUp_Point(g, 10, 10);
   DygraphOps.dispatchDoubleClick(g, null);
   
-  // check if range for y-axis was reset to original value 
-  // TODO check if range for x-axis is correct. 
-  // Currently not possible because dateRange is set to null and extremes are returned
+  // check if range for x-axis was reset to original value 
   var newXAxisRange = g.xAxisRange();
   assert.equal(extremes[0], newXAxisRange[0]);
   assert.equal(extremes[1], newXAxisRange[1]);
