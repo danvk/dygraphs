@@ -170,7 +170,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         }
         block = false;
       }
-    }, false /* no need to redraw */);
+    }, true /* no need to redraw */);
   }
 }
 
@@ -213,7 +213,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         }
         block = false;
       }
-    });
+    }, true /* no need to redraw */);
   }
 }
 
