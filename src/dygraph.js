@@ -3578,19 +3578,49 @@ Dygraph.prototype.visibility = function() {
 /**
  * Changes the visibility of one or more series.
  *
- * @param {number|number[]} num the series index or an array of series indices
- * @param {boolean} value true or false, identifying the visibility.
+ * @param {number|number[]|object} num the series index or an array of series indices
+ *                                     or a boolean array of visibility states by index
+ *                                     or an object mapping series numbers, as keys, to 
+ *                                     visibility state (boolean values)
+ * @param {boolean} value the visibility state expressed as a boolean
  */
 Dygraph.prototype.setVisibility = function(num, value) {
   var x = this.visibility();
+  var numIsObject = false;
 
-  if (num.constructor !== Array) num = [num];
-
-  for (var i = 0; i < num.length; i++) {
-    if (num[i] < 0 || num[i] >= x.length) {
-      console.warn("invalid series number in setVisibility: " + num[i]);
+  if (!Array.isArray(num)) {
+    if (num !== null && typeof num === 'object') {
+      numIsObject = true;
     } else {
-      x[num[i]] = value;
+      num = [num];
+    }
+  }
+
+  if (numIsObject) {
+    for (var i in num) {
+      if (num.hasOwnProperty(i)) {
+        if (i < 0 || i >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + i);
+        } else {
+          x[i] = num[i];
+        }
+      }
+    }
+  } else {
+    for (var i = 0; i < num.length; i++) {
+      if (typeof num[i] === 'boolean') {
+        if (i >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + i);
+        } else {
+          x[i] = num[i];
+        }
+      } else {
+        if (num[i] < 0 || num[i] >= x.length) {
+          console.warn("Invalid series number in setVisibility: " + num[i]);
+        } else {
+          x[num[i]] = value;
+        }
+      }
     }
   }
 
