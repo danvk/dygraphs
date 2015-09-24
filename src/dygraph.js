@@ -1656,10 +1656,11 @@ Dygraph.prototype.resetZoom = function() {
     this.zoomed_x_ = false;
     this.zoomed_y_ = false;
 
-    var minDate = this.rawData_[0][0];
-    var maxDate = this.rawData_[this.rawData_.length - 1][0];
+    //calculate extremes to avoid lack of padding on reset.
+    var extremes = this.xAxisExtremes();
+    var minDate = extremes[0],
+        maxDate = extremes[1];
 
-    // With only one frame, don't bother calculating extreme ranges.
     // TODO(danvk): merge this block w/ the code below.
     if (!this.getBooleanOption("animatedZooms")) {
       this.dateWindow_ = null;

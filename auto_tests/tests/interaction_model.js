@@ -457,4 +457,49 @@ describe('animated zooms', function() {
 
 });
 
+//bulk copied from "testCorrectAxisValueRangeAfterUnzoom"
+//tests if the xRangePad is taken into account after unzoom.
+it('testCorrectAxisPaddingAfterUnzoom', function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      data2, {
+        valueRange: [1, 50],
+        dateWindow: [1, 9],
+        xRangePad: 10,
+        animatedZooms:false
+      });
+
+  var extremes = g.xAxisExtremes();
+  
+  // Zoom x axis
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 130, 100);
+  DygraphOps.dispatchMouseUp_Point(g, 130, 100);
+
+  // Zoom y axis
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 130);
+  DygraphOps.dispatchMouseUp_Point(g, 100, 130);
+  var currentYAxisRange = g.yAxisRange();
+  var currentXAxisRange = g.xAxisRange();
+  
+  //check that the range for the axis has changed
+  assert.notEqual(1, currentXAxisRange[0]);
+  assert.notEqual(10, currentXAxisRange[1]);
+  assert.notEqual(1, currentYAxisRange[0]);
+  assert.notEqual(50, currentYAxisRange[1]);
+  
+  // unzoom by doubleclick.  This is really the order in which a browser
+  // generates events, and we depend on it.
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+  DygraphOps.dispatchDoubleClick(g, null);
+  
+  // check if range for x-axis was reset to original value 
+  var newXAxisRange = g.xAxisRange();
+  assert.equal(extremes[0], newXAxisRange[0]);
+  assert.equal(extremes[1], newXAxisRange[1]);
+});
+
 });
