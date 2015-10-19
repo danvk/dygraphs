@@ -6,8 +6,6 @@
 
 /*global Dygraph:false */
 
-Dygraph.Plugins.Annotations = (function() {
-
 "use strict";
 
 /**
@@ -20,7 +18,6 @@ the core dygraphs classes, but annotations involve quite a bit of parsing and
 layout.
 
 TODO(danvk): cache DOM elements.
-
 */
 
 var annotations = function() {
@@ -177,6 +174,4 @@ annotations.prototype.destroy = function() {
   this.detachLabels();
 };
 
-return annotations;
-
-})();
+export default annotations;

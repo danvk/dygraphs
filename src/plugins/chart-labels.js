@@ -5,8 +5,6 @@
  */
 /*global Dygraph:false */
 
-Dygraph.Plugins.ChartLabels = (function() {
-
 "use strict";
 
 // TODO(danvk): move chart label options out of dygraphs and into the plugin.
@@ -185,6 +183,4 @@ chart_labels.prototype.destroy = function() {
   this.detachLabels_();
 };
 
-
-return chart_labels;
-})();
+export default chart_labels;

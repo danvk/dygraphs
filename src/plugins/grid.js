@@ -5,8 +5,6 @@
  */
 /*global Dygraph:false */
 
-Dygraph.Plugins.Grid = (function() {
-
 /*
 
 Current bits of jankiness:
@@ -119,6 +117,4 @@ grid.prototype.willDrawChart = function(e) {
 grid.prototype.destroy = function() {
 };
 
-return grid;
-
-})();
+export default grid;

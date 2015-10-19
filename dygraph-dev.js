@@ -16,32 +16,32 @@
   // This list needs to be kept in sync w/ the one in generate-combined.sh
   // and the one in jsTestDriver.conf.
   var source_files = [
-    "src/polyfills/console.js",
-    "src/polyfills/dashed-canvas.js",
+    // "src/polyfills/console.js",
+    // "src/polyfills/dashed-canvas.js",
     "src/dygraph-options.js",
     "src/dygraph-layout.js",
     "src/dygraph-canvas.js",
     "src/dygraph.js",
     "src/dygraph-utils.js",
-    "src/dygraph-gviz.js",
+    // "src/dygraph-gviz.js",
     "src/dygraph-interaction-model.js",
     "src/dygraph-tickers.js",
-    "src/dygraph-plugin-base.js",
-    "src/plugins/annotations.js",
-    "src/plugins/axes.js",
-    "src/plugins/chart-labels.js",
-    "src/plugins/grid.js",
-    "src/plugins/legend.js",
-    "src/plugins/range-selector.js",
-    "src/dygraph-plugin-install.js",
-    "src/dygraph-options-reference.js",  // Shouldn't be included in generate-combined.sh
+    // "src/dygraph-plugin-base.js",
+    // "src/plugins/annotations.js",
+    // "src/plugins/axes.js",
+    // "src/plugins/chart-labels.js",
+    // "src/plugins/grid.js",
+    // "src/plugins/legend.js",
+    // "src/plugins/range-selector.js",
+    // "src/dygraph-plugin-install.js",
+    // "src/dygraph-options-reference.js",  // Shouldn't be included in generate-combined.sh
     "src/datahandler/datahandler.js",
     "src/datahandler/default.js",
-    "src/datahandler/default-fractions.js",
-    "src/datahandler/bars.js",
-    "src/datahandler/bars-error.js",
-    "src/datahandler/bars-custom.js",
-    "src/datahandler/bars-fractions.js"
+    // "src/datahandler/default-fractions.js",
+    // "src/datahandler/bars.js",
+    // "src/datahandler/bars-error.js",
+    // "src/datahandler/bars-custom.js",
+    // "src/datahandler/bars-fractions.js"
   ];
 
   for (var i = 0; i < source_files.length; i++) {

@@ -24,9 +24,10 @@
  * @constructor
  */
 
-var DygraphCanvasRenderer = (function() {
 /*global Dygraph:false */
 "use strict";
+
+import * as utils from './dygraph-utils';
 
 
 /**
@@ -57,7 +58,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   this.width = dygraph.width_;
 
   // --- check whether everything is ok before we return
-  if (!Dygraph.isCanvasSupported(this.element)) {
+  if (!utils.isCanvasSupported(this.element)) {
     throw "Canvas is not supported.";
   }
 
@@ -68,7 +69,7 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
   // This ensures that we don't overdraw.
   // on Android 3 and 4, setting a clipping area on a canvas prevents it from
   // displaying anything.
-  if (!Dygraph.isAndroid()) {
+  if (!utils.isAndroid()) {
     var ctx = this.dygraph_.canvas_ctx_;
     ctx.beginPath();
     ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
@@ -135,7 +136,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
   // TODO(konigsberg): Compute attributes outside this method call.
   var stepPlot = g.getBooleanOption("stepPlot", e.setName);
 
-  if (!Dygraph.isArrayLike(strokePattern)) {
+  if (!utils.isArrayLike(strokePattern)) {
     strokePattern = null;
   }
 
@@ -143,7 +144,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
 
   var points = e.points;
   var setName = e.setName;
-  var iter = Dygraph.createIterator(points, 0, points.length,
+  var iter = utils.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
           g.getBooleanOption("connectSeparatedPoints", setName)));
 
@@ -334,7 +335,7 @@ DygraphCanvasRenderer.prototype._renderLineChart = function(opt_seriesName, opt_
   // Determine which series have specialized plotters.
   var plotter_attr = this.dygraph_.getOption("plotter");
   var plotters = plotter_attr;
-  if (!Dygraph.isArrayLike(plotters)) {
+  if (!utils.isArrayLike(plotters)) {
     plotters = [plotters];
   }
 
@@ -425,7 +426,7 @@ DygraphCanvasRenderer._linePlotter = function(e) {
   // this code a bit nasty.
   var borderWidth = g.getNumericOption("strokeBorderWidth", setName);
   var drawPointCallback = g.getOption("drawPointCallback", setName) ||
-      Dygraph.Circles.DEFAULT;
+      utils.Circles.DEFAULT;
   var strokePattern = g.getOption("strokePattern", setName);
   var drawPoints = g.getBooleanOption("drawPoints", setName);
   var pointSize = g.getNumericOption("pointSize", setName);
@@ -475,7 +476,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var stepPlot = g.getBooleanOption("stepPlot", setName);
   var points = e.points;
 
-  var iter = Dygraph.createIterator(points, 0, points.length,
+  var iter = utils.createIterator(points, 0, points.length,
       DygraphCanvasRenderer._getIteratorPredicate(
           g.getBooleanOption("connectSeparatedPoints", setName)));
 
@@ -486,7 +487,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   var prevY = NaN;
   var prevYs = [-1, -1];
   // should be same color as the lines but only 15% opaque.
-  var rgb = Dygraph.toRGB_(color);
+  var rgb = utils.toRGB_(color);
   var err_color =
       'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
   ctx.fillStyle = err_color;
@@ -748,7 +749,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     axisY = area.h * axisY + area.y;
 
     var points = sets[setIdx];
-    var iter = Dygraph.createIterator(points, 0, points.length,
+    var iter = utils.createIterator(points, 0, points.length,
         DygraphCanvasRenderer._getIteratorPredicate(
             g.getBooleanOption("connectSeparatedPoints", setName)));
 
@@ -757,7 +758,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var prevYs = [-1, -1];
     var newYs;
     // should be same color as the lines but only 15% opaque.
-    var rgb = Dygraph.toRGB_(color);
+    var rgb = utils.toRGB_(color);
     var err_color =
         'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + fillAlpha + ')';
     ctx.fillStyle = err_color;
@@ -782,7 +783,7 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
     var point;
     while (iter.hasNext) {
       point = iter.next();
-      if (!Dygraph.isOK(point.y) && !stepPlot) {
+      if (!utils.isOK(point.y) && !stepPlot) {
         traceBackPath(ctx, prevX, prevYs[1], pathBack);
         pathBack = [];
         prevX = NaN;
@@ -866,6 +867,4 @@ DygraphCanvasRenderer._fillPlotter = function(e) {
   }
 };
 
-return DygraphCanvasRenderer;
-
-})();
+export default DygraphCanvasRenderer;

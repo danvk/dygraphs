@@ -5,7 +5,6 @@
  */
 /*global Dygraph:false */
 
-Dygraph.Plugins.Legend = (function() {
 /*
 Current bits of jankiness:
 - Uses two private APIs:
@@ -17,6 +16,8 @@ Current bits of jankiness:
 
 /*global Dygraph:false */
 "use strict";
+
+import * as utils from '../dygraph-utils';
 
 
 /**
@@ -271,7 +272,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   for (i = 0; i < sel_points.length; i++) {
     var pt = sel_points[i];
     if (pt.yval === 0 && !showZeros) continue;
-    if (!Dygraph.isOK(pt.canvasy)) continue;
+    if (!utils.isOK(pt.canvasy)) continue;
     if (sepLines) html += "<br/>";
 
     var series = g.getPropertiesForSeries(pt.name);
@@ -361,6 +362,4 @@ generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
   return dash;
 };
 
-
-return legend;
-})();
+export default legend;

@@ -6,8 +6,6 @@
 
 /*global Dygraph:false */
 
-Dygraph.Plugins.Axes = (function() {
-
 'use strict';
 
 /*
@@ -319,5 +317,4 @@ axes.prototype.willDrawChart = function(e) {
   context.restore();
 };
 
-return axes;
-})();
+export default axes;
