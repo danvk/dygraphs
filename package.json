@@ -28,6 +28,7 @@
   "devDependencies": {
     "babelify": "^6.3.0",
     "browserify": "^11.2.0",
+    "chai": "^3.3.0",
     "closure-compiler": "^0.2.6",
     "coveralls": "^2.11.2",
     "gulp": "^3.8.10",

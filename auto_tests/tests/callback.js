@@ -4,12 +4,22 @@
  * @author uemit.seren@gmail.com (Ümit Seren)
  */
 
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import Util from './Util';
+import DygraphOps from './DygraphOps';
+
 describe("callback", function() {
 
+cleanupAfterEach();
+
 var xhr, styleSheet;
+var graph;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div><div id='selection'></div>";
+  var container = document.getElementById('graph');
+  container.innerHTML = "<div id='inner-graph'></div><div id='selection'></div>";
+  graph = container.querySelector('#inner-graph');
   xhr = XMLHttpRequest;
   styleSheet = document.createElement("style");
   styleSheet.type = "text/css";
@@ -42,7 +52,6 @@ it('testHighlightCallbackIsCalled', function() {
     h_pts = pts;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data,
       {
         width: 100,
@@ -71,7 +80,6 @@ it('testDrawPointCallback_disabled', function() {
     called = true;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {
       drawPointCallback: callback,
     });
@@ -91,7 +99,6 @@ it('testDrawPointCallback_enabled', function() {
     called = true;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {
       drawPoints: true,
       drawPointCallback: callback
@@ -114,7 +121,6 @@ it('testDrawPointCallback_pointSize', function() {
     count++;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {
       drawPoints: true,
       drawPointCallback: callback
@@ -144,10 +150,9 @@ it('testDrawPointCallback_isolated', function() {
     assert.equal(g, this);
     var dx = g.toDataXCoord(cx);
     xvalues.push(dx);
-    Dygraph.Circles.DEFAULT.apply(this, arguments);
+    utils.Circles.DEFAULT.apply(this, arguments);
   };
 
-  var graph = document.getElementById("graph");
   var testdata = [[10, 2], [11, 3], [12, NaN], [13, 2], [14, NaN], [15, 3]];
   var graphOpts = {
       labels: ['X', 'Y'],
@@ -188,7 +193,6 @@ it('testDrawHighlightPointCallbackIsCalled', function() {
     called = true;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data,
       {
         width: 100,
@@ -211,7 +215,6 @@ var runClosestTest = function(isStacked, widthNormal, widthHighlighted) {
   var h_pts;
   var h_series;
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data,
       {
         width: 600,
@@ -359,7 +362,6 @@ it('testNaNData', function() {
     h_pts = pts;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, dataNaN,
       {
         width: 600,
@@ -412,7 +414,6 @@ it('testNaNDataStack', function() {
     h_pts = pts;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, dataNaN,
       {
         width: 600,
@@ -478,7 +479,6 @@ it('testGapHighlight', function() {
     h_pts = pts;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, dataGap, {
      width: 400,
      height: 300,
@@ -521,7 +521,6 @@ it('testFailedResponse', function() {
     throw "should not reach here";
   };
 
-  var graph = document.getElementById("graph");
   graph.style.border = "2px solid black";
   var g = new Dygraph(graph, "data.csv", { // fake name
      width: 400,
@@ -551,7 +550,6 @@ it('testHighlightCallbackRow', function() {
     highlightRow = row;
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,Y,Z\n" +
     "0,1,2\n" +  // 0
@@ -602,7 +600,6 @@ it('testUnderlayCallback_noSeries', function() {
     yMax = g.yAxisRange(0)[1];
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, "\n", {
       underlayCallback: callback
     });
@@ -625,7 +622,6 @@ it('testUnderlayCallback_yAxisRange', function() {
     yMax = g.yAxisRange(0)[1];
   };
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, "\n", {
       valueRange: [0,10],
       underlayCallback: callback
@@ -645,10 +641,9 @@ it('testDrawPointCallback_idx', function() {
   var callback = function(g, seriesName, canvasContext, cx, cy, color, pointSizeParam,idx) {
     assert.equal(g, this);
     indices.push(idx);
-    Dygraph.Circles.DEFAULT.apply(this, arguments);
+    utils.Circles.DEFAULT.apply(this, arguments);
   };
 
-  var graph = document.getElementById("graph");
 
   var testdata = [[10, 2], [11, 3], [12, NaN], [13, 2], [14, NaN], [15, 3]];
   var graphOpts = {
@@ -695,7 +690,6 @@ it('testDrawHighlightPointCallback_idx', function() {
     idxToCheck = idx;
   };
   var testdata = [[1, 2], [2, 3], [3, NaN], [4, 2], [5, NaN], [6, 3]];
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, testdata, {
         drawHighlightPointCallback: drawHighlightPointCallback,
         labels: ['X', 'Y']

@@ -3,14 +3,14 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphInteraction from '../../src/dygraph-interaction-model';
+import DygraphOps from './DygraphOps';
+
 describe("interaction-model", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 var data1 = "X,Y\n" +
     "20,-1\n" +
@@ -100,15 +100,15 @@ it('testClickCallbackIsCalledOnCustomPan', function() {
 
   function customDown(event, g, context) {
     context.initializeMouseDown(event, g, context);
-    Dygraph.startPan(event, g, context);
+    DygraphInteraction.startPan(event, g, context);
   }
 
   function customMove(event, g, context) {
-    Dygraph.movePan(event, g, context);
+    DygraphInteraction.movePan(event, g, context);
   }
 
   function customUp(event, g, context) {
-    Dygraph.endPan(event, g, context);
+    DygraphInteraction.endPan(event, g, context);
   }
 
   var opts = {
@@ -153,7 +153,7 @@ it('testClickCallbackIsCalledWithNonInteractiveModel', function() {
     width: 100,
     height : 100,
     clickCallback : clickCallback,
-    interactionModel : Dygraph.Interaction.nonInteractiveModel_
+    interactionModel : DygraphInteraction.nonInteractiveModel_
   };
 
   var graph = document.getElementById("graph");

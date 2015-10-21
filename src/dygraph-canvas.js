@@ -28,6 +28,7 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
+import Dygraph from './dygraph';
 
 
 /**
@@ -153,7 +154,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
   var ctx = e.drawingContext;
   ctx.save();
   if (stroking) {
-    ctx.installPattern(strokePattern);
+    if (ctx.setLineDash) ctx.setLineDash(strokePattern);
   }
 
   var pointsOnLine = DygraphCanvasRenderer._drawSeries(
@@ -162,7 +163,7 @@ DygraphCanvasRenderer._drawStyledLine = function(e,
       e, pointsOnLine, drawPointCallback, color, pointSize);
 
   if (stroking) {
-    ctx.uninstallPattern();
+    if (ctx.setLineDash) ctx.setLineDash([]);
   }
 
   ctx.restore();

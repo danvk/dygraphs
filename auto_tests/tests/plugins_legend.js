@@ -1,10 +1,16 @@
+import Dygraph from '../../src/dygraph';
+import LegendPlugin from '../../src/plugins/legend';
+import Util from './Util';
+
 describe("plugins-legend", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div><div id='label'></div>";
-});
+var graph;
 
-afterEach(function() {
+cleanupAfterEach();
+beforeEach(function() {
+  var testDiv = document.getElementById('graph');
+  testDiv.innerHTML = "<div id='inner-graph'></div><div id='label'></div>";
+  graph = document.getElementById('inner-graph');
 });
 
 it('testLegendEscape', function() {
@@ -19,10 +25,9 @@ it('testLegendEscape', function() {
       "3,0\n"
   ;
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 
-  var legendPlugin = new Dygraph.Plugins.Legend();
+  var legendPlugin = new LegendPlugin();
   legendPlugin.activate(g);
   var e = {
     selectedX: 'selectedX',
@@ -42,7 +47,7 @@ it('testLegendEscape', function() {
 
 it('should let labelsDiv be a string', function() {
   var labelsDiv = document.getElementById('label');
-  var g = new Dygraph('graph', 'X,Y\n1,2\n', {labelsDiv: 'label'});
+  var g = new Dygraph(graph, 'X,Y\n1,2\n', {labelsDiv: 'label'});
 null
   g.setSelection(0);
   assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
@@ -50,14 +55,14 @@ null
 
 it('should let labelsDiv be an Element', function() {
   var labelsDiv = document.getElementById('label');
-  var g = new Dygraph('graph', 'X,Y\n1,2\n', { labelsDiv: labelsDiv });
+  var g = new Dygraph(graph, 'X,Y\n1,2\n', { labelsDiv: labelsDiv });
   assert.isNull(labelsDiv.getAttribute('class'));  // dygraph-legend not added.
   g.setSelection(0);
   assert.equal('1: Y: 2', Util.nbspToSpace(labelsDiv.textContent));
 });
 
 it('should render dashed patterns', function() {
-  var g = new Dygraph('graph', 'X,Y\n1,2\n', {
+  var g = new Dygraph(graph, 'X,Y\n1,2\n', {
     strokePattern: [5, 5],
     color: 'red',
     legend: 'always'

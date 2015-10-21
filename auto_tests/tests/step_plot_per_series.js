@@ -8,24 +8,17 @@
  *
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+
 describe("step-plot-per-series", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-var origFunc = Dygraph.getContext;
-
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(origFunc(canvas));
-  };
-});
-
-afterEach(function() {
-  Dygraph.getContext = origFunc;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 it('testMixedModeStepAndLineFilled', function() {
   var opts = {

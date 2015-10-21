@@ -75,3 +75,5 @@ Proxy.prototype.log__ = function(name, args) {
 Proxy.reset = function(proxy) {
   proxy.calls__ = [];
 }
+
+export default Proxy;

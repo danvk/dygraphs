@@ -330,7 +330,6 @@ export var DateAccessorsUTC = {
  * @private
  */
 export function hmsString_(hh, mm, ss) {
-  var zeropad = Dygraph.zeropad;
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
@@ -599,7 +598,7 @@ export function clone(o) {
   var r = [];
   for (var i = 0; i < o.length; i++) {
     if (isArrayLike(o[i])) {
-      r.push(Dygraph.clone(o[i]));
+      r.push(clone(o[i]));
     } else {
       r.push(o[i]);
     }
@@ -768,7 +767,7 @@ export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
 
   (function loop() {
     if (frameNumber >= maxFrames) return;
-    Dygraph.requestAnimFrame.call(window, function() {
+    requestAnimFrame.call(window, function() {
       // Determine which frame to draw based on the delay so far.  Will skip
       // frames if necessary.
       var currentTime = new Date().getTime();

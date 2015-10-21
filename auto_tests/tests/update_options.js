@@ -4,7 +4,12 @@
  * @fileoverview Tests for the updateOptions function.
  * @author antrob@google.com (Anthony Robledo)
  */
+
+import Dygraph from '../../src/dygraph';
+
 describe("update-options", function() {
+
+cleanupAfterEach();
   
 var opts = {
   width: 480,
@@ -17,13 +22,6 @@ var data = "X,Y1,Y2\n" +
   "2011-03-03,6,1\n" +
   "2011-04-04,9,5\n" +
   "2011-05-05,8,3\n";
-
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div><div id='labels'></div>";
-});
-
-afterEach(function() {
-});
 
 /*
  * Tweaks the dygraph so it sets g._testDrawCalled to true when internal method

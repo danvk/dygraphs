@@ -54,8 +54,12 @@ import DygraphInteraction from './dygraph-interaction-model';
 import * as DygraphTickers from './dygraph-tickers';
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
-import DygraphDataHandler from './datahandler/datahandler';
+
 import DefaultHandler from './datahandler/default';
+import ErrorBarsHandler from './datahandler/bars-error';
+import CustomBarsHandler from './datahandler/bars-custom';
+import DefaultFractionHandler from './datahandler/default-fractions';
+import FractionsBarsHandler from './datahandler/bars-fractions';
 
 import AnnotationsPlugin from './plugins/annotations';
 import AxesPlugin from './plugins/axes';
@@ -63,6 +67,8 @@ import ChartLabelsPlugin from './plugins/chart-labels';
 import GridPlugin from './plugins/grid';
 import LegendPlugin from './plugins/legend';
 import RangeSelectorPlugin from './plugins/range-selector';
+
+import GVizChart from './dygraph-gviz';
 
 /*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
 "use strict";
@@ -648,10 +654,10 @@ Dygraph.prototype.toDataXCoord = function(x) {
     //
     // Use both sides as the exponent in 10^exp and we're done.
     // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
-    var logr0 = Dygraph.log10(xRange[0]);
-    var logr1 = Dygraph.log10(xRange[1]);
+    var logr0 = utils.log10(xRange[0]);
+    var logr1 = utils.log10(xRange[1]);
     var exponent = logr0 + (pct * (logr1 - logr0));
-    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
+    var value = Math.pow(utils.LOG_SCALE, exponent);
     return value;
   }
 };
@@ -697,10 +703,10 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
     //
     // Use both sides as the exponent in 10^exp and we're done.
     // y = 10 ^ (log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0]))));
-    var logr0 = Dygraph.log10(yRange[0]);
-    var logr1 = Dygraph.log10(yRange[1]);
+    var logr0 = utils.log10(yRange[0]);
+    var logr1 = utils.log10(yRange[1]);
     var exponent = logr1 - (pct * (logr1 - logr0));
-    var value = Math.pow(Dygraph.LOG_SCALE, exponent);
+    var value = Math.pow(utils.LOG_SCALE, exponent);
     return value;
   }
 };
@@ -732,9 +738,9 @@ Dygraph.prototype.toPercentYCoord = function(y, axis) {
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", axis);
   if (logscale) {
-    var logr0 = Dygraph.log10(yRange[0]);
-    var logr1 = Dygraph.log10(yRange[1]);
-    pct = (logr1 - Dygraph.log10(y)) / (logr1 - logr0);
+    var logr0 = utils.log10(yRange[0]);
+    var logr1 = utils.log10(yRange[1]);
+    pct = (logr1 - utils.log10(y)) / (logr1 - logr0);
   } else {
     // yRange[1] - y is unit distance from the bottom.
     // yRange[1] - yRange[0] is the scale of the range.
@@ -766,9 +772,9 @@ Dygraph.prototype.toPercentXCoord = function(x) {
   var pct;
   var logscale = this.attributes_.getForAxis("logscale", 'x') ;
   if (logscale === true) {  // logscale can be null so we test for true explicitly.
-    var logr0 = Dygraph.log10(xRange[0]);
-    var logr1 = Dygraph.log10(xRange[1]);
-    pct = (Dygraph.log10(x) - logr0) / (logr1 - logr0);
+    var logr0 = utils.log10(xRange[0]);
+    var logr1 = utils.log10(xRange[1]);
+    pct = (utils.log10(x) - logr0) / (logr1 - logr0);
   } else {
     // x - xRange[0] is unit distance from the left.
     // xRange[1] - xRange[0] is the scale of the range.
@@ -932,11 +938,11 @@ Dygraph.prototype.destroy = function() {
   this.removeTrackedEvents_();
 
   // remove mouse event handlers (This may not be necessary anymore)
-  Dygraph.removeEvent(window, 'mouseout', this.mouseOutHandler_);
-  Dygraph.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+  utils.removeEvent(window, 'mouseout', this.mouseOutHandler_);
+  utils.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // remove window handlers
-  Dygraph.removeEvent(window,'resize', this.resizeHandler_);
+  utils.removeEvent(window,'resize', this.resizeHandler_);
   this.resizeHandler_ = null;
 
   removeRecursive(this.maindiv_);
@@ -1019,7 +1025,7 @@ Dygraph.prototype.setColors_ = function() {
         // alternate colors for high contrast.
         var idx = i % 2 ? (half + (i + 1)/ 2) : Math.ceil((i + 1) / 2);
         var hue = (1.0 * idx / (1 + num));
-        colorStr = Dygraph.hsvToRGB(hue, sat, val);
+        colorStr = utils.hsvToRGB(hue, sat, val);
       }
     }
     this.colors_.push(colorStr);
@@ -1573,7 +1579,7 @@ Dygraph.prototype.findClosestPoint = function(domX, domY) {
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       point = points[i];
-      if (!Dygraph.isValidPoint(point)) continue;
+      if (!utils.isValidPoint(point)) continue;
       dx = point.canvasx - domX;
       dy = point.canvasy - domY;
       dist = dx * dx + dy * dy;
@@ -1614,12 +1620,12 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
     var points = this.layout_.points[setIdx];
     if (rowIdx >= points.length) continue;
     var p1 = points[rowIdx];
-    if (!Dygraph.isValidPoint(p1)) continue;
+    if (!utils.isValidPoint(p1)) continue;
     var py = p1.canvasy;
     if (domX > p1.canvasx && rowIdx + 1 < points.length) {
       // interpolate series Y value using next point
       var p2 = points[rowIdx + 1];
-      if (Dygraph.isValidPoint(p2)) {
+      if (utils.isValidPoint(p2)) {
         var dx = p2.canvasx - p1.canvasx;
         if (dx > 0) {
           var r = (domX - p1.canvasx) / dx;
@@ -1629,7 +1635,7 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
     } else if (domX < p1.canvasx && rowIdx > 0) {
       // interpolate series Y value using previous point
       var p0 = points[rowIdx - 1];
-      if (Dygraph.isValidPoint(p0)) {
+      if (utils.isValidPoint(p0)) {
         var dx = p1.canvasx - p0.canvasx;
         if (dx > 0) {
           var r = (p1.canvasx - domX) / dx;
@@ -2014,14 +2020,14 @@ Dygraph.prototype.getHandlerClass_ = function() {
     handlerClass =  this.attr_('dataHandler');
   } else if (this.fractions_) {
     if (this.getBooleanOption('errorBars')) {
-      handlerClass = DygraphDataHandlers.FractionsBarsHandler;
+      handlerClass = FractionsBarsHandler;
     } else {
-      handlerClass = DygraphDataHandlers.DefaultFractionHandler;
+      handlerClass = DefaultFractionHandler;
     }
   } else if (this.getBooleanOption('customBars')) {
-    handlerClass = DygraphDataHandlers.CustomBarsHandler;
+    handlerClass = CustomBarsHandler;
   } else if (this.getBooleanOption('errorBars')) {
-    handlerClass = DygraphDataHandlers.ErrorBarsHandler;
+    handlerClass = ErrorBarsHandler;
   } else {
     handlerClass = DefaultHandler;
   }
@@ -3547,5 +3553,7 @@ Dygraph.PLUGINS = [
   AnnotationsPlugin,
   GridPlugin
 ];
+
+Dygraph.GVizChart = GVizChart;
 
 export default Dygraph;

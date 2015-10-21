@@ -3,20 +3,18 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+import Util from './Util';
+
 describe("stacked", function() {
 
-var _origGetContext = Dygraph.getContext;
-
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origGetContext(canvas));
-  }
-});
-
-afterEach(function() {
-  Dygraph.getContext = _origGetContext;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 it('testCorrectColors', function() {
   var opts = {

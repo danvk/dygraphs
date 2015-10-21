@@ -301,7 +301,7 @@ TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,
  * This is a list of human-friendly values at which to show tick marks on a log
  * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
  * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
- * NOTE: this assumes that Dygraph.LOG_SCALE = 10.
+ * NOTE: this assumes that utils.LOG_SCALE = 10.
  * @type {Array.<number>}
  */
 var PREFERRED_LOG_TICK_VALUES = (function() {

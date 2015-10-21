@@ -6,22 +6,24 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
+import Dygraph from '../../src/dygraph';
+import * as DygraphTickers from '../../src/dygraph-tickers';
+import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+
 describe("numeric-ticker-tests", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 var createOptionsViewForAxis = function(axis, dict) {
   return function (x) {
     if (dict && dict.hasOwnProperty(x)) {
       return dict[x];
     }
-    if (Dygraph.DEFAULT_ATTRS.axes[axis].hasOwnProperty(x)) {
-      return Dygraph.DEFAULT_ATTRS.axes[axis][x];
+    if (DEFAULT_ATTRS.axes[axis].hasOwnProperty(x)) {
+      return DEFAULT_ATTRS.axes[axis][x];
     }
-    if (Dygraph.DEFAULT_ATTRS.hasOwnProperty(x)) {
-      return Dygraph.DEFAULT_ATTRS[x];
+    if (DEFAULT_ATTRS.hasOwnProperty(x)) {
+      return DEFAULT_ATTRS[x];
     }
     if (x == 'axisLabelFormatter') return null;
     throw "mysterious " + axis + "-axis option: " + x;
@@ -32,7 +34,7 @@ it('testBasicNumericTicker', function() {
   var opts = {"logscale":null,"labelsKMG2":false,"labelsKMB":false};
   var options = createOptionsViewForAxis('y', opts);
 
-  var ticks = Dygraph.numericTicks(-0.4, 4.4, 320, options);
+  var ticks = DygraphTickers.numericTicks(-0.4, 4.4, 320, options);
   var expected_ticks = [
     {"v":-0.5,"label":"-0.5"},
     {"v":0,"label":"0"},
@@ -47,7 +49,7 @@ it('testBasicNumericTicker', function() {
     {"v":4.5,"label":"4.5"}];
   assert.deepEqual(expected_ticks, ticks);
 
-  ticks = Dygraph.numericTicks(1, 84, 540, options);
+  ticks = DygraphTickers.numericTicks(1, 84, 540, options);
   var expected_ticks = [
     {"v":0,"label":"0"},
     {"v":5,"label":"5"},

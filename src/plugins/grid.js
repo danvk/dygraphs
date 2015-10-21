@@ -65,8 +65,9 @@ grid.prototype.willDrawChart = function(e) {
     for (i = 0; i < ticks.length; i++) {
       var axis = ticks[i][0];
       if(drawGrid[axis]) {
+        ctx.save();
         if (stroking[axis]) {
-          ctx.installPattern(strokePattern[axis]);
+          if (ctx.setLineDash) ctx.setLineDash(strokePattern[axis]);
         }
         ctx.strokeStyle = strokeStyles[axis];
         ctx.lineWidth = lineWidths[axis];
@@ -76,12 +77,9 @@ grid.prototype.willDrawChart = function(e) {
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + area.w, y);
-        ctx.closePath();
         ctx.stroke();
 
-        if (stroking[axis]) {
-          ctx.uninstallPattern();
-        }
+        ctx.restore();
       }
     }
     ctx.restore();
@@ -94,7 +92,7 @@ grid.prototype.willDrawChart = function(e) {
     var strokePattern = g.getOptionForAxis('gridLinePattern', 'x');
     var stroking = strokePattern && (strokePattern.length >= 2);
     if (stroking) {
-      ctx.installPattern(strokePattern);
+      if (ctx.setLineDash) ctx.setLineDash(strokePattern);
     }
     ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
     ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
@@ -108,7 +106,7 @@ grid.prototype.willDrawChart = function(e) {
       ctx.stroke();
     }
     if (stroking) {
-      ctx.uninstallPattern();
+      if (ctx.setLineDash) ctx.setLineDash([]);
     }
     ctx.restore();
   }

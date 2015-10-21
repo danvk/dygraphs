@@ -24,21 +24,19 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import CanvasAssertions from './CanvasAssertions';
+import Proxy from './Proxy';
+import PixelSampler from './PixelSampler';
+
 describe("simple-drawing", function() {
 
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
+
 var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
-
-var _origFunc = Dygraph.getContext;
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
-  }
-});
-
-afterEach(function() {
-  Dygraph.getContext = _origFunc;
-});
 
 it('testDrawSimpleRangePlusOne', function() {
   var opts = {

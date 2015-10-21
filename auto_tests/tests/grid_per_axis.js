@@ -4,24 +4,19 @@
  * 
  * @author david.eberlein@ch.sauter-bc.com (Fr. Sauter AG)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+import Util from './Util';
+import PixelSampler from './PixelSampler';
+
 describe("grid-per-axis", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-var origFunc = Dygraph.getContext;
-
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(origFunc(canvas));
-  };
-});
-
-afterEach(function() {
-  Dygraph.getContext = origFunc;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 it('testIndependentGrids', function() {
   var opts = {
@@ -130,17 +125,19 @@ it('testPerAxisGridColors', function() {
   }
   var x, y;
   x = halfUp(g.plotter_.area.x);
+  var sampler = new PixelSampler(g);
   // Step through y(0) and y2(1) axis
   for ( var axis = 0; axis < 2; axis++) {
     // Step through all gridlines of the axis
     for ( var i = 0; i < gridlines[axis].length; i++) {
       y = halfDown(g.toDomYCoord(gridlines[axis][i], axis));
       // Check the grid colors.
-      assert.deepEqual(gridColors[axis], Util.samplePixel(g.hidden_, x, y),
+      assert.deepEqual(gridColors[axis], sampler.colorAtPixel(x, y),
           "Unexpected grid color found at pixel: x: " + x + "y: " + y);
     }
   }
 });
+
 it('testPerAxisGridWidth', function() {
   var opts = {
     width : 480,
@@ -192,6 +189,8 @@ it('testPerAxisGridWidth', function() {
   }
   var x, y;
   x = halfUp(g.plotter_.area.x + 10);
+
+  var sampler = new PixelSampler(g);
   // Step through y(0) and y2(1) axis
   for ( var axis = 0; axis < 2; axis++) {
     // Step through all gridlines of the axis
@@ -200,11 +199,11 @@ it('testPerAxisGridWidth', function() {
       // Ignore the alpha value
 
       // FIXME(pholden): this test fails with a context pixel ratio of 2.
-      var drawnPixeldown2 = Util.samplePixel(g.hidden_, x, y - 2).slice(0, 3);
-      var drawnPixeldown1 = Util.samplePixel(g.hidden_, x, y - 1).slice(0, 3);
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0, 3);
-      var drawnPixelup1 = Util.samplePixel(g.hidden_, x, y + 1).slice(0, 3);
-      var drawnPixelup2 = Util.samplePixel(g.hidden_, x, y + 2).slice(0, 3);
+      var drawnPixeldown2 = sampler.rgbAtPixel(x, y - 2);
+      var drawnPixeldown1 = sampler.rgbAtPixel(x, y - 1);
+      var drawnPixel = sampler.rgbAtPixel(x, y);
+      var drawnPixelup1 = sampler.rgbAtPixel(x, y + 1);
+      var drawnPixelup2 = sampler.rgbAtPixel(x, y + 2);
       // Check the grid width.
       switch (axis) {
       case 0: // y with 2 pixels width
@@ -227,26 +226,26 @@ it('testPerAxisGridWidth', function() {
   y = halfDown(g.plotter_.area.y) + 10;
   for ( var i = 0; i < xGridlines.length; i++) {
     x = halfUp(g.toDomXCoord(xGridlines[i]));
-    assert.deepEqual(emptyColor, Util.samplePixel(g.hidden_, x - 4, y).slice(0, 3),
+    assert.deepEqual(emptyColor, sampler.rgbAtPixel(x - 4, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 3, y).slice(0, 3),
+    assert.deepEqual(gridColor, sampler.rgbAtPixel(x - 3, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 2, y).slice(0, 3),
+    assert.deepEqual(gridColor, sampler.rgbAtPixel(x - 2, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x - 1, y).slice(0, 3),
+    assert.deepEqual(gridColor, sampler.rgbAtPixel(x - 1, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x, y).slice(0, 3),
+    assert.deepEqual(gridColor, sampler.rgbAtPixel(x, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(gridColor, Util.samplePixel(g.hidden_, x + 1, y).slice(0, 3),
+    assert.deepEqual(gridColor, sampler.rgbAtPixel(x + 1, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
-    assert.deepEqual(emptyColor, Util.samplePixel(g.hidden_, x + 2, y).slice(0, 3),
+    assert.deepEqual(emptyColor, sampler.rgbAtPixel(x + 2, y),
                      "Unexpected x-grid color found at pixel: x: " + x + "y: " + y);
   }
 });
 
 it('testGridLinePattern', function() {
   var opts = {
-    width : 120,
+    width : 480,
     height : 320,
     errorBars : false,
     labels : [ "X", "Left", "Right" ],
@@ -287,6 +286,7 @@ it('testGridLinePattern', function() {
     return Math.round(y) - 1;
   }
   var x, y;
+  var sampler = new PixelSampler(g);
   // Step through all gridlines of the axis
   for (var i = 0; i < yGridlines.length; i++) {
     y = halfDown(g.toDomYCoord(yGridlines[i], 0));
@@ -295,9 +295,11 @@ it('testGridLinePattern', function() {
       // avoid checking the edge pixels since they differ depending on the OS.
       var pixelpos = x % 10;
       if(pixelpos < 1 || pixelpos > 8) continue;
+
+      // XXX: check what this looks like at master
       
       // Ignore alpha
-      var drawnPixel = Util.samplePixel(g.hidden_, x, y).slice(0,3);
+      var drawnPixel = sampler.rgbAtPixel(x, y);
       var pattern = (Math.floor((x) / 10)) % 2;
       switch (pattern) {
       case 0: // fill

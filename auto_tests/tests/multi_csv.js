@@ -3,14 +3,12 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
 describe("multi-csv", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 function getXLabels() {
   var x_labels = document.getElementsByClassName("dygraph-axis-label-x");

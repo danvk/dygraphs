@@ -1,16 +1,18 @@
 /** 
  * @fileoverview Test cases for DygraphOptions.
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphOptions from '../../src/dygraph-options';
+
 describe("dygraph-options-tests", function() {
+
+cleanupAfterEach();
 
 var graph;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
   graph = document.getElementById("graph");
-});
-
-afterEach(function() {
 });
 
 /*

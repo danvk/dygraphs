@@ -3,14 +3,17 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
 describe("hidpi", function() {
+
+cleanupAfterEach();
 
 var savePixelRatio;
 beforeEach(function() {
   savePixelRatio = window.devicePixelRatio;
   window.devicePixelRatio = 2;
-
-  document.body.innerHTML = "<div id='graph'></div>";
 });
 
 afterEach(function() {
