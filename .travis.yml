@@ -4,6 +4,8 @@ node_js:
 
 sudo: false  # Use container-based architecture
 script: >
-    gulp travis &&
+    ./make-prod-combined.sh &&
+    ./make-tests.sh &&
+    ./run-tests.sh &&
     curl -O https://raw.githubusercontent.com/danvk/travis-weigh-in/master/weigh_in.py &&
     python weigh_in.py dist/dygraph-combined.js

@@ -243,6 +243,10 @@ it('testPerAxisGridWidth', function() {
   }
 });
 
+// PhantomJS 1.9.x does not support setLineDash
+// When Travis-CI updates to Phantom2, this can be re-enabled.
+// See https://github.com/ariya/phantomjs/issues/12948
+if (!navigator.userAgent.match(/PhantomJS\/1.9/)) {
 it('testGridLinePattern', function() {
   var opts = {
     width : 480,
@@ -314,5 +318,6 @@ it('testGridLinePattern', function() {
     }
   }
 });
+}
 
 });

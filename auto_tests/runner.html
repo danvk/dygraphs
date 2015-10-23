@@ -9,11 +9,17 @@
   <div id="mocha"></div>
 
   <!-- Polyfills for PhantomJS -->
-  <script src="../node_modules/babel/node_modules/babel-core/browser-polyfill.js"></script>
+  <script src="../node_modules/babel-core/browser-polyfill.js"></script>
 
   <!-- Mocha -->
   <script src="../node_modules/mocha/mocha.js"></script>
   <script src="../node_modules/chai/chai.js"></script>
+  <script>
+  if (window.initMochaPhantomJS) {
+    window.initMochaPhantomJS();
+  }
+  </script>
+
   <script>
   var expect = chai.expect;
   var assert = chai.assert;
@@ -50,11 +56,7 @@
 
   <script>
     mocha.checkLeaks();
-    if (window.mochaPhantomJS) {
-      mochaPhantomJS.run();
-    } else {
-      mocha.run();
-    }
+    mocha.run();
   </script>
 </body>
 </html>
