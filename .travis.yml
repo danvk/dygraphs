@@ -3,4 +3,7 @@ node_js:
   - "0.10"
 
 sudo: false  # Use container-based architecture
-script: "gulp travis"
+script: >
+    gulp travis &&
+    curl -O https://raw.githubusercontent.com/danvk/travis-weigh-in/master/weigh_in.py &&
+    python weigh_in.py dist/dygraph-combined.js
