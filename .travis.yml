@@ -8,5 +8,6 @@ script: >
     npm run build-tests &&
     npm run test &&
     npm run coverage &&
+    ./scripts/post-coverage.sh &&
     curl -O https://raw.githubusercontent.com/danvk/travis-weigh-in/master/weigh_in.py &&
     python weigh_in.py dist/dygraph-combined.js

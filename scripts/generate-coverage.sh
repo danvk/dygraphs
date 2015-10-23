@@ -7,8 +7,8 @@ set -o errexit
 set -x
 
 # Generate per-file ES6 --> ES5 transpilations
-babel src --out-dir dist/src
-babel auto_tests/tests --out-dir dist/auto_tests/tests
+babel --retain-lines src --out-dir dist/src
+babel --retain-lines auto_tests/tests --out-dir dist/auto_tests/tests
 
 # Instrument the source code with Istanbul's __coverage__ variable.
 rm -rf coverage/*  # Clear out everything to ensure a hermetic run.
@@ -42,7 +42,7 @@ if [ $CI ]; then
   istanbul report --include coverage/*.json lcovonly
 
   # Monkey patch in the untransformed source paths.
-  # perl -i -pe 's,dist/main,src/main,' coverage/lcov.info
+  perl -i -pe 's,dist/,,' coverage/lcov.info
   echo ''  # reset exit code -- failure to post coverage shouldn't be an error.
 
 else
