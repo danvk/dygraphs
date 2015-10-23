@@ -4,5 +4,6 @@ watchify \
   -t babelify \
   -t [ envify --NODE_ENV development ] \
   --debug \
-  -o dist/tests.js \
-  auto_tests/tests/*.js
+  --standalone Dygraph \
+  -o dist/dygraph.js \
+  src/dygraph.js

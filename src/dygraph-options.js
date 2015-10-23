@@ -11,11 +11,11 @@
 
 // TODO: remove this jshint directive & fix the warnings.
 /*jshint sub:true */
-/*global Dygraph:false */
 "use strict";
 
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
+import OPTIONS_REFERENCE from './dygraph-options-reference';
 
 /*
  * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
@@ -166,7 +166,10 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
   utils.update(this.xAxis_.options, axis_opts["x"] || {});
 
-  // if (DEBUG) this.validateOptions_();
+  // For "production" code, this gets removed by uglifyjs.
+  if (process.env.NODE_ENV != 'production') {
+    this.validateOptions_();
+  }
 };
 
 /**
@@ -322,23 +325,22 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
-// TODO: fix this
-// if (DEBUG) {
-if (false) {
+// For "production" code, this gets removed by uglifyjs.
+if (process.env.NODE_ENV != 'production') {
 
 /**
  * Validate all options.
- * This requires Dygraph.OPTIONS_REFERENCE, which is only available in debug builds.
+ * This requires OPTIONS_REFERENCE, which is only available in debug builds.
  * @private
  */
 DygraphOptions.prototype.validateOptions_ = function() {
-  if (typeof Dygraph.OPTIONS_REFERENCE === 'undefined') {
+  if (typeof OPTIONS_REFERENCE === 'undefined') {
     throw 'Called validateOptions_ in prod build.';
   }
 
   var that = this;
   var validateOption = function(optionName) {
-    if (!Dygraph.OPTIONS_REFERENCE[optionName]) {
+    if (!OPTIONS_REFERENCE[optionName]) {
       that.warnInvalidOption_(optionName);
     }
   };

@@ -43,10 +43,6 @@
 
  */
 
-// For "production" code, this gets set to false by uglifyjs.
-// if (typeof(DEBUG) === 'undefined') DEBUG=true;
-var DEBUG = true;
-
 import DygraphLayout from './dygraph-layout';
 import DygraphCanvasRenderer from './dygraph-canvas';
 import DygraphOptions from './dygraph-options';
@@ -54,6 +50,7 @@ import DygraphInteraction from './dygraph-interaction-model';
 import * as DygraphTickers from './dygraph-tickers';
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
+import OPTIONS_REFERENCE from './dygraph-options-reference';
 
 import DefaultHandler from './datahandler/default';
 import ErrorBarsHandler from './datahandler/bars-error';
@@ -70,7 +67,6 @@ import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
 
-/*global DygraphLayout:false, DygraphCanvasRenderer:false, DygraphOptions:false, G_vmlCanvasManager:false,ActiveXObject:false */
 "use strict";
 
 /**
@@ -368,16 +364,17 @@ Dygraph.prototype.toString = function() {
  * @return { ... } The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
-  // if (DEBUG) {
-  //   if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
-  //     console.error('Must include options reference JS for testing');
-  //   } else if (!Dygraph.OPTIONS_REFERENCE.hasOwnProperty(name)) {
-  //     console.error('Dygraphs is using property ' + name + ', which has no ' +
-  //                   'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
-  //     // Only log this error once.
-  //     Dygraph.OPTIONS_REFERENCE[name] = true;
-  //   }
-  // }
+  // For "production" code, this gets removed by uglifyjs.
+  if (process.env.NODE_ENV != 'production') {
+    if (typeof(OPTIONS_REFERENCE) === 'undefined') {
+      console.error('Must include options reference JS for testing');
+    } else if (!OPTIONS_REFERENCE.hasOwnProperty(name)) {
+      console.error('Dygraphs is using property ' + name + ', which has no ' +
+                    'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
+      // Only log this error once.
+      OPTIONS_REFERENCE[name] = true;
+    }
+  }
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
 };
 

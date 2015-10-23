@@ -4,6 +4,7 @@
 
 import Dygraph from '../../src/dygraph';
 import DygraphOptions from '../../src/dygraph-options';
+import OPTIONS_REFERENCE from '../../src/dygraph-options-reference';
 
 describe("dygraph-options-tests", function() {
 
@@ -76,7 +77,7 @@ var getWarnings = function(div, data, opts) {
 };
 
 it('testLogWarningForNonexistentOption', function() {
-  if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
+  if (!OPTIONS_REFERENCE) {
     return;  // this test won't pass in non-debug mode.
   }
 
@@ -105,7 +106,7 @@ it('testLogWarningForNonexistentOption', function() {
 });
 
 it('testOnlyLogsEachWarningOnce', function() {
-  if (typeof(Dygraph.OPTIONS_REFERENCE) === 'undefined') {
+  if (!OPTIONS_REFERENCE) {
     return;  // this test won't pass in non-debug mode.
   }
 
