@@ -29,6 +29,7 @@
     "babel-core": "^5.8.25",
     "babelify": "^6.3.0",
     "browserify": "^11.2.0",
+    "browserify-header": "^0.9.2",
     "chai": "^3.3.0",
     "coveralls": "^2.11.2",
     "envify": "^3.4.0",
@@ -47,7 +48,10 @@
     "watchify": "^3.4.0"
   },
   "scripts": {
-    "test": "make test",
+    "build": "./scripts/build.sh",
+    "watch": "./scripts/watch.sh",
+    "build-tests": "./scripts/build-tests.sh",
+    "test": "./scripts/run-tests.sh",
     "tests-ok": "./scripts/check-no-only.sh"
   },
   "pre-commit": [

@@ -4,8 +4,8 @@ node_js:
 
 sudo: false  # Use container-based architecture
 script: >
-    ./make-prod-combined.sh &&
-    ./make-tests.sh &&
-    ./run-tests.sh &&
+    npm run build &&
+    npm run build-tests &&
+    npm run test &&
     curl -O https://raw.githubusercontent.com/danvk/travis-weigh-in/master/weigh_in.py &&
     python weigh_in.py dist/dygraph-combined.js
