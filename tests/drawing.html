@@ -147,13 +147,7 @@
               if (tool == 'zoom') {
                 Dygraph.defaultInteractionModel.mousedown(event, g, context);
               } else {
-                // prevents mouse drags from selecting page text.
-                if (event.preventDefault) {
-                  event.preventDefault();  // Firefox, Chrome, etc.
-                } else {
-                  event.returnValue = false;  // IE
-                  event.cancelBubble = true;
-                }
+                event.preventDefault();  // Firefox, Chrome, etc.
                 isDrawing = true;
                 setPoint(event, g, context);
               }
@@ -195,7 +189,7 @@
               g.updateOptions({
                 dateWindow: dateWindow
               });
-              Dygraph.cancelEvent(event);
+              event.preventDefault();
             }
           },
           strokeWidth: 1.5,

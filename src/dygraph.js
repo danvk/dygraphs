@@ -3551,6 +3551,35 @@ Dygraph.PLUGINS = [
   GridPlugin
 ];
 
+// There are many symbols which have historically been available through the
+// Dygraph class. These are exported here for backwards compatibility.
 Dygraph.GVizChart = GVizChart;
+Dygraph.DASHED_LINE = utils.DASHED_LINE;
+Dygraph.DOT_DASH_LINE = utils.DOT_DASH_LINE;
+Dygraph.dateAxisLabelFormatter = utils.dateAxisLabelFormatter;
+Dygraph.toRGB_ = utils.toRGB_;
+Dygraph.findPos = utils.findPos;
+Dygraph.pageX = utils.pageX;
+Dygraph.pageY = utils.pageY;
+Dygraph.dateString_ = utils.dateString_;
+Dygraph.defaultInteractionModel = DygraphInteraction.defaultModel;
+Dygraph.nonInteractiveModel = Dygraph.nonInteractiveModel_ = DygraphInteraction.nonInteractiveModel_;
+Dygraph.Circles = utils.Circles;
+
+Dygraph.Plugins = {
+  Legend: LegendPlugin,
+  Axes: AxesPlugin,
+  // ...
+};
+Dygraph.DataHandlers = {
+  DefaultHandler
+};
+
+Dygraph.startPan = DygraphInteraction.startPan;
+Dygraph.startZoom = DygraphInteraction.startZoom;
+Dygraph.movePan = DygraphInteraction.movePan;
+Dygraph.moveZoom = DygraphInteraction.moveZoom;
+Dygraph.endPan = DygraphInteraction.endPan;
+Dygraph.endZoom = DygraphInteraction.endZoom;
 
 export default Dygraph;

@@ -9,6 +9,4 @@ browserify \
   -t [ envify --NODE_ENV development ] \
   --debug \
   -o dist/tests.js \
-  auto_tests/tests/utils_test.js
-
-#  auto_tests/tests/*.js
+  auto_tests/tests/*.js
