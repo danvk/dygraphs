@@ -23,21 +23,19 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+import Util from './Util';
+
 var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 
 describe("missing-points", function() {
 
-var _origFunc = Dygraph.getContext;
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
-  }
-});
-
-afterEach(function() {
-  Dygraph.getContext = _origFunc;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 it('testSeparatedPointsDontDraw', function() {
   var graph = document.getElementById("graph");

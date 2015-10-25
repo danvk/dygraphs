@@ -1,7 +1,4 @@
 <html>
-<head>
-  <script src="../dashed-canvas.js"></script>
-</head>
 <body>
 <p>You should see solid black and blue lines with a dashed red line in between
 them:</p>
@@ -25,7 +22,8 @@ ctx.lineTo(580, 200);
 ctx.stroke();
 
 // Draw a dashed line segment.
-ctx.installPattern([10, 10]);
+// ctx.installPattern([10, 10]);
+ctx.setLineDash([10, 10]);
 ctx.strokeStyle = 'red';
 ctx.beginPath();
 ctx.moveTo(100, 50);
@@ -42,7 +40,8 @@ ctx2.moveTo(100, 50);
 ctx2.lineTo(600, 50);
 ctx2.stroke();
 
-ctx.uninstallPattern();
+// ctx.uninstallPattern();
+ctx.setLineDash([]);
 
 // Now that we've uninstalled the pattern, should be normal again.
 ctx.strokeStyle = 'blue';

@@ -6,7 +6,7 @@
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
   </head>
   <body>
@@ -74,7 +74,11 @@
             },
             ylabel: 'Primary y-axis',
             y2label: 'Secondary y-axis',
-            yAxisLabelWidth: 60
+            axes: {
+              y: {
+                axisLabelWidth: 60
+              }
+            }
           }
       );
 
@@ -89,7 +93,8 @@
             },
             axes: {
               y: {
-                valueRange: [40, 80]
+                valueRange: [40, 80],
+                axisLabelWidth: 60
               },
               y2: {
                 // set axis-related properties here
@@ -98,8 +103,7 @@
               }
             },
             ylabel: 'Primary y-axis',
-            y2label: 'Secondary y-axis',
-            yAxisLabelWidth: 60
+            y2label: 'Secondary y-axis'
           }
       );
 

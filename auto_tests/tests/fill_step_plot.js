@@ -4,23 +4,25 @@
  *
  * @author benoitboivin.pro@gmail.com (Benoit Boivin)
  */
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import CanvasAssertions from './CanvasAssertions';
+import Proxy from './Proxy';
+
 describe("fill-step-plot", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
-var origFunc = Dygraph.getContext;
+var origFunc = utils.getContext;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
+  utils.getContext = function(canvas) {
     return new Proxy(origFunc(canvas));
   };
 });
 
 afterEach(function() {
-  Dygraph.getContext = origFunc;
+  utils.getContext = origFunc;
 });
 
 

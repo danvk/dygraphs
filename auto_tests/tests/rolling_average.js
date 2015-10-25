@@ -3,14 +3,14 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
+import Util from './Util';
+
 describe("rolling-average", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 it('testRollingAverage', function() {
   var opts = {

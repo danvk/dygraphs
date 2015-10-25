@@ -9,20 +9,20 @@
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 
-(function() {
-
 /*global Dygraph:false */
 "use strict";
 
+import DygraphDataHandler from './datahandler';
+import DefaultHandler from './default';
+
 /**
- * @extends Dygraph.DataHandlers.DefaultHandler
+ * @extends DefaultHandler
  * @constructor
  */
-Dygraph.DataHandlers.DefaultFractionHandler = function() {
+var DefaultFractionHandler = function() {
 };
   
-var DefaultFractionHandler = Dygraph.DataHandlers.DefaultFractionHandler;
-DefaultFractionHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
+DefaultFractionHandler.prototype = new DefaultHandler();
 
 DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
@@ -84,4 +84,4 @@ DefaultFractionHandler.prototype.rollingAverage = function(originalData, rollPer
   return rollingData;
 };
 
-})();
+export default DefaultFractionHandler;

@@ -10,10 +10,11 @@
  * a timeline range selector widget for dygraphs.
  */
 
-Dygraph.Plugins.RangeSelector = (function() {
-
 /*global Dygraph:false */
 "use strict";
+
+import * as utils from '../dygraph-utils';
+import DygraphInteraction from '../dygraph-interaction-model';
 
 var rangeSelector = function() {
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
@@ -160,7 +161,7 @@ rangeSelector.prototype.updateVisibility_ = function() {
  */
 rangeSelector.prototype.resize_ = function() {
   function setElementRect(canvas, context, rect) {
-    var canvasScale = Dygraph.getContextPixelRatio(context);
+    var canvasScale = utils.getContextPixelRatio(context);
 
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
@@ -196,18 +197,18 @@ rangeSelector.prototype.resize_ = function() {
  * Creates the background and foreground canvases.
  */
 rangeSelector.prototype.createCanvases_ = function() {
-  this.bgcanvas_ = Dygraph.createCanvas();
+  this.bgcanvas_ = utils.createCanvas();
   this.bgcanvas_.className = 'dygraph-rangesel-bgcanvas';
   this.bgcanvas_.style.position = 'absolute';
   this.bgcanvas_.style.zIndex = 9;
-  this.bgcanvas_ctx_ = Dygraph.getContext(this.bgcanvas_);
+  this.bgcanvas_ctx_ = utils.getContext(this.bgcanvas_);
 
-  this.fgcanvas_ = Dygraph.createCanvas();
+  this.fgcanvas_ = utils.createCanvas();
   this.fgcanvas_.className = 'dygraph-rangesel-fgcanvas';
   this.fgcanvas_.style.position = 'absolute';
   this.fgcanvas_.style.zIndex = 9;
   this.fgcanvas_.style.cursor = 'default';
-  this.fgcanvas_ctx_ = Dygraph.getContext(this.fgcanvas_);
+  this.fgcanvas_ctx_ = utils.getContext(this.fgcanvas_);
 };
 
 /**
@@ -255,7 +256,7 @@ rangeSelector.prototype.initInteraction_ = function() {
 
   // We cover iframes during mouse interactions. See comments in
   // dygraph-utils.js for more info on why this is a good idea.
-  var tarp = new Dygraph.IFrameTarp();
+  var tarp = new utils.IFrameTarp();
 
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
@@ -274,14 +275,14 @@ rangeSelector.prototype.initInteraction_ = function() {
   };
 
   onZoomStart = function(e) {
-    Dygraph.cancelEvent(e);
+    utils.cancelEvent(e);
     isZooming = true;
     clientXLast = e.clientX;
     handle = e.target ? e.target : e.srcElement;
     if (e.type === 'mousedown' || e.type === 'dragstart') {
       // These events are removed manually.
-      Dygraph.addEvent(topElem, 'mousemove', onZoom);
-      Dygraph.addEvent(topElem, 'mouseup', onZoomEnd);
+      utils.addEvent(topElem, 'mousemove', onZoom);
+      utils.addEvent(topElem, 'mouseup', onZoomEnd);
     }
     self.fgcanvas_.style.cursor = 'col-resize';
     tarp.cover();
@@ -292,7 +293,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     if (!isZooming) {
       return false;
     }
-    Dygraph.cancelEvent(e);
+    utils.cancelEvent(e);
 
     var delX = e.clientX - clientXLast;
     if (Math.abs(delX) < 4) {
@@ -329,8 +330,8 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
     isZooming = false;
     tarp.uncover();
-    Dygraph.removeEvent(topElem, 'mousemove', onZoom);
-    Dygraph.removeEvent(topElem, 'mouseup', onZoomEnd);
+    utils.removeEvent(topElem, 'mousemove', onZoom);
+    utils.removeEvent(topElem, 'mouseup', onZoomEnd);
     self.fgcanvas_.style.cursor = 'default';
 
     // If on a slower device, zoom now.
@@ -365,13 +366,13 @@ rangeSelector.prototype.initInteraction_ = function() {
 
   onPanStart = function(e) {
     if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
-      Dygraph.cancelEvent(e);
+      utils.cancelEvent(e);
       isPanning = true;
       clientXLast = e.clientX;
       if (e.type === 'mousedown') {
         // These events are removed manually.
-        Dygraph.addEvent(topElem, 'mousemove', onPan);
-        Dygraph.addEvent(topElem, 'mouseup', onPanEnd);
+        utils.addEvent(topElem, 'mousemove', onPan);
+        utils.addEvent(topElem, 'mouseup', onPanEnd);
       }
       return true;
     }
@@ -382,7 +383,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     if (!isPanning) {
       return false;
     }
-    Dygraph.cancelEvent(e);
+    utils.cancelEvent(e);
 
     var delX = e.clientX - clientXLast;
     if (Math.abs(delX) < 4) {
@@ -422,8 +423,8 @@ rangeSelector.prototype.initInteraction_ = function() {
       return false;
     }
     isPanning = false;
-    Dygraph.removeEvent(topElem, 'mousemove', onPan);
-    Dygraph.removeEvent(topElem, 'mouseup', onPanEnd);
+    utils.removeEvent(topElem, 'mousemove', onPan);
+    utils.removeEvent(topElem, 'mouseup', onPanEnd);
     // If on a slower device, do pan now.
     if (!dynamic) {
       doPan();
@@ -454,11 +455,11 @@ rangeSelector.prototype.initInteraction_ = function() {
   onZoomHandleTouchEvent = function(e) {
     if (e.type == 'touchstart' && e.targetTouches.length == 1) {
       if (onZoomStart(e.targetTouches[0])) {
-        Dygraph.cancelEvent(e);
+        utils.cancelEvent(e);
       }
     } else if (e.type == 'touchmove' && e.targetTouches.length == 1) {
       if (onZoom(e.targetTouches[0])) {
-        Dygraph.cancelEvent(e);
+        utils.cancelEvent(e);
       }
     } else {
       onZoomEnd(e);
@@ -468,11 +469,11 @@ rangeSelector.prototype.initInteraction_ = function() {
   onCanvasTouchEvent = function(e) {
     if (e.type == 'touchstart' && e.targetTouches.length == 1) {
       if (onPanStart(e.targetTouches[0])) {
-        Dygraph.cancelEvent(e);
+        utils.cancelEvent(e);
       }
     } else if (e.type == 'touchmove' && e.targetTouches.length == 1) {
       if (onPan(e.targetTouches[0])) {
-        Dygraph.cancelEvent(e);
+        utils.cancelEvent(e);
       }
     } else {
       onPanEnd(e);
@@ -486,7 +487,7 @@ rangeSelector.prototype.initInteraction_ = function() {
     }
   };
 
-  this.setDefaultOption_('interactionModel', Dygraph.Interaction.dragIsPanInteractionModel);
+  this.setDefaultOption_('interactionModel', DygraphInteraction.dragIsPanInteractionModel);
   this.setDefaultOption_('panEdgeFraction', 0.0001);
 
   var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
@@ -685,11 +686,11 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   // Also, expand the Y range to compress the mini plot a little.
   var extraPercent = 0.25;
   if (logscale) {
-    yMax = Dygraph.log10(yMax);
+    yMax = utils.log10(yMax);
     yMax += yMax*extraPercent;
-    yMin = Dygraph.log10(yMin);
+    yMin = utils.log10(yMin);
     for (i = 0; i < combinedSeries.length; i++) {
-      combinedSeries[i][1] = Dygraph.log10(combinedSeries[i][1]);
+      combinedSeries[i][1] = utils.log10(combinedSeries[i][1]);
     }
   } else {
     var yExtra;
@@ -785,6 +786,4 @@ rangeSelector.prototype.getZoomHandleStatus_ = function() {
   };
 };
 
-return rangeSelector;
-
-})();
+export default rangeSelector;

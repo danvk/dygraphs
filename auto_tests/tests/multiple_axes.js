@@ -4,11 +4,13 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import Util from './Util';
+
 describe("multiple-axes-tests", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 var getData = function() {
   var data = [];
@@ -220,12 +222,12 @@ it('testDrawPointCallback', function() {
   var results = { y : {}, y2 : {}};
   var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
     results.y[seriesName] = 1; 
-    Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
+    utils.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
 
   };
   var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
     results.y2[seriesName] = 1; 
-    Dygraph.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
+    utils.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 
   var g = new Dygraph(

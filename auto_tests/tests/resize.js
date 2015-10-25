@@ -3,7 +3,15 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+
+import DygraphOps from './DygraphOps';
+import Util from './Util';
+
 describe("resize", function() {
+
+cleanupAfterEach();
 
 var data =
       "X,Y\n" +
@@ -14,18 +22,9 @@ var data =
       "5,300\n" +
       "6,100\n";
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
-
 it('testResizeMaintainsMouseOperations', function() {
-  document.body.innerHTML =
-      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
-      '</div>';
-  var graph = document.getElementById("graph");
+  var graph = document.getElementById('graph');
+  graph.setAttribute('style', 'width: 640px; height: 480px;');
 
   var callbackCount = 0;
   var callback = function() {
@@ -46,7 +45,7 @@ it('testResizeMaintainsMouseOperations', function() {
   strum(g, 300, 640);
   assert.equal(6, callbackCount);
 
-  document.getElementById("graph").style.width = "500px";
+  graph.style.width = "500px";
   g.resize();
 
   callbackCount = 0;

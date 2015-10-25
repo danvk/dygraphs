@@ -35,7 +35,14 @@
 /* global Dygraph:false */
 'use strict';
 
-Dygraph.synchronize = function(/* dygraphs..., opts */) {
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+}
+
+var synchronize = function(/* dygraphs..., opts */) {
   if (arguments.length === 0) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
@@ -216,5 +223,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
     }, true /* no need to redraw */);
   }
 }
+
+Dygraph.synchronize = synchronize;
 
 })();

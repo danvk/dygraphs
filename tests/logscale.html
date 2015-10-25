@@ -6,7 +6,7 @@
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
   </head>
 
@@ -27,8 +27,6 @@
     <div id="div_g1" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
-      Dygraph.Interaction.DEBUG = true;
-
       function data0() {
         return "Date,A\n" +
         "20101201,5\n"+
@@ -53,10 +51,10 @@
         "7,0\n"+
         "8,100\n"+
         "9,500\n"+
-        "101,500\n"+
         "30,500\n"+
         "50,400\n"+
         "100,300\n"+
+        "101,500\n"+
         "300,200\n"+
         "1000,100\n"+
         "";

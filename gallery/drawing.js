@@ -174,13 +174,19 @@ Gallery.register(
                 g.updateOptions({
                   dateWindow: dateWindow
                 });
-                Dygraph.cancelEvent(event);
+                event.preventDefault();
               }
             },
             strokeWidth: 1.5,
             gridLineColor: 'rgb(196, 196, 196)',
-            drawYGrid: false,
-            drawYAxis: false
+            axes: {
+              x: {
+                drawAxis: false
+              },
+              y: {
+                drawGrid: false
+              }
+            }
           });
           window.onmouseup = finishDraw;
       }

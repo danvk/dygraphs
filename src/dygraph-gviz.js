@@ -17,9 +17,10 @@
  * - http://dygraphs.com/tests/annotation-gviz.html
  */
 
-(function() {
 /*global Dygraph:false */
 "use strict";
+
+import Dygraph from './dygraph';
 
 /**
  * A wrapper around Dygraph that implements the gviz API.
@@ -27,7 +28,7 @@
  *     live in.
  * @constructor
  */
-Dygraph.GVizChart = function(container) {
+var GVizChart = function(container) {
   this.container = container;
 };
 
@@ -35,7 +36,7 @@ Dygraph.GVizChart = function(container) {
  * @param {GVizDataTable} data
  * @param {Object.<*>} options
  */
-Dygraph.GVizChart.prototype.draw = function(data, options) {
+GVizChart.prototype.draw = function(data, options) {
   // Clear out any existing dygraph.
   // TODO(danvk): would it make more sense to simply redraw using the current
   // date_graph object?
@@ -53,7 +54,7 @@ Dygraph.GVizChart.prototype.draw = function(data, options) {
  * @param {Array.<{row:number}>} selection_array array of the selected cells
  * @public
  */
-Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
+GVizChart.prototype.setSelection = function(selection_array) {
   var row = false;
   if (selection_array.length) {
     row = selection_array[0].row;
@@ -66,7 +67,7 @@ Dygraph.GVizChart.prototype.setSelection = function(selection_array) {
  * @return {Array.<{row:number,column:number}>} array of the selected cells
  * @public
  */
-Dygraph.GVizChart.prototype.getSelection = function() {
+GVizChart.prototype.getSelection = function() {
   var selection = [];
 
   var row = this.date_graph.getSelection();
@@ -81,4 +82,4 @@ Dygraph.GVizChart.prototype.getSelection = function() {
   return selection;
 };
 
-})();
+export default GVizChart;

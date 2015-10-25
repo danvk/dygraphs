@@ -1,0 +1,66 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>dygraphs tests</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+  <div id="graph"></div>
+  <div id="mocha"></div>
+
+  <!-- Polyfills for PhantomJS -->
+  <script src="../node_modules/babel-core/browser-polyfill.js"></script>
+
+  <!-- Mocha -->
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../node_modules/chai/chai.js"></script>
+  <script>
+  if (window.initMochaPhantomJS) {
+    window.initMochaPhantomJS();
+  }
+  </script>
+
+  <script>
+  var expect = chai.expect;
+  var assert = chai.assert;
+  function cleanupAfterEach() {
+    // Clean up the DOM before each test.
+    // This makes debugging easier than cleaning up after each test, since the
+    // DOM stays on the screen after a failure.
+    beforeEach(function() {
+      var graph = document.getElementById('graph');
+      graph.innerHTML = '';
+      graph.setAttribute('style', '');
+    });
+  }
+  function useProxyCanvas(utils, Proxy) {
+    var _origFunc = utils.getContext;
+    beforeEach(function() {
+      utils.getContext = function(canvas) {
+        return new Proxy(_origFunc(canvas));
+      }
+    });
+
+    afterEach(function() {
+      utils.getContext = _origFunc;
+    });
+  }
+  </script>
+  <script>mocha.setup('bdd')</script>
+
+  <!-- Test data -->
+  <script src="data/data.js"></script>
+
+  <!-- Bundled tests -->
+  <script src="../dist/tests.js"></script>
+
+  <script>
+    mocha.checkLeaks();
+    if (window.mochaPhantomJS) {
+      mochaPhantomJS.run();
+    } else {
+      mocha.run();
+    }
+  </script>
+</body>
+</html>

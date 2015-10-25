@@ -25,20 +25,22 @@ Gallery.register(
               },
               {
                 strokeWidth: 2,
-                'parabola': {
-                  strokeWidth: 0.0,
-                  drawPoints: true,
-                  pointSize: 4,
-                  highlightCircleSize: 6
-                },
-                'line': {
-                  strokeWidth: 1.0,
-                  drawPoints: true,
-                  pointSize: 1.5
-                },
-                'sine wave': {
-                  strokeWidth: 3,
-                  highlightCircleSize: 10
+                series: {
+                  'parabola': {
+                    strokeWidth: 0.0,
+                    drawPoints: true,
+                    pointSize: 4,
+                    highlightCircleSize: 6
+                  },
+                  'line': {
+                    strokeWidth: 1.0,
+                    drawPoints: true,
+                    pointSize: 1.5
+                  },
+                  'sine wave': {
+                    strokeWidth: 3,
+                    highlightCircleSize: 10
+                  }
                 }
               }
           );

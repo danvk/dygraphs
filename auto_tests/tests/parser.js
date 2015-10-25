@@ -3,14 +3,13 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
 describe("parser", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 it('testDetectLineDelimiter', function() {
   var data = "X,Y\r" +
@@ -19,7 +18,7 @@ it('testDetectLineDelimiter', function() {
       "2,1\r" +
       "3,0\r"
   ;
-  assert.equal("\r", Dygraph.detectLineDelimiter(data));
+  assert.equal("\r", utils.detectLineDelimiter(data));
 
   data = "X,Y\n" +
       "0,-1\n" +
@@ -27,7 +26,7 @@ it('testDetectLineDelimiter', function() {
       "2,1\n" +
       "3,0\n"
   ;
-  assert.equal("\n", Dygraph.detectLineDelimiter(data));
+  assert.equal("\n", utils.detectLineDelimiter(data));
 
   data = "X,Y\n\r" +
       "0,-1\n\r" +
@@ -35,7 +34,7 @@ it('testDetectLineDelimiter', function() {
       "2,1\n\r" +
       "3,0\n\r"
   ;
-  assert.equal("\n\r", Dygraph.detectLineDelimiter(data));
+  assert.equal("\n\r", utils.detectLineDelimiter(data));
 });
 
 it('testParseDosNewlines', function() {

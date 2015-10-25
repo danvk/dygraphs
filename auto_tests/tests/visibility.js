@@ -3,14 +3,12 @@
  * @author sergeyslepian@gmail.com
  */
 
+import Dygraph from '../../src/dygraph';
+import Util from './Util';
+
 describe("visibility", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 /**
  * Does a bunch of the shared busywork of setting up a graph and changing its visibility.

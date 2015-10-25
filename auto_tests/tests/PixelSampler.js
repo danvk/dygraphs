@@ -33,6 +33,17 @@ PixelSampler.prototype.colorAtPixel = function(x, y) {
 };
 
 /**
+ * Convenience wrapper around colorAtPixel if you only care about RGB (not A).
+ * @param {number} x The screen x-coordinate at which to sample.
+ * @param {number} y The screen y-coordinate at which to sample.
+ * @return {Array.<number>} a 3D array: [R, G, B]. All three values
+ *     are in [0, 255]. A pixel which has never been touched will be [0,0,0].
+ */
+PixelSampler.prototype.rgbAtPixel = function(x, y) {
+  return this.colorAtPixel(x, y).slice(0, 3);
+};
+
+/**
  * The method samples a color using data coordinates (not screen coordinates).
  * This will round your data coordinates to the nearest screen pixel before
  * sampling.
@@ -45,3 +56,5 @@ PixelSampler.prototype.colorAtCoordinate = function(x, y) {
   var dom_xy = this.dygraph_.toDomCoords(x, y);
   return this.colorAtPixel(Math.round(dom_xy[0]), Math.round(dom_xy[1]));
 };
+
+export default PixelSampler;

@@ -50,9 +50,8 @@ Gallery.register(
     },
     run: function() {
       var lastClickedGraph;
-      // TODO(konigsberg): Add cleanup to remove callbacks.
-      Dygraph.addEvent(document, "mousewheel", function() { lastClickedGraph = null; });
-      Dygraph.addEvent(document, "click", function() { lastClickedGraph = null; });
+      document.addEventListener("mousewheel", function() { lastClickedGraph = null; });
+      document.addEventListener("click", function() { lastClickedGraph = null; });
       new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
       new Dygraph(document.getElementById("div_g2"),
@@ -85,5 +84,9 @@ Gallery.register(
              },
              underlayCallback : captureCanvas
           });
+    },
+    clean: function() {
+      document.removeEventListener('mousewheel');
+      document.removeEventListener('click');
     }
   });

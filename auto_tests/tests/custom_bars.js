@@ -4,18 +4,25 @@
  * @fileoverview Regression test based on some strange customBars data.
  * @author danvk@google.com (Dan Vanderkam)
  */
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import CanvasAssertions from './CanvasAssertions';
+import PixelSampler from './PixelSampler';
+import Proxy from './Proxy';
+
 describe("custom-bars", function() {
 
-var _origFunc = Dygraph.getContext;
+cleanupAfterEach();
+
+var _origFunc = utils.getContext;
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
+  utils.getContext = function(canvas) {
     return new Proxy(_origFunc(canvas));
   }
 });
 
 afterEach(function() {
-  Dygraph.getContext = _origFunc;
+  utils.getContext = _origFunc;
 });
 
 // This test used to reliably produce an infinite loop.

@@ -24,6 +24,12 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+
+import DygraphOps from './DygraphOps';
+import {assertDeepCloseTo} from './custom_asserts';
+
 var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 var ZERO_TO_FIFTY_STEPS = (function() {
   var a = [];
@@ -42,9 +48,7 @@ var FIVE_TO_ONE_THOUSAND = [
 
 describe("range-tests", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 var createGraph = function(opts, data, expectRangeX, expectRangeY) {
   if (data === undefined) data = ZERO_TO_FIFTY_STEPS;

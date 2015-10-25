@@ -5,7 +5,6 @@
  */
 /*global Dygraph:false */
 
-Dygraph.Plugins.Legend = (function() {
 /*
 Current bits of jankiness:
 - Uses two private APIs:
@@ -18,6 +17,8 @@ Current bits of jankiness:
 /*global Dygraph:false */
 "use strict";
 
+import * as utils from '../dygraph-utils';
+
 
 /**
  * Creates the legend, which appears when the user hovers over the chart.
@@ -25,12 +26,12 @@ Current bits of jankiness:
  *
  * @constructor
  */
-var legend = function() {
+var Legend = function() {
   this.legend_div_ = null;
   this.is_generated_div_ = false;  // do we own this div, or was it user-specified?
 };
 
-legend.prototype.toString = function() {
+Legend.prototype.toString = function() {
   return "Legend Plugin";
 };
 
@@ -49,7 +50,7 @@ var generateLegendDashHTML;
  * @param {Dygraph} g Graph instance.
  * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
  */
-legend.prototype.activate = function(g) {
+Legend.prototype.activate = function(g) {
   var div;
   var divWidth = g.getOption('labelsDivWidth');
 
@@ -76,7 +77,7 @@ legend.prototype.activate = function(g) {
       "overflow": "hidden"};
 
     // TODO(danvk): get rid of labelsDivStyles? CSS is better.
-    Dygraph.update(messagestyle, g.getOption('labelsDivStyles'));
+    utils.update(messagestyle, g.getOption('labelsDivStyles'));
     div = document.createElement("div");
     div.className = "dygraph-legend";
     for (var name in messagestyle) {
@@ -121,7 +122,7 @@ var escapeHTML = function(str) {
   return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-legend.prototype.select = function(e) {
+Legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
   var row = e.selectedRow;
@@ -155,12 +156,12 @@ legend.prototype.select = function(e) {
     this.legend_div_.style.top = topLegend + "px";
   }
 
-  var html = legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
+  var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
   this.legend_div_.innerHTML = html;
   this.legend_div_.style.display = '';
 };
 
-legend.prototype.deselect = function(e) {
+Legend.prototype.deselect = function(e) {
   var legendMode = e.dygraph.getOption('legend');
   if (legendMode !== 'always') {
     this.legend_div_.style.display = "none";
@@ -170,11 +171,11 @@ legend.prototype.deselect = function(e) {
   var oneEmWidth = calculateEmWidthInDiv(this.legend_div_);
   this.one_em_width_ = oneEmWidth;
 
-  var html = legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth, null);
+  var html = Legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth, null);
   this.legend_div_.innerHTML = html;
 };
 
-legend.prototype.didDrawChart = function(e) {
+Legend.prototype.didDrawChart = function(e) {
   this.deselect(e);
 };
 
@@ -187,7 +188,7 @@ legend.prototype.didDrawChart = function(e) {
  * - its top edge is flush with the top edge of the charting area
  * @private
  */
-legend.prototype.predraw = function(e) {
+Legend.prototype.predraw = function(e) {
   // Don't touch a user-specified labelsDiv.
   if (!this.is_generated_div_) return;
 
@@ -204,7 +205,7 @@ legend.prototype.predraw = function(e) {
  * Called when dygraph.destroy() is called.
  * You should null out any references and detach any DOM elements.
  */
-legend.prototype.destroy = function() {
+Legend.prototype.destroy = function() {
   this.legend_div_ = null;
 };
 
@@ -221,7 +222,7 @@ legend.prototype.destroy = function() {
  *   'always'}) and with dashed lines.
  * @param {number} row The selected row index.
  */
-legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
+Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 
@@ -271,7 +272,7 @@ legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   for (i = 0; i < sel_points.length; i++) {
     var pt = sel_points[i];
     if (pt.yval === 0 && !showZeros) continue;
-    if (!Dygraph.isOK(pt.canvasy)) continue;
+    if (!utils.isOK(pt.canvasy)) continue;
     if (sepLines) html += "<br/>";
 
     var series = g.getPropertiesForSeries(pt.name);
@@ -361,6 +362,4 @@ generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
   return dash;
 };
 
-
-return legend;
-})();
+export default Legend;

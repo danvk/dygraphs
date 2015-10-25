@@ -3,6 +3,12 @@
  *
  * @author nyx@nyx.cz (Marek Janda)
  */
+
+import Dygraph from '../../src/dygraph';
+import '../../src/extras/synchronizer';  // Sets Dygraph.synchronize
+
+import DygraphOps from './DygraphOps';
+
 describe("synchronize", function() {
   var gs;
   var originalCallbackCalled;
@@ -12,9 +18,10 @@ describe("synchronize", function() {
     "12,1,4,2\n" +
     "13,0,2,3\n";
   var h_row, h_pts;
+  var graph = document.getElementById('graph');
 
   beforeEach(function() {
-    document.body.innerHTML = "<div id='graph1'></div><div id='graph2'></div>";
+    graph.innerHTML = "<div id='graph1'></div><div id='graph2'></div>";
     originalCallbackCalled = false;
     h_row = 0, h_pts = [];
     gs = [];

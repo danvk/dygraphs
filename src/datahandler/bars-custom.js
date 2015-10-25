@@ -9,20 +9,19 @@
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 
-(function() {
-
 /*global Dygraph:false */
 "use strict";
+
+import BarsHandler from './bars';
 
 /**
  * @constructor
  * @extends Dygraph.DataHandlers.BarsHandler
  */
-Dygraph.DataHandlers.CustomBarsHandler = function() {
+var CustomBarsHandler = function() {
 };
 
-var CustomBarsHandler = Dygraph.DataHandlers.CustomBarsHandler;
-CustomBarsHandler.prototype = new Dygraph.DataHandlers.BarsHandler();
+CustomBarsHandler.prototype = new BarsHandler();
 
 /** @inheritDoc */
 CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
@@ -100,4 +99,4 @@ CustomBarsHandler.prototype.rollingAverage =
   return rollingData;
 };
 
-})();
+export default CustomBarsHandler;
