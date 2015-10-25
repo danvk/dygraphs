@@ -918,72 +918,6 @@ export var Circles = {
 };
 
 /**
- * To create a "drag" interaction, you typically register a mousedown event
- * handler on the element where the drag begins. In that handler, you register a
- * mouseup handler on the window to determine when the mouse is released,
- * wherever that release happens. This works well, except when the user releases
- * the mouse over an off-domain iframe. In that case, the mouseup event is
- * handled by the iframe and never bubbles up to the window handler.
- *
- * To deal with this issue, we cover iframes with high z-index divs to make sure
- * they don't capture mouseup.
- *
- * Usage:
- * element.addEventListener('mousedown', function() {
- *   var tarper = new utils.IFrameTarp();
- *   tarper.cover();
- *   var mouseUpHandler = function() {
- *     ...
- *     window.removeEventListener(mouseUpHandler);
- *     tarper.uncover();
- *   };
- *   window.addEventListener('mouseup', mouseUpHandler);
- * };
- *
- * @constructor
- */
-export function IFrameTarp() {
-  /** @type {Array.<!HTMLDivElement>} */
-  this.tarps = [];
-};
-
-/**
- * Find all the iframes in the document and cover them with high z-index
- * transparent divs.
- */
-IFrameTarp.prototype.cover = function() {
-  var iframes = document.getElementsByTagName("iframe");
-  for (var i = 0; i < iframes.length; i++) {
-    var iframe = iframes[i];
-    var pos = Dygraph.findPos(iframe),
-        x = pos.x,
-        y = pos.y,
-        width = iframe.offsetWidth,
-        height = iframe.offsetHeight;
-
-    var div = document.createElement("div");
-    div.style.position = "absolute";
-    div.style.left = x + 'px';
-    div.style.top = y + 'px';
-    div.style.width = width + 'px';
-    div.style.height = height + 'px';
-    div.style.zIndex = 999;
-    document.body.appendChild(div);
-    this.tarps.push(div);
-  }
-};
-
-/**
- * Remove all the iframe covers. You should call this in a mouseup handler.
- */
-IFrameTarp.prototype.uncover = function() {
-  for (var i = 0; i < this.tarps.length; i++) {
-    this.tarps[i].parentNode.removeChild(this.tarps[i]);
-  }
-  this.tarps = [];
-};
-
-/**
  * Determine whether |data| is delimited by CR, CRLF, LF, LFCR.
  * @param {string} data
  * @return {?string} the delimiter that was detected (or null on failure).
@@ -1028,7 +962,6 @@ export function isNodeContainedBy(containee, container) {
   return (containeeNode === container);
 };
 
-
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
 /** @type {function(number,number):number} */
@@ -1042,7 +975,7 @@ export function pow(base, exp) {
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
 /**
- * Helper for Dygraph.toRGB_ which parses strings of the form:
+ * Helper for toRGB_ which parses strings of the form:
  * rgb(123, 45, 67)
  * rgba(123, 45, 67, 0.5)
  * @return parsed {r,g,b,a?} tuple or null.

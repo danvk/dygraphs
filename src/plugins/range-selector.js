@@ -15,6 +15,7 @@
 
 import * as utils from '../dygraph-utils';
 import DygraphInteraction from '../dygraph-interaction-model';
+import IFrameTarp from '../iframe-tarp';
 
 var rangeSelector = function() {
   this.hasTouchInterface_ = typeof(TouchEvent) != 'undefined';
@@ -256,7 +257,7 @@ rangeSelector.prototype.initInteraction_ = function() {
 
   // We cover iframes during mouse interactions. See comments in
   // dygraph-utils.js for more info on why this is a good idea.
-  var tarp = new utils.IFrameTarp();
+  var tarp = new IFrameTarp();
 
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
