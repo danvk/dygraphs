@@ -57,6 +57,7 @@ import ErrorBarsHandler from './datahandler/bars-error';
 import CustomBarsHandler from './datahandler/bars-custom';
 import DefaultFractionHandler from './datahandler/default-fractions';
 import FractionsBarsHandler from './datahandler/bars-fractions';
+import BarsHandler from './datahandler/bars';
 
 import AnnotationsPlugin from './plugins/annotations';
 import AxesPlugin from './plugins/axes';
@@ -3569,10 +3570,19 @@ Dygraph.Circles = utils.Circles;
 Dygraph.Plugins = {
   Legend: LegendPlugin,
   Axes: AxesPlugin,
-  // ...
+  Annotations: AnnotationsPlugin,
+  ChartLabels: ChartLabelsPlugin,
+  Grid: GridPlugin,
+  RangeSelector: RangeSelectorPlugin
 };
+
 Dygraph.DataHandlers = {
-  DefaultHandler
+  DefaultHandler,
+  BarsHandler,
+  CustomBarsHandler,
+  DefaultFractionHandler,
+  ErrorBarsHandler,
+  FractionsBarsHandler
 };
 
 Dygraph.startPan = DygraphInteraction.startPan;
