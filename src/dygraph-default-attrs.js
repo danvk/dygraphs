@@ -34,7 +34,7 @@ var DEFAULT_ATTRS = {
   rightGap: 5,
 
   showRoller: false,
-  xValueParser: utils.dateParser,
+  xValueParser: undefined,
 
   delimiter: ',',
 
