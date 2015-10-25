@@ -51,6 +51,7 @@ import * as DygraphTickers from './dygraph-tickers';
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
 import OPTIONS_REFERENCE from './dygraph-options-reference';
+import IFrameTarp from './iframe-tarp';
 
 import DefaultHandler from './datahandler/default';
 import ErrorBarsHandler from './datahandler/bars-error';
@@ -1149,7 +1150,7 @@ Dygraph.prototype.createDragInterface_ = function() {
 
     // We cover iframes during mouse interactions. See comments in
     // dygraph-utils.js for more info on why this is a good idea.
-    tarp: new utils.IFrameTarp(),
+    tarp: new IFrameTarp(),
 
     // contextB is the same thing as this context object but renamed.
     initializeMouseDown: function(event, g, contextB) {
