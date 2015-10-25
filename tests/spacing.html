@@ -22,14 +22,22 @@
             document.getElementById("div_g"),
             data, {
               rollPeriod: 7,
-              pixelsPerYLabel: 20
+              axes: {
+                y: {
+                  pixelsPerLabel: 20
+                }
+              }
             }
           );
       g2 = new Dygraph(
             document.getElementById("div_g2"),
             data, {
               rollPeriod: 7,
-              pixelsPerYLabel: 20
+              axes: {
+                y: {
+                  pixelsPerLabel: 20
+                }
+              }
             }
           );
     </script>

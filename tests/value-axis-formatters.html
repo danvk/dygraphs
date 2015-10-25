@@ -57,8 +57,6 @@
               'Y3': { axis: 'y2' },
               'Y4': { axis: 'y2' }
             },
-            xAxisLabelWidth: 100,
-            yAxisLabelWidth: 100,
             axes: {
               x: {
                 valueFormatter: function(ms) {
@@ -68,6 +66,7 @@
                   return 'xalf(' + formatDate(d) + ')';
                 },
                 pixelsPerLabel: 100,
+                axisLabelWidth: 100,
               },
               y: {
                 valueFormatter: function(y) {
@@ -75,7 +74,8 @@
                 },
                 axisLabelFormatter: function(y) {
                   return 'yalf(' + y.toPrecision(2) + ')';
-                }
+                },
+                axisLabelWidth: 100
               },
               y2: {
                 valueFormatter: function(y2) {

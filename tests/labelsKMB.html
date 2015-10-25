@@ -58,7 +58,11 @@
       });
       var g3 = new Dygraph(document.getElementById("labelsKMG2yValueFormatter"), data, {
         labelsKMG2: true,
-        yValueFormatter: formatValue,
+        axes: {
+          y: {
+            valueFormatter: formatValue
+          }
+        },
         labels: ['Base', 'Power']
       });
 

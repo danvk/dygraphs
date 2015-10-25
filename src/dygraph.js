@@ -3582,4 +3582,11 @@ Dygraph.moveZoom = DygraphInteraction.moveZoom;
 Dygraph.endPan = DygraphInteraction.endPan;
 Dygraph.endZoom = DygraphInteraction.endZoom;
 
+Dygraph.numericLinearTicks = DygraphTickers.numericLinearTicks;
+Dygraph.numericTicks = DygraphTickers.numericTicks;
+Dygraph.dateTicker = DygraphTickers.dateTicker;
+Dygraph.Granularity = DygraphTickers.Granularity;
+Dygraph.getDateAxis = DygraphTickers.getDateAxis;
+Dygraph.floatFormat = utils.floatFormat;
+
 export default Dygraph;

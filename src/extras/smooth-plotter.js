@@ -75,6 +75,10 @@ function getControlPoints(p0, p1, p2, opt_alpha, opt_allowFalseExtrema) {
   return [l1x, l1y, r1x, r1y];
 }
 
+// i.e. is none of (null, undefined, NaN)
+function isOK(x) {
+  return !!x && !isNaN(x);
+};
 
 // A plotter which uses splines to create a smooth curve.
 // See tests/plotters.html for a demo.
@@ -88,7 +92,6 @@ function smoothPlotter(e) {
 
   // right control point for previous point
   var lastRightX = points[0].canvasx, lastRightY = points[0].canvasy;
-  var isOK = Dygraph.isOK;  // i.e. is none of (null, undefined, NaN)
 
   for (var i = 1; i < points.length; i++) {
     var p0 = points[i - 1],
