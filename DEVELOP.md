@@ -8,19 +8,25 @@ This is a step-by-step guide explaining how to do it.
 
 To build dygraphs, run
 
-    gulp dist
+    npm run build
 
 To run the tests, run:
 
-    gulp test
+    npm run build-tests
+    npm run test
 
-To iterate on the code, open `tests/demo.html` (or one of the other demos) in your browser.
+To iterate on the code, run:
 
-To iterate on a unit test, change `it` to `it.only` in the Mocha test. Then run
+    npm run watch
 
-    ./node_modules/karma/bin/karma start auto_tests/chrome.karma.conf.js
+and open `tests/demo.html` (or one of the other demos) in your browser.
 
-and hit "DEBUG" in the Karma UI.
+To iterate on a unit test, run the `watch` command above and open
+
+    auto_tests/runner.html
+
+in your browser. You can use the Mocha UI to run just a single test or suite.
+Or you can change `it` to `it.only` to do run just one test in code.
 
 ### dygraphs style
 

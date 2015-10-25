@@ -51,19 +51,11 @@ seeing demonstrations of what dygraphs can do in the
 To get going, clone the repo and run:
 
     npm install
-    gulp dist
+    npm run build
+
+Then open `tests/demo.html` in your browser.
 
 Read more about the dygraphs development process in the [developer guide](/DEVELOP.md).
 
 ## License(s)
-dygraphs uses:
- - UglifyJS (BSD License)
- - JsDoc Toolkit (MIT license)
- - console-polyfill (MIT license)
-
-automated tests use:
- - auto_tests/lib/jquery-1.4.2.js (MIT & GPL2)
- - auto_tests/lib/Asserts.js (Apache 2.0 License)
- - auto-tests/lib/JsTestDriver-1.3.3cjar (Apache 2.0 License)
-
 dygraphs is available under the MIT license, included in LICENSE.txt.
