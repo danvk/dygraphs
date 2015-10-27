@@ -12,6 +12,22 @@ describe("highlight-series-background", function() {
 
   cleanupAfterEach();
 
+  var origRepeatAndCleanup;
+
+  beforeEach(function() {
+    // A "fast" version of repeatAndCleanup
+    origRepeatAndCleanup = utils.repeatAndCleanup;
+    // utils.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis, cleanupFn) {
+    //   repeatFn(0);
+    //   if (maxFrames > 1) repeatFn(maxFrames - 1);
+    //   cleanupFn();
+    // };
+  });
+
+  afterEach(function() {
+    utils.repeatAndCleanup = origRepeatAndCleanup;
+  });
+
   function setupGraph(highlightSeriesBackgroundAlpha,
                       highlightSeriesBackgroundColor) {
     var opts = {
@@ -45,10 +61,10 @@ describe("highlight-series-background", function() {
     graph.setSelection(0, 'y', true);
 
     // handle background color fade-in time
-    setTimeout(function() {
+    window.setTimeout(() => {
       assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,255,255,127]);
       done();
-    }, 1000);
+    }, 500);
   });
 
   it('testNoHighlight', function(done) {
@@ -59,10 +75,10 @@ describe("highlight-series-background", function() {
     graph.setSelection(0, 'y', true);
 
     // handle background color fade-in time
-    setTimeout(function() {
+    window.setTimeout(() => {
       assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,0,0,0]);
       done();
-    }, 1000);
+    }, 500);
   });
 
   it('testCustomHighlightColor', function(done) {
@@ -73,10 +89,10 @@ describe("highlight-series-background", function() {
     graph.setSelection(0, 'y', true);
 
     // handle background color fade-in time
-    setTimeout(function() {
+    window.setTimeout(() => {
       assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,255,255,127]);
       done();
-    }, 1000);
+    }, 500);
   });
 
   it('testCustomHighlightAlpha', function(done) {
@@ -87,10 +103,10 @@ describe("highlight-series-background", function() {
     graph.setSelection(0, 'y', true);
 
     // handle background color fade-in time
-    setTimeout(function() {
+    window.setTimeout(() => {
       assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,255,255,179]);
       done();
-    }, 1000);
+    }, 500);
   });
 
   it('testCustomHighlightColorAndAlpha', function(done) {
@@ -101,9 +117,9 @@ describe("highlight-series-background", function() {
     graph.setSelection(0, 'y', true);
 
     // handle background color fade-in time
-    setTimeout(function() {
+    window.setTimeout(() => {
       assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,0,0,76]);
       done();
-    }, 1000);
+    }, 500);
   });
 });
