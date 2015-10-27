@@ -10,6 +10,7 @@ var DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
   highlightSeriesBackgroundAlpha: 0.5,
+  highlightSeriesBackgroundColor: 'rgb(255, 255, 255)',
 
   labelsDivWidth: 250,
   labelsDivStyles: {

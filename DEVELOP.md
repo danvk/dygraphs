@@ -28,6 +28,12 @@ To iterate on a unit test, run the `watch` command above and open
 in your browser. You can use the Mocha UI to run just a single test or suite.
 Or you can change `it` to `it.only` to do run just one test in code.
 
+To run a single test from the command line, you can use:
+
+  npm run test -- --grep highlight-series-background
+
+(Note the extra `--`.)
+
 ### dygraphs style
 
 When making a change, please try to follow the style of the existing dygraphs code. This will make the review process go much more smoothly.
