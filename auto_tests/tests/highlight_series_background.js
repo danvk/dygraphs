@@ -1,18 +1,19 @@
 /**
- * @fileoverview Tests for the highlightSeriesBackgroundAlpha and highlightSeriesBackgroundColor options.
+ * @fileoverview Tests for the highlightSeriesBackgroundAlpha and
+ * highlightSeriesBackgroundColor options.
  * @author sergeyslepian@gmail.com
  */
 
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import Util from './Util';
+
 describe("highlight-series-background", function() {
 
-  beforeEach(function () {
-    document.body.innerHTML = "<div id='graph'></div>";
-  });
+  cleanupAfterEach();
 
-  afterEach(function () {
-  });
-
-  function setupGraph(highlightSeriesBackgroundAlpha, highlightSeriesBackgroundColor) {
+  function setupGraph(highlightSeriesBackgroundAlpha,
+                      highlightSeriesBackgroundColor) {
     var opts = {
       width: 480,
       height: 320,
@@ -25,16 +26,15 @@ describe("highlight-series-background", function() {
       }
     };
 
-    if(highlightSeriesBackgroundAlpha !== undefined) opts.highlightSeriesBackgroundAlpha = highlightSeriesBackgroundAlpha;
-    if(highlightSeriesBackgroundColor !== undefined) opts.highlightSeriesBackgroundColor = highlightSeriesBackgroundColor;
+    if (highlightSeriesBackgroundAlpha) utils.update(opts, {highlightSeriesBackgroundAlpha});
+    if (highlightSeriesBackgroundColor) utils.update(opts, {highlightSeriesBackgroundColor});
 
     var data = [];
     for (var j = 0; j < 10; j++) {
       data.push([j, 0]);
     }
 
-    var graph = document.getElementById("graph");
-    return new Dygraph(graph, data, opts);
+    return new Dygraph('graph', data, opts);
   }
 
   it('testDefaultHighlight', function(done) {
@@ -66,7 +66,7 @@ describe("highlight-series-background", function() {
   });
 
   it('testCustomHighlightColor', function(done) {
-    var graph = setupGraph(undefined, 'rgb(0,255,255)');
+    var graph = setupGraph(null, 'rgb(0,255,255)');
 
     assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,0,0,0]);
 

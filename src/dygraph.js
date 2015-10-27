@@ -1774,7 +1774,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   if (this.getOption('highlightSeriesOpts')) {
     ctx.clearRect(0, 0, this.width_, this.height_);
     var alpha = 1.0 - this.getNumericOption('highlightSeriesBackgroundAlpha');
-    var backgroundColor = Dygraph.toRGB_(this.getOption('highlightSeriesBackgroundColor'));
+    var backgroundColor = utils.toRGB_(this.getOption('highlightSeriesBackgroundColor'));
 
     if (alpha) {
       // Activating background fade includes an animation effect for a gradual
