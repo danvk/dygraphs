@@ -466,8 +466,11 @@ OPTIONS_REFERENCE =  // <JSON>
   "legendFormatter": {
     "default": "null",
     "labels": ["Legend"],
-    "type": "function",
-    "description": "Set this to supply a custom formatter for the legend. See ..."
+    "type": "function(data): string",
+    "params": [
+      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">here</a> for sample values." ]
+    ],
+    "description": "Set this to supply a custom formatter for the legend. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">this comment</a> and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
   },
   "labelsShowZeroValues": {
     "default": "true",
