@@ -194,7 +194,7 @@ Legend.prototype.predraw = function(e) {
 
   // TODO(danvk): only use real APIs for this.
   e.dygraph.graphDiv.appendChild(this.legend_div_);
-  var area = e.dygraph.plotter_.area;
+  var area = e.dygraph.getArea();
   var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
   this.legend_div_.style.left = area.x + area.w - labelsDivWidth - 1 + "px";
   this.legend_div_.style.top = area.y + "px";
@@ -210,7 +210,6 @@ Legend.prototype.destroy = function() {
 };
 
 /**
- * @private
  * Generates HTML for the legend which is displayed when hovering over the
  * chart. If no selected points are specified, a default legend is returned
  * (this may just be the empty string).
@@ -221,70 +220,110 @@ Legend.prototype.destroy = function() {
  *   relevant when displaying a legend with no selection (i.e. {legend:
  *   'always'}) and with dashed lines.
  * @param {number} row The selected row index.
+ * @private
  */
 Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
+  // Data about the selection to pass to legendFormatter
+  var data = {
+    dygraph: g,
+    x: x,
+    series: []
+  };
+
+  var labelToSeries = {};
+  var labels = g.getLabels();
+  if (labels) {
+    for (var i = 1; i < labels.length; i++) {
+      var series = g.getPropertiesForSeries(labels[i]);
+      var strokePattern = g.getOption('strokePattern', labels[i]);
+      var seriesData = {
+        dashHTML: generateLegendDashHTML(strokePattern, series.color, oneEmWidth),
+        label: labels[i],
+        labelHTML: escapeHTML(labels[i]),
+        isVisible: series.visible,
+        color: series.color
+      };
+
+      data.series.push(seriesData);
+      labelToSeries[labels[i]] = seriesData;
+    }
+  }
+
+  if (typeof(x) !== 'undefined') {
+    var xOptView = g.optionsViewForAxis_('x');
+    var xvf = xOptView('valueFormatter');
+    data.xHTML = xvf.call(g, x, xOptView, labels[0], g, row, 0);
+
+    var yOptViews = [];
+    var num_axes = g.numAxes();
+    for (var i = 0; i < num_axes; i++) {
+      // TODO(danvk): remove this use of a private API
+      yOptViews[i] = g.optionsViewForAxis_('y' + (i ? 1 + i : ''));
+    }
+
+    var showZeros = g.getOption('labelsShowZeroValues');
+    var highlightSeries = g.getHighlightSeries();
+    for (i = 0; i < sel_points.length; i++) {
+      var pt = sel_points[i];
+      var seriesData = labelToSeries[pt.name];
+      seriesData.y = pt.yval;
+
+      if ((pt.yval === 0 && !showZeros) || !utils.isOK(pt.canvasy)) {
+        seriesData.isVisible = false;
+        continue;
+      }
+
+      var series = g.getPropertiesForSeries(pt.name);
+      var yOptView = yOptViews[series.axis - 1];
+      var fmtFunc = yOptView('valueFormatter');
+      var yHTML = fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
+
+      utils.update(seriesData, {yHTML});
+
+      if (pt.name == highlightSeries) {
+        seriesData.isHighlighted = true;
+      }
+    }
+  }
+
+  var formatter = (g.getOption('legendFormatter') || Legend.defaultFormatter);
+  return formatter.call(g, data);
+}
+
+Legend.defaultFormatter = function(data) {
+  var g = data.dygraph;
+
   // TODO(danvk): deprecate this option in place of {legend: 'never'}
+  // XXX should this logic be in the formatter?
   if (g.getOption('showLabelsOnHighlight') !== true) return '';
 
-  // If no points are selected, we display a default legend. Traditionally,
-  // this has been blank. But a better default would be a conventional legend,
-  // which provides essential information for a non-interactive chart.
-  var html, sepLines, i, dash, strokePattern;
-  var labels = g.getLabels();
+  var sepLines = g.getOption('labelsSeparateLines');
+  var html;
 
-  if (typeof(x) === 'undefined') {
+  if (typeof(data.x) === 'undefined') {
+    // TODO: this check is duplicated in generateLegendHTML. Put it in one place.
     if (g.getOption('legend') != 'always') {
       return '';
     }
 
-    sepLines = g.getOption('labelsSeparateLines');
     html = '';
-    for (i = 1; i < labels.length; i++) {
-      var series = g.getPropertiesForSeries(labels[i]);
-      if (!series.visible) continue;
+    for (var i = 0; i < data.series.length; i++) {
+      var series = data.series[i];
+      if (!series.isVisible) continue;
 
       if (html !== '') html += (sepLines ? '<br/>' : ' ');
-      strokePattern = g.getOption("strokePattern", labels[i]);
-      dash = generateLegendDashHTML(strokePattern, series.color, oneEmWidth);
-      html += "<span style='font-weight: bold; color: " + series.color + ";'>" +
-          dash + " " + escapeHTML(labels[i]) + "</span>";
+      html += `<span style='font-weight: bold; color: ${series.color};'>${series.dashHTML} ${series.labelHTML}</span>`;
     }
     return html;
   }
 
-  // TODO(danvk): remove this use of a private API
-  var xOptView = g.optionsViewForAxis_('x');
-  var xvf = xOptView('valueFormatter');
-  html = xvf.call(g, x, xOptView, labels[0], g, row, 0);
-  if (html !== '') {
-    html += ':';
-  }
-
-  var yOptViews = [];
-  var num_axes = g.numAxes();
-  for (i = 0; i < num_axes; i++) {
-    // TODO(danvk): remove this use of a private API
-    yOptViews[i] = g.optionsViewForAxis_('y' + (i ? 1 + i : ''));
-  }
-  var showZeros = g.getOption("labelsShowZeroValues");
-  sepLines = g.getOption("labelsSeparateLines");
-  var highlightSeries = g.getHighlightSeries();
-  for (i = 0; i < sel_points.length; i++) {
-    var pt = sel_points[i];
-    if (pt.yval === 0 && !showZeros) continue;
-    if (!utils.isOK(pt.canvasy)) continue;
-    if (sepLines) html += "<br/>";
-
-    var series = g.getPropertiesForSeries(pt.name);
-    var yOptView = yOptViews[series.axis - 1];
-    var fmtFunc = yOptView('valueFormatter');
-    var yval = fmtFunc.call(g, pt.yval, yOptView, pt.name, g, row, labels.indexOf(pt.name));
-
-    var cls = (pt.name == highlightSeries) ? " class='highlight'" : "";
-
-    // TODO(danvk): use a template string here and make it an attribute.
-    html += "<span" + cls + ">" + " <b><span style='color: " + series.color + ";'>" +
-        escapeHTML(pt.name) + "</span></b>:&#160;" + yval + "</span>";
+  html = data.xHTML + ':';
+  for (var i = 0; i < data.series.length; i++) {
+    var series = data.series[i];
+    if (!series.isVisible) continue;
+    if (sepLines) html += '<br>';
+    var cls = series.isHighlighted ? ' class="highlight"' : '';
+    html += `<span${cls}> <b><span style='color: ${series.color};'>${series.labelHTML}</span></b>:&#160;${series.yHTML}</span>`;
   }
   return html;
 };
@@ -301,6 +340,7 @@ Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
  * @param oneEmWidth The width in pixels of 1em in the legend.
  * @private
  */
+// TODO(danvk): cache the results of this
 generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
   // Easy, common case: a solid line
   if (!strokePattern || strokePattern.length <= 1) {

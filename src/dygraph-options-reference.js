@@ -463,6 +463,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "When to display the legend. By default, it only appears when a user mouses over the chart. Set it to \"always\" to always display a legend of some sort. When set to \"follow\", legend follows highlighted points."
   },
+  "legendFormatter": {
+    "default": "null",
+    "labels": ["Legend"],
+    "type": "function",
+    "description": "Set this to supply a custom formatter for the legend. See ..."
+  },
   "labelsShowZeroValues": {
     "default": "true",
     "labels": ["Legend"],
