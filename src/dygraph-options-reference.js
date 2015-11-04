@@ -463,6 +463,15 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "When to display the legend. By default, it only appears when a user mouses over the chart. Set it to \"always\" to always display a legend of some sort. When set to \"follow\", legend follows highlighted points."
   },
+  "legendFormatter": {
+    "default": "null",
+    "labels": ["Legend"],
+    "type": "function(data): string",
+    "params": [
+      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">here</a> for sample values." ]
+    ],
+    "description": "Set this to supply a custom formatter for the legend. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">this comment</a> and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
+  },
   "labelsShowZeroValues": {
     "default": "true",
     "labels": ["Legend"],

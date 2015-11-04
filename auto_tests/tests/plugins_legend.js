@@ -76,4 +76,41 @@ it('should render dashed patterns', function() {
                'rgb(255, 0, 0)');
 });
 
+it('should use a legendFormatter', function() {
+  var calls = [];
+  var g = new Dygraph(graph, 'X,Y\n1,2\n', {
+    color: 'red',
+    legend: 'always',
+    legendFormatter: function(data) {
+      calls.push(data);
+      // Note: can't check against `g` because it's not defined yet.
+      assert(this.toString().indexOf('Dygraph') >= 0);
+      return '';
+    }
+  });
+
+  assert(calls.length == 1);  // legend for no selected points
+  g.setSelection(0);
+  assert(calls.length == 2);  // legend with selected points
+  g.clearSelection();
+  assert(calls.length == 3);
+
+  assert.equal(calls[0].x, undefined);
+  assert.equal(calls[1].x, 1);
+  assert.equal(calls[1].xHTML, '1');
+  assert.equal(calls[2].x, undefined);
+
+  assert.equal(calls[0].series.length, 1);
+  assert.equal(calls[1].series.length, 1);
+  assert.equal(calls[2].series.length, 1);
+
+  assert.equal(calls[0].series[0].y, undefined);
+  assert.equal(calls[1].series[0].label, 'Y');
+  assert.equal(calls[1].series[0].labelHTML, 'Y');
+  assert.equal(calls[1].series[0].y, 2);
+  assert.equal(calls[1].series[0].yHTML, '2');
+  assert.equal(calls[1].series[0].isVisible, true);
+  assert.equal(calls[2].series[0].y, undefined);
+});
+
 });
