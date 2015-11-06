@@ -627,7 +627,12 @@ Dygraph.prototype.toDataXCoord = function(x) {
   }
 
   var area = this.plotter_.area;
-  var xRange = this.xAxisRange();
+  var xRangeAny = this.xAxisRange();
+  // ensure that we have millisecods further on, xAxisRange could also return Date
+  var xRange = [
+    ( xRangeAny[0] instanceof Date ) ? xRangeAny[0].getTime() : xRangeAny[0],
+    ( xRangeAny[1] instanceof Date ) ? xRangeAny[1].getTime() : xRangeAny[1],
+  ];
 
   if (!this.attributes_.getForAxis("logscale", 'x')) {
     return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
