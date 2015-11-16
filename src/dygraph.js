@@ -1815,7 +1815,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
     ctx.save();
     for (i = 0; i < this.selPoints_.length; i++) {
       var pt = this.selPoints_[i];
-      if (isNaN(pt.canvasy) || pt.canvasy === null || pt.canvasy === undefined) continue;
+      if (isNaN(pt.canvasy)) continue;
 
       var circleSize = this.getNumericOption('highlightCircleSize', pt.name);
       var callback = this.getFunctionOption("drawHighlightPointCallback", pt.name);
