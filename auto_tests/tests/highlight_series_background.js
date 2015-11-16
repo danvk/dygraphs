@@ -122,4 +122,29 @@ describe("highlight-series-background", function() {
       done();
     }, 500);
   });
+
+  it('testGetSelectionZeroCanvasY', function () {
+    var graph = document.getElementById("graph");
+    var calls = []
+    function callback(g, seriesName, canvasContext, cx, cy, color, pointSize, idx) {
+      calls.push(arguments);
+    };
+
+    var g = new Dygraph(document.getElementById("graph"),
+                        "X,Y\n" +
+                        "1,5\n" +
+                        "1,10\n" +
+                        "1,12\n",
+                        {
+                          drawHighlightPointCallback: callback,
+                          axes: {
+                            y: {
+                              valueRange: [0, 10]
+                            }
+                          }
+                        });
+    g.setSelection(1);
+    var args = calls[0];
+    assert.equal(args[4], 0);
+  });
 });

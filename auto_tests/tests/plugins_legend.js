@@ -113,4 +113,30 @@ it('should use a legendFormatter', function() {
   assert.equal(calls[2].series[0].y, undefined);
 });
 
+it('should include point drawn where canvas-y is 0', function () {
+    var graph = document.getElementById("graph");
+    var calls = []
+    function callback(data) {
+      calls.push(data);
+    };
+
+    var g = new Dygraph(document.getElementById("graph"),
+                        "X,Y\n" +
+                        "1,5\n" +
+                        "1,10\n" +
+                        "1,12\n",
+                        {
+                          legendFormatter: callback,
+                          axes: {
+                            y: {
+                              valueRange: [0, 10]
+                            }
+                          }
+                        });
+  g.setSelection(1);
+  var data = calls[1];
+  assert.isTrue(data.series[0].isVisible);
+  assert.notEqual(data.series[0].yHTML, '');
+});
+
 });
