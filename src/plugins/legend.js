@@ -268,7 +268,7 @@ Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
       var seriesData = labelToSeries[pt.name];
       seriesData.y = pt.yval;
 
-      if ((pt.yval === 0 && !showZeros) || !utils.isOK(pt.canvasy)) {
+      if ((pt.yval === 0 && !showZeros) || isNaN(pt.canvasy) || pt.canvasy === null) {
         seriesData.isVisible = false;
         continue;
       }
