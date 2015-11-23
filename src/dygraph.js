@@ -69,6 +69,7 @@ import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
 
+import * as DygraphSelectionModes from './dygraph-selection-modes';
 "use strict";
 
 /**
@@ -148,7 +149,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.maindiv_ = div;
   this.file_ = file;
   this.rollPeriod_ = attrs.rollPeriod || Dygraph.DEFAULT_ROLL_PERIOD;
-  this.previousVerticalX_ = -1;
+  this.previousSelPoints_ = [];
   this.fractions_ = attrs.fractions || false;
   this.dateWindow_ = attrs.dateWindow || null;
 
@@ -1796,7 +1797,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
     // Redraw only the highlighted series in the interactive canvas (not the
     // static plot canvas, which is where series are usually drawn).
     this.plotter_._renderLineChart(this.highlightSet_, ctx);
-  } else if (this.previousVerticalX_ >= 0) {
+  } else if (this.previousSelPoints_.length >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
     var labels = this.attr_('labels');
@@ -1804,14 +1805,16 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       var r = this.getNumericOption('highlightCircleSize', labels[i]);
       if (r > maxCircleSize) maxCircleSize = r;
     }
-    var px = this.previousVerticalX_;
-    ctx.clearRect(px - maxCircleSize - 1, 0,
-                  2 * maxCircleSize + 2, this.height_);
+
+    for (i = 0; i < this.previousSelPoints_.length; i++) {
+      var px = this.previousSelPoints_[i].canvasx;
+      ctx.clearRect(px - maxCircleSize - 1, 0,
+                    2 * maxCircleSize + 2, this.height_);
+    }
   }
 
   if (this.selPoints_.length > 0) {
     // Draw colored circles over the center of each selected point
-    var canvasx = this.selPoints_[0].canvasx;
     ctx.save();
     for (i = 0; i < this.selPoints_.length; i++) {
       var pt = this.selPoints_[i];
@@ -1826,12 +1829,12 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
       ctx.lineWidth = this.getNumericOption('strokeWidth', pt.name);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
-      callback.call(this, this, pt.name, ctx, canvasx, pt.canvasy,
+      callback.call(this, this, pt.name, ctx, pt.canvasx, pt.canvasy,
           color, circleSize, pt.idx);
     }
     ctx.restore();
 
-    this.previousVerticalX_ = canvasx;
+    this.previousSelPoints_ = this.selPoints_;
   }
 };
 
@@ -1852,37 +1855,20 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   this.selPoints_ = [];
 
   var changed = false;
+  var selectionMode = this.getFunctionOption('selectionMode');
   if (row !== false && row >= 0) {
     if (row != this.lastRow_) changed = true;
     this.lastRow_ = row;
-    for (var setIdx = 0; setIdx < this.layout_.points.length; ++setIdx) {
-      var points = this.layout_.points[setIdx];
-      // Check if the point at the appropriate index is the point we're looking
-      // for.  If it is, just use it, otherwise search the array for a point
-      // in the proper place.
-      var setRow = row - this.getLeftBoundary_(setIdx);
-      if (setRow < points.length && points[setRow].idx == row) {
-        var point = points[setRow];
-        if (point.yval !== null) this.selPoints_.push(point);
-      } else {
-        for (var pointIdx = 0; pointIdx < points.length; ++pointIdx) {
-          var point = points[pointIdx];
-          if (point.idx == row) {
-            if (point.yval !== null) {
-              this.selPoints_.push(point);
-            }
-            break;
-          }
-        }
-      }
-    }
+    this.selPoints_ = selectionMode(this.layout_.points, row, this);
   } else {
     if (this.lastRow_ >= 0) changed = true;
     this.lastRow_ = -1;
   }
 
   if (this.selPoints_.length) {
-    this.lastx_ = this.selPoints_[0].xval;
+    this.lastx_ = this.selPoints_.reduce(function (result, p) {
+      return result && result.xval > p.xval ? result : p;
+    }).xval;
   } else {
     this.lastx_ = -1;
   }
@@ -3587,6 +3573,14 @@ Dygraph.DataHandlers = {
   ErrorBarsHandler,
   FractionsBarsHandler
 };
+
+
+Dygraph.SelectionModes = {};
+// Auto populate Dygraph.SelectionModes with exported
+// functions.
+for (var key in DygraphSelectionModes) {
+  Dygraph.SelectionModes[key] = DygraphSelectionModes[key];
+}
 
 Dygraph.startPan = DygraphInteraction.startPan;
 Dygraph.startZoom = DygraphInteraction.startZoom;
