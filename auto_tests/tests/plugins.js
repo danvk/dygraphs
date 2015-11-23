@@ -3,22 +3,23 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphOps from './DygraphOps';
+
 describe("plugins", function() {
+
+cleanupAfterEach();
 
 var data;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-
   data = "X,Y1,Y2\n" +
       "0,1,2\n" +
       "1,2,1\n" +
       "2,1,2\n" +
       "3,2,1\n"
   ;
-});
-
-afterEach(function() {
 });
 
 it('testWillDrawChart', function() {

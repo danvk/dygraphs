@@ -11,46 +11,46 @@
  * search) and generic DOM-manipulation functions.
  */
 
-(function() {
-
 /*global Dygraph:false, Node:false */
 "use strict";
 
-Dygraph.LOG_SCALE = 10;
-Dygraph.LN_TEN = Math.log(Dygraph.LOG_SCALE);
+import * as DygraphTickers from './dygraph-tickers';
+
+export var LOG_SCALE = 10;
+export var LN_TEN = Math.log(LOG_SCALE);
 
 /**
  * @private
  * @param {number} x
  * @return {number}
  */
-Dygraph.log10 = function(x) {
-  return Math.log(x) / Dygraph.LN_TEN;
+export var log10 = function(x) {
+  return Math.log(x) / LN_TEN;
 };
 
 /** A dotted line stroke pattern. */
-Dygraph.DOTTED_LINE = [2, 2];
+export var DOTTED_LINE = [2, 2];
 /** A dashed line stroke pattern. */
-Dygraph.DASHED_LINE = [7, 3];
+export var DASHED_LINE = [7, 3];
 /** A dot dash stroke pattern. */
-Dygraph.DOT_DASH_LINE = [7, 2, 2, 2];
+export var DOT_DASH_LINE = [7, 2, 2, 2];
+
+// Directions for panning and zooming. Use bit operations when combined
+// values are possible.
+export var HORIZONTAL = 1;
+export var VERTICAL = 2;
 
 /**
  * Return the 2d context for a dygraph canvas.
  *
  * This method is only exposed for the sake of replacing the function in
- * automated tests, e.g.
+ * automated tests.
  *
- * var oldFunc = Dygraph.getContext();
- * Dygraph.getContext = function(canvas) {
- *   var realContext = oldFunc(canvas);
- *   return new Proxy(realContext);
- * };
  * @param {!HTMLCanvasElement} canvas
  * @return {!CanvasRenderingContext2D}
  * @private
  */
-Dygraph.getContext = function(canvas) {
+export var getContext = function(canvas) {
   return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
 };
 
@@ -62,23 +62,8 @@ Dygraph.getContext = function(canvas) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-Dygraph.addEvent = function addEvent(elem, type, fn) {
+export var addEvent = function addEvent(elem, type, fn) {
   elem.addEventListener(type, fn, false);
-};
-
-/**
- * Add an event handler. This event handler is kept until the graph is
- * destroyed with a call to graph.destroy().
- *
- * @param {!Node} elem The element to add the event to.
- * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
- * @param {function(Event):(boolean|undefined)} fn The function to call
- *     on the event. The function takes one parameter: the event object.
- * @private
- */
-Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
-  Dygraph.addEvent(elem, type, fn);
-  this.registeredEvents_.push({ elem : elem, type : type, fn : fn });
 };
 
 /**
@@ -87,21 +72,9 @@ Dygraph.prototype.addAndTrackEvent = function(elem, type, fn) {
  * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
  * @param {function(Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
- * @private
  */
-Dygraph.removeEvent = function(elem, type, fn) {
+export function removeEvent(elem, type, fn) {
   elem.removeEventListener(type, fn, false);
-};
-
-Dygraph.prototype.removeTrackedEvents_ = function() {
-  if (this.registeredEvents_) {
-    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
-      var reg = this.registeredEvents_[idx];
-      Dygraph.removeEvent(reg.elem, reg.type, reg.fn);
-    }
-  }
-
-  this.registeredEvents_ = [];
 };
 
 /**
@@ -112,7 +85,7 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
  * @param {!Event} e The event whose normal behavior should be canceled.
  * @private
  */
-Dygraph.cancelEvent = function(e) {
+export function cancelEvent(e) {
   e = e ? e : window.event;
   if (e.stopPropagation) {
     e.stopPropagation();
@@ -136,7 +109,7 @@ Dygraph.cancelEvent = function(e) {
  * @return { string } "rgb(r,g,b)" where r, g and b range from 0-255.
  * @private
  */
-Dygraph.hsvToRGB = function (hue, saturation, value) {
+export function hsvToRGB(hue, saturation, value) {
   var red;
   var green;
   var blue;
@@ -173,7 +146,7 @@ Dygraph.hsvToRGB = function (hue, saturation, value) {
  * @return {{x:number,y:number}}
  * @private
  */
-Dygraph.findPos = function(obj) {
+export function findPos(obj) {
   var p = obj.getBoundingClientRect(),
       w = window,
       d = document.documentElement;
@@ -192,7 +165,7 @@ Dygraph.findPos = function(obj) {
  * @return {number}
  * @private
  */
-Dygraph.pageX = function(e) {
+export function pageX(e) {
   return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
 };
 
@@ -204,7 +177,7 @@ Dygraph.pageX = function(e) {
  * @return {number}
  * @private
  */
-Dygraph.pageY = function(e) {
+export function pageY(e) {
   return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
 };
 
@@ -215,8 +188,8 @@ Dygraph.pageY = function(e) {
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved to the right.
  */
-Dygraph.dragGetX_ = function(e, context) {
-  return Dygraph.pageX(e) - context.px;
+export function dragGetX_(e, context) {
+  return pageX(e) - context.px;
 };
 
 /**
@@ -226,8 +199,8 @@ Dygraph.dragGetX_ = function(e, context) {
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved down.
  */
-Dygraph.dragGetY_ = function(e, context) {
-  return Dygraph.pageY(e) - context.py;
+export function dragGetY_(e, context) {
+  return pageY(e) - context.py;
 };
 
 /**
@@ -238,7 +211,7 @@ Dygraph.dragGetY_ = function(e, context) {
  * @return {boolean} Whether the number is zero or NaN.
  * @private
  */
-Dygraph.isOK = function(x) {
+export function isOK(x) {
   return !!x && !isNaN(x);
 };
 
@@ -249,7 +222,7 @@ Dygraph.isOK = function(x) {
  * @return {boolean} Whether the point has numeric x and y.
  * @private
  */
-Dygraph.isValidPoint = function(p, opt_allowNaNY) {
+export function isValidPoint(p, opt_allowNaNY) {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;
@@ -276,7 +249,7 @@ Dygraph.isValidPoint = function(p, opt_allowNaNY) {
  * @return {string} A string formatted like %g in printf.  The max generated
  *                  string length should be precision + 6 (e.g 1.123e+300).
  */
-Dygraph.floatFormat = function(x, opt_precision) {
+export function floatFormat(x, opt_precision) {
   // Avoid invalid precision values; [1, 21] is the valid range.
   var p = Math.min(Math.max(1, opt_precision || 2), 21);
 
@@ -306,7 +279,7 @@ Dygraph.floatFormat = function(x, opt_precision) {
  * @return {string}
  * @private
  */
-Dygraph.zeropad = function(x) {
+export function zeropad(x) {
   if (x < 10) return "0" + x; else return "" + x;
 };
 
@@ -315,15 +288,15 @@ Dygraph.zeropad = function(x) {
  * day, hour, minute, second and millisecond) according to local time,
  * and factory method to call the Date constructor with an array of arguments.
  */
-Dygraph.DateAccessorsLocal = {
-  getFullYear:     function(d) {return d.getFullYear();},
-  getMonth:        function(d) {return d.getMonth();},
-  getDate:         function(d) {return d.getDate();},
-  getHours:        function(d) {return d.getHours();},
-  getMinutes:      function(d) {return d.getMinutes();},
-  getSeconds:      function(d) {return d.getSeconds();},
-  getMilliseconds: function(d) {return d.getMilliseconds();},
-  getDay:          function(d) {return d.getDay();},
+export var DateAccessorsLocal = {
+  getFullYear:     d => d.getFullYear(),
+  getMonth:        d => d.getMonth(),
+  getDate:         d => d.getDate(),
+  getHours:        d => d.getHours(),
+  getMinutes:      d => d.getMinutes(),
+  getSeconds:      d => d.getSeconds(),
+  getMilliseconds: d => d.getMilliseconds(),
+  getDay:          d => d.getDay(),
   makeDate:        function(y, m, d, hh, mm, ss, ms) {
     return new Date(y, m, d, hh, mm, ss, ms);
   }
@@ -334,15 +307,15 @@ Dygraph.DateAccessorsLocal = {
  * day of month, hour, minute, second and millisecond) according to UTC time,
  * and factory method to call the Date constructor with an array of arguments.
  */
-Dygraph.DateAccessorsUTC = {
-  getFullYear:     function(d) {return d.getUTCFullYear();},
-  getMonth:        function(d) {return d.getUTCMonth();},
-  getDate:         function(d) {return d.getUTCDate();},
-  getHours:        function(d) {return d.getUTCHours();},
-  getMinutes:      function(d) {return d.getUTCMinutes();},
-  getSeconds:      function(d) {return d.getUTCSeconds();},
-  getMilliseconds: function(d) {return d.getUTCMilliseconds();},
-  getDay:          function(d) {return d.getUTCDay();},
+export var DateAccessorsUTC = {
+  getFullYear:     d => d.getUTCFullYear(),
+  getMonth:        d => d.getUTCMonth(),
+  getDate:         d => d.getUTCDate(),
+  getHours:        d => d.getUTCHours(),
+  getMinutes:      d => d.getUTCMinutes(),
+  getSeconds:      d => d.getUTCSeconds(),
+  getMilliseconds: d => d.getUTCMilliseconds(),
+  getDay:          d => d.getUTCDay(),
   makeDate:        function(y, m, d, hh, mm, ss, ms) {
     return new Date(Date.UTC(y, m, d, hh, mm, ss, ms));
   }
@@ -356,8 +329,7 @@ Dygraph.DateAccessorsUTC = {
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-Dygraph.hmsString_ = function(hh, mm, ss) {
-  var zeropad = Dygraph.zeropad;
+export function hmsString_(hh, mm, ss) {
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
@@ -373,9 +345,8 @@ Dygraph.hmsString_ = function(hh, mm, ss) {
  *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private
  */
-Dygraph.dateString_ = function(time, utc) {
-  var zeropad = Dygraph.zeropad;
-  var accessors = utc ? Dygraph.DateAccessorsUTC : Dygraph.DateAccessorsLocal;
+export function dateString_(time, utc) {
+  var accessors = utc ? DateAccessorsUTC : DateAccessorsLocal;
   var date = new Date(time);
   var y = accessors.getFullYear(date);
   var m = accessors.getMonth(date);
@@ -392,7 +363,7 @@ Dygraph.dateString_ = function(time, utc) {
   var frac = hh * 3600 + mm * 60 + ss;
   var ret = year + "/" + month + "/" + day;
   if (frac) {
-    ret += " " + Dygraph.hmsString_(hh, mm, ss);
+    ret += " " + hmsString_(hh, mm, ss);
   }
   return ret;
 };
@@ -404,7 +375,7 @@ Dygraph.dateString_ = function(time, utc) {
  * @return {number} The rounded number
  * @private
  */
-Dygraph.round_ = function(num, places) {
+export function round_(num, places) {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
 };
@@ -422,7 +393,7 @@ Dygraph.round_ = function(num, places) {
  * @return {number} Index of the element, or -1 if it isn't found.
  * @private
  */
-Dygraph.binarySearch = function(val, arry, abs, low, high) {
+export function binarySearch(val, arry, abs, low, high) {
   if (low === null || low === undefined ||
       high === null || high === undefined) {
     low = 0;
@@ -450,7 +421,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
         return mid;
       }
     }
-    return Dygraph.binarySearch(val, arry, abs, low, mid - 1);
+    return binarySearch(val, arry, abs, low, mid - 1);
   } else if (element < val) {
     if (abs < 0) {
       // Accept if element < val, but also if prior element > val.
@@ -459,7 +430,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
         return mid;
       }
     }
-    return Dygraph.binarySearch(val, arry, abs, mid + 1, high);
+    return binarySearch(val, arry, abs, mid + 1, high);
   }
   return -1;  // can't actually happen, but makes closure compiler happy
 };
@@ -473,7 +444,7 @@ Dygraph.binarySearch = function(val, arry, abs, low, high) {
  * @return {number} Milliseconds since epoch.
  * @private
  */
-Dygraph.dateParser = function(dateStr) {
+export function dateParser(dateStr) {
   var dateStrSlashed;
   var d;
 
@@ -485,7 +456,7 @@ Dygraph.dateParser = function(dateStr) {
   // Issue: http://code.google.com/p/dygraphs/issues/detail?id=255
   if (dateStr.search("-") == -1 ||
       dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
-    d = Dygraph.dateStrToMillis(dateStr);
+    d = dateStrToMillis(dateStr);
     if (d && !isNaN(d)) return d;
   }
 
@@ -494,16 +465,16 @@ Dygraph.dateParser = function(dateStr) {
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
-    d = Dygraph.dateStrToMillis(dateStrSlashed);
+    d = dateStrToMillis(dateStrSlashed);
   } else if (dateStr.length == 8) {  // e.g. '20090712'
     // TODO(danvk): remove support for this format. It's confusing.
     dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2) + "/" +
         dateStr.substr(6,2);
-    d = Dygraph.dateStrToMillis(dateStrSlashed);
+    d = dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
     // "2009/07/12 12:34:56"
-    d = Dygraph.dateStrToMillis(dateStr);
+    d = dateStrToMillis(dateStr);
   }
 
   if (!d || isNaN(d)) {
@@ -520,7 +491,7 @@ Dygraph.dateParser = function(dateStr) {
  * @return {number} millis since epoch
  * @private
  */
-Dygraph.dateStrToMillis = function(str) {
+export function dateStrToMillis(str) {
   return new Date(str).getTime();
 };
 
@@ -532,7 +503,7 @@ Dygraph.dateStrToMillis = function(str) {
  * @param {!Object} o
  * @return {!Object}
  */
-Dygraph.update = function(self, o) {
+export function update(self, o) {
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
@@ -551,7 +522,7 @@ Dygraph.update = function(self, o) {
  * @return {!Object}
  * @private
  */
-Dygraph.updateDeep = function (self, o) {
+export function updateDeep(self, o) {
   // Taken from http://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
   function isNode(o) {
     return (
@@ -565,7 +536,7 @@ Dygraph.updateDeep = function (self, o) {
       if (o.hasOwnProperty(k)) {
         if (o[k] === null) {
           self[k] = null;
-        } else if (Dygraph.isArrayLike(o[k])) {
+        } else if (isArrayLike(o[k])) {
           self[k] = o[k].slice();
         } else if (isNode(o[k])) {
           // DOM objects are shallowly-copied.
@@ -574,7 +545,7 @@ Dygraph.updateDeep = function (self, o) {
           if (typeof(self[k]) != 'object' || self[k] === null) {
             self[k] = {};
           }
-          Dygraph.updateDeep(self[k], o[k]);
+          updateDeep(self[k], o[k]);
         } else {
           self[k] = o[k];
         }
@@ -589,7 +560,7 @@ Dygraph.updateDeep = function (self, o) {
  * @return {boolean}
  * @private
  */
-Dygraph.isArrayLike = function(o) {
+export function isArrayLike(o) {
   var typ = typeof(o);
   if (
       (typ != 'object' && !(typ == 'function' &&
@@ -608,7 +579,7 @@ Dygraph.isArrayLike = function(o) {
  * @return {boolean}
  * @private
  */
-Dygraph.isDateLike = function (o) {
+export function isDateLike(o) {
   if (typeof(o) != "object" || o === null ||
       typeof(o.getTime) != 'function') {
     return false;
@@ -622,12 +593,12 @@ Dygraph.isDateLike = function (o) {
  * @return {!Array}
  * @private
  */
-Dygraph.clone = function(o) {
+export function clone(o) {
   // TODO(danvk): figure out how MochiKit's version works
   var r = [];
   for (var i = 0; i < o.length; i++) {
-    if (Dygraph.isArrayLike(o[i])) {
-      r.push(Dygraph.clone(o[i]));
+    if (isArrayLike(o[i])) {
+      r.push(clone(o[i]));
     } else {
       r.push(o[i]);
     }
@@ -641,7 +612,7 @@ Dygraph.clone = function(o) {
  * @return {!HTMLCanvasElement}
  * @private
  */
-Dygraph.createCanvas = function() {
+export function createCanvas() {
   return document.createElement('canvas');
 };
 
@@ -655,7 +626,7 @@ Dygraph.createCanvas = function() {
  * @return {number} The ratio of the device pixel ratio and the backing store
  * ratio for the specified context.
  */
-Dygraph.getContextPixelRatio = function(context) {
+export function getContextPixelRatio(context) {
   try {
     var devicePixelRatio = window.devicePixelRatio;
     var backingStoreRatio = context.webkitBackingStorePixelRatio ||
@@ -682,7 +653,7 @@ Dygraph.getContextPixelRatio = function(context) {
  * @return {boolean}
  * @private
  */
-Dygraph.isAndroid = function() {
+export function isAndroid() {
   return (/Android/).test(navigator.userAgent);
 };
 
@@ -695,7 +666,7 @@ Dygraph.isAndroid = function() {
  * @param {function(!Array,?):boolean=} predicate
  * @constructor
  */
-Dygraph.Iterator = function(array, start, length, predicate) {
+export function Iterator(array, start, length, predicate) {
   start = start || 0;
   length = length || array.length;
   this.hasNext = true; // Use to identify if there's another element.
@@ -711,7 +682,7 @@ Dygraph.Iterator = function(array, start, length, predicate) {
 /**
  * @return {Object}
  */
-Dygraph.Iterator.prototype.next = function() {
+Iterator.prototype.next = function() {
   if (!this.hasNext) {
     return null;
   }
@@ -750,15 +721,15 @@ Dygraph.Iterator.prototype.next = function() {
  *     returned.  If omitted, all elements are accepted.
  * @private
  */
-Dygraph.createIterator = function(array, start, length, opt_predicate) {
-  return new Dygraph.Iterator(array, start, length, opt_predicate);
+export function createIterator(array, start, length, opt_predicate) {
+  return new Iterator(array, start, length, opt_predicate);
 };
 
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
-Dygraph.requestAnimFrame = (function() {
+export var requestAnimFrame = (function() {
   return window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
@@ -782,7 +753,7 @@ Dygraph.requestAnimFrame = (function() {
  * @param {function()} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
+export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
     cleanupFn) {
   var frameNumber = 0;
   var previousFrameNumber;
@@ -796,7 +767,7 @@ Dygraph.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis,
 
   (function loop() {
     if (frameNumber >= maxFrames) return;
-    Dygraph.requestAnimFrame.call(window, function() {
+    requestAnimFrame.call(window, function() {
       // Determine which frame to draw based on the delay so far.  Will skip
       // frames if necessary.
       var currentTime = new Date().getTime();
@@ -883,7 +854,7 @@ var pixelSafeOptions = {
  * @return {boolean} true if the graph needs new points else false.
  * @private
  */
-Dygraph.isPixelChangingOptionList = function(labels, attrs) {
+export function isPixelChangingOptionList(labels, attrs) {
   // Assume that we do not require new points.
   // This will change to true if we actually do need new points.
 
@@ -936,7 +907,7 @@ Dygraph.isPixelChangingOptionList = function(labels, attrs) {
   return false;
 };
 
-Dygraph.Circles = {
+export var Circles = {
   DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
     ctx.beginPath();
     ctx.fillStyle = color;
@@ -947,77 +918,11 @@ Dygraph.Circles = {
 };
 
 /**
- * To create a "drag" interaction, you typically register a mousedown event
- * handler on the element where the drag begins. In that handler, you register a
- * mouseup handler on the window to determine when the mouse is released,
- * wherever that release happens. This works well, except when the user releases
- * the mouse over an off-domain iframe. In that case, the mouseup event is
- * handled by the iframe and never bubbles up to the window handler.
- *
- * To deal with this issue, we cover iframes with high z-index divs to make sure
- * they don't capture mouseup.
- *
- * Usage:
- * element.addEventListener('mousedown', function() {
- *   var tarper = new Dygraph.IFrameTarp();
- *   tarper.cover();
- *   var mouseUpHandler = function() {
- *     ...
- *     window.removeEventListener(mouseUpHandler);
- *     tarper.uncover();
- *   };
- *   window.addEventListener('mouseup', mouseUpHandler);
- * };
- *
- * @constructor
- */
-Dygraph.IFrameTarp = function() {
-  /** @type {Array.<!HTMLDivElement>} */
-  this.tarps = [];
-};
-
-/**
- * Find all the iframes in the document and cover them with high z-index
- * transparent divs.
- */
-Dygraph.IFrameTarp.prototype.cover = function() {
-  var iframes = document.getElementsByTagName("iframe");
-  for (var i = 0; i < iframes.length; i++) {
-    var iframe = iframes[i];
-    var pos = Dygraph.findPos(iframe),
-        x = pos.x,
-        y = pos.y,
-        width = iframe.offsetWidth,
-        height = iframe.offsetHeight;
-
-    var div = document.createElement("div");
-    div.style.position = "absolute";
-    div.style.left = x + 'px';
-    div.style.top = y + 'px';
-    div.style.width = width + 'px';
-    div.style.height = height + 'px';
-    div.style.zIndex = 999;
-    document.body.appendChild(div);
-    this.tarps.push(div);
-  }
-};
-
-/**
- * Remove all the iframe covers. You should call this in a mouseup handler.
- */
-Dygraph.IFrameTarp.prototype.uncover = function() {
-  for (var i = 0; i < this.tarps.length; i++) {
-    this.tarps[i].parentNode.removeChild(this.tarps[i]);
-  }
-  this.tarps = [];
-};
-
-/**
  * Determine whether |data| is delimited by CR, CRLF, LF, LFCR.
  * @param {string} data
  * @return {?string} the delimiter that was detected (or null on failure).
  */
-Dygraph.detectLineDelimiter = function(data) {
+export function detectLineDelimiter(data) {
   for (var i = 0; i < data.length; i++) {
     var code = data.charAt(i);
     if (code === '\r') {
@@ -1046,7 +951,7 @@ Dygraph.detectLineDelimiter = function(data) {
  * @return {boolean} Whether containee is inside (or equal to) container.
  * @private
  */
-Dygraph.isNodeContainedBy = function(containee, container) {
+export function isNodeContainedBy(containee, container) {
   if (container === null || containee === null) {
     return false;
   }
@@ -1057,11 +962,10 @@ Dygraph.isNodeContainedBy = function(containee, container) {
   return (containeeNode === container);
 };
 
-
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
 /** @type {function(number,number):number} */
-Dygraph.pow = function(base, exp) {
+export function pow(base, exp) {
   if (exp < 0) {
     return 1.0 / Math.pow(base, -exp);
   }
@@ -1071,7 +975,7 @@ Dygraph.pow = function(base, exp) {
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
 /**
- * Helper for Dygraph.toRGB_ which parses strings of the form:
+ * Helper for toRGB_ which parses strings of the form:
  * rgb(123, 45, 67)
  * rgba(123, 45, 67, 0.5)
  * @return parsed {r,g,b,a?} tuple or null.
@@ -1096,7 +1000,7 @@ function parseRGBA(rgbStr) {
  * @return {{r:number,g:number,b:number,a:number?}} Parsed RGB tuple.
  * @private
  */
-Dygraph.toRGB_ = function(colorStr) {
+export function toRGB_(colorStr) {
   // Strategy: First try to parse colorStr directly. This is fast & avoids DOM
   // manipulation.  If that fails (e.g. for named colors like 'red'), then
   // create a hidden DOM element and parse its computed color.
@@ -1118,7 +1022,7 @@ Dygraph.toRGB_ = function(colorStr) {
  *     optimization if you have one.
  * @return {boolean} Whether the browser supports canvas.
  */
-Dygraph.isCanvasSupported = function(opt_canvasElement) {
+export function isCanvasSupported(opt_canvasElement) {
   try {
     var canvas = opt_canvasElement || document.createElement("canvas");
     canvas.getContext("2d");
@@ -1138,7 +1042,7 @@ Dygraph.isCanvasSupported = function(opt_canvasElement) {
  * @param {number=} opt_line_no The line number from which the string comes.
  * @param {string=} opt_line The text of the line from which the string comes.
  */
-Dygraph.parseFloat_ = function(x, opt_line_no, opt_line) {
+export function parseFloat_(x, opt_line_no, opt_line) {
   var val = parseFloat(x);
   if (!isNaN(val)) return val;
 
@@ -1159,4 +1063,149 @@ Dygraph.parseFloat_ = function(x, opt_line_no, opt_line) {
   return null;
 };
 
-})();
+
+// Label constants for the labelsKMB and labelsKMG2 options.
+// (i.e. '100000' -> '100K')
+var KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
+var KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+
+/**
+ * @private
+ * Return a string version of a number. This respects the digitsAfterDecimal
+ * and maxNumberWidth options.
+ * @param {number} x The number to be formatted
+ * @param {Dygraph} opts An options view
+ */
+export function numberValueFormatter(x, opts) {
+  var sigFigs = opts('sigFigs');
+
+  if (sigFigs !== null) {
+    // User has opted for a fixed number of significant figures.
+    return floatFormat(x, sigFigs);
+  }
+
+  var digits = opts('digitsAfterDecimal');
+  var maxNumberWidth = opts('maxNumberWidth');
+
+  var kmb = opts('labelsKMB');
+  var kmg2 = opts('labelsKMG2');
+
+  var label;
+
+  // switch to scientific notation if we underflow or overflow fixed display.
+  if (x !== 0.0 &&
+      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
+       Math.abs(x) < Math.pow(10, -digits))) {
+    label = x.toExponential(digits);
+  } else {
+    label = '' + round_(x, digits);
+  }
+
+  if (kmb || kmg2) {
+    var k;
+    var k_labels = [];
+    var m_labels = [];
+    if (kmb) {
+      k = 1000;
+      k_labels = KMB_LABELS;
+    }
+    if (kmg2) {
+      if (kmb) console.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
+      k = 1024;
+      k_labels = KMG2_BIG_LABELS;
+      m_labels = KMG2_SMALL_LABELS;
+    }
+
+    var absx = Math.abs(x);
+    var n = pow(k, k_labels.length);
+    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
+      if (absx >= n) {
+        label = round_(x / n, digits) + k_labels[j];
+        break;
+      }
+    }
+    if (kmg2) {
+      // TODO(danvk): clean up this logic. Why so different than kmb?
+      var x_parts = String(x.toExponential()).split('e-');
+      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
+        if (x_parts[1] % 3 > 0) {
+          label = round_(x_parts[0] /
+              pow(10, (x_parts[1] % 3)),
+              digits);
+        } else {
+          label = Number(x_parts[0]).toFixed(2);
+        }
+        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
+      }
+    }
+  }
+
+  return label;
+};
+
+/**
+ * variant for use as an axisLabelFormatter.
+ * @private
+ */
+export function numberAxisLabelFormatter(x, granularity, opts) {
+  return numberValueFormatter.call(this, x, opts);
+};
+
+/**
+ * @type {!Array.<string>}
+ * @private
+ * @constant
+ */
+var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+/**
+ * Convert a JS date to a string appropriate to display on an axis that
+ * is displaying values at the stated granularity. This respects the
+ * labelsUTC option.
+ * @param {Date} date The date to format
+ * @param {number} granularity One of the Dygraph granularity constants
+ * @param {Dygraph} opts An options view
+ * @return {string} The date formatted as local time
+ * @private
+ */
+export function dateAxisLabelFormatter(date, granularity, opts) {
+  var utc = opts('labelsUTC');
+  var accessors = utc ? DateAccessorsUTC : DateAccessorsLocal;
+
+  var year = accessors.getFullYear(date),
+      month = accessors.getMonth(date),
+      day = accessors.getDate(date),
+      hours = accessors.getHours(date),
+      mins = accessors.getMinutes(date),
+      secs = accessors.getSeconds(date),
+      millis = accessors.getSeconds(date);
+
+  if (granularity >= DygraphTickers.Granularity.DECADAL) {
+    return '' + year;
+  } else if (granularity >= DygraphTickers.Granularity.MONTHLY) {
+    return SHORT_MONTH_NAMES_[month] + '&#160;' + year;
+  } else {
+    var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
+    if (frac === 0 || granularity >= DygraphTickers.Granularity.DAILY) {
+      // e.g. '21 Jan' (%d%b)
+      return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
+    } else {
+      return hmsString_(hours, mins, secs);
+    }
+  }
+};
+// alias in case anyone is referencing the old method.
+// Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
+
+/**
+ * Return a string version of a JS date for a value label. This respects the
+ * labelsUTC option.
+ * @param {Date} date The date to be formatted
+ * @param {Dygraph} opts An options view
+ * @private
+ */
+export function dateValueFormatter(d, opts) {
+  return dateString_(d, opts('labelsUTC'));
+};

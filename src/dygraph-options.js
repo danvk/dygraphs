@@ -5,24 +5,17 @@
  */
 
 /**
- * @fileoverview DygraphOptions is responsible for parsing and returning information about options.
- *
- * Still tightly coupled to Dygraphs, we could remove some of that, you know.
+ * @fileoverview DygraphOptions is responsible for parsing and returning
+ * information about options.
  */
-
-var DygraphOptions = (function() {
-/*jshint strict:false */
-
-// For "production" code, this gets set to false by uglifyjs.
-// Need to define it outside of "use strict", hence the nested IIFEs.
-if (typeof(DEBUG) === 'undefined') DEBUG=true;
-
-return (function() {
 
 // TODO: remove this jshint directive & fix the warnings.
 /*jshint sub:true */
-/*global Dygraph:false */
 "use strict";
+
+import * as utils from './dygraph-utils';
+import DEFAULT_ATTRS from './dygraph-default-attrs';
+import OPTIONS_REFERENCE from './dygraph-options-reference';
 
 /*
  * Interesting member variables: (REMOVING THIS LIST AS I CLOSURIZE)
@@ -167,13 +160,16 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
 
   var axis_opts = this.user_["axes"] || {};
-  Dygraph.update(this.yAxes_[0].options, axis_opts["y"] || {});
+  utils.update(this.yAxes_[0].options, axis_opts["y"] || {});
   if (this.yAxes_.length > 1) {
-    Dygraph.update(this.yAxes_[1].options, axis_opts["y2"] || {});
+    utils.update(this.yAxes_[1].options, axis_opts["y2"] || {});
   }
-  Dygraph.update(this.xAxis_.options, axis_opts["x"] || {});
+  utils.update(this.xAxis_.options, axis_opts["x"] || {});
 
-  if (DEBUG) this.validateOptions_();
+  // For "production" code, this gets removed by uglifyjs.
+  if (process.env.NODE_ENV != 'production') {
+    this.validateOptions_();
+  }
 };
 
 /**
@@ -200,8 +196,8 @@ DygraphOptions.prototype.getGlobalDefault_ = function(name) {
   if (this.global_.hasOwnProperty(name)) {
     return this.global_[name];
   }
-  if (Dygraph.DEFAULT_ATTRS.hasOwnProperty(name)) {
-    return Dygraph.DEFAULT_ATTRS[name];
+  if (DEFAULT_ATTRS.hasOwnProperty(name)) {
+    return DEFAULT_ATTRS[name];
   }
   return null;
 };
@@ -255,7 +251,7 @@ DygraphOptions.prototype.getForAxis = function(name, axis) {
     }
   }
   // Default axis options third.
-  var defaultAxisOptions = Dygraph.DEFAULT_ATTRS.axes[axisString];
+  var defaultAxisOptions = DEFAULT_ATTRS.axes[axisString];
   if (defaultAxisOptions.hasOwnProperty(name)) {
     return defaultAxisOptions[name];
   }
@@ -329,21 +325,22 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
-if (DEBUG) {
+// For "production" code, this gets removed by uglifyjs.
+if (process.env.NODE_ENV != 'production') {
 
 /**
  * Validate all options.
- * This requires Dygraph.OPTIONS_REFERENCE, which is only available in debug builds.
+ * This requires OPTIONS_REFERENCE, which is only available in debug builds.
  * @private
  */
 DygraphOptions.prototype.validateOptions_ = function() {
-  if (typeof Dygraph.OPTIONS_REFERENCE === 'undefined') {
+  if (typeof OPTIONS_REFERENCE === 'undefined') {
     throw 'Called validateOptions_ in prod build.';
   }
 
   var that = this;
   var validateOption = function(optionName) {
-    if (!Dygraph.OPTIONS_REFERENCE[optionName]) {
+    if (!OPTIONS_REFERENCE[optionName]) {
       that.warnInvalidOption_(optionName);
     }
   };
@@ -399,7 +396,4 @@ DygraphOptions.resetWarnings_ = function() {
 
 }
 
-return DygraphOptions;
-
-})();
-})();
+export default DygraphOptions;

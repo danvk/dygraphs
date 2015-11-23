@@ -2,7 +2,10 @@
 <html>
   <head>
     <title>demo</title>
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <!--
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h2>Demo</h2>
@@ -43,7 +46,8 @@
                 title: 'Interesting Shapes',
                 xlabel: 'Date',
                 ylabel: 'Count',
-                axisLineColor: 'white'
+                axisLineColor: 'white',
+                showRangeSelector: true
                 // drawXGrid: false
               }
           );

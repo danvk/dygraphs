@@ -155,7 +155,6 @@ Gallery.register(
       '8,8,   \n' +
       '10,10, \n',
       {
-        labels: ['x', 'A', 'B' ],
         connectSeparatedPoints: true,
         drawPoints: true
       }

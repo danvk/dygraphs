@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import * as utils from '../../src/dygraph-utils';
 
 /** 
  * @fileoverview Utility functions for Dygraphs.
@@ -109,7 +110,7 @@ DygraphOps.dispatchDoubleClick = function(g, custom) {
  * type, screenX, screenY, clientX, clientY.
  */
 DygraphOps.createOptsForPoint_ = function(g, type, x, y) {
-  var pos = Dygraph.findPos(g.canvas_);
+  var pos = utils.findPos(g.canvas_);
   var pageX = pos.x + x;
   var pageY = pos.y + y;
 
@@ -213,3 +214,5 @@ DygraphOps.dispatchMouseOut = function(g, x, y, custom) {
       custom);
 };
 
+
+export default DygraphOps;

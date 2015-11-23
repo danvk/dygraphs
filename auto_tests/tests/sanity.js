@@ -25,14 +25,14 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 
+import Dygraph from '../../src/dygraph';
+
 describe("dygraphs-sanity", function() {
 
 var DEAD_SIMPLE_DATA = 'X,Y\n10,2100';
 var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 /**
  * The sanity test of sanity tests.

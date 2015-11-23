@@ -3,14 +3,14 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
+import PixelSampler from './PixelSampler';
+
 describe("per-series", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 it('testPerSeriesFill', function() {
   var opts = {
@@ -53,6 +53,49 @@ it('testPerSeriesFill', function() {
 
   // Inside of the "Y" bump -- filled in.
   assert.deepEqual([255,0,0,38], sampler.colorAtCoordinate(6.5, 0.5));
+});
+
+it('testPerSeriesAlpha', function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    axes : {
+      x : {
+        drawGrid: false,
+        drawAxis: false,
+      },
+      y : {
+        drawGrid: false,
+        drawAxis: false,
+      }
+    },
+    series: {
+      Y: { fillGraph: true, fillAlpha: 0.25 },
+      Z: { fillGraph: true, fillAlpha: 0.75 }
+    },
+    colors: [ '#FF0000', '#0000FF' ]
+  };
+  var data = "X,Y,Z\n" +
+      "1,0,0\n" +
+      "2,0,1\n" +
+      "3,0,1\n" +
+      "4,0,0\n" +
+      "5,0,0\n" +
+      "6,1,0\n" +
+      "7,1,0\n" +
+      "8,0,0\n"
+  ;
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var sampler = new PixelSampler(g);
+
+  // Inside of the "Y" bump -- 5% alpha.
+  assert.deepEqual([255,0,0,63], sampler.colorAtCoordinate(6.5, 0.5));
+
+  // Inside of the "Z" bump -- 95% alpha.
+  assert.deepEqual([0,0,255,191], sampler.colorAtCoordinate(2.5, 0.5));
 });
 
 it('testNewStyleSeries', function() {

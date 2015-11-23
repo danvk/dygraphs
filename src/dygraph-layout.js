@@ -9,10 +9,10 @@
  * dygraphs.
  */
 
-var DygraphLayout = (function() {
-
 /*global Dygraph:false */
 "use strict";
+
+import * as utils from './dygraph-utils';
 
 /**
  * Creates a new DygraphLayout object.
@@ -160,7 +160,7 @@ DygraphLayout.prototype.setAnnotations = function(ann) {
                     "annotation.icon property");
       return;
     }
-    Dygraph.update(a, ann[i]);
+    utils.update(a, ann[i]);
     if (!a.xval) a.xval = parse(a.x);
     this.annotations.push(a);
   }
@@ -191,7 +191,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
   this._xAxis.scale = (xrange !== 0 ? 1 / xrange : 1.0);
 
   if (this.dygraph_.getOptionForAxis("logscale", 'x')) {
-    this._xAxis.xlogrange = Dygraph.log10(this._xAxis.maxval) - Dygraph.log10(this._xAxis.minval);
+    this._xAxis.xlogrange = utils.log10(this._xAxis.maxval) - utils.log10(this._xAxis.minval);
     this._xAxis.xlogscale = (this._xAxis.xlogrange !== 0 ? 1.0 / this._xAxis.xlogrange : 1.0);
   }
   for (var i = 0; i < this.yAxes_.length; i++) {
@@ -202,7 +202,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yscale = (axis.yrange !== 0 ? 1.0 / axis.yrange : 1.0);
 
     if (this.dygraph_.getOption("logscale")) {
-      axis.ylogrange = Dygraph.log10(axis.maxyval) - Dygraph.log10(axis.minyval);
+      axis.ylogrange = utils.log10(axis.maxyval) - utils.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
         console.error('axis ' + i + ' of graph at ' + axis.g +
@@ -215,7 +215,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
 
 DygraphLayout.calcXNormal_ = function(value, xAxis, logscale) {
   if (logscale) {
-    return ((Dygraph.log10(value) - Dygraph.log10(xAxis.minval)) * xAxis.xlogscale);
+    return ((utils.log10(value) - utils.log10(xAxis.minval)) * xAxis.xlogscale);
   } else {
     return (value - xAxis.minval) * xAxis.scale;
   }
@@ -229,7 +229,7 @@ DygraphLayout.calcXNormal_ = function(value, xAxis, logscale) {
  */
 DygraphLayout.calcYNormal_ = function(axis, value, logscale) {
   if (logscale) {
-    var x = 1.0 - ((Dygraph.log10(value) - Dygraph.log10(axis.minyval)) * axis.ylogscale);
+    var x = 1.0 - ((utils.log10(value) - utils.log10(axis.minyval)) * axis.ylogscale);
     return isFinite(x) ? x : NaN;  // shim for v8 issue; see pull request 276
   } else {
     return 1.0 - ((value - axis.minyval) * axis.yscale);
@@ -346,6 +346,4 @@ DygraphLayout.prototype.removeAllDatasets = function() {
   this.setPointsOffsets = [];
 };
 
-return DygraphLayout;
-
-})();
+export default DygraphLayout;

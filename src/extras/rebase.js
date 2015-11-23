@@ -19,7 +19,14 @@
 /*global Dygraph:false */
 
 (function() {
+
   "use strict";
+
+  // Matches DefaultHandler.parseFloat
+  var parseFloat = function(val) {
+    if (val === null) return NaN;
+    return val;
+  };
 
   Dygraph.DataHandlers.RebaseHandler = function(baseOpt) {
     this.baseOpt = baseOpt;
@@ -66,7 +73,7 @@
     for (var i = 0; i <= lastIdx; ++i) {
       var item = series[i];
       var yraw = item[1];
-      var yval = yraw === null ? null : Dygraph.DataHandler.parseFloat(yraw);
+      var yval = yraw === null ? null : parseFloat(yraw);
       if (yval !== null) {
         if (i === firstIdx) {
           yval = (this.baseOpt === "percent") ? 0 : this.baseOpt;
@@ -77,7 +84,7 @@
       var point = {
         x: NaN,
         y: NaN,
-        xval: Dygraph.DataHandler.parseFloat(item[0]),
+        xval: parseFloat(item[0]),
         yval: yval,
         name: setName,
         idx: i + boundaryIdStart

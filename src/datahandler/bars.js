@@ -11,23 +11,21 @@
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 
-(function() {
-
 /*global Dygraph:false */
 /*global DygraphLayout:false */
 "use strict";
+
+import DygraphDataHandler from './datahandler';
+import DygraphLayout from '../dygraph-layout';
 
 /**
  * @constructor
  * @extends {Dygraph.DataHandler}
  */
-Dygraph.DataHandlers.BarsHandler = function() {
-  Dygraph.DataHandler.call(this);
+var BarsHandler = function() {
+  DygraphDataHandler.call(this);
 };
-Dygraph.DataHandlers.BarsHandler.prototype = new Dygraph.DataHandler();
-
-// alias for the rest of the implementation
-var BarsHandler = Dygraph.DataHandlers.BarsHandler;
+BarsHandler.prototype = new DygraphDataHandler();
 
 // TODO(danvk): figure out why the jsdoc has to be copy/pasted from superclass.
 //   (I get closure compiler errors if this isn't here.)
@@ -66,8 +64,8 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
     var point = points[i];
     point.y_top = NaN;
     point.y_bottom = NaN;
-    point.yval_minus = Dygraph.DataHandler.parseFloat(item[2][0]);
-    point.yval_plus = Dygraph.DataHandler.parseFloat(item[2][1]);
+    point.yval_minus = DygraphDataHandler.parseFloat(item[2][0]);
+    point.yval_plus = DygraphDataHandler.parseFloat(item[2][1]);
   }
 };
 
@@ -106,4 +104,4 @@ BarsHandler.prototype.onLineEvaluated = function(points, axis, logscale) {
   }
 };
 
-})();
+export default BarsHandler;

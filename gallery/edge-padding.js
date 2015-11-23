@@ -39,7 +39,7 @@ Gallery.register(
 
           var g = new Dygraph(gdiv, data, {
               labels: ['x', 'A', 'B'],
-              labelDivWidth: 100,
+              labelsDivWidth: 100,
               gridLineColor: '#ccc',
               includeZero: true,
               width: 250,

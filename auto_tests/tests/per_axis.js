@@ -3,9 +3,18 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import Util from './Util';
+import CanvasAssertions from './CanvasAssertions';
+import Proxy from './Proxy';
+
 describe("per-axis", function() {
 
-var _origGetContext = Dygraph.getContext;
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 var xAxisLineColor = "#00ffff";
 var yAxisLineColor = "#ffff00";
@@ -13,11 +22,6 @@ var yAxisLineColor = "#ffff00";
 var g, graph;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origGetContext(canvas));
-  }
-
   var opts = {
     axes : {
       x : {
@@ -40,10 +44,6 @@ beforeEach(function() {
   ;
   graph = document.getElementById('graph');
   g = new Dygraph(graph, data, opts);
-});
-
-afterEach(function() {
-  Dygraph.getContext = _origGetContext;
 });
 
 it('testDrawXAxis', function() {

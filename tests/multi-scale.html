@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>multi-scale</title>
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <style type="text/css">
     body {
       line-height: 150%;
@@ -95,7 +95,11 @@
                 title: 'Four series on the same scale',
                 xlabel: 'Date',
                 ylabel: 'Count',
-                yAxisLabelWidth: 80
+                axes: {
+                  y: {
+                    axisLabelWidth: 80
+                  }
+                }
               }
           );
     </script>

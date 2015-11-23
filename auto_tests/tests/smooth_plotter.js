@@ -3,8 +3,13 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import '../../src/extras/smooth-plotter';  // defines Dygraph.smoothPlotter
+
 describe("smooth-plotter", function() {
 
+var smoothPlotter = Dygraph.smoothPlotter;
 var getControlPoints = smoothPlotter._getControlPoints;
 
 beforeEach(function() {

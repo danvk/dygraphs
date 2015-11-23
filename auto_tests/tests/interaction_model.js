@@ -3,14 +3,14 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphInteraction from '../../src/dygraph-interaction-model';
+import DygraphOps from './DygraphOps';
+
 describe("interaction-model", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 var data1 = "X,Y\n" +
     "20,-1\n" +
@@ -100,15 +100,15 @@ it('testClickCallbackIsCalledOnCustomPan', function() {
 
   function customDown(event, g, context) {
     context.initializeMouseDown(event, g, context);
-    Dygraph.startPan(event, g, context);
+    DygraphInteraction.startPan(event, g, context);
   }
 
   function customMove(event, g, context) {
-    Dygraph.movePan(event, g, context);
+    DygraphInteraction.movePan(event, g, context);
   }
 
   function customUp(event, g, context) {
-    Dygraph.endPan(event, g, context);
+    DygraphInteraction.endPan(event, g, context);
   }
 
   var opts = {
@@ -153,7 +153,7 @@ it('testClickCallbackIsCalledWithNonInteractiveModel', function() {
     width: 100,
     height : 100,
     clickCallback : clickCallback,
-    interactionModel : Dygraph.Interaction.nonInteractiveModel_
+    interactionModel : DygraphInteraction.nonInteractiveModel_
   };
 
   var graph = document.getElementById("graph");
@@ -455,6 +455,51 @@ describe('animated zooms', function() {
     // at this point control flow goes up to zoomCallback
   });
 
+});
+
+//bulk copied from "testCorrectAxisValueRangeAfterUnzoom"
+//tests if the xRangePad is taken into account after unzoom.
+it('testCorrectAxisPaddingAfterUnzoom', function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      data2, {
+        valueRange: [1, 50],
+        dateWindow: [1, 9],
+        xRangePad: 10,
+        animatedZooms:false
+      });
+
+  var extremes = g.xAxisExtremes();
+  
+  // Zoom x axis
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 130, 100);
+  DygraphOps.dispatchMouseUp_Point(g, 130, 100);
+
+  // Zoom y axis
+  DygraphOps.dispatchMouseDown_Point(g, 100, 100);
+  DygraphOps.dispatchMouseMove_Point(g, 100, 130);
+  DygraphOps.dispatchMouseUp_Point(g, 100, 130);
+  var currentYAxisRange = g.yAxisRange();
+  var currentXAxisRange = g.xAxisRange();
+  
+  //check that the range for the axis has changed
+  assert.notEqual(1, currentXAxisRange[0]);
+  assert.notEqual(10, currentXAxisRange[1]);
+  assert.notEqual(1, currentYAxisRange[0]);
+  assert.notEqual(50, currentYAxisRange[1]);
+  
+  // unzoom by doubleclick.  This is really the order in which a browser
+  // generates events, and we depend on it.
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+  DygraphOps.dispatchMouseDown_Point(g, 10, 10);
+  DygraphOps.dispatchMouseUp_Point(g, 10, 10);
+  DygraphOps.dispatchDoubleClick(g, null);
+  
+  // check if range for x-axis was reset to original value 
+  var newXAxisRange = g.xAxisRange();
+  assert.equal(extremes[0], newXAxisRange[0]);
+  assert.equal(extremes[1], newXAxisRange[1]);
 });
 
 });

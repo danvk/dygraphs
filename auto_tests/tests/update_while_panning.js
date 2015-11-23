@@ -5,14 +5,13 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphOps from './DygraphOps';
+
 describe("update-while-panning", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 // This tests the following sequence:
 // 1. Begin dragging a chart (x-panning)
