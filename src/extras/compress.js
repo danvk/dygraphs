@@ -9,10 +9,15 @@
  * See "tests/candlestick.html" for demo.
  */
 
-/*global Dygraph:false */
-
 (function() {
   "use strict";
+
+  var Dygraph;
+  if (window.Dygraph) {
+    Dygraph = window.Dygraph;
+  } else if (typeof(module) !== 'undefined') {
+    Dygraph = require('../dygraph');
+  }
 
   /**
    * Get week number for date
@@ -235,13 +240,11 @@
 
     for (i = 0; i < compressedSeries.length; ++i) {
       var item = compressedSeries[i];
-      var yraw = item[1];
-      var yval = yraw === null ? null : Dygraph.DataHandler.parseFloat(yraw);
       var point = {
         x : NaN,
         y : NaN,
-        xval : Dygraph.DataHandler.parseFloat(item[0]),
-        yval : yval,
+        xval : item[0],
+        yval : item[1],
         name : setName,
         idx : i + boundaryIdStart
       };

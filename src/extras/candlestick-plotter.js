@@ -4,21 +4,19 @@
  * https://github.com/danvk/dygraphs/pull/141/files
  */
 
-/*global Dygraph:false */
-
 (function() {
   "use strict";
 
-  var candlePlotter = function(e) {
-    if (e.seriesIndex > 3) {
-      Dygraph.Plotters.linePlotter(e);
-    }
-    // This is the officially endorsed way to plot all the series at once.
-    if (e.seriesIndex !== 0) return;
+  var Dygraph;
+  if (window.Dygraph) {
+    Dygraph = window.Dygraph;
+  } else if (typeof(module) !== 'undefined') {
+    Dygraph = require('../dygraph');
+  }
 
+  function getPrices(sets) {
     var prices = [];
     var price;
-    var sets = e.allSeriesPoints.slice(0, 4); // Slice first four sets for candlestick chart
     for (var p = 0 ; p < sets[0].length; p++) {
       price = {
         open : sets[0][p].yval,
@@ -32,7 +30,19 @@
       };
       prices.push(price);
     }
+    return prices;
+  }
 
+  function candlestickPlotter(e) {
+    if (e.seriesIndex > 3) {
+      Dygraph.Plotters.linePlotter(e);
+      return;
+    }
+    // This is the officially endorsed way to plot all the series at once.
+    if (e.seriesIndex !== 0) return;
+
+    var sets = e.allSeriesPoints.slice(0, 4); // Slice first four sets for candlestick chart
+    var prices = getPrices(sets);
     var area = e.plotArea;
     var ctx = e.drawingContext;
     ctx.strokeStyle = '#202020';
@@ -46,7 +56,8 @@
     }
     barWidth = Math.max(barWidth, minBarWidth);
 
-    for (p = 0 ; p < prices.length; p++) {
+    var price;
+    for (var p = 0 ; p < prices.length; p++) {
       ctx.beginPath();
 
       price = prices[p];
@@ -70,10 +81,6 @@
       ctx.fillRect(centerX - barWidth / 2, bodyY, barWidth,  bodyHeight);
     }
   };
-
-  Dygraph.update(Dygraph.Plotters, {
-    candlePlotter: function(e) {
-      candlePlotter(e);
-    }
-  });
+  candlestickPlotter._getPrices = getPrices; // for testing
+  Dygraph.candlestickPlotter = candlestickPlotter;
 })();
