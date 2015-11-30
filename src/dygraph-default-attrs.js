@@ -4,6 +4,7 @@ import * as DygraphTickers from './dygraph-tickers';
 import DygraphInteraction from './dygraph-interaction-model';
 import DygraphCanvasRenderer from './dygraph-canvas';
 import * as utils from './dygraph-utils';
+import * as DygraphSelectionModes from './dygraph-selection-modes';
 
 // Default attribute values.
 var DEFAULT_ATTRS = {
@@ -130,7 +131,9 @@ var DEFAULT_ATTRS = {
       independentTicks: false,
       ticker: DygraphTickers.numericTicks
     }
-  }
+  },
+
+  selectionMode: DygraphSelectionModes.selectByRow
 };
 
 export default DEFAULT_ATTRS;
