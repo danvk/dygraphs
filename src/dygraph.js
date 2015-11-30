@@ -3575,12 +3575,7 @@ Dygraph.DataHandlers = {
 };
 
 
-Dygraph.SelectionModes = {};
-// Auto populate Dygraph.SelectionModes with exported
-// functions.
-for (var key in DygraphSelectionModes) {
-  Dygraph.SelectionModes[key] = DygraphSelectionModes[key];
-}
+Dygraph.SelectionModes = DygraphSelectionModes;
 
 Dygraph.startPan = DygraphInteraction.startPan;
 Dygraph.startZoom = DygraphInteraction.startZoom;
