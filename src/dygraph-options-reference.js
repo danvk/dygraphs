@@ -851,11 +851,11 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "function (seriesPoints, closestRowIndex, graph)",
     "parameters": [
       ["seriesPoints", "An array where each entry is an array of points for a series."],
-      ["closestRowIndex", "The closests row to use for selection points."],
+      ["closestRowIndex", "The closest row to use for selection points."],
       ["dygraph", "The referenced graph"]
     ],
     "returns": "Array<points>",
-    "description": "This function is called every time the selection changes. It's return value is used as the set of selected points for highlighting, reporting legend values, etc."
+    "description": "This function is called every time the selection changes. Its return value is used as the set of selected points for highlighting, reporting legend values, etc."
   }
 }
 ;  // </JSON>

@@ -5,18 +5,18 @@
  */
 
 /**
- * @fileOverview These functions determine the actual points to include
+ * @fileoverview These functions determine the actual points to include
  * in the selection set.  Any exported functions will automatically be
- * registered on Dygraph.SelectionModes (defined in dygraphs.js).
+ * registered on Dygraph.SelectionModes (defined in dygraph.js).
  *
  * @name dygraph-selection-modes.js
  * @author musicist288@gmail.com (Joseph Rossi)
  */
 
 /**
- * The default selection mode returns points that strictly from the selected
- * row. If the value for that point is undefined, this mode does not attempt
- * to find an alternate value for the selection.
+ * The default selection mode returns points from the selected row. If the
+ * value for that point is undefined, this mode does not attempt to find an
+ * alternate value for the selection.
  *
  * @param {Array<Array<Dygraph.PointType>>} seriesPoints, An array of series
        points
