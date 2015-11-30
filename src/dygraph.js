@@ -1859,7 +1859,7 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   if (row !== false && row >= 0) {
     if (row != this.lastRow_) changed = true;
     this.lastRow_ = row;
-    this.selPoints_ = selectionMode(this.layout_.points, row, this);
+    this.selPoints_ = selectionMode.call(this, this.layout_.points, row);
   } else {
     if (this.lastRow_ >= 0) changed = true;
     this.lastRow_ = -1;

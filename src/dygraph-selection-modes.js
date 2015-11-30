@@ -21,11 +21,10 @@
  * @param {Array<Array<Dygraph.PointType>>} seriesPoints, An array of series
        points
  * @param {number} closestRowIndex, The index of the closest row for the selection.
- * @param {Dygraph} graph, The dygraph instance.
  * @returns {Array<Dygraph.PointType>} An array of points to act as the new
  *     selection
  */
-export var selectByRow = function (seriesPoints, closestRowIndex, dygraph) {
+export var selectByRow = function (seriesPoints, closestRowIndex) {
   var selection = [];
   var point;
   for (var setIdx = 0; setIdx < seriesPoints.length; ++setIdx) {
@@ -33,7 +32,7 @@ export var selectByRow = function (seriesPoints, closestRowIndex, dygraph) {
     // Check if the point at the appropriate index is the point we're looking
     // for.  If it is, just use it, otherwise search the array for a point
     // in the proper place.
-    var setRow = closestRowIndex - dygraph.getLeftBoundary_(setIdx);
+    var setRow = closestRowIndex - this.getLeftBoundary_(setIdx);
     if (setRow < points.length && points[setRow].idx == closestRowIndex) {
       point = points[setRow];
       if (point.yval !== null) selection.push(point);
@@ -61,16 +60,15 @@ export var selectByRow = function (seriesPoints, closestRowIndex, dygraph) {
  * @param {Array<Array<Dygraph.PointType>>} seriesPoints, An array of series
        points
  * @param {number} closestRowIndex, The index of the closest row for the selection.
- * @param {Dygraph} graph, The dygraph instance.
  * @returns {Array<Dygraph.PointType>} An array of points to act as the new
  *     selection
  */
-export var selectByClosestX = function (seriesPoints, closestRowIndex, dygraph) {
+export var selectByClosestX = function (seriesPoints, closestRowIndex) {
   var selection = [];
   var point;
   for (var setIdx = 0; setIdx < seriesPoints.length; ++setIdx) {
     var points = seriesPoints[setIdx];
-    var setRow = closestRowIndex - dygraph.getLeftBoundary_(setIdx);
+    var setRow = closestRowIndex - this.getLeftBoundary_(setIdx);
     if (setRow < points.length && points[setRow].idx == closestRowIndex) {
       point = points[setRow];
       if (point.yval !== null && point.yval !== undefined && !isNaN(point.yval)) {
