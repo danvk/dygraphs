@@ -224,22 +224,32 @@ rangeSelector.prototype.createZoomHandles_ = function() {
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
   // TODO: change image to more options
-  img.width = 9;
-  img.height = 16;
-  img.src = 'data:image/png;base64,' +
-'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
-'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
-'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
-'6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
-'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  // get source url of the image
+  img.src = "../gallery/images/custom-zoom-handle.png";
 
-  if (this.isMobileDevice_) {
-    img.width *= 2;
-    img.height *= 2;
+  // get dimensions of the image after it's loaded
+  img.onload = function() {
+    // double the size of the image if the device is mobile
+    if (this.isMobileDevice_) {
+      this.width = this.naturalWidth;
+      this.height = this.naturalHeight;
+    }
+    else {
+      this.width = this.naturalWidth/2;
+      this.height = this.naturalHeight/2;
+    }
+    this.halfHandleWidth_ = this.width/2;
+  }
+
+  // create a duplicate of the image (for the second zoom handle)
+  var img2 = img.cloneNode(false);
+  img2.onload = function() {
+    this.width = this.naturalWidth/2;
+    this.height = this.naturalHeight/2;
   }
 
   this.leftZoomHandle_ = img;
-  this.rightZoomHandle_ = img.cloneNode(false);
+  this.rightZoomHandle_ = img2;
 };
 
 /**
@@ -721,10 +731,10 @@ rangeSelector.prototype.placeZoomHandles_ = function() {
   var leftCoord = this.canvasRect_.x + this.canvasRect_.w*leftPercent;
   var rightCoord = this.canvasRect_.x + this.canvasRect_.w*(1 - rightPercent);
   var handleTop = Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2);
-  var halfHandleWidth = this.leftZoomHandle_.width/2;
-  this.leftZoomHandle_.style.left = (leftCoord - halfHandleWidth) + 'px';
+  // var halfHandleWidth = this.leftZoomHandle_.width/2;
+  this.leftZoomHandle_.style.left = (leftCoord - this.halfHandleWidth_) + 'px';
   this.leftZoomHandle_.style.top = handleTop + 'px';
-  this.rightZoomHandle_.style.left = (rightCoord - halfHandleWidth) + 'px';
+  this.rightZoomHandle_.style.left = (rightCoord - this.halfHandleWidth_) + 'px';
   this.rightZoomHandle_.style.top = this.leftZoomHandle_.style.top;
 
   this.leftZoomHandle_.style.visibility = 'visible';
