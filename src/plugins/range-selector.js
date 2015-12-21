@@ -64,7 +64,7 @@ rangeSelector.prototype.setDefaultOption_ = function(name, value) {
  */
 rangeSelector.prototype.createInterface_ = function() {
   this.createCanvases_();
-  this.createZoomHandles_();
+  this.createZoomHandles_(this.placeZoomHandles_);
   this.initInteraction_();
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
@@ -132,7 +132,7 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
   if (!this.updateVisibility_() || this.isChangingRange_) {
     return;
   }
-  this.placeZoomHandles_();
+  // this.placeZoomHandles_();
   this.drawInteractiveLayer_();
 };
 
@@ -216,7 +216,7 @@ rangeSelector.prototype.createCanvases_ = function() {
  * @private
  * Creates the zoom handle elements.
  */
-rangeSelector.prototype.createZoomHandles_ = function() {
+rangeSelector.prototype.createZoomHandles_ = function(callbackFunction) {
   var img = new Image();
   img.className = 'dygraph-rangesel-zoomhandle';
   img.style.position = 'absolute';
@@ -229,17 +229,17 @@ rangeSelector.prototype.createZoomHandles_ = function() {
 
   // get dimensions of the image after it's loaded
   img.onload = function() {
-    // double the size of the image if the device is mobile
-    if (this.isMobileDevice_) {
-      this.width = this.naturalWidth;
-      this.height = this.naturalHeight;
-    }
-    else {
-      this.width = this.naturalWidth/2;
-      this.height = this.naturalHeight/2;
-    }
-    this.halfHandleWidth_ = this.width/2;
+    this.width = this.naturalWidth/2;
+    this.height = this.naturalHeight/2;
+    var halfHandleWidth = this.width/2;
+    callbackFunction.call(this, halfHandleWidth);
   }
+
+  // double the size of the image if the device is mobile
+  // if (this.isMobileDevice_) {
+  //   this.width = this.naturalWidth;
+  //   this.height = this.naturalHeight;
+  // }
 
   // create a duplicate of the image (for the second zoom handle)
   var img2 = img.cloneNode(false);
@@ -722,7 +722,8 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
  * @private
  * Places the zoom handles in the proper position based on the current X data window.
  */
-rangeSelector.prototype.placeZoomHandles_ = function() {
+rangeSelector.prototype.placeZoomHandles_ = function(halfHandleWidth) {
+  console.log(this);
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xWindowLimits = this.dygraph_.xAxisRange();
   var xRange = xExtremes[1] - xExtremes[0];
@@ -732,9 +733,9 @@ rangeSelector.prototype.placeZoomHandles_ = function() {
   var rightCoord = this.canvasRect_.x + this.canvasRect_.w*(1 - rightPercent);
   var handleTop = Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2);
   // var halfHandleWidth = this.leftZoomHandle_.width/2;
-  this.leftZoomHandle_.style.left = (leftCoord - this.halfHandleWidth_) + 'px';
+  this.leftZoomHandle_.style.left = (leftCoord - halfHandleWidth) + 'px';
   this.leftZoomHandle_.style.top = handleTop + 'px';
-  this.rightZoomHandle_.style.left = (rightCoord - this.halfHandleWidth_) + 'px';
+  this.rightZoomHandle_.style.left = (rightCoord - halfHandleWidth) + 'px';
   this.rightZoomHandle_.style.top = this.leftZoomHandle_.style.top;
 
   this.leftZoomHandle_.style.visibility = 'visible';
