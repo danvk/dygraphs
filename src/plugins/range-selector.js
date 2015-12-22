@@ -132,7 +132,6 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
   if (!this.updateVisibility_() || this.isChangingRange_) {
     return;
   }
-  // this.placeZoomHandles_();
   this.drawInteractiveLayer_();
 };
 
@@ -226,26 +225,30 @@ rangeSelector.prototype.createZoomHandles_ = function(callbackFunction) {
   // TODO: change image to more options
   // get source url of the image
   img.src = "../gallery/images/custom-zoom-handle.png";
-
+  var rangeSelectorInstance = this;
   // get dimensions of the image after it's loaded
   img.onload = function() {
     this.width = this.naturalWidth/2;
     this.height = this.naturalHeight/2;
+    // double the size of the image if the device is mobile
+    if (rangeSelectorInstance.isMobileDevice_) {
+      this.width *= 2;
+      this.height *= 2;
+    }
     var halfHandleWidth = this.width/2;
-    callbackFunction.call(this, halfHandleWidth);
+    callbackFunction.call(rangeSelectorInstance, halfHandleWidth);
   }
-
-  // double the size of the image if the device is mobile
-  // if (this.isMobileDevice_) {
-  //   this.width = this.naturalWidth;
-  //   this.height = this.naturalHeight;
-  // }
 
   // create a duplicate of the image (for the second zoom handle)
   var img2 = img.cloneNode(false);
   img2.onload = function() {
     this.width = this.naturalWidth/2;
     this.height = this.naturalHeight/2;
+    // double the size of the image if the device is mobile
+    if (rangeSelectorInstance.isMobileDevice_) {
+      this.width = this.naturalWidth;
+      this.height = this.naturalHeight;
+    }
   }
 
   this.leftZoomHandle_ = img;
@@ -723,7 +726,6 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
  * Places the zoom handles in the proper position based on the current X data window.
  */
 rangeSelector.prototype.placeZoomHandles_ = function(halfHandleWidth) {
-  console.log(this);
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xWindowLimits = this.dygraph_.xAxisRange();
   var xRange = xExtremes[1] - xExtremes[0];
