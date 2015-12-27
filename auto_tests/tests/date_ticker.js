@@ -6,22 +6,23 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
+import * as DygraphTickers from '../../src/dygraph-tickers';
+import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+
 describe("date-ticker-tests", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 var createOptionsViewForAxis = function(axis, dict) {
   return function (x) {
     if (dict && dict.hasOwnProperty(x)) {
       return dict[x];
     }
-    if (Dygraph.DEFAULT_ATTRS.axes[axis].hasOwnProperty(x)) {
-      return Dygraph.DEFAULT_ATTRS.axes[axis][x];
+    if (DEFAULT_ATTRS.axes[axis].hasOwnProperty(x)) {
+      return DEFAULT_ATTRS.axes[axis][x];
     }
-    if (Dygraph.DEFAULT_ATTRS.hasOwnProperty(x)) {
-      return Dygraph.DEFAULT_ATTRS[x];
+    if (DEFAULT_ATTRS.hasOwnProperty(x)) {
+      return DEFAULT_ATTRS[x];
     }
     if (x == 'axisLabelFormatter') return null;
     throw "mysterious " + axis + "-axis option: " + x;
@@ -41,7 +42,7 @@ it('testBasicDateTicker', function() {
   var opts = {labelsUTC: true};
   var options = createOptionsViewForAxis('x', opts);
   
-  var ticks = Dygraph.dateTicker(-1797534000000, 1255579200000, 800, options);
+  var ticks = DygraphTickers.dateTicker(-1797534000000, 1255579200000, 800, options);
   var expected_ticks = [
       {"v":-1577923200000,"label":"1920"},
       {"v":-1262304000000,"label":"1930"},
@@ -57,8 +58,8 @@ it('testBasicDateTicker', function() {
   
   var start = Date.UTC(1999, 11, 31, 14, 0, 0);
   var end = Date.UTC(2000,  0,  1, 12, 0, 0);
-  var granularity = Dygraph.TWO_HOURLY;
-  ticks = Dygraph.getDateAxis(start, end, granularity, options);
+  var granularity = DygraphTickers.Granularity.TWO_HOURLY;
+  ticks = DygraphTickers.getDateAxis(start, end, granularity, options);
   changeNbspToSpace(ticks);
   expected_ticks = [ // months of the year are zero-based.
       {v: Date.UTC(1999, 11, 31, 14, 0, 0), label: '14:00'},
@@ -86,7 +87,7 @@ it('testAllDateTickers', function() {
   // In these tests, those spurious ticks are removed to test new behavior.
 
   var ticker = function() {
-    var ticks = Dygraph.dateTicker.apply(null, arguments);
+    var ticks = DygraphTickers.dateTicker.apply(null, arguments);
     changeNbspToSpace(ticks);
     return ticks;
   };

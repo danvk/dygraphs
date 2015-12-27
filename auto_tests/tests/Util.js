@@ -3,6 +3,9 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import * as utils from '../../src/dygraph-utils';
+
 var Util = {};
 
 /**
@@ -90,14 +93,14 @@ Util.makeNumbers = function(ary) {
 /**
  * Sample a pixel from the canvas.
  * Returns an [r, g, b, a] tuple where each values is in [0, 255].
+ * This is _very_ slow! If you want to sample many pixels, use PixelSampler.
  */
 Util.samplePixel = function(canvas, x, y) {
   var ctx = canvas.getContext("2d");  // bypasses Proxy if applied.
 
-  // TODO(danvk): Any performance issues with this?
   var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  var scale = Dygraph.getContextPixelRatio(ctx);
+  var scale = utils.getContextPixelRatio(ctx);
 
   var i = 4 * (x * scale + imageData.width * y * scale);
   var d = imageData.data;
@@ -145,7 +148,7 @@ Util.overrideXMLHttpRequest = function(data) {
  * @return {string} The date formatted as YYYY-MM-DD.
  */
 Util.formatDate = function(dateMillis) {
-  return Dygraph.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
+  return utils.dateString_(dateMillis).slice(0, 10);  // 10 == "YYYY/MM/DD".length
 };
 
 /**
@@ -168,3 +171,5 @@ Util.captureConsole = function(obj) {
     console.error = orig[2];
   };
 };
+
+export default Util;

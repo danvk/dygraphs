@@ -6,11 +6,12 @@
  * @author danvk@google.com (Dan Vanderkam)
  */
 
+import Dygraph from '../../src/dygraph';
+import DefaultHandler from '../../src/datahandler/default';
+
 describe("selection", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
+cleanupAfterEach();
 
 it('testSetGetSelection', function() {
   var graph = document.getElementById("graph");
@@ -51,7 +52,7 @@ it('testSetGetSelectionDense', function() {
 
 it('testSetGetSelectionMissingPoints', function() {
   var dataHandler = function() {};
-  dataHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
+  dataHandler.prototype = new DefaultHandler();
   dataHandler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
     var val = null;
     if (setName == 'A') {

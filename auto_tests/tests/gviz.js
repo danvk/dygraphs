@@ -2,14 +2,13 @@
  * Unit tests for GViz data table support.
  */
 
+import Dygraph from '../../src/dygraph';
+
+import Util from './Util';
+
 describe('gviz', function() {
 
-  beforeEach(function() {
-    document.body.innerHTML = "<div id='graph'></div>";
-  });
-
-  afterEach(function() {
-  });
+  cleanupAfterEach();
 
   // This is a fake version of the gviz DataTable API, which can only be
   // sourced using the google js loader.

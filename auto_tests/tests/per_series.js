@@ -3,14 +3,14 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
+import PixelSampler from './PixelSampler';
+
 describe("per-series", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 it('testPerSeriesFill', function() {
   var opts = {

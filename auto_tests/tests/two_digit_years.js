@@ -3,6 +3,12 @@
  *
  * @author gmadrid@gmail.com (George Madrid)
  */
+
+import Dygraph from '../../src/dygraph';
+import {Granularity, getDateAxis} from '../../src/dygraph-tickers';
+import * as utils from '../../src/dygraph-utils';
+import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+
 describe("two-digit-years", function() {
 
 it('testTwoDigitYears', function() {
@@ -16,8 +22,8 @@ it('testTwoDigitYears', function() {
   start.setFullYear(9);
   end.setFullYear(11);
 
-  var ticks = Dygraph.getDateAxis(start, end, Dygraph.QUARTERLY, function(x) {
-    return Dygraph.DEFAULT_ATTRS.axes['x'][x];
+  var ticks = getDateAxis(start, end, Granularity.QUARTERLY, function(x) {
+    return DEFAULT_ATTRS.axes['x'][x];
   });
 
   // This breaks in Firefox & Safari:

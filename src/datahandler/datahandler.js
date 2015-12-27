@@ -41,6 +41,8 @@
 /*global Dygraph:false */
 /*global DygraphLayout:false */
 
+"use strict";
+
 /**
  * 
  * The data handler is responsible for all data specific operations. All of the
@@ -48,20 +50,10 @@
  * Initially the unified data is created by the extractSeries method
  * @constructor
  */
-Dygraph.DataHandler = function () {
+var DygraphDataHandler = function () {
 };
 
-/**
- * A collection of functions to create and retrieve data handlers.
- * @type {Object.<!Dygraph.DataHandler>}
- */
-Dygraph.DataHandlers = {};
-
-(function() {
-
-"use strict";
-
-var handler = Dygraph.DataHandler;
+var handler = DygraphDataHandler;
 
 /**
  * X-value array index constant for unified data samples.
@@ -267,4 +259,4 @@ handler.parseFloat = function(val) {
   return val;
 };
 
-})();
+export default DygraphDataHandler;

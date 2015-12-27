@@ -4,20 +4,25 @@
  * @fileoverview Regression test based on some strange customBars data.
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+
 describe("css", function() {
+
+cleanupAfterEach();
 
 var data = "X,Y,Z\n1,2,3\n4,5,6\n";
 
 var styleSheet;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
   styleSheet = document.createElement("style");
   styleSheet.type = "text/css";
   document.getElementsByTagName("head")[0].appendChild(styleSheet);
 });
 
 afterEach(function() {
+  styleSheet.innerHTML = '';
 });
 
 // Verifies that an unstyled, unsized dygraph gets a default size.
@@ -78,12 +83,13 @@ it('testPixelStyleWins', function() {
 
 // Verifies that a CSS percentage size works.
 it('testPercentageSize', function() {
-  document.body.innerHTML =
+  var testdiv = document.getElementById("graph");
+  testdiv.innerHTML =
       '<div style="width: 600px; height: 400px;">' +
-      '<div id="graph"></div></div>';
+      '<div id="inner-graph"></div></div>';
   var opts = {
   };
-  var graph = document.getElementById("graph");
+  var graph = document.getElementById("inner-graph");
   graph.style.width = '50%';
   graph.style.height = '50%';
 
@@ -109,22 +115,20 @@ it('testClassPixelSize', function() {
 
 // An invisible chart div shouldn't produce an error.
 it('testInvisibleChart', function() {
-  document.body.innerHTML =
+  graph.innerHTML =
       '<div style="display:none;">' +
-      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '<div id="inner-graph" style="width: 640px; height: 480px;"></div>' +
       '</div>';
-  var graph = document.getElementById("graph");
-  new Dygraph(graph, data, {});
+  new Dygraph('inner-graph', data, {});
 });
 
 // An invisible chart div shouldn't produce an error.
 it('testInvisibleChartDate', function() {
-  document.body.innerHTML =
+  graph.innerHTML =
       '<div style="display:none;">' +
-      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '<div id="inner-graph" style="width: 640px; height: 480px;"></div>' +
       '</div>';
-  var graph = document.getElementById("graph");
-  new Dygraph(graph,
+  new Dygraph('inner-graph',
                   "Date,Y\n" +
                   "2010/01/01,100\n" +
                   "2010/02/01,200\n" +
@@ -137,11 +141,12 @@ it('testInvisibleChartDate', function() {
 
 // An invisible chart div that becomes visible.
 it('testInvisibleThenVisibleChart', function() {
-  document.body.innerHTML =
+  var testdiv = document.getElementById("graph");
+  testdiv.innerHTML =
       '<div id="x" style="display:none;">' +
-      '<div id="graph" style="width: 640px; height: 480px;"></div>' +
+      '<div id="inner-graph" style="width: 640px; height: 480px;"></div>' +
       '</div>';
-  var graph = document.getElementById("graph");
+  var graph = document.getElementById("inner-graph");
   var g = new Dygraph(graph,
                   "Date,Y\n" +
                   "2010/01/01,100\n" +

@@ -3,21 +3,20 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
+import Dygraph from '../../src/dygraph';
 describe("data-api", function() {
+
+cleanupAfterEach();
 
 var opts, graphDiv;
 
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
   opts = {
     width: 480,
     height: 320
   };
 
   graphDiv = document.getElementById("graph");
-});
-
-afterEach(function() {
 });
 
 it('testBasicAccessors', function() {

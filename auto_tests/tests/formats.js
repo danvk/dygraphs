@@ -3,14 +3,12 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
+
+import Dygraph from '../../src/dygraph';
+
 describe("formats", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 var dataString =
   "X,Y\n" +

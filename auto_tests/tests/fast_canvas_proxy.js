@@ -3,13 +3,11 @@
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
+
+import DygraphCanvasRenderer from '../../src/dygraph-canvas';
+import Proxy from './Proxy';
+
 describe("fast-canvas-proxy", function() {
-
-beforeEach(function() {
-});
-
-afterEach(function() {
-});
 
 var fakeCanvasContext = {
   moveTo: function() {},

@@ -1,14 +1,11 @@
 {
   "name": "dygraphs",
-  "version": "v1.1.0",
-  "main": "dygraph-combined.js",
+  "main": "dist/dygraph.js",
   "ignore": [
     "Makefile",
     "NOTES",
     "auto_tests",
-    "closure-todo.txt",
     "common",
-    "compile-with-closure.sh",
     "data.js",
     "docs",
     "experimental",
@@ -32,6 +29,7 @@
     "release.sh",
     "releases.json",
     "screenshot.png",
+    "scripts",
     "test.sh",
     "tests",
     "thumbnail.png"

@@ -3,13 +3,10 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import * as utils from '../../src/dygraph-utils';
+
 describe("date-formats", function() {
-
-beforeEach(function() {
-});
-
-afterEach(function() {
-});
 
 it('testISO8601', function() {
   // Format: YYYY-MM-DDTHH:MM:SS.ddddddZ
@@ -19,7 +16,7 @@ it('testISO8601', function() {
   // Firefox <4 does not support this format:
   // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/parse
   if (navigator.userAgent.indexOf("Firefox/3.5") == -1) {
-    assert.equal(946816496789, Dygraph.dateParser("2000-01-02T12:34:56.789012Z"));
+    assert.equal(946816496789, utils.dateParser("2000-01-02T12:34:56.789012Z"));
   }
 });
 
@@ -36,7 +33,7 @@ it('testHyphenatedDate', function() {
             zp(d.getDate()) + ' ' +
             zp(d.getHours()) + ':' +
             zp(d.getMinutes());
-  assert.equal(Date.UTC(2000, 1, 2), Dygraph.dateParser(str));
+  assert.equal(Date.UTC(2000, 1, 2), utils.dateParser(str));
 });
 
 });

@@ -3,6 +3,10 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
+
+import Dygraph from '../../src/dygraph';
+import DygraphOps from './DygraphOps';
+
 describe("scrolling-div", function() {
 
 var point, g; 
@@ -18,12 +22,18 @@ var LOREM_IPSUM =
     "non proident, sunt in culpa qui officia deserunt mollit anim id est\n" +
     "laborum.</p>";
 
-  document.body.innerHTML = 
+  var testDiv = document.getElementById('graph');
+  testDiv.innerHTML =
       "<div id='scroller' style='overflow: scroll; height: 450px; width: 800px;'>" +
-      "<div id='graph'></div>" +
+      "<div id='graph-inner'></div>" +
       "<div style='height:100px; background-color:green;'>" + LOREM_IPSUM + " </div>" +
       "<div style='height:100px; background-color:red;'>" + LOREM_IPSUM + "</div>" +
       "</div>";
+
+  // The old test runner had an 8px margin on the body
+  // The Mocha test runner does not. We set it on the test div to keep the
+  // coordinates the same.
+  testDiv.style.margin = '8px';
 
   var data = [
       [ 10, 1 ],
@@ -35,7 +45,7 @@ var LOREM_IPSUM =
       [ 70, 4 ],
       [ 80, 6 ] ];
 
-  var graph = document.getElementById("graph");
+  var graph = document.getElementById("graph-inner");
 
   point = null;
   g = new Dygraph(graph, data,
@@ -73,9 +83,6 @@ var detectScrollbarWidth = function() {
 
   return scrollbarWidth;
 };
-
-afterEach(function() {
-});
 
 /**
  * This tests that when the nested div is unscrolled, things work normally.

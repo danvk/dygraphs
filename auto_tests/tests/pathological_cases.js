@@ -4,18 +4,25 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import Util from './Util';
+
 describe("pathological-cases", function() {
+
+cleanupAfterEach();
 
 var restoreConsole;
 var logs = {};
 beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
   restoreConsole = Util.captureConsole(logs);
 });
 
 afterEach(function() {
   restoreConsole();
 });
+
+var graph = document.getElementById("graph");
 
 it('testZeroPoint', function() {
   var opts = {
@@ -24,7 +31,6 @@ it('testZeroPoint', function() {
   };
   var data = "X,Y\n";
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 });
 
@@ -36,7 +42,6 @@ it('testOnePoint', function() {
   var data = "X,Y\n" +
              "1,2\n";
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 });
 
@@ -97,7 +102,7 @@ it('testCombinations', function() {
 
       var h = document.createElement('h3');
       h.appendChild(document.createTextNode(baseName + ' ' + variantName));
-      document.body.appendChild(h);
+      graph.appendChild(h);
       for (var dataName in dataSets) {
         var data = dataSets[dataName];
 
@@ -109,7 +114,7 @@ it('testCombinations', function() {
         var gdiv = document.createElement('div');
         gdiv.style.display = 'inline-block';
         box.appendChild(gdiv);
-        document.body.appendChild(box);
+        graph.appendChild(box);
 
         var cols = data && data[0] ? data[0].length : 0;
         opts.labels = ['X', 'A', 'B', 'C'].slice(0, cols);
@@ -139,7 +144,6 @@ it('testNullLegend', function() {
   var data = "X,Y\n" +
              "1,2\n";
 
-  var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
 });
 

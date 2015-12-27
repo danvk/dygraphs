@@ -3,14 +3,12 @@
  * @author sergeyslepian@gmail.com
  */
 
+import Dygraph from '../../src/dygraph';
+import Util from './Util';
+
 describe("visibility", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 /**
  * Does a bunch of the shared busywork of setting up a graph and changing its visibility.
@@ -65,6 +63,14 @@ it('testMultiSeriesHide', function() {
 
 it('testMultiSeriesShow', function() {
   assert.equal(' B  D', getVisibleSeries(false, [[1,3], true]));
+});
+
+it('testObjectSeriesShowAndHide', function() {
+  assert.equal(' B  D', getVisibleSeries(false, [{1:true, 2:false, 3:true}, null]));
+});
+
+it('testBooleanArraySeriesShowAndHide', function() {
+  assert.equal(' B  D', getVisibleSeries(false, [[false, true, false, true], null]));
 });
 
 });

@@ -3,14 +3,16 @@
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+import Util from './Util';
+import {assertDeepCloseTo} from './custom_asserts';
+
 describe("axis-labels", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 var simpleData =
     "X,Y,Y2\n" +
@@ -204,7 +206,7 @@ it('testDateAxisLabelFormatter', function() {
       x : {
         pixelsPerLabel: 60,
         axisLabelFormatter : function(x, granularity, opts, dg) {
-          assert.isTrue(Dygraph.isDateLike(x));
+          assert.isTrue(utils.isDateLike(x));
           assert.equal('number', typeof(granularity));
           assert.equal('function', typeof(opts));
           assert.equal('[Dygraph graph]', dg.toString());
@@ -705,7 +707,7 @@ it('testAxisLabelFontSize', function() {
   var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a 14-point default.
-  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, DEFAULT_ATTRS.axisLabelFontSize);
 
   var assertFontSize = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "font-size", expected);
@@ -763,7 +765,7 @@ it('testAxisLabelFontSizeNull', function() {
   };
 
   // Be sure we're dealing with a 14-point default.
-  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, DEFAULT_ATTRS.axisLabelFontSize);
 
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
@@ -774,7 +776,7 @@ it('testAxisLabelColor', function() {
   var g = new Dygraph(graph, simpleData, {});
 
   // Be sure we're dealing with a black default.
-  assert.equal("black", Dygraph.DEFAULT_ATTRS.axisLabelColor);
+  assert.equal("black", DEFAULT_ATTRS.axisLabelColor);
 
   var assertColor = function(selector, expected) {
     Util.assertStyleOfChildren(selector, "color", expected);
@@ -832,7 +834,7 @@ it('testAxisLabelColorNull', function() {
   }
 
   // Be sure we're dealing with a 14-point default.
-  assert.equal(14, Dygraph.DEFAULT_ATTRS.axisLabelFontSize);
+  assert.equal(14, DEFAULT_ATTRS.axisLabelFontSize);
 
   assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
   assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");

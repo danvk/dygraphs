@@ -68,7 +68,7 @@ var shapeFunction = function(sides, rotationRadians, delta) {
   };
 };
 
-Dygraph.update(Dygraph.Circles, {
+var customCircles = {
   TRIANGLE : shapeFunction(3),
   SQUARE : shapeFunction(4, Math.PI / 4),
   DIAMOND : shapeFunction(4),
@@ -113,6 +113,11 @@ Dygraph.update(Dygraph.Circles, {
     ctx.closePath();
     ctx.stroke();
   }
-});
+};
+
+for (var k in customCircles) {
+  if (!customCircles.hasOwnProperty(k)) continue;
+  Dygraph.Circles[k] = customCircles[k];
+}
 
 })();

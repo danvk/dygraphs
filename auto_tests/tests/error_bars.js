@@ -3,23 +3,17 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import Util from './Util';
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+
 describe("error-bars", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-var _origFunc = Dygraph.getContext;
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
-  }
-});
-
-afterEach(function() {
-  Dygraph.getContext = _origFunc;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 it('testErrorBarsDrawn', function() {
   var opts = {

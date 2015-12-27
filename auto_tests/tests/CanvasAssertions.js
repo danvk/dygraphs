@@ -244,3 +244,5 @@ CanvasAssertions.match = function(predicate, call) {
   }
   return true;
 };
+
+export default CanvasAssertions;

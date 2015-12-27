@@ -3,20 +3,17 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+
+import Proxy from './Proxy';
+import CanvasAssertions from './CanvasAssertions';
+import {assertDeepCloseTo} from './custom_asserts';
 
 describe("to-dom-coords", function() {
 
-var origFunc = Dygraph.getContext;
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-  Dygraph.getContext = function(canvas) {
-    return new Proxy(origFunc(canvas));
-  }
-});
-
-afterEach(function() {
-  Dygraph.getContext = origFunc;
-});
+cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 // Checks that toDomCoords and toDataCoords are inverses of one another.
 var checkForInverses = function(g) {

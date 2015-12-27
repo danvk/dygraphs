@@ -5,14 +5,13 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
+
+import Dygraph from '../../src/dygraph';
+import {assertDeepCloseTo} from './custom_asserts';
+
 describe("scientific-notation", function() {
 
-beforeEach(function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-});
-
-afterEach(function() {
-});
+cleanupAfterEach();
 
 function getXValues(g) {
   var xs = [];

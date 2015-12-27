@@ -6,7 +6,7 @@
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="interaction.js"></script>
@@ -47,8 +47,10 @@
     </table>
         
     <script type="text/javascript">
-      Dygraph.addEvent(document, "mousewheel", function() { lastClickedGraph = null; });
-      Dygraph.addEvent(document, "click", function() { lastClickedGraph = null; });
+      document.addEventListener("mousewheel", function() {
+        lastClickedGraph = null;
+      }, false);
+      document.addEventListener("click", function() { lastClickedGraph = null; }, false);
       var g = new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
       var s = document.getElementById("g2_console");

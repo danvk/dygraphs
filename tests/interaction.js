@@ -83,7 +83,8 @@ var lastClickedGraph = null;
 
 function clickV3(event, g, context) {
   lastClickedGraph = g;
-  Dygraph.cancelEvent(event);
+  event.preventDefault();
+  event.stopPropagation();
 }
 
 function scrollV3(event, g, context) {
@@ -105,7 +106,8 @@ function scrollV3(event, g, context) {
   var yPct = percentages[1];
 
   zoom(g, percentage, xPct, yPct);
-  Dygraph.cancelEvent(event);
+  event.preventDefault();
+  event.stopPropagation();
 }
 
 // Adjusts [x, y] toward each other by zoomInPercentage%

@@ -4,6 +4,8 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
+import * as utils from '../../src/dygraph-utils';
+
 describe("utils-tests", function() {
 
 it('testUpdate', function() {
@@ -18,13 +20,13 @@ it('testUpdate', function() {
   assert.deepEqual({x: 1, y: 2}, a['c']);
   assert.deepEqual({f: 10, g: 20}, a['d']);
 
-  Dygraph.update(a, { c: { x: 2 } });
+  utils.update(a, { c: { x: 2 } });
   assert.deepEqual({x: 2}, a['c']);
 
-  Dygraph.update(a, { d: null });
+  utils.update(a, { d: null });
   assert.equal(null, a['d']);
 
-  Dygraph.update(a, { a: 10, b: [1, 2] });
+  utils.update(a, { a: 10, b: [1, 2] });
   assert.equal(10, a['a']);
   assert.deepEqual([1, 2], a['b']);
   assert.deepEqual({x: 2}, a['c']);
@@ -43,13 +45,13 @@ it('testUpdateDeep', function() {
   assert.deepEqual({x: 1, y: 2}, a['c']);
   assert.deepEqual({f: 10, g: 20}, a['d']);
 
-  Dygraph.updateDeep(a, { c: { x: 2 } });
+  utils.updateDeep(a, { c: { x: 2 } });
   assert.deepEqual({x: 2, y: 2}, a['c']);
 
-  Dygraph.updateDeep(a, { d: null });
+  utils.updateDeep(a, { d: null });
   assert.equal(null, a['d']);
 
-  Dygraph.updateDeep(a, { a: 10, b: [1, 2] });
+  utils.updateDeep(a, { a: 10, b: [1, 2] });
   assert.equal(10, a['a']);
   assert.deepEqual([1, 2], a['b']);
   assert.deepEqual({x: 2, y: 2}, a['c']);
@@ -64,7 +66,7 @@ it('testUpdateDeepDecoupled', function() {
   };
 
   var b = {};
-  Dygraph.updateDeep(b, a);
+  utils.updateDeep(b, a);
 
   b.a = 2;
   assert.equal(1, a.a);
@@ -79,7 +81,7 @@ it('testUpdateDeepDecoupled', function() {
 
 it('testIterator_nopredicate', function() {
   var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  var iter = Dygraph.createIterator(array, 1, 4);
+  var iter = utils.createIterator(array, 1, 4);
   assert.isTrue(iter.hasNext);
   assert.equal('b', iter.peek);
   assert.equal('b', iter.next());
@@ -99,7 +101,7 @@ it('testIterator_nopredicate', function() {
 
 it('testIterator_predicate', function() {
   var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  var iter = Dygraph.createIterator(array, 1, 4,
+  var iter = utils.createIterator(array, 1, 4,
       function(array, idx) { return array[idx] !== 'd' });
   assert.isTrue(iter.hasNext);
   assert.equal('b', iter.peek);
@@ -117,13 +119,13 @@ it('testIterator_predicate', function() {
 
 it('testIterator_empty', function() {
   var array = [];
-  var iter = Dygraph.createIterator([], 0, 0);
+  var iter = utils.createIterator([], 0, 0);
   assert.isFalse(iter.hasNext);
 });
 
 it('testIterator_outOfRange', function() {
   var array = ['a', 'b', 'c'];
-  var iter = Dygraph.createIterator(array, 1, 4,
+  var iter = utils.createIterator(array, 1, 4,
       function(array, idx) { return array[idx] !== 'd' });
   assert.isTrue(iter.hasNext);
   assert.equal('b', iter.peek);
@@ -140,7 +142,7 @@ it('testIterator_outOfRange', function() {
 // with invalid boundaries.
 it('testIterator_whole_array', function() {
   var array = ['a', 'b', 'c'];
-  var iter = Dygraph.createIterator(array, 0, array.length,
+  var iter = utils.createIterator(array, 0, array.length,
       function(array, idx) {
         if (idx < 0 || idx >= array.length) {
           throw "err";
@@ -160,7 +162,7 @@ it('testIterator_whole_array', function() {
 
 it('testIterator_no_args', function() {
   var array = ['a', 'b', 'c'];
-  var iter = Dygraph.createIterator(array);
+  var iter = utils.createIterator(array);
   assert.isTrue(iter.hasNext);
   assert.equal('a', iter.next());
   assert.isTrue(iter.hasNext);
@@ -172,15 +174,15 @@ it('testIterator_no_args', function() {
 });
 
 it('testToRGB', function() {
-  assert.deepEqual({r: 255, g: 200, b: 150}, Dygraph.toRGB_('rgb(255,200,150)'));
-  assert.deepEqual({r: 255, g: 200, b: 150}, Dygraph.toRGB_('#FFC896'));
-  assert.deepEqual({r: 255, g: 0, b: 0}, Dygraph.toRGB_('red'));
+  assert.deepEqual({r: 255, g: 200, b: 150}, utils.toRGB_('rgb(255,200,150)'));
+  assert.deepEqual({r: 255, g: 200, b: 150}, utils.toRGB_('#FFC896'));
+  assert.deepEqual({r: 255, g: 0, b: 0}, utils.toRGB_('red'));
   assert.deepEqual({r: 255, g: 200, b: 150, a: 0.6},
-                   Dygraph.toRGB_('rgba(255, 200, 150, 0.6)'));
+                   utils.toRGB_('rgba(255, 200, 150, 0.6)'));
 });
 
 it('testIsPixelChangingOptionList', function() {
-  var isPx = Dygraph.isPixelChangingOptionList;
+  var isPx = utils.isPixelChangingOptionList;
   assert.isTrue(isPx([], { axes: { y: { digitsAfterDecimal: 3 }}}));
   assert.isFalse(isPx([], { axes: { y: { axisLineColor: 'blue' }}}));
 });
