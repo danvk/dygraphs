@@ -61,7 +61,18 @@ Dygraph.Plugins.Ribbon = (function() {
       bottom: 0
     };
 
-    this.ribbonOptions_ = Dygraph.update(defaultOptions, this.ribbonOptions_);
+    function update(self, o) {
+      if (typeof(o) != 'undefined' && o !== null) {
+        for (var k in o) {
+          if (o.hasOwnProperty(k)) {
+            self[k] = o[k];
+          }
+        }
+      }
+      return self;
+    }
+
+    this.ribbonOptions_ = update(defaultOptions, this.ribbonOptions_);
     this.ribbonOptions_.top = Math.min(this.ribbonOptions_.top, 1);
     this.ribbonOptions_.top = Math.max(this.ribbonOptions_.top, 0);
     this.ribbonOptions_.bottom = Math.min(this.ribbonOptions_.bottom, 1);
