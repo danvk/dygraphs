@@ -809,7 +809,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the series. Setting it for one series will result in that series being charted alone in the range selector."
   },
-  "rangeSlectorZoomHandleImage": {
+  "rangeSelectorZoomHandleImage": {
     "default": "null",
     "labels": ["Range Selector"],
     "type": "string",

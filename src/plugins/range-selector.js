@@ -224,7 +224,7 @@ rangeSelector.prototype.createZoomHandles_ = function(callbackFunction) {
   img.style.cursor = 'col-resize';
   // TODO: change image to more options
   // get source url of the image
-  var imgSrc = this.getOption_('rangeSlectorZoomHandleImage');
+  var imgSrc = this.getOption_('rangeSelectorZoomHandleImage');
   // if nothing is provided,
   if (imgSrc == null) {
     imgSrc =
