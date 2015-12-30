@@ -224,7 +224,37 @@ rangeSelector.prototype.createZoomHandles_ = function(callbackFunction) {
   img.style.cursor = 'col-resize';
   // TODO: change image to more options
   // get source url of the image
-  img.src = "../gallery/images/custom-zoom-handle.png";
+  var imgSrc = this.getOption_('rangeSlectorZoomHandleImage');
+  // if nothing is provided,
+  if (imgSrc == null) {
+    imgSrc =
+    "data:image/png;base64," +
+    "iVBORw0KGgoAAAANSUhEUgAAABMAAAAhCAYAAAA74pBqAAAABm" +
+    "JLR0QA/wD/AP+gvaeTAAADFElEQVRIie3Wb0vjWBTH8W+TmzZJ" +
+    "LZrY7lB2bat13IFRi868jFVfp0/dtzAiCBF01OCAVTp1am2T9A" +
+    "82f9ok+2BZYZwdYZ8unmcXLh8O9x74nYzrummr1cKyLJrX13iu" +
+    "i+/7vFQ5VcUwDKrVKh8+fmRlZQXbtn8VrVaLi4sLzk5PuWu3Sd" +
+    "OUjCSRVRRkIb5DkjgmiiJGoxG9Xo/RaISmaciSxOHhYUFYlsXZ" +
+    "6SndbpdCocD6xga1Wg3DNNE17TssCAI81+Vru83nszN6Dw9Yls" +
+    "XE97Ft+xfRvL7mrt2mUChQr9dpNBr8/u4dpmmi6/oPmOs4LBaL" +
+    "TCYTvlxd0el0UBSF4XA4LzzXJU1T1jc2aDQa1FdXMU2TbDb7w1" +
+    "spioJhGCwvLxPHMfl8nsNPn3Adh2Q6VYXv+2QkiVqt9tRRkiTc" +
+    "NJskaUq5XEaSJDqdDnEcUy6XMUyTSqWC4zhkJInJZEIcx7IAyC" +
+    "oKhmk+dXTTbHJwcEAUhuzu7ZFTVf48OMD3ffb29lheWfnXX5YA" +
+    "ZCHQNQ1d1xFCMB6Puby85Pz8nMFwyHg8xv7nPBj8dGSkFwfqP9" +
+    "Yr9oq9Yq/Y/wUT8HcehmFIGAQIRUHTdaqVCmEUMZfPo6oqlWoV" +
+    "fzIhPzf3MhZNp3ieh+u6LBgG5XKZnd1d4iTht6UlZFnmj50dZr" +
+    "MZlUrl51g2lyMeDmm325RKJWppymKxyGajgSzLTxe3trZIkoTp" +
+    "dMrA8+j1enieB2lKTlXxwzARpmni9Pt8Pjsj8H1msxmZTIYFw0" +
+    "B7luhRFDEYDLhpNjk+PubL1RWzOOaNafI4GgViqVLB8zycfh/b" +
+    "ttF0nSAIWCwWyT9LdD8IcPp9bm9usC8v6fX7FItFarUafccZiw" +
+    "/b26i5HCcnJ3S7XY6OjrAsCzWXQzxbXGZxTBgERFFEGEWUSiW2" +
+    "t7d5v76O47o9sfr2LZIs8/j4SCaTwXUcXMd5cQRUTaNUKlGv19" +
+    "nY3GRtbY0wDAfi/v7+vW3bha+3t2/8yWRBEiKna5p4CcsIMQuD" +
+    "ILz79m1k23Z3fn5+uL+///AXMD2A8GOGIcgAAAAASUVORK5CYI" +
+    "I="
+  }
+  img.src = imgSrc;
   var rangeSelectorInstance = this;
   // get dimensions of the image after it's loaded
   img.onload = function() {
