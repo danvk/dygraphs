@@ -217,6 +217,8 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   this.eventListeners_ = {};
 
   this.attributes_ = new DygraphOptions(this);
+  this.lastMouseMoveEvent_ = null;
+  this.currentZoomRectArgs_ = null;
 
   // Create the containing DIV and other interactive elements
   this.createInterface_();
@@ -1247,6 +1249,7 @@ Dygraph.prototype.drawZoomRect_ = function(direction, startX, endX, startY,
                                            endY, prevDirection, prevEndX,
                                            prevEndY) {
   var ctx = this.canvas_ctx_;
+  this.currentZoomRectArgs_ = arguments;
 
   // Clean up from the previous rect if necessary
   if (prevDirection == utils.HORIZONTAL) {
@@ -1664,6 +1667,8 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
+  this.lastMouseMoveEvent_ = event;
+  
   // This prevents JS errors when mousing over the canvas before data loads.
   var points = this.layout_.points;
   if (points === undefined || points === null) return;
@@ -2420,6 +2425,15 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
       var fn = this.readyFns_.pop();
       fn(this);
     }
+  }
+
+  if(this.lastMouseMoveEvent_ !== null)
+  {
+    this.mouseMove_(this.lastMouseMoveEvent_);
+  }
+  if(this.currentZoomRectArgs_ !== null)
+  {
+    this.drawZoomRect_.apply(this, this.currentZoomRectArgs_);
   }
 };
 

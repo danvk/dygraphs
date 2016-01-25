@@ -43,14 +43,14 @@ it('testResizeMaintainsMouseOperations', function() {
   var g = new Dygraph(graph, data, {highlightCallback: callback});
 
   strum(g, 300, 640);
-  assert.equal(6, callbackCount);
+  assert.equal(7, callbackCount);
 
   graph.style.width = "500px";
   g.resize();
 
   callbackCount = 0;
   strum(g, 300, 500);
-  assert.equal(6, callbackCount);
+  assert.equal(7, callbackCount);
 });
 
 /**
