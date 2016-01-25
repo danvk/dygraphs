@@ -240,8 +240,8 @@ export var Granularity = {
   QUARTERLY: 17,
   BIANNUAL: 18,
   ANNUAL: 19,
-  TWOANNUAL: 20,
-  FIVEANNUAL: 21,
+  TWO_ANNUAL: 20,
+  FIVE_ANNUAL: 21,
   DECADAL: 22,
   CENTENNIAL: 23,
   NUM_GRANULARITIES: 24
@@ -295,8 +295,8 @@ TICK_PLACEMENT[Granularity.MONTHLY]         = {datefield: DateField.DATEFIELD_M,
 TICK_PLACEMENT[Granularity.QUARTERLY]       = {datefield: DateField.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
 TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
 TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
-TICK_PLACEMENT[Granularity.TWOANNUAL]       = {datefield: DateField.DATEFIELD_Y,  step:   2, spacing: 1000 * 86400 * 2 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
-TICK_PLACEMENT[Granularity.FIVEANNUAL]      = {datefield: DateField.DATEFIELD_Y,  step:   5, spacing: 1000 * 86400 * 5 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
+TICK_PLACEMENT[Granularity.TWO_ANNUAL]      = {datefield: DateField.DATEFIELD_Y,  step:   2, spacing: 1000 * 86400 * 365.2524 * 2}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
+TICK_PLACEMENT[Granularity.FIVE_ANNUAL]     = {datefield: DateField.DATEFIELD_Y,  step:   5, spacing: 1000 * 86400 * 365.2524 * 5}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
 TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
 TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
 
