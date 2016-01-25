@@ -27,6 +27,9 @@ Options left to make axis-friendly.
 var axes = function() {
   this.xlabels_ = [];
   this.ylabels_ = [];
+  this.containerDivX = document.createElement('div');
+  this.containerDivY = document.createElement('div');
+  this.containerDivY2 = document.createElement('div');
 };
 
 axes.prototype.toString = function() {
@@ -99,7 +102,7 @@ axes.prototype.willDrawChart = function(e) {
       !g.getOptionForAxis('drawAxis', 'y2')) {
     return;
   }
-  
+
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x)  { return Math.round(x) + 0.5; }
   function halfDown(y){ return Math.round(y) - 0.5; }
@@ -212,7 +215,11 @@ axes.prototype.willDrawChart = function(e) {
           label.style.textAlign = 'left';
         }
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
-        containerDiv.appendChild(label);
+        if (getAxisOption == getOptions[0]) {
+          this.containerDivY.appendChild(label);
+        } else {
+          this.containerDivY2.appendChild(label);
+        }
         this.ylabels_.push(label);
       }
 
@@ -228,6 +235,16 @@ axes.prototype.willDrawChart = function(e) {
             fontSize / 2) + 'px';
       }
     }
+
+    // Add class name identifiers
+    this.containerDivY.className = 'dygraph-axis-labels-y';
+    this.containerDivY2.className = 'dygraph-axis-labels-y2';
+
+    // Prepend y-axis labels
+    containerDiv.insertBefore(this.containerDivY, containerDiv.firstChild);
+
+    // Append y2-axis labels
+    containerDiv.appendChild(this.containerDivY2);
 
     // draw a vertical line on the left to separate the chart from the labels.
     var axisX;
@@ -292,10 +309,16 @@ axes.prototype.willDrawChart = function(e) {
 
         label.style.left = left + 'px';
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
-        containerDiv.appendChild(label);
+        this.containerDivX.appendChild(label);
         this.xlabels_.push(label);
       }
     }
+
+    // Add class name identifier
+    this.containerDivX.className = 'dygraph-axis-labels-x';
+
+    // Append x-axis labels
+    containerDiv.appendChild(this.containerDivX);
 
     context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');
     context.lineWidth = g.getOptionForAxis('axisLineWidth', 'x');
