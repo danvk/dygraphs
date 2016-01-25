@@ -240,9 +240,11 @@ export var Granularity = {
   QUARTERLY: 17,
   BIANNUAL: 18,
   ANNUAL: 19,
-  DECADAL: 20,
-  CENTENNIAL: 21,
-  NUM_GRANULARITIES: 22
+  TWOANNUAL: 20,
+  FIVEANNUAL: 21,
+  DECADAL: 22,
+  CENTENNIAL: 23,
+  NUM_GRANULARITIES: 24
 }
 
 // Date components enumeration (in the order of the arguments in Date)
@@ -293,6 +295,8 @@ TICK_PLACEMENT[Granularity.MONTHLY]         = {datefield: DateField.DATEFIELD_M,
 TICK_PLACEMENT[Granularity.QUARTERLY]       = {datefield: DateField.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
 TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
 TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
+TICK_PLACEMENT[Granularity.TWOANNUAL]       = {datefield: DateField.DATEFIELD_Y,  step:   2, spacing: 1000 * 86400 * 2 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
+TICK_PLACEMENT[Granularity.FIVEANNUAL]      = {datefield: DateField.DATEFIELD_Y,  step:   5, spacing: 1000 * 86400 * 5 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
 TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
 TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
 
@@ -388,7 +392,7 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.
