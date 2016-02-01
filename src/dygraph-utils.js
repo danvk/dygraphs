@@ -193,6 +193,7 @@ Dygraph.findPos = function(obj) {
  * @private
  */
 Dygraph.pageX = function(e) {
+  if (e.isTouchOver) return (!e.touches[0] || e.touches[0].pageX < 0) ? 0 : e.touches[0].pageX;
   return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
 };
 
@@ -205,6 +206,7 @@ Dygraph.pageX = function(e) {
  * @private
  */
 Dygraph.pageY = function(e) {
+  if (e.isTouchOver) return (!e.touches[0] || e.touches[0].pageY < 0) ? 0 : e.touches[0].pageY;
   return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
 };
 
