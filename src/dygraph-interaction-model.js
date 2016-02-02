@@ -414,9 +414,6 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
     context.startTimeForDoubleTapMs = null;
   }
 
-  // save the last touch to check if it's a touchOVER
-  context.lastTouch = event;
-
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
@@ -432,7 +429,9 @@ Dygraph.Interaction.startTouch = function(event, g, context) {
   context.initialTouches = touches;
 
   if (touches.length == 1) {
-    // This is just a swipe.
+    // This is possbily a touchOVER, save the last touch to check
+    context.lastTouch = event;
+    // or This is just a swipe. 
     context.initialPinchCenter = touches[0];
     context.touchDirections = { x: true, y: true };
   } else if (touches.length >= 2) {
