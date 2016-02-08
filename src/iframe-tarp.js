@@ -23,6 +23,8 @@
  *
  * @constructor
  */
+import * as utils from './dygraph-utils';
+
 function IFrameTarp() {
   /** @type {Array.<!HTMLDivElement>} */
   this.tarps = [];
