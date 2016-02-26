@@ -56,7 +56,7 @@
 
     <script type="text/javascript">
       var candleData =
-      "Date,Open,Close,High,Low\n";
+      "Date,Open,High,Low,Close\n";
       for (var i = 0; i <= 25; i++) {
         var d = new Date(i
                          * 1000 // ms
@@ -68,11 +68,11 @@
         var min = 100;
         var max = 400;
         var open = Math.random() * (max - min) + min;
-        var close = Math.random() * (max - min) + min;
         var high = Math.max(open, close) * 1.25;
         var low = Math.min(open, close) * 0.75;
+        var close = Math.random() * (max - min) + min;
 
-        candleData += [dateStr, open, close, high, low].join(",") + "\n";
+        candleData += [dateStr, open, high, low, close].join(",") + "\n";
       }
       g1 = new Dygraph(
         document.getElementById("candlechart"),
@@ -83,7 +83,7 @@
       );
 
       var candleData =
-      "Date,Open,Close,High,Low\n";
+      "Date,Open,High,Low,Close\n";
       for (var i = 0; i <= 365 * 10; i++) {
         var d = new Date(i
                          * 1000 // ms
@@ -95,11 +95,11 @@
         var min = 100;
         var max = 400;
         var open = Math.random() * (max - min) + min;
-        var close = Math.random() * (max - min) + min;
         var high = Math.max(open, close) * 1.25;
         var low = Math.min(open, close) * 0.75;
+        var close = Math.random() * (max - min) + min;
 
-        candleData += [dateStr, open, close, high, low].join(",") + "\n";
+        candleData += [dateStr, open, high, low, close].join(",") + "\n";
       }
       g2 = new Dygraph(
         document.getElementById("candlechart-compress"),
@@ -111,7 +111,7 @@
       );
 
       var candleData =
-      "Date,Open,Close,High,Low,Avg\n";
+      "Date,Open,High,Low,Close,Avg\n";
       for (var i = 0; i <= 25; i++) {
         var d = new Date(i
                          * 1000 // ms
@@ -123,12 +123,12 @@
         var min = 100;
         var max = 400;
         var open = Math.random() * (max - min) + min;
-        var close = Math.random() * (max - min) + min;
         var high = Math.max(open, close) * 1.25;
         var low = Math.min(open, close) * 0.75;
-        var avg = (open + close + high + low) / 4;
+        var close = Math.random() * (max - min) + min;
+        var avg = (open + high + low + close) / 4;
 
-        candleData += [dateStr, open, close, high, low, avg].join(",") + "\n";
+        candleData += [dateStr, open, high, low, close, avg].join(",") + "\n";
       }
       g1 = new Dygraph(
         document.getElementById("candlechart-line"),

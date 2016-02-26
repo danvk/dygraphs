@@ -20,13 +20,13 @@
     for (var p = 0 ; p < sets[0].length; p++) {
       price = {
         open : sets[0][p].yval,
-        close : sets[1][p].yval,
-        high : sets[2][p].yval,
-        low : sets[3][p].yval,
+        high : sets[1][p].yval,
+        low : sets[2][p].yval,
+        close : sets[3][p].yval,
         openY : sets[0][p].y,
-        closeY : sets[1][p].y,
-        highY : sets[2][p].y,
-        lowY : sets[3][p].y
+        highY : sets[1][p].y,
+        lowY : sets[2][p].y,
+        closeY : sets[3][p].y
       };
       prices.push(price);
     }
