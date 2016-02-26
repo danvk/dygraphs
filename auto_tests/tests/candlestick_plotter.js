@@ -21,20 +21,20 @@ describe("candlestick-plotter", function() {
   it('testPrices', function() {
     var set = [
       [{yval: 200, y: 0.2}], // Open
-      [{yval: 300, y: 0.3}], // Close
       [{yval: 400, y: 0.4}], // High
       [{yval: 100, y: 0.1}], // Low
+      [{yval: 300, y: 0.3}] // Close
     ];
 
     assert.deepEqual([{
       open: 200,
       openY: 0.2,
-      close: 300,
-      closeY: 0.3,
       high: 400,
       highY: 0.4,
       low: 100,
-      lowY: 0.1
+      lowY: 0.1,
+      close: 300,
+      closeY: 0.3
     }], getPrices(set));
   });
 
