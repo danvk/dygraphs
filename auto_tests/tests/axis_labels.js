@@ -688,6 +688,33 @@ it('testLogScale', function() {
 });
 
 /**
+ * Verify that log scale axis range works with yRangePad.
+ *
+ * This is a regression test for https://github.com/danvk/dygraphs/issues/661 .
+ */
+it('testLogScalePad', function() {
+  var g = new Dygraph("graph",
+                      [[0, 1e-5], [1, 0.25], [2, 1], [3, 3], [4, 10]], {
+                        width: 250,
+                        height: 130,
+                        logscale: true,
+                        yRangePad: 30,
+                        axes: {y: {valueRange: [1, 10]}},
+                        labels: ['X', 'Y']
+                      });
+  var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['1', '7', '30'], nonEmptyLabels);
+
+  g.updateOptions({ yRangePad: 10, axes: {y: {valueRange: [0.25005, 3]}} });
+  nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['0.4', '1', '3'], nonEmptyLabels);
+
+  g.updateOptions({ axes: {y: {valueRange: [0.01, 3]}} });
+  nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['0.01','0.1','0.7','5'], nonEmptyLabels);
+});
+
+/**
  * Verify that include zero range is properly specified.
  */
 it('testIncludeZero', function() {

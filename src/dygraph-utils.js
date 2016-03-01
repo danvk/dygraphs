@@ -28,6 +28,39 @@ export var log10 = function(x) {
   return Math.log(x) / LN_TEN;
 };
 
+/**
+ * @private
+ * @param {number} r0
+ * @param {number} r1
+ * @param {number} pct
+ * @return {number}
+ */
+export var logRangeFraction = function(r0, r1, pct) {
+  // Computing the inverse of toPercentXCoord. The function was arrived at with
+  // the following steps:
+  //
+  // Original calcuation:
+  // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
+  //
+  // Multiply both sides by the right-side demoninator.
+  // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
+  //
+  // add log(xRange[0]) to both sides
+  // log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])) = log(x);
+  //
+  // Swap both sides of the equation,
+  // log(x) = log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0]))
+  //
+  // Use both sides as the exponent in 10^exp and we're done.
+  // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
+
+  var logr0 = log10(r0);
+  var logr1 = log10(r1);
+  var exponent = logr0 + (pct * (logr1 - logr0));
+  var value = Math.pow(LOG_SCALE, exponent);
+  return value;
+};
+
 /** A dotted line stroke pattern. */
 export var DOTTED_LINE = [2, 2];
 /** A dashed line stroke pattern. */

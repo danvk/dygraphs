@@ -632,32 +632,8 @@ Dygraph.prototype.toDataXCoord = function(x) {
   if (!this.attributes_.getForAxis("logscale", 'x')) {
     return xRange[0] + (x - area.x) / area.w * (xRange[1] - xRange[0]);
   } else {
-    // TODO: remove duplicate code?
-    // Computing the inverse of toDomCoord.
     var pct = (x - area.x) / area.w;
-
-    // Computing the inverse of toPercentXCoord. The function was arrived at with
-    // the following steps:
-    //
-    // Original calcuation:
-    // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
-    //
-    // Multiply both sides by the right-side demoninator.
-    // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
-    //
-    // add log(xRange[0]) to both sides
-    // log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])) = log(x);
-    //
-    // Swap both sides of the equation,
-    // log(x) = log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0]))
-    //
-    // Use both sides as the exponent in 10^exp and we're done.
-    // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
-    var logr0 = utils.log10(xRange[0]);
-    var logr1 = utils.log10(xRange[1]);
-    var exponent = logr0 + (pct * (logr1 - logr0));
-    var value = Math.pow(utils.LOG_SCALE, exponent);
-    return value;
+    return utils.logRangeFraction(xRange[0], xRange[1], pct);
   }
 };
 
@@ -681,32 +657,8 @@ Dygraph.prototype.toDataYCoord = function(y, axis) {
   } else {
     // Computing the inverse of toDomCoord.
     var pct = (y - area.y) / area.h;
-
-    // Computing the inverse of toPercentYCoord. The function was arrived at with
-    // the following steps:
-    //
-    // Original calcuation:
-    // pct = (log(yRange[1]) - log(y)) / (log(yRange[1]) - log(yRange[0]));
-    //
-    // Multiply both sides by the right-side demoninator.
-    // pct * (log(yRange[1]) - log(yRange[0])) = log(yRange[1]) - log(y);
-    //
-    // subtract log(yRange[1]) from both sides.
-    // (pct * (log(yRange[1]) - log(yRange[0]))) - log(yRange[1]) = -log(y);
-    //
-    // and multiply both sides by -1.
-    // log(yRange[1]) - (pct * (logr1 - log(yRange[0])) = log(y);
-    //
-    // Swap both sides of the equation,
-    // log(y) = log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0])));
-    //
-    // Use both sides as the exponent in 10^exp and we're done.
-    // y = 10 ^ (log(yRange[1]) - (pct * (log(yRange[1]) - log(yRange[0]))));
-    var logr0 = utils.log10(yRange[0]);
-    var logr1 = utils.log10(yRange[1]);
-    var exponent = logr1 - (pct * (logr1 - logr0));
-    var value = Math.pow(utils.LOG_SCALE, exponent);
-    return value;
+    // Note reversed yRange, y1 is on top with pct==0.
+    return utils.logRangeFraction(yRange[1], yRange[0], pct);
   }
 };
 
@@ -2602,25 +2554,21 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         }
       }
 
-      var maxAxisY, minAxisY;
-      if (logscale) {
-        if (ypadCompat) {
+      var maxAxisY = maxY, minAxisY = minY;
+      if (ypadCompat) {
+        if (logscale) {
           maxAxisY = maxY + ypad * span;
           minAxisY = minY;
         } else {
-          var logpad = Math.exp(Math.log(span) * ypad);
-          maxAxisY = maxY * logpad;
-          minAxisY = minY / logpad;
-        }
-      } else {
-        maxAxisY = maxY + ypad * span;
-        minAxisY = minY - ypad * span;
+          maxAxisY = maxY + ypad * span;
+          minAxisY = minY - ypad * span;
 
-        // Backwards-compatible behavior: Move the span to start or end at zero if it's
-        // close to zero, but not if avoidMinZero is set.
-        if (ypadCompat && !this.getBooleanOption("avoidMinZero")) {
-          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+          // Backwards-compatible behavior: Move the span to start or end at zero if it's
+          // close to zero, but not if avoidMinZero is set.
+          if (!this.getBooleanOption("avoidMinZero")) {
+            if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+            if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+          }
         }
       }
       axis.extremeRange = [minAxisY, maxAxisY];
@@ -2634,20 +2582,27 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       // This is a user-set value range for this axis.
       var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
       var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
-      if (!ypadCompat) {
-        if (axis.logscale) {
-          var logpad = Math.exp(Math.log(span) * ypad);
-          y0 *= logpad;
-          y1 /= logpad;
-        } else {
-          span = y1 - y0;
-          y0 -= span * ypad;
-          y1 += span * ypad;
-        }
-      }
       axis.computedValueRange = [y0, y1];
     } else {
       axis.computedValueRange = axis.extremeRange;
+    }
+    if (!axis.valueWindow && !ypadCompat) {
+      // When using yRangePad, adjust the upper/lower bounds to add
+      // padding unless the user has zoomed/panned the Y axis range.
+      if (logscale) {
+        y0 = axis.computedValueRange[0];
+        y1 = axis.computedValueRange[1];
+        var y0pct = ypad / (2 * ypad - 1);
+        var y1pct = (ypad - 1) / (2 * ypad - 1);
+        axis.computedValueRange[0] = utils.logRangeFraction(y0, y1, y0pct);
+        axis.computedValueRange[1] = utils.logRangeFraction(y0, y1, y1pct);
+      } else {
+        y0 = axis.computedValueRange[0];
+        y1 = axis.computedValueRange[1];
+        span = y1 - y0;
+        axis.computedValueRange[0] = y0 - span * ypad;
+        axis.computedValueRange[1] = y1 + span * ypad;
+      }
     }
 
 
