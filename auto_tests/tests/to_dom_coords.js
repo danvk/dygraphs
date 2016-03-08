@@ -225,6 +225,20 @@ it('testChartLogarithmic_YAxis', function() {
   assert.deepEqual([400, 0], g.toDomCoords(10, 4));
   assert.deepEqual([400, 400], g.toDomCoords(10, 1));
   assert.deepEqual([400, 200], g.toDomCoords(10, 2));
+
+  // Verify that the margins are adjusted appropriately for yRangePad.
+  g.updateOptions({yRangePad: 40});
+  assertDeepCloseTo([0, 4], g.toDataCoords(0, 40), epsilon);
+  assertDeepCloseTo([0, 1], g.toDataCoords(0, 360), epsilon);
+  assertDeepCloseTo([10, 4], g.toDataCoords(400, 40), epsilon);
+  assertDeepCloseTo([10, 1], g.toDataCoords(400, 360), epsilon);
+  assertDeepCloseTo([10, 2], g.toDataCoords(400, 200), epsilon);
+
+  assertDeepCloseTo([0, 40], g.toDomCoords(0, 4), epsilon);
+  assertDeepCloseTo([0, 360], g.toDomCoords(0, 1), epsilon);
+  assertDeepCloseTo([400, 40], g.toDomCoords(10, 4), epsilon);
+  assertDeepCloseTo([400, 360], g.toDomCoords(10, 1), epsilon);
+  assertDeepCloseTo([400, 200], g.toDomCoords(10, 2), epsilon);
 });
 
 it('testChartLogarithmic_XAxis', function() {
