@@ -220,18 +220,18 @@ DygraphCanvasRenderer._drawSeries = function(e,
       prevCanvasX = prevCanvasY = null;
     } else {
       isIsolated = false;
-      if (drawGapPoints || !prevCanvasX) {
+      if (drawGapPoints || prevCanvasX === null) {
         iter.nextIdx_ = i;
         iter.next();
         nextCanvasY = iter.hasNext ? iter.peek.canvasy : null;
 
         var isNextCanvasYNullOrNaN = nextCanvasY === null ||
             nextCanvasY != nextCanvasY;
-        isIsolated = (!prevCanvasX && isNextCanvasYNullOrNaN);
+        isIsolated = (prevCanvasX === null && isNextCanvasYNullOrNaN);
         if (drawGapPoints) {
           // Also consider a point to be "isolated" if it's adjacent to a
           // null point, excluding the graph edges.
-          if ((!first && !prevCanvasX) ||
+          if ((!first && prevCanvasX === null) ||
               (iter.hasNext && isNextCanvasYNullOrNaN)) {
             isIsolated = true;
           }
