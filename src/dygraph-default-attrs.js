@@ -44,6 +44,7 @@ var DEFAULT_ATTRS = {
   fractions: false,
   wilsonInterval: true,  // only relevant if fractions is true
   customBars: false,
+  boxplot: false,
   fillGraph: false,
   fillAlpha: 0.15,
   connectSeparatedPoints: false,
@@ -93,6 +94,7 @@ var DEFAULT_ATTRS = {
   plotter: [
     DygraphCanvasRenderer._fillPlotter,
     DygraphCanvasRenderer._errorPlotter,
+    DygraphCanvasRenderer._boxplotPlotter,
     DygraphCanvasRenderer._linePlotter
   ],
 
