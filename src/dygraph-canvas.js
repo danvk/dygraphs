@@ -615,12 +615,12 @@ DygraphCanvasRenderer._boxplotPlotter = function(e) {
     ctx.beginPath();
     ctx.moveTo(x,box_y);
     ctx.lineTo(x,whisker_y);
-    ctx.moveTo(x - width/2, whisker_y);
-    ctx.lineTo(x + width/2, whisker_y);
+    ctx.moveTo(x - width/2.0, whisker_y);
+    ctx.lineTo(x + width/2.0, whisker_y);
     ctx.stroke();
   };
   
-  var boxHalfWidth = Math.floor(getMinimalGap(points) / 3.0);
+  var boxHalfWidth = getMinimalGap(points) / 3.0;
   
   // Plot the actual points
   for (var i = 0; i < points.length; i++) {
