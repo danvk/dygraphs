@@ -864,6 +864,7 @@ var flds = ['type', 'default', 'description'];
 var valid_cats = [
  'Annotations',
  'Axis display',
+ 'Boxplot',
  'Chart labels',
  'CSV parsing',
  'Callbacks',
