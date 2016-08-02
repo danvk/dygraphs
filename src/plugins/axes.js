@@ -99,7 +99,7 @@ axes.prototype.willDrawChart = function(e) {
       !g.getOptionForAxis('drawAxis', 'y2')) {
     return;
   }
-  
+
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x)  { return Math.round(x) + 0.5; }
   function halfDown(y){ return Math.round(y) - 0.5; }
@@ -170,21 +170,20 @@ axes.prototype.willDrawChart = function(e) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
-      for (i = 0; i < layout.yticks.length; i++) {
-        tick = layout.yticks[i];
-        if (typeof(tick) == 'function') return;  // <-- when would this happen?
+      for (var tick of layout.yticks) {
+        if (tick.label === undefined) continue;  // this tick only has a grid line.
         x = area.x;
         var sgn = 1;
         var prec_axis = 'y1';
         var getAxisOption = getOptions[0];
-        if (tick[0] == 1) {  // right-side y-axis
+        if (tick.axis == 1) {  // right-side y-axis
           x = area.x + area.w;
           sgn = -1;
           prec_axis = 'y2';
           getAxisOption = getOptions[1];
         }
         var fontSize = getAxisOption('axisLabelFontSize');
-        y = area.y + tick[1] * area.h;
+        y = area.y + tick.pos * area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
@@ -194,7 +193,7 @@ axes.prototype.willDrawChart = function(e) {
         context.stroke();
         */
 
-        label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
+        label = makeDiv(tick.label, 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - fontSize / 2);
         if (top < 0) top = 0;
 
@@ -203,10 +202,10 @@ axes.prototype.willDrawChart = function(e) {
         } else {
           label.style.top = top + 'px';
         }
-        if (tick[0] === 0) {
+        if (tick.axis === 0) {
           label.style.left = (area.x - getAxisOption('axisLabelWidth') - getAxisOption('axisTickSize')) + 'px';
           label.style.textAlign = 'right';
-        } else if (tick[0] == 1) {
+        } else if (tick.axis == 1) {
           label.style.left = (area.x + area.w +
                               getAxisOption('axisTickSize')) + 'px';
           label.style.textAlign = 'left';
@@ -263,9 +262,9 @@ axes.prototype.willDrawChart = function(e) {
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       var getAxisOption = makeOptionGetter('x');
-      for (i = 0; i < layout.xticks.length; i++) {
-        tick = layout.xticks[i];
-        x = area.x + tick[0] * area.w;
+      for (var tick of layout.xticks) {
+        if (tick.label === undefined) continue;  // this tick only has a grid line.
+        x = area.x + tick.pos * area.w;
         y = area.y + area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
@@ -276,7 +275,7 @@ axes.prototype.willDrawChart = function(e) {
         context.stroke();
         */
 
-        label = makeDiv(tick[1], 'x');
+        label = makeDiv(tick.label, 'x');
         label.style.textAlign = 'center';
         label.style.top = (y + getAxisOption('axisTickSize')) + 'px';
 
