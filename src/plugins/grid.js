@@ -62,9 +62,10 @@ grid.prototype.willDrawChart = function(e) {
     ticks = layout.yticks;
     ctx.save();
     // draw grids for the different y axes
-    for (i = 0; i < ticks.length; i++) {
-      var axis = ticks[i][0];
-      if(drawGrid[axis]) {
+    for (var tick of ticks) {
+      if (!tick.has_tick) continue;
+      var axis = tick.axis;
+      if (drawGrid[axis]) {
         ctx.save();
         if (stroking[axis]) {
           if (ctx.setLineDash) ctx.setLineDash(strokePattern[axis]);
@@ -73,7 +74,7 @@ grid.prototype.willDrawChart = function(e) {
         ctx.lineWidth = lineWidths[axis];
 
         x = halfUp(area.x);
-        y = halfDown(area.y + ticks[i][1] * area.h);
+        y = halfDown(area.y + tick.pos * area.h);
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + area.w, y);
@@ -96,8 +97,9 @@ grid.prototype.willDrawChart = function(e) {
     }
     ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
     ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
-    for (i = 0; i < ticks.length; i++) {
-      x = halfUp(area.x + ticks[i][0] * area.w);
+    for (var tick of ticks) {
+      if (!tick.has_tick) continue;
+      x = halfUp(area.x + tick.pos * area.w);
       y = halfDown(area.y + area.h);
       ctx.beginPath();
       ctx.moveTo(x, y);
