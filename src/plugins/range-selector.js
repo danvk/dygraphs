@@ -262,7 +262,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   // functions, defined below.  Defining them this way (rather than with
   // "function foo() {...}" makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
-      onPanStart, onPan, onPanEnd, doPan, onCanvasHover;
+      onPanStart, onPan, onPanEnd, doPan, onCanvasHover, getZoomHandleBounds;
 
   // Touch event functions
   var onZoomHandleTouchEvent, onCanvasTouchEvent, addTouchEvents;
@@ -274,6 +274,19 @@ rangeSelector.prototype.initInteraction_ = function() {
     var xDataMax = xDataLimits[0] + (zoomHandleStatus.rightHandlePos - self.canvasRect_.x)*fact;
     return [xDataMin, xDataMax];
   };
+
+  getZoomHandleBounds = function(zoomHandleStatus) {
+    var rangeSelectorBounds = self.getOption_('rangeSelectorBounds');
+    var xDataLimits = self.dygraph_.xAxisExtremes();
+    var fact = (xDataLimits[1] - xDataLimits[0])/self.canvasRect_.w;
+    var leftHandlePos = (rangeSelectorBounds[0] === null) ?
+      zoomHandleStatus.rightHandlePos - handle.width - 3 :
+      ((rangeSelectorBounds[0] - xDataLimits[0])/fact) + self.canvasRect_.x;
+    var rightHandlePos = (rangeSelectorBounds[1] === null) ?
+      zoomHandleStatus.leftHandlePos + handle.width + 3 :
+      ((rangeSelectorBounds[1] - xDataLimits[0])/fact) + self.canvasRect_.x;
+    return [leftHandlePos, rightHandlePos];
+  }
 
   onZoomStart = function(e) {
     utils.cancelEvent(e);
@@ -304,15 +317,17 @@ rangeSelector.prototype.initInteraction_ = function() {
 
     // Move handle.
     var zoomHandleStatus = self.getZoomHandleStatus_();
+    var zoomHandleBounds = getZoomHandleBounds(zoomHandleStatus);
     var newPos;
+
     if (handle == self.leftZoomHandle_) {
       newPos = zoomHandleStatus.leftHandlePos + delX;
-      newPos = Math.min(newPos, zoomHandleStatus.rightHandlePos - handle.width - 3);
+      newPos = Math.min(newPos, zoomHandleBounds[0]);
       newPos = Math.max(newPos, self.canvasRect_.x);
     } else {
       newPos = zoomHandleStatus.rightHandlePos + delX;
+      newPos = Math.max(newPos, zoomHandleBounds[1]);
       newPos = Math.min(newPos, self.canvasRect_.x + self.canvasRect_.w);
-      newPos = Math.max(newPos, zoomHandleStatus.leftHandlePos + handle.width + 3);
     }
     var halfHandleWidth = handle.width/2;
     handle.style.left = (newPos - halfHandleWidth) + 'px';
@@ -394,14 +409,22 @@ rangeSelector.prototype.initInteraction_ = function() {
 
     // Move range view
     var zoomHandleStatus = self.getZoomHandleStatus_();
+    var zoomHandleBounds = getZoomHandleBounds(zoomHandleStatus);
     var leftHandlePos = zoomHandleStatus.leftHandlePos;
     var rightHandlePos = zoomHandleStatus.rightHandlePos;
     var rangeSize = rightHandlePos - leftHandlePos;
+
     if (leftHandlePos + delX <= self.canvasRect_.x) {
       leftHandlePos = self.canvasRect_.x;
       rightHandlePos = leftHandlePos + rangeSize;
     } else if (rightHandlePos + delX >= self.canvasRect_.x + self.canvasRect_.w) {
       rightHandlePos = self.canvasRect_.x + self.canvasRect_.w;
+      leftHandlePos = rightHandlePos - rangeSize;
+    } else if (leftHandlePos + delX > zoomHandleBounds[0]) {
+      leftHandlePos = zoomHandleBounds[0];
+      rightHandlePos = leftHandlePos + rangeSize;
+    } else if (rightHandlePos + delX < zoomHandleBounds[1]) {
+      rightHandlePos = zoomHandleBounds[1];
       leftHandlePos = rightHandlePos - rangeSize;
     } else {
       leftHandlePos += delX;

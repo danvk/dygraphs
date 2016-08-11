@@ -87,6 +87,7 @@ var DEFAULT_ATTRS = {
   rangeSelectorForegroundLineWidth: 1,
   rangeSelectorAlpha: 0.6,
   showInRangeSelector: null,
+  rangeSelectorBounds: [null, null],
 
   // The ordering here ensures that central lines always appear above any
   // fill bars/error bars.
