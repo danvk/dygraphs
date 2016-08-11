@@ -21,11 +21,9 @@ cleanupAfterEach();
 var restoreConsole;
 var logs = {};
 beforeEach(function() {
-  restoreConsole = Util.captureConsole(logs);
 });
 
 afterEach(function() {
-  restoreConsole();
 });
 
 it('testRangeSelector', function() {
@@ -209,6 +207,9 @@ it('testRangeSelectorEnablingAfterCreation', function() {
 
 // The animatedZooms option does not work with the range selector. Make sure it gets turned off.
 it('testRangeSelectorWithAnimatedZoomsOption', function() {
+  var logs = {};
+  restoreConsole = Util.captureConsole(logs);
+
   var opts = {
     width: 480,
     height: 320,
@@ -235,9 +236,12 @@ it('testRangeSelectorWithAnimatedZoomsOption', function() {
     log: [], error: [],
     warn: ["Animated zooms and range selector are not compatible; disabling animatedZooms."]
   });
+  restoreConsole();
 });
 
 it('testRangeSelectorWithAnimatedZoomsOption2', function() {
+  var logs = {};
+  restoreConsole = Util.captureConsole(logs);
   var opts = {
     width: 480,
     height: 320,
@@ -264,6 +268,7 @@ it('testRangeSelectorWithAnimatedZoomsOption2', function() {
     log: [], error: [],
     warn: ["Animated zooms and range selector are not compatible; disabling animatedZooms."]
   });
+  restoreConsole();
 });
 
 it('testRangeSelectorInteraction', function() {
@@ -629,6 +634,163 @@ it('testTwoCombinedSeriesCustomBars', function() {
     ]
   }, combinedSeries);
 });
+
+it('testRangeSelectorInteractionWithBounds', function() {
+  var opts = {
+    width: 480,
+    height: 320,
+    showRangeSelector: true,
+    labels: ['X', 'Y'],
+    rangeSelectorBounds: [3, 7],
+  };
+  var data = [
+               [1, 10],
+               [2, 20],
+               [3, 30],
+               [4, 40],
+               [5, 50],
+               [6, 60],
+               [7, 70],
+               [8, 80],
+               [9, 90]
+             ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+  assertGraphExistence(g, graph);
+  var zoomhandles = graph.getElementsByClassName('dygraph-rangesel-zoomhandle');
+  var canvasWidth = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0].width;
+  var xRange, newXRange;
+
+  // Move left zoom handle a little bit
+  xRange = g.xAxisRange().slice();
+  doZoom(0, 50, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] > xRange[0], 'left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0]);
+  assert.equal(xRange[1], newXRange[1], 'right zoomhandle should not have moved');
+
+  // Move right zoom handle a little bit
+  xRange = g.xAxisRange().slice();
+  doZoom(1, -50, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[1] < xRange[1], 'right zoomhandle should have moved: '+newXRange[1]+'<'+xRange[1]);
+  assert.equal(xRange[0], newXRange[0], 'left zoomhandle should not have moved');
+
+  // Try to move left zoom handle past boundary
+  xRange = newXRange;
+  doZoom(0, 240, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] > xRange[0], 'left zoomhandle should have moved: '+newXRange[0]+'>'+xRange[0]);
+  assert.equal(xRange[1], newXRange[1], 'right zoomhandle should not have moved');
+  assert.equal(opts.rangeSelectorBounds[0], newXRange[0], 'left zoomhandle should have moved to ' + opts.rangeSelectorBounds[0]);
+
+  // Pan left part of way the way back
+  xRange = newXRange;
+  doPan(-20, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] < xRange[0], newXRange[0]+'<'+xRange[0]);
+  assert(newXRange[1] < xRange[1], newXRange[1]+'<'+xRange[1]);
+  assert.closeTo(newXRange[1]-newXRange[0], xRange[1]-xRange[0], 0.001, 'dataWindow should be equal.'+(newXRange[1]-newXRange[0])+'='+(xRange[1]-xRange[0]));
+
+  // Pan right more than previous to test boundary against panning
+  xRange = newXRange;
+  doPan(40, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] > xRange[0], newXRange[0]+'>'+xRange[0]);
+  assert(newXRange[1] > xRange[1], newXRange[1]+'>'+xRange[1]);
+  assert.equal(opts.rangeSelectorBounds[0], newXRange[0], 'left zoomhandle should have moved to ' + opts.rangeSelectorBounds[0]);
+  assert.closeTo(newXRange[1]-newXRange[0], xRange[1]-xRange[0], 0.001, 'dataWindow should be equal.'+(newXRange[1]-newXRange[0])+'='+(xRange[1]-xRange[0]));
+
+  // Move left handle so we can test on the right boundary
+  doPan(-50, graph);
+
+  // Try to move right handle past boundary
+  xRange = g.xAxisRange().slice();
+  doZoom(1, -240, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[1] < xRange[1], 'right zoomhandle should have moved: '+newXRange[1]+'<'+xRange[1]);
+  assert.equal(xRange[0], newXRange[0], 'left zoomhandle should not have moved');
+  assert.equal(opts.rangeSelectorBounds[1], newXRange[1], 'right zoomhandle should have moved to ' + opts.rangeSelectorBounds[1]);
+
+  // Pan right part of way the way back
+  xRange = newXRange;
+  doPan(20, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] > xRange[0], newXRange[0]+'>'+xRange[0]);
+  assert(newXRange[1] > xRange[1], newXRange[1]+'>'+xRange[1]);
+  assert.closeTo(newXRange[1]-newXRange[0], xRange[1]-xRange[0], 0.001, 'dataWindow should be equal.'+(newXRange[1]-newXRange[0])+'='+(xRange[1]-xRange[0]));
+
+  // Pan left more than previous to test boundary against panning
+  xRange = newXRange;
+  doPan(-40, graph);
+  newXRange = g.xAxisRange().slice();
+  assert(newXRange[0] < xRange[0], newXRange[0]+'<'+xRange[0]);
+  assert(newXRange[1] < xRange[1], newXRange[1]+'<'+xRange[1]);
+  assert.equal(opts.rangeSelectorBounds[1], newXRange[1], 'right zoomhandle should have moved to ' + opts.rangeSelectorBounds[1]);
+  assert.closeTo(newXRange[1]-newXRange[0], xRange[1]-xRange[0], 0.001, 'dataWindow should be equal.'+(newXRange[1]-newXRange[0])+'='+(xRange[1]-xRange[0]));
+});
+
+var doZoom = function(handleId, deltaX, graph) {
+  var zoomhandle = graph.getElementsByClassName('dygraph-rangesel-zoomhandle')[handleId];
+  var x = parseInt(zoomhandle.style.left);
+  var y = parseInt(zoomhandle.style.top);
+
+  var mouseDownEvent = DygraphOps.createEvent({
+    type : 'dragstart',
+    detail: 1,
+    clientX : x,
+    clientY : y
+  });
+  zoomhandle.dispatchEvent(mouseDownEvent);
+
+  x += deltaX;
+
+  var mouseMoveEvent = DygraphOps.createEvent({
+    type : 'mousemove',
+    clientX : x,
+    clientY : y
+  });
+  zoomhandle.dispatchEvent(mouseMoveEvent);
+
+  var mouseUpEvent = DygraphOps.createEvent({
+    type : 'mouseup',
+    detail: 1,
+    clientX : x,
+    clientY : y
+  });
+  zoomhandle.dispatchEvent(mouseUpEvent);
+}
+
+var doPan = function(deltaX, graph) {
+  var zoomhandle = graph.getElementsByClassName('dygraph-rangesel-zoomhandle')[0];
+  var fgcanvas = graph.getElementsByClassName('dygraph-rangesel-fgcanvas')[0];
+  var x = parseInt(zoomhandle.style.left) + 20;
+  var y = parseInt(zoomhandle.style.top);
+
+  var mouseDownEvent = DygraphOps.createEvent({
+    type : 'mousedown',
+    detail: 1,
+    clientX : x,
+    clientY : y
+  });
+  fgcanvas.dispatchEvent(mouseDownEvent);
+
+  x += deltaX;
+
+  var mouseMoveEvent = DygraphOps.createEvent({
+    type : 'mousemove',
+    clientX : x,
+    clientY : y
+  });
+  fgcanvas.dispatchEvent(mouseMoveEvent);
+
+  var mouseUpEvent = DygraphOps.createEvent({
+    type : 'mouseup',
+    detail: 1,
+    clientX : x,
+    clientY : y
+  });
+  fgcanvas.dispatchEvent(mouseUpEvent);
+}
 
 
 var assertGraphExistence = function(g, graph) {
