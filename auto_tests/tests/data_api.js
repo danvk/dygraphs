@@ -104,7 +104,7 @@ it('testGetRowForXDuplicates', function() {
 it('testIndexFromSetNameOnInvisibleSet', function() {
   
   var localOpts = opts;
-  localOpts.visibility = [true, true];
+  localOpts.visibility = [true, false];
 
   var g = new Dygraph(graphDiv, [
     "x,y1,y2",
