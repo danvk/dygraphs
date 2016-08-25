@@ -99,4 +99,21 @@ it('testGetRowForXDuplicates', function() {
   assert.equal(5, g.getRowForX(9));
 });
 
+// indexFromSeriesName should return a value even if the series is invisible
+// In 1.1.1, if you request the last set and it's invisible, the method returns undefined.
+it('testIndexFromSetNameOnInvisibleSet', function() {
+  
+  var localOpts = opts;
+  localOpts.visibility = [true, true];
+
+  var g = new Dygraph(graphDiv, [
+    "x,y1,y2",
+    "1,1,1",
+    "2,2,2",
+    "3,3,3"
+  ].join('\n'), localOpts);
+
+  assert.equal(2, g.indexFromSetName("y2"));
+});
+
 });

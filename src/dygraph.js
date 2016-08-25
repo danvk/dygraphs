@@ -2304,15 +2304,14 @@ Dygraph.prototype.drawGraph_ = function() {
 
   this.setIndexByName_ = {};
   var labels = this.attr_("labels");
-  if (labels.length > 0) {
-    this.setIndexByName_[labels[0]] = 0;
-  }
   var dataIdx = 0;
   for (var i = 1; i < points.length; i++) {
-    this.setIndexByName_[labels[i]] = i;
     if (!this.visibility()[i - 1]) continue;
     this.layout_.addDataset(labels[i], points[i]);
     this.datasetIndex_[i] = dataIdx++;
+  }
+  for (var i = 0; i < labels.length; i++) {
+    this.setIndexByName_[labels[i]] = i;
   }
 
   this.computeYAxisRanges_(extremes);
