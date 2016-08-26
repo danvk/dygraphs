@@ -4,6 +4,7 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
 describe("data-api", function() {
 
 cleanupAfterEach();
@@ -103,7 +104,7 @@ it('testGetRowForXDuplicates', function() {
 // In 1.1.1, if you request the last set and it's invisible, the method returns undefined.
 it('testIndexFromSetNameOnInvisibleSet', function() {
   
-  var localOpts = opts;
+  var localOpts = utils.clone(opts);
   localOpts.visibility = [true, false];
 
   var g = new Dygraph(graphDiv, [
