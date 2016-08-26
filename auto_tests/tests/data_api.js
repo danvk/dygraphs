@@ -4,6 +4,7 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
 describe("data-api", function() {
 
 cleanupAfterEach();
@@ -97,6 +98,23 @@ it('testGetRowForXDuplicates', function() {
   assert.equal(0, g.getRowForX(1));
   assert.equal(null, g.getRowForX(2));
   assert.equal(5, g.getRowForX(9));
+});
+
+// indexFromSeriesName should return a value even if the series is invisible
+// In 1.1.1, if you request the last set and it's invisible, the method returns undefined.
+it('testIndexFromSetNameOnInvisibleSet', function() {
+  
+  var localOpts = utils.clone(opts);
+  localOpts.visibility = [true, false];
+
+  var g = new Dygraph(graphDiv, [
+    "x,y1,y2",
+    "1,1,1",
+    "2,2,2",
+    "3,3,3"
+  ].join('\n'), localOpts);
+
+  assert.equal(2, g.indexFromSetName("y2"));
 });
 
 });
