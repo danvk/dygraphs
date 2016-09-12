@@ -397,7 +397,7 @@ export function dateString_(time, utc) {
   var month = zeropad(m + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
   var day = zeropad(d);
-  var frac = hh * 3600 + mm * 60 + ss;
+  var frac = hh * 3600 + mm * 60 + ss + 1e-3 * ms;
   var ret = year + "/" + month + "/" + day;
   if (frac) {
     ret += " " + hmsString_(hh, mm, ss, ms);
