@@ -367,7 +367,7 @@ export function hmsString_(hh, mm, ss, ms) {
   if (ss) {
     ret += ":" + zeropad(ss);
     if (ms) {
-      ret += ":" + zeropad(ms);
+      ret += "." + ms;
     }
   }
   return ret;
