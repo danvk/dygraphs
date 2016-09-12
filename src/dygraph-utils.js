@@ -362,10 +362,13 @@ export var DateAccessorsUTC = {
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-export function hmsString_(hh, mm, ss) {
+export function hmsString_(hh, mm, ss, ms) {
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
+    if (ms) {
+      ret += ":" + zeropad(ms);
+    }
   }
   return ret;
 };
@@ -387,6 +390,7 @@ export function dateString_(time, utc) {
   var hh = accessors.getHours(date);
   var mm = accessors.getMinutes(date);
   var ss = accessors.getSeconds(date);
+  var ms = accessors.getMilliseconds(date);
   // Get a year string:
   var year = "" + y;
   // Get a 0 padded month string
@@ -396,7 +400,7 @@ export function dateString_(time, utc) {
   var frac = hh * 3600 + mm * 60 + ss;
   var ret = year + "/" + month + "/" + day;
   if (frac) {
-    ret += " " + hmsString_(hh, mm, ss);
+    ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
 };
