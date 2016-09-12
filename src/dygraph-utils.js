@@ -1217,7 +1217,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       hours = accessors.getHours(date),
       mins = accessors.getMinutes(date),
       secs = accessors.getSeconds(date),
-      millis = accessors.getSeconds(date);
+      millis = accessors.getMilliseconds(date);
 
   if (granularity >= DygraphTickers.Granularity.DECADAL) {
     return '' + year;
