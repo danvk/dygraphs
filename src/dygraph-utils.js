@@ -367,7 +367,8 @@ export function hmsString_(hh, mm, ss, ms) {
   if (ss) {
     ret += ":" + zeropad(ss);
     if (ms) {
-      ret += "." + ms;
+      var str = "" + ms;
+      ret += "." + ('000'+str).substring(str.length);
     }
   }
   return ret;
