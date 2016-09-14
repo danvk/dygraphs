@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>UTC date labels</title>
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body>
+
+    <h2>Milliseconds display in date and time labels</h2>
+
+    <p>This shows how milliseconds are displayed when present.</p>
+
+    <div id="div_loc" style="width:600px; height:200px;"></div>
+    <div id="div_utc" style="width:600px; height:200px;"></div>
+    
+    <p>You can check it by hovering over corresponding points and comparing
+    the value labels.</p>
+
+    <script type="text/javascript">
+      var values = (function () {
+        var rand10 = function () { return Math.round(10 * Math.random()); };
+        var a = [];
+        for (var n=0; n < 72; n++) {
+          a.push(rand10());
+        }
+        return a;
+      })();
+      function data(y,m,d,hh,mm,ss,ms) {
+        var a = [];
+        for (var n=0; n < 72; n++) {
+          a.push([new Date(Date.UTC(y, m, d, hh + n, mm, ss, ms)), values[n]]);
+        }
+        return a;
+      }
+      gloc = new Dygraph(
+                   document.getElementById("div_loc"),
+                   data(2009, 6, 25, 14, 34, 56, 654),
+                   {
+                     labels: ['time with ms', 'random']
+                   }
+                 );
+      gutc = new Dygraph(
+                   document.getElementById("div_utc"),
+                   data(2009, 6, 25, 14, 0, 0, 0),
+                   {
+                     labels: ['time', 'random']
+                   }
+                 );
+    </script>
+
+  </body>
+</html>
