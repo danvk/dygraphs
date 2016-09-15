@@ -1230,7 +1230,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       // e.g. '21 Jan' (%d%b)
       return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
     } else {
-      return hmsString_(hours, mins, secs);
+      return hmsString_(hours, mins, secs, millis);
     }
   }
 };
