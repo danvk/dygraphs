@@ -6,6 +6,10 @@ This is a step-by-step guide explaining how to do it.
 
 ### How-to
 
+To install dependencies, run
+
+    npm install
+
 To build dygraphs, run
 
     npm run build

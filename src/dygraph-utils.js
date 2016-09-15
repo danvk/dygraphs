@@ -362,10 +362,14 @@ export var DateAccessorsUTC = {
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-export function hmsString_(hh, mm, ss) {
+export function hmsString_(hh, mm, ss, ms) {
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
+    if (ms) {
+      var str = "" + ms;
+      ret += "." + ('000'+str).substring(str.length);
+    }
   }
   return ret;
 };
@@ -387,16 +391,17 @@ export function dateString_(time, utc) {
   var hh = accessors.getHours(date);
   var mm = accessors.getMinutes(date);
   var ss = accessors.getSeconds(date);
+  var ms = accessors.getMilliseconds(date);
   // Get a year string:
   var year = "" + y;
   // Get a 0 padded month string
   var month = zeropad(m + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
   var day = zeropad(d);
-  var frac = hh * 3600 + mm * 60 + ss;
+  var frac = hh * 3600 + mm * 60 + ss + 1e-3 * ms;
   var ret = year + "/" + month + "/" + day;
   if (frac) {
-    ret += " " + hmsString_(hh, mm, ss);
+    ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
 };
@@ -1213,7 +1218,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       hours = accessors.getHours(date),
       mins = accessors.getMinutes(date),
       secs = accessors.getSeconds(date),
-      millis = accessors.getSeconds(date);
+      millis = accessors.getMilliseconds(date);
 
   if (granularity >= DygraphTickers.Granularity.DECADAL) {
     return '' + year;
@@ -1225,7 +1230,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       // e.g. '21 Jan' (%d%b)
       return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
     } else {
-      return hmsString_(hours, mins, secs);
+      return hmsString_(hours, mins, secs, millis);
     }
   }
 };
