@@ -36,4 +36,12 @@ it('testHyphenatedDate', function() {
   assert.equal(Date.UTC(2000, 1, 2), utils.dateParser(str));
 });
 
+it('testMillisecondsDate', function() {
+  // Format: YYYY-MM-DD HH:MM:SS.MS
+
+  // Midnight February 2, 2000 14:25:42.123 UTC
+  var ts = Date.UTC(2000, 1, 2, 14, 25, 42, 123);
+  assert.equal("2000/02/02 14:25:42.123", utils.dateString_(ts, true));
+});
+
 });
