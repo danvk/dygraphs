@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>UTC date labels</title>
+    <title>Milliseconds date labels</title>
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
@@ -14,8 +14,8 @@
 
     <p>This shows how milliseconds are displayed when present.</p>
 
-    <div id="div_loc" style="width:600px; height:200px;"></div>
-    <div id="div_utc" style="width:600px; height:200px;"></div>
+    <div id="div_ms" style="width:600px; height:200px;"></div>
+    <div id="div_std" style="width:600px; height:200px;"></div>
     
     <p>You can check it by hovering over corresponding points and comparing
     the value labels.</p>
@@ -36,15 +36,15 @@
         }
         return a;
       }
-      gloc = new Dygraph(
-                   document.getElementById("div_loc"),
+      gms = new Dygraph(
+                   document.getElementById("div_ms"),
                    data(2009, 6, 25, 14, 34, 56, 654),
                    {
                      labels: ['time with ms', 'random']
                    }
                  );
-      gutc = new Dygraph(
-                   document.getElementById("div_utc"),
+      gstd = new Dygraph(
+                   document.getElementById("div_std"),
                    data(2009, 6, 25, 14, 0, 0, 0),
                    {
                      labels: ['time', 'random']
