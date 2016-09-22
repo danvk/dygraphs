@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'highlighted-series',
   {
@@ -57,9 +58,17 @@ var makeGraph = function(className, numSeries, numRows, isStacked) {
         highlightSeriesOpts: {
           strokeWidth: 3,
           strokeBorderWidth: 1,
-          highlightCircleSize: 5,
-        },
+          highlightCircleSize: 5
+        }
       });
+  var onclick = function(ev) {
+    if (g.isSeriesLocked()) {
+      g.clearSelection();
+    } else {
+      g.setSelection(g.getSelection(), g.getHighlightSeries(), true);
+    }
+  };
+  g.updateOptions({clickCallback: onclick}, true);
   g.setSelection(false, 's005');
   //console.log(g);
 };

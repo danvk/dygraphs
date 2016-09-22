@@ -83,7 +83,8 @@ var lastClickedGraph = null;
 
 function clickV3(event, g, context) {
   lastClickedGraph = g;
-  Dygraph.cancelEvent(event);
+  event.preventDefault();
+  event.stopPropagation();
 }
 
 function scrollV3(event, g, context) {
@@ -105,7 +106,8 @@ function scrollV3(event, g, context) {
   var yPct = percentages[1];
 
   zoom(g, percentage, xPct, yPct);
-  Dygraph.cancelEvent(event);
+  event.preventDefault();
+  event.stopPropagation();
 }
 
 // Adjusts [x, y] toward each other by zoomInPercentage%
@@ -149,8 +151,9 @@ function moveV4(event, g, context) {
   var RANGE = 7;
 
   if (v4Active) {
-    var canvasx = Dygraph.pageX(event) - Dygraph.findPosX(g.graphDiv);
-    var canvasy = Dygraph.pageY(event) - Dygraph.findPosY(g.graphDiv);
+    var graphPos = Dygraph.findPos(g.graphDiv);
+    var canvasx = Dygraph.pageX(event) - graphPos.x;
+    var canvasy = Dygraph.pageY(event) - graphPos.y;
 
     var rows = g.numRows();
     // Row layout:

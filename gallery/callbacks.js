@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global NoisyData */
 Gallery.register(
   'callbacks',
   {
@@ -14,19 +16,19 @@ Gallery.register(
           "<div id='status' style='width:100%; height:200px;'></div>";
     },
     run: function() {
+      var g = null;
       var showLabels = document.getElementById('showLabels');
       showLabels.onclick =  function() {
         g.updateOptions({showLabelsOnHighlight: showLabels.checked});
-      }
+      };
 
       var s = document.getElementById("status");
       var clearStatus = function() {
         s.innerHTML = '';
-      }
+      };
       document.getElementById('clear').onclick = clearStatus;
 
-      var g = null;
-      pts_info = function(e, x, pts, row) {
+      var pts_info = function(e, x, pts, row) {
         var str = "(" + x + ") ";
         for (var i = 0; i < pts.length; i++) {
           var p = pts[i];

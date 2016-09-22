@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data */
+/*global data_temp */
 Gallery.register(
   // Get a better name.
   'temperature-sf-ny',
@@ -13,7 +15,7 @@ Gallery.register(
           .join("\n");
     },
     run: function() {
-      g1 = new Dygraph(
+      new Dygraph(
           document.getElementById("noroll"),
           data_temp,
           {
@@ -24,7 +26,7 @@ Gallery.register(
             labelsDivStyles: { 'textAlign': 'right' }
           }
       );
-      g2 = new Dygraph(
+      new Dygraph(
           document.getElementById("roll14"),
           data_temp,
           {

@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>fillGraph</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
   </head>
   <body>
@@ -20,7 +16,7 @@
     <p>Filled, negatives:</p>
     <div id="div_g2" style="width:600px; height:300px;"></div>
 
-    <p>Filled, error bars:</p>
+    <p>Filled on a per-series basis:</p>
     <div id="div_g3" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript">
@@ -47,6 +43,22 @@
           return ret;
         },
         { fillGraph: true }
+      );
+
+      var g3 = new Dygraph(
+        document.getElementById("div_g3"),
+        function() {
+          var ret = "X,Y1,Y2\n";
+          for (var i = 0; i < 100; i++) {
+            ret += i + "," + i + "," + (i * (100-i) * 100/(50*50)) + "\n";
+          }
+          return ret;
+        },
+        {
+          series: {
+            Y1: { fillGraph: true }
+          }
+        }
       );
     </script>
   </body>

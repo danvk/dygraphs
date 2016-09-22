@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>isolated points</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
     <!--
     For production (minified) code, use:
     <script type="text/javascript" src="dygraph-combined.js"></script>
     -->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
   </head>
   <body>
@@ -29,8 +25,10 @@
       ],
       {
         labels: ["X", "S1", "S2" ],
-        S1: {
-          drawGapEdgePoints: true
+        series: {
+          S1: {
+            drawGapEdgePoints: true
+          }
         },
         pointSize: 4,
         showRoller: true

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>demo</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <!--
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h2>Demo</h2>
@@ -48,7 +47,8 @@
                 xlabel: 'Date',
                 ylabel: 'Count',
                 axisLineColor: 'white',
-                drawXGrid: false
+                showRangeSelector: true
+                // drawXGrid: false
               }
           );
     </script>

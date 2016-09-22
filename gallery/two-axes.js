@@ -1,9 +1,10 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'two-axes',
   {
     name: "Multiple y-axes",
     setup: function(parent) {
-      parent.innerHTML = 
+      parent.innerHTML =
           "<p>The same data with both one and two y-axes. Two y-axes:</p>" +
           "<div id='demodiv' style='width: 640; height: 350; border: 1px solid black'></div>" +
           "<p>A single y-axis:</p>" +
@@ -11,10 +12,11 @@ Gallery.register(
           "<input type='checkbox' id='check'><label for='check'> Fill?</label>";
     },
     run: function() {
-      document.getElementById('check') = function(el) {
+      var g, g2;
+      document.getElementById('check').onchange = function(el) {
         g.updateOptions( { fillGraph: el.checked } );
         g2.updateOptions( { fillGraph: el.checked } );
-      }
+      };
 
       var data = [];
       for (var i = 1; i <= 100; i++) {
@@ -62,7 +64,7 @@ Gallery.register(
             labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
             labelsKMB: true,
             ylabel: 'Primary y-axis',
-            y2label: 'Secondary y-axis',
+            y2label: 'Secondary y-axis'
           }
       );
     }

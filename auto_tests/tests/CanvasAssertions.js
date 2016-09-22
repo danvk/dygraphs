@@ -27,6 +27,36 @@
 var CanvasAssertions = {};
 
 /**
+ * Updates path attributes to match fill/stroke operations.
+ *
+ * This sets fillStyle to undefined for stroked paths,
+ * and strokeStyle to undefined for filled paths, to simplify
+ * matchers such as numLinesDrawn.
+ *
+ * @private
+ * @param {Array.<Object>} List of operations.
+ */
+CanvasAssertions.cleanPathAttrs_ = function(calls) {
+  var isStroked = true;
+  for (var i = calls.length - 1; i >= 0; --i) {
+    var call = calls[i];
+    var name = call.name;
+    if (name == 'stroke') {
+      isStroked = true;
+    } else if (name == 'fill') {
+      isStroked = false;
+    } else if (name == 'lineTo') {
+      if (isStroked) {
+        call.properties.fillStyle = undefined;
+      } else {
+        call.properties.strokeStyle = undefined;
+      }
+    }
+  }
+};
+
+
+/**
  * Assert that a line is drawn between the two points
  *
  * This merely looks for one of these four possibilities:
@@ -40,6 +70,7 @@ var CanvasAssertions = {};
  * or a function that accepts the current call.
  */
 CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   // found = 1 when prior loop found p1.
   // found = 2 when prior loop found p2.
   var priorFound = 0;
@@ -62,7 +93,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
           }
         }
         if (priorFound == 2 && matchp1) {
-          if (CanvasAssertions.match(predicate, call.properties)) {
+          if (CanvasAssertions.match(predicate, call)) {
             return;
           }
         }
@@ -84,8 +115,8 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
     }
     return s + "}";
   };
-  fail("Can't find a line drawn between " + p1 +
-      " and " + p2 + " with attributes " + toString(predicate));
+  throw "Can't find a line drawn between " + p1 +
+      " and " + p2 + " with attributes " + toString(predicate);
 };
 
 /**
@@ -101,6 +132,7 @@ CanvasAssertions.assertLineDrawn = function(proxy, p1, p2, predicate) {
  * color and stroke width.
  */
 CanvasAssertions.getLinesDrawn = function(proxy, predicate) {
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   var lastCall;
   var lines = [];
   for (var i = 0; i < proxy.calls__.length; i++) {
@@ -149,11 +181,22 @@ CanvasAssertions.assertBalancedSaveRestore = function(proxy) {
 // common case. Possibly allow predicate to be function, hash, or
 // string representing color?
 CanvasAssertions.numLinesDrawn = function(proxy, color) {
+  CanvasAssertions.cleanPathAttrs_(proxy.calls__);
   var num_lines = 0;
+  var num_potential_calls = 0;
   for (var i = 0; i < proxy.calls__.length; i++) {
     var call = proxy.calls__[i];
-    if (call.name == "lineTo" && call.properties.strokeStyle == color) {
-      num_lines++;
+    if (call.name == "beginPath") {
+      num_potential_calls = 0;
+    } else if (call.name == "lineTo") {
+      num_potential_calls++;
+    } else if (call.name == "stroke") {
+      // note: Don't simplify these two conditionals into one. The
+      // separation simplifies debugging tricky tests.
+      if (call.properties.strokeStyle == color) {
+        num_lines += num_potential_calls;
+      }
+      num_potential_calls = 0;
     }
   }
   return num_lines;
@@ -201,3 +244,5 @@ CanvasAssertions.match = function(predicate, call) {
   }
   return true;
 };
+
+export default CanvasAssertions;

@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
     <title>multi-scale</title>
-    <!--[if IE]>
-    <script type="text/javascript" src="../excanvas.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="../dygraph-dev.js"></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <style type="text/css">
     body {
       line-height: 150%;
@@ -76,10 +72,14 @@
                 title: 'Four series on different scales',
                 xlabel: 'Date',
                 ylabel: 'Count',
-                yValueFormatter: function(y, opts, series_name) {
-                  var unscaled = y * scales[series_name];
-                  if (series_name == 'sine wave') return unscaled.toPrecision(4);
-                  return unscaled;
+                axes : {
+                  y : {
+                    valueFormatter: function(y, opts, series_name) {
+                      var unscaled = y * scales[series_name];
+                      if (series_name == 'sine wave') return unscaled.toPrecision(4);
+                      return unscaled;
+                    }
+                  }
                 }
               }
           );
@@ -95,7 +95,11 @@
                 title: 'Four series on the same scale',
                 xlabel: 'Date',
                 ylabel: 'Count',
-                yAxisLabelWidth: 80
+                axes: {
+                  y: {
+                    axisLabelWidth: 80
+                  }
+                }
               }
           );
     </script>

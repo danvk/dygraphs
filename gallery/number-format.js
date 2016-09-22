@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'number-format',
   {
@@ -22,26 +23,26 @@ Gallery.register(
     run: function() {
       // Helper functions for generating an HTML table for holding the test
       // results.
-      createRow = function(columnType, columns) {
+      var createRow = function(columnType, columns) {
         var row = document.createElement('tr');
         for (var i = 0; i  < columns.length; i ++) {
           var th = document.createElement(columnType);
           var text = document.createTextNode(columns[i]);
           th.appendChild(text);
           row.appendChild(th);
-        };
+        }
         return row;
       };
 
-      createHeaderRow = function(columns) {
+      var createHeaderRow = function(columns) {
         return createRow('th', columns);
       };
 
-      createDataRow = function(columns) {
+      var createDataRow = function(columns) {
         return createRow('td', columns);
       };
 
-      createTable = function(headerColumns, dataColumnsList) {
+      var createTable = function(headerColumns, dataColumnsList) {
         var table = document.createElement('table');
         table.appendChild(createHeaderRow(headerColumns));
         for (var i = 0; i < dataColumnsList.length; i++) {
@@ -50,11 +51,11 @@ Gallery.register(
         return table;
       };
 
-      updateTable = function() {
+      var updateTable = function() {
         var headers = ['Dygraph.floatFormat()', 'toPrecision()',
                        'Dygraph.floatFormat()', 'toPrecision()'];
         var numbers = [];
-        var p = parseInt(document.getElementById('p_input').value);
+        var p = parseInt(document.getElementById('p_input').value, 10);
 
         for (var i = -10; i <= 10; i++) {
           var n = Math.pow(10, i);
@@ -66,7 +67,7 @@ Gallery.register(
 
         // Check exact values of 0.
         numbers.push([Dygraph.floatFormat(0.0, p),
-                      0.0.toPrecision(p)]);
+                      (0.0).toPrecision(p)]);
 
         var elem = document.getElementById('content');
         elem.innerHTML = '';

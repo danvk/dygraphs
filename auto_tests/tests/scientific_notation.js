@@ -5,14 +5,13 @@
  *
  * @author danvk@google.com (Dan Vanderkam)
  */
-var scientificNotationTestCase = TestCase("scientific-notation");
 
-scientificNotationTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-};
+import Dygraph from '../../src/dygraph';
+import {assertDeepCloseTo} from './custom_asserts';
 
-scientificNotationTestCase.prototype.tearDown = function() {
-};
+describe("scientific-notation", function() {
+
+cleanupAfterEach();
 
 function getXValues(g) {
   var xs = [];
@@ -22,7 +21,7 @@ function getXValues(g) {
   return xs;
 }
 
-scientificNotationTestCase.prototype.testScientificInput = function() {
+it('testScientificInput', function() {
   var data = "X,Y\n" +
       "1.0e1,-1\n" +
       "2.0e1,0\n" +
@@ -32,10 +31,10 @@ scientificNotationTestCase.prototype.testScientificInput = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assertEqualsDelta([10, 20, 30, 40], getXValues(g), 1e-6);
-};
+  assertDeepCloseTo([10, 20, 30, 40], getXValues(g), 1e-6);
+});
 
-scientificNotationTestCase.prototype.testScientificInputPlus = function() {
+it('testScientificInputPlus', function() {
   var data = "X,Y\n" +
       "1.0e+1,-1\n" +
       "2.0e+1,0\n" +
@@ -45,10 +44,10 @@ scientificNotationTestCase.prototype.testScientificInputPlus = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assertEqualsDelta([10, 20, 30, 40], getXValues(g), 1e-6);
-};
+  assertDeepCloseTo([10, 20, 30, 40], getXValues(g), 1e-6);
+});
 
-scientificNotationTestCase.prototype.testScientificInputMinus = function() {
+it('testScientificInputMinus', function() {
   var data = "X,Y\n" +
       "1.0e-1,-1\n" +
       "2.0e-1,0\n" +
@@ -58,10 +57,10 @@ scientificNotationTestCase.prototype.testScientificInputMinus = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assertEqualsDelta([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
-};
+  assertDeepCloseTo([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
+});
 
-scientificNotationTestCase.prototype.testScientificInputMinusCap = function() {
+it('testScientificInputMinusCap', function() {
   var data = "X,Y\n" +
       "1.0E-1,-1\n" +
       "2.0E-1,0\n" +
@@ -71,5 +70,7 @@ scientificNotationTestCase.prototype.testScientificInputMinusCap = function() {
 
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, {});
-  assertEqualsDelta([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
-};
+  assertDeepCloseTo([0.1, 0.2, 0.3, 0.4], getXValues(g), 1e-6);
+});
+
+});

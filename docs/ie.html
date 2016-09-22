@@ -1,0 +1,19 @@
+<!--#include virtual="header.html" -->
+
+<h2 id="ie">Internet Explorer Compatibility</h2>
+
+<p>The dygraphs library relies heavily on the HTML5 <code>&lt;canvas&gt;</code> tag, which Microsoft Internet Explorer did not traditionally support. To use Microsoft's native canvas implementation in IE9, you need to set an HTML5 doctype on your page:</p>
+
+<pre>
+&lt;!DOCTYPE html&gt;
+</pre>
+
+<p>When IE9 is in HTML5 mode, dygraphs works just like in other modern browsers.</p>
+
+<p>If you need to support older versions of IE, which do not have native
+    <code>&lt;canvas&gt;</code> implementations, you'll need to use the <a
+      href="/1.1.0/download.html">1.x series of dygraphs</a> and follow <a
+        href="/1.1.0/ie.html">its instructions for IE</a>.
+</p>
+
+<!--#include virtual="footer.html" -->

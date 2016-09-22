@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'annotations',
   {
@@ -19,7 +20,7 @@ Gallery.register(
         return "(" + ann.series + ", " + ann.x + ")";
       }
   
-      g = new Dygraph(
+      var g = new Dygraph(
               document.getElementById("g_div"),
               function() {
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
@@ -44,17 +45,17 @@ Gallery.register(
                   var html = "";
                   for (var i = 0; i < ann.length; i++) {
                     var name = nameAnnotation(ann[i]);
-                    html += "<span id='" + name + "'>"
-                    html += name + ": " + (ann[i].shortText || '(icon)')
+                    html += "<span id='" + name + "'>";
+                    html += name + ": " + (ann[i].shortText || '(icon)');
                     html += " -> " + ann[i].text + "</span><br/>";
                   }
                   document.getElementById("list").innerHTML = html;
-            }
-          }
+                }
+              }
           );
-    
+
       var last_ann = 0;
-      annotations = [];
+      var annotations = [];
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
@@ -78,10 +79,9 @@ Gallery.register(
         }
       } );
       g.setAnnotations(annotations);
-    
+
       document.getElementById('add').onclick = function() {
         var x = last_ann + 2;
-        var annnotations = g.annotations();
         annotations.push( {
           series: 'line',
           x: "200610" + x,
@@ -91,26 +91,26 @@ Gallery.register(
         } );
         last_ann = x;
         g.setAnnotations(annotations);
-      }
+      };
 
       var bottom = document.getElementById('bottom');
 
       bottom.onclick = function() {
         var to_bottom = bottom.textContent == 'Shove to bottom';
-    
+
         var anns = g.annotations();
         for (var i = 0; i < anns.length; i++) {
           anns[i].attachAtBottom = to_bottom;
         }
         g.setAnnotations(anns);
-    
+
         if (to_bottom) {
           bottom.textContent = 'Lift back up';
         } else {
           bottom.textContent = 'Shove to bottom';
         }
-      }
-    
+      };
+
       var saveBg = '';
       var num = 0;
       g.updateOptions( {

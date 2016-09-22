@@ -4,17 +4,29 @@
  * @fileoverview Regression test based on some strange customBars data.
  * @author danvk@google.com (Dan Vanderkam)
  */
-var CustomBarsTestCase = TestCase("custom-bars");
+import Dygraph from '../../src/dygraph';
+import * as utils from '../../src/dygraph-utils';
+import CanvasAssertions from './CanvasAssertions';
+import PixelSampler from './PixelSampler';
+import Proxy from './Proxy';
 
-CustomBarsTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-};
+describe("custom-bars", function() {
 
-CustomBarsTestCase.prototype.tearDown = function() {
-};
+cleanupAfterEach();
+
+var _origFunc = utils.getContext;
+beforeEach(function() {
+  utils.getContext = function(canvas) {
+    return new Proxy(_origFunc(canvas));
+  }
+});
+
+afterEach(function() {
+  utils.getContext = _origFunc;
+});
 
 // This test used to reliably produce an infinite loop.
-CustomBarsTestCase.prototype.testCustomBarsNoHang = function() {
+it('testCustomBarsNoHang', function() {
   var opts = {
     width: 480,
     height: 320,
@@ -56,4 +68,139 @@ CustomBarsTestCase.prototype.testCustomBarsNoHang = function() {
     "35,,0;22437620;0\n";
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data, opts);
-};
+});
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=201
+it('testCustomBarsZero', function() {
+  var opts = {
+    customBars: true
+  };
+  var data = "X,Y1,Y2\n" +
+"1,1;2;3,0;0;0\n" +
+"2,2;3;4,0;0;0\n" +
+"3,1;3;5,0;0;0\n";
+
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var range = g.yAxisRange();
+  assert.isTrue(range[0] <= 0, 'y-axis must include 0');
+  assert.isTrue(range[1] >= 5, 'y-axis must include 5');
+});
+
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=229
+it('testCustomBarsAtTop', function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      [
+        [1, [10, 10, 100]],
+        [1, [10, 10, 100]],
+        [2, [15, 20, 110]],
+        [3, [10, 30, 100]],
+        [4, [15, 40, 110]],
+        [5, [10,120, 100]],
+        [6, [15, 50, 110]],
+        [7, [10, 70, 100]],
+        [8, [15, 90, 110]],
+        [9, [10, 50, 100]]
+      ], {
+        width: 500, height: 350,
+        customBars: true,
+        errorBars: true,
+        axes: {
+          x: {
+            drawGrid: false,
+            drawAxis: false,
+          },
+          y: {
+            drawGrid: false,
+            drawAxis: false,
+          }
+        },
+        valueRange: [0, 120],
+        fillAlpha: 0.15,
+        colors: ['#00FF00'],
+        labels: ['X', 'Y']
+      });
+
+  var sampler = new PixelSampler(g);
+  assert.deepEqual([0, 255, 0, 38], sampler.colorAtCoordinate(5, 60));
+});
+
+// Tests that custom bars work with log scale.
+it('testCustomBarsLogScale', function() {
+  var g = new Dygraph(document.getElementById("graph"),
+      [
+        [1, [10, 10, 100]],
+        [5, [15,120, 80]],
+        [9, [10, 50, 100]]
+      ], {
+        width: 500, height: 350,
+        customBars: true,
+        errorBars: true,
+        valueRange: [1, 120],
+        axes : {
+          x : {
+            drawGrid: false,
+            drawAxis: false,
+          },
+          y : {
+            drawGrid: false,
+            drawAxis: false,
+          }
+        },
+        fillAlpha: 1.0,
+        logscale: true,
+        colors: ['#00FF00'],
+        labels: ['X', 'Y']
+      });
+
+  // The following assertions describe the sides of the custom bars, which are
+  // drawn in two halves.
+  CanvasAssertions.assertConsecutiveLinesDrawn(
+      g.hidden_ctx_,
+      [[0, 13.329014086362069],
+       [247.5, 29.64240889852502],
+       [247.5, 152.02209814465604],
+       [0, 181.66450704318103]],
+      { fillStyle: "#00ff00" });
+
+  CanvasAssertions.assertConsecutiveLinesDrawn(
+      g.hidden_ctx_,
+      [[247.5, 29.64240889852502],
+       [495, 13.329014086362069],
+       [495, 181.66450704318103],
+       [247.5, 152.02209814465604]],
+      { fillStyle: "#00ff00" });
+});
+
+it('testCustomBarsWithNegativeValuesInLogScale', function() {
+  var graph = document.getElementById("graph");
+
+  var count = 0;
+  var drawPointCallback = function() {
+    count++;
+  };
+
+  var g = new Dygraph(graph,
+      [
+        [1, [10, 20,30]],
+        [2, [5, 10, 15]],
+        [3, [-1, 5, 10]]
+      ],
+      {
+        drawPoints: true,
+        drawPointCallback: drawPointCallback,
+        customBars: true,
+        labels: ['X', 'Y']
+      });
+
+  // Normally all three points would be drawn.
+  assert.equal(3, count);
+  count = 0;
+
+  // In log scale, the third point shouldn't be shown.
+  g.updateOptions({ logscale : true });
+  assert.equal(2, count);
+});
+
+});

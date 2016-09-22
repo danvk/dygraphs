@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'color-cycle',
   {
@@ -17,8 +18,8 @@ Gallery.register(
         ['#284785', '#EE1111', '#8AE234'],
         ['#444444', '#888888', '#DDDDDD'],
         null
-      ]
-      chart = new Dygraph(document.getElementById("blah"),
+      ];
+      var chart = new Dygraph(document.getElementById("blah"),
                           "X,a,b,c\n" +
                           "10,12345,23456,34567\n" +
                           "11,12345,20123,31345\n",

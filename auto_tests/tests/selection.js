@@ -6,13 +6,14 @@
  * @author danvk@google.com (Dan Vanderkam)
  */
 
-var SelectionTestCase = TestCase("selection");
+import Dygraph from '../../src/dygraph';
+import DefaultHandler from '../../src/datahandler/default';
 
-SelectionTestCase.prototype.setUp = function() {
-  document.body.innerHTML = "<div id='graph'></div>";
-};
+describe("selection", function() {
 
-SelectionTestCase.prototype.testSetGetSelection = function() {
+cleanupAfterEach();
+
+it('testSetGetSelection', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,Y\n" +
@@ -22,14 +23,14 @@ SelectionTestCase.prototype.testSetGetSelection = function() {
   );
 
   g.setSelection(0);
-  assertEquals(0, g.getSelection());
+  assert.equal(0, g.getSelection());
   g.setSelection(1);
-  assertEquals(1, g.getSelection());
+  assert.equal(1, g.getSelection());
   g.setSelection(2);
-  assertEquals(2, g.getSelection());
-};
+  assert.equal(2, g.getSelection());
+});
 
-SelectionTestCase.prototype.testSetGetSelectionDense = function() {
+it('testSetGetSelectionDense', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph,
     "X,Y\n" +
@@ -40,11 +41,53 @@ SelectionTestCase.prototype.testSetGetSelectionDense = function() {
   );
 
   g.setSelection(0);
-  assertEquals(0, g.getSelection());
+  assert.equal(0, g.getSelection());
   g.setSelection(1);
-  assertEquals(1, g.getSelection());
+  assert.equal(1, g.getSelection());
   g.setSelection(2);
-  assertEquals(2, g.getSelection());
+  assert.equal(2, g.getSelection());
   g.setSelection(3);
-  assertEquals(3, g.getSelection());
-};
+  assert.equal(3, g.getSelection());
+});
+
+it('testSetGetSelectionMissingPoints', function() {
+  var dataHandler = function() {};
+  dataHandler.prototype = new DefaultHandler();
+  dataHandler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
+    var val = null;
+    if (setName == 'A') {
+      val = 1;
+    } else if (setName == 'B') {
+      val = 2;
+    } else if (setName == 'C') {
+      val = 3;
+    }
+    return [{
+      x: NaN,
+      y: NaN,
+      xval: val,
+      yval: val,
+      name: setName,
+      idx: val - 1
+    }];
+  };
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph,
+    "X,A,B,C\n" +
+    "1,1,,\n" +
+    "2,,2,\n" +
+    "3,,,3\n",
+    {
+      dataHandler: dataHandler
+    }
+  );
+
+  g.setSelection(0);
+  assert.equal(0, g.getSelection());
+  g.setSelection(1);
+  assert.equal(1, g.getSelection());
+  g.setSelection(2);
+  assert.equal(2, g.getSelection());
+});
+
+});

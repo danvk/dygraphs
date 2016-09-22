@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'link-interaction',
   {
@@ -26,7 +27,7 @@ Gallery.register(
                ]);
       }
       var orig_range = [ r[0][0].valueOf(), r[r.length - 1][0].valueOf() ];
-      g = new Dygraph(
+      var g = new Dygraph(
             document.getElementById("div_g"),
             r, {
               rollPeriod: 7,
@@ -38,7 +39,7 @@ Gallery.register(
             }
           );
 
-      var desired_range = null;
+      var desired_range = null, animate;
       function approach_range() {
         if (!desired_range) return;
         // go halfway there
@@ -55,20 +56,20 @@ Gallery.register(
           animate();
         }
       }
-      function animate() {
+      animate = function() {
         setTimeout(approach_range, 50);
-      }
+      };
 
       var zoom = function(res) {
         var w = g.xAxisRange();
         desired_range = [ w[0], w[0] + res * 1000 ];
         animate();
-      }
+      };
 
       var reset = function() {
         desired_range = orig_range;
         animate();
-      }
+      };
 
       var pan = function(dir) {
         var w = g.xAxisRange();
@@ -76,7 +77,7 @@ Gallery.register(
         var amount = scale * 0.25 * dir;
         desired_range = [ w[0] + amount, w[1] + amount ];
         animate();
-      }
+      };
 
       document.getElementById('hour').onclick = function() { zoom(3600); };
       document.getElementById('day').onclick = function() { zoom(86400); };

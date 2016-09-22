@@ -104,7 +104,6 @@ TextArea.prototype.show = function(title, content) {
   var textarea = this;
 
   this.keyDownListener_ = function(event) {
-    console.log(event);
     if(event.keyCode == 13) { // enter / return
       textarea.hide();
     }
@@ -113,14 +112,14 @@ TextArea.prototype.show = function(title, content) {
     }
   }
 
-  Dygraph.addEvent(document, "keydown", this.keyDownListener_);
+  document.addEventListener("keydown", this.keyDownListener_);
   this.reposition();
   window.addEventListener('resize', this.reposition, false);
   document.documentElement.addEventListener('onscroll', this.reposition);
 }
 
 TextArea.prototype.hide = function() {
-  Dygraph.removeEvent(document, "keypress", this.keyDownListener_);
+  document.removeEventListener('keypress', this.keyDownListener_);
   this.keyDownListener_ = null;
   this.elem.style.display = "none";
   this.background.style.display = "none";

@@ -1,3 +1,5 @@
+/*global Gallery,Dygraph,data,$ */
+/*jshint unused:false */
 Gallery.register(
   'color-visibility',
   {
@@ -27,8 +29,9 @@ Gallery.register(
             visibility: [true, true, true]
           });
   
-     function change(el) {
-       g.setVisibility(el.id, el.checked);
-     }
+      $('input[type=checkbox]').click(function() {
+        var el = this;
+        g.setVisibility(el.id, el.checked);
+      });
     }
   });

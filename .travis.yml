@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.10"
+
+sudo: false  # Use container-based architecture
+script: >
+    npm run build &&
+    npm run build-tests &&
+    npm run test &&
+    npm run coverage &&
+    ./scripts/post-coverage.sh &&
+    ./scripts/weigh-in.sh

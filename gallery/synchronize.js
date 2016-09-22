@@ -1,3 +1,6 @@
+/*global Gallery,Dygraph,data */
+/*jshint loopfunc:true */
+/*global NoisyData */
 Gallery.register(
   'synchronize',
   {
@@ -5,19 +8,34 @@ Gallery.register(
     title: 'Multiple graphs in sync',
     setup: function(parent) {
       parent.innerHTML = [
-        "<p>Zooming and panning on any of the charts will zoom and pan all the",
-        "others.</p>",
-        "<p><aside>(zoom: Click and drag, pan: shift-click and drag, unzoom: double-click)</aside></p>",
-        "<table><tr>",
-        "<td><div id='div1' style='width:500px; height:300px;'></div></td>",
-        "<td><div id='div3' style='width:500px; height:300px;'></div></td></tr>",
-        "<tr><td><div id='div2' style='width:500px; height:300px;'></div></td>",
-        "<td><div id='div4' style='width:500px; height:300px;'></div></td></table>"].join("\n");
+        '<style>',
+        '  .chart { width: 500px; height: 300px; }',
+        '  .chart-container { overflow: hidden; }',
+        '  #div1 { float: left; }',
+        '  #div2 { float: left; }',
+        '  #div3 { float: left; clear: left; }',
+        '  #div4 { float: left; }',
+        '</style>',
+        '<p>Zooming and panning on any of the charts will zoom and pan all the',
+        'others. Selecting points on one will select points on the others.</p>',
+        '<p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
+        'See the comments in that file for usage.</p>',
+        '<div class="chart-container">',
+        '  <div id="div1" class="chart"></div>',
+        '  <div id="div2" class="chart"></div>',
+        '  <div id="div3" class="chart"></div>',
+        '  <div id="div4" class="chart"></div>',
+        '</div>',
+        '<p>',
+        '  Synchronize what?',
+        '  <input type=checkbox id="chk-zoom" checked><label for="chk-zoom"> Zoom</label>',
+        '  <input type=checkbox id="chk-selection" checked><label for="chk-selection"> Selection</label>',
+        '</p>'
+        ].join("\n");
     },
     run: function() {
-      gs = [];
+      var gs = [];
       var blockRedraw = false;
-      var initialized = false;
       for (var i = 1; i <= 4; i++) {
         gs.push(
           new Dygraph(
@@ -25,23 +43,21 @@ Gallery.register(
             NoisyData, {
               rollPeriod: 7,
               errorBars: true,
-              drawCallback: function(me, initial) {
-                if (blockRedraw || initial) return;
-                blockRedraw = true;
-                var range = me.xAxisRange();
-                var yrange = me.yAxisRange();
-                for (var j = 0; j < 4; j++) {
-                  if (gs[j] == me) continue;
-                  gs[j].updateOptions( {
-                    dateWindow: range,
-                    valueRange: yrange
-                  } );
-                }
-                blockRedraw = false;
-              }
             }
           )
         );
       }
+      var sync = Dygraph.synchronize(gs);
+      
+      function update() {
+        var zoom = document.getElementById('chk-zoom').checked;
+        var selection = document.getElementById('chk-selection').checked;
+        sync.detach();
+        sync = Dygraph.synchronize(gs, {
+          zoom: zoom,
+          selection: selection
+        });
+      }
+      $('#chk-zoom, #chk-selection').change(update);
     }
   });

@@ -3,9 +3,15 @@
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
-var ScrollingDivTestCase = TestCase("scrolling-div");
 
-ScrollingDivTestCase.prototype.setUp = function() {
+import Dygraph from '../../src/dygraph';
+import DygraphOps from './DygraphOps';
+
+describe("scrolling-div", function() {
+
+var point, g; 
+
+beforeEach(function() {
 
 var LOREM_IPSUM =
     "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\n" +
@@ -16,12 +22,18 @@ var LOREM_IPSUM =
     "non proident, sunt in culpa qui officia deserunt mollit anim id est\n" +
     "laborum.</p>";
 
-  document.body.innerHTML = 
+  var testDiv = document.getElementById('graph');
+  testDiv.innerHTML =
       "<div id='scroller' style='overflow: scroll; height: 450px; width: 800px;'>" +
-      "<div id='graph'></div>" +
+      "<div id='graph-inner'></div>" +
       "<div style='height:100px; background-color:green;'>" + LOREM_IPSUM + " </div>" +
       "<div style='height:100px; background-color:red;'>" + LOREM_IPSUM + "</div>" +
       "</div>";
+
+  // The old test runner had an 8px margin on the body
+  // The Mocha test runner does not. We set it on the test div to keep the
+  // coordinates the same.
+  testDiv.style.margin = '8px';
 
   var data = [
       [ 10, 1 ],
@@ -33,28 +45,27 @@ var LOREM_IPSUM =
       [ 70, 4 ],
       [ 80, 6 ] ];
 
-  var graph = document.getElementById("graph");
+  var graph = document.getElementById("graph-inner");
 
-  this.point = null;
-  var self = this;
-  this.g = new Dygraph(graph, data,
+  point = null;
+  g = new Dygraph(graph, data,
           {
             labels : ['a', 'b'],
             drawPoints : true,
             highlightCircleSize : 6,
-            pointClickCallback : function(evt, point) {
-              self.point = point;
+            pointClickCallback : function(evt, p) {
+              point = p;
             }
           }
       );
   
-};
+});
 
 // This is usually something like 15, but for OS X Lion and its auto-hiding
 // scrollbars, it's 0. This is a large enough difference that we need to
 // consider it when synthesizing clicks.
 // Adapted from http://davidwalsh.name/detect-scrollbar-width
-ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
+var detectScrollbarWidth = function() {
   // Create the measurement node
   var scrollDiv = document.createElement("div");
   scrollDiv.style.width = "100px";
@@ -73,13 +84,10 @@ ScrollingDivTestCase.prototype.detectScrollbarWidth = function() {
   return scrollbarWidth;
 };
 
-ScrollingDivTestCase.prototype.tearDown = function() {
-};
-
 /**
  * This tests that when the nested div is unscrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
+it('testUnscrolledDiv', function() {
 
   document.getElementById('scroller').scrollTop = 0;
 
@@ -90,31 +98,33 @@ ScrollingDivTestCase.prototype.testUnscrolledDiv = function() {
     screenY: 320
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
 
 /**
  * This tests that when the nested div is scrolled, things work normally.
  */
-ScrollingDivTestCase.prototype.testScrolledDiv = function() {
+it('testScrolledDiv', function() {
   document.getElementById('scroller').scrollTop = 117;
 
   var clickOn4_40 = {
     clientX: 244,
-    clientY: 30 - this.detectScrollbarWidth(),
+    clientY: 30 - detectScrollbarWidth(),
     screenX: 416,
     screenY: 160
   };
 
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
-  DygraphOps.dispatchCanvasEvent(this.g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousemove' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mousedown' }));
+  DygraphOps.dispatchCanvasEvent(g, DygraphOps.createEvent(clickOn4_40, { type : 'mouseup' }));
 
-  assertEquals(40, this.point.xval);
-  assertEquals(4, this.point.yval);
-};
+  assert.equal(40, point.xval);
+  assert.equal(4, point.yval);
+});
+
+});

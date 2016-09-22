@@ -1,3 +1,4 @@
+/*global Gallery,Dygraph,data */
 Gallery.register(
   'highlighted-region',
   {
@@ -23,7 +24,7 @@ Gallery.register(
         data[i][2] += 5.0;
       }
 
-      var g = new Dygraph(
+      new Dygraph(
           document.getElementById("div_g"),
           data,
           {
