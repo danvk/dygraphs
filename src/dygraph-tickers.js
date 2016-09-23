@@ -225,8 +225,8 @@ export var Granularity = {
   FIVE_MSLY: 2,
   TEN_MSLY: 3,
   FIFTY_MSLY: 4,
-  HTH_MSLY: 5,
-  FHTH_MSLY: 6,
+  HUNDRED_MSLY: 5,
+  FIVE_HUNDRED_MSLY: 6,
   SECONDLY: 7,
   TWO_SECONDLY: 8,
   FIVE_SECONDLY: 9,
@@ -285,8 +285,8 @@ TICK_PLACEMENT[Granularity.TWO_MSLY]        = {datefield: DateField.DATEFIELD_MS
 TICK_PLACEMENT[Granularity.FIVE_MSLY]       = {datefield: DateField.DATEFIELD_MS, step:   5, spacing: 5};
 TICK_PLACEMENT[Granularity.TEN_MSLY]        = {datefield: DateField.DATEFIELD_MS, step:  10, spacing: 10};
 TICK_PLACEMENT[Granularity.FIFTY_MSLY]      = {datefield: DateField.DATEFIELD_MS, step:  50, spacing: 50};
-TICK_PLACEMENT[Granularity.HTH_MSLY]        = {datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100};
-TICK_PLACEMENT[Granularity.FHTH_MSLY]       = {datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500};
+TICK_PLACEMENT[Granularity.HUNDRED_MSLY]    = {datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100};
+TICK_PLACEMENT[Granularity.FIVE_HUNDRED_MSLY] = {datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500};
 TICK_PLACEMENT[Granularity.SECONDLY]        = {datefield: DateField.DATEFIELD_SS, step:   1, spacing: 1000 * 1};
 TICK_PLACEMENT[Granularity.TWO_SECONDLY]    = {datefield: DateField.DATEFIELD_SS, step:   2, spacing: 1000 * 2};
 TICK_PLACEMENT[Granularity.FIVE_SECONDLY]   = {datefield: DateField.DATEFIELD_SS, step:   5, spacing: 1000 * 5};
