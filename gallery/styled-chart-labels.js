@@ -6,6 +6,7 @@ Gallery.register(
     title: 'Each chart label is styled independently with CSS',
     setup: function(parent) {
       parent.innerHTML = [
+          "<style>.dygraph-legend { text-align: right; background: none; }</style>",
           "<p class='infotext'>This chart's labels are styled</p>",
           "<div class='chart' id='div_g' style='width:600px; height:300px;'></div>",
           "<p class='infotext'>This version of the chart uses the default styles:</p>",
@@ -21,10 +22,6 @@ Gallery.register(
               titleHeight: 32,
               ylabel: 'Temperature (F)',
               xlabel: 'Date (Ticks indicate the start of the indicated time period)',
-              labelsDivStyles: {
-                'text-align': 'right',
-                'background': 'none'
-              },
               strokeWidth: 1.5
             }
           );
@@ -37,10 +34,6 @@ Gallery.register(
               title: 'High and Low Temperatures (30-day average)',
               ylabel: 'Temperature (F)',
               xlabel: 'Date (Ticks indicate the start of the indicated time period)',
-              labelsDivStyles: {
-                'text-align': 'right',
-                'background': 'none'
-              },
               strokeWidth: 1.5
             }
           );

@@ -19,6 +19,8 @@ Options left to make axis-friendly.
   ('xAxisHeight')
 */
 
+import * as utils from '../dygraph-utils';
+
 /**
  * Draws the axes. This includes the labels on the x- and y-axes, as well
  * as the tick marks on the axes.
@@ -115,19 +117,14 @@ axes.prototype.willDrawChart = function(e) {
     return {
       position: 'absolute',
       fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + 'px',
-      zIndex: 10,
-      color: g.getOptionForAxis('axisLabelColor', axis),
       width: g.getOptionForAxis('axisLabelWidth', axis) + 'px',
-      // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
-      lineHeight: 'normal',  // Something other than "normal" line-height screws up label positioning.
-      overflow: 'hidden'
     };
   };
 
   var labelStyles = {
-    x : makeLabelStyle('x'),
-    y : makeLabelStyle('y'),
-    y2 : makeLabelStyle('y2')
+    x: makeLabelStyle('x'),
+    y: makeLabelStyle('y'),
+    y2: makeLabelStyle('y2')
   };
 
   var makeDiv = function(txt, axis, prec_axis) {
@@ -139,11 +136,8 @@ axes.prototype.willDrawChart = function(e) {
      */
     var div = document.createElement('div');
     var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
-    for (var name in labelStyle) {
-      if (labelStyle.hasOwnProperty(name)) {
-        div.style[name] = labelStyle[name];
-      }
-    }
+    utils.update(div.style, labelStyle);
+    // TODO: combine outer & inner divs
     var inner_div = document.createElement('div');
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
@@ -202,6 +196,7 @@ axes.prototype.willDrawChart = function(e) {
         } else {
           label.style.top = top + 'px';
         }
+        // TODO: replace these with css classes?
         if (tick.axis === 0) {
           label.style.left = (area.x - getAxisOption('axisLabelWidth') - getAxisOption('axisTickSize')) + 'px';
           label.style.textAlign = 'right';
