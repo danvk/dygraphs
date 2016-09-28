@@ -6,6 +6,7 @@ Gallery.register(
     title: 'Graph edge padding and axis position',
     setup: function(parent) {
       parent.innerHTML = (
+          "<style>.dygraph-legend { width: 100px; }</style>" +
           "<p>" +
           "  <b>Mode:</b>" +
           "    <input type='radio' name='mode'>use {x,y}RangePad</input>" +
@@ -39,7 +40,6 @@ Gallery.register(
 
           var g = new Dygraph(gdiv, data, {
               labels: ['x', 'A', 'B'],
-              labelsDivWidth: 100,
               gridLineColor: '#ccc',
               includeZero: true,
               width: 250,
