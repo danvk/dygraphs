@@ -79,16 +79,8 @@ var createRotatedDiv = function(g, box, axis, classes, html) {
   inner_div.style.height = box.w + 'px';
   inner_div.style.top = (box.h / 2 - box.w / 2) + 'px';
   inner_div.style.left = (box.w / 2 - box.h / 2) + 'px';
-  inner_div.style.textAlign = 'center';
-
-  // CSS rotation is an HTML5 feature which is not standardized. Hence every
-  // browser has its own name for the CSS style.
-  var val = 'rotate(' + (axis == 1 ? '-' : '') + '90deg)';
-  inner_div.style.transform = val;        // HTML5
-  inner_div.style.WebkitTransform = val;  // Safari/Chrome
-  inner_div.style.MozTransform = val;     // Firefox
-  inner_div.style.OTransform = val;       // Opera
-  inner_div.style.msTransform = val;      // IE9
+  // TODO: combine inner_div and class_div.
+  inner_div.className = 'dygraph-label-rotate-' + (axis == 1 ? 'right' : 'left');
 
   var class_div = document.createElement("div");
   class_div.className = classes;
@@ -108,10 +100,7 @@ chart_labels.prototype.layout = function(e) {
     // QUESTION: should this return an absolutely-positioned div instead?
     var title_rect = e.reserveSpaceTop(g.getOption('titleHeight'));
     this.title_div_ = createDivInRect(title_rect);
-    this.title_div_.style.textAlign = 'center';
     this.title_div_.style.fontSize = (g.getOption('titleHeight') - 8) + 'px';
-    this.title_div_.style.fontWeight = 'bold';
-    this.title_div_.style.zIndex = 10;
 
     var class_div = document.createElement("div");
     class_div.className = 'dygraph-label dygraph-title';
@@ -123,7 +112,6 @@ chart_labels.prototype.layout = function(e) {
   if (g.getOption('xlabel')) {
     var x_rect = e.reserveSpaceBottom(g.getOption('xLabelHeight'));
     this.xlabel_div_ = createDivInRect(x_rect);
-    this.xlabel_div_.style.textAlign = 'center';
     this.xlabel_div_.style.fontSize = (g.getOption('xLabelHeight') - 2) + 'px';
 
     var class_div = document.createElement("div");

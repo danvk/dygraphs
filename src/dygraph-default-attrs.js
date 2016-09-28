@@ -12,10 +12,6 @@ var DEFAULT_ATTRS = {
   highlightSeriesBackgroundAlpha: 0.5,
   highlightSeriesBackgroundColor: 'rgb(255, 255, 255)',
 
-  labelsDivWidth: 250,
-  labelsDivStyles: {
-    // TODO(danvk): move defaults from createStatusMessage_ here.
-  },
   labelsSeparateLines: false,
   labelsShowZeroValues: true,
   labelsKMB: false,
@@ -67,7 +63,6 @@ var DEFAULT_ATTRS = {
   axisLineColor: "black",
   axisLineWidth: 0.3,
   gridLineWidth: 0.3,
-  axisLabelColor: "black",
   axisLabelWidth: 50,
   gridLineColor: "rgb(128,128,128)",
 

@@ -1029,32 +1029,28 @@ Dygraph.prototype.getPropertiesForSeries = function(series_name) {
  */
 Dygraph.prototype.createRollInterface_ = function() {
   // Create a roller if one doesn't exist already.
-  if (!this.roller_) {
-    this.roller_ = document.createElement("input");
-    this.roller_.type = "text";
-    this.roller_.style.display = "none";
-    this.graphDiv.appendChild(this.roller_);
+  var roller = this.roller_;
+  if (!roller) {
+    this.roller_ = roller = document.createElement("input");
+    roller.type = "text";
+    roller.style.display = "none";
+    roller.className = 'dygraph-roller';
+    this.graphDiv.appendChild(roller);
   }
 
   var display = this.getBooleanOption('showRoller') ? 'block' : 'none';
 
-  var area = this.plotter_.area;
-  var textAttr = { "position": "absolute",
-                   "zIndex": 10,
+  var area = this.getArea();
+  var textAttr = {
                    "top": (area.y + area.h - 25) + "px",
                    "left": (area.x + 1) + "px",
                    "display": display
-                  };
-  this.roller_.size = "2";
-  this.roller_.value = this.rollPeriod_;
-  for (var name in textAttr) {
-    if (textAttr.hasOwnProperty(name)) {
-      this.roller_.style[name] = textAttr[name];
-    }
-  }
+                 };
+  roller.size = "2";
+  roller.value = this.rollPeriod_;
+  utils.update(roller.style, textAttr);
 
-  var dygraph = this;
-  this.roller_.onchange = function() { dygraph.adjustRoll(dygraph.roller_.value); };
+  roller.onchange = () => this.adjustRoll(roller.value);
 };
 
 /**
@@ -3340,7 +3336,6 @@ Dygraph.prototype.size = function() {
  */
 Dygraph.prototype.setAnnotations = function(ann, suppressDraw) {
   // Only add the annotation CSS rule once we know it will be used.
-  Dygraph.addAnnotationRule();
   this.annotations_ = ann;
   if (!this.layout_) {
     console.warn("Tried to setAnnotations before dygraph was ready. " +
@@ -3428,48 +3423,6 @@ Dygraph.prototype.ready = function(callback) {
   } else {
     callback.call(this, this);
   }
-};
-
-/**
- * @private
- * Adds a default style for the annotation CSS classes to the document. This is
- * only executed when annotations are actually used. It is designed to only be
- * called once -- all calls after the first will return immediately.
- */
-Dygraph.addAnnotationRule = function() {
-  // TODO(danvk): move this function into plugins/annotations.js?
-  if (Dygraph.addedAnnotationCSS) return;
-
-  var rule = "border: 1px solid black; " +
-             "background-color: white; " +
-             "text-align: center;";
-
-  var styleSheetElement = document.createElement("style");
-  styleSheetElement.type = "text/css";
-  document.getElementsByTagName("head")[0].appendChild(styleSheetElement);
-
-  // Find the first style sheet that we can access.
-  // We may not add a rule to a style sheet from another domain for security
-  // reasons. This sometimes comes up when using gviz, since the Google gviz JS
-  // adds its own style sheets from google.com.
-  for (var i = 0; i < document.styleSheets.length; i++) {
-    if (document.styleSheets[i].disabled) continue;
-    var mysheet = document.styleSheets[i];
-    try {
-      if (mysheet.insertRule) {  // Firefox
-        var idx = mysheet.cssRules ? mysheet.cssRules.length : 0;
-        mysheet.insertRule(".dygraphDefaultAnnotation { " + rule + " }", idx);
-      } else if (mysheet.addRule) {  // IE
-        mysheet.addRule(".dygraphDefaultAnnotation", rule);
-      }
-      Dygraph.addedAnnotationCSS = true;
-      return;
-    } catch(err) {
-      // Was likely a security exception.
-    }
-  }
-
-  console.warn("Unable to add default annotation CSS rule; display may be off.");
 };
 
 /**

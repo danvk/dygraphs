@@ -56,12 +56,6 @@ annotations.prototype.didDrawChart = function(e) {
   if (!points || points.length === 0) return;
 
   var containerDiv = e.canvas.parentNode;
-  var annotationStyle = {
-    "position": "absolute",
-    "fontSize": g.getOption('axisLabelFontSize') + "px",
-    "zIndex": 10,
-    "overflow": "hidden"
-  };
 
   var bindEvt = function(eventName, classEventName, pt) {
     return function(annotation_event) {
@@ -75,7 +69,7 @@ annotations.prototype.didDrawChart = function(e) {
   };
 
   // Add the annotations one-by-one.
-  var area = e.dygraph.plotter_.area;
+  var area = e.dygraph.getArea();
 
   // x-coord to sum of previous annotation's heights (used for stacking).
   var xToUsedHeight = {};
@@ -93,18 +87,18 @@ annotations.prototype.didDrawChart = function(e) {
       tick_height = a.tickHeight;
     }
 
+    // TODO: deprecate axisLabelFontSize in favor of CSS
     var div = document.createElement("div");
-    for (var name in annotationStyle) {
-      if (annotationStyle.hasOwnProperty(name)) {
-        div.style[name] = annotationStyle[name];
-      }
-    }
+    div.style['fontSize'] = g.getOption('axisLabelFontSize') + "px";
+    var className = 'dygraph-annotation';
     if (!a.hasOwnProperty('icon')) {
-      div.className = "dygraphDefaultAnnotation";
+      // camelCase class names are deprecated.
+      className += ' dygraphDefaultAnnotation dygraph-default-annotation';
     }
     if (a.hasOwnProperty('cssClass')) {
-      div.className += " " + a.cssClass;
+      className += " " + a.cssClass;
     }
+    div.className = className;
 
     var width = a.hasOwnProperty('width') ? a.width : 16;
     var height = a.hasOwnProperty('height') ? a.height : 16;
