@@ -1714,8 +1714,8 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   /*var defaultPrevented = */
   this.cascadeEvents_('select', {
-    selectedRow: this.lastRow_,
-    selectedX: this.lastx_,
+    selectedRow: this.lastRow_ === -1 ? undefined : this.lastRow_,
+    selectedX: this.lastx_ === -1 ? undefined : this.lastx_,
     selectedPoints: this.selPoints_
   });
   // TODO(danvk): use defaultPrevented here?
@@ -1791,6 +1791,10 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * Manually set the selected points and display information about them in the
  * legend. The selection can be cleared using clearSelection() and queried
  * using getSelection().
+ *
+ * To set a selected series but not a selected point, call setSelection with
+ * row=false and the selected series name.
+ *
  * @param {number} row Row number that should be highlighted (i.e. appear with
  * hover dots on the chart).
  * @param {seriesName} optional series name to highlight that series with the
