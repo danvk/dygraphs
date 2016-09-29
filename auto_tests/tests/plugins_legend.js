@@ -113,6 +113,18 @@ it('should use a legendFormatter', function() {
   assert.equal(calls[2].series[0].y, undefined);
 });
 
+it('should work with highlight series', () => {
+  var calls = [];
+  var g = new Dygraph(graph, 'X,y1,y2\n1,2,3\n', {
+    highlightSeriesOpts: {
+      strokeWidth: 3,
+    }
+  });
+
+  g.setSelection(false, 'y2');
+  assert.equal(Util.getLegend(graph), '');
+});
+
 it('should include point drawn where canvas-y is 0', function () {
     var graph = document.getElementById("graph");
     var calls = []
