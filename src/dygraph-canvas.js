@@ -68,19 +68,15 @@ var DygraphCanvasRenderer = function(dygraph, element, elementContext, layout) {
 
   // Set up a clipping area for the canvas (and the interaction canvas).
   // This ensures that we don't overdraw.
-  // on Android 3 and 4, setting a clipping area on a canvas prevents it from
-  // displaying anything.
-  if (!utils.isAndroid()) {
-    var ctx = this.dygraph_.canvas_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
+  var ctx = this.dygraph_.canvas_ctx_;
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
 
-    ctx = this.dygraph_.hidden_ctx_;
-    ctx.beginPath();
-    ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
-    ctx.clip();
-  }
+  ctx = this.dygraph_.hidden_ctx_;
+  ctx.beginPath();
+  ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
+  ctx.clip();
 };
 
 /**
@@ -544,7 +540,7 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
  * Proxy for CanvasRenderingContext2D which drops moveTo/lineTo calls which are
  * superfluous. It accumulates all movements which haven't changed the x-value
  * and only applies the two with the most extreme y-values.
- * 
+ *
  * Calls to lineTo/moveTo must have non-decreasing x-values.
  */
 DygraphCanvasRenderer._fastCanvasProxy = function(context) {

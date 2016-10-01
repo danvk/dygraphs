@@ -686,17 +686,6 @@ export function getContextPixelRatio(context) {
 };
 
 /**
- * Checks whether the user is on an Android browser.
- * Android does not fully support the <canvas> tag, e.g. w/r/t/ clipping.
- * @return {boolean}
- * @private
- */
-export function isAndroid() {
-  return (/Android/).test(navigator.userAgent);
-};
-
-
-/**
  * TODO(danvk): use @template here when it's better supported for classes.
  * @param {!Array} array
  * @param {number} start
