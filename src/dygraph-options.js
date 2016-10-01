@@ -384,8 +384,8 @@ DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
       console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://bit.ly/1tceaJs');
     } else {
       console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
-      throw "invalid option " + optionName;
     }
+    throw "invalid option " + optionName;
   }
 };
 
