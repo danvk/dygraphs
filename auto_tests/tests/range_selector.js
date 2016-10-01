@@ -630,6 +630,73 @@ it('testTwoCombinedSeriesCustomBars', function() {
   }, combinedSeries);
 });
 
+it('testHiddenSeriesExcludedFromMiniplot', function() {
+  var opts = {
+    showRangeSelector: true,
+    labels: ['X', 'Y1', 'Y2'],
+    visibility: [true, false]
+  };
+  var data = [
+      [0, 1, 3],  // average = 2
+      [5, 4, 6],  // average = 5
+      [10, 7, 9]  // average = 8
+    ];
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph, data, opts);
+
+  var rangeSelector = g.getPluginInstance_(RangeSelectorPlugin);
+  assert.isNotNull(rangeSelector);
+
+  // Invisible series (e.g. Y2) are not included in the combined series.
+  var combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
+  assert.deepEqual({
+    yMin: 1 - 6 * 0.25,  // 25% padding on single series range.
+    yMax: 7 + 6 * 0.25,
+    data: [
+      [0, 1],
+      [5, 4],
+      [10, 7]
+    ]
+  }, combinedSeries);
+
+  // If Y2 is explicitly marked to be included in the range selector,
+  // then it will be (even if it's not visible). Since we've started being
+  // explicit about marking series for inclusion, this means that Y1 is no
+  // longer included.
+  g.updateOptions({
+    series: {
+      Y2: { showInRangeSelector: true },
+    }
+  });
+  combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
+  assert.deepEqual({
+    yMin: 3 - 6 * 0.25,  // 25% padding on combined series range.
+    yMax: 9 + 6 * 0.25,
+    data: [
+      [0, 3],
+      [5, 6],
+      [10, 9]
+    ]
+  }, combinedSeries);
+
+  // If we explicitly mark Y1, too, then it also gets included.
+  g.updateOptions({
+    series: {
+      Y1: { showInRangeSelector: true },
+      Y2: { showInRangeSelector: true },
+    }
+  });
+  combinedSeries = rangeSelector.computeCombinedSeriesAndLimits_();
+  assert.deepEqual({
+    yMin: 2 - 6 * 0.25,  // 25% padding on combined series range.
+    yMax: 8 + 6 * 0.25,
+    data: [
+      [0, 2],
+      [5, 5],
+      [10, 8]
+    ]
+  }, combinedSeries);
+});
 
 var assertGraphExistence = function(g, graph) {
   assert.isNotNull(g);
