@@ -635,13 +635,23 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
   var labels = g.getLabels();
   var includeSeries = new Array(numColumns);
   var anySet = false;
+  var visibility = g.visibility();
+  var inclusion = [];
+
   for (i = 1; i < numColumns; i++) {
     var include = this.getOption_('showInRangeSelector', labels[i]);
-    includeSeries[i] = include;
+    inclusion.push(include);
     if (include !== null) anySet = true;  // it's set explicitly for this series
   }
-  if (!anySet) {
-    for (i = 0; i < includeSeries.length; i++) includeSeries[i] = true;
+
+  if (anySet) {
+    for (i = 1; i < numColumns; i++) {
+      includeSeries[i] = inclusion[i - 1];
+    }
+  } else {
+    for (i = 1; i < numColumns; i++) {
+      includeSeries[i] = visibility[i - 1];
+    }
   }
 
   // Create a combined series (average of selected series values).
