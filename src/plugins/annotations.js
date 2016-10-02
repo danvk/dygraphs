@@ -148,7 +148,8 @@ annotations.prototype.didDrawChart = function(e) {
 
     var ctx = e.drawingContext;
     ctx.save();
-    ctx.strokeStyle = g.colorsMap_[p.name];
+    ctx.strokeStyle = a.hasOwnProperty('tickColor') ? a.tickColor : g.colorsMap_[p.name];
+    ctx.lineWidth = a.hasOwnProperty('tickWidth') ? a.tickWidth : g.getOption('strokeWidth');
     ctx.beginPath();
     if (!a.attachAtBottom) {
       ctx.moveTo(p.canvasx, p.canvasy);
