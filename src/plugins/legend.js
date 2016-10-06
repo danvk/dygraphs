@@ -105,7 +105,7 @@ Legend.prototype.select = function(e) {
   if (legendMode === 'follow') {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
-    var labelsDivWidth = this.legend_div.offsetWidth;
+    var labelsDivWidth = this.legend_div_.offsetWidth;
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
