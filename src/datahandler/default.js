@@ -83,7 +83,7 @@ DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
   var firstIdx = 0, lastIdx = series.length - 1;
 
   for ( var j = firstIdx; j <= lastIdx; j++) {
-    y = series[j][1];
+    y = new Number(series[j][1]);
     if (y === null || isNaN(y))
       continue;
     if (maxY === null || y > maxY) {
