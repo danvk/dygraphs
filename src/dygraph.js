@@ -1996,6 +1996,9 @@ Dygraph.prototype.getHandlerClass_ = function() {
  * number of axes, rolling averages, etc.
  */
 Dygraph.prototype.predraw_ = function() {
+  if (!this.rawData_) {
+    return;
+  }
   var start = new Date();
 
   // Create the correct dataHandler
