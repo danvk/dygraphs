@@ -127,7 +127,7 @@ OPTIONS_REFERENCE =  // <JSON>
       ["x", "the x-coordinate of the highlighted points"],
       ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
       ["row", "integer index of the highlighted row in the data table, starting from 0"],
-      ["seriesName", "name of the highlighted series, only present if highlightSeriesOpts is set."]
+      ["seriesName", "name or names of the highlighted series, only present if highlightSeriesOpts is set."]
     ]
   },
   "drawHighlightPointCallback": {
