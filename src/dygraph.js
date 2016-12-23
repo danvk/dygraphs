@@ -2319,10 +2319,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   this.addXTicks_();
 
-  // Save the X axis zoomed status as the updateOptions call will tend to set it erroneously
-  var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
-  this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluate();
   this.renderGraph_(is_initial_draw);
 
@@ -3275,7 +3272,7 @@ Dygraph.prototype.visibility = function() {
  *
  * @param {number|number[]|object} num the series index or an array of series indices
  *                                     or a boolean array of visibility states by index
- *                                     or an object mapping series numbers, as keys, to 
+ *                                     or an object mapping series numbers, as keys, to
  *                                     visibility state (boolean values)
  * @param {boolean} value the visibility state expressed as a boolean
  */
