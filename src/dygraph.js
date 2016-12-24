@@ -336,7 +336,8 @@ Dygraph.prototype.isZoomed = function(axis) {
   const isZoomedX = !!this.dateWindow_;
   if (axis === 'x') return isZoomedX;
 
-  const isZoomedY = this.axes_.map(axis => !!axis.valueRange).indexOf(true) >= 0;
+  const isZoomedY = this.axes_.map(
+      axis => !!(axis.valueWindow || axis.valueRange)).indexOf(true) >= 0;
   if (axis === null || axis === undefined) {
     return isZoomedX || isZoomedY;
   }
@@ -1263,11 +1264,10 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   // between values, it can jerk around.)
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
-  var that = this;
-  this.doAnimatedZoom(old_window, new_window, null, null, function() {
-    if (that.getFunctionOption("zoomCallback")) {
-      that.getFunctionOption("zoomCallback").call(that,
-          minDate, maxDate, that.yAxisRanges());
+  const zoomCallback = this.getFunctionOption('zoomCallback');
+  this.doAnimatedZoom(old_window, new_window, null, null, () => {
+    if (zoomCallback) {
+      zoomCallback.call(that, minDate, maxDate, that.yAxisRanges());
     }
   });
 };
@@ -1294,12 +1294,11 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
     newValueRanges.push([low, hi]);
   }
 
-  var that = this;
-  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
-    if (that.getFunctionOption("zoomCallback")) {
-      var xRange = that.xAxisRange();
-      that.getFunctionOption("zoomCallback").call(that,
-          xRange[0], xRange[1], that.yAxisRanges());
+  const zoomCallback = this.getFunctionOption('zoomCallback');
+  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {
+    if (zoomCallback) {
+      const [minX, maxX] = this.xAxisRange();
+      zoomCallback.call(this, minX, maxX, this.yAxisRanges());
     }
   });
 };
@@ -1415,18 +1414,17 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     }
   }
 
-  var that = this;
-  utils.repeatAndCleanup(function(step) {
+  utils.repeatAndCleanup(step => {
     if (valueRanges.length) {
-      for (var i = 0; i < that.axes_.length; i++) {
+      for (var i = 0; i < this.axes_.length; i++) {
         var w = valueRanges[step][i];
-        that.axes_[i].valueWindow = [w[0], w[1]];
+        this.axes_[i].valueWindow = [w[0], w[1]];
       }
     }
     if (windows.length) {
-      that.dateWindow_ = windows[step];
+      this.dateWindow_ = windows[step];
     }
-    that.drawGraph_();
+    this.drawGraph_();
   }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
 };
 
@@ -2314,10 +2312,11 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('clearChart');
   this.plotter_.clear();
 
-  if (this.getFunctionOption('underlayCallback')) {
+  const underlayCallback = this.getFunctionOption('underlayCallback');
+  if (underlayCallback) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.getFunctionOption('underlayCallback').call(this,
+    underlayCallback.call(this,
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
@@ -2334,8 +2333,9 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   // The interaction canvas should already be empty in that situation.
   this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
 
-  if (this.getFunctionOption("drawCallback") !== null) {
-    this.getFunctionOption("drawCallback").call(this, this, is_initial_draw);
+  const drawCallback = this.getFunctionOption("drawCallback");
+  if (drawCallback !== null) {
+    drawCallback.call(this, this, is_initial_draw);
   }
   if (is_initial_draw) {
     this.readyFired_ = true;
@@ -2379,7 +2379,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     this.axes_[axis] = opts;
   }
 
-
   // Copy global valueRange option over to the first axis.
   // NOTE(konigsberg): Are these two statements necessary?
   // I tried removing it. The automated tests pass, and manually
@@ -2390,8 +2389,7 @@ Dygraph.prototype.computeYAxes_ = function() {
   if (valueWindows !== undefined) {
     // Restore valueWindow settings.
 
-    // When going from two axes back to one, we only restore
-    // one axis.
+    // When going from two axes back to one, we only restore one axis.
     var idxCount = Math.min(valueWindows.length, this.axes_.length);
 
     for (index = 0; index < idxCount; index++) {
@@ -2473,10 +2471,11 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     //
     ypadCompat = true;
     ypad = 0.1; // add 10%
-    if (this.getNumericOption('yRangePad') !== null) {
+    const yRangePad = this.getNumericOption('yRangePad');
+    if (yRangePad !== null) {
       ypadCompat = false;
       // Convert pixel padding to ratio
-      ypad = this.getNumericOption('yRangePad') / this.plotter_.area.h;
+      ypad = yRangePad / this.plotter_.area.h;
     }
 
     if (series.length === 0) {
