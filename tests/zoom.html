@@ -51,13 +51,13 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(minDate, maxDate, yRange) {
+              zoomCallback: function(minDate, maxDate, yRange) {
                 showDimensions(minDate, maxDate, yRange);
               },
-              drawCallback: function(me, initial) {
-                document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
-                document.getElementById("zoomedX").innerHTML = "" + me.isZoomed("x");
-                document.getElementById("zoomedY").innerHTML = "" + me.isZoomed("y");
+              drawCallback: function() {
+                document.getElementById("zoomed").innerHTML = "" + this.isZoomed();
+                document.getElementById("zoomedX").innerHTML = "" + this.isZoomed("x");
+                document.getElementById("zoomedY").innerHTML = "" + this.isZoomed("y");
               }
             }
           );

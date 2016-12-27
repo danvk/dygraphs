@@ -841,7 +841,6 @@ var pixelSafeOptions = {
   'highlightCallback': true,
   'highlightCircleSize': true,
   'interactionModel': true,
-  'isZoomedIgnoreProgrammaticZoom': true,
   'labelsDiv': true,
   'labelsKMB': true,
   'labelsKMG2': true,

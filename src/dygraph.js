@@ -154,10 +154,6 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   this.annotations_ = [];
 
-  // Zoomed indicators - These indicate when the graph has been zoomed and on what axis.
-  this.zoomed_x_ = false;
-  this.zoomed_y_ = false;
-
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
   div.innerHTML = "";
@@ -333,16 +329,20 @@ Dygraph.prototype.getPluginInstance_ = function(type) {
  * Axis is an optional parameter. Can be set to 'x' or 'y'.
  *
  * The zoomed status for an axis is set whenever a user zooms using the mouse
- * or when the dateWindow or valueRange are updated (unless the
- * isZoomedIgnoreProgrammaticZoom option is also specified).
+ * or when the dateWindow or valueRange are updated. Double-clicking or calling
+ * resetZoom() resets the zoom status for the chart.
  */
 Dygraph.prototype.isZoomed = function(axis) {
+  const isZoomedX = !!this.dateWindow_;
+  if (axis === 'x') return isZoomedX;
+
+  const isZoomedY = this.axes_.map(axis => !!axis.valueRange).indexOf(true) >= 0;
   if (axis === null || axis === undefined) {
-    return this.zoomed_x_ || this.zoomed_y_;
+    return isZoomedX || isZoomedY;
   }
-  if (axis === 'x') return this.zoomed_x_;
-  if (axis === 'y') return this.zoomed_y_;
-  throw "axis parameter is [" + axis + "] must be null, 'x' or 'y'.";
+  if (axis === 'y') return isZoomedY;
+
+  throw new Error(`axis parameter is [${axis}] must be null, 'x' or 'y'.`);
 };
 
 /**
@@ -510,8 +510,7 @@ Dygraph.prototype.xAxisRange = function() {
 };
 
 /**
- * Returns the lower- and upper-bound x-axis values of the
- * data set.
+ * Returns the lower- and upper-bound x-axis values of the data set.
  */
 Dygraph.prototype.xAxisExtremes = function() {
   var pad = this.getNumericOption('xRangePad') / this.plotter_.area.w;
@@ -528,6 +527,22 @@ Dygraph.prototype.xAxisExtremes = function() {
   }
   return [left, right];
 };
+
+/**
+ * Returns the lower- and upper-bound y-axis values for each axis. These are
+ * the ranges you'll get if you double-click to zoom out or call resetZoom().
+ * The return value is an array of [low, high] tuples, one for each y-axis.
+ */
+Dygraph.prototype.yAxisExtremes = function() {
+  // TODO(danvk): this is pretty inefficient
+  const packed = this.gatherDatasets_(this.rolledSeries_, null);
+  const { extremes } = packed;
+  const saveAxes = this.axes_;
+  this.computeYAxisRanges_(extremes);
+  const newAxes = this.axes_;
+  this.axes_ = saveAxes;
+  return newAxes.map(axis => axis.extremeRange);
+}
 
 /**
  * Returns the currently-visible y-range for an axis. This can be affected by
@@ -1264,12 +1279,10 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   // between values, it can jerk around.)
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
-  this.zoomed_x_ = true;
-  var that = this;
-  this.doAnimatedZoom(old_window, new_window, null, null, function() {
-    if (that.getFunctionOption("zoomCallback")) {
-      that.getFunctionOption("zoomCallback").call(that,
-          minDate, maxDate, that.yAxisRanges());
+  const zoomCallback = this.getFunctionOption('zoomCallback');
+  this.doAnimatedZoom(old_window, new_window, null, null, () => {
+    if (zoomCallback) {
+      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
     }
   });
 };
@@ -1296,13 +1309,11 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
     newValueRanges.push([low, hi]);
   }
 
-  this.zoomed_y_ = true;
-  var that = this;
-  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function() {
-    if (that.getFunctionOption("zoomCallback")) {
-      var xRange = that.xAxisRange();
-      that.getFunctionOption("zoomCallback").call(that,
-          xRange[0], xRange[1], that.yAxisRanges());
+  const zoomCallback = this.getFunctionOption('zoomCallback');
+  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {
+    if (zoomCallback) {
+      const [minX, maxX] = this.xAxisRange();
+      zoomCallback.call(this, minX, maxX, this.yAxisRanges());
     }
   });
 };
@@ -1322,89 +1333,56 @@ Dygraph.zoomAnimationFunction = function(frame, numFrames) {
  * double-clicking on the graph.
  */
 Dygraph.prototype.resetZoom = function() {
-  var dirty = false, dirtyX = false, dirtyY = false;
-  if (this.dateWindow_ !== null) {
-    dirty = true;
-    dirtyX = true;
-  }
-
-  for (var i = 0; i < this.axes_.length; i++) {
-    if (typeof(this.axes_[i].valueWindow) !== 'undefined' && this.axes_[i].valueWindow !== null) {
-      dirty = true;
-      dirtyY = true;
-    }
-  }
+  const dirtyX = this.isZoomed('x');
+  const dirtyY = this.isZoomed('y');
+  const dirty = dirtyX || dirtyY;
 
   // Clear any selection, since it's likely to be drawn in the wrong place.
   this.clearSelection();
 
-  if (dirty) {
-    this.zoomed_x_ = false;
-    this.zoomed_y_ = false;
+  if (!dirty) return;
 
-    //calculate extremes to avoid lack of padding on reset.
-    var extremes = this.xAxisExtremes();
-    var minDate = extremes[0],
-        maxDate = extremes[1];
+  // Calculate extremes to avoid lack of padding on reset.
+  const [minDate, maxDate] = this.xAxisExtremes();
 
-    // TODO(danvk): merge this block w/ the code below.
-    if (!this.getBooleanOption("animatedZooms")) {
-      this.dateWindow_ = null;
-      for (i = 0; i < this.axes_.length; i++) {
-        if (this.axes_[i].valueWindow !== null) {
-          delete this.axes_[i].valueWindow;
-        }
-      }
-      this.drawGraph_();
-      if (this.getFunctionOption("zoomCallback")) {
-        this.getFunctionOption("zoomCallback").call(this,
-            minDate, maxDate, this.yAxisRanges());
-      }
-      return;
+  const animatedZooms = this.getBooleanOption('animatedZooms');
+  const zoomCallback = this.getFunctionOption('zoomCallback');
+
+  // TODO(danvk): merge this block w/ the code below.
+  if (!animatedZooms) {
+    this.dateWindow_ = null;
+    for (const axis of this.axes_) {
+      if (axis.valueRange) delete axis.valueRange;
     }
 
-    var oldWindow=null, newWindow=null, oldValueRanges=null, newValueRanges=null;
-    if (dirtyX) {
-      oldWindow = this.xAxisRange();
-      newWindow = [minDate, maxDate];
+    this.drawGraph_();
+    if (zoomCallback) {
+      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
     }
-
-    if (dirtyY) {
-      oldValueRanges = this.yAxisRanges();
-      // TODO(danvk): this is pretty inefficient
-      var packed = this.gatherDatasets_(this.rolledSeries_, null);
-      var extremes = packed.extremes;
-
-      // this has the side-effect of modifying this.axes_.
-      // this doesn't make much sense in this context, but it's convenient (we
-      // need this.axes_[*].extremeValues) and not harmful since we'll be
-      // calling drawGraph_ shortly, which clobbers these values.
-      this.computeYAxisRanges_(extremes);
-
-      newValueRanges = [];
-      for (i = 0; i < this.axes_.length; i++) {
-        var axis = this.axes_[i];
-        newValueRanges.push((axis.valueRange !== null &&
-                             axis.valueRange !== undefined) ?
-                            axis.valueRange : axis.extremeRange);
-      }
-    }
-
-    var that = this;
-    this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
-        function() {
-          that.dateWindow_ = null;
-          for (var i = 0; i < that.axes_.length; i++) {
-            if (that.axes_[i].valueWindow !== null) {
-              delete that.axes_[i].valueWindow;
-            }
-          }
-          if (that.getFunctionOption("zoomCallback")) {
-            that.getFunctionOption("zoomCallback").call(that,
-                minDate, maxDate, that.yAxisRanges());
-          }
-        });
+    return;
   }
+
+  var oldWindow=null, newWindow=null, oldValueRanges=null, newValueRanges=null;
+  if (dirtyX) {
+    oldWindow = this.xAxisRange();
+    newWindow = [minDate, maxDate];
+  }
+
+  if (dirtyY) {
+    oldValueRanges = this.yAxisRanges();
+    newValueRanges = this.yAxisExtremes();
+  }
+
+  this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
+      () => {
+        this.dateWindow_ = null;
+        for (const axis of this.axes_) {
+          if (axis.valueRange) delete axis.valueRange;
+        }
+        if (zoomCallback) {
+          zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+        }
+      });
 };
 
 /**
@@ -1440,18 +1418,17 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     }
   }
 
-  var that = this;
-  utils.repeatAndCleanup(function(step) {
+  utils.repeatAndCleanup(step => {
     if (valueRanges.length) {
-      for (var i = 0; i < that.axes_.length; i++) {
+      for (var i = 0; i < this.axes_.length; i++) {
         var w = valueRanges[step][i];
-        that.axes_[i].valueWindow = [w[0], w[1]];
+        this.axes_[i].valueRange = [w[0], w[1]];
       }
     }
     if (windows.length) {
-      that.dateWindow_ = windows[step];
+      this.dateWindow_ = windows[step];
     }
-    that.drawGraph_();
+    this.drawGraph_();
   }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
 };
 
@@ -2319,10 +2296,7 @@ Dygraph.prototype.drawGraph_ = function() {
 
   this.addXTicks_();
 
-  // Save the X axis zoomed status as the updateOptions call will tend to set it erroneously
-  var tmp_zoomed_x = this.zoomed_x_;
   // Tell PlotKit to use this new data and render itself
-  this.zoomed_x_ = tmp_zoomed_x;
   this.layout_.evaluate();
   this.renderGraph_(is_initial_draw);
 
@@ -2342,10 +2316,11 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   this.cascadeEvents_('clearChart');
   this.plotter_.clear();
 
-  if (this.getFunctionOption('underlayCallback')) {
+  const underlayCallback = this.getFunctionOption('underlayCallback');
+  if (underlayCallback) {
     // NOTE: we pass the dygraph object to this callback twice to avoid breaking
     // users who expect a deprecated form of this callback.
-    this.getFunctionOption('underlayCallback').call(this,
+    underlayCallback.call(this,
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
@@ -2362,8 +2337,9 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
   // The interaction canvas should already be empty in that situation.
   this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
 
-  if (this.getFunctionOption("drawCallback") !== null) {
-    this.getFunctionOption("drawCallback").call(this, this, is_initial_draw);
+  const drawCallback = this.getFunctionOption("drawCallback");
+  if (drawCallback !== null) {
+    drawCallback.call(this, this, is_initial_draw);
   }
   if (is_initial_draw) {
     this.readyFired_ = true;
@@ -2385,15 +2361,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  // Preserve valueWindow settings if they exist, and if the user hasn't
-  // specified a new valueRange.
-  var valueWindows, axis, index, opts, v;
-  if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
-    valueWindows = [];
-    for (index = 0; index < this.axes_.length; index++) {
-      valueWindows.push(this.axes_[index].valueWindow);
-    }
-  }
+  var axis, index, opts, v;
 
   // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
   // data computation as well as options storage.
@@ -2405,26 +2373,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     opts = { g : this };
     utils.update(opts, this.attributes_.axisOptions(axis));
     this.axes_[axis] = opts;
-  }
-
-
-  // Copy global valueRange option over to the first axis.
-  // NOTE(konigsberg): Are these two statements necessary?
-  // I tried removing it. The automated tests pass, and manually
-  // messing with tests/zoom.html showed no trouble.
-  v = this.attr_('valueRange');
-  if (v) this.axes_[0].valueRange = v;
-
-  if (valueWindows !== undefined) {
-    // Restore valueWindow settings.
-
-    // When going from two axes back to one, we only restore
-    // one axis.
-    var idxCount = Math.min(valueWindows.length, this.axes_.length);
-
-    for (index = 0; index < idxCount; index++) {
-      this.axes_[index].valueWindow = valueWindows[index];
-    }
   }
 
   for (axis = 0; axis < this.axes_.length; axis++) {
@@ -2501,10 +2449,11 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     //
     ypadCompat = true;
     ypad = 0.1; // add 10%
-    if (this.getNumericOption('yRangePad') !== null) {
+    const yRangePad = this.getNumericOption('yRangePad');
+    if (yRangePad !== null) {
       ypadCompat = false;
       // Convert pixel padding to ratio
-      ypad = this.getNumericOption('yRangePad') / this.plotter_.area.h;
+      ypad = yRangePad / this.plotter_.area.h;
     }
 
     if (series.length === 0) {
@@ -2572,12 +2521,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       }
       axis.extremeRange = [minAxisY, maxAxisY];
     }
-    if (axis.valueWindow) {
-      // This is only set if the user has zoomed on the y-axis. It is never set
-      // by a user. It takes precedence over axis.valueRange because, if you set
-      // valueRange, you'd still expect to be able to pan.
-      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
-    } else if (axis.valueRange) {
+    if (axis.valueRange) {
       // This is a user-set value range for this axis.
       var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
       var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
@@ -2585,7 +2529,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
-    if (!axis.valueWindow && !ypadCompat) {
+    if (!ypadCompat) {
       // When using yRangePad, adjust the upper/lower bounds to add
       // padding unless the user has zoomed/panned the Y axis range.
       if (logscale) {
@@ -3145,12 +3089,6 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   }
   if ('dateWindow' in attrs) {
     this.dateWindow_ = attrs.dateWindow;
-    if (!('isZoomedIgnoreProgrammaticZoom' in attrs)) {
-      this.zoomed_x_ = (attrs.dateWindow !== null);
-    }
-  }
-  if ('valueRange' in attrs && !('isZoomedIgnoreProgrammaticZoom' in attrs)) {
-    this.zoomed_y_ = (attrs.valueRange !== null);
   }
 
   // TODO(danvk): validate per-series options.
@@ -3275,7 +3213,7 @@ Dygraph.prototype.visibility = function() {
  *
  * @param {number|number[]|object} num the series index or an array of series indices
  *                                     or a boolean array of visibility states by index
- *                                     or an object mapping series numbers, as keys, to 
+ *                                     or an object mapping series numbers, as keys, to
  *                                     visibility state (boolean values)
  * @param {boolean} value the visibility state expressed as a boolean
  */
