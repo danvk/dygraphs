@@ -43,6 +43,10 @@
 
  */
 
+// Polyfills
+import 'core-js/es6/symbol';
+import 'core-js/fn/symbol/iterator';
+
 import DygraphLayout from './dygraph-layout';
 import DygraphCanvasRenderer from './dygraph-canvas';
 import DygraphOptions from './dygraph-options';
