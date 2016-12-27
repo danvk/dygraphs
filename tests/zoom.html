@@ -55,7 +55,6 @@
                 showDimensions(minDate, maxDate, yRange);
               },
               drawCallback: function() {
-                console.log(this.dateWindow_, this.axes_[0].valueWindow);
                 document.getElementById("zoomed").innerHTML = "" + this.isZoomed();
                 document.getElementById("zoomedX").innerHTML = "" + this.isZoomed("x");
                 document.getElementById("zoomedY").innerHTML = "" + this.isZoomed("y");

@@ -635,12 +635,6 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "18",
     "description": "Width of the div which contains the y-axis label. Since the y-axis label appears rotated 90 degrees, this actually affects the height of its div."
   },
-  "isZoomedIgnoreProgrammaticZoom" : {
-    "default": "false",
-    "labels": ["Zooming"],
-    "type": "boolean",
-    "description" : "When this option is passed to updateOptions() along with either the <code>dateWindow</code> or <code>valueRange</code> options, the zoom flags are not changed to reflect a zoomed state. This is primarily useful for when the display area of a chart is changed programmatically and also where manual zooming is allowed and use is made of the <code>isZoomed</code> method to determine this."
-  },
   "drawGrid": {
     "default": "true for x and y, false for y2",
     "labels": ["Grid"],
