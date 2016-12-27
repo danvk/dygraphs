@@ -529,6 +529,22 @@ Dygraph.prototype.xAxisExtremes = function() {
 };
 
 /**
+ * Returns the lower- and upper-bound y-axis values for each axis. These are
+ * the ranges you'll get if you double-click to zoom out or call resetZoom().
+ * The return value is an array of [low, high] tuples, one for each y-axis.
+ */
+Dygraph.prototype.yAxisExtremes = function() {
+  // TODO(danvk): this is pretty inefficient
+  const packed = this.gatherDatasets_(this.rolledSeries_, null);
+  const { extremes } = packed;
+  const saveAxes = this.axes_;
+  this.computeYAxisRanges_(extremes);
+  const newAxes = this.axes_;
+  this.axes_ = saveAxes;
+  return newAxes.map(axis => axis.extremeRange);
+}
+
+/**
  * Returns the currently-visible y-range for an axis. This can be affected by
  * zooming, panning or a call to updateOptions. Axis indices are zero-based. If
  * called with no arguments, returns the range of the first axis.
@@ -1354,18 +1370,7 @@ Dygraph.prototype.resetZoom = function() {
 
   if (dirtyY) {
     oldValueRanges = this.yAxisRanges();
-    // TODO(danvk): this is pretty inefficient
-    var packed = this.gatherDatasets_(this.rolledSeries_, null);
-    var extremes = packed.extremes;
-
-    // this has the side-effect of modifying this.axes_.
-    // this doesn't make much sense in this context, but it's convenient (we
-    // need this.axes_[*].extremeValues) and not harmful since we'll be
-    // calling drawGraph_ shortly, which clobbers these values.
-    this.computeYAxisRanges_(extremes);
-
-    newValueRanges = this.axes_.map(
-        axis => axis.valueRange ? axis.valueRange : axis.extremeRange);
+    newValueRanges = this.yAxisExtremes();
   }
 
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
@@ -1375,7 +1380,7 @@ Dygraph.prototype.resetZoom = function() {
           if (axis.valueRange) delete axis.valueRange;
         }
         if (zoomCallback) {
-          zoomCallback(this, minDate, maxDate, this.yAxisRanges());
+          zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
         }
       });
 };
@@ -2542,12 +2547,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
       }
       axis.extremeRange = [minAxisY, maxAxisY];
     }
-    if (axis.valueWindow) {
-      // This is only set if the user has zoomed on the y-axis. It is never set
-      // by a user. It takes precedence over axis.valueRange because, if you set
-      // valueRange, you'd still expect to be able to pan.
-      axis.computedValueRange = [axis.valueWindow[0], axis.valueWindow[1]];
-    } else if (axis.valueRange) {
+    if (axis.valueRange) {
       // This is a user-set value range for this axis.
       var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
       var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
@@ -2555,7 +2555,7 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     } else {
       axis.computedValueRange = axis.extremeRange;
     }
-    if (!axis.valueWindow && !ypadCompat) {
+    if (!ypadCompat) {
       // When using yRangePad, adjust the upper/lower bounds to add
       // padding unless the user has zoomed/panned the Y axis range.
       if (logscale) {

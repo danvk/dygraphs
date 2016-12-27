@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for the interaction model.
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
@@ -344,7 +344,7 @@ it('testCorrectAxisValueRangeAfterUnzoom', function() {
         dateWindow: [1, 9],
         animatedZooms:false
       });
-  
+
   // Zoom x axis
   DygraphOps.dispatchMouseDown_Point(g, 100, 100);
   DygraphOps.dispatchMouseMove_Point(g, 130, 100);
@@ -356,13 +356,13 @@ it('testCorrectAxisValueRangeAfterUnzoom', function() {
   DygraphOps.dispatchMouseUp_Point(g, 100, 130);
   var currentYAxisRange = g.yAxisRange();
   var currentXAxisRange = g.xAxisRange();
-  
+
   //check that the range for the axis has changed
   assert.notEqual(1, currentXAxisRange[0]);
   assert.notEqual(10, currentXAxisRange[1]);
   assert.notEqual(1, currentYAxisRange[0]);
   assert.notEqual(50, currentYAxisRange[1]);
-  
+
   // unzoom by doubleclick.  This is really the order in which a browser
   // generates events, and we depend on it.
   DygraphOps.dispatchMouseDown_Point(g, 10, 10);
@@ -370,13 +370,10 @@ it('testCorrectAxisValueRangeAfterUnzoom', function() {
   DygraphOps.dispatchMouseDown_Point(g, 10, 10);
   DygraphOps.dispatchMouseUp_Point(g, 10, 10);
   DygraphOps.dispatchDoubleClick(g, null);
-  
-  // check if range for y-axis was reset to original value 
-  // TODO check if range for x-axis is correct. 
-  // Currently not possible because dateRange is set to null and extremes are returned
-  var newYAxisRange = g.yAxisRange();
-  assert.equal(1, newYAxisRange[0]);
-  assert.equal(50, newYAxisRange[1]);
+
+  // check if the range for both axis was reset to show the full data.
+  assert.deepEqual(g.yAxisExtremes()[0], g.yAxisRange());
+  assert.deepEqual(g.xAxisExtremes(), g.xAxisRange());
 });
 
 /**
@@ -468,8 +465,9 @@ it('testCorrectAxisPaddingAfterUnzoom', function() {
         animatedZooms:false
       });
 
-  var extremes = g.xAxisExtremes();
-  
+  var xExtremes = g.xAxisExtremes();
+  var [ yExtremes ] = g.yAxisExtremes();
+
   // Zoom x axis
   DygraphOps.dispatchMouseDown_Point(g, 100, 100);
   DygraphOps.dispatchMouseMove_Point(g, 130, 100);
@@ -479,15 +477,11 @@ it('testCorrectAxisPaddingAfterUnzoom', function() {
   DygraphOps.dispatchMouseDown_Point(g, 100, 100);
   DygraphOps.dispatchMouseMove_Point(g, 100, 130);
   DygraphOps.dispatchMouseUp_Point(g, 100, 130);
-  var currentYAxisRange = g.yAxisRange();
-  var currentXAxisRange = g.xAxisRange();
-  
+
   //check that the range for the axis has changed
-  assert.notEqual(1, currentXAxisRange[0]);
-  assert.notEqual(10, currentXAxisRange[1]);
-  assert.notEqual(1, currentYAxisRange[0]);
-  assert.notEqual(50, currentYAxisRange[1]);
-  
+  assert.notDeepEqual([1, 10], g.xAxisRange());
+  assert.notDeepEqual([1, 50], g.yAxisRange());
+
   // unzoom by doubleclick.  This is really the order in which a browser
   // generates events, and we depend on it.
   DygraphOps.dispatchMouseDown_Point(g, 10, 10);
@@ -495,11 +489,10 @@ it('testCorrectAxisPaddingAfterUnzoom', function() {
   DygraphOps.dispatchMouseDown_Point(g, 10, 10);
   DygraphOps.dispatchMouseUp_Point(g, 10, 10);
   DygraphOps.dispatchDoubleClick(g, null);
-  
-  // check if range for x-axis was reset to original value 
-  var newXAxisRange = g.xAxisRange();
-  assert.equal(extremes[0], newXAxisRange[0]);
-  assert.equal(extremes[1], newXAxisRange[1]);
+
+  // check if range for x-axis was reset to original value.
+  assert.deepEqual(xExtremes, g.xAxisRange());
+  assert.deepEqual(yExtremes, g.yAxisRange());
 });
 
 });
