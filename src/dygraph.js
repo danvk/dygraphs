@@ -336,8 +336,7 @@ Dygraph.prototype.isZoomed = function(axis) {
   const isZoomedX = !!this.dateWindow_;
   if (axis === 'x') return isZoomedX;
 
-  const isZoomedY = this.axes_.map(
-      axis => !!(axis.valueWindow || axis.valueRange)).indexOf(true) >= 0;
+  const isZoomedY = this.axes_.map(axis => !!axis.valueRange).indexOf(true) >= 0;
   if (axis === null || axis === undefined) {
     return isZoomedX || isZoomedY;
   }
@@ -1267,7 +1266,7 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   const zoomCallback = this.getFunctionOption('zoomCallback');
   this.doAnimatedZoom(old_window, new_window, null, null, () => {
     if (zoomCallback) {
-      zoomCallback.call(that, minDate, maxDate, that.yAxisRanges());
+      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
     }
   });
 };
@@ -1337,7 +1336,7 @@ Dygraph.prototype.resetZoom = function() {
   if (!animatedZooms) {
     this.dateWindow_ = null;
     for (const axis of this.axes_) {
-      if (axis.valueWindow) delete axis.valueWindow;
+      if (axis.valueRange) delete axis.valueRange;
     }
 
     this.drawGraph_();
@@ -1373,7 +1372,7 @@ Dygraph.prototype.resetZoom = function() {
       () => {
         this.dateWindow_ = null;
         for (const axis of this.axes_) {
-          if (axis.valueWindow) delete axis.valueWindow;
+          if (axis.valueRange) delete axis.valueRange;
         }
         if (zoomCallback) {
           zoomCallback(this, minDate, maxDate, this.yAxisRanges());
@@ -1418,7 +1417,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     if (valueRanges.length) {
       for (var i = 0; i < this.axes_.length; i++) {
         var w = valueRanges[step][i];
-        this.axes_[i].valueWindow = [w[0], w[1]];
+        this.axes_[i].valueRange = [w[0], w[1]];
       }
     }
     if (windows.length) {
@@ -2360,12 +2359,12 @@ Dygraph.prototype.computeYAxes_ = function() {
   // Preserve valueWindow settings if they exist, and if the user hasn't
   // specified a new valueRange.
   var valueWindows, axis, index, opts, v;
-  if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
-    valueWindows = [];
-    for (index = 0; index < this.axes_.length; index++) {
-      valueWindows.push(this.axes_[index].valueWindow);
-    }
-  }
+  // if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
+  //   valueWindows = [];
+  //   for (index = 0; index < this.axes_.length; index++) {
+  //     valueWindows.push(this.axes_[index].valueWindow);
+  //   }
+  // }
 
   // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
   // data computation as well as options storage.
@@ -2386,16 +2385,16 @@ Dygraph.prototype.computeYAxes_ = function() {
   v = this.attr_('valueRange');
   if (v) this.axes_[0].valueRange = v;
 
-  if (valueWindows !== undefined) {
-    // Restore valueWindow settings.
+  // if (valueWindows !== undefined) {
+  //   // Restore valueWindow settings.
 
-    // When going from two axes back to one, we only restore one axis.
-    var idxCount = Math.min(valueWindows.length, this.axes_.length);
+  //   // When going from two axes back to one, we only restore one axis.
+  //   var idxCount = Math.min(valueWindows.length, this.axes_.length);
 
-    for (index = 0; index < idxCount; index++) {
-      this.axes_[index].valueWindow = valueWindows[index];
-    }
-  }
+  //   for (index = 0; index < idxCount; index++) {
+  //     this.axes_[index].valueWindow = valueWindows[index];
+  //   }
+  // }
 
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
