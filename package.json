@@ -60,5 +60,8 @@
   },
   "pre-commit": [
     "tests-ok"
-  ]
+  ],
+  "dependencies": {
+    "core-js": "^2.4.1"
+  }
 }
