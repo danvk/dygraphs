@@ -2361,15 +2361,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
  *   indices are into the axes_ array.
  */
 Dygraph.prototype.computeYAxes_ = function() {
-  // Preserve valueWindow settings if they exist, and if the user hasn't
-  // specified a new valueRange.
-  var valueWindows, axis, index, opts, v;
-  // if (this.axes_ !== undefined && this.user_attrs_.hasOwnProperty("valueRange") === false) {
-  //   valueWindows = [];
-  //   for (index = 0; index < this.axes_.length; index++) {
-  //     valueWindows.push(this.axes_[index].valueWindow);
-  //   }
-  // }
+  var axis, index, opts, v;
 
   // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
   // data computation as well as options storage.
@@ -2382,24 +2374,6 @@ Dygraph.prototype.computeYAxes_ = function() {
     utils.update(opts, this.attributes_.axisOptions(axis));
     this.axes_[axis] = opts;
   }
-
-  // Copy global valueRange option over to the first axis.
-  // NOTE(konigsberg): Are these two statements necessary?
-  // I tried removing it. The automated tests pass, and manually
-  // messing with tests/zoom.html showed no trouble.
-  v = this.attr_('valueRange');
-  if (v) this.axes_[0].valueRange = v;
-
-  // if (valueWindows !== undefined) {
-  //   // Restore valueWindow settings.
-
-  //   // When going from two axes back to one, we only restore one axis.
-  //   var idxCount = Math.min(valueWindows.length, this.axes_.length);
-
-  //   for (index = 0; index < idxCount; index++) {
-  //     this.axes_[index].valueWindow = valueWindows[index];
-  //   }
-  // }
 
   for (axis = 0; axis < this.axes_.length; axis++) {
     if (axis === 0) {
