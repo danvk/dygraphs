@@ -490,12 +490,6 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point."
   },
-  "avoidMinZero": {
-    "default": "false",
-    "labels": ["Deprecated"],
-    "type": "boolean",
-    "description": "Deprecated, please use yRangePad instead. When set, the heuristic that fixes the Y axis at zero for a data set with the minimum Y value of zero is disabled. \nThis is particularly useful for data sets that contain many zero values, especially for step plots which may otherwise have lines not visible running along the bottom axis."
-  },
   "drawAxesAtZero": {
     "default": "false",
     "labels": ["Axis display"],
@@ -709,7 +703,7 @@ OPTIONS_REFERENCE =  // <JSON>
   },
   "timingName": {
     "default": "null",
-    "labels": [ "Debugging" ],
+    "labels": [ "Debugging", "Deprecated" ],
     "type": "string",
     "description": "Set this option to log timing information. The value of the option will be logged along with the timimg, so that you can distinguish multiple dygraphs on the same page."
   },

@@ -50,7 +50,6 @@ var DEFAULT_ATTRS = {
 
   legend: 'onmouseover',
   stepPlot: false,
-  avoidMinZero: false,
   xRangePad: 0,
   yRangePad: null,
   drawAxesAtZero: false,

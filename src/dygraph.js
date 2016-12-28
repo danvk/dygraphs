@@ -2441,9 +2441,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     //
     // - backwards compatible (yRangePad not set):
     //   10% padding for automatic Y ranges, but not for user-supplied
-    //   ranges, and move a close-to-zero edge to zero except if
-    //   avoidMinZero is set, since drawing at the edge results in
-    //   invisible lines. Unfortunately lines drawn at the edge of a
+    //   ranges, and move a close-to-zero edge to zero, since drawing at the edge
+    //   results in invisible lines. Unfortunately lines drawn at the edge of a
     //   user-supplied range will still be invisible. If logscale is
     //   set, add a variable amount of padding at the top but
     //   none at the bottom.
@@ -2516,11 +2515,9 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           minAxisY = minY - ypad * span;
 
           // Backwards-compatible behavior: Move the span to start or end at zero if it's
-          // close to zero, but not if avoidMinZero is set.
-          if (!this.getBooleanOption("avoidMinZero")) {
-            if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-            if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-          }
+          // close to zero.
+          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
         }
       }
       axis.extremeRange = [minAxisY, maxAxisY];
