@@ -2,11 +2,12 @@
   "name": "dygraphs",
   "version": "2.0.0-rc1",
   "description": "dygraphs is a fast, flexible open source JavaScript charting library.",
-  "main": "src-es5/dygraph.js",
+  "main": "index.es5",
   "module": "index",
   "jsnext:main": "index",
   "files": [
     "index.js",
+    "index.es5.js",
     "docs",
     "dist",
     "src",
