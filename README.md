@@ -24,7 +24,8 @@ Get help with dygraphs on
 ```html
 <html>
 <head>
-<script type="text/javascript" src="dygraph-combined.js"></script>
+<script type="text/javascript" src="dygraph.js"></script>
+<link rel="stylesheet" href="dygraph.css" />
 </head>
 <body>
 <div id="graphdiv"></div>

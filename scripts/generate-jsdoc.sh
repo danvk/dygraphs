@@ -7,7 +7,7 @@ echo Generating JSDoc...
 java -jar jsdoc-toolkit/jsrun.jar \
   jsdoc-toolkit/app/run.js \
   -d=jsdoc -t=jsdoc-toolkit/templates/jsdoc \
-  dygraph.js \
+  src/dygraph.js \
 | tee /tmp/dygraphs-jsdocerrors.txt
 
 if [ -s /tmp/dygraphs-jsdocerrors.txt ]; then

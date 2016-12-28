@@ -40,12 +40,7 @@
  And error bars will be calculated automatically using a binomial distribution.
 
  For further documentation and examples, see http://dygraphs.com/
-
  */
-
-// Polyfills
-import 'core-js/es6/symbol';
-import 'core-js/fn/symbol/iterator';
 
 import DygraphLayout from './dygraph-layout';
 import DygraphCanvasRenderer from './dygraph-canvas';
@@ -94,7 +89,7 @@ var Dygraph = function(div, data, opts) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "1.1.0";
+Dygraph.VERSION = "2.0.0";
 
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
@@ -371,14 +366,16 @@ Dygraph.prototype.toString = function() {
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
   // For "production" code, this gets removed by uglifyjs.
-  if (process.env.NODE_ENV != 'production') {
-    if (typeof(OPTIONS_REFERENCE) === 'undefined') {
-      console.error('Must include options reference JS for testing');
-    } else if (!OPTIONS_REFERENCE.hasOwnProperty(name)) {
-      console.error('Dygraphs is using property ' + name + ', which has no ' +
-                    'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
-      // Only log this error once.
-      OPTIONS_REFERENCE[name] = true;
+  if (typeof(process) !== 'undefined') {
+    if (process.env.NODE_ENV != 'production') {
+      if (typeof(OPTIONS_REFERENCE) === 'undefined') {
+        console.error('Must include options reference JS for testing');
+      } else if (!OPTIONS_REFERENCE.hasOwnProperty(name)) {
+        console.error('Dygraphs is using property ' + name + ', which has no ' +
+                      'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
+        // Only log this error once.
+        OPTIONS_REFERENCE[name] = true;
+      }
     }
   }
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
@@ -1355,9 +1352,9 @@ Dygraph.prototype.resetZoom = function() {
   // TODO(danvk): merge this block w/ the code below.
   if (!animatedZooms) {
     this.dateWindow_ = null;
-    for (const axis of this.axes_) {
+    this.axes_.forEach(axis => {
       if (axis.valueRange) delete axis.valueRange;
-    }
+    });
 
     this.drawGraph_();
     if (zoomCallback) {
@@ -1380,9 +1377,9 @@ Dygraph.prototype.resetZoom = function() {
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
       () => {
         this.dateWindow_ = null;
-        for (const axis of this.axes_) {
+        this.axes_.forEach(axis => {
           if (axis.valueRange) delete axis.valueRange;
-        }
+        });
         if (zoomCallback) {
           zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
         }
@@ -2441,9 +2438,8 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     //
     // - backwards compatible (yRangePad not set):
     //   10% padding for automatic Y ranges, but not for user-supplied
-    //   ranges, and move a close-to-zero edge to zero except if
-    //   avoidMinZero is set, since drawing at the edge results in
-    //   invisible lines. Unfortunately lines drawn at the edge of a
+    //   ranges, and move a close-to-zero edge to zero, since drawing at the edge
+    //   results in invisible lines. Unfortunately lines drawn at the edge of a
     //   user-supplied range will still be invisible. If logscale is
     //   set, add a variable amount of padding at the top but
     //   none at the bottom.
@@ -2516,11 +2512,9 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
           minAxisY = minY - ypad * span;
 
           // Backwards-compatible behavior: Move the span to start or end at zero if it's
-          // close to zero, but not if avoidMinZero is set.
-          if (!this.getBooleanOption("avoidMinZero")) {
-            if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-            if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-          }
+          // close to zero.
+          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
         }
       }
       axis.extremeRange = [minAxisY, maxAxisY];
@@ -2783,6 +2777,23 @@ Dygraph.prototype.parseCSV_ = function(data) {
   return ret;
 };
 
+// In native format, all values must be dates or numbers.
+// This check isn't perfect but will catch most mistaken uses of strings.
+function validateNativeFormat(data) {
+  const firstRow = data[0];
+  const firstX = firstRow[0];
+  if (typeof firstX !== 'number' && !utils.isDateLike(firstX)) {
+    throw new Error(`Expected number or date but got ${typeof firstX}: ${firstX}.`);
+  }
+  for (let i = 1; i < firstRow.length; i++) {
+    const val = firstRow[i];
+    if (val === null || val === undefined) continue;
+    if (typeof val === 'number') continue;
+    if (utils.isArrayLike(val)) continue;  // e.g. error bars or custom bars.
+    throw new Error(`Expected number or array but got ${typeof val}: ${val}.`);
+  }
+}
+
 /**
  * The user has provided their data as a pre-packaged JS array. If the x values
  * are numeric, this is the same as dygraphs' internal format. If the x values
@@ -2801,6 +2812,8 @@ Dygraph.prototype.parseArray_ = function(data) {
     console.error("Data set cannot contain an empty row");
     return null;
   }
+
+  validateNativeFormat(data);
 
   var i;
   if (this.attr_("labels") === null) {

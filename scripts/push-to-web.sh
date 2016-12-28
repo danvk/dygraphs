@@ -1,6 +1,5 @@
 #!/bin/bash
-# This script generates the combined JS file, pushes all content to a web site
-# and then reverts the combined file.
+# This script generates the bundled JS files and pushes all content to a web site using rsync.
 
 if [ "$1" == "" ] ; then
   echo "usage: $0 destination"
@@ -8,18 +7,18 @@ if [ "$1" == "" ] ; then
 fi
 
 set -x
+set -o errexit
 site=$1
 
-# Produce dygraph-combined.js and dygraph-combined-dev.js
-./generate-combined.sh
-./generate-combined.sh cat-dev > dygraph-combined-dev.js
+# Produce dist/*.js
+npm run build
 
 # Generate documentation.
-./generate-documentation.py > docs/options.html
+./scripts/generate-documentation.py > docs/options.html
 chmod a+r docs/options.html
 if [ -s docs/options.html ] ; then
-  ./generate-jsdoc.sh
-  ./generate-download.py > docs/download.html
+  ./scripts/generate-jsdoc.sh
+  ./scripts/generate-download.py > docs/download.html
 
   temp_dir=$(mktemp -d /tmp/dygraphs-docs.XXXX)
   cd docs
@@ -27,20 +26,18 @@ if [ -s docs/options.html ] ; then
   cd ..
 
   # Make sure everything will be readable on the web.
-  # This is like "chmod -R a+rX", but excludes the .git directory.
-  find . -path ./.git -prune -o -print | xargs chmod a+rX
+  # This is like "chmod -R a+rX", but excludes the .git and node_modules directories.
+  find . -print | egrep -v '\.git|node_modules' | xargs chmod a+rX
 
   # Copy everything to the site.
-  rsync -avzr gallery common tests jsdoc experimental plugins datahandler polyfills extras $site \
+  rsync -avzr src src/extras gallery common tests jsdoc dist $site \
   && \
-  rsync -avzr --copy-links dashed-canvas.js dygraph*.js gadget.xml thumbnail.png screenshot.png $temp_dir/* $site/
+  rsync -avzr --copy-links dist/* thumbnail.png screenshot.png $temp_dir/* $site/
 else
   echo "generate-documentation.py failed"
 fi
 
-# Revert changes to dygraph-combined.js and docs.
-make clean-combined-test
-rm dygraph-combined-dev.js
+# Revert changes to docs.
 git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir

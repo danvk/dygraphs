@@ -70,10 +70,6 @@ it('testCombinations', function() {
 
   var variantOpts = {
     none: {},
-    avoidMinZero: {
-      avoidMinZero: true,
-      includeZero: true
-    },
     padded: {
       includeZero: true,
       drawAxesAtZero: true,

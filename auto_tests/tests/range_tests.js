@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 
-/** 
+/**
  * @fileoverview Test valueRange and dateWindow changes.
  *
  * @author konigsberg@google.com (Robert Konigsberg)
@@ -43,7 +43,7 @@ var ZERO_TO_FIFTY_STEPS = (function() {
 }());
 
 var FIVE_TO_ONE_THOUSAND = [
-    [ 1, 10 ], [ 2, 20 ], [ 3, 30 ], [ 4, 40 ] , [ 5, 50 ], 
+    [ 1, 10 ], [ 2, 20 ], [ 3, 30 ], [ 4, 40 ] , [ 5, 50 ],
     [ 6, 60 ], [ 7, 70 ], [ 8, 80 ], [ 9, 90 ] , [ 10, 1000 ]];
 
 describe("range-tests", function() {
@@ -106,7 +106,7 @@ it('testRangeSetOperations', function() {
   g.updateOptions({  });
   assert.deepEqual([12, 18], g.xAxisRange());
   assert.deepEqual([10, 40], g.yAxisRange(0));
-  
+
   g.updateOptions({valueRange : null, axes: {y:{valueRange : [15, 20]}}});
   assert.deepEqual([12, 18], g.xAxisRange());
   assert.deepEqual([15, 20], g.yAxisRange(0));
@@ -182,7 +182,7 @@ it('testLogScaleExcludesZero', function() {
     labels: ['X', 'Y']
   });
   assert.deepEqual([10, 1099], g.yAxisRange(0));
- 
+
   g.updateOptions({ logscale : false });
   assert.deepEqual([0, 1099], g.yAxisRange(0));
 });
@@ -196,7 +196,7 @@ it('testIncludeZeroIncludesZero', function() {
     labels: ['X', 'Y']
   });
   assert.deepEqual([0, 1100], g.yAxisRange(0));
- 
+
   g.updateOptions({ includeZero : false });
   assert.deepEqual([450, 1050], g.yAxisRange(0));
 });
@@ -206,14 +206,14 @@ it('testIncludeZeroIncludesZero', function() {
  * Verify that includeZero range is properly specified per axis.
  */
 it('testIncludeZeroPerAxis', function() {
-  var g = new Dygraph("graph", 
+  var g = new Dygraph("graph",
     'X,A,B\n'+
     '0,50,50\n'+
     '50,110,110\n',
     {
       drawPoints: true,
       pointSize:5,
-      series:{ 
+      series:{
         A: {
           axis: 'y',
           pointSize: 10
@@ -221,7 +221,7 @@ it('testIncludeZeroPerAxis', function() {
         B: {
           axis: 'y2'
         }
-      },  
+      },
       axes: {
         'y2': { includeZero: true }
       }
@@ -242,7 +242,7 @@ it('testIncludeZeroPerAxis', function() {
 
 /**
  * Verify that very large Y ranges don't break things.
- */ 
+ */
 it('testHugeRange', function() {
   var g = new Dygraph("graph", [[0, -1e120], [1, 1e230]], {
     includeZero: true,
@@ -250,15 +250,6 @@ it('testHugeRange', function() {
   });
   assert.closeTo(1, -1e229 / g.yAxisRange(0)[0], 0.001);
   assert.closeTo(1, 1.1e230 / g.yAxisRange(0)[1], 0.001);
-});
-
-/**
- * Verify old-style avoidMinZero option.
- */
-it('testAvoidMinZero', function() {
-  var g = createGraph({
-      avoidMinZero: true,
-    }, ZERO_TO_FIFTY_STEPS, [10, 20], [-5, 55]);
 });
 
 /**
@@ -343,23 +334,6 @@ it('testLogscalePad', function() {
     },
     [[-10, 10], [10, 10], [30, 1000]],
     [-10, 30], [5.623, 1778.279]);
-});
-
-/**
- * Verify scrolling all-zero region, traditional.
- */
-it('testZeroScroll', function() {
-  var g = new Dygraph(
-      document.getElementById("graph"),
-      "X,Y\n" +
-      "1,0\n" +
-      "8,0\n" +
-      "9,0.1\n",
-      {
-        drawAxesAtZero: true,
-        animatedZooms: true,
-        avoidMinZero: true
-      });
 });
 
 /**
