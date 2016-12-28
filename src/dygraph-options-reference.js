@@ -9,6 +9,7 @@
 var OPTIONS_REFERENCE = null;
 
 // For "production" code, this gets removed by uglifyjs.
+if (typeof(process) !== 'undefined') {
 if (process.env.NODE_ENV != 'production') {
 
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
@@ -875,6 +876,7 @@ for (var k in OPTIONS_REFERENCE) {
   }
 }
 
+}
 }
 
 export default OPTIONS_REFERENCE;
