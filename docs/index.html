@@ -26,7 +26,7 @@ pre.prettyprint {
       <div id="demodiv"></div>
     </div>
   </div>
-  
+
 
   <script type="text/javascript">
     g = new Dygraph(
@@ -61,6 +61,19 @@ pre.prettyprint {
       <p>Start by <a href="download.html">downloading dygraphs</a>. Then read the <a href="tutorial.html">Tutorial</a> to learn how to use it, or just <a href="http://dygraphs.com/fiddle">play with dygraphs</a> on jsFiddle.</p>
 
       <p>Once you've got your feet wet, look for inspiration in the <a href="gallery/">demo gallery</a> or check out our <a href="users.html">list of users</a>.</p>
+
+      <p>If you're using npm and a bundler like webpack, browserify or rollup, you can install dygraphs via:</p>
+
+      <pre>npm install --save dygraphs</pre>
+
+      and use it via:
+
+      <pre class="prettyprint">import Dygraph from 'dygraphs';
+        // or: const Dygraph = require('dygraphs');
+        const g = new Dygraph(div, data, {});
+      </pre>
+
+      <p>Check out the <a href="https://github.com/danvk/dygraphs-es6">dygraphs ES6 sample project</a> for more details on this approach.</p>
     </div>
 
     <div class="col-lg-4">
@@ -79,5 +92,5 @@ pre.prettyprint {
     </div>
 
   </div>
-  
+
 <!--#include virtual="footer.html" -->
