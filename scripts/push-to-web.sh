@@ -30,7 +30,7 @@ if [ -s docs/options.html ] ; then
   find . -print | egrep -v '\.git|node_modules' | xargs chmod a+rX
 
   # Copy everything to the site.
-  rsync -avzr src src/extras gallery common tests jsdoc $site \
+  rsync -avzr src src/extras gallery common tests jsdoc dist $site \
   && \
   rsync -avzr --copy-links dist/* thumbnail.png screenshot.png $temp_dir/* $site/
 else
