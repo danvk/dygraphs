@@ -48,6 +48,10 @@ uglifyjs --compress --mangle \
 # Build GWT JAR
 jar -cf dist/dygraph-gwt.jar -C gwt org
 
+# Minify CSS
+cp css/dygraph.css dist/
+cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
+
 # Remove temp files.
 rm dist/dygraph.tmp.js
 rm dist/dygraph.tmp.js.map

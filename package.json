@@ -32,6 +32,7 @@
     "browserify": "^11.2.0",
     "browserify-header": "^0.9.2",
     "chai": "^3.3.0",
+    "clean-css": "^3.4.23",
     "coveralls": "^2.11.2",
     "envify": "^3.4.0",
     "exorcist": "^0.4.0",

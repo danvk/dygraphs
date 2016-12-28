@@ -32,7 +32,7 @@ if [ -s docs/options.html ] ; then
   # Copy everything to the site.
   rsync -avzr src src/extras gallery common tests jsdoc $site \
   && \
-  rsync -avzr --copy-links dist/* css/* thumbnail.png screenshot.png $temp_dir/* $site/
+  rsync -avzr --copy-links dist/* thumbnail.png screenshot.png $temp_dir/* $site/
 else
   echo "generate-documentation.py failed"
 fi
