@@ -40,7 +40,6 @@
  And error bars will be calculated automatically using a binomial distribution.
 
  For further documentation and examples, see http://dygraphs.com/
-
  */
 
 import DygraphLayout from './dygraph-layout';
@@ -2776,6 +2775,23 @@ Dygraph.prototype.parseCSV_ = function(data) {
   return ret;
 };
 
+// In native format, all values must be dates or numbers.
+// This check isn't perfect but will catch most mistaken uses of strings.
+function validateNativeFormat(data) {
+  const firstRow = data[0];
+  const firstX = firstRow[0];
+  if (typeof firstX !== 'number' && !utils.isDateLike(firstX)) {
+    throw new Error(`Expected number or date but got ${typeof firstX}: ${firstX}.`);
+  }
+  for (let i = 1; i < firstRow.length; i++) {
+    const val = firstRow[i];
+    if (val === null || val === undefined) continue;
+    if (typeof val === 'number') continue;
+    if (utils.isArrayLike(val)) continue;  // e.g. error bars or custom bars.
+    throw new Error(`Expected number or array but got ${typeof val}: ${val}.`);
+  }
+}
+
 /**
  * The user has provided their data as a pre-packaged JS array. If the x values
  * are numeric, this is the same as dygraphs' internal format. If the x values
@@ -2794,6 +2810,8 @@ Dygraph.prototype.parseArray_ = function(data) {
     console.error("Data set cannot contain an empty row");
     return null;
   }
+
+  validateNativeFormat(data);
 
   var i;
   if (this.attr_("labels") === null) {

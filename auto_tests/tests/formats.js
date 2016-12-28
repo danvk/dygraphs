@@ -77,6 +77,16 @@ it('testXValueParser', function() {
   assert.equal(6, g.getValue(3, 0));
 });
 
+it('should throw on strings in native format', () => {
+  assert.throws(() => {
+    new Dygraph('graph', [['1', '10'], ['2', '20']])
+  }, /expected number or date/i);
+
+  assert.throws(() => {
+    new Dygraph('graph', [[new Date(), '10'], [new Date(), '20']])
+  }, /expected number or array/i);
+});
+
 var assertData = function(g) {
   var expected = dataArray;
 
