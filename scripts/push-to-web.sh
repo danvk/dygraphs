@@ -1,6 +1,5 @@
 #!/bin/bash
-# This script generates the combined JS file, pushes all content to a web site
-# and then reverts the combined file.
+# This script generates the bundled JS files and pushes all content to a web site using rsync.
 
 if [ "$1" == "" ] ; then
   echo "usage: $0 destination"
@@ -38,7 +37,7 @@ else
   echo "generate-documentation.py failed"
 fi
 
-# Revert changes to dygraph-combined.js and docs.
+# Revert changes to docs.
 git checkout docs/download.html
 rm docs/options.html
 rm -rf $temp_dir

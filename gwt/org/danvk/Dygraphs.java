@@ -15,7 +15,7 @@ public class Dygraphs {
 
   // Protected because the GWT compiler has to generate a subclass.
   protected interface Resources extends ClientBundle {
-    @Source("org/danvk/dygraph-combined.js")
+    @Source("org/danvk/dygraph.min.js")
     TextResource dygraphs();
   }
 

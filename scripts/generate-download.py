@@ -51,27 +51,24 @@ print '''
 
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
-<pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph-combined.js"&gt;&lt;/script&gt;</pre>
+<pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; src=&quot;//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css&quot; /&gt;
+</pre>
 
-<p>You can install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a> or <a href="http://bower.io/search/?q=dygraphs">Bower</a>.</p>
+<p>You can also install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
 
-<p>To install using NPM:</p>
 <pre>$ npm install dygraphs
-# dygraphs is now in node_modules/dygraphs/dygraph-combined.js</pre>
+# dygraphs is now in node_modules/dygraphs/dygraph.js</pre>
 
-<p>To install using bower:</p>
-<pre>$ bower install dygraphs
-# dygraphs is now in bower_components/dygraphs/dygraph-combined.js</pre>
-
-<p>Most distributions include a source map. For non-concatenated JS, see <a href="https://github.com/danvk/dygraphs/blob/master/dygraph-dev.js">dygraph-dev.js</a> on <a href="https://github.com/danvk/dygraphs/">github</a>.</a>
+<p>Most distributions include a source map to facilitate debugging.</p>
 
 <p>To generate your own minified JS, run:</p>
 
 <pre>git clone https://github.com/danvk/dygraphs.git
-./generate-combined.sh
+npm run build
 </pre>
 
-<p>This will create a dygraph.min.js file in the dygraphs directory.</p>
+<p>This will create a dygraph.min.js file in the <code>dist</code> directory.</p>
 
 <p>You may also download files for previously-released versions:</p>
 

@@ -45,9 +45,6 @@ uglifyjs --compress --mangle \
   -o dist/dygraph.min.js \
   dist/dygraph.tmp.js
 
-# Copy to the old location
-cp dist/dygraph.min.js dist/dygraph-combined.js
-
 # Build GWT JAR
 jar -cf dist/dygraph-gwt.jar -C gwt org
 
