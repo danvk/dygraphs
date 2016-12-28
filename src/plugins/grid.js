@@ -15,7 +15,6 @@ Current bits of jankiness:
 
 "use strict";
 
-
 /**
  * Draws the gridlines, i.e. the gray horizontal & vertical lines running the
  * length of the chart.
@@ -62,8 +61,8 @@ grid.prototype.willDrawChart = function(e) {
     ticks = layout.yticks;
     ctx.save();
     // draw grids for the different y axes
-    for (var tick of ticks) {
-      if (!tick.has_tick) continue;
+    ticks.forEach(tick => {
+      if (!tick.has_tick) return;
       var axis = tick.axis;
       if (drawGrid[axis]) {
         ctx.save();
@@ -82,7 +81,7 @@ grid.prototype.willDrawChart = function(e) {
 
         ctx.restore();
       }
-    }
+    });
     ctx.restore();
   }
 
@@ -97,8 +96,8 @@ grid.prototype.willDrawChart = function(e) {
     }
     ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
     ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
-    for (var tick of ticks) {
-      if (!tick.has_tick) continue;
+    ticks.forEach(tick => {
+      if (!tick.has_tick) return;
       x = halfUp(area.x + tick.pos * area.w);
       y = halfDown(area.y + area.h);
       ctx.beginPath();
@@ -106,7 +105,7 @@ grid.prototype.willDrawChart = function(e) {
       ctx.lineTo(x, area.y);
       ctx.closePath();
       ctx.stroke();
-    }
+    });
     if (stroking) {
       if (ctx.setLineDash) ctx.setLineDash([]);
     }

@@ -43,10 +43,6 @@
 
  */
 
-// Polyfills
-import 'core-js/es6/symbol';
-import 'core-js/fn/symbol/iterator';
-
 import DygraphLayout from './dygraph-layout';
 import DygraphCanvasRenderer from './dygraph-canvas';
 import DygraphOptions from './dygraph-options';
@@ -1355,9 +1351,9 @@ Dygraph.prototype.resetZoom = function() {
   // TODO(danvk): merge this block w/ the code below.
   if (!animatedZooms) {
     this.dateWindow_ = null;
-    for (const axis of this.axes_) {
+    this.axes_.forEach(axis => {
       if (axis.valueRange) delete axis.valueRange;
-    }
+    });
 
     this.drawGraph_();
     if (zoomCallback) {
@@ -1380,9 +1376,9 @@ Dygraph.prototype.resetZoom = function() {
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
       () => {
         this.dateWindow_ = null;
-        for (const axis of this.axes_) {
+        this.axes_.forEach(axis => {
           if (axis.valueRange) delete axis.valueRange;
-        }
+        });
         if (zoomCallback) {
           zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
         }

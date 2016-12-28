@@ -164,8 +164,8 @@ axes.prototype.willDrawChart = function(e) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
-      for (var tick of layout.yticks) {
-        if (tick.label === undefined) continue;  // this tick only has a grid line.
+      layout.yticks.forEach(tick => {
+        if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x;
         var sgn = 1;
         var prec_axis = 'y1';
@@ -208,7 +208,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
-      }
+      });
 
       // The lowest tick on the y-axis often overlaps with the leftmost
       // tick on the x-axis. Shift the bottom tick up a little bit to
@@ -257,8 +257,8 @@ axes.prototype.willDrawChart = function(e) {
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       var getAxisOption = makeOptionGetter('x');
-      for (var tick of layout.xticks) {
-        if (tick.label === undefined) continue;  // this tick only has a grid line.
+      layout.xticks.forEach(tick => {
+        if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x + tick.pos * area.w;
         y = area.y + area.h;
 
@@ -288,7 +288,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.xlabels_.push(label);
-      }
+      });
     }
 
     context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');
