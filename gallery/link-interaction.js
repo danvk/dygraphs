@@ -5,6 +5,8 @@ Gallery.register(
     name: 'Link Interaction',
     setup: function(parent) {
       parent.innerHTML = [
+          "<div class='link-interaction'>",
+          "<style>.link-interaction a:visited { color: blue; }</style>",
           "<div id='div_g'></div>",
           "<b>Zoom:</b>",
           "<a href='#' id='hour'>hour</a> ",
@@ -14,7 +16,8 @@ Gallery.register(
           "<a href='#' id='full'>full</a> ",
           "<b>Pan:</b> ",
           "<a href='#' id='left'>left</a> ",
-          "<a href='#' id='right'>right</a> "].join("\n");
+          "<a href='#' id='right'>right</a> ",
+          "</div>"].join("\n");
     },
     run: function() {
       var r = [ ];
