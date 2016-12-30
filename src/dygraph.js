@@ -2036,10 +2036,10 @@ Dygraph.prototype.predraw_ = function() {
     var series = this.dataHandler_.extractSeries(this.rawData_, i, this.attributes_);
 	var seriesRollPeriod;
 	
-	if (this.getOption("rollPeriod", seriesName[i]) == undefined) { 
-		seriesRollPeriod = this.rollPeriod(); 
+	if (this.getOption('rollPeriod', seriesName[i])) { 
+		seriesRollPeriod = this.getOption('rollPeriod', seriesName[i]);
 	} else {
-		seriesRollPeriod = this.getOption("rollPeriod", seriesName[i]);
+		seriesRollPeriod = this.rollPeriod(); 
 	}
     if (seriesRollPeriod > 1) {
       series = this.dataHandler_.rollingAverage(series, seriesRollPeriod, this.attributes_);
