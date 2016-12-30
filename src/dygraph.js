@@ -2026,23 +2026,17 @@ Dygraph.prototype.predraw_ = function() {
 
   this.cascadeEvents_('predraw');
 
-  var seriesName = this.getLabels();
-
+  
   // Convert the raw data (a 2D array) into the internal format and compute
   // rolling averages.
+  var seriesName = this.getLabels();
   this.rolledSeries_ = [null];  // x-axis is the first series and it's special
   for (var i = 1; i < this.numColumns(); i++) {
     // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
     var series = this.dataHandler_.extractSeries(this.rawData_, i, this.attributes_);
-	var seriesRollPeriod;
-	
-	if (this.getOption('rollPeriod', seriesName[i])) { 
-		seriesRollPeriod = this.getOption('rollPeriod', seriesName[i]);
-	} else {
-		seriesRollPeriod = this.rollPeriod(); 
-	}
-    if (seriesRollPeriod > 1) {
-      series = this.dataHandler_.rollingAverage(series, seriesRollPeriod, this.attributes_);
+	const rollPeriod = this.getOption('rollPeriod', seriesName[i]);
+    if (rollPeriod > 1) {
+      series = this.dataHandler_.rollingAverage(series, rollPeriod, this.attributes_);
     }
 
     this.rolledSeries_.push(series);

@@ -19,52 +19,45 @@
   </head>
   <body>
 	  
-	  <div id="graphdiv"> </div>
+  <div id="graphdiv"> </div>
+  
+  Check the boxes to apply the rolling average <br>
 	  
-	  Check the boxes to apply the rolling average <br>
-	  
-	  <input type="checkbox" href="#" id="high" name="high" />High (7 day rolling average)<br>
-	  <input type="checkbox" href="#" id="low" name="low" />Low (30 day rolling average)
-	  
-	  <script type="text/javascript">
-	  
-      var g = new Dygraph(document.getElementById('graphdiv'), data,
-      {
-        title: 'Per Series Rolling Average',     
-        xlabel: 'Date',
-        ylabel: 'Temperature (F)'
-		  
+  <input type="checkbox" href="#" id="high" name="high" />High (7 day rolling average)<br>
+  <input type="checkbox" href="#" id="low" name="low" />Low (30 day rolling average)
+  
+  <script type="text/javascript">
+  
+  var g = new Dygraph(document.getElementById('graphdiv'), data,
+    {
+       title: 'Per Series Rolling Average',     
+       xlabel: 'Date',
+       ylabel: 'Temperature (F)'	  
       });
 	  
-	  function updateRollPeriod(series, value) {
-	  	
-		  var seriesOpt = {};
-		  seriesOpt[series] = { rollPeriod: value };
-		  g.updateOptions ({ series: seriesOpt });
-		
-	  }
-	  
-	  
-	  
-	$("#high").change(function () {
-		if(this.checked) {
-			updateRollPeriod("High", 7);
-		} else {
-			updateRollPeriod("High", 1);
-		}
-	});
+  function updateRollPeriod(series, value) {
+    var seriesOpt = {};
+    seriesOpt[series] = { rollPeriod: value };
+    g.updateOptions ({ series: seriesOpt });
+  }
+	   
+  $("#high").change(function () {
+    if(this.checked) {
+      updateRollPeriod("High", 7);
+    } else {
+      updateRollPeriod("High", 1);
+    }
+  });
 	
-	$("#low").change(function () {
-		if(this.checked) {
-			updateRollPeriod("Low", 30);
-		} else {
-			updateRollPeriod("Low", 1);
-		}
-	});
-	  
-	  
-	  </script>
-   </body>
+  $("#low").change(function () {
+    if(this.checked) {
+      updateRollPeriod("Low", 30);
+    } else {
+      updateRollPeriod("Low", 1);
+    }
+  });	  
+  </script>
+  </body>
 </html>
    
 	
