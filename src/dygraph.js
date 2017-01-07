@@ -2034,7 +2034,7 @@ Dygraph.prototype.predraw_ = function() {
   for (var i = 1; i < this.numColumns(); i++) {
     // var logScale = this.attr_('logscale', i); // TODO(klausw): this looks wrong // konigsberg thinks so too.
     var series = this.dataHandler_.extractSeries(this.rawData_, i, this.attributes_);
-	const rollPeriod = this.getOption('rollPeriod', seriesName[i]);
+	var rollPeriod = this.getOption('rollPeriod', seriesName[i]);
     if (rollPeriod > 1) {
       series = this.dataHandler_.rollingAverage(series, rollPeriod, this.attributes_);
     }
