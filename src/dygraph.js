@@ -3010,6 +3010,7 @@ Dygraph.prototype.parseDataTable_ = function(data) {
 /**
  * Signals to plugins that the chart data has updated.
  * This happens after the data has updated but before the chart has redrawn.
+ * @private
  */
 Dygraph.prototype.cascadeDataDidUpdateEvent_ = function() {
   // TODO(danvk): there are some issues checking xAxisRange() and using
@@ -3142,6 +3143,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
 /**
  * Make a copy of input attributes, removing file as a convenience.
+ * @private
  */
 Dygraph.copyUserAttrs_ = function(attrs) {
   var my_attrs = {};
