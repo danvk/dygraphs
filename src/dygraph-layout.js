@@ -330,7 +330,10 @@ DygraphLayout.prototype._evaluateAnnotations = function() {
       var k = p.xval + "," + p.name;
       if (k in annotations) {
         p.annotation = annotations[k];
-        this.annotated_points.push(p);
+        this.annotated_points.push(p);        
+        //if there are multiple same x-valued points, the annotation would be rendered multiple times
+        //remove already rendered annotation
+        delete annotations[k];
       }
     }
   }
