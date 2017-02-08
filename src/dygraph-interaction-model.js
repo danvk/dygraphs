@@ -706,7 +706,8 @@ DygraphInteraction.defaultModel = {
     // Give plugins a chance to grab this event.
     var e = {
       canvasx: context.dragEndX,
-      canvasy: context.dragEndY
+      canvasy: context.dragEndY,
+      cancelable: true,
     };
     if (g.cascadeEvents_('dblclick', e)) {
       return;

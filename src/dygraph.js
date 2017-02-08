@@ -1350,6 +1350,7 @@ Dygraph.prototype.resetZoom = function() {
   const zoomCallback = this.getFunctionOption('zoomCallback');
 
   // TODO(danvk): merge this block w/ the code below.
+  // TODO(danvk): factor out a generic, public zoomTo method.
   if (!animatedZooms) {
     this.dateWindow_ = null;
     this.axes_.forEach(axis => {
