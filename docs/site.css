@@ -32,7 +32,7 @@ body {
   }
 }
 @media screen and (min-width: 768px) and (max-width: 992px) {
-  /* The topnav drops down to the next line between these sizes. We must accomodate. */
+  /* The topnav drops down to the next line between these sizes. We must accommodate. */
   body {
     padding-top: 130px;
   }

@@ -3126,7 +3126,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
   if (file) {
     // This event indicates that the data is about to change, but hasn't yet.
-    // TODO(danvk): support cancelation of the update via this event.
+    // TODO(danvk): support cancellation of the update via this event.
     this.cascadeEvents_('dataWillUpdate', {});
 
     this.file_ = file;
