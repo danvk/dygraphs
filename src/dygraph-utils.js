@@ -42,7 +42,7 @@ export var logRangeFraction = function(r0, r1, pct) {
   // Original calcuation:
   // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
   //
-  // Multiply both sides by the right-side demoninator.
+  // Multiply both sides by the right-side denominator.
   // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
   //
   // add log(xRange[0]) to both sides
@@ -265,7 +265,7 @@ export function isValidPoint(p, opt_allowNaNY) {
 };
 
 /**
- * Number formatting function which mimicks the behavior of %g in printf, i.e.
+ * Number formatting function which mimics the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
  * there is a predictable upper bound on the resulting string length,
@@ -377,7 +377,7 @@ export function hmsString_(hh, mm, ss, ms) {
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
  * @param {number} time The JavaScript time value (ms since epoch)
- * @param {boolean} utc Wether output UTC or local time
+ * @param {boolean} utc Whether output UTC or local time
  * @return {string} A date of one of these forms:
  *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private

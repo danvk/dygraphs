@@ -586,7 +586,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Axis display", "Interactive Elements"],
     "type": "float",
-    "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% pased the edges of the displayed values. null means no bounds."
+    "description": "A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% passed the edges of the displayed values. null means no bounds."
   },
   "title": {
     "labels": ["Chart labels"],

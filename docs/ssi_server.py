@@ -9,7 +9,7 @@ inline SSI (Server Side Includes) of the form:
 
   <!-- #include virtual="fragment.html" -->
 
-Run ./ssi_server.py in this directory and visit localhost:8000 for an exmaple.
+Run ./ssi_server.py in this directory and visit localhost:8000 for an example.
 '''
 
 import os
