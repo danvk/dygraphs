@@ -142,7 +142,7 @@ Dygraph.prototype.visibility;
 /** @type {function(number, boolean)} */
 Dygraph.prototype.setVisibility;
 
-/** @type {function(Array.<Object>, boolean)} */
+/** @type {function(Array.<Object>, boolean=)} */
 Dygraph.prototype.setAnnotations;
 
 /** @type {function(): Array.<Object>} */
