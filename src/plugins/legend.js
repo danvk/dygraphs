@@ -35,9 +35,6 @@ Legend.prototype.toString = function() {
   return "Legend Plugin";
 };
 
-// (defined below)
-var generateLegendDashHTML;
-
 /**
  * This is called during the dygraph constructor, after options have been set
  * but before the data is available.
@@ -52,7 +49,6 @@ var generateLegendDashHTML;
  */
 Legend.prototype.activate = function(g) {
   var div;
-  var divWidth = g.getOption('labelsDivWidth');
 
   var userLabelsDiv = g.getOption('labelsDiv');
   if (userLabelsDiv && null !== userLabelsDiv) {
@@ -62,35 +58,8 @@ Legend.prototype.activate = function(g) {
       div = userLabelsDiv;
     }
   } else {
-    // Default legend styles. These can be overridden in CSS by adding
-    // "!important" after your rule, e.g. "left: 30px !important;"
-    var messagestyle = {
-      "position": "absolute",
-      "fontSize": "14px",
-      "zIndex": 10,
-      "width": divWidth + "px",
-      "top": "0px",
-      "left": (g.size().width - divWidth - 2) + "px",
-      "background": "white",
-      "lineHeight": "normal",
-      "textAlign": "left",
-      "overflow": "hidden"};
-
-    // TODO(danvk): get rid of labelsDivStyles? CSS is better.
-    utils.update(messagestyle, g.getOption('labelsDivStyles'));
     div = document.createElement("div");
     div.className = "dygraph-legend";
-    for (var name in messagestyle) {
-      if (!messagestyle.hasOwnProperty(name)) continue;
-
-      try {
-        div.style[name] = messagestyle[name];
-      } catch (e) {
-        console.warn("You are using unsupported css properties for your " +
-            "browser in labelsDivStyles");
-      }
-    }
-
     // TODO(danvk): come up with a cleaner way to expose this.
     g.graphDiv.appendChild(div);
     this.is_generated_div_ = true;
@@ -136,7 +105,7 @@ Legend.prototype.select = function(e) {
   if (legendMode === 'follow') {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
-    var labelsDivWidth = e.dygraph.getOption('labelsDivWidth');
+    var labelsDivWidth = this.legend_div_.offsetWidth;
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
@@ -195,10 +164,9 @@ Legend.prototype.predraw = function(e) {
   // TODO(danvk): only use real APIs for this.
   e.dygraph.graphDiv.appendChild(this.legend_div_);
   var area = e.dygraph.getArea();
-  var labelsDivWidth = e.dygraph.getOption("labelsDivWidth");
+  var labelsDivWidth = this.legend_div_.offsetWidth;
   this.legend_div_.style.left = area.x + area.w - labelsDivWidth - 1 + "px";
   this.legend_div_.style.top = area.y + "px";
-  this.legend_div_.style.width = labelsDivWidth + "px";
 };
 
 /**
@@ -341,12 +309,10 @@ Legend.defaultFormatter = function(data) {
  * @private
  */
 // TODO(danvk): cache the results of this
-generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
+function generateLegendDashHTML(strokePattern, color, oneEmWidth) {
   // Easy, common case: a solid line
   if (!strokePattern || strokePattern.length <= 1) {
-    return "<div style=\"display: inline-block; position: relative; " +
-    "bottom: .5ex; padding-left: 1em; height: 1px; " +
-    "border-bottom: 2px solid " + color + ";\"></div>";
+    return `<div class="dygraph-legend-line" style="border-bottom-color: ${color};"></div>`;
   }
 
   var i, j, paddingLeft, marginRight;
@@ -393,10 +359,7 @@ generateLegendDashHTML = function(strokePattern, color, oneEmWidth) {
         // The repeated first segment has no right margin.
         marginRight = 0;
       }
-      dash += "<div style=\"display: inline-block; position: relative; " +
-        "bottom: .5ex; margin-right: " + marginRight + "em; padding-left: " +
-        paddingLeft + "em; height: 1px; border-bottom: 2px solid " + color +
-        ";\"></div>";
+      dash += `<div class="dygraph-legend-dash" style="margin-right: ${marginRight}em; padding-left: ${paddingLeft}em;"></div>`;
     }
   }
   return dash;

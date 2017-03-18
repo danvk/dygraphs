@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>gadget border</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
     <style type="text/css">
     #bordered {
       border: 1px solid red;
+    }
+    .dygraph-legend {
+      border: 1px solid black;
     }
     </style>
   </head>
@@ -21,7 +21,6 @@
     <script type="text/javascript">
     var g = new Dygraph(document.getElementById('bordered'), data,
     {
-      labelsDivStyles: { border: '1px solid black' },
       title: 'Chart Title',
       xlabel: 'Date',
       ylabel: 'Temperature (F)'

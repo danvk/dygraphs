@@ -6,7 +6,8 @@
   }
 </style>
 
-<p>To use dygraphs, include the <code><a href="download.html">dygraph-combined-dev.js</a></code> JavaScript file and instantiate a <code>Dygraph</code> object.</p>
+<p>To use dygraphs, include the <code><a href="download.html">dygraph.js</a></code> JavaScript file
+and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> object.</p>
 
 <p>Here's a basic example to get things started:</p>
 
@@ -17,7 +18,8 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph-combined-dev.js&quot;&gt;&lt;/script&gt;
+  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;graphdiv&quot;&gt;&lt;/div&gt;
@@ -69,7 +71,8 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph-combined-dev.js&quot;&gt;&lt;/script&gt;
+  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;graphdiv2&quot;
@@ -120,7 +123,8 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph-combined-dev.js&quot;&gt;&lt;/script&gt;
+  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;graphdiv3&quot;
@@ -170,7 +174,8 @@
 &lt;html&gt;
 &lt;head&gt;
 &lt;script type=&quot;text/javascript&quot;
-  src=&quot;combined.js&quot;&gt;&lt;/script&gt;
+  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;graphdiv4&quot;
@@ -231,11 +236,9 @@ AnnotatedTimeline visualization used on Google Finance and other sites. To
 see how this works, check out the <a href="tests/annotation-gviz.html">gviz
   annotation demo.</a></p>
 
-<p>For a simple demonstration of how to use dygraphs a GViz visualization, see <a href="http://danvk.org/dygraphs/tests/gviz.html">http://danvk.org/dygraphs/tests/gviz.html</a>. dygraphs can also be used as a GViz gadget. This allows it to be embedded inside of a Google Spreadsheet. For a demonstration of this, see <a   href="http://spreadsheets.google.com/ccc?key=0Anx1yCqeL8YUdDR1c3pPREhraGhkWmdhaURjOXRncXc&amp;hl=en">this spreadsheet</a>. The URL for the gadget is <code><a href="http://danvk.org/dygraphs/gadget.xml">http://danvk.org/dygraphs/gadget.xml</a></code>.</p>
-
-<p>Here's an example of a published gviz gadget using dygraphs:</p>
-
-<script src="http://spreadsheets.google.com/gpub?url=http%3A%2F%2Fkb8jbn8l90ocl9n4b14jrcvp61ceqis5.spreadsheets.gmodules.com%2Fgadgets%2Fifr%3Fup__table_query_url%3Dhttp%253A%252F%252Fspreadsheets.google.com%252Ftq%253Frange%253DA1%25253AC31%2526headers%253D-1%2526key%253D0Anx1yCqeL8YUdDR1c3pPREhraGhkWmdhaURjOXRncXc%2526gid%253D0%2526pub%253D1%26up__table_query_refresh_interval%3D300%26url%3Dhttp%253A%252F%252Fdanvk.org%252Fdygraphs%252Fgadget.xml%253Fnocache&height=215&width=530"></script>
+<p>Here is another demonstration of
+<a href="http://danvk.org/dygraphs/tests/gviz.html">how to use dygraphs a GViz visualization</a>.
+</p>
 
 <h2 id="baseball">Charting Fractions</h2>
 

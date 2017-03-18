@@ -75,7 +75,7 @@ DygraphInteraction.startPan = function(event, g, context) {
     context.initialLeftmostDate = utils.log10(xRange[0]);
     context.dateRange = utils.log10(xRange[1]) - utils.log10(xRange[0]);
   } else {
-    context.initialLeftmostDate = xRange[0];    
+    context.initialLeftmostDate = xRange[0];
     context.dateRange = xRange[1] - xRange[0];
   }
   context.xUnitsPerPixel = context.dateRange / (g.plotter_.area.w - 1);
@@ -110,7 +110,7 @@ DygraphInteraction.startPan = function(event, g, context) {
   }
 
   // Record the range of each y-axis at the start of the drag.
-  // If any axis has a valueRange or valueWindow, then we want a 2D pan.
+  // If any axis has a valueRange, then we want a 2D pan.
   // We can't store data directly in g.axes_, because it does not belong to us
   // and could change out from under us during a pan (say if there's a data
   // update).
@@ -134,7 +134,7 @@ DygraphInteraction.startPan = function(event, g, context) {
     context.axes.push(axis_data);
 
     // While calculating axes, set 2dpan.
-    if (axis.valueWindow || axis.valueRange) context.is2DPan = true;
+    if (axis.valueRange) context.is2DPan = true;
   }
 };
 
@@ -174,7 +174,7 @@ DygraphInteraction.movePan = function(event, g, context) {
     g.dateWindow_ = [ Math.pow(utils.LOG_SCALE, minDate),
                       Math.pow(utils.LOG_SCALE, maxDate) ];
   } else {
-    g.dateWindow_ = [minDate, maxDate];    
+    g.dateWindow_ = [minDate, maxDate];
   }
 
   // y-axis scaling is automatic unless this is a full 2D pan.
@@ -204,10 +204,10 @@ DygraphInteraction.movePan = function(event, g, context) {
         }
       }
       if (g.attributes_.getForAxis("logscale", i)) {
-        axis.valueWindow = [ Math.pow(utils.LOG_SCALE, minValue),
-                             Math.pow(utils.LOG_SCALE, maxValue) ];
+        axis.valueRange = [ Math.pow(utils.LOG_SCALE, minValue),
+                            Math.pow(utils.LOG_SCALE, maxValue) ];
       } else {
-        axis.valueWindow = [ minValue, maxValue ];
+        axis.valueRange = [ minValue, maxValue ];
       }
     }
   }
@@ -536,7 +536,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
     ];
     didZoom = true;
   }
-  
+
   if (context.touchDirections.y) {
     for (i = 0; i < 1  /*g.axes_.length*/; i++) {
       var axis = g.axes_[i];
@@ -544,7 +544,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
       if (logscale) {
         // TODO(danvk): implement
       } else {
-        axis.valueWindow = [
+        axis.valueRange = [
           c_init.dataY - swipe.dataY + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
@@ -706,7 +706,8 @@ DygraphInteraction.defaultModel = {
     // Give plugins a chance to grab this event.
     var e = {
       canvasx: context.dragEndX,
-      canvasy: context.dragEndY
+      canvasy: context.dragEndY,
+      cancelable: true,
     };
     if (g.cascadeEvents_('dblclick', e)) {
       return;

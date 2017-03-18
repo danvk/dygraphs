@@ -276,14 +276,16 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
 };
 
 DygraphLayout.prototype._evaluateLineTicks = function() {
-  var i, tick, label, pos;
+  var i, tick, label, pos, v, has_tick;
   this.xticks = [];
   for (i = 0; i < this.xTicks_.length; i++) {
     tick = this.xTicks_[i];
     label = tick.label;
-    pos = this.dygraph_.toPercentXCoord(tick.v);
+    has_tick = !('label_v' in tick);
+    v = has_tick ? tick.v : tick.label_v;
+    pos = this.dygraph_.toPercentXCoord(v);
     if ((pos >= 0.0) && (pos < 1.0)) {
-      this.xticks.push([pos, label]);
+      this.xticks.push({pos, label, has_tick});
     }
   }
 
@@ -293,9 +295,11 @@ DygraphLayout.prototype._evaluateLineTicks = function() {
     for (var j = 0; j < axis.ticks.length; j++) {
       tick = axis.ticks[j];
       label = tick.label;
-      pos = this.dygraph_.toPercentYCoord(tick.v, i);
+      has_tick = !('label_v' in tick);
+      v = has_tick ? tick.v : tick.label_v;
+      pos = this.dygraph_.toPercentYCoord(v, i);
       if ((pos > 0.0) && (pos <= 1.0)) {
-        this.yticks.push([i, pos, label]);
+        this.yticks.push({axis: i, pos, label, has_tick});
       }
     }
   }

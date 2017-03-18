@@ -1,10 +1,7 @@
 <html>
   <head>
-    <title>isZoomedIgnoresProgrammaticZoom Flag</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>isZoomed method</title>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -16,9 +13,9 @@
       If called with no argument, it will report whether <em>either</em> axis has been zoomed.
       Alternatively it can be called with an argument of either <code>'x'</code> or <code>'y'</code> and it will report the status of just that axis.
     </p>
-  
+
     <p>Here's a simple example using <code>drawCallback</code> to display the various zoom states whenever the chart is zoomed:</p>
-  
+
     <div style="width:600px; text-align:center; font-weight: bold; font-size: 125%;">OUTPUT</div>
     <div style="width: 750px">
       <div style="float: right">
@@ -30,10 +27,10 @@
       <div id="zoomdiv"></div>
       <script type="text/javascript">
         var g = new Dygraph(
-  
+
         // containing div
         document.getElementById("zoomdiv"),
-  
+
         // CSV or path to a CSV file.
         "Date,Value\n" +
         "2011-01-07,75\n" +
@@ -55,7 +52,7 @@
       </script>
       </div>
     </div>
-  
+
     <p>
       <div style="clear:both; width:600px; text-align:center; font-weight: bold; font-size: 125%;">HTML</div>
 
@@ -85,18 +82,7 @@
   );
 </pre>
     </p>
-  
+
     <p>The <a href="zoom.html">Tests for zoom operations</a> show a full example of this in action.</p>
-  
-    <h3>Programmatic Zoom</h3>
-    <p>
-      When a chart is programmatically zoomed by updating either the <code>dateWindow</code>
-      or <code>valueRange</code> option, by default the zoomed flags are also updated correspondingly.
-      It is possible to prevent this by specifying the <code>isZoomedIgnoreProgrammaticZoom</code> in the same
-      call to the <code>updateOptions</code> method.
-    </p>
-    <p>
-      The <a href="tests/is-zoomed-ignore-programmatic-zoom.html">is-zoomed-ignore-programmatic-zoom</a> test shows this in operation.
-    </p>
   </body>
 </html>

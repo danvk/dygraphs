@@ -688,6 +688,33 @@ it('testLogScale', function() {
 });
 
 /**
+ * Verify that log scale axis range works with yRangePad.
+ *
+ * This is a regression test for https://github.com/danvk/dygraphs/issues/661 .
+ */
+it('testLogScalePad', function() {
+  var g = new Dygraph("graph",
+                      [[0, 1e-5], [1, 0.25], [2, 1], [3, 3], [4, 10]], {
+                        width: 250,
+                        height: 130,
+                        logscale: true,
+                        yRangePad: 30,
+                        axes: {y: {valueRange: [1, 10]}},
+                        labels: ['X', 'Y']
+                      });
+  var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['1', '7', '30'], nonEmptyLabels);
+
+  g.updateOptions({ yRangePad: 10, axes: {y: {valueRange: [0.25005, 3]}} });
+  nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['0.4', '1', '3'], nonEmptyLabels);
+
+  g.updateOptions({ axes: {y: {valueRange: [0.01, 3]}} });
+  nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
+  assert.deepEqual(['0.01','0.1','0.7','5'], nonEmptyLabels);
+});
+
+/**
  * Verify that include zero range is properly specified.
  */
 it('testIncludeZero', function() {
@@ -769,75 +796,6 @@ it('testAxisLabelFontSizeNull', function() {
 
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "14px");
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
-});
-
-it('testAxisLabelColor', function() {
-  var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, simpleData, {});
-
-  // Be sure we're dealing with a black default.
-  assert.equal("black", DEFAULT_ATTRS.axisLabelColor);
-
-  var assertColor = function(selector, expected) {
-    Util.assertStyleOfChildren(selector, "color", expected);
-  }
-
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
-
-  g.updateOptions({ axisLabelColor : "red"});
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(255, 0, 0)"); 
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(255, 0, 0)"); 
-
-  g.updateOptions({
-    axisLabelColor : null,
-    axes : { 
-      x : { axisLabelColor : "blue" },
-    }   
-  }); 
-
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
-
-  g.updateOptions({
-    axes : { 
-      y : { axisLabelColor : "green" },
-    }   
-  }); 
-
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 128, 0)"); 
-
-  g.updateOptions({
-    series : { 
-      Y2 : { axis : "y2" } // copy y2 series to y2 axis.
-    },  
-    axes : { 
-      y2 : { axisLabelColor : "yellow" },
-    }   
-  }); 
-
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 255)"); 
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y1"), "rgb(0, 128, 0)"); 
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y2"), "rgb(255, 255, 0)"); 
-});
-
-it('testAxisLabelColorNull', function() {
-  var graph = document.getElementById("graph");
-  var g = new Dygraph(graph, simpleData,
-    {
-      axisLabelColor: null
-    });
-
-  var assertColor = function(selector, expected) {
-    Util.assertStyleOfChildren(selector, "color", expected);
-  }
-
-  // Be sure we're dealing with a 14-point default.
-  assert.equal(14, DEFAULT_ATTRS.axisLabelFontSize);
-
-  assertColor(document.querySelectorAll(".dygraph-axis-label-x"), "rgb(0, 0, 0)");
-  assertColor(document.querySelectorAll(".dygraph-axis-label-y"), "rgb(0, 0, 0)");
 });
 
 /*

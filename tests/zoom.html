@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>zoom</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -50,13 +47,13 @@
             document.getElementById("div_g"),
             NoisyData, {
               errorBars: true,
-              zoomCallback : function(minDate, maxDate, yRange) {
+              zoomCallback: function(minDate, maxDate, yRange) {
                 showDimensions(minDate, maxDate, yRange);
               },
-              drawCallback: function(me, initial) {
-                document.getElementById("zoomed").innerHTML = "" + me.isZoomed();
-                document.getElementById("zoomedX").innerHTML = "" + me.isZoomed("x");
-                document.getElementById("zoomedY").innerHTML = "" + me.isZoomed("y");
+              drawCallback: function() {
+                document.getElementById("zoomed").innerHTML = "" + this.isZoomed();
+                document.getElementById("zoomedX").innerHTML = "" + this.isZoomed("x");
+                document.getElementById("zoomedY").innerHTML = "" + this.isZoomed("y");
               }
             }
           );

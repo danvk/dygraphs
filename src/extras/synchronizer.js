@@ -153,6 +153,16 @@ var synchronize = function(/* dygraphs..., opts */) {
   };
 };
 
+function arraysAreEqual(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  var i = a.length;
+  if (i !== b.length) return false;
+  while (i--) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
 function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
@@ -173,6 +183,13 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
             }
             continue;
           }
+
+          // Only redraw if there are new options
+          if (arraysAreEqual(opts.dateWindow, gs[j].getOption('dateWindow')) && 
+              arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange'))) {
+            continue;
+          }
+
           gs[j].updateOptions(opts);
         }
         block = false;

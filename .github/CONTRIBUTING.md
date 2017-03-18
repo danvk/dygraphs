@@ -7,13 +7,13 @@ It also helps if you include the non-compacted version of the JS on your
 page. For instance, instead of doing this:
 
 ```html
-<script type="text/javascript" src="dygraph-combined.js"></script>
+<script type="text/javascript" src="dygraph.min.js"></script>
 ```
 
 do this:
 
 ```html
-<script type="text/javascript" src="dygraph-combined.dev.js"></script>
+<script type="text/javascript" src="dygraph.js"></script>
 ```
 
 This makes error messages and debugging simpler. The jsfiddle does this automatically.

@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>two series</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -29,6 +26,10 @@
       margin: 5px;
       padding: 2px;
     }
+    .dygraph-legend {
+      text-align: right;
+      background: none;
+    }
     </style>
   </head>
   <body>
@@ -50,10 +51,6 @@
               titleHeight: 32,
               ylabel: 'Temperature (F)',
               xlabel: 'Date (Ticks indicate the start of the indicated time period)',
-              labelsDivStyles: {
-                'text-align': 'right',
-                'background': 'none'
-              },
               strokeWidth: 1.5
             }
           );
@@ -66,10 +63,6 @@
               title: 'High and Low Temperatures (30-day average)',
               ylabel: 'Temperature (F)',
               xlabel: 'Date (Ticks indicate the start of the indicated time period)',
-              labelsDivStyles: {
-                'text-align': 'right',
-                'background': 'none'
-              },
               strokeWidth: 1.5
             }
           );

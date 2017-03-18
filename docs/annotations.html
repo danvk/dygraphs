@@ -6,6 +6,9 @@
   .annotation {
     font-size: 12px !important;
   }
+  .dygraph-legend {
+    width: 300px;
+  }
 </style>
 
 <h2>dygraphs Annotations</h2>
@@ -26,7 +29,6 @@ them.</p>
       showRoller: true,
       customBars: true,
       labelsKMB: true,
-      labelsDivWidth: 300
     }
   );
 
@@ -192,6 +194,8 @@ g.ready(function() {
 <tr><td><code>height</code></td><td>Height (in pixels) of the annotation flag or icon.</td></tr>
 <tr><td><code>cssClass</code></td><td>CSS class to use for styling the annotation.</td></tr>
 <tr><td><code>tickHeight</code></td><td>Height of the tick mark (in pixels) connecting the point to its flag or icon.</td></tr>
+<tr><td><code>tickWidth</code></td><td>Width of the tick mark connecting the point to its flag or icon.</td></tr>
+<tr><td><code>tickColor</code></td><td>Color of the tick mark connecting the point to its flag or icon.</td></tr>
 <tr><td><code>attachAtBottom</code></td><td>If true, attach annotations to the x-axis, rather than to actual points.</td></tr>
 <tr><td><code>clickHandler</code></td>    <td>See Handlers, below</td></tr>
 <tr><td><code>mouseOverHandler</code></td><td>See Handlers, below</td></tr>

@@ -167,8 +167,10 @@ DygraphOptions.prototype.reparseSeries = function() {
   utils.update(this.xAxis_.options, axis_opts["x"] || {});
 
   // For "production" code, this gets removed by uglifyjs.
-  if (process.env.NODE_ENV != 'production') {
-    this.validateOptions_();
+  if (typeof(process) !== 'undefined') {
+    if (process.env.NODE_ENV != 'production') {
+      this.validateOptions_();
+    }
   }
 };
 
@@ -326,6 +328,7 @@ DygraphOptions.prototype.seriesNames = function() {
 };
 
 // For "production" code, this gets removed by uglifyjs.
+if (typeof(process) !== 'undefined') {
 if (process.env.NODE_ENV != 'production') {
 
 /**
@@ -384,8 +387,8 @@ DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
       console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://bit.ly/1tceaJs');
     } else {
       console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
-      throw "invalid option " + optionName;
     }
+    throw "invalid option " + optionName;
   }
 };
 
@@ -394,6 +397,7 @@ DygraphOptions.resetWarnings_ = function() {
   WARNINGS = {};
 };
 
+}
 }
 
 export default DygraphOptions;

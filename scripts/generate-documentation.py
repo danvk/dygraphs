@@ -16,7 +16,7 @@ debug_tests = []  # [ 'tests/zoom.html' ]
 # Pull options reference JSON out of dygraph.js
 js = ''
 in_json = False
-for line in file('dygraph-options-reference.js'):
+for line in file('src/dygraph-options-reference.js'):
   if '<JSON>' in line:
     in_json = True
   elif '</JSON>' in line:

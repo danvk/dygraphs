@@ -5,7 +5,7 @@ Gallery.register(
     name: 'Number formatting',
     setup: function(parent) {
       parent.innerHTML = 
-          "<p>The default formatting mimicks printf with %.<i>p</i>g where <i>p</i> is" +
+          "<p>The default formatting mimics printf with %.<i>p</i>g where <i>p</i> is" +
           "   the precision to use.  It turns out that JavaScript's toPrecision()" +
           "   method is almost but not exactly equal to %g; they differ for values" +
           "   with small absolute values (10^-1 to 10^-5 or so), with toPrecision()" +

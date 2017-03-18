@@ -28,6 +28,39 @@ export var log10 = function(x) {
   return Math.log(x) / LN_TEN;
 };
 
+/**
+ * @private
+ * @param {number} r0
+ * @param {number} r1
+ * @param {number} pct
+ * @return {number}
+ */
+export var logRangeFraction = function(r0, r1, pct) {
+  // Computing the inverse of toPercentXCoord. The function was arrived at with
+  // the following steps:
+  //
+  // Original calcuation:
+  // pct = (log(x) - log(xRange[0])) / (log(xRange[1]) - log(xRange[0])));
+  //
+  // Multiply both sides by the right-side denominator.
+  // pct * (log(xRange[1] - log(xRange[0]))) = log(x) - log(xRange[0])
+  //
+  // add log(xRange[0]) to both sides
+  // log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])) = log(x);
+  //
+  // Swap both sides of the equation,
+  // log(x) = log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0]))
+  //
+  // Use both sides as the exponent in 10^exp and we're done.
+  // x = 10 ^ (log(xRange[0]) + (pct * (log(xRange[1]) - log(xRange[0])))
+
+  var logr0 = log10(r0);
+  var logr1 = log10(r1);
+  var exponent = logr0 + (pct * (logr1 - logr0));
+  var value = Math.pow(LOG_SCALE, exponent);
+  return value;
+};
+
 /** A dotted line stroke pattern. */
 export var DOTTED_LINE = [2, 2];
 /** A dashed line stroke pattern. */
@@ -232,7 +265,7 @@ export function isValidPoint(p, opt_allowNaNY) {
 };
 
 /**
- * Number formatting function which mimicks the behavior of %g in printf, i.e.
+ * Number formatting function which mimics the behavior of %g in printf, i.e.
  * either exponential or fixed format (without trailing 0s) is used depending on
  * the length of the generated string.  The advantage of this format is that
  * there is a predictable upper bound on the resulting string length,
@@ -329,10 +362,14 @@ export var DateAccessorsUTC = {
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-export function hmsString_(hh, mm, ss) {
+export function hmsString_(hh, mm, ss, ms) {
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
+    if (ms) {
+      var str = "" + ms;
+      ret += "." + ('000'+str).substring(str.length);
+    }
   }
   return ret;
 };
@@ -340,7 +377,7 @@ export function hmsString_(hh, mm, ss) {
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
  * @param {number} time The JavaScript time value (ms since epoch)
- * @param {boolean} utc Wether output UTC or local time
+ * @param {boolean} utc Whether output UTC or local time
  * @return {string} A date of one of these forms:
  *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private
@@ -354,16 +391,17 @@ export function dateString_(time, utc) {
   var hh = accessors.getHours(date);
   var mm = accessors.getMinutes(date);
   var ss = accessors.getSeconds(date);
+  var ms = accessors.getMilliseconds(date);
   // Get a year string:
   var year = "" + y;
   // Get a 0 padded month string
   var month = zeropad(m + 1);  //months are 0-offset, sigh
   // Get a 0 padded day string
   var day = zeropad(d);
-  var frac = hh * 3600 + mm * 60 + ss;
+  var frac = hh * 3600 + mm * 60 + ss + 1e-3 * ms;
   var ret = year + "/" + month + "/" + day;
   if (frac) {
-    ret += " " + hmsString_(hh, mm, ss);
+    ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
 };
@@ -648,17 +686,6 @@ export function getContextPixelRatio(context) {
 };
 
 /**
- * Checks whether the user is on an Android browser.
- * Android does not fully support the <canvas> tag, e.g. w/r/t/ clipping.
- * @return {boolean}
- * @private
- */
-export function isAndroid() {
-  return (/Android/).test(navigator.userAgent);
-};
-
-
-/**
  * TODO(danvk): use @template here when it's better supported for classes.
  * @param {!Array} array
  * @param {number} start
@@ -799,7 +826,6 @@ var pixelSafeOptions = {
   'annotationDblClickHandler': true,
   'annotationMouseOutHandler': true,
   'annotationMouseOverHandler': true,
-  'axisLabelColor': true,
   'axisLineColor': true,
   'axisLineWidth': true,
   'clickCallback': true,
@@ -815,10 +841,7 @@ var pixelSafeOptions = {
   'highlightCallback': true,
   'highlightCircleSize': true,
   'interactionModel': true,
-  'isZoomedIgnoreProgrammaticZoom': true,
   'labelsDiv': true,
-  'labelsDivStyles': true,
-  'labelsDivWidth': true,
   'labelsKMB': true,
   'labelsKMG2': true,
   'labelsSeparateLines': true,
@@ -1180,7 +1203,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       hours = accessors.getHours(date),
       mins = accessors.getMinutes(date),
       secs = accessors.getSeconds(date),
-      millis = accessors.getSeconds(date);
+      millis = accessors.getMilliseconds(date);
 
   if (granularity >= DygraphTickers.Granularity.DECADAL) {
     return '' + year;
@@ -1192,7 +1215,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       // e.g. '21 Jan' (%d%b)
       return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
     } else {
-      return hmsString_(hours, mins, secs);
+      return hmsString_(hours, mins, secs, millis);
     }
   }
 };

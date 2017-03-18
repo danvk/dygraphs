@@ -89,7 +89,7 @@ Gallery.start = function() {
 
       jsfs.html("<input type='submit' value='Edit in jsFiddle'/>\n" +
       "<span style='display:none'>\n" +
-      "<textarea name='resources'>http://dygraphs.com/dygraph-combined.js</textarea>\n" +
+      "<textarea name='resources'>http://dygraphs.com/dygraph.js</textarea>\n" +
       "<input type='text' name='dtd' value='html 5'/></span>\n");
 
       var javascript = demo.run.toString();

@@ -1,17 +1,17 @@
 <!DOCTYPE html> 
 <html> 
   <head> 
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>Temperatures</title> 
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    --> 
     <script type="text/javascript" src="../dist/dygraph.js"></script> 
  
     <script type="text/javascript" src="data.js"></script> 
     <style type="text/css"> 
     #bordered {
       border: 1px solid red;
+    }
+    .dygraph-legend {
+      text-align: right;
     }
     </style> 
   </head> 
@@ -34,7 +34,6 @@
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' }
           }
       );
       g2 = new Dygraph(
@@ -47,7 +46,6 @@
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' }
           }
       );
     </script> 

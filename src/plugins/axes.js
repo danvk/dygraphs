@@ -19,6 +19,8 @@ Options left to make axis-friendly.
   ('xAxisHeight')
 */
 
+import * as utils from '../dygraph-utils';
+
 /**
  * Draws the axes. This includes the labels on the x- and y-axes, as well
  * as the tick marks on the axes.
@@ -99,7 +101,7 @@ axes.prototype.willDrawChart = function(e) {
       !g.getOptionForAxis('drawAxis', 'y2')) {
     return;
   }
-  
+
   // Round pixels to half-integer boundaries for crisper drawing.
   function halfUp(x)  { return Math.round(x) + 0.5; }
   function halfDown(y){ return Math.round(y) - 0.5; }
@@ -115,19 +117,14 @@ axes.prototype.willDrawChart = function(e) {
     return {
       position: 'absolute',
       fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + 'px',
-      zIndex: 10,
-      color: g.getOptionForAxis('axisLabelColor', axis),
       width: g.getOptionForAxis('axisLabelWidth', axis) + 'px',
-      // height: g.getOptionForAxis('axisLabelFontSize', 'x') + 2 + "px",
-      lineHeight: 'normal',  // Something other than "normal" line-height screws up label positioning.
-      overflow: 'hidden'
     };
   };
 
   var labelStyles = {
-    x : makeLabelStyle('x'),
-    y : makeLabelStyle('y'),
-    y2 : makeLabelStyle('y2')
+    x: makeLabelStyle('x'),
+    y: makeLabelStyle('y'),
+    y2: makeLabelStyle('y2')
   };
 
   var makeDiv = function(txt, axis, prec_axis) {
@@ -139,11 +136,8 @@ axes.prototype.willDrawChart = function(e) {
      */
     var div = document.createElement('div');
     var labelStyle = labelStyles[prec_axis == 'y2' ? 'y2' : axis];
-    for (var name in labelStyle) {
-      if (labelStyle.hasOwnProperty(name)) {
-        div.style[name] = labelStyle[name];
-      }
-    }
+    utils.update(div.style, labelStyle);
+    // TODO: combine outer & inner divs
     var inner_div = document.createElement('div');
     inner_div.className = 'dygraph-axis-label' +
                           ' dygraph-axis-label-' + axis +
@@ -170,21 +164,20 @@ axes.prototype.willDrawChart = function(e) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
-      for (i = 0; i < layout.yticks.length; i++) {
-        tick = layout.yticks[i];
-        if (typeof(tick) == 'function') return;  // <-- when would this happen?
+      layout.yticks.forEach(tick => {
+        if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x;
         var sgn = 1;
         var prec_axis = 'y1';
         var getAxisOption = getOptions[0];
-        if (tick[0] == 1) {  // right-side y-axis
+        if (tick.axis == 1) {  // right-side y-axis
           x = area.x + area.w;
           sgn = -1;
           prec_axis = 'y2';
           getAxisOption = getOptions[1];
         }
         var fontSize = getAxisOption('axisLabelFontSize');
-        y = area.y + tick[1] * area.h;
+        y = area.y + tick.pos * area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
@@ -194,7 +187,7 @@ axes.prototype.willDrawChart = function(e) {
         context.stroke();
         */
 
-        label = makeDiv(tick[2], 'y', num_axes == 2 ? prec_axis : null);
+        label = makeDiv(tick.label, 'y', num_axes == 2 ? prec_axis : null);
         var top = (y - fontSize / 2);
         if (top < 0) top = 0;
 
@@ -203,10 +196,11 @@ axes.prototype.willDrawChart = function(e) {
         } else {
           label.style.top = top + 'px';
         }
-        if (tick[0] === 0) {
+        // TODO: replace these with css classes?
+        if (tick.axis === 0) {
           label.style.left = (area.x - getAxisOption('axisLabelWidth') - getAxisOption('axisTickSize')) + 'px';
           label.style.textAlign = 'right';
-        } else if (tick[0] == 1) {
+        } else if (tick.axis == 1) {
           label.style.left = (area.x + area.w +
                               getAxisOption('axisTickSize')) + 'px';
           label.style.textAlign = 'left';
@@ -214,7 +208,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
-      }
+      });
 
       // The lowest tick on the y-axis often overlaps with the leftmost
       // tick on the x-axis. Shift the bottom tick up a little bit to
@@ -263,9 +257,9 @@ axes.prototype.willDrawChart = function(e) {
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       var getAxisOption = makeOptionGetter('x');
-      for (i = 0; i < layout.xticks.length; i++) {
-        tick = layout.xticks[i];
-        x = area.x + tick[0] * area.w;
+      layout.xticks.forEach(tick => {
+        if (tick.label === undefined) return;  // this tick only has a grid line.
+        x = area.x + tick.pos * area.w;
         y = area.y + area.h;
 
         /* Tick marks are currently clipped, so don't bother drawing them.
@@ -276,7 +270,7 @@ axes.prototype.willDrawChart = function(e) {
         context.stroke();
         */
 
-        label = makeDiv(tick[1], 'x');
+        label = makeDiv(tick.label, 'x');
         label.style.textAlign = 'center';
         label.style.top = (y + getAxisOption('axisTickSize')) + 'px';
 
@@ -294,7 +288,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.xlabels_.push(label);
-      }
+      });
     }
 
     context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');

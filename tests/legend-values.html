@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>Label styles</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -17,6 +14,7 @@
         border-radius: 10px;
         box-shadow: 4px 4px 4px #888;
         pointer-events: none;
+        width: 100px;
       }
       pre {
         margin-top: 30px;
@@ -52,7 +50,6 @@
       var baseOpts = {
         rollPeriod: 14,
         errorBars: true,
-        labelsDivWidth: 100,
         labelsSeparateLines: true
       };
 

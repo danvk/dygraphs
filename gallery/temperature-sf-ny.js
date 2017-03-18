@@ -8,6 +8,7 @@ Gallery.register(
     title: 'Demo of a graph with many data points and custom error bars.',
     setup: function(parent) {
       parent.innerHTML = [
+          "<style>.dygraph-legend { text-align: right; }</style>",
           "<p>Roll period of 14 timesteps.</p>",
           "<div id='roll14' style='width:600px; height:300px;'></div>",
           "<p>No roll period.</p>",
@@ -23,7 +24,6 @@ Gallery.register(
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' }
           }
       );
       new Dygraph(
@@ -36,7 +36,6 @@ Gallery.register(
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' }
           }
       );
     }

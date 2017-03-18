@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
     <title>Temperatures with Range Selector</title>
-    <!--
-    For production (minified) code, use:
-    <script type="text/javascript" src="dygraph-combined.js"></script>
-    -->
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="data.js"></script>
@@ -16,6 +13,21 @@
     #dark-background {
       background-color: #101015;
       color: white;
+    }
+    #darkbg1 .dygraph-axis-label, #darkbg2 .dygraph-axis-label {
+      color: white;
+    }
+    #noroll .dygraph-legend,
+    #roll14 .dygraph-legend,
+    #darkbg1 .dygraph-legend,
+    #darkbg2 .dygraph-legend {
+      text-align: right;
+    }
+    #darkbg1 .dygraph-legend {
+      background-color: #101015;
+    }
+    #darkbg2 .dygraph-legend {
+      background-color: #101015;
     }
     </style>
   </head>
@@ -61,7 +73,6 @@
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' },
             showRangeSelector: true
           }
       );
@@ -75,7 +86,6 @@
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' },
             xAxisHeight: 14,
             showRangeSelector: true,
             rangeSelectorHeight: 80,
@@ -133,11 +143,9 @@
               title: 'Nightly Temperatures in NY vs. SF',
               ylabel: 'Temperature (F)',
               legend: 'always',
-              labelsDivStyles: { 'textAlign': 'right', 'backgroundColor': '#101015' },
               showRangeSelector: true,
               rangeSelectorPlotFillColor: 'MediumSlateBlue',
               rangeSelectorPlotFillGradientColor: 'rgba(123, 104, 238, 0)',
-              axisLabelColor: 'white',
               colorValue: 0.9,
               fillAlpha: 0.4
           }
@@ -152,10 +160,8 @@
               title: 'Nightly Temperatures in NY vs. SF',
               ylabel: 'Temperature (F)',
               legend: 'always',
-              labelsDivStyles: { 'textAlign': 'right', 'backgroundColor': '#101015' },
               showRangeSelector: true,
               rangeSelectorPlotFillColor: 'MediumSlateBlue',
-              axisLabelColor: 'white',
               colorValue: 0.9,
               fillAlpha: 0.4
           }

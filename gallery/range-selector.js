@@ -7,6 +7,11 @@ Gallery.register(
     title: 'Demo of the Range Selector',
     setup: function(parent) {
       parent.innerHTML = [
+          "<style>",
+          "  #darkbg .dygraph-axis-label { color: white; }",
+          "  .dygraph-legend { text-align: right; }",
+          "  #darkbg .dygraph-legend { background-color: #101015; }",
+          "</style>",
           "<p>No roll period.</p>",
           "<div id='noroll' style='width:600px; height:300px;'></div>",
           "",
@@ -27,7 +32,6 @@ Gallery.register(
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' },
             showRangeSelector: true
           }
       );
@@ -41,7 +45,6 @@ Gallery.register(
             title: 'Daily Temperatures in New York vs. San Francisco',
             ylabel: 'Temperature (F)',
             legend: 'always',
-            labelsDivStyles: { 'textAlign': 'right' },
             showRangeSelector: true,
             rangeSelectorHeight: 30,
             rangeSelectorPlotStrokeColor: 'yellow',
@@ -58,11 +61,9 @@ Gallery.register(
               title: 'Nightly Temperatures in New York vs. San Francisco',
               ylabel: 'Temperature (F)',
               legend: 'always',
-              labelsDivStyles: { 'textAlign': 'right', 'backgroundColor': '#101015' },
               showRangeSelector: true,
               rangeSelectorPlotFillColor: 'MediumSlateBlue',
               rangeSelectorPlotFillGradientColor: 'rgba(123, 104, 238, 0)',
-              axisLabelColor: 'white',
               colorValue: 0.9,
               fillAlpha: 0.4
           }

@@ -1,9 +1,6 @@
 #!/bin/bash
-# This generates:
-# - dist/dygraph.js
-# - dist/dygraph.js.map
-# - dist/dygraph.min.js
-# - dist/dygraph.min.js.map
+# This generates everything under dist:
+# bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
 
 mkdir -p dist
@@ -34,7 +31,7 @@ browserify \
 # Create dist/dygraph.tmp.js.map
 cat dist/dygraph.tmp.js | exorcist --base . dist/dygraph.tmp.js.map > /dev/null
 
-header='/*! @license Copyright 2014 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
+header='/*! @license Copyright 2017 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
 
 # Create dist/dygraph.js.min{,.map}
 uglifyjs --compress --mangle \
@@ -45,11 +42,15 @@ uglifyjs --compress --mangle \
   -o dist/dygraph.min.js \
   dist/dygraph.tmp.js
 
-# Copy to the old location
-cp dist/dygraph.min.js dist/dygraph-combined.js
-
 # Build GWT JAR
 jar -cf dist/dygraph-gwt.jar -C gwt org
+
+# Minify CSS
+cp css/dygraph.css dist/
+cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
+
+# Build ES5-compatible distribution
+babel src -d src-es5 --compact false
 
 # Remove temp files.
 rm dist/dygraph.tmp.js
