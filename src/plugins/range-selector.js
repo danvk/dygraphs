@@ -752,6 +752,7 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
   var width = this.canvasRect_.w - margin;
   var height = this.canvasRect_.h - margin;
   var zoomHandleStatus = this.getZoomHandleStatus_();
+  var fillStyle = this.getOption_('rangeSelectorForegroundFillColor');
 
   ctx.strokeStyle = this.getOption_('rangeSelectorForegroundStrokeColor');
   ctx.lineWidth = this.getOption_('rangeSelectorForegroundLineWidth');
@@ -766,7 +767,11 @@ rangeSelector.prototype.drawInteractiveLayer_ = function() {
     var leftHandleCanvasPos = Math.max(margin, zoomHandleStatus.leftHandlePos - this.canvasRect_.x);
     var rightHandleCanvasPos = Math.min(width, zoomHandleStatus.rightHandlePos - this.canvasRect_.x);
 
-    ctx.fillStyle = 'rgba(240, 240, 240, ' + this.getOption_('rangeSelectorAlpha').toString() + ')';
+    if (fillStyle) {
+      ctx.fillStyle = fillStyle
+    } else {
+      ctx.fillStyle = 'rgba(240, 240, 240, ' + this.getOption_('rangeSelectorAlpha').toString() + ')';
+    }
     ctx.fillRect(0, 0, leftHandleCanvasPos, this.canvasRect_.h);
     ctx.fillRect(rightHandleCanvasPos, 0, this.canvasRect_.w - rightHandleCanvasPos, this.canvasRect_.h);
 

@@ -64,6 +64,11 @@
     <p>Demo of range selector with stepPlot</p>
     <div id="stepplot" style="width:800px; height:320px;"></div>
 
+    <div id="rangeselectorveil" style="width:800px; height:320px;"></div>
+    <p>
+      Demo of setting a custom color for the range selector veil.
+    </p>
+
     <script type="text/javascript">
       g1 = new Dygraph(
           document.getElementById("noroll"),
@@ -180,6 +185,22 @@
                           includeZero: true,
                           showRangeSelector: true
                        });
+      g8 = new Dygraph(
+          document.getElementById("rangeselectorveil"),
+          [
+            [0, 4],
+            [10, 2],
+            [25, 15],
+            [35, 8],
+            [42, 9]
+          ],
+          {
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            showRangeSelector: true,
+            rangeSelectorForegroundFillColor: 'rgba(200,0,40,0.6)',
+            dateWindow: [5, 20],
+          }); 
     </script>
   </body>
 </html>
