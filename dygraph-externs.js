@@ -40,7 +40,7 @@ Dygraph.prototype.isZoomed;
 /** @type {function(): string} */
 Dygraph.prototype.toString;
 
-/** @type {function(string, string)} */
+/** @type {function(string, string=)} */
 Dygraph.prototype.getOption;
 
 /** @type {function(): number} */
@@ -127,7 +127,7 @@ Dygraph.prototype.isSeriesLocked;
 /** @type {function(): number} */
 Dygraph.prototype.numAxes;
 
-/** @type {function(Object, Boolean=)} */
+/** @type {function(Object, boolean=)} */
 Dygraph.prototype.updateOptions;
 
 /** @type {function(number, number)} */
