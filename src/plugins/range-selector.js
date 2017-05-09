@@ -64,7 +64,7 @@ rangeSelector.prototype.setDefaultOption_ = function(name, value) {
  */
 rangeSelector.prototype.createInterface_ = function() {
   this.createCanvases_();
-  this.createZoomHandles_();
+  this.createZoomHandles_(this.placeZoomHandles_);
   this.initInteraction_();
 
   // Range selector and animatedZooms have a bad interaction. See issue 359.
@@ -132,7 +132,6 @@ rangeSelector.prototype.renderInteractiveLayer_ = function() {
   if (!this.updateVisibility_() || this.isChangingRange_) {
     return;
   }
-  this.placeZoomHandles_();
   this.drawInteractiveLayer_();
 };
 
@@ -216,7 +215,7 @@ rangeSelector.prototype.createCanvases_ = function() {
  * @private
  * Creates the zoom handle elements.
  */
-rangeSelector.prototype.createZoomHandles_ = function() {
+rangeSelector.prototype.createZoomHandles_ = function(callbackFunction) {
   var img = new Image();
   img.className = 'dygraph-rangesel-zoomhandle';
   img.style.position = 'absolute';
@@ -224,22 +223,66 @@ rangeSelector.prototype.createZoomHandles_ = function() {
   img.style.visibility = 'hidden'; // Initially hidden so they don't show up in the wrong place.
   img.style.cursor = 'col-resize';
   // TODO: change image to more options
-  img.width = 9;
-  img.height = 16;
-  img.src = 'data:image/png;base64,' +
-'iVBORw0KGgoAAAANSUhEUgAAAAkAAAAQCAYAAADESFVDAAAAAXNSR0IArs4c6QAAAAZiS0dEANAA' +
-'zwDP4Z7KegAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sHGw0cMqdt1UwAAAAZdEVYdENv' +
-'bW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAaElEQVQoz+3SsRFAQBCF4Z9WJM8KCDVwownl' +
-'6YXsTmCUsyKGkZzcl7zkz3YLkypgAnreFmDEpHkIwVOMfpdi9CEEN2nGpFdwD03yEqDtOgCaun7s' +
-'qSTDH32I1pQA2Pb9sZecAxc5r3IAb21d6878xsAAAAAASUVORK5CYII=';
+  // get source url of the image
+  var imgSrc = this.getOption_('rangeSelectorZoomHandleImage');
+  // if nothing is provided,
+  if (imgSrc == null) {
+    imgSrc =
+    "data:image/png;base64," +
+    "iVBORw0KGgoAAAANSUhEUgAAABMAAAAhCAYAAAA74pBqAAAABm" +
+    "JLR0QA/wD/AP+gvaeTAAADFElEQVRIie3Wb0vjWBTH8W+TmzZJ" +
+    "LZrY7lB2bat13IFRi868jFVfp0/dtzAiCBF01OCAVTp1am2T9A" +
+    "82f9ok+2BZYZwdYZ8unmcXLh8O9x74nYzrummr1cKyLJrX13iu" +
+    "i+/7vFQ5VcUwDKrVKh8+fmRlZQXbtn8VrVaLi4sLzk5PuWu3Sd" +
+    "OUjCSRVRRkIb5DkjgmiiJGoxG9Xo/RaISmaciSxOHhYUFYlsXZ" +
+    "6SndbpdCocD6xga1Wg3DNNE17TssCAI81+Vru83nszN6Dw9Yls" +
+    "XE97Ft+xfRvL7mrt2mUChQr9dpNBr8/u4dpmmi6/oPmOs4LBaL" +
+    "TCYTvlxd0el0UBSF4XA4LzzXJU1T1jc2aDQa1FdXMU2TbDb7w1" +
+    "spioJhGCwvLxPHMfl8nsNPn3Adh2Q6VYXv+2QkiVqt9tRRkiTc" +
+    "NJskaUq5XEaSJDqdDnEcUy6XMUyTSqWC4zhkJInJZEIcx7IAyC" +
+    "oKhmk+dXTTbHJwcEAUhuzu7ZFTVf48OMD3ffb29lheWfnXX5YA" +
+    "ZCHQNQ1d1xFCMB6Puby85Pz8nMFwyHg8xv7nPBj8dGSkFwfqP9" +
+    "Yr9oq9Yq/Y/wUT8HcehmFIGAQIRUHTdaqVCmEUMZfPo6oqlWoV" +
+    "fzIhPzf3MhZNp3ieh+u6LBgG5XKZnd1d4iTht6UlZFnmj50dZr" +
+    "MZlUrl51g2lyMeDmm325RKJWppymKxyGajgSzLTxe3trZIkoTp" +
+    "dMrA8+j1enieB2lKTlXxwzARpmni9Pt8Pjsj8H1msxmZTIYFw0" +
+    "B7luhRFDEYDLhpNjk+PubL1RWzOOaNafI4GgViqVLB8zycfh/b" +
+    "ttF0nSAIWCwWyT9LdD8IcPp9bm9usC8v6fX7FItFarUafccZiw" +
+    "/b26i5HCcnJ3S7XY6OjrAsCzWXQzxbXGZxTBgERFFEGEWUSiW2" +
+    "t7d5v76O47o9sfr2LZIs8/j4SCaTwXUcXMd5cQRUTaNUKlGv19" +
+    "nY3GRtbY0wDAfi/v7+vW3bha+3t2/8yWRBEiKna5p4CcsIMQuD" +
+    "ILz79m1k23Z3fn5+uL+///AXMD2A8GOGIcgAAAAASUVORK5CYI" +
+    "I="
+  }
+  img.src = imgSrc;
+  var rangeSelectorInstance = this;
+  // get dimensions of the image after it's loaded
+  img.onload = function() {
+    this.width = this.naturalWidth/2;
+    this.height = this.naturalHeight/2;
+    // double the size of the image if the device is mobile
+    if (rangeSelectorInstance.isMobileDevice_) {
+      this.width *= 2;
+      this.height *= 2;
+    }
+    var halfHandleWidth = this.width/2;
+    callbackFunction.call(rangeSelectorInstance, halfHandleWidth);
+  }
 
-  if (this.isMobileDevice_) {
-    img.width *= 2;
-    img.height *= 2;
+  // create a duplicate of the image (for the second zoom handle)
+  var img2 = img.cloneNode(false);
+  img2.onload = function() {
+    this.width = this.naturalWidth/2;
+    this.height = this.naturalHeight/2;
+    // double the size of the image if the device is mobile
+    if (rangeSelectorInstance.isMobileDevice_) {
+      this.width = this.naturalWidth;
+      this.height = this.naturalHeight;
+    }
   }
 
   this.leftZoomHandle_ = img;
-  this.rightZoomHandle_ = img.cloneNode(false);
+  this.rightZoomHandle_ = img2;
 };
 
 /**
@@ -722,7 +765,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
  * @private
  * Places the zoom handles in the proper position based on the current X data window.
  */
-rangeSelector.prototype.placeZoomHandles_ = function() {
+rangeSelector.prototype.placeZoomHandles_ = function(halfHandleWidth) {
   var xExtremes = this.dygraph_.xAxisExtremes();
   var xWindowLimits = this.dygraph_.xAxisRange();
   var xRange = xExtremes[1] - xExtremes[0];
@@ -731,7 +774,7 @@ rangeSelector.prototype.placeZoomHandles_ = function() {
   var leftCoord = this.canvasRect_.x + this.canvasRect_.w*leftPercent;
   var rightCoord = this.canvasRect_.x + this.canvasRect_.w*(1 - rightPercent);
   var handleTop = Math.max(this.canvasRect_.y, this.canvasRect_.y + (this.canvasRect_.h - this.leftZoomHandle_.height)/2);
-  var halfHandleWidth = this.leftZoomHandle_.width/2;
+  // var halfHandleWidth = this.leftZoomHandle_.width/2;
   this.leftZoomHandle_.style.left = (leftCoord - halfHandleWidth) + 'px';
   this.leftZoomHandle_.style.top = handleTop + 'px';
   this.rightZoomHandle_.style.left = (rightCoord - halfHandleWidth) + 'px';

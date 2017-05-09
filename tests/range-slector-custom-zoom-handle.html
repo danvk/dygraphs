@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Custom zoom handle image</title>
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #bordered {
+      border: 1px solid red;
+    }
+    #dark-background {
+      background-color: #101015;
+      color: white;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Custom zoom handle image</h1>
+    <div id="custom-zoom-handle" style="width:800px; height:320px;"></div>
+
+    <script type="text/javascript">
+      g1 = new Dygraph(
+          document.getElementById("custom-zoom-handle"),
+          data_temp,
+          {
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            labelsDivStyles: { 'textAlign': 'right' },
+            showRangeSelector: true,
+            rangeSelectorZoomHandleImage: 'drawing/custom-zoom-handle.png'
+          }
+      );
+    </script>
+  </body>
+</html>

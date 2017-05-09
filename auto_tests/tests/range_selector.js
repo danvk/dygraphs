@@ -161,6 +161,7 @@ it('testAdditionalRangeSelectorOptions', function() {
     rangeSelectorForegroundStrokeColor: 'red',
     rangeSelectorForegroundLineWidth: 2,
     rangeSelectorAlpha: 0.8,
+    rangeSelectorZoomHandleImage: 'img/custom-zoom-handle.png',
     labels: ['X', 'Y']
   };
   var data = [
