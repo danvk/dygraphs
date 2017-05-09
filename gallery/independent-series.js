@@ -145,16 +145,18 @@ Gallery.register(
 
     new Dygraph(
       document.getElementById('graph2'),
-      'x,A,B  \n' +
-      '1,,3   \n' +
-      '2,2,   \n' +
-      '3,,5   \n' +
-      '4,4,   \n' +
-      '5,,7   \n' +
-      '6,NaN, \n' +
-      '8,8,   \n' +
-      '10,10, \n',
+      [
+        [1, null, 3],
+        [2, 2, null],
+        [3, null, 7],
+        [4, 5, null],
+        [5, null, 5],
+        [6, NaN, null],
+        [8, 8, null],
+        [10, 10, null],
+      ],
       {
+        labels: ['x', 'A', 'B' ],
         connectSeparatedPoints: true,
         drawPoints: true
       }
