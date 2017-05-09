@@ -236,6 +236,10 @@ Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
       var seriesData = labelToSeries[pt.name];
       seriesData.y = pt.yval;
 
+      // Add canvas location to returned series data
+      seriesData.canvasx = pt.canvasx;
+      seriesData.canvasy = pt.canvasy;
+
       if ((pt.yval === 0 && !showZeros) || isNaN(pt.canvasy)) {
         seriesData.isVisible = false;
         continue;
@@ -320,7 +324,7 @@ function generateLegendDashHTML(strokePattern, color, oneEmWidth) {
   var normalizedPattern = [];
   var loop;
 
-  // Compute the length of the pixels including the first segment twice, 
+  // Compute the length of the pixels including the first segment twice,
   // since we repeat it.
   for (i = 0; i <= strokePattern.length; i++) {
     strokePixelLength += strokePattern[i%strokePattern.length];
