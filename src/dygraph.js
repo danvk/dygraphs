@@ -519,7 +519,7 @@ Dygraph.prototype.xAxisExtremes = function() {
     return [0 - pad, 1 + pad];
   }
   var left = this.rawData_[0][0];
-  var right = this.rawData_[this.rawData_.length - 1][0];
+  var right = this.rawData_[Object.keys(this.rawData_).length - 1][0];
   if (pad) {
     // Must keep this in sync with dygraph-layout _evaluateLimits()
     var range = right - left;
@@ -766,7 +766,7 @@ Dygraph.prototype.numColumns = function() {
  */
 Dygraph.prototype.numRows = function() {
   if (!this.rawData_) return 0;
-  return this.rawData_.length;
+  return Object.keys(this.rawData_).length;
 };
 
 /**
@@ -780,7 +780,7 @@ Dygraph.prototype.numRows = function() {
  *     were out of range.
  */
 Dygraph.prototype.getValue = function(row, col) {
-  if (row < 0 || row > this.rawData_.length) return null;
+  if (row < 0 || row > Object.keys(this.rawData_).length) return null;
   if (col < 0 || col > this.rawData_[row].length) return null;
 
   return this.rawData_[row][col];

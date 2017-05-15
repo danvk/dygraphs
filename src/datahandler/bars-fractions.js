@@ -32,7 +32,7 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var mult = 100.0;
   var sigma = options.get("sigma");
   var logScale = options.get('logscale');
-  for ( var j = 0; j < rawData.length; j++) {
+  for ( var j = 0; j < Object.keys(rawData).length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
     if (logScale && point !== null) {

@@ -29,7 +29,7 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var series = [];
   var x, y, point;
   var logScale = options.get('logscale');
-  for ( var j = 0; j < rawData.length; j++) {
+  for ( var j = 0; j < Object.keys(rawData).length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
     if (logScale && point !== null) {
