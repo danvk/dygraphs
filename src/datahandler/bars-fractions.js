@@ -32,32 +32,34 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var mult = 100.0;
   var sigma = options.get("sigma");
   var logScale = options.get('logscale');
-  for ( var j = 0; j < Object.keys(rawData).length; j++) {
-    x = rawData[j][0];
-    point = rawData[j][i];
-    if (logScale && point !== null) {
-      // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart.
-      if (point[0] <= 0 || point[1] <= 0) {
-        point = null;
-      }
-    }
-    // Extract to the unified data format.
-    if (point !== null) {
-      num = point[0];
-      den = point[1];
-      if (num !== null && !isNaN(num)) {
-        value = den ? num / den : 0.0;
-        stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
-        variance = mult * stddev;
-        y = mult * value;
-        // preserve original values in extras for further filtering
-        series.push([ x, y, [ y - variance, y + variance, num, den ] ]);
-      } else {
-        series.push([ x, num, [ num, num, num, den ] ]);
-      }
-    } else {
-      series.push([ x, null, [ null, null, null, null ] ]);
+  for ( var j = 0; j < rawData.length; j++) {
+    if (rawData[j] !== undefined) {
+        x = rawData[j][0];
+        point = rawData[j][i];
+        if (logScale && point !== null) {
+            // On the log scale, points less than zero do not exist.
+            // This will create a gap in the chart.
+            if (point[0] <= 0 || point[1] <= 0) {
+                point = null;
+            }
+        }
+        // Extract to the unified data format.
+        if (point !== null) {
+            num = point[0];
+            den = point[1];
+            if (num !== null && !isNaN(num)) {
+                value = den ? num / den : 0.0;
+                stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
+                variance = mult * stddev;
+                y = mult * value;
+                // preserve original values in extras for further filtering
+                series.push([ x, y, [ y - variance, y + variance, num, den ] ]);
+            } else {
+                series.push([ x, num, [ num, num, num, den ] ]);
+            }
+        } else {
+            series.push([ x, null, [ null, null, null, null ] ]);
+        }
     }
   }
   return series;

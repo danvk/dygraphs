@@ -30,30 +30,32 @@ DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {
   var x, y, point, num, den, value;
   var mult = 100.0;
   var logScale = options.get('logscale');
-  for ( var j = 0; j < Object.keys(rawData).length; j++) {
-    x = rawData[j][0];
-    point = rawData[j][i];
-    if (logScale && point !== null) {
-      // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart.
-      if (point[0] <= 0 || point[1] <= 0) {
-        point = null;
-      }
-    }
-    // Extract to the unified data format.
-    if (point !== null) {
-      num = point[0];
-      den = point[1];
-      if (num !== null && !isNaN(num)) {
-        value = den ? num / den : 0.0;
-        y = mult * value;
-        // preserve original values in extras for further filtering
-        series.push([ x, y, [ num, den ] ]);
-      } else {
-        series.push([ x, num, [ num, den ] ]);
-      }
-    } else {
-      series.push([ x, null, [ null, null ] ]);
+  for ( var j = 0; j < rawData.length; j++) {
+    if (rawData[j] !== undefined) {
+        x = rawData[j][0];
+        point = rawData[j][i];
+        if (logScale && point !== null) {
+            // On the log scale, points less than zero do not exist.
+            // This will create a gap in the chart.
+            if (point[0] <= 0 || point[1] <= 0) {
+                point = null;
+            }
+        }
+        // Extract to the unified data format.
+        if (point !== null) {
+            num = point[0];
+            den = point[1];
+            if (num !== null && !isNaN(num)) {
+                value = den ? num / den : 0.0;
+                y = mult * value;
+                // preserve original values in extras for further filtering
+                series.push([ x, y, [ num, den ] ]);
+            } else {
+                series.push([ x, num, [ num, den ] ]);
+            }
+        } else {
+            series.push([ x, null, [ null, null ] ]);
+        }
     }
   }
   return series;
