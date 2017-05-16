@@ -31,28 +31,30 @@ ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var sigma = options.get("sigma");
   var logScale = options.get('logscale');
   for ( var j = 0; j < rawData.length; j++) {
-    x = rawData[j][0];
-    point = rawData[j][i];
-    if (logScale && point !== null) {
-      // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart.
-      if (point[0] <= 0 || point[0] - sigma * point[1] <= 0) {
-        point = null;
-      }
-    }
-    // Extract to the unified data format.
-    if (point !== null) {
-      y = point[0];
-      if (y !== null && !isNaN(y)) {
-        variance = sigma * point[1];
-        // preserve original error value in extras for further
-        // filtering
-        series.push([ x, y, [ y - variance, y + variance, point[1] ] ]);
-      } else {
-        series.push([ x, y, [ y, y, y ] ]);
-      }
-    } else {
-      series.push([ x, null, [ null, null, null ] ]);
+    if (rawData[j] !== undefined) {
+        x = rawData[j][0];
+        point = rawData[j][i];
+        if (logScale && point !== null) {
+            // On the log scale, points less than zero do not exist.
+            // This will create a gap in the chart.
+            if (point[0] <= 0 || point[0] - sigma * point[1] <= 0) {
+                point = null;
+            }
+        }
+        // Extract to the unified data format.
+        if (point !== null) {
+            y = point[0];
+            if (y !== null && !isNaN(y)) {
+                variance = sigma * point[1];
+                // preserve original error value in extras for further
+                // filtering
+                series.push([ x, y, [ y - variance, y + variance, point[1] ] ]);
+            } else {
+                series.push([ x, y, [ y, y, y ] ]);
+            }
+        } else {
+            series.push([ x, null, [ null, null, null ] ]);
+        }
     }
   }
   return series;

@@ -518,8 +518,9 @@ Dygraph.prototype.xAxisExtremes = function() {
   if (this.numRows() === 0) {
     return [0 - pad, 1 + pad];
   }
-  var left = this.rawData_[0][0];
-  var right = this.rawData_[this.rawData_.length - 1][0];
+  var keys = Object.keys(this.rawData_);
+  var left = this.rawData_[keys[0]][0];
+  var right = this.rawData_[keys[keys.length - 1]][0];
   if (pad) {
     // Must keep this in sync with dygraph-layout _evaluateLimits()
     var range = right - left;
@@ -766,7 +767,7 @@ Dygraph.prototype.numColumns = function() {
  */
 Dygraph.prototype.numRows = function() {
   if (!this.rawData_) return 0;
-  return this.rawData_.length;
+  return Object.keys(this.rawData_).length;
 };
 
 /**
@@ -780,7 +781,7 @@ Dygraph.prototype.numRows = function() {
  *     were out of range.
  */
 Dygraph.prototype.getValue = function(row, col) {
-  if (row < 0 || row > this.rawData_.length) return null;
+  if (row < 0 || row > Object.keys(this.rawData_).length) return null;
   if (col < 0 || col > this.rawData_[row].length) return null;
 
   return this.rawData_[row][col];
@@ -2843,17 +2844,19 @@ Dygraph.prototype.parseArray_ = function(data) {
     // Assume they're all dates.
     var parsedData = utils.clone(data);
     for (i = 0; i < data.length; i++) {
-      if (parsedData[i].length === 0) {
-        console.error("Row " + (1 + i) + " of data is empty");
-        return null;
+      if (parsedData[i] !== undefined) {
+          if (parsedData[i].length === 0) {
+              console.error("Row " + (1 + i) + " of data is empty");
+              return null;
+          }
+          if (parsedData[i][0] === null ||
+              typeof(parsedData[i][0].getTime) != 'function' ||
+              isNaN(parsedData[i][0].getTime())) {
+              console.error("x value in row " + (1 + i) + " is not a Date");
+              return null;
+          }
+          parsedData[i][0] = parsedData[i][0].getTime();
       }
-      if (parsedData[i][0] === null ||
-          typeof(parsedData[i][0].getTime) != 'function' ||
-          isNaN(parsedData[i][0].getTime())) {
-        console.error("x value in row " + (1 + i) + " is not a Date");
-        return null;
-      }
-      parsedData[i][0] = parsedData[i][0].getTime();
     }
     return parsedData;
   } else {

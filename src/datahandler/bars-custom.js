@@ -30,25 +30,27 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var x, y, point;
   var logScale = options.get('logscale');
   for ( var j = 0; j < rawData.length; j++) {
-    x = rawData[j][0];
-    point = rawData[j][i];
-    if (logScale && point !== null) {
-      // On the log scale, points less than zero do not exist.
-      // This will create a gap in the chart.
-      if (point[0] <= 0 || point[1] <= 0 || point[2] <= 0) {
-        point = null;
-      }
-    }
-    // Extract to the unified data format.
-    if (point !== null) {
-      y = point[1];
-      if (y !== null && !isNaN(y)) {
-        series.push([ x, y, [ point[0], point[2] ] ]);
-      } else {
-        series.push([ x, y, [ y, y ] ]);
-      }
-    } else {
-      series.push([ x, null, [ null, null ] ]);
+    if (rawData[j] !== undefined) {
+        x = rawData[j][0];
+        point = rawData[j][i];
+        if (logScale && point !== null) {
+            // On the log scale, points less than zero do not exist.
+            // This will create a gap in the chart.
+            if (point[0] <= 0 || point[1] <= 0 || point[2] <= 0) {
+                point = null;
+            }
+        }
+        // Extract to the unified data format.
+        if (point !== null) {
+            y = point[1];
+            if (y !== null && !isNaN(y)) {
+                series.push([ x, y, [ point[0], point[2] ] ]);
+            } else {
+                series.push([ x, y, [ y, y ] ]);
+            }
+        } else {
+            series.push([ x, null, [ null, null ] ]);
+        }
     }
   }
   return series;
