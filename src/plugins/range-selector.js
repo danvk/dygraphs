@@ -161,8 +161,10 @@ rangeSelector.prototype.updateVisibility_ = function() {
  * Resizes the range selector.
  */
 rangeSelector.prototype.resize_ = function() {
-  function setElementRect(canvas, context, rect) {
-    var canvasScale = utils.getContextPixelRatio(context);
+  function setElementRect(canvas, context, rect, pixelRatioOption) {
+    var canvasScale = pixelRatioOption > 0
+      ? pixelRatioOption
+      : utils.getContextPixelRatio(context);
 
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
@@ -189,8 +191,9 @@ rangeSelector.prototype.resize_ = function() {
     h: this.getOption_('rangeSelectorHeight')
   };
 
-  setElementRect(this.bgcanvas_, this.bgcanvas_ctx_, this.canvasRect_);
-  setElementRect(this.fgcanvas_, this.fgcanvas_ctx_, this.canvasRect_);
+  var pixelRatioOption = dygraph.getNumericOption('pixelRatio');
+  setElementRect(this.bgcanvas_, this.bgcanvas_ctx_, this.canvasRect_, pixelRatioOption);
+  setElementRect(this.fgcanvas_, this.fgcanvas_ctx_, this.canvasRect_, pixelRatioOption);
 };
 
 /**
