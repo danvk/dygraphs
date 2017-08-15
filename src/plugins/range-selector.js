@@ -191,7 +191,7 @@ rangeSelector.prototype.resize_ = function() {
     h: this.getOption_('rangeSelectorHeight')
   };
 
-  var pixelRatioOption = dygraph.getNumericOption('pixelRatio');
+  var pixelRatioOption = this.dygraph_.getNumericOption('pixelRatio');
   setElementRect(this.bgcanvas_, this.bgcanvas_ctx_, this.canvasRect_, pixelRatioOption);
   setElementRect(this.fgcanvas_, this.fgcanvas_ctx_, this.canvasRect_, pixelRatioOption);
 };
