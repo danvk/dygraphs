@@ -302,8 +302,8 @@ OPTIONS_REFERENCE =  // <JSON>
   "pixelRatio": {
     "default": "(devicePixelRatio / context.backingStoreRatio)",
     "labels": ["Overall display"],
-    "type": "integer",
-    "description": "Overrides the pixel ratio scaling factor for the canvas's 3d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1."
+    "type": "float",
+    "description": "Overrides the pixel ratio scaling factor for the canvas's 2d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1."
   },
   "interactionModel": {
     "default": "...",

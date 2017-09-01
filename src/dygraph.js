@@ -863,9 +863,7 @@ Dygraph.prototype.resizeElements_ = function() {
 
   var pixelRatioOption = this.getNumericOption('pixelRatio')
 
-  var canvasScale = pixelRatioOption > 0
-    ? pixelRatioOption
-    : utils.getContextPixelRatio(this.canvas_ctx_);
+  var canvasScale = pixelRatioOption || utils.getContextPixelRatio(this.canvas_ctx_);
   this.canvas_.width = this.width_ * canvasScale;
   this.canvas_.height = this.height_ * canvasScale;
   this.canvas_.style.width = this.width_ + "px";    // for IE
@@ -874,9 +872,7 @@ Dygraph.prototype.resizeElements_ = function() {
     this.canvas_ctx_.scale(canvasScale, canvasScale);
   }
 
-  var hiddenScale = pixelRatioOption > 0
-    ? pixelRatioOption
-    : utils.getContextPixelRatio(this.hidden_ctx_);
+  var hiddenScale = pixelRatioOption || utils.getContextPixelRatio(this.hidden_ctx_);
   this.hidden_.width = this.width_ * hiddenScale;
   this.hidden_.height = this.height_ * hiddenScale;
   this.hidden_.style.width = this.width_ + "px";    // for IE

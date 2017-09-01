@@ -162,9 +162,7 @@ rangeSelector.prototype.updateVisibility_ = function() {
  */
 rangeSelector.prototype.resize_ = function() {
   function setElementRect(canvas, context, rect, pixelRatioOption) {
-    var canvasScale = pixelRatioOption > 0
-      ? pixelRatioOption
-      : utils.getContextPixelRatio(context);
+    var canvasScale = pixelRatioOption || utils.getContextPixelRatio(context);
 
     canvas.style.top = rect.y + 'px';
     canvas.style.left = rect.x + 'px';
