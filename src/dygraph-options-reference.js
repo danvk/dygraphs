@@ -299,6 +299,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "Width, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored."
   },
+  "pixelRatio": {
+    "default": "(devicePixelRatio / context.backingStoreRatio)",
+    "labels": ["Overall display"],
+    "type": "float",
+    "description": "Overrides the pixel ratio scaling factor for the canvas's 2d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1, at the expense of resolution."
+  },
   "interactionModel": {
     "default": "...",
     "labels": ["Interactive Elements"],

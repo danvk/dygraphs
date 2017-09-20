@@ -45,5 +45,36 @@ it('testDoesntCreateScrollbars', function() {
   assert.equal(sw, document.body.scrollWidth);
 });
 
+it('should be influenced by options.pixelRatio', function () {
+  var graph = document.getElementById("graph");
+
+  // make sure devicePixelRatio is still setup to not 1.
+  assert(devicePixelRatio > 1.5, 'devicePixelRatio is not much greater than 1.');
+
+  var data = "X,Y\n" +
+    "0,-1\n" +
+    "1,0\n" +
+    "2,1\n" +
+    "3,0\n";
+
+  // first try a default one
+  var g1 = new Dygraph(graph, data, {});
+  var area1 = g1.getArea();
+
+  var g2 = new Dygraph(graph, data, { pixelRatio: 1 });
+  var area2 = g2.getArea();
+
+  var g3 = new Dygraph(graph, data, { pixelRatio: 3 });
+  var area3 = g3.getArea();
+
+  assert.deepEqual(area1, area2, 'areas 1 and 2 are not the same');
+  assert.deepEqual(area2, area3, 'areas 2 and 3 are not the same');
+
+  assert.notEqual(g1.canvas_.width, g2.canvas_.width,
+    'Expected, for devicePixelRatio != 1, '
+    + 'that setting options.pixelRatio would change the canvas width');
+  assert.equal(g2.canvas_.width * 3, g3.canvas_.width,
+    'Expected that pixelRatio of 3 vs 1 would triple the canvas width.');
+});
 
 });
