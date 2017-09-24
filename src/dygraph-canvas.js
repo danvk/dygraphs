@@ -204,6 +204,12 @@ DygraphCanvasRenderer._drawSeries = function(e,
       point = arr[i];
     }
 
+    // RRDtool-like plot, all lines are strictly horizontal and vertical so avoid using subpixel coordinates
+    if (stepPlot && strokeWidth == 1) {
+      point.canvasx = Math.round(point.canvasx+0.5)-0.5;
+      point.canvasy = Math.round(point.canvasy+0.5)-0.5;
+    }
+
     // FIXME: The 'canvasy != canvasy' test here catches NaN values but the test
     // doesn't catch Infinity values. Could change this to
     // !isFinite(point.canvasy), but I assume it avoids isNaN for performance?
