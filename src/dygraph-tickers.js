@@ -220,6 +220,13 @@ export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
 
 // Time granularity enumeration
 export var Granularity = {
+  MILLISECONDLY: 22,
+  TWO_MILLISECONDLY: 23,
+  FIVE_MILLISECONDLY: 24,
+  TEN_MILLISECONDLY: 25,
+  FIFTY_MILLISECONDLY: 26,
+  HUNDRED_MILLISECONDLY: 27,
+  FIVE_HUNDRED_MILLISECONDLY: 28,
   SECONDLY: 0,
   TWO_SECONDLY: 1,
   FIVE_SECONDLY: 2,
@@ -242,7 +249,7 @@ export var Granularity = {
   ANNUAL: 19,
   DECADAL: 20,
   CENTENNIAL: 21,
-  NUM_GRANULARITIES: 22
+  NUM_GRANULARITIES: 29
 }
 
 // Date components enumeration (in the order of the arguments in Date)
@@ -273,6 +280,13 @@ var DateField = {
  * @type {Array.<{datefield:number, step:number, spacing:number}>}
  */
 var TICK_PLACEMENT = [];
+TICK_PLACEMENT[Granularity.MILLISECONDLY]               = {datefield: DateField.DATEFIELD_MS, step:   1, spacing: 1};
+TICK_PLACEMENT[Granularity.TWO_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:   2, spacing: 2};
+TICK_PLACEMENT[Granularity.FIVE_MILLISECONDLY]          = {datefield: DateField.DATEFIELD_MS, step:   5, spacing: 5};
+TICK_PLACEMENT[Granularity.TEN_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:  10, spacing: 10};
+TICK_PLACEMENT[Granularity.FIFTY_MILLISECONDLY]         = {datefield: DateField.DATEFIELD_MS, step:  50, spacing: 50};
+TICK_PLACEMENT[Granularity.HUNDRED_MILLISECONDLY]       = {datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100};
+TICK_PLACEMENT[Granularity.FIVE_HUNDRED_MILLISECONDLY]  = {datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500};
 TICK_PLACEMENT[Granularity.SECONDLY]        = {datefield: DateField.DATEFIELD_SS, step:   1, spacing: 1000 * 1};
 TICK_PLACEMENT[Granularity.TWO_SECONDLY]    = {datefield: DateField.DATEFIELD_SS, step:   2, spacing: 1000 * 2};
 TICK_PLACEMENT[Granularity.FIVE_SECONDLY]   = {datefield: DateField.DATEFIELD_SS, step:   5, spacing: 1000 * 5};
