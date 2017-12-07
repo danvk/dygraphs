@@ -20,4 +20,4 @@ trap finish EXIT
 sleep 1
 
 # Start the tests
-mocha-phantomjs http://localhost:8081/auto_tests/runner.html "$@"
+mocha-phantomjs -p $(which phantomjs) http://localhost:8081/auto_tests/runner.html "$@"

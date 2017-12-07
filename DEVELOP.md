@@ -10,6 +10,10 @@ To install dependencies, run
 
     npm install
 
+To install local phantomjs with homebrew on macOS, run
+
+    brew install phantomjs
+
 To build dygraphs, run
 
     npm run build

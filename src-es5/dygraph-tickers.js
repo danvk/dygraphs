@@ -62,10 +62,18 @@
 /*global Dygraph:false */
 "use strict";
 
-import * as utils from './dygraph-utils';
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var _dygraphUtils = require('./dygraph-utils');
+
+var utils = _interopRequireWildcard(_dygraphUtils);
 
 /** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
-var TickList = undefined;  // the ' = undefined' keeps jshint happy.
+var TickList = undefined; // the ' = undefined' keeps jshint happy.
 
 /** @typedef {function(
  *    number,
@@ -76,30 +84,31 @@ var TickList = undefined;  // the ' = undefined' keeps jshint happy.
  *    Array.<number>=
  *  ): TickList}
  */
-var Ticker = undefined;  // the ' = undefined' keeps jshint happy.
+var Ticker = undefined; // the ' = undefined' keeps jshint happy.
 
 /** @type {Ticker} */
-export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
-  var nonLogscaleOpts = function(opt) {
+var numericLinearTicks = function numericLinearTicks(a, b, pixels, opts, dygraph, vals) {
+  var nonLogscaleOpts = function nonLogscaleOpts(opt) {
     if (opt === 'logscale') return false;
     return opts(opt);
   };
   return numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
 };
 
+exports.numericLinearTicks = numericLinearTicks;
 /** @type {Ticker} */
-export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
-  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
+var numericTicks = function numericTicks(a, b, pixels, opts, dygraph, vals) {
+  var pixels_per_tick = /** @type{number} */opts('pixelsPerLabel');
   var ticks = [];
   var i, j, tickV, nTicks;
   if (vals) {
     for (i = 0; i < vals.length; i++) {
-      ticks.push({v: vals[i]});
+      ticks.push({ v: vals[i] });
     }
   } else {
     // TODO(danvk): factor this log-scale block out into a separate function.
     if (opts("logscale")) {
-      nTicks  = Math.floor(pixels / pixels_per_tick);
+      nTicks = Math.floor(pixels / pixels_per_tick);
       var minIdx = utils.binarySearch(a, PREFERRED_LOG_TICK_VALUES, 1);
       var maxIdx = utils.binarySearch(b, PREFERRED_LOG_TICK_VALUES, -1);
       if (minIdx == -1) {
@@ -118,14 +127,14 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
           var tick = { v: tickValue };
           if (lastDisplayed === null) {
             lastDisplayed = {
-              tickValue : tickValue,
-              pixel_coord : pixel_coord
+              tickValue: tickValue,
+              pixel_coord: pixel_coord
             };
           } else {
             if (Math.abs(pixel_coord - lastDisplayed.pixel_coord) >= pixels_per_tick) {
               lastDisplayed = {
-                tickValue : tickValue,
-                pixel_coord : pixel_coord
+                tickValue: tickValue,
+                pixel_coord: pixel_coord
               };
             } else {
               tick.label = "";
@@ -188,16 +197,16 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       if (low_val > high_val) scale *= -1;
       for (i = 0; i <= nTicks; i++) {
         tickV = low_val + i * scale;
-        ticks.push( {v: tickV} );
+        ticks.push({ v: tickV });
       }
     }
   }
 
-  var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
+  var formatter = /**@type{AxisLabelFormatter}*/opts('axisLabelFormatter');
 
   // Add labels to the ticks.
   for (i = 0; i < ticks.length; i++) {
-    if (ticks[i].label !== undefined) continue;  // Use current label.
+    if (ticks[i].label !== undefined) continue; // Use current label.
     // TODO(danvk): set granularity to something appropriate here.
     ticks[i].label = formatter.call(dygraph, ticks[i].v, 0, opts, dygraph);
   }
@@ -205,9 +214,9 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   return ticks;
 };
 
-
+exports.numericTicks = numericTicks;
 /** @type {Ticker} */
-export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
+var dateTicker = function dateTicker(a, b, pixels, opts, dygraph, vals) {
   var chosen = pickDateTickGranularity(a, b, pixels, opts);
 
   if (chosen >= 0) {
@@ -218,8 +227,9 @@ export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   }
 };
 
+exports.dateTicker = dateTicker;
 // Time granularity enumeration
-export var Granularity = {
+var Granularity = {
   MILLISECONDLY: 0,
   TWO_MILLISECONDLY: 1,
   FIVE_MILLISECONDLY: 2,
@@ -250,8 +260,9 @@ export var Granularity = {
   DECADAL: 27,
   CENTENNIAL: 28,
   NUM_GRANULARITIES: 29
-}
+};
 
+exports.Granularity = Granularity;
 // Date components enumeration (in the order of the arguments in Date)
 // TODO: make this an @enum
 var DateField = {
@@ -264,7 +275,6 @@ var DateField = {
   DATEFIELD_MS: 6,
   NUM_DATEFIELDS: 7
 };
-
 
 /**
  * The value of datefield will start at an even multiple of "step", i.e.
@@ -280,36 +290,35 @@ var DateField = {
  * @type {Array.<{datefield:number, step:number, spacing:number}>}
  */
 var TICK_PLACEMENT = [];
-TICK_PLACEMENT[Granularity.MILLISECONDLY]               = {datefield: DateField.DATEFIELD_MS, step:   1, spacing: 1};
-TICK_PLACEMENT[Granularity.TWO_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:   2, spacing: 2};
-TICK_PLACEMENT[Granularity.FIVE_MILLISECONDLY]          = {datefield: DateField.DATEFIELD_MS, step:   5, spacing: 5};
-TICK_PLACEMENT[Granularity.TEN_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:  10, spacing: 10};
-TICK_PLACEMENT[Granularity.FIFTY_MILLISECONDLY]         = {datefield: DateField.DATEFIELD_MS, step:  50, spacing: 50};
-TICK_PLACEMENT[Granularity.HUNDRED_MILLISECONDLY]       = {datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100};
-TICK_PLACEMENT[Granularity.FIVE_HUNDRED_MILLISECONDLY]  = {datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500};
-TICK_PLACEMENT[Granularity.SECONDLY]        = {datefield: DateField.DATEFIELD_SS, step:   1, spacing: 1000 * 1};
-TICK_PLACEMENT[Granularity.TWO_SECONDLY]    = {datefield: DateField.DATEFIELD_SS, step:   2, spacing: 1000 * 2};
-TICK_PLACEMENT[Granularity.FIVE_SECONDLY]   = {datefield: DateField.DATEFIELD_SS, step:   5, spacing: 1000 * 5};
-TICK_PLACEMENT[Granularity.TEN_SECONDLY]    = {datefield: DateField.DATEFIELD_SS, step:  10, spacing: 1000 * 10};
-TICK_PLACEMENT[Granularity.THIRTY_SECONDLY] = {datefield: DateField.DATEFIELD_SS, step:  30, spacing: 1000 * 30};
-TICK_PLACEMENT[Granularity.MINUTELY]        = {datefield: DateField.DATEFIELD_MM, step:   1, spacing: 1000 * 60};
-TICK_PLACEMENT[Granularity.TWO_MINUTELY]    = {datefield: DateField.DATEFIELD_MM, step:   2, spacing: 1000 * 60 * 2};
-TICK_PLACEMENT[Granularity.FIVE_MINUTELY]   = {datefield: DateField.DATEFIELD_MM, step:   5, spacing: 1000 * 60 * 5};
-TICK_PLACEMENT[Granularity.TEN_MINUTELY]    = {datefield: DateField.DATEFIELD_MM, step:  10, spacing: 1000 * 60 * 10};
-TICK_PLACEMENT[Granularity.THIRTY_MINUTELY] = {datefield: DateField.DATEFIELD_MM, step:  30, spacing: 1000 * 60 * 30};
-TICK_PLACEMENT[Granularity.HOURLY]          = {datefield: DateField.DATEFIELD_HH, step:   1, spacing: 1000 * 3600};
-TICK_PLACEMENT[Granularity.TWO_HOURLY]      = {datefield: DateField.DATEFIELD_HH, step:   2, spacing: 1000 * 3600 * 2};
-TICK_PLACEMENT[Granularity.SIX_HOURLY]      = {datefield: DateField.DATEFIELD_HH, step:   6, spacing: 1000 * 3600 * 6};
-TICK_PLACEMENT[Granularity.DAILY]           = {datefield: DateField.DATEFIELD_D,  step:   1, spacing: 1000 * 86400};
-TICK_PLACEMENT[Granularity.TWO_DAILY]       = {datefield: DateField.DATEFIELD_D,  step:   2, spacing: 1000 * 86400 * 2};
-TICK_PLACEMENT[Granularity.WEEKLY]          = {datefield: DateField.DATEFIELD_D,  step:   7, spacing: 1000 * 604800};
-TICK_PLACEMENT[Granularity.MONTHLY]         = {datefield: DateField.DATEFIELD_M,  step:   1, spacing: 1000 * 7200  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 12
-TICK_PLACEMENT[Granularity.QUARTERLY]       = {datefield: DateField.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
-TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
-TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
-TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
-TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
-
+TICK_PLACEMENT[Granularity.MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 1, spacing: 1 };
+TICK_PLACEMENT[Granularity.TWO_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 2, spacing: 2 };
+TICK_PLACEMENT[Granularity.FIVE_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 5, spacing: 5 };
+TICK_PLACEMENT[Granularity.TEN_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 10, spacing: 10 };
+TICK_PLACEMENT[Granularity.FIFTY_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 50, spacing: 50 };
+TICK_PLACEMENT[Granularity.HUNDRED_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100 };
+TICK_PLACEMENT[Granularity.FIVE_HUNDRED_MILLISECONDLY] = { datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500 };
+TICK_PLACEMENT[Granularity.SECONDLY] = { datefield: DateField.DATEFIELD_SS, step: 1, spacing: 1000 * 1 };
+TICK_PLACEMENT[Granularity.TWO_SECONDLY] = { datefield: DateField.DATEFIELD_SS, step: 2, spacing: 1000 * 2 };
+TICK_PLACEMENT[Granularity.FIVE_SECONDLY] = { datefield: DateField.DATEFIELD_SS, step: 5, spacing: 1000 * 5 };
+TICK_PLACEMENT[Granularity.TEN_SECONDLY] = { datefield: DateField.DATEFIELD_SS, step: 10, spacing: 1000 * 10 };
+TICK_PLACEMENT[Granularity.THIRTY_SECONDLY] = { datefield: DateField.DATEFIELD_SS, step: 30, spacing: 1000 * 30 };
+TICK_PLACEMENT[Granularity.MINUTELY] = { datefield: DateField.DATEFIELD_MM, step: 1, spacing: 1000 * 60 };
+TICK_PLACEMENT[Granularity.TWO_MINUTELY] = { datefield: DateField.DATEFIELD_MM, step: 2, spacing: 1000 * 60 * 2 };
+TICK_PLACEMENT[Granularity.FIVE_MINUTELY] = { datefield: DateField.DATEFIELD_MM, step: 5, spacing: 1000 * 60 * 5 };
+TICK_PLACEMENT[Granularity.TEN_MINUTELY] = { datefield: DateField.DATEFIELD_MM, step: 10, spacing: 1000 * 60 * 10 };
+TICK_PLACEMENT[Granularity.THIRTY_MINUTELY] = { datefield: DateField.DATEFIELD_MM, step: 30, spacing: 1000 * 60 * 30 };
+TICK_PLACEMENT[Granularity.HOURLY] = { datefield: DateField.DATEFIELD_HH, step: 1, spacing: 1000 * 3600 };
+TICK_PLACEMENT[Granularity.TWO_HOURLY] = { datefield: DateField.DATEFIELD_HH, step: 2, spacing: 1000 * 3600 * 2 };
+TICK_PLACEMENT[Granularity.SIX_HOURLY] = { datefield: DateField.DATEFIELD_HH, step: 6, spacing: 1000 * 3600 * 6 };
+TICK_PLACEMENT[Granularity.DAILY] = { datefield: DateField.DATEFIELD_D, step: 1, spacing: 1000 * 86400 };
+TICK_PLACEMENT[Granularity.TWO_DAILY] = { datefield: DateField.DATEFIELD_D, step: 2, spacing: 1000 * 86400 * 2 };
+TICK_PLACEMENT[Granularity.WEEKLY] = { datefield: DateField.DATEFIELD_D, step: 7, spacing: 1000 * 604800 };
+TICK_PLACEMENT[Granularity.MONTHLY] = { datefield: DateField.DATEFIELD_M, step: 1, spacing: 1000 * 7200 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 / 12
+TICK_PLACEMENT[Granularity.QUARTERLY] = { datefield: DateField.DATEFIELD_M, step: 3, spacing: 1000 * 21600 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
+TICK_PLACEMENT[Granularity.BIANNUAL] = { datefield: DateField.DATEFIELD_M, step: 6, spacing: 1000 * 43200 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
+TICK_PLACEMENT[Granularity.ANNUAL] = { datefield: DateField.DATEFIELD_Y, step: 1, spacing: 1000 * 86400 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
+TICK_PLACEMENT[Granularity.DECADAL] = { datefield: DateField.DATEFIELD_Y, step: 10, spacing: 1000 * 864000 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
+TICK_PLACEMENT[Granularity.CENTENNIAL] = { datefield: DateField.DATEFIELD_Y, step: 100, spacing: 1000 * 8640000 * 365.2524 }; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
 
 /**
  * This is a list of human-friendly values at which to show tick marks on a log
@@ -318,7 +327,7 @@ TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,
  * NOTE: this assumes that utils.LOG_SCALE = 10.
  * @type {Array.<number>}
  */
-var PREFERRED_LOG_TICK_VALUES = (function() {
+var PREFERRED_LOG_TICK_VALUES = (function () {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -340,8 +349,8 @@ var PREFERRED_LOG_TICK_VALUES = (function() {
  * @return {number} The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
-var pickDateTickGranularity = function(a, b, pixels, opts) {
-  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
+var pickDateTickGranularity = function pickDateTickGranularity(a, b, pixels, opts) {
+  var pixels_per_tick = /** @type{number} */opts('pixelsPerLabel');
   for (var i = 0; i < Granularity.NUM_GRANULARITIES; i++) {
     var num_ticks = numDateTicks(a, b, i);
     if (pixels / num_ticks >= pixels_per_tick) {
@@ -358,7 +367,7 @@ var pickDateTickGranularity = function(a, b, pixels, opts) {
  * @param {number} granularity (one of the granularities enumerated above)
  * @return {number} (Approximate) number of ticks that would result.
  */
-var numDateTicks = function(start_time, end_time, granularity) {
+var numDateTicks = function numDateTicks(start_time, end_time, granularity) {
   var spacing = TICK_PLACEMENT[granularity].spacing;
   return Math.round(1.0 * (end_time - start_time) / spacing);
 };
@@ -372,9 +381,8 @@ var numDateTicks = function(start_time, end_time, granularity) {
  * @param {Dygraph=} dg
  * @return {!TickList}
  */
-export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
-  var formatter = /** @type{AxisLabelFormatter} */(
-      opts("axisLabelFormatter"));
+var getDateAxis = function getDateAxis(start_time, end_time, granularity, opts, dg) {
+  var formatter = /** @type{AxisLabelFormatter} */opts("axisLabelFormatter");
   var utc = opts("labelsUTC");
   var accessors = utc ? utils.DateAccessorsUTC : utils.DateAccessorsLocal;
 
@@ -389,9 +397,9 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   // by setting the start_date_offset to 0.
   var start_date = new Date(start_time);
   var date_array = [];
-  date_array[DateField.DATEFIELD_Y]  = accessors.getFullYear(start_date);
-  date_array[DateField.DATEFIELD_M]  = accessors.getMonth(start_date);
-  date_array[DateField.DATEFIELD_D]  = accessors.getDate(start_date);
+  date_array[DateField.DATEFIELD_Y] = accessors.getFullYear(start_date);
+  date_array[DateField.DATEFIELD_M] = accessors.getMonth(start_date);
+  date_array[DateField.DATEFIELD_D] = accessors.getDate(start_date);
   date_array[DateField.DATEFIELD_HH] = accessors.getHours(start_date);
   date_array[DateField.DATEFIELD_MM] = accessors.getMinutes(start_date);
   date_array[DateField.DATEFIELD_SS] = accessors.getSeconds(start_date);
@@ -402,11 +410,11 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.
-    date_array[df] = (df === DateField.DATEFIELD_D) ? 1 : 0;
+    date_array[df] = df === DateField.DATEFIELD_D ? 1 : 0;
   }
 
   // Generate the ticks.
@@ -432,8 +440,8 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     }
     while (tick_time <= end_time) {
       ticks.push({ v: tick_time,
-                   label: formatter.call(dg, tick_date, granularity, opts, dg)
-                 });
+        label: formatter.call(dg, tick_date, granularity, opts, dg)
+      });
       tick_time += spacing;
       tick_date = new Date(tick_time);
     }
@@ -444,11 +452,10 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
       tick_time = tick_date.getTime();
     }
     while (tick_time <= end_time) {
-      if (granularity >= Granularity.DAILY ||
-          accessors.getHours(tick_date) % step === 0) {
+      if (granularity >= Granularity.DAILY || accessors.getHours(tick_date) % step === 0) {
         ticks.push({ v: tick_time,
-                     label: formatter.call(dg, tick_date, granularity, opts, dg)
-                   });
+          label: formatter.call(dg, tick_date, granularity, opts, dg)
+        });
       }
       date_array[datefield] += step;
       tick_date = accessors.makeDate.apply(null, date_array);
@@ -457,3 +464,4 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   }
   return ticks;
 };
+exports.getDateAxis = getDateAxis;
