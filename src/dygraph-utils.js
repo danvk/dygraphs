@@ -1214,6 +1214,12 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
     if (frac === 0 || granularity >= DygraphTickers.Granularity.DAILY) {
       // e.g. '21 Jan' (%d%b)
       return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
+    } else if (granularity < DygraphTickers.Granularity.SECONDLY) {
+      // e.g. 40.310 (meaning 40 seconds and 310 milliseconds)
+      var str = "" + millis;
+      return zeropad(secs) + "." + ('000'+str).substring(str.length);
+    } else if (granularity > DygraphTickers.Granularity.MINUTELY) {
+      return hmsString_(hours, mins, secs, 0);
     } else {
       return hmsString_(hours, mins, secs, millis);
     }

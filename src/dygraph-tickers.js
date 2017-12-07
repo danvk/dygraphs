@@ -220,29 +220,36 @@ export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
 
 // Time granularity enumeration
 export var Granularity = {
-  SECONDLY: 0,
-  TWO_SECONDLY: 1,
-  FIVE_SECONDLY: 2,
-  TEN_SECONDLY: 3,
-  THIRTY_SECONDLY : 4,
-  MINUTELY: 5,
-  TWO_MINUTELY: 6,
-  FIVE_MINUTELY: 7,
-  TEN_MINUTELY: 8,
-  THIRTY_MINUTELY: 9,
-  HOURLY: 10,
-  TWO_HOURLY: 11,
-  SIX_HOURLY: 12,
-  DAILY: 13,
-  TWO_DAILY: 14,
-  WEEKLY: 15,
-  MONTHLY: 16,
-  QUARTERLY: 17,
-  BIANNUAL: 18,
-  ANNUAL: 19,
-  DECADAL: 20,
-  CENTENNIAL: 21,
-  NUM_GRANULARITIES: 22
+  MILLISECONDLY: 0,
+  TWO_MILLISECONDLY: 1,
+  FIVE_MILLISECONDLY: 2,
+  TEN_MILLISECONDLY: 3,
+  FIFTY_MILLISECONDLY: 4,
+  HUNDRED_MILLISECONDLY: 5,
+  FIVE_HUNDRED_MILLISECONDLY: 6,
+  SECONDLY: 7,
+  TWO_SECONDLY: 8,
+  FIVE_SECONDLY: 9,
+  TEN_SECONDLY: 10,
+  THIRTY_SECONDLY: 11,
+  MINUTELY: 12,
+  TWO_MINUTELY: 13,
+  FIVE_MINUTELY: 14,
+  TEN_MINUTELY: 15,
+  THIRTY_MINUTELY: 16,
+  HOURLY: 17,
+  TWO_HOURLY: 18,
+  SIX_HOURLY: 19,
+  DAILY: 20,
+  TWO_DAILY: 21,
+  WEEKLY: 22,
+  MONTHLY: 23,
+  QUARTERLY: 24,
+  BIANNUAL: 25,
+  ANNUAL: 26,
+  DECADAL: 27,
+  CENTENNIAL: 28,
+  NUM_GRANULARITIES: 29
 }
 
 // Date components enumeration (in the order of the arguments in Date)
@@ -273,6 +280,13 @@ var DateField = {
  * @type {Array.<{datefield:number, step:number, spacing:number}>}
  */
 var TICK_PLACEMENT = [];
+TICK_PLACEMENT[Granularity.MILLISECONDLY]               = {datefield: DateField.DATEFIELD_MS, step:   1, spacing: 1};
+TICK_PLACEMENT[Granularity.TWO_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:   2, spacing: 2};
+TICK_PLACEMENT[Granularity.FIVE_MILLISECONDLY]          = {datefield: DateField.DATEFIELD_MS, step:   5, spacing: 5};
+TICK_PLACEMENT[Granularity.TEN_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:  10, spacing: 10};
+TICK_PLACEMENT[Granularity.FIFTY_MILLISECONDLY]         = {datefield: DateField.DATEFIELD_MS, step:  50, spacing: 50};
+TICK_PLACEMENT[Granularity.HUNDRED_MILLISECONDLY]       = {datefield: DateField.DATEFIELD_MS, step: 100, spacing: 100};
+TICK_PLACEMENT[Granularity.FIVE_HUNDRED_MILLISECONDLY]  = {datefield: DateField.DATEFIELD_MS, step: 500, spacing: 500};
 TICK_PLACEMENT[Granularity.SECONDLY]        = {datefield: DateField.DATEFIELD_SS, step:   1, spacing: 1000 * 1};
 TICK_PLACEMENT[Granularity.TWO_SECONDLY]    = {datefield: DateField.DATEFIELD_SS, step:   2, spacing: 1000 * 2};
 TICK_PLACEMENT[Granularity.FIVE_SECONDLY]   = {datefield: DateField.DATEFIELD_SS, step:   5, spacing: 1000 * 5};
