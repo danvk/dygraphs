@@ -123,7 +123,9 @@ handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
       xval : handler.parseFloat(item[0]),
       yval : yval,
       name : setName, // TODO(danvk): is this really necessary?
-      idx : i + boundaryIdStart
+      idx : i + boundaryIdStart,
+      canvasx: NaN, // add these so we do not alter the structure later, which slows Chrome
+      canvasy: NaN,
     };
     points.push(point);
   }
