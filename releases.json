@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.1.0",
+    "files": [
+      "dygraph.min.js",
+      "dygraph.js",
+      "dygraph.css"
+    ]
+  },
+  {
     "version": "2.0.0",
     "files": [
       "dygraph.min.js",

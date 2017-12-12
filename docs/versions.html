@@ -28,6 +28,89 @@
 
 <table class="versions">
   <tr>
+    <td>2.1.0<p class="date">2017-12-08</p></td>
+    <td class="notes">
+      New features:
+      <ul>
+        <li>Double click event can be captured and cancelled by plugins</li>
+        <li>setAnnotations's second parameter is now an optional boolean</li>
+        <li>Add `pixelRatio` option, which may allow improved performance on smaller screens by controlling the canvas' pixel ratio</li>
+        <li>X-axis label and tick logic can now operate at millisecond-level granularity</li>
+      </ul>
+      
+      Bug fixes:
+      <ul>
+        <li>Repair a bug in "Custom interaction modals" demo</li>
+      </ul>
+      
+      Internal refactors/fixes:
+      <ul>
+        <li>Fix various spelling mistakes</li>
+        <li>Fix a couple of type signatures in dygraph-externs.js</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>2.0.0<p class="date">2017-01-11</p></td>
+    <td class="notes">
+      Breaking changes:
+      <ul>
+        <li>JS files were renamed to dygraph.js and dygraph.min.js.</li>
+        <li>There's now a dygraph.css file that you must include.</li>
+        <li>Dropped support for OldIE and other non-standard browsers. dygraphs works in IE11. I'm not sure about IE9 and IE10.</li>
+        <li>Double-click to unzoom zooms all the way out (and ignores valueRange).</li>
+        <li>Dropped old-style per-axis/per-series options.</li>
+      </ul>
+
+      New features:
+      <ul>
+        <li>Add a legendFormatter option</li>
+        <li>`this` is the Dygraph object in all callbacks</li>
+        <li>pass through (row, col) to valueFormatter</li>
+        <li>Option to not sync range in extras/synchronizer.js</li>
+        <li>Additional options for styling the range selector</li>
+        <li>getRowForX method</li>
+        <li>setVisibility can set the visibility of multiple series at once.</li>
+        <li>crosshair plugin extra</li>
+        <li>rebase/straw broom plugin</li>
+        <li>highlightSeriesBackgroundColor option</li>
+        <li>yAxisExtremes() method.</li>
+        <li>Passing strings in native format now throws. (Previously it kinda sorta worked.)</li>
+      </ul>
+
+      Bug fixes:
+      <ul>
+        <li>Selections are always cleared with animations</li>
+        <li>synchronizer calls previously-set callbacks</li>
+        <li>synchronizer only syncs when graphs are ready</li>
+        <li>Reset on synchronized graphs failed </li>
+        <li>fix to improve synchronizer performance </li>
+        <li>binary search bug fix in synchronizer</li>
+        <li>Fix range selection when chart is located inside fullscreen element </li>
+        <li>fillAlpha can be set per-series when fillGraph is set.</li>
+        <li>xRangePad was ignored on unzoom </li>
+        <li>Allow selected points where canvas-y coordinate is 0</li>
+        <li>Using valueRange with Logscale and yRangePad has unexpected results </li>
+        <li>With "drawGapEdgePoints", unwanted point often drawn at beginning of chart </li>
+      </ul>
+
+      Other user-visible changes:
+      <ul>
+        <li>“legend: follow” positioning changes</li>
+      </ul>
+      
+      Internal refactors:
+      <ul>
+        <li>Code moved into a “src/“ directory</li>
+        <li>Tests use Mocha instead of jstd</li>
+        <li>dygraphs is split into ES6 modules and uses some ES6 features (e.g. arrows and destructuring).</li>
+        <li>dygraphs is built using babel & browserify</li>
+        <li>Code coverage is tracked continuously</li>
+        <li>Bundle size is now tracked continuously</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
     <td>1.1.1<p class="date">2015-06-01</p></td>
     <td class="notes">
       <ul>
@@ -35,20 +118,21 @@
         <li>Minor bug fixes.</li>
       </ul>
     </td>
-
+  </tr>
+  <tr>
     <td>1.1.0<p class="date">2014-12-03</p></td>
     <td class="notes">
       Highlights include:
       <ul>
-        <li>dygraphs is now "retina" compatible.
-        <li>Dramatically improved performance for filled charts (i.e. fillGraph)
-        <li>More sensible date ticks: "Jan 08"→"Jan 2008", "29Jan"→"29 Jan"
-        <li>Using a non-existent option now throws (w/ dygraph-combined-dev.js)
-        <li>x-axis log scales
-        <li>The <code>labelsUTC</code> option forces UTC formatting for all labels.
-        <li>The new DataHandler system allows for more flexibility in data loading.
-        <li>"this" is set to the dygraph in all callbacks.
-        <li>dygraphs has shrunk, because we moved some stuff into "extras" (133kb→122kb)
+        <li>dygraphs is now "retina" compatible.</li>
+        <li>Dramatically improved performance for filled charts (i.e. fillGraph)</li>
+        <li>More sensible date ticks: "Jan 08"→"Jan 2008", "29Jan"→"29 Jan"</li>
+        <li>Using a non-existent option now throws (w/ dygraph-combined-dev.js)</li>
+        <li>x-axis log scales</li>
+        <li>The <code>labelsUTC</code> option forces UTC formatting for all labels.</li>
+        <li>The new DataHandler system allows for more flexibility in data loading.</li>
+        <li>"this" is set to the dygraph in all callbacks.</li>
+        <li>dygraphs has shrunk, because we moved some stuff into "extras" (133kb→122kb)</li>
       </ul>
 
       This will be the last major release to support browsers without a native &lt;canvas&gt; implementation. See <a href="http://blog.dygraphs.com/2014/12/dygraphs-110.html">blog post</a> for more details.
