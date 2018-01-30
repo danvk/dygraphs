@@ -51,7 +51,7 @@ print '''
 
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
-<pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
+<pre>&lt;script href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
 &lt;link rel=&quot;stylesheet&quot; src=&quot;//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css&quot; /&gt;
 </pre>
 
