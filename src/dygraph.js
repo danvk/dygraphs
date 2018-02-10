@@ -2539,8 +2539,13 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
 
       // special case #781: if we have no sense of scale, center on the sole value.
       if (y0 === y1) {
-          y0 -= 0.5;
-          y1 += 0.5;
+        if(y0 === 0) {
+          y1 = 1;
+        } else {
+          var delta = Math.abs(y0 / 10);
+          y0 -= delta;
+          y1 += delta;
+        }
       }
 
       if (logscale) {
