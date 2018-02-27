@@ -821,6 +821,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
+  },
+  "selectMode": {
+    "default": "closest-x",
+    "labels": ["Interactive Elements"],
+    "type": "string",
+    "description": "Defines how points are selected. Valid values are 'closest-x' and 'euclidian'. 'closest-x' selects the nearest point along the X axis, while 'euclidian' selects the closest point in any direction. If highlightSeriesOpts is set, this has no effect."
   }
 }
 ;  // </JSON>
