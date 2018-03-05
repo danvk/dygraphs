@@ -1615,16 +1615,27 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var searchSeries = undefined;
   var highlightSeries = undefined;
 
+  // If the series is locked, we can only search and highlight
+  // that series
   if (this.isSeriesLocked()) {
     searchSeries = this.highlightSet_;
     if (this.getOption("highlightSeriesOpts")) {
       highlightSeries = searchSeries;
     }
+
+  // If the graph is stacked AND we want to highlight the
+  // series, the selection will be based on the area
+  // of the graph under each series. Otherwise
+  // stacked graphs behave the same as non-stacked
   } else if (this.getBooleanOption("stackedGraph") &&
              this.getOption("highlightSeriesOpts")) {
     
     searchSeries = this.findStackedPoint(canvasx, canvasy).seriesName;
     highlightSeries = searchSeries;
+  
+  // If series highlight is set on its own, we switch to
+  // euclidian mode since we want to highlight the closest
+  // series to the mouse
   } else if (this.getOption("highlightSeriesOpts")) {
     searchMode = 'euclidian';
   }

@@ -229,13 +229,13 @@ it('euclidian/no highlight/not stacked/no series lock', () => {
   assert.equal(0, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.4, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.6, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.8, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 1, 5);
   assert.equal(4, g.getSelection());
@@ -248,13 +248,13 @@ it('euclidian/no highlight/not stacked/no series lock', () => {
   assert.equal(2, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.7, 3);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.7, 4);
   assert.equal(2, g.getSelection());
 
   DygraphOps.dispatchMouseMove(g, 0.7, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
 
 });
 
@@ -308,15 +308,15 @@ it('closest-x/with highlight/not stacked/no series lock', () => {
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.4, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.6, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.8, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 1, 5);
@@ -333,7 +333,7 @@ it('closest-x/with highlight/not stacked/no series lock', () => {
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 3);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 4);
@@ -341,7 +341,7 @@ it('closest-x/with highlight/not stacked/no series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 });
 
@@ -394,15 +394,15 @@ it('euclidian/with highlight/not stacked/no series lock', () => {
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.4, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.6, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.8, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 1, 5);
@@ -419,7 +419,7 @@ it('euclidian/with highlight/not stacked/no series lock', () => {
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 3);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y2', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 4);
@@ -427,7 +427,7 @@ it('euclidian/with highlight/not stacked/no series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 });
 
@@ -876,23 +876,23 @@ it('euclidian/no highlight/not stacked/with series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.2, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.4, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.6, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.8, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 1, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   // Mouse up x=0.7
@@ -913,7 +913,7 @@ it('euclidian/no highlight/not stacked/with series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
 });
@@ -1054,23 +1054,23 @@ it('euclidian/with highlight/not stacked/with series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.2, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.4, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.6, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.8, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 1, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
   // Mouse up x=0.7
@@ -1091,7 +1091,7 @@ it('euclidian/with highlight/not stacked/with series lock', () => {
   assert.equal('Y1', g.highlightSet_);
 
   DygraphOps.dispatchMouseMove(g, 0.7, 5);
-  assert.equal(2, g.getSelection()); // SHOULD BE 3 - getSelection BUG
+  assert.equal(3, g.getSelection());
   assert.equal('Y1', g.highlightSet_);
 
 });
