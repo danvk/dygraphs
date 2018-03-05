@@ -1904,17 +1904,9 @@ Dygraph.prototype.clearSelection = function() {
 Dygraph.prototype.getSelection = function() {
   if (!this.selPoints_ || this.selPoints_.length < 1) {
     return -1;
+  } else {
+    return this.selPoints_[0].idx;
   }
-
-  for (var setIdx = 0; setIdx < this.layout_.points.length; setIdx++) {
-    var points = this.layout_.points[setIdx];
-    for (var row = 0; row < points.length; row++) {
-      if (points[row].x == this.selPoints_[0].x) {
-        return points[row].idx;
-      }
-    }
-  }
-  return -1;
 };
 
 /**
