@@ -1614,15 +1614,15 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var searchMode = this.getOption("selectMode");
   var searchSeries = undefined;
   var highlightSeries = undefined;
-  var closestPoint = null;
-  var closestIdx = null;
 
   if (this.isSeriesLocked()) {
     searchSeries = this.highlightSet_;
     if (this.getOption("highlightSeriesOpts")) {
       highlightSeries = searchSeries;
     }
-  } else if (this.getBooleanOption("stackedGraph") && this.getOption("highlightSeriesOpts")) {
+  } else if (this.getBooleanOption("stackedGraph") &&
+             this.getOption("highlightSeriesOpts")) {
+    
     searchSeries = this.findStackedPoint(canvasx, canvasy).seriesName;
     highlightSeries = searchSeries;
   } else if (this.getOption("highlightSeriesOpts")) {
@@ -1630,15 +1630,17 @@ Dygraph.prototype.mouseMove_ = function(event) {
   }
 
   if (searchMode == 'euclidian') {
-    closestPoint = this.findClosestPoint(canvasx, canvasy, searchSeries);
+    var closestPoint = this.findClosestPoint(canvasx, canvasy, searchSeries);
     if (this.getOption("highlightSeriesOpts")) {
       highlightSeries = closestPoint.seriesName;
     }
 
     selectionChanged = this.setSelection(closestPoint.row, highlightSeries);
   } else {
-    closestIdx = this.findClosestRow(canvasx, searchSeries);
-    selectionChanged = this.setSelection(closestIdx, highlightSeries);
+    selectionChanged = this.setSelection(
+      this.findClosestRow(canvasx, searchSeries),
+      highlightSeries
+      );
   }
 
   var callback = this.getFunctionOption("highlightCallback");
