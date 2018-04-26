@@ -88,6 +88,14 @@ export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 /** @type {Ticker} */
+export var integerTicks = function(a, b, pixels, opts, dygraph, vals) {
+    var allTicks = numericTicks(a, b, pixels, opts, dygraph, vals);
+    return allTicks.filter(function(tick) {
+      return tick.v % 1 === 0;
+    });
+};
+
+/** @type {Ticker} */
 export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
@@ -402,7 +410,7 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.
