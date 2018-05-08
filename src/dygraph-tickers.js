@@ -425,6 +425,13 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var ticks = [];
   var tick_date = accessors.makeDate.apply(null, date_array);
   var tick_time = tick_date.getTime();
+
+  // Account for negative timezones
+  if (tick_time < 0) {
+    tick_date = new Date(start_time);
+    tick_time = start_time;
+  }
+
   if (granularity <= Granularity.HOURLY) {
     if (tick_time < start_time) {
       tick_time += spacing;
