@@ -217,7 +217,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
           }
           var idx = gs[i].getRowForX(x);
           if (idx !== null) {
-            gs[i].setSelection(idx, seriesName);
+            gs[i].setSelection(idx, seriesName, undefined, true);
           }
         }
         block = false;
