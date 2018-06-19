@@ -53,6 +53,7 @@ it('testExplicitParamSize', function() {
 
 // Verifies that setting a style on the div works.
 it('testExplicitStyleSize', function() {
+  this.timeout(5000);
   var opts = {
   };
   var graph = document.getElementById("graph");
@@ -67,6 +68,7 @@ it('testExplicitStyleSize', function() {
 
 // Verifies that CSS pixel styles on the div trump explicit parameters.
 it('testPixelStyleWins', function() {
+  this.timeout(5000);
   var opts = {
     width: 987,
     height: 654
