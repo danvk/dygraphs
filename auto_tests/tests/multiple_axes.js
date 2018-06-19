@@ -142,6 +142,69 @@ it('testMultiChartLabels', function() {
   // TODO(danvk): check relative positioning here: title on top, y left of y2.
 });
 
+// Test option to draw Y2 axis, but not Y1
+it('testOnlyDrawingSecondAxis', function() {
+  var data = getData();
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      drawPoints : true,
+      pointSize : 3,
+      series : {
+        'Y4': {
+          axis: 'y2'
+        }
+      },
+      axes: {
+        y: {
+          drawAxis: false
+        },
+        y2: {
+          drawAxis: true
+        }
+      },
+    }
+  );
+
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y1").length == 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y2").length > 0);
+});
+
+// Test default(?) Y-axis drawing: Y1 drawn, Y2 not drawn
+it('testNotDrawingSecondAxis', function() {
+  var data = getData();
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'Date', 'Y1', 'Y2', 'Y3', 'Y4' ],
+      drawPoints : true,
+      pointSize : 3,
+      series : {
+        'Y4': {
+          axis: 'y2'
+        }
+      },
+      axes: {
+        y: {
+          drawAxis: true
+        },
+        y2: {
+          drawAxis: false
+        }
+      },
+    }
+  );
+
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y1").length > 0);
+  assert.isTrue(document.getElementsByClassName("dygraph-axis-label-y2").length == 0);
+
+});
+
 // Check that a chart w/o a secondary y-axis will not get a y2label, even if one
 // is specified.
 it('testNoY2LabelWithoutSecondaryAxis', function() {

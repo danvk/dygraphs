@@ -160,7 +160,7 @@ axes.prototype.willDrawChart = function(e) {
     };
   };
 
-  if (g.getOptionForAxis('drawAxis', 'y')) {
+  if (g.getOptionForAxis('drawAxis', 'y') || g.getOptionForAxis('drawAxis', 'y2')) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
@@ -176,6 +176,7 @@ axes.prototype.willDrawChart = function(e) {
           prec_axis = 'y2';
           getAxisOption = getOptions[1];
         }
+        if (!getAxisOption('drawAxis')) return;
         var fontSize = getAxisOption('axisLabelFontSize');
         y = area.y + tick.pos * area.h;
 
@@ -243,7 +244,7 @@ axes.prototype.willDrawChart = function(e) {
     context.stroke();
 
     // if there's a secondary y-axis, draw a vertical line for that, too.
-    if (g.numAxes() == 2) {
+    if (g.numAxes() == 2 && g.getOptionForAxis('drawAxis', 'y2')) {
       context.strokeStyle = g.getOptionForAxis('axisLineColor', 'y2');
       context.lineWidth = g.getOptionForAxis('axisLineWidth', 'y2');
       context.beginPath();
