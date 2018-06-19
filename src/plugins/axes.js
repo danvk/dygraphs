@@ -195,7 +195,10 @@ axes.prototype.willDrawChart = function(e) {
         if (top + fontSize + 3 > canvasHeight) {
           label.style.bottom = '0';
         } else {
-          label.style.top = top + 'px';
+          // The lowest tick on the y-axis often overlaps with the leftmost
+          // tick on the x-axis. Shift the bottom tick up a little bit to
+          // compensate if necessary.
+          label.style.top = Math.min(top, canvasHeight - (2 * fontSize)) + 'px';
         }
         // TODO: replace these with css classes?
         if (tick.axis === 0) {
@@ -210,18 +213,6 @@ axes.prototype.willDrawChart = function(e) {
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
       });
-
-      // The lowest tick on the y-axis often overlaps with the leftmost
-      // tick on the x-axis. Shift the bottom tick up a little bit to
-      // compensate if necessary.
-      var bottomTick = this.ylabels_[0];
-      // Interested in the y2 axis also?
-      var fontSize = g.getOptionForAxis('axisLabelFontSize', 'y');
-      var bottom = parseInt(bottomTick.style.top, 10) + fontSize;
-      if (bottom > canvasHeight - fontSize) {
-        bottomTick.style.top = (parseInt(bottomTick.style.top, 10) -
-            fontSize / 2) + 'px';
-      }
     }
 
     // draw a vertical line on the left to separate the chart from the labels.
