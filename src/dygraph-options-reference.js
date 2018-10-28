@@ -821,7 +821,20 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
     "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
+  },
+  "topLegendOffset": {
+	"default": "-40",
+	"labels": ["Legend Top Offset"],
+	"type": "integer",
+	"description": "Top offset, in pixels, of the legend from current point."
+  },
+  "leftLegendOffset": {
+	"default": "5",
+	"labels": ["Legend Left Offset"],
+	"type": "integer",
+	"description": "Left offset, in pixels, of the legend from current point."
   }
+
 }
 ;  // </JSON>
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
