@@ -288,6 +288,7 @@ Legend.defaultFormatter = function(data) {
   html = data.xHTML + ':';
   for (var i = 0; i < data.series.length; i++) {
     var series = data.series[i];
+    if (!series.y && !series.yHTML) continue;
     if (!series.isVisible) continue;
     if (sepLines) html += '<br>';
     var cls = series.isHighlighted ? ' class="highlight"' : '';
