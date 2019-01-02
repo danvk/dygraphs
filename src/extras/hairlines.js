@@ -29,7 +29,7 @@ Dygraph.Plugins.Hairlines = (function() {
 var CLICK_DELAY_MS = 300;
 
 var hairlines = function(opt_options) {
-  /* @type {!Array.<!Hairline>} */
+  /** @private {!Array.<!Hairline>} */
   this.hairlines_ = [];
 
   // Used to detect resizes (which require the divs to be repositioned).
