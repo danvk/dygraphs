@@ -12,19 +12,7 @@ import Proxy from './Proxy';
 describe("fill-step-plot", function() {
 
 cleanupAfterEach();
-
-var origFunc = utils.getContext;
-
-beforeEach(function() {
-  utils.getContext = function(canvas) {
-    return new Proxy(origFunc(canvas));
-  };
-});
-
-afterEach(function() {
-  utils.getContext = origFunc;
-});
-
+useProxyCanvas(utils, Proxy);
 
 it('testFillStepPlotNullValues', function() {
   var opts = {

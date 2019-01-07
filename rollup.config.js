@@ -3,7 +3,7 @@ import { terser } from "rollup-plugin-terser";
 
 const banner = '/*! @license Copyright 2017 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */';
 
-module.exports = [
+export default [
 	{
 		input: 'index.js',
 		output: {

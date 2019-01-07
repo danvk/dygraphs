@@ -14,7 +14,7 @@
 import Dygraph from '../../src/dygraph';
 import Util from './Util';
 
-import 'core-js/es6/promise';
+import Promise from 'promise-polyfill';
 
 function dygraphPromise(div, data, opts) {
   return new Promise((resolve, reject) => {

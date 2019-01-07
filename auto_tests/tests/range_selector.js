@@ -17,6 +17,7 @@ import Proxy from './Proxy';
 describe("range-selector", function() {
 
 cleanupAfterEach();
+useProxyCanvas(utils, Proxy);
 
 var restoreConsole;
 var logs = {};
@@ -413,17 +414,6 @@ it('testRangeSelectorPositionIfXAxisNotDrawn', function() {
 });
 
 it('testMiniPlotDrawn', function() {
-  // Install Proxy to track canvas calls.
-  var origFunc = utils.getContext;
-  var miniHtx;
-  utils.getContext = function(canvas) {
-    if (canvas.className != 'dygraph-rangesel-bgcanvas') {
-      return origFunc(canvas);
-    }
-    miniHtx = new Proxy(origFunc(canvas));
-    return miniHtx;
-  };
-
   var opts = {
     width: 480,
     height: 100,
@@ -445,8 +435,6 @@ it('testMiniPlotDrawn', function() {
   // TODO(danvk): more precise tests.
   assert.isNotNull(miniHtx);
   assert.isTrue(0 < CanvasAssertions.numLinesDrawn(miniHtx, '#ff0000'));
-
-  utils.getContext = origFunc;
 });
 
 // Tests data computation for the mini plot with a single series.

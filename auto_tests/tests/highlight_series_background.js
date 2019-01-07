@@ -12,6 +12,7 @@ describe("highlight-series-background", function() {
 
   cleanupAfterEach();
 
+/*
   var origRepeatAndCleanup;
 
   beforeEach(function() {
@@ -27,6 +28,7 @@ describe("highlight-series-background", function() {
   afterEach(function() {
     utils.repeatAndCleanup = origRepeatAndCleanup;
   });
+*/
 
   function setupGraph(highlightSeriesBackgroundAlpha,
                       highlightSeriesBackgroundColor) {

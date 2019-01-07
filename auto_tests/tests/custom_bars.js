@@ -13,17 +13,7 @@ import Proxy from './Proxy';
 describe("custom-bars", function() {
 
 cleanupAfterEach();
-
-var _origFunc = utils.getContext;
-beforeEach(function() {
-  utils.getContext = function(canvas) {
-    return new Proxy(_origFunc(canvas));
-  }
-});
-
-afterEach(function() {
-  utils.getContext = _origFunc;
-});
+useProxyCanvas(utils, Proxy);
 
 // This test used to reliably produce an infinite loop.
 it('testCustomBarsNoHang', function() {
