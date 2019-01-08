@@ -74,7 +74,7 @@ export var HORIZONTAL = 1;
 export var VERTICAL = 2;
 
 var _getContext = function(canvas) {
-	return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
+  return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
 };
 
 /**
@@ -93,7 +93,7 @@ export var getContext = function(canvas) {
 
 // allows swapping in a Proxy-wrapped context
 export var setGetContext = function(newGetContext) {
-	_getContext = newGetContext;
+  _getContext = newGetContext;
 };
 
 /**
