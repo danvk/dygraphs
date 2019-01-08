@@ -14,7 +14,9 @@ import Proxy from './Proxy';
 describe("per-axis", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 var xAxisLineColor = "#00ffff";
 var yAxisLineColor = "#ffff00";

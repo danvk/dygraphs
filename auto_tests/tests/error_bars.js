@@ -13,7 +13,9 @@ import CanvasAssertions from './CanvasAssertions';
 describe("error-bars", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testErrorBarsDrawn', function() {
   var opts = {
@@ -181,7 +183,7 @@ it('testErrorBarsForAlphaSeriesCorrectColors', function() {
   //  38 = 255 * 0.15 (fillAlpha)
   // 146 = 255 * (0.15 * 0.5 + 1 * 0.5) (fillAlpha from error bar + alpha from series line)
   assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 175));
-  assert.deepEqual([0, 255, 0, 146], Util.samplePixel(g.hidden_, 200, 199));
+  assert.deepEqual([0, 255, 0, 147], Util.samplePixel(g.hidden_, 200, 199));
   assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 225));
 });
 

@@ -18,7 +18,9 @@ import CanvasAssertions from './CanvasAssertions';
 describe("step-plot-per-series", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testMixedModeStepAndLineFilled', function() {
   var opts = {

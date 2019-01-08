@@ -6,7 +6,7 @@ export default {
 	input: "./auto_tests/tests/*.js",
 	output: {
 		file: 'dist/tests.js',
-		name: 'Dygraph',
+		name: 'DygraphTests',
 		format: 'iife'
 	},
 	plugins: [
@@ -14,13 +14,9 @@ export default {
 		replace({
 			patterns: [
 				{
-					test: /typeof\(process\)/gm,
-					replace: 'true',
+					test: /^import Dygraph from/gm,
+					replace: '// import Dygraph from',
 				},
-				{
-					test: /process\.env\.NODE_ENV/gm,
-					replace: "'development'",
-				}
 			]
 		}),
 		multiEntry(),

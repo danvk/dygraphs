@@ -31,20 +31,10 @@
       graph.setAttribute('style', '');
     });
   }
-  function useProxyCanvas(utils, Proxy) {
-    var _origFunc = utils.getContext;
-    beforeEach(function() {
-      utils.getContext = function(canvas) {
-        return new Proxy(_origFunc(canvas));
-      }
-    });
-
-    afterEach(function() {
-      utils.getContext = _origFunc;
-    });
-  }
   </script>
   <script>mocha.setup('bdd')</script>
+
+  <script src="../dist/dygraph.js"></script>
 
   <!-- Test data -->
   <script src="data/data.js"></script>

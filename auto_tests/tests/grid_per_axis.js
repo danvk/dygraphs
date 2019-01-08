@@ -16,7 +16,9 @@ import PixelSampler from './PixelSampler';
 describe("grid-per-axis", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testIndependentGrids', function() {
   var opts = {

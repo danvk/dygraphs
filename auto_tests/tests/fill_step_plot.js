@@ -12,7 +12,9 @@ import Proxy from './Proxy';
 describe("fill-step-plot", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testFillStepPlotNullValues', function() {
   var opts = {

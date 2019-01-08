@@ -33,6 +33,7 @@
   "homepage": "https://github.com/danvk/dygraphs",
   "devDependencies": {
     "chai": "^4.2.0",
+    "http-server": "^0.11.1",
     "mocha": "^5.2.0",
     "promise-polyfill": "^8.1.0",
     "rollup": "^1.0.2",

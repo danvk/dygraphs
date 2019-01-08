@@ -12,7 +12,9 @@ import Proxy from './Proxy';
 describe("connect-separated-points", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testEdgePointsSimple', function() {
   var opts = {

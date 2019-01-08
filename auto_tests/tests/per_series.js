@@ -92,7 +92,7 @@ it('testPerSeriesAlpha', function() {
   var sampler = new PixelSampler(g);
 
   // Inside of the "Y" bump -- 5% alpha.
-  assert.deepEqual([255,0,0,63], sampler.colorAtCoordinate(6.5, 0.5));
+  assert.deepEqual([255,0,0,64], sampler.colorAtCoordinate(6.5, 0.5));
 
   // Inside of the "Z" bump -- 95% alpha.
   assert.deepEqual([0,0,255,191], sampler.colorAtCoordinate(2.5, 0.5));

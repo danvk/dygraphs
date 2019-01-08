@@ -14,7 +14,9 @@ import Util from './Util';
 describe("stacked", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testCorrectColors', function() {
   var opts = {

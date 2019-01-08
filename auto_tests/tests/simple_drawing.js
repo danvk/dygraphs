@@ -34,7 +34,9 @@ import PixelSampler from './PixelSampler';
 describe("simple-drawing", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 var ZERO_TO_FIFTY = 'X,Y\n10,0\n20,50';
 

@@ -35,7 +35,9 @@ var ZERO_TO_FIFTY = [[ 10, 0 ] , [ 20, 50 ]];
 describe("missing-points", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 it('testSeparatedPointsDontDraw', function() {
   var graph = document.getElementById("graph");

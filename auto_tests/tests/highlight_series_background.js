@@ -12,24 +12,6 @@ describe("highlight-series-background", function() {
 
   cleanupAfterEach();
 
-/*
-  var origRepeatAndCleanup;
-
-  beforeEach(function() {
-    // A "fast" version of repeatAndCleanup
-    origRepeatAndCleanup = utils.repeatAndCleanup;
-    // utils.repeatAndCleanup = function(repeatFn, maxFrames, framePeriodInMillis, cleanupFn) {
-    //   repeatFn(0);
-    //   if (maxFrames > 1) repeatFn(maxFrames - 1);
-    //   cleanupFn();
-    // };
-  });
-
-  afterEach(function() {
-    utils.repeatAndCleanup = origRepeatAndCleanup;
-  });
-*/
-
   function setupGraph(highlightSeriesBackgroundAlpha,
                       highlightSeriesBackgroundColor) {
     var opts = {
@@ -64,7 +46,7 @@ describe("highlight-series-background", function() {
 
     // handle background color fade-in time
     window.setTimeout(() => {
-      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,255,255,127]);
+      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,255,255,128]);
       done();
     }, 500);
   });
@@ -92,7 +74,7 @@ describe("highlight-series-background", function() {
 
     // handle background color fade-in time
     window.setTimeout(() => {
-      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,255,255,127]);
+      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,255,255,128]);
       done();
     }, 500);
   });
@@ -120,7 +102,7 @@ describe("highlight-series-background", function() {
 
     // handle background color fade-in time
     window.setTimeout(() => {
-      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,0,0,76]);
+      assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [255,0,0,77]);
       done();
     }, 500);
   });

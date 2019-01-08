@@ -13,7 +13,9 @@ import Proxy from './Proxy';
 describe("custom-bars", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 // This test used to reliably produce an infinite loop.
 it('testCustomBarsNoHang', function() {

@@ -73,6 +73,10 @@ export var DOT_DASH_LINE = [7, 2, 2, 2];
 export var HORIZONTAL = 1;
 export var VERTICAL = 2;
 
+var _getContext = function(canvas) {
+	return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
+};
+
 /**
  * Return the 2d context for a dygraph canvas.
  *
@@ -84,7 +88,12 @@ export var VERTICAL = 2;
  * @private
  */
 export var getContext = function(canvas) {
-  return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
+  return _getContext(canvas);
+};
+
+// allows swapping in a Proxy-wrapped context
+export var setGetContext = function(newGetContext) {
+	_getContext = newGetContext;
 };
 
 /**

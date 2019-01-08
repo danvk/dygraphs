@@ -13,7 +13,9 @@ import {assertDeepCloseTo} from './custom_asserts';
 describe("to-dom-coords", function() {
 
 cleanupAfterEach();
-useProxyCanvas(utils, Proxy);
+Dygraph.setGetContext(function(canvas) {
+  return new Proxy(canvas.getContext("2d"));
+});
 
 // Checks that toDomCoords and toDataCoords are inverses of one another.
 var checkForInverses = function(g) {
