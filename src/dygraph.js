@@ -2788,7 +2788,7 @@ function validateNativeFormat(data) {
   if (typeof firstX !== 'number' && !utils.isDateLike(firstX)) {
     throw new Error(`Expected number or date but got ${typeof firstX}: ${firstX}.`);
   }
-  for (let i = 1; i < firstRow.length; i++) {
+  for (var i = 1; i < firstRow.length; i++) {
     const val = firstRow[i];
     if (val === null || val === undefined) continue;
     if (typeof val === 'number') continue;
