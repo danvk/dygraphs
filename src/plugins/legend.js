@@ -91,15 +91,19 @@ var escapeHTML = function(str) {
   return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
+var isString = function(s) {
+    return typeof(s) === 'string' || s instanceof String;
+};
+
 var replaceHTML = function(e, html) {
-  if (html instanceof Node &&
+  if (isString(html)) {
+    e.innerHTML = html;
+  } else if (html instanceof Node &&
       html.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
     e.innerHTML = '';
     e.appendChild(html);
-  } else if (html instanceof string) {
-    e.innerHTML = html;
   }
-}
+};
 
 Legend.prototype.select = function(e) {
   var xValue = e.selectedX;
