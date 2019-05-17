@@ -67,5 +67,8 @@
   },
   "pre-commit": [
     "tests-ok"
-  ]
+  ],
+  "dependencies": {
+    "typescript": "^3.4.5"
+  }
 }
