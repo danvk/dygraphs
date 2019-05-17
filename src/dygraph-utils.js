@@ -1,3 +1,7 @@
+// @ts-check
+
+/// <reference path="./dygraph-internal.externs.js" />
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -120,14 +124,9 @@ export function removeEvent(elem, type, fn) {
  */
 export function cancelEvent(e) {
   e = e ? e : window.event;
-  if (e.stopPropagation) {
-    e.stopPropagation();
-  }
-  if (e.preventDefault) {
-    e.preventDefault();
-  }
+  e.stopPropagation();
+  e.preventDefault();
   e.cancelBubble = true;
-  e.cancel = true;
   e.returnValue = false;
   return false;
 };
@@ -175,7 +174,7 @@ export function hsvToRGB(hue, saturation, value) {
 /**
  * Find the coordinates of an object relative to the top left of the page.
  *
- * @param {Node} obj
+ * @param {Element} obj
  * @return {{x:number,y:number}}
  * @private
  */
@@ -194,7 +193,7 @@ export function findPos(obj) {
  * Returns the x-coordinate of the event in a coordinate system where the
  * top-left corner of the page (not the window) is (0,0).
  * Taken from MochiKit.Signal
- * @param {!Event} e
+ * @param {!MouseEvent} e
  * @return {number}
  * @private
  */
@@ -206,7 +205,7 @@ export function pageX(e) {
  * Returns the y-coordinate of the event in a coordinate system where the
  * top-left corner of the page (not the window) is (0,0).
  * Taken from MochiKit.Signal
- * @param {!Event} e
+ * @param {!MouseEvent} e
  * @return {number}
  * @private
  */
@@ -217,7 +216,7 @@ export function pageY(e) {
 /**
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
  * canvas (i.e. DOM Coords).
- * @param {!Event} e Drag event.
+ * @param {!DragEvent} e Drag event.
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved to the right.
  */
@@ -228,7 +227,7 @@ export function dragGetX_(e, context) {
 /**
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
  * canvas (i.e. DOM Coords).
- * @param {!Event} e Drag event.
+ * @param {!DragEvent} e Drag event.
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved down.
  */
@@ -446,7 +445,7 @@ export function binarySearch(val, arry, abs, low, high) {
   var validIndex = function(idx) {
     return idx >= 0 && idx < arry.length;
   };
-  var mid = parseInt((low + high) / 2, 10);
+  var mid = Math.floor((low + high) / 2);
   var element = arry[mid];
   var idx;
   if (element == val) {
@@ -499,10 +498,7 @@ export function dateParser(dateStr) {
   }
 
   if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
-    dateStrSlashed = dateStr.replace("-", "/", "g");
-    while (dateStrSlashed.search("-") != -1) {
-      dateStrSlashed = dateStrSlashed.replace("-", "/");
-    }
+    dateStrSlashed = dateStr.replace(/-/g, '/');
     d = dateStrToMillis(dateStrSlashed);
   } else if (dateStr.length == 8) {  // e.g. '20090712'
     // TODO(danvk): remove support for this format. It's confusing.
@@ -666,20 +662,7 @@ export function createCanvas() {
  */
 export function getContextPixelRatio(context) {
   try {
-    var devicePixelRatio = window.devicePixelRatio;
-    var backingStoreRatio = context.webkitBackingStorePixelRatio ||
-                            context.mozBackingStorePixelRatio ||
-                            context.msBackingStorePixelRatio ||
-                            context.oBackingStorePixelRatio ||
-                            context.backingStorePixelRatio || 1;
-    if (devicePixelRatio !== undefined) {
-      return devicePixelRatio / backingStoreRatio;
-    } else {
-      // At least devicePixelRatio must be defined for this ratio to make sense.
-      // We default backingStoreRatio to 1: this does not exist on some browsers
-      // (i.e. desktop Chrome).
-      return 1;
-    }
+    return window.devicePixelRatio;
   } catch (e) {
     return 1;
   }
@@ -693,45 +676,55 @@ export function getContextPixelRatio(context) {
  * @param {function(!Array,?):boolean=} predicate
  * @constructor
  */
-export function Iterator(array, start, length, predicate) {
-  start = start || 0;
-  length = length || array.length;
-  this.hasNext = true; // Use to identify if there's another element.
-  this.peek = null; // Use for look-ahead
-  this.start_ = start;
-  this.array_ = array;
-  this.predicate_ = predicate;
-  this.end_ = Math.min(array.length, start + length);
-  this.nextIdx_ = start - 1; // use -1 so initial advance works.
-  this.next(); // ignoring result.
-};
-
 /**
- * @return {Object}
+ * TODO(danvk): use @template here when it's better supported for classes.
+ * @param {!Array} array
+ * @param {number} start
+ * @param {number} length
+ * @param {function(!Array,?):boolean=} predicate
+ * @constructor
  */
-Iterator.prototype.next = function() {
-  if (!this.hasNext) {
-    return null;
+export class Iterator {
+  constructor(array, start, length, predicate) {
+    start = start || 0;
+    length = length || array.length;
+    this.hasNext = true; // Use to identify if there's another element.
+    this.peek = null; // Use for look-ahead
+    this.start_ = start;
+    this.array_ = array;
+    this.predicate_ = predicate;
+    this.end_ = Math.min(array.length, start + length);
+    this.nextIdx_ = start - 1; // use -1 so initial advance works.
+    this.next(); // ignoring result.
   }
-  var obj = this.peek;
-
-  var nextIdx = this.nextIdx_ + 1;
-  var found = false;
-  while (nextIdx < this.end_) {
-    if (!this.predicate_ || this.predicate_(this.array_, nextIdx)) {
-      this.peek = this.array_[nextIdx];
-      found = true;
-      break;
+  /**
+   * @return {Object}
+   */
+  next() {
+    if (!this.hasNext) {
+      return null;
     }
-    nextIdx++;
+    var obj = this.peek;
+    var nextIdx = this.nextIdx_ + 1;
+    var found = false;
+    while (nextIdx < this.end_) {
+      if (!this.predicate_ || this.predicate_(this.array_, nextIdx)) {
+        this.peek = this.array_[nextIdx];
+        found = true;
+        break;
+      }
+      nextIdx++;
+    }
+    this.nextIdx_ = nextIdx;
+    if (!found) {
+      this.hasNext = false;
+      this.peek = null;
+    }
+    return obj;
   }
-  this.nextIdx_ = nextIdx;
-  if (!found) {
-    this.hasNext = false;
-    this.peek = null;
-  }
-  return obj;
-};
+}
+;
+
 
 /**
  * Returns a new iterator over array, between indexes start and
