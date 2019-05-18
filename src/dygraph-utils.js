@@ -358,6 +358,7 @@ export var DateAccessorsUTC = {
  * @param {number} hh The hours (from 0-23)
  * @param {number} mm The minutes (from 0-59)
  * @param {number} ss The seconds (from 0-59)
+ * @param {number} ms
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
@@ -668,23 +669,15 @@ export function getContextPixelRatio(context) {
   }
 };
 
-/**
- * TODO(danvk): use @template here when it's better supported for classes.
- * @param {!Array} array
- * @param {number} start
- * @param {number} length
- * @param {function(!Array,?):boolean=} predicate
- * @constructor
- */
-/**
- * TODO(danvk): use @template here when it's better supported for classes.
- * @param {!Array} array
- * @param {number} start
- * @param {number} length
- * @param {function(!Array,?):boolean=} predicate
- * @constructor
- */
 export class Iterator {
+  /**
+   * TODO(danvk): use @template here when it's better supported for classes.
+   * @param {!Array} array
+   * @param {number} start
+   * @param {number} length
+   * @param {function(!Array,?):boolean=} predicate
+   * @constructor
+   */
   constructor(array, start, length, predicate) {
     start = start || 0;
     length = length || array.length;
@@ -723,7 +716,6 @@ export class Iterator {
     return obj;
   }
 }
-;
 
 
 /**
@@ -749,16 +741,7 @@ export function createIterator(array, start, length, opt_predicate) {
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
-export var requestAnimFrame = (function() {
-  return window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          window.oRequestAnimationFrame      ||
-          window.msRequestAnimationFrame     ||
-          function (callback) {
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();
+export var requestAnimFrame = window.requestAnimationFrame;
 
 /**
  * Call a function at most maxFrames times at an attempted interval of
@@ -766,11 +749,11 @@ export var requestAnimFrame = (function() {
  * once immediately, then at most (maxFrames - 1) times asynchronously. If
  * maxFrames==1, then cleanup_fn() is also called synchronously.  This function
  * is used to sequence animation.
- * @param {function(number)} repeatFn Called repeatedly -- takes the frame
+ * @param {(frame: number) => void} repeatFn Called repeatedly -- takes the frame
  *     number (from 0 to maxFrames-1) as an argument.
  * @param {number} maxFrames The max number of times to call repeatFn
  * @param {number} framePeriodInMillis Max requested time between frames.
- * @param {function()} cleanupFn A function to call after all repeatFn calls.
+ * @param {() => void} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
 export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
@@ -1013,7 +996,7 @@ function parseRGBA(rgbStr) {
  * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
  *
  * @param {!string} colorStr Any valid CSS color string.
- * @return {{r:number,g:number,b:number,a:number?}} Parsed RGB tuple.
+ * @return {{r:number,g:number,b:number,a?:number}} Parsed RGB tuple.
  * @private
  */
 export function toRGB_(colorStr) {
@@ -1091,7 +1074,7 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * Return a string version of a number. This respects the digitsAfterDecimal
  * and maxNumberWidth options.
  * @param {number} x The number to be formatted
- * @param {Dygraph} opts An options view
+ * @param {(option: string) => any} opts An options view
  */
 export function numberValueFormatter(x, opts) {
   var sigFigs = opts('sigFigs');
@@ -1143,7 +1126,7 @@ export function numberValueFormatter(x, opts) {
     }
     if (kmg2) {
       // TODO(danvk): clean up this logic. Why so different than kmb?
-      var x_parts = String(x.toExponential()).split('e-');
+      var x_parts = String(x.toExponential()).split('e-').map(Number);
       if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
         if (x_parts[1] % 3 > 0) {
           label = round_(x_parts[0] /
@@ -1182,7 +1165,7 @@ var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'
  * labelsUTC option.
  * @param {Date} date The date to format
  * @param {number} granularity One of the Dygraph granularity constants
- * @param {Dygraph} opts An options view
+ * @param {(option: string) => any} opts An options view
  * @return {string} The date formatted as local time
  * @private
  */
@@ -1224,10 +1207,10 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
 /**
  * Return a string version of a JS date for a value label. This respects the
  * labelsUTC option.
- * @param {Date} date The date to be formatted
- * @param {Dygraph} opts An options view
+ * @param {Date} d The date to be formatted
+ * @param {(option: string) => any} opts An options view
  * @private
  */
 export function dateValueFormatter(d, opts) {
-  return dateString_(d, opts('labelsUTC'));
+  return dateString_(d.getTime(), opts('labelsUTC'));
 };
