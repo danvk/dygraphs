@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
@@ -14,9 +16,8 @@
  *   isPanning: boolean,
  *   is2DPan: boolean,
  *   cancelNextDblclick: boolean,
- *   initializeMouseDown:
- *       function(!Event, !Dygraph, !DygraphInteractionContext)
- * }}
+ *   initializeMouseDown: (e: !Event, dygraph:!Dygraph, context: !DygraphInteractionContext) => void
+ * }} DygraphInteractionContext
  */
 var DygraphInteractionContext;
 
@@ -41,6 +42,6 @@ var DygraphInteractionContext;
  *     yval: ?number,
  *     yval_plus: ?number,
  *     yval_stacked
- * }}
+ * }} Dygraph.PointType
  */
 Dygraph.PointType;

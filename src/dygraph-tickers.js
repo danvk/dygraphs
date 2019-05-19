@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -64,22 +66,29 @@
 
 import * as utils from './dygraph-utils';
 
-/** @typedef {Array.<{v:number, label:string, label_v:(string|undefined)}>} */
-var TickList = undefined;  // the ' = undefined' keeps jshint happy.
-
-/** @typedef {function(
- *    number,
- *    number,
- *    number,
- *    function(string):*,
- *    Dygraph=,
- *    Array.<number>=
- *  ): TickList}
+/**
+ * @typedef {{
+ *   v:number,
+ *   label:string,
+ *   label_v?: string
+ * }} Tick
  */
-var Ticker = undefined;  // the ' = undefined' keeps jshint happy.
+// var Tick;
+
+/**
+ * @typedef {(
+ *    a: number,
+ *    b: number,
+ *    pixels: number,
+ *    opts: (option: string) => any,
+ *    dygraph?: any,
+ *    vals?: number[]
+ *  ) => Tick[]} Ticker
+ */
+// var Ticker;
 
 /** @type {Ticker} */
-export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
+export var numericLinearTicks = (a, b, pixels, opts, dygraph, vals) => {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
     return opts(opt);
@@ -90,11 +99,14 @@ export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 /** @type {Ticker} */
 export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
+
+  /** @type {Tick[]} */
   var ticks = [];
+
   var i, j, tickV, nTicks;
   if (vals) {
     for (i = 0; i < vals.length; i++) {
-      ticks.push({v: vals[i]});
+      ticks.push({v: vals[i], label: undefined});
     }
   } else {
     // TODO(danvk): factor this log-scale block out into a separate function.
@@ -115,7 +127,7 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
         for (var idx = maxIdx; idx >= minIdx; idx--) {
           var tickValue = PREFERRED_LOG_TICK_VALUES[idx];
           var pixel_coord = Math.log(tickValue / a) / Math.log(b / a) * pixels;
-          var tick = { v: tickValue };
+          var tick = { v: tickValue, label: undefined };
           if (lastDisplayed === null) {
             lastDisplayed = {
               tickValue : tickValue,
@@ -188,7 +200,7 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       if (low_val > high_val) scale *= -1;
       for (i = 0; i <= nTicks; i++) {
         tickV = low_val + i * scale;
-        ticks.push( {v: tickV} );
+        ticks.push( {v: tickV, label: undefined} );
       }
     }
   }
@@ -204,7 +216,6 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 
   return ticks;
 };
-
 
 /** @type {Ticker} */
 export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
@@ -369,8 +380,8 @@ var numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} end_time
  * @param {number} granularity (one of the granularities enumerated above)
  * @param {function(string):*} opts Function mapping from option name -&gt; value.
- * @param {Dygraph=} dg
- * @return {!TickList}
+ * @param {Dygraph} [dg]
+ * @return {Tick[]}
  */
 export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
@@ -402,7 +413,7 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.
