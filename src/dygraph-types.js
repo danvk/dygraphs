@@ -44,4 +44,16 @@ var DygraphInteractionContext;
  *     yval_stacked
  * }} Dygraph.PointType
  */
-Dygraph.PointType;
+// Dygraph.PointType;
+
+/**
+ * @typedef {{
+ *   minxval: number;
+ *   minyval: number;
+ *   minval: number;
+ *   maxval: number;
+ *   xlogscale: number;
+ *   ylogscale: number;
+ *   yscale: number;
+ * }} DygraphAxisType
+ */
