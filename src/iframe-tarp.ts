@@ -25,10 +25,12 @@ import * as utils from './dygraph-utils';
  *     };
  */
 class IFrameTarp {
+  tarps: HTMLDivElement[];
+
   constructor() {
-    /** @type {Array.<!HTMLDivElement>} */
     this.tarps = [];
   }
+
   /**
    * Find all the iframes in the document and cover them with high z-index
    * transparent divs.
@@ -49,6 +51,7 @@ class IFrameTarp {
       this.tarps.push(div);
     }
   }
+
   /**
    * Remove all the iframe covers. You should call this in a mouseup handler.
    */
@@ -59,7 +62,5 @@ class IFrameTarp {
     this.tarps = [];
   }
 }
-
-
 
 export default IFrameTarp;

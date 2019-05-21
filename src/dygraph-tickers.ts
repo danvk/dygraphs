@@ -82,7 +82,7 @@ type Ticker = (
  ) => Tick[];
 
 export var numericLinearTicks: Ticker = (a, b, pixels, opts, dygraph, vals) => {
-  var nonLogscaleOpts = function(opt) {
+  var nonLogscaleOpts = function(opt: string) {
     if (opt === 'logscale') return false;
     return opts(opt);
   };
@@ -153,7 +153,7 @@ export var numericTicks: Ticker = function(a, b, pixels, opts, dygraph, vals) {
       // The first spacing greater than pixelsPerYLabel is what we use.
       // TODO(danvk): version that works on a log scale.
       var kmg2 = opts("labelsKMG2");
-      var mults, base;
+      var mults: number[], base: number;
       if (kmg2) {
         mults = [1, 2, 4, 8, 16, 32, 64, 128, 256];
         base = 16;
