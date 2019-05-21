@@ -320,7 +320,8 @@ export function treatMouseOpAsClick(g: DygraphAny, event: MouseEvent, context: D
   }
 
   if (selectedPoint) {
-    const e: PluginPointClickEvent = {
+    // TODO(danvk): should be Omit<PluginPointClickEvent, PluginEvent>
+    const e: Partial<PluginPointClickEvent> = {
       cancelable: true,
       point: selectedPoint,
       canvasx: context.dragEndX,
@@ -336,7 +337,7 @@ export function treatMouseOpAsClick(g: DygraphAny, event: MouseEvent, context: D
     }
   }
 
-  const e: PluginClickEvent = {
+  const e: Partial<PluginClickEvent> = {
     cancelable: true,
     xval: g.lastx_,  // closest point by x value
     pts: g.selPoints_,

@@ -216,15 +216,25 @@ export interface PluginClickEvent extends PluginXYEvent {
   pts: DygraphPointType[];
 }
 
-export interface PluginWillDrawEvent extends PluginEvent {
+export interface PluginDrawEvent extends PluginEvent {
   canvas: HTMLCanvasElement;
   drawingContext: CanvasRenderingContext2D;
+}
+
+export interface PluginLayoutEvent extends PluginEvent {
+  chart_div: HTMLDivElement;
+  reserveSpaceTop(px: number): Area;
+  reserveSpaceBottom(px: number): Area;
+  reserveSpaceLeft(px: number): Area;
+  reserveSpaceRight(px: number): Area;
 }
 
 export interface DygraphsPlugin {
   toString(): string;
   activate(g: DygraphAny): void;
-  willDrawChart?(e: PluginWillDrawEvent): void;
-  didDrawChart?(e: PluginWillDrawEvent): void;
+  layout?(e: PluginLayoutEvent): void;
+  willDrawChart?(e: PluginDrawEvent): void;
+  didDrawChart?(e: PluginDrawEvent): void;
+  clearChart?(e: PluginEvent): void;
   destroy?(): void;
 }
