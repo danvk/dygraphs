@@ -16,26 +16,14 @@
 import * as DygraphTickers from './dygraph-tickers';
 import { DygraphAny, DygraphInteractionContext } from "./dygraph-types";
 
-export var LOG_SCALE = 10;
-export var LN_TEN = Math.log(LOG_SCALE);
+export const LOG_SCALE = 10;
+export const LN_TEN = Math.log(LOG_SCALE);
 
-/**
- * @private
- * @param {number} x
- * @return {number}
- */
-export var log10 = function(x: number): number {
+export const log10 = function(x: number): number {
   return Math.log(x) / LN_TEN;
 };
 
-/**
- * @private
- * @param {number} r0
- * @param {number} r1
- * @param {number} pct
- * @return {number}
- */
-export var logRangeFraction = function(r0: number, r1: number, pct: number): number {
+export const logRangeFraction = function(r0: number, r1: number, pct: number): number {
   // Computing the inverse of toPercentXCoord. The function was arrived at with
   // the following steps:
   //
@@ -78,9 +66,6 @@ export var VERTICAL = 2;
  *
  * This method is only exposed for the sake of replacing the function in
  * automated tests.
- *
- * @param {!HTMLCanvasElement} canvas
- * @return {!CanvasRenderingContext2D}
  * @private
  */
 export var getContext = function(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
@@ -89,24 +74,26 @@ export var getContext = function(canvas: HTMLCanvasElement): CanvasRenderingCont
 
 /**
  * Add an event handler.
- * @param {!Node} elem The element to add the event to.
- * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
- * @param {function(Event):(boolean|undefined)} fn The function to call
+ * @param elem The element to add the event to.
+ * @param type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param fn The function to call
  *     on the event. The function takes one parameter: the event object.
  * @private
+ * TODO(danvk): eliminate this; just use addEventListener!
  */
-export var addEvent = function addEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
+export var addEvent = function addEvent(elem: Node, type: string, fn: (e: Event) => void) {
   elem.addEventListener(type, fn, false);
 };
 
 /**
  * Remove an event handler.
- * @param {!Node} elem The element to remove the event from.
- * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
- * @param {function(Event):(boolean|undefined)} fn The function to call
+ * @param elem The element to remove the event from.
+ * @param type The type of the event, e.g. 'click' or 'mousemove'.
+ * @param fn The function to call
  *     on the event. The function takes one parameter: the event object.
+ * TODO(danvk): eliminate this; just use removeEventListener!
  */
-export function removeEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
+export function removeEvent(elem: Node, type: string, fn: (e: Event) => void) {
   elem.removeEventListener(type, fn, false);
 };
 
@@ -115,7 +102,7 @@ export function removeEvent(elem: Node, type: string, fn: (arg0: Event) => (bool
  * browser actions, e.g. highlighting text on a double-click.
  * Based on the article at
  * http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
- * @param {!Event} e The event whose normal behavior should be canceled.
+ * @param e The event whose normal behavior should be canceled.
  * @private
  */
 export function cancelEvent(e: Event) {
@@ -131,16 +118,16 @@ export function cancelEvent(e: Event) {
  * Convert hsv values to an rgb(r,g,b) string. Taken from MochiKit.Color. This
  * is used to generate default series colors which are evenly spaced on the
  * color wheel.
- * @param { number } hue Range is 0.0-1.0.
- * @param { number } saturation Range is 0.0-1.0.
- * @param { number } value Range is 0.0-1.0.
- * @return { string } "rgb(r,g,b)" where r, g and b range from 0-255.
+ * @param hue Range is 0.0-1.0.
+ * @param saturation Range is 0.0-1.0.
+ * @param value Range is 0.0-1.0.
+ * @return "rgb(r,g,b)" where r, g and b range from 0-255.
  * @private
  */
 export function hsvToRGB(hue: number, saturation: number, value: number): string {
-  var red;
-  var green;
-  var blue;
+  var red: number;
+  var green: number;
+  var blue: number;
   if (saturation === 0) {
     red = value;
     green = value;
@@ -169,9 +156,6 @@ export function hsvToRGB(hue: number, saturation: number, value: number): string
 
 /**
  * Find the coordinates of an object relative to the top left of the page.
- *
- * @param {Element} obj
- * @return {{x:number,y:number}}
  * @private
  */
 export function findPos(obj: Element): { x: number; y: number; } {
@@ -189,8 +173,6 @@ export function findPos(obj: Element): { x: number; y: number; } {
  * Returns the x-coordinate of the event in a coordinate system where the
  * top-left corner of the page (not the window) is (0,0).
  * Taken from MochiKit.Signal
- * @param {!MouseEvent} e
- * @return {number}
  * @private
  */
 export function pageX(e: MouseEvent): number {
@@ -201,8 +183,6 @@ export function pageX(e: MouseEvent): number {
  * Returns the y-coordinate of the event in a coordinate system where the
  * top-left corner of the page (not the window) is (0,0).
  * Taken from MochiKit.Signal
- * @param {!MouseEvent} e
- * @return {number}
  * @private
  */
 export function pageY(e: MouseEvent): number {
@@ -235,8 +215,8 @@ export function dragGetY_(e: MouseEvent, context: DygraphInteractionContext): nu
  * This returns true unless the parameter is 0, null, undefined or NaN.
  * TODO(danvk): rename this function to something like 'isNonZeroNan'.
  *
- * @param {number} x The number to consider.
- * @return {boolean} Whether the number is zero or NaN.
+ * @param x The number to consider.
+ * @return Whether the number is zero or NaN.
  * @private
  */
 export function isOK(x: number): boolean {
@@ -244,13 +224,13 @@ export function isOK(x: number): boolean {
 };
 
 /**
- * @param {{x:?number,y:?number,yval:?number}} p The point to consider, valid
+ * @param p The point to consider, valid
  *     points are {x, y} objects
- * @param {boolean=} opt_allowNaNY Treat point with y=NaN as valid
- * @return {boolean} Whether the point has numeric x and y.
+ * @param opt_allowNaNY Treat point with y=NaN as valid
+ * @return Whether the point has numeric x and y.
  * @private
  */
-export function isValidPoint(p: { x: number | null; y: number | null; yval: number | null; }, opt_allowNaNY: boolean | undefined): boolean {
+export function isValidPoint(p: { x: number | null; y: number | null; yval: number | null; }, opt_allowNaNY?: boolean): boolean {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;
@@ -272,12 +252,12 @@ export function isValidPoint(p: { x: number | null; y: number | null; yval: numb
  * 10^-6, e.g. '0.00001' instead of '1e-5'. See tests/number-format.html for
  * output examples.
  *
- * @param {number} x The number to format
- * @param {number=} opt_precision The precision to use, default 2.
- * @return {string} A string formatted like %g in printf.  The max generated
- *                  string length should be precision + 6 (e.g 1.123e+300).
+ * @param x The number to format
+ * @param opt_precision The precision to use, default 2.
+ * @return A string formatted like %g in printf.  The max generated
+ *         string length should be precision + 6 (e.g 1.123e+300).
  */
-export function floatFormat(x: number, opt_precision: number | undefined): string {
+export function floatFormat(x: number, opt_precision?: number): string {
   // Avoid invalid precision values; [1, 21] is the valid range.
   var p = Math.min(Math.max(1, opt_precision || 2), 21);
 
@@ -303,8 +283,6 @@ export function floatFormat(x: number, opt_precision: number | undefined): strin
 
 /**
  * Converts '9' to '09' (useful for dates)
- * @param {number} x
- * @return {string}
  * @private
  */
 export function zeropad(x: number): string {
@@ -316,16 +294,16 @@ export function zeropad(x: number): string {
  * day, hour, minute, second and millisecond) according to local time,
  * and factory method to call the Date constructor with an array of arguments.
  */
-export var DateAccessorsLocal = {
-  getFullYear:     d => d.getFullYear(),
-  getMonth:        d => d.getMonth(),
-  getDate:         d => d.getDate(),
-  getHours:        d => d.getHours(),
-  getMinutes:      d => d.getMinutes(),
-  getSeconds:      d => d.getSeconds(),
-  getMilliseconds: d => d.getMilliseconds(),
-  getDay:          d => d.getDay(),
-  makeDate:        function(y, m, d, hh, mm, ss, ms) {
+export const DateAccessorsLocal = {
+  getFullYear:     (d: Date) => d.getFullYear(),
+  getMonth:        (d: Date) => d.getMonth(),
+  getDate:         (d: Date) => d.getDate(),
+  getHours:        (d: Date) => d.getHours(),
+  getMinutes:      (d: Date) => d.getMinutes(),
+  getSeconds:      (d: Date) => d.getSeconds(),
+  getMilliseconds: (d: Date) => d.getMilliseconds(),
+  getDay:          (d: Date) => d.getDay(),
+  makeDate:        function(y: number, m: number, d: number, hh: number, mm: number, ss: number, ms: number) {
     return new Date(y, m, d, hh, mm, ss, ms);
   }
 };
@@ -335,7 +313,7 @@ export var DateAccessorsLocal = {
  * day of month, hour, minute, second and millisecond) according to UTC time,
  * and factory method to call the Date constructor with an array of arguments.
  */
-export var DateAccessorsUTC = {
+export const DateAccessorsUTC: typeof DateAccessorsLocal = {
   getFullYear:     d => d.getUTCFullYear(),
   getMonth:        d => d.getUTCMonth(),
   getDate:         d => d.getUTCDate(),
@@ -351,11 +329,10 @@ export var DateAccessorsUTC = {
 
 /**
  * Return a string version of the hours, minutes and seconds portion of a date.
- * @param {number} hh The hours (from 0-23)
- * @param {number} mm The minutes (from 0-59)
- * @param {number} ss The seconds (from 0-59)
- * @param {number} ms
- * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
+ * @param hh The hours (from 0-23)
+ * @param mm The minutes (from 0-59)
+ * @param ss The seconds (from 0-59)
+ * @return A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
 export function hmsString_(hh: number, mm: number, ss: number, ms: number): string {
@@ -372,9 +349,9 @@ export function hmsString_(hh: number, mm: number, ss: number, ms: number): stri
 
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
- * @param {number} time The JavaScript time value (ms since epoch)
- * @param {boolean} utc Whether output UTC or local time
- * @return {string} A date of one of these forms:
+ * @param time The JavaScript time value (ms since epoch)
+ * @param utc Whether output UTC or local time
+ * @return A date of one of these forms:
  *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private
  */
@@ -404,9 +381,9 @@ export function dateString_(time: number, utc: boolean): string {
 
 /**
  * Round a number to the specified number of digits past the decimal point.
- * @param {number} num The number to round
- * @param {number} places The number of decimals to which to round
- * @return {number} The rounded number
+ * @param num The number to round
+ * @param places The number of decimals to which to round
+ * @return The rounded number
  * @private
  */
 export function round_(num: number, places: number): number {
@@ -417,17 +394,23 @@ export function round_(num: number, places: number): number {
 /**
  * Implementation of binary search over an array.
  * Currently does not work when val is outside the range of arry's values.
- * @param {number} val the value to search for
- * @param {Array.<number>} arry is the value over which to search
- * @param {number} abs If abs > 0, find the lowest entry greater than val
+ * @param val the value to search for
+ * @param arry is the value over which to search
+ * @param abs If abs > 0, find the lowest entry greater than val
  *     If abs < 0, find the highest entry less than val.
  *     If abs == 0, find the entry that equals val.
- * @param {number=} low The first index in arry to consider (optional)
- * @param {number=} high The last index in arry to consider (optional)
+ * @param low The first index in arry to consider (optional)
+ * @param high The last index in arry to consider (optional)
  * @return Index of the element, or -1 if it isn't found.
  * @private
  */
-export function binarySearch(val: number, arry: Array<number>, abs: number, low?: number, high?: number): number {
+export function binarySearch(
+  val: number,
+  arry: number[],
+  abs: number,
+  low?: number,
+  high?: number
+): number {
   if (low === null || low === undefined ||
       high === null || high === undefined) {
     low = 0;
@@ -474,8 +457,8 @@ export function binarySearch(val: number, arry: Array<number>, abs: number, low?
  * passed in as an xValueParser in the Dygraph constructor.
  * TODO(danvk): enumerate formats that this understands.
  *
- * @param {string} dateStr A date in a variety of possible string formats.
- * @return {number} Milliseconds since epoch.
+ * @param dateStr A date in a variety of possible string formats.
+ * @return Milliseconds since epoch.
  * @private
  */
 export function dateParser(dateStr: string): number {
@@ -518,8 +501,8 @@ export function dateParser(dateStr: string): number {
  * This is identical to JavaScript's built-in Date.parse() method, except that
  * it doesn't get replaced with an incompatible method by aggressive JS
  * libraries like MooTools or Joomla.
- * @param {string} str The date string, e.g. "2011/05/06"
- * @return {number} millis since epoch
+ * @param str The date string, e.g. "2011/05/06"
+ * @return millis since epoch
  * @private
  */
 export function dateStrToMillis(str: string): number {
@@ -529,10 +512,6 @@ export function dateStrToMillis(str: string): number {
 // These functions are all based on MochiKit.
 /**
  * Copies all the properties from o to self.
- *
- * @param {!Object} self
- * @param {!Object} o
- * @return {!Object}
  */
 export function update(self: object, o: object): object {
   if (typeof(o) != 'undefined' && o !== null) {
@@ -547,10 +526,6 @@ export function update(self: object, o: object): object {
 
 /**
  * Copies all the properties from o to self.
- *
- * @param {!Object} self
- * @param {!Object} o
- * @return {!Object}
  * @private
  */
 export function updateDeep(self: object, o: object): object {
@@ -586,11 +561,6 @@ export function updateDeep(self: object, o: object): object {
   return self;
 };
 
-/**
- * @param {*} o
- * @return {boolean}
- * @private
- */
 export function isArrayLike(o: any): boolean {
   var typ = typeof(o);
   if (
@@ -605,12 +575,7 @@ export function isArrayLike(o: any): boolean {
   return true;
 };
 
-/**
- * @param {Object} o
- * @return {boolean}
- * @private
- */
-export function isDateLike(o: object): boolean {
+export function isDateLike(o: any): o is Date {
   if (typeof(o) !== "object" || o === null ||
       typeof(o['getTime']) != 'function') {
     return false;
@@ -620,8 +585,6 @@ export function isDateLike(o: object): boolean {
 
 /**
  * Note: this only seems to work for arrays.
- * @param {!Array} o
- * @return {!Array}
  * @private
  */
 export function clone(o: Array<any>): Array<any> {
@@ -639,8 +602,6 @@ export function clone(o: Array<any>): Array<any> {
 
 /**
  * Create a new canvas element.
- *
- * @return {!HTMLCanvasElement}
  * @private
  */
 export function createCanvas(): HTMLCanvasElement {
@@ -653,8 +614,8 @@ export function createCanvas(): HTMLCanvasElement {
  * displays, and > 1 for HiDPI displays (such as the Retina MBP).
  * See http://www.html5rocks.com/en/tutorials/canvas/hidpi/ for more details.
  *
- * @param {!CanvasRenderingContext2D} context The canvas's 2d context.
- * @return {number} The ratio of the device pixel ratio and the backing store
+ * @param context The canvas's 2d context.
+ * @return The ratio of the device pixel ratio and the backing store
  * ratio for the specified context.
  */
 export function getContextPixelRatio(context: CanvasRenderingContext2D): number {
@@ -745,15 +706,19 @@ export var requestAnimFrame = window.requestAnimationFrame;
  * once immediately, then at most (maxFrames - 1) times asynchronously. If
  * maxFrames==1, then cleanup_fn() is also called synchronously.  This function
  * is used to sequence animation.
- * @param {(frame: number) => void} repeatFn Called repeatedly -- takes the frame
+ * @param repeatFn Called repeatedly -- takes the frame
  *     number (from 0 to maxFrames-1) as an argument.
- * @param {number} maxFrames The max number of times to call repeatFn
- * @param {number} framePeriodInMillis Max requested time between frames.
- * @param {() => void} cleanupFn A function to call after all repeatFn calls.
+ * @param maxFrames The max number of times to call repeatFn
+ * @param framePeriodInMillis Max requested time between frames.
+ * @param cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-export function repeatAndCleanup(repeatFn: (frame: number) => void, maxFrames: number, framePeriodInMillis: number,
-    cleanupFn: () => void) {
+export function repeatAndCleanup(
+  repeatFn: (frame: number) => void,
+  maxFrames: number,
+  framePeriodInMillis: number,
+  cleanupFn: () => void
+) {
   var frameNumber = 0;
   var previousFrameNumber;
   var startTime = new Date().getTime();
@@ -844,12 +809,11 @@ var pixelSafeOptions = {
  * This function will scan the option list and determine if they
  * require us to recalculate the pixel positions of each point.
  * TODO: move this into dygraph-options.js
- * @param {!Array.<string>} labels a list of options to check.
- * @param {!Object} attrs
- * @return {boolean} true if the graph needs new points else false.
+ * @param labels a list of options to check.
+ * @return true if the graph needs new points else false.
  * @private
  */
-export function isPixelChangingOptionList(labels: Array<string>, attrs: object): boolean {
+export function isPixelChangingOptionList(labels: string[], attrs: object): boolean {
   // Assume that we do not require new points.
   // This will change to true if we actually do need new points.
 
@@ -924,8 +888,8 @@ export var Circles = {
 
 /**
  * Determine whether |data| is delimited by CR, CRLF, LF, LFCR.
- * @param {string} data
- * @return {?string} the delimiter that was detected (or null on failure).
+ * @param data
+ * @return the delimiter that was detected (or null on failure).
  */
 export function detectLineDelimiter(data: string): string | null {
   for (var i = 0; i < data.length; i++) {
@@ -951,9 +915,9 @@ export function detectLineDelimiter(data: string): string | null {
 
 /**
  * Is one node contained by another?
- * @param {Node} containee The contained node.
- * @param {Node} container The container node.
- * @return {boolean} Whether containee is inside (or equal to) container.
+ * @param containee The contained node.
+ * @param container The container node.
+ * @return Whether containee is inside (or equal to) container.
  * @private
  */
 export function isNodeContainedBy(containee: Node, container: Node): boolean {
@@ -970,7 +934,7 @@ export function isNodeContainedBy(containee: Node, container: Node): boolean {
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
 /** @type {function(number,number):number} */
-export function pow(base, exp) {
+export function pow(base: number, exp: number) {
   if (exp < 0) {
     return 1.0 / Math.pow(base, -exp);
   }
@@ -979,13 +943,20 @@ export function pow(base, exp) {
 
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
+export interface RGBAColor {
+  r: number;
+  g: number;
+  b: number;
+  a?: number;
+}
+
 /**
  * Helper for toRGB_ which parses strings of the form:
  * rgb(123, 45, 67)
  * rgba(123, 45, 67, 0.5)
  * @return parsed {r,g,b,a?} tuple or null.
  */
-function parseRGBA(rgbStr) {
+function parseRGBA(rgbStr: string): RGBAColor {
   var bits = RGBA_RE.exec(rgbStr);
   if (!bits) return null;
   var r = parseInt(bits[1], 10),
@@ -1001,11 +972,11 @@ function parseRGBA(rgbStr) {
 /**
  * Converts any valid CSS color (hex, rgb(), named color) to an RGB tuple.
  *
- * @param {!string} colorStr Any valid CSS color string.
- * @return {{r:number,g:number,b:number,a?:number}} Parsed RGB tuple.
+ * @param colorStr Any valid CSS color string.
+ * @return Parsed RGB tuple.
  * @private
  */
-export function toRGB_(colorStr: string): { r: number; g: number; b: number; a?: number; } {
+export function toRGB_(colorStr: string): RGBAColor {
   // Strategy: First try to parse colorStr directly. This is fast & avoids DOM
   // manipulation.  If that fails (e.g. for named colors like 'red'), then
   // create a hidden DOM element and parse its computed color.
@@ -1023,11 +994,11 @@ export function toRGB_(colorStr: string): { r: number; g: number; b: number; a?:
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
- * @param {HTMLCanvasElement=} opt_canvasElement Pass a canvas element as an
+ * @param opt_canvasElement Pass a canvas element as an
  *     optimization if you have one.
- * @return {boolean} Whether the browser supports canvas.
+ * @return Whether the browser supports canvas.
  */
-export function isCanvasSupported(opt_canvasElement: HTMLCanvasElement | undefined): boolean {
+export function isCanvasSupported(opt_canvasElement?: HTMLCanvasElement): boolean {
   try {
     var canvas = opt_canvasElement || document.createElement("canvas");
     canvas.getContext("2d");
@@ -1043,11 +1014,11 @@ export function isCanvasSupported(opt_canvasElement: HTMLCanvasElement | undefin
  * - the empty string is parsed as null, rather than NaN.
  * - if the string cannot be parsed at all, an error is logged.
  * If the string can't be parsed, this method returns null.
- * @param {string} x The string to be parsed
- * @param {number=} opt_line_no The line number from which the string comes.
- * @param {string=} opt_line The text of the line from which the string comes.
+ * @param x The string to be parsed
+ * @param opt_line_no The line number from which the string comes.
+ * @param opt_line The text of the line from which the string comes.
  */
-export function parseFloat_(x: string, opt_line_no: number | undefined, opt_line: string | undefined) {
+export function parseFloat_(x: string, opt_line_no?: number, opt_line?: string) {
   var val = parseFloat(x);
   if (!isNaN(val)) return val;
 
@@ -1079,8 +1050,8 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * @private
  * Return a string version of a number. This respects the digitsAfterDecimal
  * and maxNumberWidth options.
- * @param {number} x The number to be formatted
- * @param {(option: string) => any} opts An options view
+ * @param x The number to be formatted
+ * @param opts An options view
  */
 export function numberValueFormatter(x: number, opts: (option: string) => any) {
   var sigFigs = opts('sigFigs');
@@ -1153,26 +1124,21 @@ export function numberValueFormatter(x: number, opts: (option: string) => any) {
  * variant for use as an axisLabelFormatter.
  * @private
  */
-export function numberAxisLabelFormatter(x, granularity, opts) {
+export function numberAxisLabelFormatter(x: number, granularity: number, opts: (option: string) => any) {
   return numberValueFormatter.call(this, x, opts);
 };
 
-/**
- * @type {!Array.<string>}
- * @private
- * @constant
- */
-var SHORT_MONTH_NAMES_: Array<string> = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
  * is displaying values at the stated granularity. This respects the
  * labelsUTC option.
- * @param {Date} date The date to format
- * @param {number} granularity One of the Dygraph granularity constants
- * @param {(option: string) => any} opts An options view
- * @return {string} The date formatted as local time
+ * @param date The date to format
+ * @param granularity One of the Dygraph granularity constants
+ * @param opts An options view
+ * @return The date formatted as local time
  * @private
  */
 export function dateAxisLabelFormatter(date: Date, granularity: number, opts: (option: string) => any): string {
@@ -1213,8 +1179,8 @@ export function dateAxisLabelFormatter(date: Date, granularity: number, opts: (o
 /**
  * Return a string version of a JS date for a value label. This respects the
  * labelsUTC option.
- * @param {Date} d The date to be formatted
- * @param {(option: string) => any} opts An options view
+ * @param d The date to be formatted
+ * @param opts An options view
  * @private
  */
 export function dateValueFormatter(d: Date, opts: (option: string) => any) {
