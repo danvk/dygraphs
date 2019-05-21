@@ -13,13 +13,13 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
-import { Annotation, DygraphAxisType, DygraphPointType, DygraphAny, Tick } from "./dygraph-types";
+import { Annotation, Area, DygraphAxisType, DygraphPointType, DygraphAny, Tick } from "./dygraph-types";
 
-export interface Area {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+export interface LayoutTick {
+  axis?: number;
+  pos: number;
+  label: string;
+  has_tick: boolean;
 }
 
 /**
@@ -58,11 +58,9 @@ class DygraphLayout {
   yTicks_: Tick[];
   area_: Area;
   _xAxis: DygraphAxisType;
-  xticks: any[];
-  yticks: any[];
+  xticks: LayoutTick[];
+  yticks: LayoutTick[];
   annotated_points: any[];
-  setPointsLengths: any;
-  setPointsOffsets: any;
 
   constructor(dygraph: DygraphAny) {
     this.dygraph_ = dygraph;
@@ -160,6 +158,7 @@ class DygraphLayout {
     this.dygraph_.cascadeEvents_('layout', e);
     this.area_ = area;
   }
+
   setAnnotations(ann: Annotation[]) {
     // The Dygraph object's annotations aren't parsed. We parse them here and
     // save a copy. If there is no parser, then the user must be using raw format.
@@ -185,6 +184,7 @@ class DygraphLayout {
       this.annotations.push(a);
     }
   }
+
   setXTicks(xTicks) {
     this.xTicks_ = xTicks;
   }
@@ -229,6 +229,7 @@ class DygraphLayout {
       }
     }
   }
+
   _evaluateLineCharts() {
     var isStacked = this.dygraph_.getOption("stackedGraph");
     var isLogscaleForX = this.dygraph_.getOptionForAxis("logscale", 'x');
@@ -264,7 +265,7 @@ class DygraphLayout {
   }
 
   _evaluateLineTicks() {
-    var tick, label, pos, v, has_tick;
+    var tick: Tick, label: string, pos: number, v: string | number, has_tick: boolean;
     this.xticks = [];
     for (let i = 0; i < this.xTicks_.length; i++) {
       tick = this.xTicks_[i];
@@ -295,8 +296,8 @@ class DygraphLayout {
   _evaluateAnnotations() {
     // Add the annotations to the point to which they belong.
     // Make a map from (setName, xval) to annotation for quick lookups.
-    var i;
-    var annotations = {};
+    var i: number;
+    var annotations: {[key: string]: Annotation} = {};
     for (i = 0; i < this.annotations.length; i++) {
       var a = this.annotations[i];
       annotations[a.xval + "," + a.series] = a;
@@ -320,20 +321,18 @@ class DygraphLayout {
       }
     }
   }
+
   /**
    * Convenience function to remove all the data sets from a graph
    */
   removeAllDatasets() {
     delete this.points;
     delete this.setNames;
-    delete this.setPointsLengths;
-    delete this.setPointsOffsets;
     this.points = [];
     this.setNames = [];
-    this.setPointsLengths = [];
-    this.setPointsOffsets = [];
   }
-  static calcXNormal_(value, xAxis, logscale) {
+
+  static calcXNormal_(value: number, xAxis: DygraphAxisType, logscale: boolean) {
     if (logscale) {
       return ((utils.log10(value) - utils.log10(xAxis.minval)) * xAxis.xlogscale);
     }
@@ -341,12 +340,7 @@ class DygraphLayout {
       return (value - xAxis.minval) * xAxis.scale;
     }
   }
-  /**
-   * @param {DygraphAxisType} axis
-   * @param {number} value
-   * @param {boolean} logscale
-   * @return {number}
-   */
+
   static calcYNormal_(axis: DygraphAxisType, value: number, logscale: boolean): number {
     if (logscale) {
       var x = 1.0 - ((utils.log10(value) - utils.log10(axis.minyval)) * axis.ylogscale);

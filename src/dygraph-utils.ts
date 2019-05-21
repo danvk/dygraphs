@@ -690,7 +690,7 @@ export class Iterator<T extends object = object> {
     this.next(); // ignoring result.
   }
 
-  next(): object {
+  next(): T {
     if (!this.hasNext) {
       return null;
     }
@@ -729,8 +729,8 @@ export class Iterator<T extends object = object> {
  *     parameters array and idx, which returns true when the element should be
  *     returned.  If omitted, all elements are accepted.
  */
-export function createIterator(array: Array<any>, start: number, length: number, opt_predicate: ((arg0: any) => boolean) | undefined) {
-  return new Iterator(array, start, length, opt_predicate);
+export function createIterator<T extends object>(array: Array<T>, start: number, length: number, opt_predicate?: ((array: T[], index: number) => boolean)) {
+  return new Iterator<T>(array, start, length, opt_predicate);
 };
 
 // Shim layer with setTimeout fallback.

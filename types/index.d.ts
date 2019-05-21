@@ -21,9 +21,9 @@ declare namespace dygraphs {
          * A per-series color definition. Used in conjunction with, and overrides, the colors option.
          */
         color?: string;
-                
+
         /**
-         * A function which plot data for this series on the chart.         
+         * A function which plot data for this series on the chart.
          */
         plotter?: any;
 

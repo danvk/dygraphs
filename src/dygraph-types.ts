@@ -4,6 +4,13 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
+export interface Area {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface Tick {
   v: number;
   label: string;
@@ -29,19 +36,31 @@ export interface DygraphInteractionContext {
  * and bottom/top/minus/plus are used for error bar graphs.
  */
 export interface DygraphPointType {
-    idx: number;
-    name: string;
-    x?: number;
-    xval?: number;
-    y_bottom?: number;
-    y?: number;
-    y_stacked?: number;
-    y_top?: number;
-    yval_minus?: number;
-    yval?: number;
-    yval_plus?: number;
-    yval_stacked?: any;
-    annotation?: Annotation;
+  idx: number;
+  name: string;
+  x?: number;
+  xval?: number;
+  y_bottom?: number;
+  y?: number;
+  y_stacked?: number;
+  y_top?: number;
+  yval_minus?: number;
+  yval?: number;
+  yval_plus?: number;
+  yval_stacked?: any;
+  annotation?: Annotation;
+  canvasx?: number;
+  canvasy?: number;
+}
+
+export interface PlotterData {
+  dygraph: DygraphAny;
+  setName: string;
+  points: DygraphPointType[];
+  drawingContext: CanvasRenderingContext2D;
+  color: string;
+  plotArea: Area;
+  strokeWidth: number;
 }
 
 export interface Annotation {

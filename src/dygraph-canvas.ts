@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
@@ -21,6 +19,8 @@
 
 import * as utils from './dygraph-utils';
 import Dygraph from './dygraph';
+import DygraphLayout from './dygraph-layout';
+import { Area, DygraphAny, DygraphPointType, PlotterData } from './dygraph-types';
 
 
 /**
@@ -35,13 +35,23 @@ import Dygraph from './dygraph';
  * TODO(danvk): remove the elementContext property.
  */
 class DygraphCanvasRenderer {
+  dygraph_: DygraphAny;
+  layout: DygraphLayout;
+  element: HTMLCanvasElement;
+  elementContext: CanvasRenderingContext2D;
+  height: number;
+  width: number;
+  area: Area;
+  colors: string[];
+  static _Plotters: { linePlotter: (e: any) => void; fillPlotter: (e: any) => void; errorPlotter: (e: any) => void; };
+
   /**
-   * @param {Dygraph} dygraph The chart to which this renderer belongs.
-   * @param {HTMLCanvasElement} element The &lt;canvas&gt; DOM element on which to draw.
-   * @param {CanvasRenderingContext2D} elementContext The drawing context.
-   * @param {DygraphLayout} layout The chart's DygraphLayout object.
+   * @param dygraph The chart to which this renderer belongs.
+   * @param element The &lt;canvas&gt; DOM element on which to draw.
+   * @param elementContext The drawing context.
+   * @param layout The chart's DygraphLayout object.
    */
-  constructor(dygraph, element, elementContext, layout) {
+  constructor(dygraph: Dygraph, element: HTMLCanvasElement, elementContext: CanvasRenderingContext2D, layout: DygraphLayout) {
     this.dygraph_ = dygraph;
     this.layout = layout;
     this.element = element;
@@ -65,6 +75,7 @@ class DygraphCanvasRenderer {
     ctx.rect(this.area.x, this.area.y, this.area.w, this.area.h);
     ctx.clip();
   }
+
   /**
    * Clears out all chart content and DOM elements.
    * This is called immediately before render() on every frame, including
@@ -74,6 +85,7 @@ class DygraphCanvasRenderer {
   clear() {
     this.elementContext.clearRect(0, 0, this.width, this.height);
   }
+
   /**
    * This method is responsible for drawing everything on the chart, including
    * lines, error bars, fills and axes.
@@ -87,6 +99,7 @@ class DygraphCanvasRenderer {
     // actually draws the chart.
     this._renderLineChart();
   }
+
   /**
    * Attaches canvas coordinates to the points array.
    * @private
@@ -121,14 +134,14 @@ class DygraphCanvasRenderer {
    * updated with canvas{x,y} attributes, i.e. by
    * DygraphCanvasRenderer._updatePoints.
    *
-   * @param {string=} opt_seriesName when specified, only that series will
+   * @param opt_seriesName when specified, only that series will
    *     be drawn. (This is used for expedited redrawing with highlightSeriesOpts)
-   * @param {CanvasRenderingContext2D=} opt_ctx when specified, the drawing
-   *     context.  However, lines are typically drawn on the object's
+   * @param opt_ctx when specified, the drawing
+   *     context. However, lines are typically drawn on the object's
    *     elementContext.
    * @private
    */
-  _renderLineChart(opt_seriesName, opt_ctx) {
+  _renderLineChart(opt_seriesName?: string, opt_ctx?: CanvasRenderingContext2D) {
     var ctx = opt_ctx || this.elementContext;
     var i;
     var sets = this.layout.points;
@@ -197,20 +210,22 @@ class DygraphCanvasRenderer {
    * connectSeparatedPoints is true. When it's false, the predicate will
    * skip over points with missing yVals.
    */
-  static _getIteratorPredicate(connectSeparatedPoints) {
+  static _getIteratorPredicate(connectSeparatedPoints: boolean) {
     return connectSeparatedPoints ?
       DygraphCanvasRenderer._predicateThatSkipsEmptyPoints :
       null;
   }
-  static _predicateThatSkipsEmptyPoints(array, idx) {
+
+  static _predicateThatSkipsEmptyPoints(array: DygraphPointType[], idx: number) {
     return array[idx].yval !== null;
   }
+
   /**
    * Draws a line with the styles passed in and calls all the drawPointCallbacks.
    * @param {Object} e The dictionary passed to the plotter function.
    * @private
    */
-  static _drawStyledLine(e, color, strokeWidth, strokePattern, drawPoints, drawPointCallback, pointSize) {
+  static _drawStyledLine(e: PlotterData, color, strokeWidth, strokePattern, drawPoints, drawPointCallback, pointSize) {
     var g = e.dygraph;
     // TODO(konigsberg): Compute attributes outside this method call.
     var stepPlot = g.getBooleanOption("stepPlot", e.setName);
@@ -241,10 +256,10 @@ class DygraphCanvasRenderer {
    * Returns a list of [canvasx, canvasy] pairs for points for which a
    * drawPointCallback should be fired.  These include isolated points, or all
    * points if drawPoints=true.
-   * @param {Object} e The dictionary passed to the plotter function.
+   * @param e The dictionary passed to the plotter function.
    * @private
    */
-  static _drawSeries(e, iter, strokeWidth, pointSize, drawPoints, drawGapPoints, stepPlot, color) {
+  static _drawSeries(e: PlotterData, iter: utils.Iterator<DygraphPointType>, strokeWidth: number, pointSize: any, drawPoints: any, drawGapPoints: any, stepPlot: any, color: string | CanvasGradient | CanvasPattern) {
     var prevCanvasX = null;
     var prevCanvasY = null;
     var nextCanvasY = null;
@@ -326,10 +341,10 @@ class DygraphCanvasRenderer {
    * This fires the drawPointCallback functions, which draw dots on the points by
    * default. This gets used when the "drawPoints" option is set, or when there
    * are isolated points.
-   * @param {Object} e The dictionary passed to the plotter function.
+   * @param e The dictionary passed to the plotter function.
    * @private
    */
-  static _drawPointsOnLine(e, pointsOnLine, drawPointCallback, color, pointSize) {
+  static _drawPointsOnLine(e: PlotterData, pointsOnLine: any[], drawPointCallback: (arg0: any, arg1: any, arg2: string, arg3: CanvasRenderingContext2D, arg4: any, arg5: any, arg6: any, arg7: any) => void, color: any, pointSize: any) {
     var ctx = e.drawingContext;
     for (var idx = 0; idx < pointsOnLine.length; idx++) {
       var cb = pointsOnLine[idx];
@@ -342,7 +357,7 @@ class DygraphCanvasRenderer {
    * Plotter which draws the central lines for a series.
    * @private
    */
-  static _linePlotter(e) {
+  static _linePlotter(e: PlotterData) {
     var g = e.dygraph;
     var setName = e.setName;
     var strokeWidth = e.strokeWidth;
@@ -366,7 +381,7 @@ class DygraphCanvasRenderer {
    * need to be drawn on top of the error bars for all series.
    * @private
    */
-  static _errorPlotter(e) {
+  static _errorPlotter(e: PlotterData) {
     var g = e.dygraph;
     var setName = e.setName;
     var errorBars = g.getBooleanOption("errorBars") ||
@@ -648,7 +663,7 @@ class DygraphCanvasRenderer {
       var last_x, is_first = true;
       // If the point density is high enough, dropping segments on their way to
       // the canvas justifies the overhead of doing so.
-      if (points.length > 2 * g.width_ || Dygraph.FORCE_FAST_PROXY) {
+      if (points.length > 2 * g.width_ || (Dygraph as any).FORCE_FAST_PROXY) {
         ctx = DygraphCanvasRenderer._fastCanvasProxy(ctx);
       }
       // For filled charts, we draw points from left to right, then back along
