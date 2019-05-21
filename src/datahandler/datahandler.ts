@@ -41,7 +41,7 @@
 
 "use strict";
 
-import { DygraphOptions, DygraphPointType } from "../dygraph-types";
+import { DygraphOptions, DygraphPointType, DygraphAxisType } from "../dygraph-types";
 
 /** "unified data format": x, y, extras */
 export type UnifiedPoint<T=any> = [number, number|null, T];
@@ -69,7 +69,7 @@ class DygraphDataHandler {
    * @param options Dygraph options.
    * @return The series in the unified data format where series[i] = [x,y,{extras}].
    */
-  extractSeries(rawData: string[][], seriesIndex: number, options: DygraphOptions): UnifiedPoint[] {
+  extractSeries(rawData: number[][], seriesIndex: number, options: DygraphOptions): UnifiedPoint[] {
     throw new Error('Not imlemented');
   }
 
@@ -162,7 +162,7 @@ class DygraphDataHandler {
    * @param axis The axis on which the series will be plotted.
    * @param logscale Weather or not to use a logscale.
    */
-  onLineEvaluated(points: DygraphPointType[], axis: object, logscale: boolean) {
+  onLineEvaluated(points: DygraphPointType[], axis: DygraphAxisType, logscale: boolean) {
   }
 
   /**
