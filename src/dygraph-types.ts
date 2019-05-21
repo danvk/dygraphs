@@ -142,3 +142,6 @@ export interface Annotation {
 
 /** Placeholder for TS conversion. Should be Dygraph. */
 export type DygraphAny = any;
+
+/** Placeholder for TS conversion. */
+export type DygraphOptions = any;
