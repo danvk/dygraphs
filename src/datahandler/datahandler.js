@@ -44,165 +44,156 @@
 "use strict";
 
 /**
- *
  * The data handler is responsible for all data specific operations. All of the
  * series data it receives and returns is always in the unified data format.
  * Initially the unified data is created by the extractSeries method
- * @constructor
  */
-var DygraphDataHandler = function () {
-};
+class DygraphDataHandler {
+  constructor() {
+  }
 
-var handler = DygraphDataHandler;
+  /**
+   * Extracts one series from the raw data (a 2D array) into an array of the
+   * unified data format.
+   * This is where undesirable points (i.e. negative values on log scales and
+   * missing values through which we wish to connect lines) are dropped.
+   * TODO(danvk): the "missing values" bit above doesn't seem right.
+   *
+   * @param {!Array.<Array>} rawData The raw data passed into dygraphs where
+   *     rawData[i] = [x,ySeries1,...,ySeriesN].
+   * @param {!number} seriesIndex Index of the series to extract. All other
+   *     series should be ignored.
+   * @param {!DygraphOptions} options Dygraph options.
+   * @return {Array.<[!number,?number,?]>} The series in the unified data format
+   *     where series[i] = [x,y,{extras}].
+   */
+  extractSeries(rawData, seriesIndex, options) {
+  }
+
+  /**
+   * Converts a series to a Point array.  The resulting point array must be
+   * returned in increasing order of idx property.
+   *
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!string} setName Name of the series.
+   * @param {!number} boundaryIdStart Index offset of the first point, equal to the
+   *          number of skipped points left of the date window minimum (if any).
+   * @return {!Array.<DygraphPointType>} List of points for this series.
+   */
+  seriesToPoints(series, setName, boundaryIdStart) {
+    // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
+    // fact,
+    // on chrome+linux, they are 6 times more expensive than iterating through
+    // the
+    // points and drawing the lines. The brunt of the cost comes from allocating
+    // the |point| structures.
+    var points = [];
+    for (var i = 0; i < series.length; ++i) {
+      var item = series[i];
+      var yraw = item[1];
+      var yval = yraw === null ? null : DygraphDataHandler.parseFloat(yraw);
+      var point = {
+        x: NaN,
+        y: NaN,
+        xval: DygraphDataHandler.parseFloat(item[0]),
+        yval: yval,
+        name: setName,
+        idx: i + boundaryIdStart,
+        canvasx: NaN,
+        canvasy: NaN,
+      };
+      points.push(point);
+    }
+    this.onPointsCreated_(series, points);
+    return points;
+  }
+
+  /**
+   * Callback called for each series after the series points have been generated
+   * which will later be used by the plotters to draw the graph.
+   * Here data may be added to the seriesPoints which is needed by the plotters.
+   * The indexes of series and points are in sync meaning the original data
+   * sample for series[i] is points[i].
+   *
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified
+   *     data format where series[i] = [x,y,{extras}].
+   * @param {!Array.<DygraphPointType>} points The corresponding points passed
+   *     to the plotter.
+   * @protected
+   */
+  onPointsCreated_(series, points) {
+  }
+
+  /**
+   * Calculates the rolling average of a data set.
+   *
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified
+   *          data format where series[i] = [x,y,{extras}].
+   * @param {!number} rollPeriod The number of points over which to average the data
+   * @param {!DygraphOptions} options The dygraph options.
+   * @return {!Array.<[!number,?number,?]>} the rolled series.
+   */
+  rollingAverage(series, rollPeriod, options) {
+  }
+
+  /**
+   * Computes the range of the data series (including confidence intervals).
+   *
+   * @param {!Array.<[!number,?number,?]>} series The series in the unified
+   *     data format where series[i] = [x, y, {extras}].
+   * @param {!Array.<number>} dateWindow The x-value range to display with
+   *     the format: [min, max].
+   * @param {!DygraphOptions} options The dygraph options.
+   * @return {Array.<number>} The low and high extremes of the series in the
+   *     given window with the format: [low, high].
+   */
+  getExtremeYValues(series, dateWindow, options) {
+  }
+
+  /**
+   * Callback called for each series after the layouting data has been
+   * calculated before the series is drawn. Here normalized positioning data
+   * should be calculated for the extras of each point.
+   *
+   * @param {!Array.<DygraphPointType>} points The points passed to
+   *          the plotter.
+   * @param {!Object} axis The axis on which the series will be plotted.
+   * @param {!boolean} logscale Weather or not to use a logscale.
+   */
+  onLineEvaluated(points, axis, logscale) {
+  }
+
+  /**
+   * Optimized replacement for parseFloat, which was way too slow when almost
+   * all values were type number, with few edge cases, none of which were strings.
+   * @param {?number} val
+   * @return {number}
+   * @protected
+   */
+  static parseFloat(val) {
+    // parseFloat(null) is NaN
+    if (val === null) {
+      return NaN;
+    }
+    // Assume it's a number or NaN. If it's something else, I'll be shocked.
+    return val;
+  }
+}
 
 /**
  * X-value array index constant for unified data samples.
- * @const
- * @type {number}
  */
-handler.X = 0;
+DygraphDataHandler.X = 0;
 
 /**
  * Y-value array index constant for unified data samples.
- * @const
- * @type {number}
  */
-handler.Y = 1;
+DygraphDataHandler.Y = 1;
 
 /**
  * Extras-value array index constant for unified data samples.
- * @const
- * @type {number}
  */
-handler.EXTRAS = 2;
-
-/**
- * Extracts one series from the raw data (a 2D array) into an array of the
- * unified data format.
- * This is where undesirable points (i.e. negative values on log scales and
- * missing values through which we wish to connect lines) are dropped.
- * TODO(danvk): the "missing values" bit above doesn't seem right.
- *
- * @param {!Array.<Array>} rawData The raw data passed into dygraphs where
- *     rawData[i] = [x,ySeries1,...,ySeriesN].
- * @param {!number} seriesIndex Index of the series to extract. All other
- *     series should be ignored.
- * @param {!DygraphOptions} options Dygraph options.
- * @return {Array.<[!number,?number,?]>} The series in the unified data format
- *     where series[i] = [x,y,{extras}].
- */
-handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
-};
-
-/**
- * Converts a series to a Point array.  The resulting point array must be
- * returned in increasing order of idx property.
- *
- * @param {!Array.<[!number,?number,?]>} series The series in the unified
- *          data format where series[i] = [x,y,{extras}].
- * @param {!string} setName Name of the series.
- * @param {!number} boundaryIdStart Index offset of the first point, equal to the
- *          number of skipped points left of the date window minimum (if any).
- * @return {!Array.<DygraphPointType>} List of points for this series.
- */
-handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
-  // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
-  // fact,
-  // on chrome+linux, they are 6 times more expensive than iterating through
-  // the
-  // points and drawing the lines. The brunt of the cost comes from allocating
-  // the |point| structures.
-  var points = [];
-  for ( var i = 0; i < series.length; ++i) {
-    var item = series[i];
-    var yraw = item[1];
-    var yval = yraw === null ? null : handler.parseFloat(yraw);
-    var point = {
-      x : NaN,
-      y : NaN,
-      xval : handler.parseFloat(item[0]),
-      yval : yval,
-      name : setName, // TODO(danvk): is this really necessary?
-      idx : i + boundaryIdStart,
-      canvasx: NaN, // add these so we do not alter the structure later, which slows Chrome
-      canvasy: NaN,
-    };
-    points.push(point);
-  }
-  this.onPointsCreated_(series, points);
-  return points;
-};
-
-/**
- * Callback called for each series after the series points have been generated
- * which will later be used by the plotters to draw the graph.
- * Here data may be added to the seriesPoints which is needed by the plotters.
- * The indexes of series and points are in sync meaning the original data
- * sample for series[i] is points[i].
- *
- * @param {!Array.<[!number,?number,?]>} series The series in the unified
- *     data format where series[i] = [x,y,{extras}].
- * @param {!Array.<DygraphPointType>} points The corresponding points passed
- *     to the plotter.
- * @protected
- */
-handler.prototype.onPointsCreated_ = function(series, points) {
-};
-
-/**
- * Calculates the rolling average of a data set.
- *
- * @param {!Array.<[!number,?number,?]>} series The series in the unified
- *          data format where series[i] = [x,y,{extras}].
- * @param {!number} rollPeriod The number of points over which to average the data
- * @param {!DygraphOptions} options The dygraph options.
- * @return {!Array.<[!number,?number,?]>} the rolled series.
- */
-handler.prototype.rollingAverage = function(series, rollPeriod, options) {
-};
-
-/**
- * Computes the range of the data series (including confidence intervals).
- *
- * @param {!Array.<[!number,?number,?]>} series The series in the unified
- *     data format where series[i] = [x, y, {extras}].
- * @param {!Array.<number>} dateWindow The x-value range to display with
- *     the format: [min, max].
- * @param {!DygraphOptions} options The dygraph options.
- * @return {Array.<number>} The low and high extremes of the series in the
- *     given window with the format: [low, high].
- */
-handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
-};
-
-/**
- * Callback called for each series after the layouting data has been
- * calculated before the series is drawn. Here normalized positioning data
- * should be calculated for the extras of each point.
- *
- * @param {!Array.<DygraphPointType>} points The points passed to
- *          the plotter.
- * @param {!Object} axis The axis on which the series will be plotted.
- * @param {!boolean} logscale Weather or not to use a logscale.
- */
-handler.prototype.onLineEvaluated = function(points, axis, logscale) {
-};
-
-/**
- * Optimized replacement for parseFloat, which was way too slow when almost
- * all values were type number, with few edge cases, none of which were strings.
- * @param {?number} val
- * @return {number}
- * @protected
- */
-handler.parseFloat = function(val) {
-  // parseFloat(null) is NaN
-  if (val === null) {
-    return NaN;
-  }
-
-  // Assume it's a number or NaN. If it's something else, I'll be shocked.
-  return val;
-};
+DygraphDataHandler.EXTRAS = 2;
 
 export default DygraphDataHandler;
