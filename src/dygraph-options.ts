@@ -12,6 +12,7 @@
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
 import OPTIONS_REFERENCE from './dygraph-options-reference';
+import { DygraphAny } from './dygraph-types';
 
 declare let process: any;
 
@@ -21,6 +22,7 @@ declare let process: any;
  * user - attributes set by the user
  * series_ - { seriesName -> { idx, yAxis, options }}
  */
+
 /**
  * This parses attributes into an object that can be easily queried.
  *
@@ -29,40 +31,45 @@ declare let process: any;
  * and per-axis options.
  */
 class DygraphOptions {
+  dygraph_: DygraphAny;
+
   /**
-   * @param {DygraphAny} dygraph The chart to which these options belong.
-   * @constructor
+   * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
+   * @type {Array.<{series : Array.<string>, options : Object}>}
    */
-  constructor(dygraph) {
-    /**
-     * The dygraph.
-     * @type {!Dygraph}
-     */
+  yAxes_: {series: string[]; options: object}[];
+
+  /**
+   * Contains x-axis specific options, which are stored in the options key.
+   * This matches the yAxes_ object structure (by being a dictionary with an
+   * options element) allowing for shared code.
+   * @type {{options: Object}}
+   */
+  xAxis_: { options: object; };
+
+  series_: { [seriesName: string]: any };
+  global_: any;
+  user_: any;
+
+  /**
+   * A list of series in columnar order.
+   */
+  labels_: any[];
+  highlightSeries_: any;
+
+  constructor(dygraph: DygraphAny) {
     this.dygraph_ = dygraph;
-    /**
-     * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
-     * @type {Array.<{series : Array.<string>, options : Object}>} @private
-     */
     this.yAxes_ = [];
-    /**
-     * Contains x-axis specific options, which are stored in the options key.
-     * This matches the yAxes_ object structure (by being a dictionary with an
-     * options element) allowing for shared code.
-     * @type {{options: Object}} @private
-     */
     this.xAxis_ = {options: {}};
     this.series_ = {};
     // Once these two objects are initialized, you can call get();
     this.global_ = this.dygraph_.attrs_;
     this.user_ = this.dygraph_.user_attrs_ || {};
-    /**
-     * A list of series in columnar order.
-     * @type {Array.<string>}
-     */
     this.labels_ = [];
     this.highlightSeries_ = this.get("highlightSeriesOpts") || {};
     this.reparseSeries();
   }
+
   /**
    * Reparses options that are all related to series. This typically occurs when
    * options are either updated, or source data has been made available.
@@ -95,7 +102,7 @@ class DygraphOptions {
     for (var idx = 0; idx < this.labels_.length; idx++) {
       var seriesName = this.labels_[idx];
       var optionsForSeries = seriesDict[seriesName] || {};
-      var yAxis = DygraphOptions.axisToIndex_(optionsForSeries["axis"]);
+      var yAxis = axisToIndex_(optionsForSeries["axis"]);
       this.series_[seriesName] = {
         idx: idx,
         yAxis: yAxis,
@@ -124,22 +131,24 @@ class DygraphOptions {
   /**
    * Get a global value.
    *
-   * @param {string} name the name of the option.
+   * @param name the name of the option.
    */
-  get(name) {
+  get(name: string) {
     var result = this.getGlobalUser_(name);
     if (result !== null) {
       return result;
     }
     return this.getGlobalDefault_(name);
   }
-  getGlobalUser_(name) {
+
+  getGlobalUser_(name: string) {
     if (this.user_.hasOwnProperty(name)) {
       return this.user_[name];
     }
     return null;
   }
-  getGlobalDefault_(name) {
+
+  getGlobalDefault_(name: string) {
     if (this.global_.hasOwnProperty(name)) {
       return this.global_[name];
     }
@@ -148,17 +157,18 @@ class DygraphOptions {
     }
     return null;
   }
+
   /**
    * Get a value for a specific axis. If there is no specific value for the axis,
    * the global value is returned.
    *
-   * @param {string} name the name of the option.
-   * @param {string|number} axis the axis to search. Can be the string representation
-   * ("y", "y2") or the axis number (0, 1).
+   * @param name the name of the option.
+   * @param axis the axis to search. Can be the string representation
+   *             ("y", "y2") or the axis number (0, 1).
    */
-  getForAxis(name, axis) {
-    var axisIdx;
-    var axisString;
+  getForAxis(name: string, axis: string | number) {
+    var axisIdx: number;
+    var axisString: string;
     // Since axis can be a number or a string, straighten everything out here.
     if (typeof (axis) == 'number') {
       axisIdx = axis;
@@ -206,14 +216,15 @@ class DygraphOptions {
     // Default global options last.
     return this.getGlobalDefault_(name);
   }
+
   /**
    * Get a value for a specific series. If there is no specific value for the series,
    * the value for the axis is returned (and afterwards, the global value.)
    *
-   * @param {string} name the name of the option.
-   * @param {string} series the series to search.
+   * @param name the name of the option.
+   * @param series the series to search.
    */
-  getForSeries(name, series) {
+  getForSeries(name: string, series: string) {
     // Honors indexes as series.
     if (series === this.dygraph_.getHighlightSeries()) {
       if (this.highlightSeries_.hasOwnProperty(name)) {
@@ -221,7 +232,7 @@ class DygraphOptions {
       }
     }
     if (!this.series_.hasOwnProperty(series)) {
-      throw "Unknown series: " + series;
+      throw new Error("Unknown series: " + series);
     }
     var seriesObj = this.series_[series];
     var seriesOptions = seriesObj["options"];
@@ -230,38 +241,35 @@ class DygraphOptions {
     }
     return this.getForAxis(name, seriesObj["yAxis"]);
   }
+
   /**
    * Returns the number of y-axes on the chart.
-   * @return {number} the number of axes.
    */
-  numAxes() {
+  numAxes(): number {
     return this.yAxes_.length;
   }
+
   /**
    * Return the y-axis for a given series, specified by name.
    */
-  axisForSeries(series) {
+  axisForSeries(series: string) {
     return this.series_[series].yAxis;
   }
-  /**
-   * Returns the options for the specified axis.
-   */
-  // TODO(konigsberg): this is y-axis specific. Support the x axis.
-  axisOptions(yAxis) {
-    return this.yAxes_[yAxis].options;
-  }
+
   /**
    * Return the series associated with an axis.
    */
-  seriesForAxis(yAxis) {
+  seriesForAxis(yAxis: number) {
     return this.yAxes_[yAxis].series;
   }
+
   /**
    * Return the list of all series, in their columnar order.
    */
   seriesNames() {
     return this.labels_;
   }
+
   /**
    * Validate all options.
    * This requires OPTIONS_REFERENCE, which is only available in debug builds.
@@ -271,10 +279,9 @@ class DygraphOptions {
     if (typeof OPTIONS_REFERENCE === 'undefined') {
       throw 'Called validateOptions_ in prod build.';
     }
-    var that = this;
-    var validateOption = function (optionName) {
+    var validateOption = (optionName: string) => {
       if (!OPTIONS_REFERENCE[optionName]) {
-        that.warnInvalidOption_(optionName);
+        this.warnInvalidOption_(optionName);
       }
     };
     var optionsDicts = [
@@ -303,12 +310,13 @@ class DygraphOptions {
       }
     }
   }
+
   /**
    * Logs a warning about invalid options.
    * TODO: make this throw for testing
    * @private
    */
-  warnInvalidOption_(optionName) {
+  warnInvalidOption_(optionName: string) {
     if (!WARNINGS[optionName]) {
       WARNINGS[optionName] = true;
       var isSeries = (this.labels_.indexOf(optionName) >= 0);
@@ -318,36 +326,35 @@ class DygraphOptions {
       else {
         console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
       }
-      throw "invalid option " + optionName;
+      throw new Error("invalid option " + optionName);
     }
   }
-  /**
-   * @param {string|number} axis
-   * @private
-   */
-  static axisToIndex_(axis) {
-    if (typeof (axis) == "string") {
-      if (DygraphOptions.AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
-        return DygraphOptions.AXIS_STRING_MAPPINGS_[axis];
-      }
-      throw "Unknown axis : " + axis;
+}
+
+
+function axisToIndex_(axis: string | number) {
+  if (typeof (axis) == "string") {
+    if (AXIS_STRING_MAPPINGS_.hasOwnProperty(axis)) {
+      return AXIS_STRING_MAPPINGS_[axis];
     }
-    if (typeof (axis) == "number") {
-      if (axis === 0 || axis === 1) {
-        return axis;
-      }
-      throw "Dygraphs only supports two y-axes, indexed from 0-1.";
-    }
-    if (axis) {
-      throw "Unknown axis : " + axis;
-    }
-    // No axis specification means axis 0.
-    return 0;
+    throw "Unknown axis : " + axis;
   }
-  // Reset list of previously-shown warnings. Used for testing.
-  static resetWarnings_() {
-    WARNINGS = {};
+  if (typeof (axis) == "number") {
+    if (axis === 0 || axis === 1) {
+      return axis;
+    }
+    throw "Dygraphs only supports two y-axes, indexed from 0-1.";
   }
+  if (axis) {
+    throw "Unknown axis : " + axis;
+  }
+  // No axis specification means axis 0.
+  return 0;
+}
+
+// Reset list of previously-shown warnings. Used for testing.
+function resetWarnings_() {
+  WARNINGS = {};
 }
 
 /**
@@ -356,7 +363,7 @@ class DygraphOptions {
  *
  * @private
  */
-DygraphOptions.AXIS_STRING_MAPPINGS_ = {
+const AXIS_STRING_MAPPINGS_ = {
   'y' : 0,
   'Y' : 0,
   'y1' : 0,
@@ -364,7 +371,6 @@ DygraphOptions.AXIS_STRING_MAPPINGS_ = {
   'y2' : 1,
   'Y2' : 1
 };
-
 
 // For "production" code, this gets removed by uglifyjs.
 if (typeof(process) !== 'undefined') {
