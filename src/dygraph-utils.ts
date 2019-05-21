@@ -426,7 +426,7 @@ export function round_(num: number, places: number): number {
  * @return {number} Index of the element, or -1 if it isn't found.
  * @private
  */
-export function binarySearch(val: number, arry: Array<number>, abs: number, low: number | undefined, high: number | undefined): number {
+export function binarySearch(val: number, arry: Array<number>, abs: number, low?: number, high?: number): number {
   if (low === null || low === undefined ||
       high === null || high === undefined) {
     low = 0;

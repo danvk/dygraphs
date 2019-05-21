@@ -1,5 +1,3 @@
-// @ts-check
-
 /// <reference path="./dygraph-internal.externs.js" />
 /// <reference path="./dygraph-types.js" />
 
