@@ -1,7 +1,3 @@
-// @ts-check
-
-/// <reference path="./dygraph-internal.externs.js" />
-
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -16,7 +12,6 @@
  */
 
 /*global Dygraph:false, Node:false */
-"use strict";
 
 import * as DygraphTickers from './dygraph-tickers';
 
@@ -28,7 +23,7 @@ export var LN_TEN = Math.log(LOG_SCALE);
  * @param {number} x
  * @return {number}
  */
-export var log10 = function(x) {
+export var log10 = function(x: number): number {
   return Math.log(x) / LN_TEN;
 };
 
@@ -39,7 +34,7 @@ export var log10 = function(x) {
  * @param {number} pct
  * @return {number}
  */
-export var logRangeFraction = function(r0, r1, pct) {
+export var logRangeFraction = function(r0: number, r1: number, pct: number): number {
   // Computing the inverse of toPercentXCoord. The function was arrived at with
   // the following steps:
   //
@@ -87,7 +82,7 @@ export var VERTICAL = 2;
  * @return {!CanvasRenderingContext2D}
  * @private
  */
-export var getContext = function(canvas) {
+export var getContext = function(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
 };
 
@@ -99,7 +94,7 @@ export var getContext = function(canvas) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-export var addEvent = function addEvent(elem, type, fn) {
+export var addEvent = function addEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
   elem.addEventListener(type, fn, false);
 };
 
@@ -110,7 +105,7 @@ export var addEvent = function addEvent(elem, type, fn) {
  * @param {function(Event):(boolean|undefined)} fn The function to call
  *     on the event. The function takes one parameter: the event object.
  */
-export function removeEvent(elem, type, fn) {
+export function removeEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
   elem.removeEventListener(type, fn, false);
 };
 
@@ -122,7 +117,7 @@ export function removeEvent(elem, type, fn) {
  * @param {!Event} e The event whose normal behavior should be canceled.
  * @private
  */
-export function cancelEvent(e) {
+export function cancelEvent(e: Event) {
   e = e ? e : window.event;
   e.stopPropagation();
   e.preventDefault();
@@ -141,7 +136,7 @@ export function cancelEvent(e) {
  * @return { string } "rgb(r,g,b)" where r, g and b range from 0-255.
  * @private
  */
-export function hsvToRGB(hue, saturation, value) {
+export function hsvToRGB(hue: number, saturation: number, value: number): string {
   var red;
   var green;
   var blue;
@@ -178,7 +173,7 @@ export function hsvToRGB(hue, saturation, value) {
  * @return {{x:number,y:number}}
  * @private
  */
-export function findPos(obj) {
+export function findPos(obj: Element): { x: number; y: number; } {
   var p = obj.getBoundingClientRect(),
       w = window,
       d = document.documentElement;
@@ -197,7 +192,7 @@ export function findPos(obj) {
  * @return {number}
  * @private
  */
-export function pageX(e) {
+export function pageX(e: MouseEvent): number {
   return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
 };
 
@@ -209,7 +204,7 @@ export function pageX(e) {
  * @return {number}
  * @private
  */
-export function pageY(e) {
+export function pageY(e: MouseEvent): number {
   return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
 };
 
@@ -220,7 +215,7 @@ export function pageY(e) {
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved to the right.
  */
-export function dragGetX_(e, context) {
+export function dragGetX_(e: DragEvent, context: DygraphInteractionContext): number {
   return pageX(e) - context.px;
 };
 
@@ -231,7 +226,7 @@ export function dragGetX_(e, context) {
  * @param {!DygraphInteractionContext} context Interaction context object.
  * @return {number} The amount by which the drag has moved down.
  */
-export function dragGetY_(e, context) {
+export function dragGetY_(e: DragEvent, context: DygraphInteractionContext): number {
   return pageY(e) - context.py;
 };
 
@@ -243,7 +238,7 @@ export function dragGetY_(e, context) {
  * @return {boolean} Whether the number is zero or NaN.
  * @private
  */
-export function isOK(x) {
+export function isOK(x: number): boolean {
   return !!x && !isNaN(x);
 };
 
@@ -254,7 +249,7 @@ export function isOK(x) {
  * @return {boolean} Whether the point has numeric x and y.
  * @private
  */
-export function isValidPoint(p, opt_allowNaNY) {
+export function isValidPoint(p: { x: number | null; y: number | null; yval: number | null; }, opt_allowNaNY: boolean | undefined): boolean {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;
@@ -281,7 +276,7 @@ export function isValidPoint(p, opt_allowNaNY) {
  * @return {string} A string formatted like %g in printf.  The max generated
  *                  string length should be precision + 6 (e.g 1.123e+300).
  */
-export function floatFormat(x, opt_precision) {
+export function floatFormat(x: number, opt_precision: number | undefined): string {
   // Avoid invalid precision values; [1, 21] is the valid range.
   var p = Math.min(Math.max(1, opt_precision || 2), 21);
 
@@ -311,7 +306,7 @@ export function floatFormat(x, opt_precision) {
  * @return {string}
  * @private
  */
-export function zeropad(x) {
+export function zeropad(x: number): string {
   if (x < 10) return "0" + x; else return "" + x;
 };
 
@@ -362,7 +357,7 @@ export var DateAccessorsUTC = {
  * @return {string} A time of the form "HH:MM" or "HH:MM:SS"
  * @private
  */
-export function hmsString_(hh, mm, ss, ms) {
+export function hmsString_(hh: number, mm: number, ss: number, ms: number): string {
   var ret = zeropad(hh) + ":" + zeropad(mm);
   if (ss) {
     ret += ":" + zeropad(ss);
@@ -382,7 +377,7 @@ export function hmsString_(hh, mm, ss, ms) {
  *     "YYYY/MM/DD", "YYYY/MM/DD HH:MM" or "YYYY/MM/DD HH:MM:SS"
  * @private
  */
-export function dateString_(time, utc) {
+export function dateString_(time: number, utc: boolean): string {
   var accessors = utc ? DateAccessorsUTC : DateAccessorsLocal;
   var date = new Date(time);
   var y = accessors.getFullYear(date);
@@ -413,7 +408,7 @@ export function dateString_(time, utc) {
  * @return {number} The rounded number
  * @private
  */
-export function round_(num, places) {
+export function round_(num: number, places: number): number {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
 };
@@ -431,7 +426,7 @@ export function round_(num, places) {
  * @return {number} Index of the element, or -1 if it isn't found.
  * @private
  */
-export function binarySearch(val, arry, abs, low, high) {
+export function binarySearch(val: number, arry: Array<number>, abs: number, low: number | undefined, high: number | undefined): number {
   if (low === null || low === undefined ||
       high === null || high === undefined) {
     low = 0;
@@ -482,7 +477,7 @@ export function binarySearch(val, arry, abs, low, high) {
  * @return {number} Milliseconds since epoch.
  * @private
  */
-export function dateParser(dateStr) {
+export function dateParser(dateStr: string): number {
   var dateStrSlashed;
   var d;
 
@@ -526,7 +521,7 @@ export function dateParser(dateStr) {
  * @return {number} millis since epoch
  * @private
  */
-export function dateStrToMillis(str) {
+export function dateStrToMillis(str: string): number {
   return new Date(str).getTime();
 };
 
@@ -538,7 +533,7 @@ export function dateStrToMillis(str) {
  * @param {!Object} o
  * @return {!Object}
  */
-export function update(self, o) {
+export function update(self: object, o: object): object {
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
@@ -557,7 +552,7 @@ export function update(self, o) {
  * @return {!Object}
  * @private
  */
-export function updateDeep(self, o) {
+export function updateDeep(self: object, o: object): object {
   // Taken from http://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
   function isNode(o) {
     return (
@@ -595,7 +590,7 @@ export function updateDeep(self, o) {
  * @return {boolean}
  * @private
  */
-export function isArrayLike(o) {
+export function isArrayLike(o: any): boolean {
   var typ = typeof(o);
   if (
       (typ != 'object' && !(typ == 'function' &&
@@ -614,9 +609,9 @@ export function isArrayLike(o) {
  * @return {boolean}
  * @private
  */
-export function isDateLike(o) {
-  if (typeof(o) != "object" || o === null ||
-      typeof(o.getTime) != 'function') {
+export function isDateLike(o: object): boolean {
+  if (typeof(o) !== "object" || o === null ||
+      typeof(o['getTime']) != 'function') {
     return false;
   }
   return true;
@@ -628,7 +623,7 @@ export function isDateLike(o) {
  * @return {!Array}
  * @private
  */
-export function clone(o) {
+export function clone(o: Array<any>): Array<any> {
   // TODO(danvk): figure out how MochiKit's version works
   var r = [];
   for (var i = 0; i < o.length; i++) {
@@ -647,7 +642,7 @@ export function clone(o) {
  * @return {!HTMLCanvasElement}
  * @private
  */
-export function createCanvas() {
+export function createCanvas(): HTMLCanvasElement {
   return document.createElement('canvas');
 };
 
@@ -661,7 +656,7 @@ export function createCanvas() {
  * @return {number} The ratio of the device pixel ratio and the backing store
  * ratio for the specified context.
  */
-export function getContextPixelRatio(context) {
+export function getContextPixelRatio(context: CanvasRenderingContext2D): number {
   try {
     return window.devicePixelRatio;
   } catch (e) {
@@ -669,16 +664,19 @@ export function getContextPixelRatio(context) {
   }
 };
 
-export class Iterator {
+export class Iterator<T extends object = object> {
+  hasNext: boolean;
+  peek: T;
+  start_: number;
+  end_: number;
+  array_: T[];
+  predicate_: ((array: T[], index: number) => boolean) | undefined;
+  nextIdx_: number;
+
   /**
    * TODO(danvk): use @template here when it's better supported for classes.
-   * @param {!Array} array
-   * @param {number} start
-   * @param {number} length
-   * @param {function(!Array,?):boolean=} predicate
-   * @constructor
    */
-  constructor(array, start, length, predicate) {
+  constructor(array: Array<T>, start: number, length: number, predicate: ((array: T[], index: number) => boolean) | undefined) {
     start = start || 0;
     length = length || array.length;
     this.hasNext = true; // Use to identify if there's another element.
@@ -690,10 +688,8 @@ export class Iterator {
     this.nextIdx_ = start - 1; // use -1 so initial advance works.
     this.next(); // ignoring result.
   }
-  /**
-   * @return {Object}
-   */
-  next() {
+
+  next(): object {
     if (!this.hasNext) {
       return null;
     }
@@ -722,18 +718,17 @@ export class Iterator {
  * Returns a new iterator over array, between indexes start and
  * start + length, and only returns entries that pass the accept function
  *
- * @param {!Array} array the array to iterate over.
- * @param {number} start the first index to iterate over, 0 if absent.
- * @param {number} length the number of elements in the array to iterate over.
+ * @param array the array to iterate over.
+ * @param start the first index to iterate over, 0 if absent.
+ * @param length the number of elements in the array to iterate over.
  *     This, along with start, defines a slice of the array, and so length
  *     doesn't imply the number of elements in the iterator when accept doesn't
  *     always accept all values. array.length when absent.
- * @param {function(?):boolean=} opt_predicate a function that takes
+ * @param opt_predicate a function that takes
  *     parameters array and idx, which returns true when the element should be
  *     returned.  If omitted, all elements are accepted.
- * @private
  */
-export function createIterator(array, start, length, opt_predicate) {
+export function createIterator(array: Array<any>, start: number, length: number, opt_predicate: ((arg0: any) => boolean) | undefined) {
   return new Iterator(array, start, length, opt_predicate);
 };
 
@@ -756,8 +751,8 @@ export var requestAnimFrame = window.requestAnimationFrame;
  * @param {() => void} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
-    cleanupFn) {
+export function repeatAndCleanup(repeatFn: (frame: number) => void, maxFrames: number, framePeriodInMillis: number,
+    cleanupFn: () => void) {
   var frameNumber = 0;
   var previousFrameNumber;
   var startTime = new Date().getTime();
@@ -853,7 +848,7 @@ var pixelSafeOptions = {
  * @return {boolean} true if the graph needs new points else false.
  * @private
  */
-export function isPixelChangingOptionList(labels, attrs) {
+export function isPixelChangingOptionList(labels: Array<string>, attrs: object): boolean {
   // Assume that we do not require new points.
   // This will change to true if we actually do need new points.
 
@@ -884,7 +879,7 @@ export function isPixelChangingOptionList(labels, attrs) {
 
     // Find out of this field is actually a series specific options list.
     if (property == 'highlightSeriesOpts' ||
-        (seriesNamesDictionary[property] && !attrs.series)) {
+        (seriesNamesDictionary[property] && !(attrs as any).series)) {
       // This property value is a list of options for this series.
       if (scanFlatOptions(attrs[property])) return true;
     } else if (property == 'series' || property == 'axes') {
@@ -906,13 +901,23 @@ export function isPixelChangingOptionList(labels, attrs) {
   return false;
 };
 
+export type DrawPointCallback = (
+  g: DygraphAny,
+  name: string,
+  ctx: CanvasRenderingContext2D,
+  canvasX: number,
+  canvasY: number,
+  color: string,
+  radius: number
+) => void;
+
 export var Circles = {
   DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
     ctx.fill();
-  }
+  } as DrawPointCallback
   // For more shapes, include extras/shapes.js
 };
 
@@ -921,7 +926,7 @@ export var Circles = {
  * @param {string} data
  * @return {?string} the delimiter that was detected (or null on failure).
  */
-export function detectLineDelimiter(data) {
+export function detectLineDelimiter(data: string): string | null {
   for (var i = 0; i < data.length; i++) {
     var code = data.charAt(i);
     if (code === '\r') {
@@ -950,11 +955,11 @@ export function detectLineDelimiter(data) {
  * @return {boolean} Whether containee is inside (or equal to) container.
  * @private
  */
-export function isNodeContainedBy(containee, container) {
+export function isNodeContainedBy(containee: Node, container: Node): boolean {
   if (container === null || containee === null) {
     return false;
   }
-  var containeeNode = /** @type {Node} */ (containee);
+  var containeeNode: Node = /** @type {Node} */ (containee);
   while (containeeNode && containeeNode !== container) {
     containeeNode = containeeNode.parentNode;
   }
@@ -999,7 +1004,7 @@ function parseRGBA(rgbStr) {
  * @return {{r:number,g:number,b:number,a?:number}} Parsed RGB tuple.
  * @private
  */
-export function toRGB_(colorStr) {
+export function toRGB_(colorStr: string): { r: number; g: number; b: number; a?: number; } {
   // Strategy: First try to parse colorStr directly. This is fast & avoids DOM
   // manipulation.  If that fails (e.g. for named colors like 'red'), then
   // create a hidden DOM element and parse its computed color.
@@ -1021,7 +1026,7 @@ export function toRGB_(colorStr) {
  *     optimization if you have one.
  * @return {boolean} Whether the browser supports canvas.
  */
-export function isCanvasSupported(opt_canvasElement) {
+export function isCanvasSupported(opt_canvasElement: HTMLCanvasElement | undefined): boolean {
   try {
     var canvas = opt_canvasElement || document.createElement("canvas");
     canvas.getContext("2d");
@@ -1041,7 +1046,7 @@ export function isCanvasSupported(opt_canvasElement) {
  * @param {number=} opt_line_no The line number from which the string comes.
  * @param {string=} opt_line The text of the line from which the string comes.
  */
-export function parseFloat_(x, opt_line_no, opt_line) {
+export function parseFloat_(x: string, opt_line_no: number | undefined, opt_line: string | undefined) {
   var val = parseFloat(x);
   if (!isNaN(val)) return val;
 
@@ -1076,7 +1081,7 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * @param {number} x The number to be formatted
  * @param {(option: string) => any} opts An options view
  */
-export function numberValueFormatter(x, opts) {
+export function numberValueFormatter(x: number, opts: (option: string) => any) {
   var sigFigs = opts('sigFigs');
 
   if (sigFigs !== null) {
@@ -1156,7 +1161,7 @@ export function numberAxisLabelFormatter(x, granularity, opts) {
  * @private
  * @constant
  */
-var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var SHORT_MONTH_NAMES_: Array<string> = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 
 /**
@@ -1169,7 +1174,7 @@ var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'
  * @return {string} The date formatted as local time
  * @private
  */
-export function dateAxisLabelFormatter(date, granularity, opts) {
+export function dateAxisLabelFormatter(date: Date, granularity: number, opts: (option: string) => any): string {
   var utc = opts('labelsUTC');
   var accessors = utc ? DateAccessorsUTC : DateAccessorsLocal;
 
@@ -1211,6 +1216,6 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
  * @param {(option: string) => any} opts An options view
  * @private
  */
-export function dateValueFormatter(d, opts) {
+export function dateValueFormatter(d: Date, opts: (option: string) => any) {
   return dateString_(d.getTime(), opts('labelsUTC'));
 };
