@@ -1,12 +1,10 @@
-'use strict'
-
 import * as DygraphTickers from './dygraph-tickers';
 import DygraphInteraction from './dygraph-interaction-model';
 import DygraphCanvasRenderer from './dygraph-canvas';
 import * as utils from './dygraph-utils';
 
 // Default attribute values.
-var DEFAULT_ATTRS = {
+const DEFAULT_ATTRS = {
   highlightCircleSize: 3,
   highlightSeriesOpts: null,
   highlightSeriesBackgroundAlpha: 0.5,
