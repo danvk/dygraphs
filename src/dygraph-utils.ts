@@ -212,22 +212,22 @@ export function pageY(e: MouseEvent): number {
 /**
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
  * canvas (i.e. DOM Coords).
- * @param {!DragEvent} e Drag event.
- * @param {!DygraphInteractionContext} context Interaction context object.
- * @return {number} The amount by which the drag has moved to the right.
+ * @param e Drag event.
+ * @param context Interaction context object.
+ * @return The amount by which the drag has moved to the right.
  */
-export function dragGetX_(e: DragEvent, context: DygraphInteractionContext): number {
+export function dragGetX_(e: MouseEvent, context: DygraphInteractionContext): number {
   return pageX(e) - context.px;
 };
 
 /**
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
  * canvas (i.e. DOM Coords).
- * @param {!DragEvent} e Drag event.
- * @param {!DygraphInteractionContext} context Interaction context object.
- * @return {number} The amount by which the drag has moved down.
+ * @param e Drag event.
+ * @param context Interaction context object.
+ * @return The amount by which the drag has moved down.
  */
-export function dragGetY_(e: DragEvent, context: DygraphInteractionContext): number {
+export function dragGetY_(e: MouseEvent, context: DygraphInteractionContext): number {
   return pageY(e) - context.py;
 };
 

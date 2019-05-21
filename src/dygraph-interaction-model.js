@@ -33,9 +33,9 @@ var DygraphInteraction = {};
  * should be considered a click. If it should, dispatch appropriate events.
  * Returns true if the event was treated as a click.
  *
- * @param {Event} event
- * @param {Dygraph} g
- * @param {Object} context
+ * @param {DragEvent} event
+ * @param {DygraphAny} g
+ * @param {DygraphInteractionContext} context
  */
 DygraphInteraction.maybeTreatMouseOpAsClick = function(event, g, context) {
   context.dragEndX = utils.dragGetX_(event, context);
@@ -60,9 +60,9 @@ DygraphInteraction.maybeTreatMouseOpAsClick = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param {Event} event the event object which led to the startPan call.
- * @param {Dygraph} g The dygraph on which to act.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the startPan call.
+ * @param {DygraphAny} g The dygraph on which to act.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -146,9 +146,9 @@ DygraphInteraction.startPan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param {Event} event the event object which led to the movePan call.
- * @param {Dygraph} g The dygraph on which to act.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the movePan call.
+ * @param {DygraphAny} g The dygraph on which to act.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -223,9 +223,9 @@ DygraphInteraction.movePan = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * panning behavior.
  *
- * @param {Event} event the event object which led to the endPan call.
- * @param {Dygraph} g The dygraph on which to act.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the endPan call.
+ * @param {DygraphAny} g The dygraph on which to act.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -239,9 +239,9 @@ DygraphInteraction.endPan = DygraphInteraction.maybeTreatMouseOpAsClick;
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param {Event} event the event object which led to the startZoom call.
- * @param {Dygraph} g The dygraph on which to act.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the startZoom call.
+ * @param {DygraphAny} g The dygraph on which to act.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -258,9 +258,9 @@ DygraphInteraction.startZoom = function(event, g, context) {
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param {Event} event the event object which led to the moveZoom call.
- * @param {Dygraph} g The dygraph on which to act.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the moveZoom call.
+ * @param {DygraphAny} g The dygraph on which to act.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -292,9 +292,9 @@ DygraphInteraction.moveZoom = function(event, g, context) {
 
 /**
  * TODO(danvk): move this logic into dygraph.js
- * @param {Dygraph} g
- * @param {Event} event
- * @param {Object} context
+ * @param {DygraphAny} g
+ * @param {MouseEvent} event
+ * @param {DygraphInteractionContext} context
  */
 DygraphInteraction.treatMouseOpAsClick = function(g, event, context) {
   var clickCallback = g.getFunctionOption('clickCallback');
@@ -365,9 +365,9 @@ DygraphInteraction.treatMouseOpAsClick = function(g, event, context) {
  * Custom interaction model builders can use it to provide the default
  * zooming behavior.
  *
- * @param {Event} event the event object which led to the endZoom call.
- * @param {Dygraph} g The dygraph on which to end the zoom.
- * @param {Object} context The dragging context object (with
+ * @param {MouseEvent} event the event object which led to the endZoom call.
+ * @param {DygraphAny} g The dygraph on which to end the zoom.
+ * @param {DygraphInteractionContext} context The dragging context object (with
  *     dragStartX/dragStartY/etc. properties). This function modifies the
  *     context.
  */
@@ -406,7 +406,9 @@ DygraphInteraction.endZoom = function(event, g, context) {
 };
 
 /**
- * @private
+ * @param {MouseEvent} event
+ * @param {DygraphAny} g
+ * @param {DygraphInteractionContext} context
  */
 DygraphInteraction.startTouch = function(event, g, context) {
   event.preventDefault();  // touch browsers are all nice.
@@ -470,7 +472,9 @@ DygraphInteraction.startTouch = function(event, g, context) {
 };
 
 /**
- * @private
+ * @param {TouchEvent} event
+ * @param {DygraphAny} g
+ * @param {DygraphInteractionContext} context
  */
 DygraphInteraction.moveTouch = function(event, g, context) {
   // If the tap moves, then it's definitely not part of a double-tap.
@@ -563,7 +567,9 @@ DygraphInteraction.moveTouch = function(event, g, context) {
 };
 
 /**
- * @private
+ * @param {TouchEvent} event
+ * @param {DygraphAny} g
+ * @param {DygraphInteractionContext} context
  */
 DygraphInteraction.endTouch = function(event, g, context) {
   if (event.touches.length !== 0) {
@@ -588,7 +594,12 @@ DygraphInteraction.endTouch = function(event, g, context) {
   }
 };
 
-// Determine the distance from x to [left, right].
+/**
+ * Determine the distance from x to [left, right].
+ * @param {number} x
+ * @param {number} left
+ * @param {number} right
+ */
 var distanceFromInterval = function(x, left, right) {
   if (x < left) {
     return left - x;
@@ -602,6 +613,8 @@ var distanceFromInterval = function(x, left, right) {
 /**
  * Returns the number of pixels by which the event happens from the nearest
  * edge of the chart. For events in the interior of the chart, this returns zero.
+ * @param {MouseEvent} event
+ * @param {DygraphAny} g
  */
 var distanceFromChart = function(event, g) {
   var chartPos = utils.findPos(g.canvas_);
