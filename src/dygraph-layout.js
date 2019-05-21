@@ -15,6 +15,7 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
+import { DygraphAxisType, DygraphPointType } from "./dygraph-types";
 
 /**
  * Creates a new DygraphLayout object.
@@ -44,7 +45,7 @@ class DygraphLayout {
      * zoom region (including one point just outside the window).
      * All points in the same row index share the same X value.
      *
-     * @type {Array.<Array.<Dygraph.PointType>>}
+     * @type {Array.<Array.<DygraphPointType>>}
      */
     this.points = [];
     this.setNames = [];
@@ -59,7 +60,7 @@ class DygraphLayout {
    * Add points for a single series.
    *
    * @param {string} setname Name of the series.
-   * @param {Array.<Dygraph.PointType>} set_xy Points for the series.
+   * @param {Array.<DygraphPointType>} set_xy Points for the series.
    */
   addDataset(setname, set_xy) {
     this.points.push(set_xy);

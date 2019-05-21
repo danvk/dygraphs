@@ -14,6 +14,7 @@
 /*global Dygraph:false, Node:false */
 
 import * as DygraphTickers from './dygraph-tickers';
+import { DygraphAny, DygraphInteractionContext } from "./dygraph-types";
 
 export var LOG_SCALE = 10;
 export var LN_TEN = Math.log(LOG_SCALE);
@@ -423,7 +424,7 @@ export function round_(num: number, places: number): number {
  *     If abs == 0, find the entry that equals val.
  * @param {number=} low The first index in arry to consider (optional)
  * @param {number=} high The last index in arry to consider (optional)
- * @return {number} Index of the element, or -1 if it isn't found.
+ * @return Index of the element, or -1 if it isn't found.
  * @private
  */
 export function binarySearch(val: number, arry: Array<number>, abs: number, low?: number, high?: number): number {

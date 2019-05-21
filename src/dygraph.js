@@ -2051,7 +2051,7 @@ Dygraph.prototype.predraw_ = function() {
  *     yval_stacked
  * }}
  */
-Dygraph.PointType = undefined;
+DygraphPointType = undefined;
 
 /**
  * Calculates point stacking for stackedGraph=true.
@@ -2060,7 +2060,7 @@ Dygraph.PointType = undefined;
  * NaN values based on stackedGraphNaNFill settings. This is for display
  * only, the underlying data value as shown in the legend remains NaN.
  *
- * @param {Array.<Dygraph.PointType>} points Point array for a single series.
+ * @param {Array.<DygraphPointType>} points Point array for a single series.
  *     Updates each Point's yval_stacked property.
  * @param {Array.<number>} cumulativeYval Accumulated top-of-graph stacked Y
  *     values for the series seen so far. Index is the row number. Updated
@@ -2162,7 +2162,7 @@ Dygraph.stackPoints_ = function(
  *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
  * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
  * @return {{
- *     points: Array.<Array.<Dygraph.PointType>>,
+ *     points: Array.<Array.<DygraphPointType>>,
  *     seriesExtremes: Array.<Array.<number>>,
  *     boundaryIds: Array.<number>}}
  * @private

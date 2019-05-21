@@ -103,7 +103,7 @@ handler.prototype.extractSeries = function(rawData, seriesIndex, options) {
  * @param {!string} setName Name of the series.
  * @param {!number} boundaryIdStart Index offset of the first point, equal to the
  *          number of skipped points left of the date window minimum (if any).
- * @return {!Array.<Dygraph.PointType>} List of points for this series.
+ * @return {!Array.<DygraphPointType>} List of points for this series.
  */
 handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
   // TODO(bhs): these loops are a hot-spot for high-point-count charts. In
@@ -142,7 +142,7 @@ handler.prototype.seriesToPoints = function(series, setName, boundaryIdStart) {
  *
  * @param {!Array.<[!number,?number,?]>} series The series in the unified
  *     data format where series[i] = [x,y,{extras}].
- * @param {!Array.<Dygraph.PointType>} points The corresponding points passed
+ * @param {!Array.<DygraphPointType>} points The corresponding points passed
  *     to the plotter.
  * @protected
  */
@@ -180,7 +180,7 @@ handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
  * calculated before the series is drawn. Here normalized positioning data
  * should be calculated for the extras of each point.
  *
- * @param {!Array.<Dygraph.PointType>} points The points passed to
+ * @param {!Array.<DygraphPointType>} points The points passed to
  *          the plotter.
  * @param {!Object} axis The axis on which the series will be plotted.
  * @param {!boolean} logscale Weather or not to use a logscale.
