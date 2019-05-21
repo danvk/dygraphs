@@ -282,6 +282,7 @@ class DygraphLayout {
     for (var setIdx = 0; setIdx < this.points.length; setIdx++) {
       var points = this.points[setIdx];
       for (i = 0; i < points.length; i++) {
+        /** @type {any} */  // TODO(danvk): introduce an AnnotatedPoint type
         var p = points[i];
         var k = p.xval + "," + p.name;
         if (k in annotations) {

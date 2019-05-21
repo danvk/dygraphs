@@ -4,26 +4,30 @@
 
 
 /**
- * @typedef {function(
- *   (number|Date),
- *   number,
- *   function(string):*,
- *   (Dygraph|undefined)
- * ):string}
+ * @typedef {(
+ *   value: (number|Date),
+ *   granularity: number,
+ *   opts: (optionName: string) => any,
+ *   dygraph: Dygraph|undefined
+ * ) => string} AxisLabelFormatter
  */
-var AxisLabelFormatter;
+// var AxisLabelFormatter;
 
 
 /**
- * @typedef {function(number,function(string),Dygraph):string}
+ * @typedef {(
+ *   value: number,
+ *   opts: (optionName: string) => any,
+ *   dygraph: Dygraph
+ * ) => string} ValueFormatter
  */
-var ValueFormatter;
+// var ValueFormatter;
 
 
 /**
- * @typedef {Array.<Array.<string|number|Array.<number>>>}
+ * @typedef {Array.<Array.<string|number|Array.<number>>>} DygraphDataArray
  */
-var DygraphDataArray;
+// var DygraphDataArray;
 
 /**
  * @constructor

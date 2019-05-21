@@ -16,7 +16,7 @@
  *   isPanning: boolean,
  *   is2DPan: boolean,
  *   cancelNextDblclick: boolean,
- *   initializeMouseDown: (e: !Event, dygraph:!Dygraph, context: !DygraphInteractionContext) => void
+ *   initializeMouseDown: (e: !Event, dygraph:!DygraphAny, context: !DygraphInteractionContext) => void
  * }} DygraphInteractionContext
  */
 var DygraphInteractionContext;
@@ -56,4 +56,9 @@ var DygraphInteractionContext;
  *   ylogscale: number;
  *   yscale: number;
  * }} DygraphAxisType
+ */
+
+/**
+ * Placeholder for TS conversion. Should be Dygraph.
+ * @typedef {any} DygraphAny
  */

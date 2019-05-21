@@ -1,5 +1,8 @@
 // @ts-check
 
+/// <reference path="./dygraph-internal.externs.js" />
+/// <reference path="./dygraph-types.js" />
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -380,7 +383,7 @@ var numDateTicks = function(start_time, end_time, granularity) {
  * @param {number} end_time
  * @param {number} granularity (one of the granularities enumerated above)
  * @param {function(string):*} opts Function mapping from option name -&gt; value.
- * @param {Dygraph} [dg]
+ * @param {DygraphAny} dg
  * @return {Tick[]}
  */
 export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
