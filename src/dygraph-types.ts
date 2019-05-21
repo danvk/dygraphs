@@ -194,7 +194,12 @@ export type DygraphAny = any;
 export type DygraphOptions = any;
 
 export interface PluginEvent {
+  dygraph: DygraphAny;
   cancelable: boolean;
+  defaultPrevented: boolean;
+  preventDefault(): void;
+  propagationStopped: boolean;
+  stopPropagationfunction(): void;
 }
 
 export interface PluginXYEvent extends PluginEvent {
@@ -209,4 +214,17 @@ export interface PluginPointClickEvent extends PluginXYEvent {
 export interface PluginClickEvent extends PluginXYEvent {
   xval: number;
   pts: DygraphPointType[];
+}
+
+export interface PluginWillDrawEvent extends PluginEvent {
+  canvas: HTMLCanvasElement;
+  drawingContext: CanvasRenderingContext2D;
+}
+
+export interface DygraphsPlugin {
+  toString(): string;
+  activate(g: DygraphAny): void;
+  willDrawChart?(e: PluginWillDrawEvent): void;
+  didDrawChart?(e: PluginWillDrawEvent): void;
+  destroy?(): void;
 }
