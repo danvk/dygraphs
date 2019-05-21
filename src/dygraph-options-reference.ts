@@ -6,9 +6,19 @@
 
 "use strict";
 
-var OPTIONS_REFERENCE = null;
+interface OptionDoc {
+  labels: string[];
+  default: string;
+  type: string;
+  description: string;
+  parameters?: [string, string][];
+  example?: string;  // this doesn't go on the options reference page.
+}
+
+var OPTIONS_REFERENCE: {[optionName: string]: OptionDoc} = null;
 
 // For "production" code, this gets removed by uglifyjs.
+declare let process: any;
 if (typeof(process) !== 'undefined') {
 if (process.env.NODE_ENV != 'production') {
 
@@ -88,7 +98,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "A function to call when the zoom window is changed (either by zooming in or out). When animatedZooms is set, zoomCallback is called once at the end of the transition (it will not be called for intermediate frames)."
   },
   "pointClickCallback": {
-    "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
+    "example": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
     "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
     "type": "function(e, point)",
@@ -462,7 +472,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Legend"],
     "type": "function(data): string",
-    "params": [
+    "parameters": [
       [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">here</a> for sample values." ]
     ],
     "description": "Set this to supply a custom formatter for the legend. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">this comment</a> and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
@@ -528,7 +538,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "clickCallback": {
-    "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
+    "example": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(e, x, points)",
