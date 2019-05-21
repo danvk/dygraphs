@@ -17,13 +17,13 @@ class DefaultHandler extends DygraphDataHandler {
     super();
   }
 
-  extractSeries(rawData: number[][], seriesIndex: number, options: DygraphOptions): UnifiedPoint[] {
+  extractSeries(rawData: number[][], i: number, options: DygraphOptions): UnifiedPoint[] {
     // TODO(danvk): pre-allocate series here.
     var series = [];
     var logScale = options.get('logscale');
     for (var j = 0; j < rawData.length; j++) {
       var x = rawData[j][0];
-      var point = rawData[j][1];
+      var point = rawData[j][i];
       if (logScale) {
         // On the log scale, points less than zero do not exist.
         // This will create a gap in the chart.
