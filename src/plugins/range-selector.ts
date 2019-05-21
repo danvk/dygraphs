@@ -479,9 +479,8 @@ class RangeSelector implements DygraphsPlugin {
 
     this.setDefaultOption_('interactionModel', DygraphInteraction.dragIsPanInteractionModel);
     this.setDefaultOption_('panEdgeFraction', 0.0001);
-    var dragStartEvent = window.opera ? 'mousedown' : 'dragstart';
-    this.dygraph_.addAndTrackEvent(this.leftZoomHandle_, dragStartEvent, onZoomStart);
-    this.dygraph_.addAndTrackEvent(this.rightZoomHandle_, dragStartEvent, onZoomStart);
+    this.dygraph_.addAndTrackEvent(this.leftZoomHandle_, 'dragstart', onZoomStart);
+    this.dygraph_.addAndTrackEvent(this.rightZoomHandle_, 'dragstart', onZoomStart);
     this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart);
     this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
     // Touch events
