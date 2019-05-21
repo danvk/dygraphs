@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -15,7 +13,14 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
-import { DygraphAxisType, DygraphPointType } from "./dygraph-types";
+import { Annotation, DygraphAxisType, DygraphPointType, DygraphAny, Tick } from "./dygraph-types";
+
+export interface Area {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 
 /**
  * Creates a new DygraphLayout object.
@@ -34,45 +39,61 @@ import { DygraphAxisType, DygraphPointType } from "./dygraph-types";
  * @constructor
  */
 class DygraphLayout {
-  constructor(dygraph) {
+  dygraph_: DygraphAny;
+  /**
+   * Array of points for each series.
+   *
+   * [series index][row index in series] = |Point| structure,
+   * where series index refers to visible series only, and the
+   * point index is for the reduced set of points for the current
+   * zoom region (including one point just outside the window).
+   * All points in the same row index share the same X value.
+   */
+  points: DygraphPointType[][];
+
+  setNames: string[];
+  annotations: any[];
+  yAxes_: DygraphAxisType[];
+  xTicks_: Tick[];
+  yTicks_: Tick[];
+  area_: Area;
+  _xAxis: DygraphAxisType;
+  xticks: any[];
+  yticks: any[];
+  annotated_points: any[];
+  setPointsLengths: any;
+  setPointsOffsets: any;
+
+  constructor(dygraph: DygraphAny) {
     this.dygraph_ = dygraph;
-    /**
-     * Array of points for each series.
-     *
-     * [series index][row index in series] = |Point| structure,
-     * where series index refers to visible series only, and the
-     * point index is for the reduced set of points for the current
-     * zoom region (including one point just outside the window).
-     * All points in the same row index share the same X value.
-     *
-     * @type {Array.<Array.<DygraphPointType>>}
-     */
+
     this.points = [];
     this.setNames = [];
     this.annotations = [];
     this.yAxes_ = null;
+
     // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
     // yticks are outputs. Clean this up.
     this.xTicks_ = null;
     this.yTicks_ = null;
   }
+
   /**
    * Add points for a single series.
    *
-   * @param {string} setname Name of the series.
-   * @param {Array.<DygraphPointType>} set_xy Points for the series.
+   * @param setname Name of the series.
+   * @param set_xy Points for the series.
    */
-  addDataset(setname, set_xy) {
+  addDataset(setname: string, set_xy: Array<DygraphPointType>) {
     this.points.push(set_xy);
     this.setNames.push(setname);
   }
+
   /**
    * Returns the box which the chart should be drawn in. This is the canvas's
    * box, less space needed for the axis and chart labels.
-   *
-   * @return {{x: number, y: number, w: number, h: number}}
    */
-  getPlotArea() {
+  getPlotArea(): Area {
     return this.area_;
   }
 
@@ -139,13 +160,13 @@ class DygraphLayout {
     this.dygraph_.cascadeEvents_('layout', e);
     this.area_ = area;
   }
-  setAnnotations(ann) {
+  setAnnotations(ann: Annotation[]) {
     // The Dygraph object's annotations aren't parsed. We parse them here and
     // save a copy. If there is no parser, then the user must be using raw format.
     this.annotations = [];
     var parse = this.dygraph_.getOption('xValueParser') || function (x) { return x; };
     for (var i = 0; i < ann.length; i++) {
-      var a = {};
+      var a = {} as Annotation;
       if (!ann[i].xval && ann[i].x === undefined) {
         console.error("Annotations must have an 'x' property");
         return;
@@ -158,25 +179,29 @@ class DygraphLayout {
         return;
       }
       utils.update(a, ann[i]);
-      if (!a.xval)
+      if (!a.xval) {
         a.xval = parse(a.x);
+      }
       this.annotations.push(a);
     }
   }
   setXTicks(xTicks) {
     this.xTicks_ = xTicks;
   }
+
   // TODO(danvk): add this to the Dygraph object's API or move it into Layout.
-  setYAxes(yAxes) {
+  setYAxes(yAxes: DygraphAxisType[]) {
     this.yAxes_ = yAxes;
   }
+
   evaluate() {
-    this._xAxis = {};
+    this._xAxis = {} as DygraphAxisType;
     this._evaluateLimits();
     this._evaluateLineCharts();
     this._evaluateLineTicks();
     this._evaluateAnnotations();
   }
+
   _evaluateLimits() {
     var xlimits = this.dygraph_.xAxisRange();
     this._xAxis.minval = xlimits[0];
@@ -237,10 +262,11 @@ class DygraphLayout {
       this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
     }
   }
+
   _evaluateLineTicks() {
-    var i, tick, label, pos, v, has_tick;
+    var tick, label, pos, v, has_tick;
     this.xticks = [];
-    for (i = 0; i < this.xTicks_.length; i++) {
+    for (let i = 0; i < this.xTicks_.length; i++) {
       tick = this.xTicks_[i];
       label = tick.label;
       has_tick = !('label_v' in tick);
@@ -251,9 +277,9 @@ class DygraphLayout {
       }
     }
     this.yticks = [];
-    for (i = 0; i < this.yAxes_.length; i++) {
+    for (let i = 0; i < this.yAxes_.length; i++) {
       var axis = this.yAxes_[i];
-      for (var j = 0; j < axis.ticks.length; j++) {
+      for (let j = 0; j < axis.ticks.length; j++) {
         tick = axis.ticks[j];
         label = tick.label;
         has_tick = !('label_v' in tick);
@@ -265,6 +291,7 @@ class DygraphLayout {
       }
     }
   }
+
   _evaluateAnnotations() {
     // Add the annotations to the point to which they belong.
     // Make a map from (setName, xval) to annotation for quick lookups.
@@ -284,7 +311,7 @@ class DygraphLayout {
       var points = this.points[setIdx];
       for (i = 0; i < points.length; i++) {
         /** @type {any} */  // TODO(danvk): introduce an AnnotatedPoint type
-        var p = points[i];
+        var p: any = points[i];
         var k = p.xval + "," + p.name;
         if (k in annotations) {
           p.annotation = annotations[k];
@@ -320,7 +347,7 @@ class DygraphLayout {
    * @param {boolean} logscale
    * @return {number}
    */
-  static calcYNormal_(axis, value, logscale) {
+  static calcYNormal_(axis: DygraphAxisType, value: number, logscale: boolean): number {
     if (logscale) {
       var x = 1.0 - ((utils.log10(value) - utils.log10(axis.minyval)) * axis.ylogscale);
       return isFinite(x) ? x : NaN; // shim for v8 issue; see pull request 276

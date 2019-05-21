@@ -64,13 +64,7 @@
 
 import * as utils from './dygraph-utils';
 import {AxisLabelFormatter} from './dygraph-internal.externs';
-import { DygraphAny } from './dygraph-types';
-
-interface Tick {
-  v: number;
-  label: string;
-  label_v?: string;
-}
+import { DygraphAny, Tick } from './dygraph-types';
 
 type Ticker = (
    a: number,
