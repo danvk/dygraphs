@@ -1,6 +1,3 @@
-/// <reference path="./dygraph-internal.externs.js" />
-/// <reference path="./dygraph-types.ts" />
-
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -66,30 +63,25 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
+import {AxisLabelFormatter} from './dygraph-internal.externs';
+import { DygraphAny } from './dygraph-types';
 
-/**
- * @typedef {{
- *   v:number,
- *   label:string,
- *   label_v?: string
- * }} Tick
- */
-// var Tick;
+interface Tick {
+  v: number;
+  label: string;
+  label_v?: string;
+}
 
-/**
- * @typedef {(
- *    a: number,
- *    b: number,
- *    pixels: number,
- *    opts: (option: string) => any,
- *    dygraph?: any,
- *    vals?: number[]
- *  ) => Tick[]} Ticker
- */
-// var Ticker;
+type Ticker = (
+   a: number,
+   b: number,
+   pixels: number,
+   opts: (option: string) => any,
+   dygraph?: any,
+   vals?: number[]
+ ) => Tick[];
 
-/** @type {Ticker} */
-export var numericLinearTicks = (a, b, pixels, opts, dygraph, vals) => {
+export var numericLinearTicks: Ticker = (a, b, pixels, opts, dygraph, vals) => {
   var nonLogscaleOpts = function(opt) {
     if (opt === 'logscale') return false;
     return opts(opt);
@@ -97,14 +89,16 @@ export var numericLinearTicks = (a, b, pixels, opts, dygraph, vals) => {
   return numericTicks(a, b, pixels, nonLogscaleOpts, dygraph, vals);
 };
 
-/** @type {Ticker} */
-export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
-  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
+export var numericTicks: Ticker = function(a, b, pixels, opts, dygraph, vals) {
+  var pixels_per_tick: number = opts('pixelsPerLabel');
 
-  /** @type {Tick[]} */
-  var ticks = [];
+  var ticks: Tick[] = [];
 
-  var i, j, tickV, nTicks;
+  var i: number;
+  var j: number;
+  var tickV: number;
+  var nTicks: number;
+
   if (vals) {
     for (i = 0; i < vals.length; i++) {
       ticks.push({v: vals[i], label: undefined});
@@ -186,7 +180,7 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
       // that results in tick marks spaced sufficiently far apart.
       // The "mults" array should cover the range 1 .. base^2 to
       // adjust for rounding and edge effects.
-      var scale, low_val, high_val, spacing;
+      var scale: number, low_val: number, high_val: number, spacing: number;
       for (j = 0; j < mults.length; j++) {
         scale = base_scale * mults[j];
         low_val = Math.floor(a / scale) * scale;
@@ -206,7 +200,7 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
     }
   }
 
-  var formatter = /**@type{AxisLabelFormatter}*/(opts('axisLabelFormatter'));
+  var formatter: AxisLabelFormatter = opts('axisLabelFormatter');
 
   // Add labels to the ticks.
   for (i = 0; i < ticks.length; i++) {
@@ -218,8 +212,7 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   return ticks;
 };
 
-/** @type {Ticker} */
-export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
+export var dateTicker: Ticker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = pickDateTickGranularity(a, b, pixels, opts);
 
   if (chosen >= 0) {
@@ -277,6 +270,11 @@ var DateField = {
   NUM_DATEFIELDS: 7
 };
 
+interface TickPlacement {
+  datefield: number;
+  step: number;
+  spacing: number;
+}
 
 /**
  * The value of datefield will start at an even multiple of "step", i.e.
@@ -288,10 +286,8 @@ var DateField = {
  *   `step`. In this case, the `spacing` value is only used to estimate the
  *   number of ticks. It should roughly correspond to the spacing between
  *   adjacent ticks.
- *
- * @type {Array.<{datefield:number, step:number, spacing:number}>}
  */
-var TICK_PLACEMENT = [];
+var TICK_PLACEMENT: TickPlacement[] = [];
 TICK_PLACEMENT[Granularity.MILLISECONDLY]               = {datefield: DateField.DATEFIELD_MS, step:   1, spacing: 1};
 TICK_PLACEMENT[Granularity.TWO_MILLISECONDLY]           = {datefield: DateField.DATEFIELD_MS, step:   2, spacing: 2};
 TICK_PLACEMENT[Granularity.FIVE_MILLISECONDLY]          = {datefield: DateField.DATEFIELD_MS, step:   5, spacing: 5};
@@ -328,9 +324,8 @@ TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,
  * scale. It is k * 10^n, where k=1..9 and n=-39..+39, so:
  * ..., 1, 2, 3, 4, 5, ..., 9, 10, 20, 30, ..., 90, 100, 200, 300, ...
  * NOTE: this assumes that utils.LOG_SCALE = 10.
- * @type {Array.<number>}
  */
-var PREFERRED_LOG_TICK_VALUES = (function() {
+var PREFERRED_LOG_TICK_VALUES: number[] = (function() {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -345,15 +340,15 @@ var PREFERRED_LOG_TICK_VALUES = (function() {
 /**
  * Determine the correct granularity of ticks on a date axis.
  *
- * @param {number} a Left edge of the chart (ms)
- * @param {number} b Right edge of the chart (ms)
- * @param {number} pixels Size of the chart in the relevant dimension (width).
- * @param {function(string):*} opts Function mapping from option name -&gt; value.
- * @return {number} The appropriate axis granularity for this chart. See the
+ * @param a Left edge of the chart (ms)
+ * @param b Right edge of the chart (ms)
+ * @param pixels Size of the chart in the relevant dimension (width).
+ * @param opts Function mapping from option name -&gt; value.
+ * @return The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
-var pickDateTickGranularity = function(a, b, pixels, opts) {
-  var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
+var pickDateTickGranularity = function(a: number, b: number, pixels: number, opts: (name: string) => any): number {
+  var pixels_per_tick: number = opts('pixelsPerLabel');
   for (var i = 0; i < Granularity.NUM_GRANULARITIES; i++) {
     var num_ticks = numDateTicks(a, b, i);
     if (pixels / num_ticks >= pixels_per_tick) {
@@ -365,28 +360,26 @@ var pickDateTickGranularity = function(a, b, pixels, opts) {
 
 /**
  * Compute the number of ticks on a date axis for a given granularity.
- * @param {number} start_time
- * @param {number} end_time
- * @param {number} granularity (one of the granularities enumerated above)
- * @return {number} (Approximate) number of ticks that would result.
+ * @param start_time
+ * @param end_time
+ * @param granularity (one of the granularities enumerated above)
+ * @return (Approximate) number of ticks that would result.
  */
-var numDateTicks = function(start_time, end_time, granularity) {
+var numDateTicks = function(start_time: number, end_time: number, granularity: number): number {
   var spacing = TICK_PLACEMENT[granularity].spacing;
   return Math.round(1.0 * (end_time - start_time) / spacing);
 };
 
 /**
  * Compute the positions and labels of ticks on a date axis for a given granularity.
- * @param {number} start_time
- * @param {number} end_time
- * @param {number} granularity (one of the granularities enumerated above)
- * @param {function(string):*} opts Function mapping from option name -&gt; value.
- * @param {DygraphAny} dg
- * @return {Tick[]}
+ * @param start_time
+ * @param end_time
+ * @param granularity (one of the granularities enumerated above)
+ * @param opts Function mapping from option name -&gt; value.
+ * @param dg
  */
-export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
-  var formatter = /** @type{AxisLabelFormatter} */(
-      opts("axisLabelFormatter"));
+export var getDateAxis = function(start_time: number, end_time: number, granularity: number, opts: (optionName: string) => any, dg: DygraphAny): Tick[] {
+  var formatter: AxisLabelFormatter = opts("axisLabelFormatter");
   var utc = opts("labelsUTC");
   var accessors = utc ? utils.DateAccessorsUTC : utils.DateAccessorsLocal;
 
