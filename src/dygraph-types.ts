@@ -17,14 +17,61 @@ export interface Tick {
   label_v?: string;
 }
 
+// TODO(danvk): this is a total mess; move inside dygraph-interaction-model?
 export interface DygraphInteractionContext {
-  px: number;
-  py: number;
   isZooming: boolean;
   isPanning: boolean;
   is2DPan: boolean;
+  zoomMoved: boolean;
+  dragDirection: number;  // utils.VERTICAL | utils.HORIZONTAL
+
+  px: number;
+  py: number;
+  dragStartX: number;
+  dragStartY: number;
+  dragEndX: number;
+  dragEndY: number;
+  regionWidth: number;
+  regionHeight: number;
+  dateRange: number;
+  xUnitsPerPixel: number;
+  boundedDates: [number, number];
+  boundedValues: [number, number][];
+  axes: DygraphInteractionAxis[];
+  startTimeForDoubleTapMs: number;
+
+  initialTouches: DygraphInteractionTouch[];
+  initialPinchCenter: DygraphInteractionTouch;
+  touchDirections: {x: boolean; y: boolean };
+  doubleTapX: number;
+  doubleTapY: number;
+
+  initialRange: {
+    x: [number, number];
+    y: [number, number];
+  };
+  initialLeftmostDate: number;
+
+  prevDragDirection: number;
+  prevEndX: number;
+  prevEndY: number;
+
   cancelNextDblclick: boolean;
   initializeMouseDown: (e: Event, dygraph: any, context: any) => void;
+  destroy(): void;
+}
+
+export interface DygraphInteractionAxis {
+  initialTopValue: number;
+  dragValueRange: number;
+  unitsPerPixel: number;
+}
+
+export interface DygraphInteractionTouch {
+  pageX: number;
+  pageY: number;
+  dataX: number;
+  dataY: number;
 }
 
 /**
@@ -145,3 +192,21 @@ export type DygraphAny = any;
 
 /** Placeholder for TS conversion. */
 export type DygraphOptions = any;
+
+export interface PluginEvent {
+  cancelable: boolean;
+}
+
+export interface PluginXYEvent extends PluginEvent {
+  canvasx: number;
+  canvasy: number;
+}
+
+export interface PluginPointClickEvent extends PluginXYEvent {
+  point: DygraphPointType;
+}
+
+export interface PluginClickEvent extends PluginXYEvent {
+  xval: number;
+  pts: DygraphPointType[];
+}
