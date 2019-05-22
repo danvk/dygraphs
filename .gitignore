@@ -7,3 +7,4 @@ coverage
 *.log
 *.pyc
 src-es5
+src-js

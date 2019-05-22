@@ -5,6 +5,10 @@ set -o errexit
 
 mkdir -p dist
 
+# Create src-js
+rm -rf src-js
+tsc
+
 # Create dist/dygraph.js
 browserify \
   -v \
@@ -12,7 +16,7 @@ browserify \
   -t [ envify --NODE_ENV development ] \
   --debug \
   --standalone Dygraph \
-  src/dygraph.js \
+  src-js/src/dygraph.js \
   > dist/dygraph.tmp.js
 
 # Create dist/dygraph.js.map
@@ -25,7 +29,7 @@ browserify \
   -t [ envify --NODE_ENV production ] \
   --debug \
   --standalone Dygraph \
-  src/dygraph.js \
+  src-js/src/dygraph.js \
   > dist/dygraph.tmp.js
 
 # Create dist/dygraph.tmp.js.map
@@ -47,7 +51,7 @@ cp css/dygraph.css dist/
 cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
 
 # Build ES5-compatible distribution
-babel src -d src-es5 --compact false
+# babel src -d src-es5 --compact false
 
 # Remove temp files.
 rm dist/dygraph.tmp.js

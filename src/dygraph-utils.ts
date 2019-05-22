@@ -11,8 +11,6 @@
  * search) and generic DOM-manipulation functions.
  */
 
-/*global Dygraph:false, Node:false */
-
 import * as DygraphTickers from './dygraph-tickers';
 import { DygraphInteractionContext } from "./dygraph-types";
 import Dygraph from './dygraph';
@@ -22,7 +20,7 @@ export const LN_TEN = Math.log(LOG_SCALE);
 
 export const log10 = function(x: number): number {
   return Math.log(x) / LN_TEN;
-};
+}
 
 export const logRangeFraction = function(r0: number, r1: number, pct: number): number {
   // Computing the inverse of toPercentXCoord. The function was arrived at with
@@ -48,7 +46,7 @@ export const logRangeFraction = function(r0: number, r1: number, pct: number): n
   var exponent = logr0 + (pct * (logr1 - logr0));
   var value = Math.pow(LOG_SCALE, exponent);
   return value;
-};
+}
 
 /** A dotted line stroke pattern. */
 export var DOTTED_LINE = [2, 2];
@@ -71,7 +69,7 @@ export var VERTICAL = 2;
  */
 export function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   return canvas.getContext("2d");
-};
+}
 
 /**
  * Add an event handler.
@@ -113,7 +111,7 @@ export function cancelEvent(e: Event) {
   e.cancelBubble = true;
   e.returnValue = false;
   return false;
-};
+}
 
 /**
  * Convert hsv values to an rgb(r,g,b) string. Taken from MochiKit.Color. This
@@ -153,7 +151,7 @@ export function hsvToRGB(hue: number, saturation: number, value: number): string
   green = Math.floor(255 * green + 0.5);
   blue = Math.floor(255 * blue + 0.5);
   return 'rgb(' + red + ',' + green + ',' + blue + ')';
-};
+}
 
 /**
  * Find the coordinates of an object relative to the top left of the page.
@@ -168,7 +166,7 @@ export function findPos(obj: Element): { x: number; y: number; } {
     x: p.left + (w.pageXOffset || d.scrollLeft),
     y: p.top  + (w.pageYOffset || d.scrollTop)
   }
-};
+}
 
 /**
  * Returns the x-coordinate of the event in a coordinate system where the
@@ -178,7 +176,7 @@ export function findPos(obj: Element): { x: number; y: number; } {
  */
 export function pageX(e: MouseEvent): number {
   return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
-};
+}
 
 /**
  * Returns the y-coordinate of the event in a coordinate system where the
@@ -188,7 +186,7 @@ export function pageX(e: MouseEvent): number {
  */
 export function pageY(e: MouseEvent): number {
   return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
-};
+}
 
 /**
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
@@ -199,7 +197,7 @@ export function pageY(e: MouseEvent): number {
  */
 export function dragGetX_(e: MouseEvent, context: DygraphInteractionContext): number {
   return pageX(e) - context.px;
-};
+}
 
 /**
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
@@ -210,7 +208,7 @@ export function dragGetX_(e: MouseEvent, context: DygraphInteractionContext): nu
  */
 export function dragGetY_(e: MouseEvent, context: DygraphInteractionContext): number {
   return pageY(e) - context.py;
-};
+}
 
 /**
  * This returns true unless the parameter is 0, null, undefined or NaN.
@@ -222,7 +220,7 @@ export function dragGetY_(e: MouseEvent, context: DygraphInteractionContext): nu
  */
 export function isOK(x: number): boolean {
   return !!x && !isNaN(x);
-};
+}
 
 /**
  * @param p The point to consider, valid
@@ -238,7 +236,7 @@ export function isValidPoint(p: { x?: number | null; y?: number | null; yval?: n
   if (p.y === null || p.y === undefined) return false;
   if (isNaN(p.x) || (!opt_allowNaNY && isNaN(p.y))) return false;
   return true;
-};
+}
 
 /**
  * Number formatting function which mimics the behavior of %g in printf, i.e.
@@ -280,7 +278,7 @@ export function floatFormat(x: number, opt_precision?: number): string {
   // so we take off 1 for the value before the '.'.
   return (Math.abs(x) < 1.0e-3 && x !== 0.0) ?
       x.toExponential(p - 1) : x.toPrecision(p);
-};
+}
 
 /**
  * Converts '9' to '09' (useful for dates)
@@ -288,7 +286,7 @@ export function floatFormat(x: number, opt_precision?: number): string {
  */
 export function zeropad(x: number): string {
   if (x < 10) return "0" + x; else return "" + x;
-};
+}
 
 /**
  * Date accessors to get the parts of a calendar date (year, month,
@@ -346,7 +344,7 @@ export function hmsString_(hh: number, mm: number, ss: number, ms: number): stri
     }
   }
   return ret;
-};
+}
 
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
@@ -378,7 +376,7 @@ export function dateString_(time: number, utc: boolean): string {
     ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
-};
+}
 
 /**
  * Round a number to the specified number of digits past the decimal point.
@@ -390,7 +388,7 @@ export function dateString_(time: number, utc: boolean): string {
 export function round_(num: number, places: number): number {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
-};
+}
 
 /**
  * Implementation of binary search over an array.
@@ -451,7 +449,7 @@ export function binarySearch(
     return binarySearch(val, arry, abs, mid + 1, high);
   }
   return -1;  // can't actually happen, but makes closure compiler happy
-};
+}
 
 /**
  * Parses a date, returning the number of milliseconds since epoch. This can be
@@ -496,7 +494,7 @@ export function dateParser(dateStr: string): number {
     console.error("Couldn't parse " + dateStr + " as a date");
   }
   return d;
-};
+}
 
 /**
  * This is identical to JavaScript's built-in Date.parse() method, except that
@@ -508,7 +506,7 @@ export function dateParser(dateStr: string): number {
  */
 export function dateStrToMillis(str: string): number {
   return new Date(str).getTime();
-};
+}
 
 // These functions are all based on MochiKit.
 /**
@@ -523,7 +521,7 @@ export function update(self: object, o: object): object {
     }
   }
   return self;
-};
+}
 
 /**
  * Copies all the properties from o to self.
@@ -560,7 +558,7 @@ export function updateDeep(self: object, o: object): object {
     }
   }
   return self;
-};
+}
 
 export function isArrayLike(o: any): boolean {
   var typ = typeof(o);
@@ -574,7 +572,7 @@ export function isArrayLike(o: any): boolean {
     return false;
   }
   return true;
-};
+}
 
 export function isDateLike(o: any): o is Date {
   if (typeof(o) !== "object" || o === null ||
@@ -582,7 +580,7 @@ export function isDateLike(o: any): o is Date {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Note: this only seems to work for arrays.
@@ -599,7 +597,7 @@ export function clone(o: Array<any>): Array<any> {
     }
   }
   return r;
-};
+}
 
 /**
  * Create a new canvas element.
@@ -607,7 +605,7 @@ export function clone(o: Array<any>): Array<any> {
  */
 export function createCanvas(): HTMLCanvasElement {
   return document.createElement('canvas');
-};
+}
 
 /**
  * Returns the context's pixel ratio, which is the ratio between the device
@@ -625,7 +623,7 @@ export function getContextPixelRatio(context: CanvasRenderingContext2D): number 
   } catch (e) {
     return 1;
   }
-};
+}
 
 export class Iterator<T extends object = object> {
   hasNext: boolean;
@@ -676,7 +674,6 @@ export class Iterator<T extends object = object> {
   }
 }
 
-
 /**
  * Returns a new iterator over array, between indexes start and
  * start + length, and only returns entries that pass the accept function
@@ -693,7 +690,7 @@ export class Iterator<T extends object = object> {
  */
 export function createIterator<T extends object>(array: Array<T>, start: number, length: number, opt_predicate?: ((array: T[], index: number) => boolean)) {
   return new Iterator<T>(array, start, length, opt_predicate);
-};
+}
 
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -756,7 +753,7 @@ export function repeatAndCleanup(
       }
     });
   })();
-};
+}
 
 // A whitelist of options that do not change pixel positions.
 var pixelSafeOptions = {
@@ -865,7 +862,7 @@ export function isPixelChangingOptionList(labels: string[], attrs: object): bool
   }
 
   return false;
-};
+}
 
 export type DrawPointCallback = (
   g: Dygraph,
@@ -885,7 +882,7 @@ export var Circles = {
     ctx.fill();
   } as DrawPointCallback
   // For more shapes, include extras/shapes.js
-};
+}
 
 /**
  * Determine whether |data| is delimited by CR, CRLF, LF, LFCR.
@@ -912,7 +909,7 @@ export function detectLineDelimiter(data: string): string | null {
   }
 
   return null;
-};
+}
 
 /**
  * Is one node contained by another?
@@ -930,7 +927,7 @@ export function isNodeContainedBy(containee: Node, container: Node): boolean {
     containeeNode = containeeNode.parentNode;
   }
   return (containeeNode === container);
-};
+}
 
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
@@ -940,7 +937,7 @@ export function pow(base: number, exp: number) {
     return 1.0 / Math.pow(base, -exp);
   }
   return Math.pow(base, exp);
-};
+}
 
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
@@ -991,7 +988,7 @@ export function toRGB_(colorStr: string): RGBAColor {
   var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   return parseRGBA(rgbStr);
-};
+}
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
@@ -1007,7 +1004,7 @@ export function isCanvasSupported(opt_canvasElement?: HTMLCanvasElement): boolea
     return false;
   }
   return true;
-};
+}
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()
@@ -1038,8 +1035,7 @@ export function parseFloat_(x: string, opt_line_no?: number, opt_line?: string) 
   console.error(msg);
 
   return null;
-};
-
+}
 
 // Label constants for the labelsKMB and labelsKMG2 options.
 // (i.e. '100000' -> '100K')
@@ -1119,7 +1115,7 @@ export function numberValueFormatter(x: number, opts: (option: string) => any) {
   }
 
   return label;
-};
+}
 
 /**
  * variant for use as an axisLabelFormatter.
@@ -1127,7 +1123,7 @@ export function numberValueFormatter(x: number, opts: (option: string) => any) {
  */
 export function numberAxisLabelFormatter(x: number, granularity: number, opts: (option: string) => any) {
   return numberValueFormatter.call(this, x, opts);
-};
+}
 
 const SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -1173,7 +1169,7 @@ export function dateAxisLabelFormatter(date: Date, granularity: number, opts: (o
       return hmsString_(hours, mins, secs, millis);
     }
   }
-};
+}
 // alias in case anyone is referencing the old method.
 // Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
 
@@ -1184,6 +1180,6 @@ export function dateAxisLabelFormatter(date: Date, granularity: number, opts: (o
  * @param opts An options view
  * @private
  */
-export function dateValueFormatter(d: Date, opts: (option: string) => any) {
-  return dateString_(d.getTime(), opts('labelsUTC'));
-};
+export function dateValueFormatter(d: number, opts: (option: string) => any) {
+  return dateString_(d, opts('labelsUTC'));
+}

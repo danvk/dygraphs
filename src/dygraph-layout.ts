@@ -104,13 +104,13 @@ class DygraphLayout {
       // TODO(danvk): per-axis setting.
       x: 0,
       y: 0,
-      w: this.dygraph_.width_ - area.x - this.dygraph_.getOption('rightGap'),
+      w: this.dygraph_.width_ - this.dygraph_.getOption('rightGap'),
       h: this.dygraph_.height_,
     };
     // Let plugins reserve space.
     var e = {
       chart_div: this.dygraph_.graphDiv,
-      reserveSpaceLeft: function (px) {
+      reserveSpaceLeft: function (px: number) {
         var r = {
           x: area.x,
           y: area.y,
@@ -121,7 +121,7 @@ class DygraphLayout {
         area.w -= px;
         return r;
       },
-      reserveSpaceRight: function (px) {
+      reserveSpaceRight: function (px: number) {
         var r = {
           x: area.x + area.w - px,
           y: area.y,
@@ -131,7 +131,7 @@ class DygraphLayout {
         area.w -= px;
         return r;
       },
-      reserveSpaceTop: function (px) {
+      reserveSpaceTop: function (px: number) {
         var r = {
           x: area.x,
           y: area.y,
@@ -142,7 +142,7 @@ class DygraphLayout {
         area.h -= px;
         return r;
       },
-      reserveSpaceBottom: function (px) {
+      reserveSpaceBottom: function (px: number) {
         var r = {
           x: area.x,
           y: area.y + area.h - px,
