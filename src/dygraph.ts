@@ -3371,6 +3371,63 @@ class Dygraph {
     this.registeredEvents_ = [];
   }
 
+  // Installed plugins, in order of precedence (most-general to most-specific).
+  static PLUGINS = [
+    LegendPlugin,
+    AxesPlugin,
+    RangeSelectorPlugin, // Has to be before ChartLabels so that its callbacks are called after ChartLabels' callbacks.
+    ChartLabelsPlugin,
+    AnnotationsPlugin,
+    GridPlugin
+  ];
+
+  // There are many symbols which have historically been available through the
+  // Dygraph class. These are exported here for backwards compatibility.
+  static GVizChart = GVizChart;
+  static DASHED_LINE = utils.DASHED_LINE;
+  static DOT_DASH_LINE = utils.DOT_DASH_LINE;
+  static dateAxisLabelFormatter = utils.dateAxisLabelFormatter;
+  static toRGB_ = utils.toRGB_;
+  static findPos = utils.findPos;
+  static pageX = utils.pageX;
+  static pageY = utils.pageY;
+  static dateString_ = utils.dateString_;
+  static defaultInteractionModel = DygraphInteraction.defaultModel;
+  static nonInteractiveModel = DygraphInteraction.nonInteractiveModel_ = DygraphInteraction.nonInteractiveModel_;
+  static Circles = utils.Circles;
+
+  static Plugins = {
+    Legend: LegendPlugin,
+    Axes: AxesPlugin,
+    Annotations: AnnotationsPlugin,
+    ChartLabels: ChartLabelsPlugin,
+    Grid: GridPlugin,
+    RangeSelector: RangeSelectorPlugin
+  };
+
+  static DataHandlers = {
+    DefaultHandler,
+    BarsHandler,
+    CustomBarsHandler,
+    DefaultFractionHandler,
+    ErrorBarsHandler,
+    FractionsBarsHandler
+  };
+
+  static startPan = DygraphInteraction.startPan;
+  static startZoom = DygraphInteraction.startZoom;
+  static movePan = DygraphInteraction.movePan;
+  static moveZoom = DygraphInteraction.moveZoom;
+  static endPan = DygraphInteraction.endPan;
+  static endZoom = DygraphInteraction.endZoom;
+
+  static numericLinearTicks = DygraphTickers.numericLinearTicks;
+  static numericTicks = DygraphTickers.numericTicks;
+  static dateTicker = DygraphTickers.dateTicker;
+  static Granularity = DygraphTickers.Granularity;
+  static getDateAxis = DygraphTickers.getDateAxis;
+  static floatFormat = utils.floatFormat;
+
 }
 
 
@@ -3391,63 +3448,5 @@ function validateNativeFormat(data) {
   }
 }
 
-
-
-// Installed plugins, in order of precedence (most-general to most-specific).
-Dygraph.PLUGINS = [
-  LegendPlugin,
-  AxesPlugin,
-  RangeSelectorPlugin, // Has to be before ChartLabels so that its callbacks are called after ChartLabels' callbacks.
-  ChartLabelsPlugin,
-  AnnotationsPlugin,
-  GridPlugin
-];
-
-// There are many symbols which have historically been available through the
-// Dygraph class. These are exported here for backwards compatibility.
-Dygraph.GVizChart = GVizChart;
-Dygraph.DASHED_LINE = utils.DASHED_LINE;
-Dygraph.DOT_DASH_LINE = utils.DOT_DASH_LINE;
-Dygraph.dateAxisLabelFormatter = utils.dateAxisLabelFormatter;
-Dygraph.toRGB_ = utils.toRGB_;
-Dygraph.findPos = utils.findPos;
-Dygraph.pageX = utils.pageX;
-Dygraph.pageY = utils.pageY;
-Dygraph.dateString_ = utils.dateString_;
-Dygraph.defaultInteractionModel = DygraphInteraction.defaultModel;
-Dygraph.nonInteractiveModel = Dygraph.nonInteractiveModel_ = DygraphInteraction.nonInteractiveModel_;
-Dygraph.Circles = utils.Circles;
-
-Dygraph.Plugins = {
-  Legend: LegendPlugin,
-  Axes: AxesPlugin,
-  Annotations: AnnotationsPlugin,
-  ChartLabels: ChartLabelsPlugin,
-  Grid: GridPlugin,
-  RangeSelector: RangeSelectorPlugin
-};
-
-Dygraph.DataHandlers = {
-  DefaultHandler,
-  BarsHandler,
-  CustomBarsHandler,
-  DefaultFractionHandler,
-  ErrorBarsHandler,
-  FractionsBarsHandler
-};
-
-Dygraph.startPan = DygraphInteraction.startPan;
-Dygraph.startZoom = DygraphInteraction.startZoom;
-Dygraph.movePan = DygraphInteraction.movePan;
-Dygraph.moveZoom = DygraphInteraction.moveZoom;
-Dygraph.endPan = DygraphInteraction.endPan;
-Dygraph.endZoom = DygraphInteraction.endZoom;
-
-Dygraph.numericLinearTicks = DygraphTickers.numericLinearTicks;
-Dygraph.numericTicks = DygraphTickers.numericTicks;
-Dygraph.dateTicker = DygraphTickers.dateTicker;
-Dygraph.Granularity = DygraphTickers.Granularity;
-Dygraph.getDateAxis = DygraphTickers.getDateAxis;
-Dygraph.floatFormat = utils.floatFormat;
 
 export default Dygraph;

@@ -740,7 +740,13 @@ export const dragIsPanInteractionModel: InteractionModel = {
 export const DygraphInteraction = {
   defaultModel,
   nonInteractiveModel_,
-  dragIsPanInteractionModel
+  dragIsPanInteractionModel,
+  startPan,
+  startZoom,
+  movePan,
+  moveZoom,
+  endPan,
+  endZoom,
 };
 
 export default DygraphInteraction;
