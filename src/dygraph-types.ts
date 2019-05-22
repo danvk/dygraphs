@@ -4,6 +4,8 @@
  * MIT-licensed (http://opensource.org/licenses/MIT)
  */
 
+import Dygraph from './dygraph';
+
 export interface Area {
   x: number;
   y: number;
@@ -95,7 +97,7 @@ export interface DygraphPointType {
 }
 
 export interface PlotterData {
-  dygraph: DygraphAny;
+  dygraph: Dygraph;
   setName: string;
   points: DygraphPointType[];
   drawingContext: CanvasRenderingContext2D;
@@ -149,16 +151,16 @@ export interface Annotation {
   div?: HTMLDivElement;
 
   /** This function is called whenever the user clicks on this annotation. */
-  clickHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: DygraphAny, event: MouseEvent) => any;
+  clickHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: Dygraph, event: MouseEvent) => any;
 
   /** This function is called whenever the user mouses over this annotation. */
-  mouseOverHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: DygraphAny, event: MouseEvent) => any;
+  mouseOverHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: Dygraph, event: MouseEvent) => any;
 
   /** This function is called whenever the user mouses out of this annotation. */
-  mouseOutHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: DygraphAny, event: MouseEvent) => any;
+  mouseOutHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: Dygraph, event: MouseEvent) => any;
 
   /** this function is called whenever the user double-clicks on this annotation. */
-  dblClickHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: DygraphAny, event: MouseEvent) => any;
+  dblClickHandler?: (annotation: Annotation, point: DygraphPointType, dygraph: Dygraph, event: MouseEvent) => any;
 }
 
 // TODO(danvk): this type is incoherent; restructure.
@@ -177,7 +179,7 @@ export interface Annotation {
    scale: number;
    yrange: number;
    computedValueRange: [number, number];
-   g: DygraphAny;
+   g: Dygraph;
    ticks: Tick[];
    extremeRange: [number, number];
    valueRange: [number, number];
@@ -187,14 +189,11 @@ export interface Annotation {
    independentTicks: boolean;
  }
 
-/** Placeholder for TS conversion. Should be Dygraph. */
-export type DygraphAny = any;
-
 /** Placeholder for TS conversion. */
 export type DygraphOptions = any;
 
 export interface PluginEvent {
-  dygraph: DygraphAny;
+  dygraph: Dygraph;
   cancelable: boolean;
   defaultPrevented: boolean;
   preventDefault(): void;
@@ -237,7 +236,7 @@ export interface PluginSelectEvent extends PluginEvent {
 
 export interface DygraphsPlugin {
   toString(): string;
-  activate(g: DygraphAny): {[eventName: string]: (e: any) => void};
+  activate(g: Dygraph): {[eventName: string]: (e: any) => void};
   layout?(e: PluginLayoutEvent): void;
   willDrawChart?(e: PluginDrawEvent): void;
   didDrawChart?(e: PluginDrawEvent): void;
@@ -299,5 +298,5 @@ export interface LegendData {
   /**
    * Dygraph object for this graph
    */
-  dygraph: DygraphAny;
+  dygraph: Dygraph;
 }

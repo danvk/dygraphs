@@ -12,7 +12,7 @@
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';
 import OPTIONS_REFERENCE from './dygraph-options-reference';
-import { DygraphAny } from './dygraph-types';
+import Dygraph from './dygraph';
 
 declare let process: any;
 
@@ -31,7 +31,7 @@ declare let process: any;
  * and per-axis options.
  */
 class DygraphOptions {
-  dygraph_: DygraphAny;
+  dygraph_: Dygraph;
 
   /**
    * Array of axis index to { series : [ series names ] , options : { axis-specific options. }
@@ -64,7 +64,7 @@ class DygraphOptions {
   stackedGraph: any;
   fillGraph: boolean;
 
-  constructor(dygraph: DygraphAny) {
+  constructor(dygraph: Dygraph) {
     this.dygraph_ = dygraph;
     this.yAxes_ = [];
     this.xAxis_ = {options: {}};

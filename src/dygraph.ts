@@ -555,14 +555,14 @@ class Dygraph {
    * Returns a two-element array: [left, right].
    * If the Dygraph has dates on the x-axis, these will be millis since epoch.
    */
-  xAxisRange() {
+  xAxisRange(): [number, number] {
     return this.dateWindow_ ? this.dateWindow_ : this.xAxisExtremes();
   };
 
   /**
    * Returns the lower- and upper-bound x-axis values of the data set.
    */
-  xAxisExtremes() {
+  xAxisExtremes(): [number, number] {
     var pad = this.getNumericOption('xRangePad') / this.plotter_.area.w;
     if (this.numRows() === 0) {
       return [0 - pad, 1 + pad];
@@ -600,7 +600,7 @@ class Dygraph {
    * called with no arguments, returns the range of the first axis.
    * Returns a two-element array: [bottom, top].
    */
-  yAxisRange(idx: number) {
+  yAxisRange(idx?: number): [number, number] {
     if (typeof(idx) == "undefined") idx = 0;
     if (idx < 0 || idx >= this.axes_.length) {
       return null;

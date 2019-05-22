@@ -70,7 +70,7 @@ class Axes implements DygraphsPlugin {
       }
     }
     else if (g.numAxes() > 2) {
-      g.error('Only two y-axes are supported at this time. (Trying ' +
+      throw new Error('Only two y-axes are supported at this time. (Trying ' +
         'to use ' + g.numAxes() + ')');
     }
   }
@@ -109,7 +109,7 @@ class Axes implements DygraphsPlugin {
     const canvasWidth = g.width_; // e.canvas.width is affected by pixel ratio.
     const canvasHeight = g.height_;
 
-    const makeLabelStyle = function (axis: string) {
+    const makeLabelStyle = function (axis: 'x' | 'y' | 'y2') {
       return {
         position: 'absolute',
         fontSize: g.getOptionForAxis('axisLabelFontSize', axis) + 'px',

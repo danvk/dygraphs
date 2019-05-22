@@ -16,13 +16,14 @@
 import * as utils from '../dygraph-utils';
 import DygraphInteraction from '../dygraph-interaction-model';
 import IFrameTarp from '../iframe-tarp';
-import { DygraphsPlugin, Area, DygraphAny, PluginLayoutEvent } from '../dygraph-types';
+import { DygraphsPlugin, Area, PluginLayoutEvent } from '../dygraph-types';
+import Dygraph from '../dygraph';
 
 class RangeSelector implements DygraphsPlugin {
   hasTouchInterface_: boolean;
   isMobileDevice_: boolean;
   interfaceCreated_: boolean;
-  dygraph_: DygraphAny;
+  dygraph_: Dygraph;
   bgcanvas_: HTMLCanvasElement;
   fgcanvas_: HTMLCanvasElement;
   bgcanvas_ctx_: CanvasRenderingContext2D;
@@ -43,7 +44,7 @@ class RangeSelector implements DygraphsPlugin {
     return "RangeSelector Plugin";
   }
 
-  activate(dygraph: DygraphAny) {
+  activate(dygraph: Dygraph) {
     this.dygraph_ = dygraph;
     if (this.getOption_('showRangeSelector')) {
       this.createInterface_();
@@ -266,7 +267,7 @@ class RangeSelector implements DygraphsPlugin {
     // dygraph-utils.js for more info on why this is a good idea.
     var tarp = new IFrameTarp();
 
-    const toXDataWindow = function (zoomHandleStatus) {
+    const toXDataWindow = function (zoomHandleStatus: any): [number, number] {
       var xDataLimits = self.dygraph_.xAxisExtremes();
       var fact = (xDataLimits[1] - xDataLimits[0]) / self.canvasRect_.w;
       var xDataMin = xDataLimits[0] + (zoomHandleStatus.leftHandlePos - self.canvasRect_.x) * fact;
@@ -350,32 +351,33 @@ class RangeSelector implements DygraphsPlugin {
         self.isChangingRange_ = false;
       }
     };
-    const isMouseInPanZone = function (e: MouseEvent) {
+    const isMouseInPanZone = function (e: MouseEvent | Touch) {
       var rect = self.leftZoomHandle_.getBoundingClientRect();
       var leftHandleClientX = rect.left + rect.width / 2;
       rect = self.rightZoomHandle_.getBoundingClientRect();
       var rightHandleClientX = rect.left + rect.width / 2;
       return (e.clientX > leftHandleClientX && e.clientX < rightHandleClientX);
     };
-    const onPanStart = function (e) {
+    const onPanStart = function (e: MouseEvent | Touch) {
       if (!isPanning && isMouseInPanZone(e) && self.getZoomHandleStatus_().isZoomed) {
-        utils.cancelEvent(e);
+        if ('preventDefault' in e) utils.cancelEvent(e);
         isPanning = true;
         clientXLast = e.clientX;
-        if (e.type === 'mousedown') {
+        if ('type' in e && e.type === 'mousedown') {
           // These events are removed manually.
-          utils.addEvent(topElem, 'mousemove', onPan);
+          utils.addEvent(topElem, 'mousemove', onPan as any);
           utils.addEvent(topElem, 'mouseup', onPanEnd);
         }
         return true;
       }
       return false;
     };
-    const onPan = function (e) {
+    const onPan = function (e: MouseEvent|Touch) {
       if (!isPanning) {
         return false;
       }
-      utils.cancelEvent(e);
+      if ('preventDefault' in e) utils.cancelEvent(e);
+
       var delX = e.clientX - clientXLast;
       if (Math.abs(delX) < 4) {
         return true;
@@ -408,12 +410,12 @@ class RangeSelector implements DygraphsPlugin {
       }
       return true;
     };
-    const onPanEnd = function (e) {
+    const onPanEnd = function (e: MouseEvent | TouchEvent) {
       if (!isPanning) {
         return false;
       }
       isPanning = false;
-      utils.removeEvent(topElem, 'mousemove', onPan);
+      utils.removeEvent(topElem, 'mousemove', onPan as any);
       utils.removeEvent(topElem, 'mouseup', onPanEnd);
       // If on a slower device, do pan now.
       if (!dynamic) {
@@ -425,7 +427,7 @@ class RangeSelector implements DygraphsPlugin {
       try {
         self.isChangingRange_ = true;
         self.dygraph_.dateWindow_ = toXDataWindow(self.getZoomHandleStatus_());
-        self.dygraph_.drawGraph_(false);
+        self.dygraph_.drawGraph_();
       }
       finally {
         self.isChangingRange_ = false;
@@ -481,7 +483,7 @@ class RangeSelector implements DygraphsPlugin {
     this.setDefaultOption_('panEdgeFraction', 0.0001);
     this.dygraph_.addAndTrackEvent(this.leftZoomHandle_, 'dragstart', onZoomStart);
     this.dygraph_.addAndTrackEvent(this.rightZoomHandle_, 'dragstart', onZoomStart);
-    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart);
+    this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousedown', onPanStart as any);
     this.dygraph_.addAndTrackEvent(this.fgcanvas_, 'mousemove', onCanvasHover);
     // Touch events
     if (this.hasTouchInterface_) {
@@ -753,7 +755,7 @@ class RangeSelector implements DygraphsPlugin {
    * @private
    * Returns the current zoom handle position information.
    */
-  getZoomHandleStatus_() {
+  getZoomHandleStatus_(): ZoomHandleStatus {
     var halfHandleWidth = this.leftZoomHandle_.width / 2;
     var leftHandlePos = parseFloat(this.leftZoomHandle_.style.left) + halfHandleWidth;
     var rightHandlePos = parseFloat(this.rightZoomHandle_.style.left) + halfHandleWidth;
@@ -763,6 +765,12 @@ class RangeSelector implements DygraphsPlugin {
       isZoomed: (leftHandlePos - 1 > this.canvasRect_.x || rightHandlePos + 1 < this.canvasRect_.x + this.canvasRect_.w)
     };
   }
+}
+
+interface ZoomHandleStatus {
+  leftHandlePos: number;
+  rightHandlePos: number;
+  isZoomed: boolean;
 }
 
 export default RangeSelector;

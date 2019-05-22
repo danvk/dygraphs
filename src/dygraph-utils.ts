@@ -14,7 +14,8 @@
 /*global Dygraph:false, Node:false */
 
 import * as DygraphTickers from './dygraph-tickers';
-import { DygraphAny, DygraphInteractionContext } from "./dygraph-types";
+import { DygraphInteractionContext } from "./dygraph-types";
+import Dygraph from './dygraph';
 
 export const LOG_SCALE = 10;
 export const LN_TEN = Math.log(LOG_SCALE);
@@ -867,7 +868,7 @@ export function isPixelChangingOptionList(labels: string[], attrs: object): bool
 };
 
 export type DrawPointCallback = (
-  g: DygraphAny,
+  g: Dygraph,
   name: string,
   ctx: CanvasRenderingContext2D,
   canvasX: number,

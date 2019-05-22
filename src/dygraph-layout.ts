@@ -13,7 +13,8 @@
 "use strict";
 
 import * as utils from './dygraph-utils';
-import { Annotation, Area, DygraphAxisType, DygraphPointType, DygraphAny, Tick } from "./dygraph-types";
+import { Annotation, Area, DygraphAxisType, DygraphPointType, Tick } from "./dygraph-types";
+import Dygraph from './dygraph';
 
 export interface LayoutTick {
   axis?: number;
@@ -39,7 +40,7 @@ export interface LayoutTick {
  * @constructor
  */
 class DygraphLayout {
-  dygraph_: DygraphAny;
+  dygraph_: Dygraph;
   /**
    * Array of points for each series.
    *
@@ -62,7 +63,7 @@ class DygraphLayout {
   yticks: LayoutTick[];
   annotated_points: any[];
 
-  constructor(dygraph: DygraphAny) {
+  constructor(dygraph: Dygraph) {
     this.dygraph_ = dygraph;
 
     this.points = [];
@@ -272,7 +273,7 @@ class DygraphLayout {
       label = tick.label;
       has_tick = !('label_v' in tick);
       v = has_tick ? tick.v : tick.label_v;
-      pos = this.dygraph_.toPercentXCoord(v);
+      pos = this.dygraph_.toPercentXCoord(Number(v));
       if ((pos >= 0.0) && (pos < 1.0)) {
         this.xticks.push({ pos, label, has_tick });
       }
@@ -285,7 +286,7 @@ class DygraphLayout {
         label = tick.label;
         has_tick = !('label_v' in tick);
         v = has_tick ? tick.v : tick.label_v;
-        pos = this.dygraph_.toPercentYCoord(v, i);
+        pos = this.dygraph_.toPercentYCoord(Number(v), i);
         if ((pos > 0.0) && (pos <= 1.0)) {
           this.yticks.push({ axis: i, pos, label, has_tick });
         }

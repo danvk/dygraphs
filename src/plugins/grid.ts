@@ -39,7 +39,7 @@ const grid: DygraphsPlugin = {
     const halfDown = (y: number) => Math.round(y) - 0.5;
 
     if (g.getOptionForAxis('drawGrid', 'y')) {
-      var axes = ["y", "y2"];
+      var axes = ["y", "y2"] as const;
       let strokeStyles = [], lineWidths = [], drawGrid = [], stroking = [], strokePattern = [];
       for (let i = 0; i < axes.length; i++) {
         drawGrid[i] = g.getOptionForAxis('drawGrid', axes[i]);

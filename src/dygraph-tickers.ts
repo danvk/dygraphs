@@ -64,7 +64,8 @@
 
 import * as utils from './dygraph-utils';
 import {AxisLabelFormatter} from './dygraph-internal.externs';
-import { DygraphAny, Tick } from './dygraph-types';
+import { Tick } from './dygraph-types';
+import Dygraph from './dygraph';
 
 type Ticker = (
    a: number,
@@ -372,7 +373,7 @@ var numDateTicks = function(start_time: number, end_time: number, granularity: n
  * @param opts Function mapping from option name -&gt; value.
  * @param dg
  */
-export var getDateAxis = function(start_time: number, end_time: number, granularity: number, opts: (optionName: string) => any, dg: DygraphAny): Tick[] {
+export var getDateAxis = function(start_time: number, end_time: number, granularity: number, opts: (optionName: string) => any, dg: Dygraph): Tick[] {
   var formatter: AxisLabelFormatter = opts("axisLabelFormatter");
   var utc = opts("labelsUTC");
   var accessors = utc ? utils.DateAccessorsUTC : utils.DateAccessorsLocal;

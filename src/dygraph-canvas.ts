@@ -14,13 +14,10 @@
  * - dygraphs attribute system
  */
 
-/*global Dygraph:false */
-"use strict";
-
 import * as utils from './dygraph-utils';
 import Dygraph from './dygraph';
 import DygraphLayout from './dygraph-layout';
-import { Area, DygraphAny, DygraphPointType, PlotterData } from './dygraph-types';
+import { Area, DygraphPointType, PlotterData } from './dygraph-types';
 
 
 /**
@@ -35,14 +32,14 @@ import { Area, DygraphAny, DygraphPointType, PlotterData } from './dygraph-types
  * TODO(danvk): remove the elementContext property.
  */
 class DygraphCanvasRenderer {
-  dygraph_: DygraphAny;
+  dygraph_: Dygraph;
   layout: DygraphLayout;
   element: HTMLCanvasElement;
   elementContext: CanvasRenderingContext2D;
   height: number;
   width: number;
   area: Area;
-  colors: string[];
+  colors: {[setName: string]: string};
   static _Plotters: { linePlotter: (e: any) => void; fillPlotter: (e: any) => void; errorPlotter: (e: any) => void; };
 
   /**
@@ -143,10 +140,8 @@ class DygraphCanvasRenderer {
    */
   _renderLineChart(opt_seriesName?: string, opt_ctx?: CanvasRenderingContext2D) {
     var ctx = opt_ctx || this.elementContext;
-    var i;
     var sets = this.layout.points;
     var setNames = this.layout.setNames;
-    var setName;
     this.colors = this.dygraph_.colorsMap_;
     // Determine which series have specialized plotters.
     var plotter_attr = this.dygraph_.getOption("plotter");
@@ -155,18 +150,18 @@ class DygraphCanvasRenderer {
       plotters = [plotters];
     }
     var setPlotters = {}; // series name -> plotter fn.
-    for (i = 0; i < setNames.length; i++) {
-      setName = setNames[i];
+    for (let i = 0; i < setNames.length; i++) {
+      const setName = setNames[i];
       var setPlotter = this.dygraph_.getOption("plotter", setName);
       if (setPlotter == plotter_attr)
         continue; // not specialized.
       setPlotters[setName] = setPlotter;
     }
-    for (i = 0; i < plotters.length; i++) {
+    for (let i = 0; i < plotters.length; i++) {
       var plotter = plotters[i];
       var is_last = (i == plotters.length - 1);
       for (var j = 0; j < sets.length; j++) {
-        setName = setNames[j];
+        const setName = setNames[j];
         if (opt_seriesName && setName != opt_seriesName)
           continue;
         var points = sets[j];

@@ -6,7 +6,8 @@
 // TODO(danvk): move chart label options out of dygraphs and into the plugin.
 // TODO(danvk): only tear down & rebuild the DIVs when it's necessary.
 
-import { DygraphsPlugin, DygraphAny, PluginDrawEvent, PluginLayoutEvent, Area } from "../dygraph-types";
+import { DygraphsPlugin, PluginDrawEvent, PluginLayoutEvent, Area } from "../dygraph-types";
+import Dygraph from "../dygraph";
 
 class ChartLabels implements DygraphsPlugin {
   title_div_: HTMLDivElement;
@@ -25,7 +26,7 @@ class ChartLabels implements DygraphsPlugin {
     return "ChartLabels Plugin";
   }
 
-  activate(g: DygraphAny) {
+  activate(g: Dygraph) {
     return {
       layout: this.layout,
       // clearChart: this.clearChart,
@@ -130,7 +131,7 @@ function createDivInRect(r: Area) {
   return div;
 };
 
-function createRotatedDiv(g: DygraphAny, box: Area, axis: number, classes: string, html: string) {
+function createRotatedDiv(g: Dygraph, box: Area, axis: number, classes: string, html: string) {
   // TODO(danvk): is this outer div actually necessary?
   var div = document.createElement("div");
   div.style.position = 'absolute';
