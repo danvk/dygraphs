@@ -67,7 +67,8 @@ import LegendPlugin from './plugins/legend';
 import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
-import { DygraphsPlugin, DygraphPointType } from './dygraph-types';
+import { DygraphsPlugin, DygraphPointType, Annotation, DygraphAxisType } from './dygraph-types';
+import DygraphDataHandler from './datahandler/datahandler';
 
 declare let process;
 
@@ -83,6 +84,50 @@ class Dygraph {
   // For max 60 Hz. animation:
   static ANIMATION_STEPS = 12;
   static ANIMATION_DURATION = 200;
+
+  is_initial_draw_: boolean;
+  readyFns_: (() => void)[];
+  maindiv_: HTMLElement;
+  file_: string | Function;
+  rollPeriod_: number;
+  previousVerticalX_: number;
+  fractions_: boolean;
+  dateWindow_: [number, number] | null;
+  annotations_: Annotation[];
+  width_: number;
+  height_: number;
+  user_attrs_: {[option: string]: any};
+  attrs_: {[option: string]: any};
+  boundaryIds_: number[];
+  setIndexByName_: {[seriesName: string]: number};
+  datasetIndex_: number[];
+  registeredEvents_: {elem: Node, type: string, fn: (e:Event) => void}[];
+  eventListeners_: {[eventName: string]: [DygraphsPlugin, Function][]};
+  attributes_: DygraphOptions;
+  plugins_: DygraphsPlugin[];
+  axes_: DygraphAxisType[];
+  plotter_: DygraphCanvasRenderer;
+  rawData_: any[];  // see comment in parseCSV_
+  graphDiv: HTMLDivElement;
+  canvas_: HTMLCanvasElement;
+  hidden_: HTMLCanvasElement;
+  canvas_ctx_: CanvasRenderingContext2D;
+  hidden_ctx_: CanvasRenderingContext2D;
+  mouseEventElement_: HTMLCanvasElement;
+  layout_: DygraphLayout;
+  mouseMoveHandler_: (e: MouseEvent) => void;
+  mouseOutHandler_: (e: MouseEvent) => void;
+  resizeHandler_: (e: Event) => void | null;
+  colors_: string[];
+  colorsMap_: {[label: string]: string};
+  roller_: HTMLInputElement | null;
+  fadeLevel: number | undefined;
+  animateId: number | undefined;
+  lockedSet_: boolean;
+  dataHandler_: DygraphDataHandler;
+  drawingTimeMs_: number;
+  readyFired_: boolean;
+  resize_lock: boolean;
 
   /**
    * Creates an interactive, zoomable chart.
@@ -125,7 +170,7 @@ class Dygraph {
    * @param attrs Miscellaneous other options
    * @private
    */
-  __init__(div: HTMLElement | string, file: string | Function, attrs: DygraphOptions) {
+  __init__(div: HTMLElement | string, file: string | Function, attrs: {[optionName: string]: any}) {
     this.is_initial_draw_ = true;
     this.readyFns_ = [];
 
@@ -545,6 +590,9 @@ class Dygraph {
     this.axes_ = saveAxes;
     return newAxes.map(axis => axis.extremeRange);
   }
+  rolledSeries_(rolledSeries_: any, arg1: null) {
+    throw new Error("Method not implemented.");
+  }
 
   /**
    * Returns the currently-visible y-range for an axis. This can be affected by
@@ -939,7 +987,7 @@ class Dygraph {
    * @return The newly-created canvas
    * @private
    */
-  createPlotKitCanvas_(canvas: HTMLCanvasElement): object {
+  createPlotKitCanvas_(canvas: HTMLCanvasElement): HTMLCanvasElement {
     var h = utils.createCanvas();
     h.style.position = "absolute";
     // TODO(danvk): h should be offset from canvas. canvas needs to include
@@ -1246,7 +1294,6 @@ class Dygraph {
    * @private
    */
   clearZoomRect_() {
-    this.currentZoomRectArgs_ = null;
     this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
   }
 
@@ -1261,7 +1308,6 @@ class Dygraph {
    * @private
    */
   doZoomX_(lowX: number, highX: number) {
-    this.currentZoomRectArgs_ = null;
     // Find the earliest and latest dates contained in this canvasx range.
     // Convert the call to date ranges of the raw data.
     var minDate = this.toDataXCoord(lowX);
@@ -1301,7 +1347,6 @@ class Dygraph {
    * @private
    */
   doZoomY_(lowY: number, highY: number) {
-    this.currentZoomRectArgs_ = null;
     // Find the highest and lowest values in pixel range for each axis.
     // Note that lowY (in pixels) corresponds to the max Value (in data coords).
     // This is because pixels increase as you go down on the screen, whereas data
@@ -1623,6 +1668,18 @@ class Dygraph {
           this.lastRow_,
           this.highlightSet_);
     }
+  }
+  lastx_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
+    throw new Error("Method not implemented.");
+  }
+  selPoints_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
+    throw new Error("Method not implemented.");
+  }
+  lastRow_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
+    throw new Error("Method not implemented.");
+  }
+  highlightSet_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
+    throw new Error("Method not implemented.");
   }
 
   /**
@@ -2127,18 +2184,14 @@ class Dygraph {
    * extreme values "speculatively", i.e. without actually setting state on the
    * dygraph.
    *
-   * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
+   * @param rolledSeries, where
    *     rolledSeries[seriesIndex][row] = raw point, where
    *     seriesIndex is the column number starting with 1, and
    *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
-   * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
-   * @return {{
-   *     points: Array.<Array.<DygraphPointType>>,
-   *     seriesExtremes: Array.<Array.<number>>,
-   *     boundaryIds: Array.<number>}}
+   * @param dateWindow [xmin, xmax] pair, or null.
    * @private
    */
-  gatherDatasets_(rolledSeries: (number | number[])[][][], dateWindow: [number, number] | null): { points: DygraphPointType[][]; seriesExtremes: number[][]; boundaryIds: number[]; } {
+  gatherDatasets_(rolledSeries: (number | number[])[][][], dateWindow: [number, number] | null): { points: DygraphPointType[][]; extremes: number[][]; boundaryIds: number[]; } {
     var boundaryIds = [];
     var points = [];
     var cumulativeYval = [];  // For stacked series.
@@ -2611,9 +2664,9 @@ class Dygraph {
    * We also expect that all remaining fields represent series.
    * if the errorBars attribute is set, then interpret the fields as:
    * date, series1, stddev1, series2, stddev2, ...
-   * @param {[Object]} data See above.
+   * @param data See above.
    *
-   * @return [Object] An array with one entry for each row. These entries
+   * @return An array with one entry for each row. These entries
    * are an array of cells in that row. The first entry is the parsed x-value for
    * the row. The second, third, etc. are the y-values. These can take on one of
    * three forms, depending on the CSV and constructor parameters:
@@ -2621,7 +2674,7 @@ class Dygraph {
    * 2. [ value, stddev ]
    * 3. [ low value, center value, high value ]
    */
-  parseCSV_(data: object[]) {
+  parseCSV_(data: string) {
     var ret = [];
     var line_delimiter = utils.detectLineDelimiter(data);
     var lines = data.split(line_delimiter || "\n");
@@ -3251,10 +3304,10 @@ class Dygraph {
   /**
    * Update the list of annotations and redraw the chart.
    * See dygraphs.com/annotations.html for more info on how to use annotations.
-   * @param ann {Array} An array of annotation objects.
-   * @param suppressDraw {Boolean} Set to "true" to block chart redraw (optional).
+   * @param ann An array of annotation objects.
+   * @param suppressDraw Set to "true" to block chart redraw (optional).
    */
-  setAnnotations(ann: Array<any>, suppressDraw: boolean) {
+  setAnnotations(ann: Annotation[], suppressDraw?: boolean) {
     // Only add the annotation CSS rule once we know it will be used.
     this.annotations_ = ann;
     if (!this.layout_) {
@@ -3292,7 +3345,7 @@ class Dygraph {
   * Get the index of a series (column) given its name. The first column is the
   * x-axis, so the data series start with index 1.
   */
-  indexFromSetName(name) {
+  indexFromSetName(name: string): number {
     return this.setIndexByName_[name];
   }
 
@@ -3349,13 +3402,13 @@ class Dygraph {
    * Add an event handler. This event handler is kept until the graph is
    * destroyed with a call to graph.destroy().
    *
-   * @param {!Node} elem The element to add the event to.
-   * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
-   * @param {function(Event):(boolean|undefined)} fn The function to call
+   * @param elem The element to add the event to.
+   * @param type The type of the event, e.g. 'click' or 'mousemove'.
+   * @param fn The function to call
    *     on the event. The function takes one parameter: the event object.
    * @private
    */
-  addAndTrackEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
+  addAndTrackEvent(elem: Node, type: string, fn: (e: Event) => void) {
     utils.addEvent(elem, type, fn);
     this.registeredEvents_.push({elem, type, fn});
   }
@@ -3429,7 +3482,6 @@ class Dygraph {
   static floatFormat = utils.floatFormat;
 
 }
-
 
 // In native format, all values must be dates or numbers.
 // This check isn't perfect but will catch most mistaken uses of strings.

@@ -185,6 +185,8 @@ export interface Annotation {
    computedValueRange: [number, number];
    g: DygraphAny;
    ticks: Tick[];
+   extremeRange: [number, number];
+   valueRange: [number, number];
  }
 
 /** Placeholder for TS conversion. Should be Dygraph. */
