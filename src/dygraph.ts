@@ -69,6 +69,7 @@ import RangeSelectorPlugin from './plugins/range-selector';
 import GVizChart from './dygraph-gviz';
 import { DygraphsPlugin, DygraphPointType, Annotation, DygraphAxisType } from './dygraph-types';
 import DygraphDataHandler, { UnifiedPoint } from './datahandler/datahandler';
+import { GVizDataTable } from './dygraph-internal.externs';
 
 declare let process;
 
@@ -86,9 +87,9 @@ class Dygraph {
   static ANIMATION_DURATION = 200;
 
   is_initial_draw_: boolean;
-  readyFns_: (() => void)[];
+  readyFns_: ((g: Dygraph) => void)[];
   maindiv_: HTMLElement;
-  file_: string | Function;
+  file_: string | Function | GVizDataTable;
   rollPeriod_: number;
   previousVerticalX_: number;
   fractions_: boolean;
@@ -324,7 +325,7 @@ class Dygraph {
    * of the event listeners called event.preventDefault().
    * @private
    */
-  cascadeEvents_(name: string, extra_props: any) {
+  cascadeEvents_(name: string, extra_props?: any) {
     if (!(name in this.eventListeners_)) return false;
 
     // QUESTION: can we use objects & prototypes to speed this up?
@@ -1820,7 +1821,7 @@ class Dygraph {
    *               over the graph, disabling closest-series highlighting. Call
    *               clearSelection() to unlock it.
    */
-  setSelection(row: number, opt_seriesName?: string, opt_locked?: boolean) {
+  setSelection(row: number|false, opt_seriesName?: string, opt_locked?: boolean) {
     // Extract the points we've selected
     this.selPoints_ = [];
 
@@ -2064,7 +2065,7 @@ class Dygraph {
 
     // This is used to determine whether to do various animations.
     var end = new Date();
-    this.drawingTimeMs_ = (end - start);
+    this.drawingTimeMs_ = (end.getTime() - start.getTime());
   }
 
 
@@ -2087,7 +2088,11 @@ class Dygraph {
    * @private
    */
   static stackPoints_(
-    points: Array<DygraphPointType>, cumulativeYval: Array<number>, seriesExtremes: Array<number>, fillMethod: string) {
+    points: DygraphPointType[],
+    cumulativeYval: number[],
+    seriesExtremes: number[],
+    fillMethod: string
+  ) {
     var lastXval = null;
     var prevPoint = null;
     var nextPoint = null;
@@ -2177,7 +2182,14 @@ class Dygraph {
    * @param dateWindow [xmin, xmax] pair, or null.
    * @private
    */
-  gatherDatasets_(rolledSeries: (number | number[])[][][], dateWindow: [number, number] | null): { points: DygraphPointType[][]; extremes: number[][]; boundaryIds: number[]; } {
+  gatherDatasets_(
+    rolledSeries: (number | number[])[][][],
+    dateWindow: [number, number] | null
+  ): {
+    points: DygraphPointType[][];
+    extremes: {[seriesName: string]: [number, number]};
+    boundaryIds: number[];
+  } {
     var boundaryIds = [];
     var points = [];
     var cumulativeYval = [];  // For stacked series.
@@ -2260,7 +2272,7 @@ class Dygraph {
           cumulativeYval[axisIdx] = [];
         }
         Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
-                            this.getBooleanOption("stackedGraphNaNFill"));
+                            this.getStringOption("stackedGraphNaNFill"));
       }
 
       extremes[seriesName] = seriesExtremes;
@@ -2316,7 +2328,7 @@ class Dygraph {
 
     if (this.getStringOption("timingName")) {
       var end = new Date();
-      console.log(this.getStringOption("timingName") + " - drawGraph: " + (end - start) + "ms");
+      console.log(this.getStringOption("timingName") + " - drawGraph: " + (+end - +start) + "ms");
     }
   }
 
@@ -2559,7 +2571,6 @@ class Dygraph {
         }
       }
 
-
       if (independentTicks) {
         axis.independentTicks = independentTicks;
         var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
@@ -2626,17 +2637,14 @@ class Dygraph {
     this.setXAxisOptions_(isDate);
   }
 
-  setXAxisOptions_(isDate) {
+  setXAxisOptions_(isDate: boolean) {
     if (isDate) {
       this.attrs_.xValueParser = utils.dateParser;
       this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
       this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
       this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
     } else {
-      /** @private (shut up, jsdoc!) */
       this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-      // TODO(danvk): use Dygraph.numberValueFormatter here?
-      /** @private (shut up, jsdoc!) */
       this.attrs_.axes.x.valueFormatter = function(x) { return x; };
       this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
       this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
@@ -2664,30 +2672,27 @@ class Dygraph {
     var ret = [];
     var line_delimiter = utils.detectLineDelimiter(data);
     var lines = data.split(line_delimiter || "\n");
-    var vals, j;
 
     // Use the default delimiter or fall back to a tab if that makes sense.
-    var delim = this.getStringOption('delimiter');
+    let delim = this.getStringOption('delimiter');
     if (lines[0].indexOf(delim) == -1 && lines[0].indexOf('\t') >= 0) {
       delim = '\t';
     }
 
-    var start = 0;
+    let start = 0;
     if (!('labels' in this.user_attrs_)) {
       // User hasn't explicitly set labels, so they're (presumably) in the CSV.
       start = 1;
       this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
       this.attributes_.reparseSeries();
     }
-    var line_no = 0;
 
     var xParser;
     var defaultParserSet = false;  // attempt to auto-detect x value type
     var expectedCols = this.attr_("labels").length;
     var outOfOrder = false;
-    for (var i = start; i < lines.length; i++) {
+    for (let i = start; i < lines.length; i++) {
       var line = lines[i];
-      line_no = i;
       if (line.length === 0) continue;  // skip blank lines
       if (line[0] == '#') continue;    // skip comment lines
       var inFields = line.split(delim);
@@ -2703,17 +2708,19 @@ class Dygraph {
 
       // If fractions are expected, parse the numbers as "A/B"
       if (this.fractions_) {
-        for (j = 1; j < inFields.length; j++) {
+        for (let j = 1; j < inFields.length; j++) {
           // TODO(danvk): figure out an appropriate way to flag parse errors.
-          vals = inFields[j].split("/");
+          const vals = inFields[j].split("/");
           if (vals.length != 2) {
             console.error('Expected fractional "num/den" values in CSV data ' +
                           "but found a value '" + inFields[j] + "' on line " +
                           (1 + i) + " ('" + line + "') which is not of this form.");
             fields[j] = [0, 0];
           } else {
-            fields[j] = [utils.parseFloat_(vals[0], i, line),
-                        utils.parseFloat_(vals[1], i, line)];
+            fields[j] = [
+              utils.parseFloat_(vals[0], i, line),
+              utils.parseFloat_(vals[1], i, line)
+            ];
           }
         }
       } else if (this.getBooleanOption("errorBars")) {
@@ -2723,22 +2730,26 @@ class Dygraph {
                         'but line ' + (1 + i) + ' has an odd number of values (' +
                         (inFields.length - 1) + "): '" + line + "'");
         }
-        for (j = 1; j < inFields.length; j += 2) {
-          fields[(j + 1) / 2] = [utils.parseFloat_(inFields[j], i, line),
-                                utils.parseFloat_(inFields[j + 1], i, line)];
+        for (let j = 1; j < inFields.length; j += 2) {
+          fields[(j + 1) / 2] = [
+            utils.parseFloat_(inFields[j], i, line),
+            utils.parseFloat_(inFields[j + 1], i, line)
+          ];
         }
       } else if (this.getBooleanOption("customBars")) {
         // Bars are a low;center;high tuple
-        for (j = 1; j < inFields.length; j++) {
+        for (let j = 1; j < inFields.length; j++) {
           var val = inFields[j];
           if (/^ *$/.test(val)) {
             fields[j] = [null, null, null];
           } else {
-            vals = val.split(";");
+            const vals = val.split(";");
             if (vals.length == 3) {
-              fields[j] = [ utils.parseFloat_(vals[0], i, line),
-                            utils.parseFloat_(vals[1], i, line),
-                            utils.parseFloat_(vals[2], i, line) ];
+              fields[j] = [
+                utils.parseFloat_(vals[0], i, line),
+                utils.parseFloat_(vals[1], i, line),
+                utils.parseFloat_(vals[2], i, line)
+              ];
             } else {
               console.warn('When using customBars, values must be either blank ' +
                           'or "low;center;high" tuples (got "' + val +
@@ -2748,7 +2759,7 @@ class Dygraph {
         }
       } else {
         // Values are just numbers
-        for (j = 1; j < inFields.length; j++) {
+        for (let j = 1; j < inFields.length; j++) {
           fields[j] = utils.parseFloat_(inFields[j], i, line);
         }
       }
@@ -2768,7 +2779,7 @@ class Dygraph {
       // log a warning to the JS console.
       if (i === 0 && this.attr_('labels')) {
         var all_null = true;
-        for (j = 0; all_null && j < fields.length; j++) {
+        for (let j = 0; all_null && j < fields.length; j++) {
           if (fields[j]) all_null = false;
         }
         if (all_null) {
@@ -2794,11 +2805,11 @@ class Dygraph {
    * The user has provided their data as a pre-packaged JS array. If the x values
    * are numeric, this is the same as dygraphs' internal format. If the x values
    * are dates, we need to convert them from Date objects to ms since epoch.
-   * @param {!Array} data
-   * @return {Object} data with numeric x values.
+   * @param data
+   * @return data with numeric x values.
    * @private
    */
-  parseArray_(data: Array<any>): object {
+  parseArray_(data: (number|Date)[][]): any[] {
     // Peek at the first x value to see if it's numeric.
     if (data.length === 0) {
       console.error("Can't plot empty data set");
@@ -2867,11 +2878,11 @@ class Dygraph {
    * number. All subsequent columns must be numbers. If there is a clear mismatch
    * between this.xValueParser_ and the type of the first column, it will be
    * fixed. Fills out rawData_.
-   * @param {!google.visualization.DataTable} data See above.
+   * @param data See above.
    * @private
    */
-  parseDataTable_(data: google.visualization.DataTable) {
-    var shortTextForAnnotationNum = function(num) {
+  parseDataTable_(data: GVizDataTable) {
+    const shortTextForAnnotationNum = function(num: number) {
       // converts [0-9]+ [A-Z][a-z]*
       // example: 0=A, 1=B, 25=Z, 26=Aa, 27=Ab
       // and continues like.. Ba Bb .. Za .. Zz..Aaa...Zzz Aaaa Zzzz
@@ -2908,8 +2919,7 @@ class Dygraph {
     var colIdx = [];
     var annotationCols = {};  // data index -> [annotation cols]
     var hasAnnotations = false;
-    var i, j;
-    for (i = 1; i < cols; i++) {
+    for (let i = 1; i < cols; i++) {
       var type = data.getColumnType(i);
       if (type == 'number') {
         colIdx.push(i);
@@ -2932,7 +2942,7 @@ class Dygraph {
     // Read column labels
     // TODO(danvk): add support back for errorBars
     var labels = [data.getColumnLabel(0)];
-    for (i = 0; i < colIdx.length; i++) {
+    for (let i = 0; i < colIdx.length; i++) {
       labels.push(data.getColumnLabel(colIdx[i]));
       if (this.getBooleanOption("errorBars")) i += 1;
     }
@@ -2942,7 +2952,7 @@ class Dygraph {
     var ret = [];
     var outOfOrder = false;
     var annotations = [];
-    for (i = 0; i < rows; i++) {
+    for (let i = 0; i < rows; i++) {
       var row = [];
       if (typeof(data.getValue(i, 0)) === 'undefined' ||
           data.getValue(i, 0) === null) {
@@ -2957,13 +2967,13 @@ class Dygraph {
         row.push(data.getValue(i, 0));
       }
       if (!this.getBooleanOption("errorBars")) {
-        for (j = 0; j < colIdx.length; j++) {
+        for (let j = 0; j < colIdx.length; j++) {
           var col = colIdx[j];
           row.push(data.getValue(i, col));
           if (hasAnnotations &&
               annotationCols.hasOwnProperty(col) &&
               data.getValue(i, annotationCols[col][0]) !== null) {
-            var ann = {};
+            var ann = {} as Annotation;
             ann.series = data.getColumnLabel(col);
             ann.xval = row[0];
             ann.shortText = shortTextForAnnotationNum(annotations.length);
@@ -2977,11 +2987,11 @@ class Dygraph {
         }
 
         // Strip out infinities, which give dygraphs problems later on.
-        for (j = 0; j < row.length; j++) {
+        for (let j = 0; j < row.length; j++) {
           if (!isFinite(row[j])) row[j] = null;
         }
       } else {
-        for (j = 0; j < cols - 1; j++) {
+        for (let j = 0; j < cols - 1; j++) {
           row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
         }
       }
@@ -3044,15 +3054,7 @@ class Dygraph {
       if (line_delimiter) {
         this.loadedEvent_(data);
       } else {
-        // REMOVE_FOR_IE
-        var req;
-        if (window.XMLHttpRequest) {
-          // Firefox, Opera, IE7, and other browsers will use the native object
-          req = new XMLHttpRequest();
-        } else {
-          // IE 5 and 6 will use the ActiveX control
-          req = new ActiveXObject("Microsoft.XMLHTTP");
-        }
+        var req = new XMLHttpRequest();
 
         var caller = this;
         req.onreadystatechange = function () {
@@ -3082,15 +3084,15 @@ class Dygraph {
   * There's a huge variety of options that can be passed to this method. For a
   * full list, see http://dygraphs.com/options.html.
   *
-  * @param {Object} input_attrs The new properties and values
-  * @param {boolean} block_redraw Usually the chart is redrawn after every
+  * @param input_attrs The new properties and values
+  * @param block_redraw Usually the chart is redrawn after every
   *     call to updateOptions(). If you know better, you can pass true to
   *     explicitly block the redraw. This can be useful for chaining
   *     updateOptions() calls, avoiding the occasional infinite loop and
   *     preventing redraws when it's not necessary (e.g. when updating a
   *     callback).
   */
-  updateOptions(input_attrs: object, block_redraw: boolean) {
+  updateOptions(input_attrs: {[option: string]: any}, block_redraw: boolean) {
     if (typeof(block_redraw) == 'undefined') block_redraw = false;
 
     // copyUserAttrs_ drops the "file" parameter as a convenience to us.
@@ -3143,7 +3145,7 @@ class Dygraph {
    * Make a copy of input attributes, removing file as a convenience.
    * @private
    */
-  static copyUserAttrs_(attrs) {
+  static copyUserAttrs_(attrs: {[option: string]: any}): {[option: string]: any} {
     var my_attrs = {};
     for (var k in attrs) {
       if (!attrs.hasOwnProperty(k)) continue;
@@ -3228,27 +3230,23 @@ class Dygraph {
   /**
    * Changes the visibility of one or more series.
    *
-   * @param {number|number[]|object} num the series index or an array of series indices
-   *                                     or a boolean array of visibility states by index
-   *                                     or an object mapping series numbers, as keys, to
-   *                                     visibility state (boolean values)
-   * @param {boolean} value the visibility state expressed as a boolean
+   * @param num the series index or an array of series indices
+   *            or a boolean array of visibility states by index
+   *            or an object mapping series numbers, as keys, to
+   *            visibility state (boolean values)
+   * @param value the visibility state expressed as a boolean
    */
-  setVisibility(num: number | number[] | object, value: boolean) {
+  setVisibility(num: number | number[] | {[series: number]: boolean}, value: boolean) {
     var x = this.visibility();
-    var numIsObject = false;
 
-    if (!Array.isArray(num)) {
-      if (num !== null && typeof num === 'object') {
-        numIsObject = true;
-      } else {
-        num = [num];
-      }
+    if (!Array.isArray(num) && typeof num !== 'object') {
+      num = [num];
     }
 
-    if (numIsObject) {
-      for (var i in num) {
-        if (num.hasOwnProperty(i)) {
+    if (typeof num === 'object' && !Array.isArray(num)) {
+      for (var iStr in num) {
+        if (num.hasOwnProperty(iStr)) {
+          const i = Number(iStr);
           if (i < 0 || i >= x.length) {
             console.warn("Invalid series number in setVisibility: " + i);
           } else {

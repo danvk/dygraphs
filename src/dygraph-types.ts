@@ -37,7 +37,7 @@ export interface DygraphInteractionContext {
   xUnitsPerPixel: number;
   boundedDates: [number, number];
   boundedValues: [number, number][];
-  axes: DygraphInteractionAxis[];
+  axes: DygraphAxisType[];
   startTimeForDoubleTapMs: number;
 
   initialTouches: DygraphInteractionTouch[];
@@ -184,6 +184,7 @@ export interface Annotation {
    initialTopValue: number;
    dragValueRange: number;
    unitsPerPixel: number;
+   independentTicks: boolean;
  }
 
 /** Placeholder for TS conversion. Should be Dygraph. */

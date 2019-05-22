@@ -56,6 +56,13 @@ class DygraphOptions {
    */
   labels_: any[];
   highlightSeries_: any;
+  rollPeriod: number;
+  fractions: boolean;
+  dateWindow: any;
+  width: boolean;
+  height: boolean;
+  stackedGraph: any;
+  fillGraph: boolean;
 
   constructor(dygraph: DygraphAny) {
     this.dygraph_ = dygraph;
@@ -254,6 +261,14 @@ class DygraphOptions {
    */
   axisForSeries(series: string) {
     return this.series_[series].yAxis;
+  }
+
+  /**
+   * Returns the options for the specified axis.
+   */
+  // TODO(konigsberg): this is y-axis specific. Support the x axis.
+  axisOptions(yAxis: number) {
+    return this.yAxes_[yAxis].options;
   }
 
   /**
