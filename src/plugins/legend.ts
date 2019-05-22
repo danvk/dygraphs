@@ -15,7 +15,8 @@ Current bits of jankiness:
 */
 
 import * as utils from '../dygraph-utils';
-import { DygraphsPlugin, DygraphAny, PluginSelectEvent, PluginEvent, PluginDrawEvent, DygraphPointType, LegendData, SeriesLegendData } from '../dygraph-types';
+import { DygraphsPlugin, PluginSelectEvent, PluginEvent, PluginDrawEvent, DygraphPointType, LegendData, SeriesLegendData } from '../dygraph-types';
+import Dygraph from '../dygraph';
 
 /**
  * Creates the legend, which appears when the user hovers over the chart.
@@ -44,7 +45,7 @@ class Legend implements DygraphsPlugin {
    * - DOM manipulation
    * - Registering event listeners
    */
-  activate(g: DygraphAny) {
+  activate(g: Dygraph) {
     var div: HTMLElement;
     var userLabelsDiv = g.getOption('labelsDiv');
     if (userLabelsDiv && null !== userLabelsDiv) {
@@ -162,7 +163,7 @@ class Legend implements DygraphsPlugin {
    *   'always'}) and with dashed lines.
    * @param row The selected row index.
    */
-  static generateLegendHTML(g: DygraphAny, x: number, sel_points: DygraphPointType[], oneEmWidth: number, row: number) {
+  static generateLegendHTML(g: Dygraph, x: number, sel_points: DygraphPointType[], oneEmWidth: number, row: number) {
     // Data about the selection to pass to legendFormatter
     var data: LegendData = {
       dygraph: g,

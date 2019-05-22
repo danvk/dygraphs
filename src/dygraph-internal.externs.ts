@@ -1,21 +1,21 @@
+import Dygraph from "./dygraph";
+
 // This file:
 // - declares symbols that are provided outisde of dygraphs
 // - defines custom types used internally
-
-import {DygraphAny} from './dygraph-types';
 
 export type AxisLabelFormatter = (
   value: (number|Date),
   granularity: number,
   opts: (optionName: string) => any,
-  dygraph: DygraphAny|undefined
+  dygraph: Dygraph|undefined
 ) => string;
 
 
 export type ValueFormatter = (
   value: number,
   opts: (optionName: string) => any,
-  dygraph: DygraphAny
+  dygraph: Dygraph
 ) => string;
 
 

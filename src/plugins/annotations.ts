@@ -15,7 +15,8 @@ layout.
 TODO(danvk): cache DOM elements.
 */
 
-import { Annotation, DygraphsPlugin, DygraphAny, PluginDrawEvent } from "../dygraph-types";
+import { Annotation, DygraphsPlugin, PluginDrawEvent } from "../dygraph-types";
+import Dygraph from "../dygraph";
 
 class Annotations implements DygraphsPlugin {
   annotations_: HTMLDivElement[];
@@ -28,7 +29,7 @@ class Annotations implements DygraphsPlugin {
     return "Annotations Plugin";
   }
 
-  activate(g: DygraphAny) {
+  activate(g: Dygraph) {
     return {
       clearChart: this.clearChart,
       didDrawChart: this.didDrawChart
