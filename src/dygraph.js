@@ -68,23 +68,23 @@ import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
 
-"use strict";
+declare let process;
 
 /**
  * Creates an interactive, zoomable chart.
  *
  * @constructor
- * @param {div | String} div A div or the id of a div into which to construct
+ * @param {HTMLElement | String} div A div or the id of a div into which to construct
  * the chart.
- * @param {String | Function} file A file containing CSV data or a function
+ * @param {string | Function} data A file containing CSV data or a function
  * that returns this data. The most basic expected format for each line is
  * "YYYY/MM/DD,val1,val2,...". For more information, see
  * http://dygraphs.com/data.html.
- * @param {Object} attrs Various other attributes, e.g. errorBars determines
+ * @param {Object} opts Various other attributes, e.g. errorBars determines
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts) {
+function Dygraph(div, data, opts) {
   this.__init__(div, data, opts);
 };
 
@@ -120,7 +120,7 @@ Dygraph.addedAnnotationCSS = false;
  * Initializes the Dygraph. This creates a new DIV and constructs the PlotKit
  * and context &lt;canvas&gt; inside of it. See the constructor for details.
  * on the parameters.
- * @param {Element} div the Element to render the graph into.
+ * @param {HTMLElement | string} div the Element to render the graph into.
  * @param {string | Function} file Source data
  * @param {Object} attrs Miscellaneous other options
  * @private
@@ -218,6 +218,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
 
   // Activate plugins.
   this.plugins_ = [];
+  /** @type DygraphPlugin[] */
   var plugins = Dygraph.PLUGINS.concat(this.getOption('plugins'));
   for (var i = 0; i < plugins.length; i++) {
     // the plugins option may contain either plugin classes or instances.
@@ -309,7 +310,7 @@ Dygraph.prototype.cascadeEvents_ = function(name, extra_props) {
 /**
  * Fetch a plugin instance of a particular class. Only for testing.
  * @private
- * @param {!Class} type The type of the plugin.
+ * @param {!any} type The type of the plugin.
  * @return {Object} Instance of the plugin, or null if there is none.
  */
 Dygraph.prototype.getPluginInstance_ = function(type) {
@@ -362,7 +363,7 @@ Dygraph.prototype.toString = function() {
  * @param {string} [seriesName] The name of the series to which the option
  * will be applied. If no per-series value of this option is available, then
  * the global value is returned. This is optional.
- * @return { ... } The value of the option.
+ * @return The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
   // For "production" code, this gets removed by uglifyjs.
@@ -374,7 +375,7 @@ Dygraph.prototype.attr_ = function(name, seriesName) {
         console.error('Dygraphs is using property ' + name + ', which has no ' +
                       'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
         // Only log this error once.
-        OPTIONS_REFERENCE[name] = true;
+        OPTIONS_REFERENCE[name] = true as any;
       }
     }
   }
@@ -825,11 +826,11 @@ Dygraph.prototype.createInterface_ = function() {
 
   var dygraph = this;
 
-  this.mouseMoveHandler_ = function(e) {
+  this.mouseMoveHandler_ = function(e: MouseEvent) {
     dygraph.mouseMove_(e);
   };
 
-  this.mouseOutHandler_ = function(e) {
+  this.mouseOutHandler_ = function(e: MouseEvent) {
     // The mouse has left the chart if:
     // 1. e.target is inside the chart
     // 2. e.relatedTarget is outside the chart
@@ -841,19 +842,19 @@ Dygraph.prototype.createInterface_ = function() {
     }
   };
 
-  this.addAndTrackEvent(window, 'mouseout', this.mouseOutHandler_);
+  this.addAndTrackEvent(document, 'mouseout', this.mouseOutHandler_);
   this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
   // Don't recreate and register the resize handler on subsequent calls.
   // This happens when the graph is resized.
   if (!this.resizeHandler_) {
-    this.resizeHandler_ = function(e) {
+    this.resizeHandler_ = function(e: Event) {
       dygraph.resize();
     };
 
     // Update when the window is resized.
     // TODO(danvk): drop frames depending on complexity of the chart.
-    this.addAndTrackEvent(window, 'resize', this.resizeHandler_);
+    this.addAndTrackEvent(document, 'resize', this.resizeHandler_);
   }
 };
 
@@ -3168,8 +3169,8 @@ Dygraph.copyUserAttrs_ = function(attrs) {
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.
  *
- * @param {number} width Width (in pixels)
- * @param {number} height Height (in pixels)
+ * @param {number=} width Width (in pixels)
+ * @param {number=} height Height (in pixels)
  */
 Dygraph.prototype.resize = function(width, height) {
   if (this.resize_lock) {
