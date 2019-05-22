@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for DygraphOptions.
  */
 
@@ -33,7 +33,7 @@ it('testGetSeriesNames', function() {
   // We don't need to get at g's attributes_ object just
   // to test DygraphOptions.
   var o = new DygraphOptions(g);
-  assert.deepEqual(["Y", "Y2", "Y3"], o.seriesNames()); 
+  assert.deepEqual(["Y", "Y2", "Y3"], o.seriesNames());
 });
 
 /*

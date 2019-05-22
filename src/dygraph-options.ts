@@ -344,6 +344,11 @@ class DygraphOptions {
       throw new Error("invalid option " + optionName);
     }
   }
+
+  // Reset list of previously-shown warnings. Used for testing.
+  static resetWarnings_() {
+    WARNINGS = {};
+  }
 }
 
 
@@ -365,11 +370,6 @@ function axisToIndex_(axis: string | number) {
   }
   // No axis specification means axis 0.
   return 0;
-}
-
-// Reset list of previously-shown warnings. Used for testing.
-function resetWarnings_() {
-  WARNINGS = {};
 }
 
 /**
