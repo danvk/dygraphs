@@ -51,7 +51,7 @@ cp css/dygraph.css dist/
 cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
 
 # Build ES5-compatible distribution
-# babel src -d src-es5 --compact false
+babel src-js -d src-es5 --compact false
 
 # Remove temp files.
 rm dist/dygraph.tmp.js

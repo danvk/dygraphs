@@ -9,6 +9,8 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 mkdir -p dist  # in case it doesn't exist; watchify needs it
 
+tsc --watch &
+
 watchify \
   -v \
   -t babelify \
@@ -16,7 +18,7 @@ watchify \
   --debug \
   --standalone Dygraph \
   -o dist/dygraph.js \
-  src/dygraph.js &
+  src-js/src/dygraph.js &
 
 watchify \
   -v \

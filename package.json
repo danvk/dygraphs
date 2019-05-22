@@ -51,7 +51,7 @@
     "mocha-phantomjs": "3.5.3",
     "mocha-phantomjs-istanbul": "0.0.2",
     "parse-data-uri": "^0.2.0",
-    "phantomjs": "^1.9.7-8",
+    "phantomjs": "^1.9.20",
     "pre-commit": "^1.0.6",
     "source-map": "^0.4.2",
     "uglify-js": "^2.5.0",
