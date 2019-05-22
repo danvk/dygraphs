@@ -67,7 +67,7 @@ import LegendPlugin from './plugins/legend';
 import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
-import { DygraphsPlugin } from './dygraph-types';
+import { DygraphsPlugin, DygraphPointType } from './dygraph-types';
 
 declare let process;
 
@@ -2025,736 +2025,1354 @@ class Dygraph {
   }
 
 
-
-}
-
-
-/**
- * Calculates point stacking for stackedGraph=true.
- *
- * For stacking purposes, interpolate or extend neighboring data across
- * NaN values based on stackedGraphNaNFill settings. This is for display
- * only, the underlying data value as shown in the legend remains NaN.
- *
- * @param {Array.<DygraphPointType>} points Point array for a single series.
- *     Updates each Point's yval_stacked property.
- * @param {Array.<number>} cumulativeYval Accumulated top-of-graph stacked Y
- *     values for the series seen so far. Index is the row number. Updated
- *     based on the current series's values.
- * @param {Array.<number>} seriesExtremes Min and max values, updated
- *     to reflect the stacked values.
- * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
- *     'none'.
- * @private
- */
-Dygraph.stackPoints_ = function(
+  /**
+   * Calculates point stacking for stackedGraph=true.
+   *
+   * For stacking purposes, interpolate or extend neighboring data across
+   * NaN values based on stackedGraphNaNFill settings. This is for display
+   * only, the underlying data value as shown in the legend remains NaN.
+   *
+   * @param {Array.<DygraphPointType>} points Point array for a single series.
+   *     Updates each Point's yval_stacked property.
+   * @param {Array.<number>} cumulativeYval Accumulated top-of-graph stacked Y
+   *     values for the series seen so far. Index is the row number. Updated
+   *     based on the current series's values.
+   * @param {Array.<number>} seriesExtremes Min and max values, updated
+   *     to reflect the stacked values.
+   * @param {string} fillMethod Interpolation method, one of 'all', 'inside', or
+   *     'none'.
+   * @private
+   */
+  static stackPoints_(
     points: Array<DygraphPointType>, cumulativeYval: Array<number>, seriesExtremes: Array<number>, fillMethod: string) {
-  var lastXval = null;
-  var prevPoint = null;
-  var nextPoint = null;
-  var nextPointIdx = -1;
+    var lastXval = null;
+    var prevPoint = null;
+    var nextPoint = null;
+    var nextPointIdx = -1;
 
-  // Find the next stackable point starting from the given index.
-  var updateNextPoint = function(idx) {
-    // If we've previously found a non-NaN point and haven't gone past it yet,
-    // just use that.
-    if (nextPointIdx >= idx) return;
+    // Find the next stackable point starting from the given index.
+    var updateNextPoint = function(idx) {
+      // If we've previously found a non-NaN point and haven't gone past it yet,
+      // just use that.
+      if (nextPointIdx >= idx) return;
 
-    // We haven't found a non-NaN point yet or have moved past it,
-    // look towards the right to find a non-NaN point.
-    for (var j = idx; j < points.length; ++j) {
-      // Clear out a previously-found point (if any) since it's no longer
-      // valid, we shouldn't use it for interpolation anymore.
-      nextPoint = null;
-      if (!isNaN(points[j].yval) && points[j].yval !== null) {
-        nextPointIdx = j;
-        nextPoint = points[j];
-        break;
+      // We haven't found a non-NaN point yet or have moved past it,
+      // look towards the right to find a non-NaN point.
+      for (var j = idx; j < points.length; ++j) {
+        // Clear out a previously-found point (if any) since it's no longer
+        // valid, we shouldn't use it for interpolation anymore.
+        nextPoint = null;
+        if (!isNaN(points[j].yval) && points[j].yval !== null) {
+          nextPointIdx = j;
+          nextPoint = points[j];
+          break;
+        }
       }
-    }
-  };
+    };
 
-  for (var i = 0; i < points.length; ++i) {
-    var point = points[i];
-    var xval = point.xval;
-    if (cumulativeYval[xval] === undefined) {
-      cumulativeYval[xval] = 0;
-    }
+    for (var i = 0; i < points.length; ++i) {
+      var point = points[i];
+      var xval = point.xval;
+      if (cumulativeYval[xval] === undefined) {
+        cumulativeYval[xval] = 0;
+      }
 
-    var actualYval = point.yval;
-    if (isNaN(actualYval) || actualYval === null) {
-      if(fillMethod == 'none') {
-        actualYval = 0;
-      } else {
-        // Interpolate/extend for stacking purposes if possible.
-        updateNextPoint(i);
-        if (prevPoint && nextPoint && fillMethod != 'none') {
-          // Use linear interpolation between prevPoint and nextPoint.
-          actualYval = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
-              ((xval - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
-        } else if (prevPoint && fillMethod == 'all') {
-          actualYval = prevPoint.yval;
-        } else if (nextPoint && fillMethod == 'all') {
-          actualYval = nextPoint.yval;
-        } else {
+      var actualYval = point.yval;
+      if (isNaN(actualYval) || actualYval === null) {
+        if(fillMethod == 'none') {
           actualYval = 0;
-        }
-      }
-    } else {
-      prevPoint = point;
-    }
-
-    var stackedYval = cumulativeYval[xval];
-    if (lastXval != xval) {
-      // If an x-value is repeated, we ignore the duplicates.
-      stackedYval += actualYval;
-      cumulativeYval[xval] = stackedYval;
-    }
-    lastXval = xval;
-
-    point.yval_stacked = stackedYval;
-
-    if (stackedYval > seriesExtremes[1]) {
-      seriesExtremes[1] = stackedYval;
-    }
-    if (stackedYval < seriesExtremes[0]) {
-      seriesExtremes[0] = stackedYval;
-    }
-  }
-};
-
-
-/**
- * Loop over all fields and create datasets, calculating extreme y-values for
- * each series and extreme x-indices as we go.
- *
- * dateWindow is passed in as an explicit parameter so that we can compute
- * extreme values "speculatively", i.e. without actually setting state on the
- * dygraph.
- *
- * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
- *     rolledSeries[seriesIndex][row] = raw point, where
- *     seriesIndex is the column number starting with 1, and
- *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
- * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
- * @return {{
- *     points: Array.<Array.<DygraphPointType>>,
- *     seriesExtremes: Array.<Array.<number>>,
- *     boundaryIds: Array.<number>}}
- * @private
- */
-Dygraph.prototype.gatherDatasets_ = function(rolledSeries: Array<Array<Array<(number | Array<number>)>>>, dateWindow: Array<number> | null): { points: Array<Array<DygraphPointType>>; seriesExtremes: Array<Array<number>>; boundaryIds: Array<number>; } {
-  var boundaryIds = [];
-  var points = [];
-  var cumulativeYval = [];  // For stacked series.
-  var extremes = {};  // series name -> [low, high]
-  var seriesIdx, sampleIdx;
-  var firstIdx, lastIdx;
-  var axisIdx;
-
-  // Loop over the fields (series).  Go from the last to the first,
-  // because if they're stacked that's how we accumulate the values.
-  var num_series = rolledSeries.length - 1;
-  var series;
-  for (seriesIdx = num_series; seriesIdx >= 1; seriesIdx--) {
-    if (!this.visibility()[seriesIdx - 1]) continue;
-
-    // Prune down to the desired range, if necessary (for zooming)
-    // Because there can be lines going to points outside of the visible area,
-    // we actually prune to visible points, plus one on either side.
-    if (dateWindow) {
-      series = rolledSeries[seriesIdx];
-      var low = dateWindow[0];
-      var high = dateWindow[1];
-
-      // TODO(danvk): do binary search instead of linear search.
-      // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
-      firstIdx = null;
-      lastIdx = null;
-      for (sampleIdx = 0; sampleIdx < series.length; sampleIdx++) {
-        if (series[sampleIdx][0] >= low && firstIdx === null) {
-          firstIdx = sampleIdx;
-        }
-        if (series[sampleIdx][0] <= high) {
-          lastIdx = sampleIdx;
-        }
-      }
-
-      if (firstIdx === null) firstIdx = 0;
-      var correctedFirstIdx = firstIdx;
-      var isInvalidValue = true;
-      while (isInvalidValue && correctedFirstIdx > 0) {
-        correctedFirstIdx--;
-        // check if the y value is null.
-        isInvalidValue = series[correctedFirstIdx][1] === null;
-      }
-
-      if (lastIdx === null) lastIdx = series.length - 1;
-      var correctedLastIdx = lastIdx;
-      isInvalidValue = true;
-      while (isInvalidValue && correctedLastIdx < series.length - 1) {
-        correctedLastIdx++;
-        isInvalidValue = series[correctedLastIdx][1] === null;
-      }
-
-      if (correctedFirstIdx!==firstIdx) {
-        firstIdx = correctedFirstIdx;
-      }
-      if (correctedLastIdx !== lastIdx) {
-        lastIdx = correctedLastIdx;
-      }
-
-      boundaryIds[seriesIdx-1] = [firstIdx, lastIdx];
-
-      // .slice's end is exclusive, we want to include lastIdx.
-      series = series.slice(firstIdx, lastIdx + 1);
-    } else {
-      series = rolledSeries[seriesIdx];
-      boundaryIds[seriesIdx-1] = [0, series.length-1];
-    }
-
-    var seriesName = this.attr_("labels")[seriesIdx];
-    var seriesExtremes = this.dataHandler_.getExtremeYValues(series,
-        dateWindow, this.getBooleanOption("stepPlot",seriesName));
-
-    var seriesPoints = this.dataHandler_.seriesToPoints(series,
-        seriesName, boundaryIds[seriesIdx-1][0]);
-
-    if (this.getBooleanOption("stackedGraph")) {
-      axisIdx = this.attributes_.axisForSeries(seriesName);
-      if (cumulativeYval[axisIdx] === undefined) {
-        cumulativeYval[axisIdx] = [];
-      }
-      Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
-                           this.getBooleanOption("stackedGraphNaNFill"));
-    }
-
-    extremes[seriesName] = seriesExtremes;
-    points[seriesIdx] = seriesPoints;
-  }
-
-  return { points: points, extremes: extremes, boundaryIds: boundaryIds };
-};
-
-/**
- * Update the graph with new data. This method is called when the viewing area
- * has changed. If the underlying data or options have changed, predraw_ will
- * be called before drawGraph_ is called.
- *
- * @private
- */
-Dygraph.prototype.drawGraph_ = function() {
-  var start = new Date();
-
-  // This is used to set the second parameter to drawCallback, below.
-  var is_initial_draw = this.is_initial_draw_;
-  this.is_initial_draw_ = false;
-
-  this.layout_.removeAllDatasets();
-  this.setColors_();
-  this.attrs_.pointSize = 0.5 * this.getNumericOption('highlightCircleSize');
-
-  var packed = this.gatherDatasets_(this.rolledSeries_, this.dateWindow_);
-  var points = packed.points;
-  var extremes = packed.extremes;
-  this.boundaryIds_ = packed.boundaryIds;
-
-  this.setIndexByName_ = {};
-  var labels = this.attr_("labels");
-  var dataIdx = 0;
-  for (var i = 1; i < points.length; i++) {
-    if (!this.visibility()[i - 1]) continue;
-    this.layout_.addDataset(labels[i], points[i]);
-    this.datasetIndex_[i] = dataIdx++;
-  }
-  for (var i = 0; i < labels.length; i++) {
-    this.setIndexByName_[labels[i]] = i;
-  }
-
-  this.computeYAxisRanges_(extremes);
-  this.layout_.setYAxes(this.axes_);
-
-  this.addXTicks_();
-
-  // Tell PlotKit to use this new data and render itself
-  this.layout_.evaluate();
-  this.renderGraph_(is_initial_draw);
-
-  if (this.getStringOption("timingName")) {
-    var end = new Date();
-    console.log(this.getStringOption("timingName") + " - drawGraph: " + (end - start) + "ms");
-  }
-};
-
-/**
- * This does the work of drawing the chart. It assumes that the layout and axis
- * scales have already been set (e.g. by predraw_).
- *
- * @private
- */
-Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
-  this.cascadeEvents_('clearChart');
-  this.plotter_.clear();
-
-  const underlayCallback = this.getFunctionOption('underlayCallback');
-  if (underlayCallback) {
-    // NOTE: we pass the dygraph object to this callback twice to avoid breaking
-    // users who expect a deprecated form of this callback.
-    underlayCallback.call(this,
-        this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
-  }
-
-  var e = {
-    canvas: this.hidden_,
-    drawingContext: this.hidden_ctx_
-  };
-  this.cascadeEvents_('willDrawChart', e);
-  this.plotter_.render();
-  this.cascadeEvents_('didDrawChart', e);
-  this.lastRow_ = -1;  // because plugins/legend.js clears the legend
-
-  // TODO(danvk): is this a performance bottleneck when panning?
-  // The interaction canvas should already be empty in that situation.
-  this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
-
-  const drawCallback = this.getFunctionOption("drawCallback");
-  if (drawCallback !== null) {
-    drawCallback.call(this, this, is_initial_draw);
-  }
-  if (is_initial_draw) {
-    this.readyFired_ = true;
-    while (this.readyFns_.length > 0) {
-      var fn = this.readyFns_.pop();
-      fn(this);
-    }
-  }
-};
-
-/**
- * @private
- * Determine properties of the y-axes which are independent of the data
- * currently being displayed. This includes things like the number of axes and
- * the style of the axes. It does not include the range of each axis and its
- * tick marks.
- * This fills in this.axes_.
- * axes_ = [ { options } ]
- *   indices are into the axes_ array.
- */
-Dygraph.prototype.computeYAxes_ = function() {
-  var axis, index, opts, v;
-
-  // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
-  // data computation as well as options storage.
-  // Go through once and add all the axes.
-  this.axes_ = [];
-
-  for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
-    // Add a new axis, making a copy of its per-axis options.
-    opts = { g : this };
-    utils.update(opts, this.attributes_.axisOptions(axis));
-    this.axes_[axis] = opts;
-  }
-
-  for (axis = 0; axis < this.axes_.length; axis++) {
-    if (axis === 0) {
-      opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
-      v = opts("valueRange");
-      if (v) this.axes_[axis].valueRange = v;
-    } else {  // To keep old behavior
-      var axes = this.user_attrs_.axes;
-      if (axes && axes.y2) {
-        v = axes.y2.valueRange;
-        if (v) this.axes_[axis].valueRange = v;
-      }
-    }
-  }
-};
-
-/**
- * Returns the number of y-axes on the chart.
- * @return {number} the number of axes.
- */
-Dygraph.prototype.numAxes = function(): number {
-  return this.attributes_.numAxes();
-};
-
-/**
- * @private
- * Returns axis properties for the given series.
- * @param {string} setName The name of the series for which to get axis
- * properties, e.g. 'Y1'.
- * @return {Object} The axis properties.
- */
-Dygraph.prototype.axisPropertiesForSeries = function(series): object {
-  // TODO(danvk): handle errors.
-  return this.axes_[this.attributes_.axisForSeries(series)];
-};
-
-/**
- * @private
- * Determine the value range and tick marks for each axis.
- * @param {Object} extremes A mapping from seriesName -> [low, high]
- * This fills in the valueRange and ticks fields in each entry of this.axes_.
- */
-Dygraph.prototype.computeYAxisRanges_ = function(extremes: object) {
-  var isNullUndefinedOrNaN = function(num) {
-    return isNaN(parseFloat(num));
-  };
-  var numAxes = this.attributes_.numAxes();
-  var ypadCompat, span, series, ypad;
-
-  var p_axis;
-
-  // Compute extreme values, a span and tick marks for each axis.
-  for (var i = 0; i < numAxes; i++) {
-    var axis = this.axes_[i];
-    var logscale = this.attributes_.getForAxis("logscale", i);
-    var includeZero = this.attributes_.getForAxis("includeZero", i);
-    var independentTicks = this.attributes_.getForAxis("independentTicks", i);
-    series = this.attributes_.seriesForAxis(i);
-
-    // Add some padding. This supports two Y padding operation modes:
-    //
-    // - backwards compatible (yRangePad not set):
-    //   10% padding for automatic Y ranges, but not for user-supplied
-    //   ranges, and move a close-to-zero edge to zero, since drawing at the edge
-    //   results in invisible lines. Unfortunately lines drawn at the edge of a
-    //   user-supplied range will still be invisible. If logscale is
-    //   set, add a variable amount of padding at the top but
-    //   none at the bottom.
-    //
-    // - new-style (yRangePad set by the user):
-    //   always add the specified Y padding.
-    //
-    ypadCompat = true;
-    ypad = 0.1; // add 10%
-    const yRangePad = this.getNumericOption('yRangePad');
-    if (yRangePad !== null) {
-      ypadCompat = false;
-      // Convert pixel padding to ratio
-      ypad = yRangePad / this.plotter_.area.h;
-    }
-
-    if (series.length === 0) {
-      // If no series are defined or visible then use a reasonable default
-      axis.extremeRange = [0, 1];
-    } else {
-      // Calculate the extremes of extremes.
-      var minY = Infinity;  // extremes[series[0]][0];
-      var maxY = -Infinity;  // extremes[series[0]][1];
-      var extremeMinY, extremeMaxY;
-
-      for (var j = 0; j < series.length; j++) {
-        // this skips invisible series
-        if (!extremes.hasOwnProperty(series[j])) continue;
-
-        // Only use valid extremes to stop null data series' from corrupting the scale.
-        extremeMinY = extremes[series[j]][0];
-        if (extremeMinY !== null) {
-          minY = Math.min(extremeMinY, minY);
-        }
-        extremeMaxY = extremes[series[j]][1];
-        if (extremeMaxY !== null) {
-          maxY = Math.max(extremeMaxY, maxY);
-        }
-      }
-
-      // Include zero if requested by the user.
-      if (includeZero && !logscale) {
-        if (minY > 0) minY = 0;
-        if (maxY < 0) maxY = 0;
-      }
-
-      // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
-      if (minY == Infinity) minY = 0;
-      if (maxY == -Infinity) maxY = 1;
-
-      span = maxY - minY;
-      // special case: if we have no sense of scale, center on the sole value.
-      if (span === 0) {
-        if (maxY !== 0) {
-          span = Math.abs(maxY);
         } else {
-          // ... and if the sole value is zero, use range 0-1.
-          maxY = 1;
-          span = 1;
+          // Interpolate/extend for stacking purposes if possible.
+          updateNextPoint(i);
+          if (prevPoint && nextPoint && fillMethod != 'none') {
+            // Use linear interpolation between prevPoint and nextPoint.
+            actualYval = prevPoint.yval + (nextPoint.yval - prevPoint.yval) *
+                ((xval - prevPoint.xval) / (nextPoint.xval - prevPoint.xval));
+          } else if (prevPoint && fillMethod == 'all') {
+            actualYval = prevPoint.yval;
+          } else if (nextPoint && fillMethod == 'all') {
+            actualYval = nextPoint.yval;
+          } else {
+            actualYval = 0;
+          }
         }
-      }
-
-      var maxAxisY = maxY, minAxisY = minY;
-      if (ypadCompat) {
-        if (logscale) {
-          maxAxisY = maxY + ypad * span;
-          minAxisY = minY;
-        } else {
-          maxAxisY = maxY + ypad * span;
-          minAxisY = minY - ypad * span;
-
-          // Backwards-compatible behavior: Move the span to start or end at zero if it's
-          // close to zero.
-          if (minAxisY < 0 && minY >= 0) minAxisY = 0;
-          if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
-        }
-      }
-      axis.extremeRange = [minAxisY, maxAxisY];
-    }
-    if (axis.valueRange) {
-      // This is a user-set value range for this axis.
-      var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
-      var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
-      axis.computedValueRange = [y0, y1];
-    } else {
-      axis.computedValueRange = axis.extremeRange;
-    }
-    if (!ypadCompat) {
-      // When using yRangePad, adjust the upper/lower bounds to add
-      // padding unless the user has zoomed/panned the Y axis range.
-      if (logscale) {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
-        var y0pct = ypad / (2 * ypad - 1);
-        var y1pct = (ypad - 1) / (2 * ypad - 1);
-        axis.computedValueRange[0] = utils.logRangeFraction(y0, y1, y0pct);
-        axis.computedValueRange[1] = utils.logRangeFraction(y0, y1, y1pct);
       } else {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
-        span = y1 - y0;
-        axis.computedValueRange[0] = y0 - span * ypad;
-        axis.computedValueRange[1] = y1 + span * ypad;
+        prevPoint = point;
+      }
+
+      var stackedYval = cumulativeYval[xval];
+      if (lastXval != xval) {
+        // If an x-value is repeated, we ignore the duplicates.
+        stackedYval += actualYval;
+        cumulativeYval[xval] = stackedYval;
+      }
+      lastXval = xval;
+
+      point.yval_stacked = stackedYval;
+
+      if (stackedYval > seriesExtremes[1]) {
+        seriesExtremes[1] = stackedYval;
+      }
+      if (stackedYval < seriesExtremes[0]) {
+        seriesExtremes[0] = stackedYval;
+      }
+    }
+  }
+
+  /**
+   * Loop over all fields and create datasets, calculating extreme y-values for
+   * each series and extreme x-indices as we go.
+   *
+   * dateWindow is passed in as an explicit parameter so that we can compute
+   * extreme values "speculatively", i.e. without actually setting state on the
+   * dygraph.
+   *
+   * @param {Array.<Array.<Array.<(number|Array<number>)>>} rolledSeries, where
+   *     rolledSeries[seriesIndex][row] = raw point, where
+   *     seriesIndex is the column number starting with 1, and
+   *     rawPoint is [x,y] or [x, [y, err]] or [x, [y, yminus, yplus]].
+   * @param {?Array.<number>} dateWindow [xmin, xmax] pair, or null.
+   * @return {{
+   *     points: Array.<Array.<DygraphPointType>>,
+   *     seriesExtremes: Array.<Array.<number>>,
+   *     boundaryIds: Array.<number>}}
+   * @private
+   */
+  gatherDatasets_(rolledSeries: (number | number[])[][][], dateWindow: [number, number] | null): { points: DygraphPointType[][]; seriesExtremes: number[][]; boundaryIds: number[]; } {
+    var boundaryIds = [];
+    var points = [];
+    var cumulativeYval = [];  // For stacked series.
+    var extremes = {};  // series name -> [low, high]
+    var seriesIdx, sampleIdx;
+    var firstIdx, lastIdx;
+    var axisIdx;
+
+    // Loop over the fields (series).  Go from the last to the first,
+    // because if they're stacked that's how we accumulate the values.
+    var num_series = rolledSeries.length - 1;
+    var series;
+    for (seriesIdx = num_series; seriesIdx >= 1; seriesIdx--) {
+      if (!this.visibility()[seriesIdx - 1]) continue;
+
+      // Prune down to the desired range, if necessary (for zooming)
+      // Because there can be lines going to points outside of the visible area,
+      // we actually prune to visible points, plus one on either side.
+      if (dateWindow) {
+        series = rolledSeries[seriesIdx];
+        var low = dateWindow[0];
+        var high = dateWindow[1];
+
+        // TODO(danvk): do binary search instead of linear search.
+        // TODO(danvk): pass firstIdx and lastIdx directly to the renderer.
+        firstIdx = null;
+        lastIdx = null;
+        for (sampleIdx = 0; sampleIdx < series.length; sampleIdx++) {
+          if (series[sampleIdx][0] >= low && firstIdx === null) {
+            firstIdx = sampleIdx;
+          }
+          if (series[sampleIdx][0] <= high) {
+            lastIdx = sampleIdx;
+          }
+        }
+
+        if (firstIdx === null) firstIdx = 0;
+        var correctedFirstIdx = firstIdx;
+        var isInvalidValue = true;
+        while (isInvalidValue && correctedFirstIdx > 0) {
+          correctedFirstIdx--;
+          // check if the y value is null.
+          isInvalidValue = series[correctedFirstIdx][1] === null;
+        }
+
+        if (lastIdx === null) lastIdx = series.length - 1;
+        var correctedLastIdx = lastIdx;
+        isInvalidValue = true;
+        while (isInvalidValue && correctedLastIdx < series.length - 1) {
+          correctedLastIdx++;
+          isInvalidValue = series[correctedLastIdx][1] === null;
+        }
+
+        if (correctedFirstIdx!==firstIdx) {
+          firstIdx = correctedFirstIdx;
+        }
+        if (correctedLastIdx !== lastIdx) {
+          lastIdx = correctedLastIdx;
+        }
+
+        boundaryIds[seriesIdx-1] = [firstIdx, lastIdx];
+
+        // .slice's end is exclusive, we want to include lastIdx.
+        series = series.slice(firstIdx, lastIdx + 1);
+      } else {
+        series = rolledSeries[seriesIdx];
+        boundaryIds[seriesIdx-1] = [0, series.length-1];
+      }
+
+      var seriesName = this.attr_("labels")[seriesIdx];
+      var seriesExtremes = this.dataHandler_.getExtremeYValues(series,
+          dateWindow, this.getBooleanOption("stepPlot",seriesName));
+
+      var seriesPoints = this.dataHandler_.seriesToPoints(series,
+          seriesName, boundaryIds[seriesIdx-1][0]);
+
+      if (this.getBooleanOption("stackedGraph")) {
+        axisIdx = this.attributes_.axisForSeries(seriesName);
+        if (cumulativeYval[axisIdx] === undefined) {
+          cumulativeYval[axisIdx] = [];
+        }
+        Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
+                            this.getBooleanOption("stackedGraphNaNFill"));
+      }
+
+      extremes[seriesName] = seriesExtremes;
+      points[seriesIdx] = seriesPoints;
+    }
+
+    return { points: points, extremes: extremes, boundaryIds: boundaryIds };
+  }
+
+  /**
+   * Update the graph with new data. This method is called when the viewing area
+   * has changed. If the underlying data or options have changed, predraw_ will
+   * be called before drawGraph_ is called.
+   *
+   * @private
+   */
+  drawGraph_() {
+    var start = new Date();
+
+    // This is used to set the second parameter to drawCallback, below.
+    var is_initial_draw = this.is_initial_draw_;
+    this.is_initial_draw_ = false;
+
+    this.layout_.removeAllDatasets();
+    this.setColors_();
+    this.attrs_.pointSize = 0.5 * this.getNumericOption('highlightCircleSize');
+
+    var packed = this.gatherDatasets_(this.rolledSeries_, this.dateWindow_);
+    var points = packed.points;
+    var extremes = packed.extremes;
+    this.boundaryIds_ = packed.boundaryIds;
+
+    this.setIndexByName_ = {};
+    var labels = this.attr_("labels");
+    var dataIdx = 0;
+    for (var i = 1; i < points.length; i++) {
+      if (!this.visibility()[i - 1]) continue;
+      this.layout_.addDataset(labels[i], points[i]);
+      this.datasetIndex_[i] = dataIdx++;
+    }
+    for (var i = 0; i < labels.length; i++) {
+      this.setIndexByName_[labels[i]] = i;
+    }
+
+    this.computeYAxisRanges_(extremes);
+    this.layout_.setYAxes(this.axes_);
+
+    this.addXTicks_();
+
+    // Tell PlotKit to use this new data and render itself
+    this.layout_.evaluate();
+    this.renderGraph_(is_initial_draw);
+
+    if (this.getStringOption("timingName")) {
+      var end = new Date();
+      console.log(this.getStringOption("timingName") + " - drawGraph: " + (end - start) + "ms");
+    }
+  }
+
+  /**
+   * This does the work of drawing the chart. It assumes that the layout and axis
+   * scales have already been set (e.g. by predraw_).
+   *
+   * @private
+   */
+  renderGraph_(is_initial_draw: boolean) {
+    this.cascadeEvents_('clearChart');
+    this.plotter_.clear();
+
+    const underlayCallback = this.getFunctionOption('underlayCallback');
+    if (underlayCallback) {
+      // NOTE: we pass the dygraph object to this callback twice to avoid breaking
+      // users who expect a deprecated form of this callback.
+      underlayCallback.call(this,
+          this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
+    }
+
+    var e = {
+      canvas: this.hidden_,
+      drawingContext: this.hidden_ctx_
+    };
+    this.cascadeEvents_('willDrawChart', e);
+    this.plotter_.render();
+    this.cascadeEvents_('didDrawChart', e);
+    this.lastRow_ = -1;  // because plugins/legend.js clears the legend
+
+    // TODO(danvk): is this a performance bottleneck when panning?
+    // The interaction canvas should already be empty in that situation.
+    this.canvas_.getContext('2d').clearRect(0, 0, this.width_, this.height_);
+
+    const drawCallback = this.getFunctionOption("drawCallback");
+    if (drawCallback !== null) {
+      drawCallback.call(this, this, is_initial_draw);
+    }
+    if (is_initial_draw) {
+      this.readyFired_ = true;
+      while (this.readyFns_.length > 0) {
+        var fn = this.readyFns_.pop();
+        fn(this);
+      }
+    }
+  }
+
+  /**
+   * @private
+   * Determine properties of the y-axes which are independent of the data
+   * currently being displayed. This includes things like the number of axes and
+   * the style of the axes. It does not include the range of each axis and its
+   * tick marks.
+   * This fills in this.axes_.
+   * axes_ = [ { options } ]
+   *   indices are into the axes_ array.
+   */
+  computeYAxes_() {
+    var axis, index, opts, v;
+
+    // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
+    // data computation as well as options storage.
+    // Go through once and add all the axes.
+    this.axes_ = [];
+
+    for (axis = 0; axis < this.attributes_.numAxes(); axis++) {
+      // Add a new axis, making a copy of its per-axis options.
+      opts = { g : this };
+      utils.update(opts, this.attributes_.axisOptions(axis));
+      this.axes_[axis] = opts;
+    }
+
+    for (axis = 0; axis < this.axes_.length; axis++) {
+      if (axis === 0) {
+        opts = this.optionsViewForAxis_('y' + (axis ? '2' : ''));
+        v = opts("valueRange");
+        if (v) this.axes_[axis].valueRange = v;
+      } else {  // To keep old behavior
+        var axes = this.user_attrs_.axes;
+        if (axes && axes.y2) {
+          v = axes.y2.valueRange;
+          if (v) this.axes_[axis].valueRange = v;
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns the number of y-axes on the chart.
+   * @return {number} the number of axes.
+   */
+  numAxes(): number {
+    return this.attributes_.numAxes();
+  };
+
+  /**
+   * @private
+   * Returns axis properties for the given series.
+   * @param {string} setName The name of the series for which to get axis
+   * properties, e.g. 'Y1'.
+   * @return {Object} The axis properties.
+   */
+  axisPropertiesForSeries(series) {
+    // TODO(danvk): handle errors.
+    return this.axes_[this.attributes_.axisForSeries(series)];
+  };
+
+  /**
+   * @private
+   * Determine the value range and tick marks for each axis.
+   * @param {Object} extremes A mapping from seriesName -> [low, high]
+   * This fills in the valueRange and ticks fields in each entry of this.axes_.
+   */
+  computeYAxisRanges_(extremes: object) {
+    var isNullUndefinedOrNaN = function(num) {
+      return isNaN(parseFloat(num));
+    };
+    var numAxes = this.attributes_.numAxes();
+    var ypadCompat, span, series, ypad;
+
+    var p_axis;
+
+    // Compute extreme values, a span and tick marks for each axis.
+    for (var i = 0; i < numAxes; i++) {
+      var axis = this.axes_[i];
+      var logscale = this.attributes_.getForAxis("logscale", i);
+      var includeZero = this.attributes_.getForAxis("includeZero", i);
+      var independentTicks = this.attributes_.getForAxis("independentTicks", i);
+      series = this.attributes_.seriesForAxis(i);
+
+      // Add some padding. This supports two Y padding operation modes:
+      //
+      // - backwards compatible (yRangePad not set):
+      //   10% padding for automatic Y ranges, but not for user-supplied
+      //   ranges, and move a close-to-zero edge to zero, since drawing at the edge
+      //   results in invisible lines. Unfortunately lines drawn at the edge of a
+      //   user-supplied range will still be invisible. If logscale is
+      //   set, add a variable amount of padding at the top but
+      //   none at the bottom.
+      //
+      // - new-style (yRangePad set by the user):
+      //   always add the specified Y padding.
+      //
+      ypadCompat = true;
+      ypad = 0.1; // add 10%
+      const yRangePad = this.getNumericOption('yRangePad');
+      if (yRangePad !== null) {
+        ypadCompat = false;
+        // Convert pixel padding to ratio
+        ypad = yRangePad / this.plotter_.area.h;
+      }
+
+      if (series.length === 0) {
+        // If no series are defined or visible then use a reasonable default
+        axis.extremeRange = [0, 1];
+      } else {
+        // Calculate the extremes of extremes.
+        var minY = Infinity;  // extremes[series[0]][0];
+        var maxY = -Infinity;  // extremes[series[0]][1];
+        var extremeMinY, extremeMaxY;
+
+        for (var j = 0; j < series.length; j++) {
+          // this skips invisible series
+          if (!extremes.hasOwnProperty(series[j])) continue;
+
+          // Only use valid extremes to stop null data series' from corrupting the scale.
+          extremeMinY = extremes[series[j]][0];
+          if (extremeMinY !== null) {
+            minY = Math.min(extremeMinY, minY);
+          }
+          extremeMaxY = extremes[series[j]][1];
+          if (extremeMaxY !== null) {
+            maxY = Math.max(extremeMaxY, maxY);
+          }
+        }
+
+        // Include zero if requested by the user.
+        if (includeZero && !logscale) {
+          if (minY > 0) minY = 0;
+          if (maxY < 0) maxY = 0;
+        }
+
+        // Ensure we have a valid scale, otherwise default to [0, 1] for safety.
+        if (minY == Infinity) minY = 0;
+        if (maxY == -Infinity) maxY = 1;
+
+        span = maxY - minY;
+        // special case: if we have no sense of scale, center on the sole value.
+        if (span === 0) {
+          if (maxY !== 0) {
+            span = Math.abs(maxY);
+          } else {
+            // ... and if the sole value is zero, use range 0-1.
+            maxY = 1;
+            span = 1;
+          }
+        }
+
+        var maxAxisY = maxY, minAxisY = minY;
+        if (ypadCompat) {
+          if (logscale) {
+            maxAxisY = maxY + ypad * span;
+            minAxisY = minY;
+          } else {
+            maxAxisY = maxY + ypad * span;
+            minAxisY = minY - ypad * span;
+
+            // Backwards-compatible behavior: Move the span to start or end at zero if it's
+            // close to zero.
+            if (minAxisY < 0 && minY >= 0) minAxisY = 0;
+            if (maxAxisY > 0 && maxY <= 0) maxAxisY = 0;
+          }
+        }
+        axis.extremeRange = [minAxisY, maxAxisY];
+      }
+      if (axis.valueRange) {
+        // This is a user-set value range for this axis.
+        var y0 = isNullUndefinedOrNaN(axis.valueRange[0]) ? axis.extremeRange[0] : axis.valueRange[0];
+        var y1 = isNullUndefinedOrNaN(axis.valueRange[1]) ? axis.extremeRange[1] : axis.valueRange[1];
+        axis.computedValueRange = [y0, y1];
+      } else {
+        axis.computedValueRange = axis.extremeRange;
+      }
+      if (!ypadCompat) {
+        // When using yRangePad, adjust the upper/lower bounds to add
+        // padding unless the user has zoomed/panned the Y axis range.
+        if (logscale) {
+          y0 = axis.computedValueRange[0];
+          y1 = axis.computedValueRange[1];
+          var y0pct = ypad / (2 * ypad - 1);
+          var y1pct = (ypad - 1) / (2 * ypad - 1);
+          axis.computedValueRange[0] = utils.logRangeFraction(y0, y1, y0pct);
+          axis.computedValueRange[1] = utils.logRangeFraction(y0, y1, y1pct);
+        } else {
+          y0 = axis.computedValueRange[0];
+          y1 = axis.computedValueRange[1];
+          span = y1 - y0;
+          axis.computedValueRange[0] = y0 - span * ypad;
+          axis.computedValueRange[1] = y1 + span * ypad;
+        }
+      }
+
+
+      if (independentTicks) {
+        axis.independentTicks = independentTicks;
+        var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+        var ticker = opts('ticker');
+        axis.ticks = ticker(axis.computedValueRange[0],
+                axis.computedValueRange[1],
+                this.plotter_.area.h,
+                opts,
+                this);
+        // Define the first independent axis as primary axis.
+        if (!p_axis) p_axis = axis;
+      }
+    }
+    if (p_axis === undefined) {
+      throw ("Configuration Error: At least one axis has to have the \"independentTicks\" option activated.");
+    }
+    // Add ticks. By default, all axes inherit the tick positions of the
+    // primary axis. However, if an axis is specifically marked as having
+    // independent ticks, then that is permissible as well.
+    for (var i = 0; i < numAxes; i++) {
+      var axis = this.axes_[i];
+
+      if (!axis.independentTicks) {
+        var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
+        var ticker = opts('ticker');
+        var p_ticks = p_axis.ticks;
+        var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
+        var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
+        var tick_values = [];
+        for (var k = 0; k < p_ticks.length; k++) {
+          var y_frac = (p_ticks[k].v - p_axis.computedValueRange[0]) / p_scale;
+          var y_val = axis.computedValueRange[0] + y_frac * scale;
+          tick_values.push(y_val);
+        }
+
+        axis.ticks = ticker(axis.computedValueRange[0],
+                            axis.computedValueRange[1],
+                            this.plotter_.area.h,
+                            opts,
+                            this,
+                            tick_values);
+      }
+    }
+  }
+
+  /**
+  * Detects the type of the str (date or numeric) and sets the various
+  * formatting attributes in this.attrs_ based on this type.
+  * @param {string} str An x value.
+  * @private
+  */
+  detectTypeFromString_(str: string) {
+    var isDate = false;
+    var dashPos = str.indexOf('-');  // could be 2006-01-01 _or_ 1.0e-2
+    if ((dashPos > 0 && (str[dashPos-1] != 'e' && str[dashPos-1] != 'E')) ||
+        str.indexOf('/') >= 0 ||
+        isNaN(parseFloat(str))) {
+      isDate = true;
+    } else if (str.length == 8 && str > '19700101' && str < '20371231') {
+      // TODO(danvk): remove support for this format.
+      isDate = true;
+    }
+
+    this.setXAxisOptions_(isDate);
+  }
+
+  setXAxisOptions_(isDate) {
+    if (isDate) {
+      this.attrs_.xValueParser = utils.dateParser;
+      this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
+      this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
+      this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
+    } else {
+      /** @private (shut up, jsdoc!) */
+      this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+      // TODO(danvk): use Dygraph.numberValueFormatter here?
+      /** @private (shut up, jsdoc!) */
+      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
+      this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
+    }
+  }
+
+  /**
+   * @private
+   * Parses a string in a special csv format.  We expect a csv file where each
+   * line is a date point, and the first field in each line is the date string.
+   * We also expect that all remaining fields represent series.
+   * if the errorBars attribute is set, then interpret the fields as:
+   * date, series1, stddev1, series2, stddev2, ...
+   * @param {[Object]} data See above.
+   *
+   * @return [Object] An array with one entry for each row. These entries
+   * are an array of cells in that row. The first entry is the parsed x-value for
+   * the row. The second, third, etc. are the y-values. These can take on one of
+   * three forms, depending on the CSV and constructor parameters:
+   * 1. numeric value
+   * 2. [ value, stddev ]
+   * 3. [ low value, center value, high value ]
+   */
+  parseCSV_(data: object[]) {
+    var ret = [];
+    var line_delimiter = utils.detectLineDelimiter(data);
+    var lines = data.split(line_delimiter || "\n");
+    var vals, j;
+
+    // Use the default delimiter or fall back to a tab if that makes sense.
+    var delim = this.getStringOption('delimiter');
+    if (lines[0].indexOf(delim) == -1 && lines[0].indexOf('\t') >= 0) {
+      delim = '\t';
+    }
+
+    var start = 0;
+    if (!('labels' in this.user_attrs_)) {
+      // User hasn't explicitly set labels, so they're (presumably) in the CSV.
+      start = 1;
+      this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+      this.attributes_.reparseSeries();
+    }
+    var line_no = 0;
+
+    var xParser;
+    var defaultParserSet = false;  // attempt to auto-detect x value type
+    var expectedCols = this.attr_("labels").length;
+    var outOfOrder = false;
+    for (var i = start; i < lines.length; i++) {
+      var line = lines[i];
+      line_no = i;
+      if (line.length === 0) continue;  // skip blank lines
+      if (line[0] == '#') continue;    // skip comment lines
+      var inFields = line.split(delim);
+      if (inFields.length < 2) continue;
+
+      var fields = [];
+      if (!defaultParserSet) {
+        this.detectTypeFromString_(inFields[0]);
+        xParser = this.getFunctionOption("xValueParser");
+        defaultParserSet = true;
+      }
+      fields[0] = xParser(inFields[0], this);
+
+      // If fractions are expected, parse the numbers as "A/B"
+      if (this.fractions_) {
+        for (j = 1; j < inFields.length; j++) {
+          // TODO(danvk): figure out an appropriate way to flag parse errors.
+          vals = inFields[j].split("/");
+          if (vals.length != 2) {
+            console.error('Expected fractional "num/den" values in CSV data ' +
+                          "but found a value '" + inFields[j] + "' on line " +
+                          (1 + i) + " ('" + line + "') which is not of this form.");
+            fields[j] = [0, 0];
+          } else {
+            fields[j] = [utils.parseFloat_(vals[0], i, line),
+                        utils.parseFloat_(vals[1], i, line)];
+          }
+        }
+      } else if (this.getBooleanOption("errorBars")) {
+        // If there are error bars, values are (value, stddev) pairs
+        if (inFields.length % 2 != 1) {
+          console.error('Expected alternating (value, stdev.) pairs in CSV data ' +
+                        'but line ' + (1 + i) + ' has an odd number of values (' +
+                        (inFields.length - 1) + "): '" + line + "'");
+        }
+        for (j = 1; j < inFields.length; j += 2) {
+          fields[(j + 1) / 2] = [utils.parseFloat_(inFields[j], i, line),
+                                utils.parseFloat_(inFields[j + 1], i, line)];
+        }
+      } else if (this.getBooleanOption("customBars")) {
+        // Bars are a low;center;high tuple
+        for (j = 1; j < inFields.length; j++) {
+          var val = inFields[j];
+          if (/^ *$/.test(val)) {
+            fields[j] = [null, null, null];
+          } else {
+            vals = val.split(";");
+            if (vals.length == 3) {
+              fields[j] = [ utils.parseFloat_(vals[0], i, line),
+                            utils.parseFloat_(vals[1], i, line),
+                            utils.parseFloat_(vals[2], i, line) ];
+            } else {
+              console.warn('When using customBars, values must be either blank ' +
+                          'or "low;center;high" tuples (got "' + val +
+                          '" on line ' + (1+i));
+            }
+          }
+        }
+      } else {
+        // Values are just numbers
+        for (j = 1; j < inFields.length; j++) {
+          fields[j] = utils.parseFloat_(inFields[j], i, line);
+        }
+      }
+      if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
+        outOfOrder = true;
+      }
+
+      if (fields.length != expectedCols) {
+        console.error("Number of columns in line " + i + " (" + fields.length +
+                      ") does not agree with number of labels (" + expectedCols +
+                      ") " + line);
+      }
+
+      // If the user specified the 'labels' option and none of the cells of the
+      // first row parsed correctly, then they probably double-specified the
+      // labels. We go with the values set in the option, discard this row and
+      // log a warning to the JS console.
+      if (i === 0 && this.attr_('labels')) {
+        var all_null = true;
+        for (j = 0; all_null && j < fields.length; j++) {
+          if (fields[j]) all_null = false;
+        }
+        if (all_null) {
+          console.warn("The dygraphs 'labels' option is set, but the first row " +
+                      "of CSV data ('" + line + "') appears to also contain " +
+                      "labels. Will drop the CSV labels and use the option " +
+                      "labels.");
+          continue;
+        }
+      }
+      ret.push(fields);
+    }
+
+    if (outOfOrder) {
+      console.warn("CSV is out of order; order it correctly to speed loading.");
+      ret.sort(function(a,b) { return a[0] - b[0]; });
+    }
+
+    return ret;
+  }
+
+  /**
+   * The user has provided their data as a pre-packaged JS array. If the x values
+   * are numeric, this is the same as dygraphs' internal format. If the x values
+   * are dates, we need to convert them from Date objects to ms since epoch.
+   * @param {!Array} data
+   * @return {Object} data with numeric x values.
+   * @private
+   */
+  parseArray_(data: Array<any>): object {
+    // Peek at the first x value to see if it's numeric.
+    if (data.length === 0) {
+      console.error("Can't plot empty data set");
+      return null;
+    }
+    if (data[0].length === 0) {
+      console.error("Data set cannot contain an empty row");
+      return null;
+    }
+
+    validateNativeFormat(data);
+
+    var i;
+    if (this.attr_("labels") === null) {
+      console.warn("Using default labels. Set labels explicitly via 'labels' " +
+                  "in the options parameter");
+      this.attrs_.labels = [ "X" ];
+      for (i = 1; i < data[0].length; i++) {
+        this.attrs_.labels.push("Y" + i); // Not user_attrs_.
+      }
+      this.attributes_.reparseSeries();
+    } else {
+      var num_labels = this.attr_("labels");
+      if (num_labels.length != data[0].length) {
+        console.error("Mismatch between number of labels (" + num_labels + ")" +
+                      " and number of columns in array (" + data[0].length + ")");
+        return null;
       }
     }
 
+    if (utils.isDateLike(data[0][0])) {
+      // Some intelligent defaults for a date x-axis.
+      this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
+      this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
+      this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
 
-    if (independentTicks) {
-      axis.independentTicks = independentTicks;
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
-      var ticker = opts('ticker');
-      axis.ticks = ticker(axis.computedValueRange[0],
-              axis.computedValueRange[1],
-              this.plotter_.area.h,
-              opts,
-              this);
-      // Define the first independent axis as primary axis.
-      if (!p_axis) p_axis = axis;
+      // Assume they're all dates.
+      var parsedData = utils.clone(data);
+      for (i = 0; i < data.length; i++) {
+        if (parsedData[i].length === 0) {
+          console.error("Row " + (1 + i) + " of data is empty");
+          return null;
+        }
+        if (parsedData[i][0] === null ||
+            typeof(parsedData[i][0].getTime) != 'function' ||
+            isNaN(parsedData[i][0].getTime())) {
+          console.error("x value in row " + (1 + i) + " is not a Date");
+          return null;
+        }
+        parsedData[i][0] = parsedData[i][0].getTime();
+      }
+      return parsedData;
+    } else {
+      // Some intelligent defaults for a numeric x-axis.
+      /** @private (shut up, jsdoc!) */
+      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
+      this.attrs_.axes.x.axisLabelFormatter = utils.numberAxisLabelFormatter;
+      return data;
     }
   }
-  if (p_axis === undefined) {
-    throw ("Configuration Error: At least one axis has to have the \"independentTicks\" option activated.");
-  }
-  // Add ticks. By default, all axes inherit the tick positions of the
-  // primary axis. However, if an axis is specifically marked as having
-  // independent ticks, then that is permissible as well.
-  for (var i = 0; i < numAxes; i++) {
-    var axis = this.axes_[i];
 
-    if (!axis.independentTicks) {
-      var opts = this.optionsViewForAxis_('y' + (i ? '2' : ''));
-      var ticker = opts('ticker');
-      var p_ticks = p_axis.ticks;
-      var p_scale = p_axis.computedValueRange[1] - p_axis.computedValueRange[0];
-      var scale = axis.computedValueRange[1] - axis.computedValueRange[0];
-      var tick_values = [];
-      for (var k = 0; k < p_ticks.length; k++) {
-        var y_frac = (p_ticks[k].v - p_axis.computedValueRange[0]) / p_scale;
-        var y_val = axis.computedValueRange[0] + y_frac * scale;
-        tick_values.push(y_val);
+  /**
+   * Parses a DataTable object from gviz.
+   * The data is expected to have a first column that is either a date or a
+   * number. All subsequent columns must be numbers. If there is a clear mismatch
+   * between this.xValueParser_ and the type of the first column, it will be
+   * fixed. Fills out rawData_.
+   * @param {!google.visualization.DataTable} data See above.
+   * @private
+   */
+  parseDataTable_(data: google.visualization.DataTable) {
+    var shortTextForAnnotationNum = function(num) {
+      // converts [0-9]+ [A-Z][a-z]*
+      // example: 0=A, 1=B, 25=Z, 26=Aa, 27=Ab
+      // and continues like.. Ba Bb .. Za .. Zz..Aaa...Zzz Aaaa Zzzz
+      var shortText = String.fromCharCode(65 /* A */ + num % 26);
+      num = Math.floor(num / 26);
+      while ( num > 0 ) {
+        shortText = String.fromCharCode(65 /* A */ + (num - 1) % 26 ) + shortText.toLowerCase();
+        num = Math.floor((num - 1) / 26);
+      }
+      return shortText;
+    };
+
+    var cols = data.getNumberOfColumns();
+    var rows = data.getNumberOfRows();
+
+    var indepType = data.getColumnType(0);
+    if (indepType == 'date' || indepType == 'datetime') {
+      this.attrs_.xValueParser = utils.dateParser;
+      this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
+      this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
+      this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
+    } else if (indepType == 'number') {
+      this.attrs_.xValueParser = function(x) { return parseFloat(x); };
+      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
+      this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
+    } else {
+      throw new Error(
+            "only 'date', 'datetime' and 'number' types are supported " +
+            "for column 1 of DataTable input (Got '" + indepType + "')");
+    }
+
+    // Array of the column indices which contain data (and not annotations).
+    var colIdx = [];
+    var annotationCols = {};  // data index -> [annotation cols]
+    var hasAnnotations = false;
+    var i, j;
+    for (i = 1; i < cols; i++) {
+      var type = data.getColumnType(i);
+      if (type == 'number') {
+        colIdx.push(i);
+      } else if (type == 'string' && this.getBooleanOption('displayAnnotations')) {
+        // This is OK -- it's an annotation column.
+        var dataIdx = colIdx[colIdx.length - 1];
+        if (!annotationCols.hasOwnProperty(dataIdx)) {
+          annotationCols[dataIdx] = [i];
+        } else {
+          annotationCols[dataIdx].push(i);
+        }
+        hasAnnotations = true;
+      } else {
+        throw new Error(
+            "Only 'number' is supported as a dependent type with Gviz." +
+            " 'string' is only supported if displayAnnotations is true");
+      }
+    }
+
+    // Read column labels
+    // TODO(danvk): add support back for errorBars
+    var labels = [data.getColumnLabel(0)];
+    for (i = 0; i < colIdx.length; i++) {
+      labels.push(data.getColumnLabel(colIdx[i]));
+      if (this.getBooleanOption("errorBars")) i += 1;
+    }
+    this.attrs_.labels = labels;
+    cols = labels.length;
+
+    var ret = [];
+    var outOfOrder = false;
+    var annotations = [];
+    for (i = 0; i < rows; i++) {
+      var row = [];
+      if (typeof(data.getValue(i, 0)) === 'undefined' ||
+          data.getValue(i, 0) === null) {
+        console.warn("Ignoring row " + i +
+                    " of DataTable because of undefined or null first column.");
+        continue;
       }
 
-      axis.ticks = ticker(axis.computedValueRange[0],
-                          axis.computedValueRange[1],
-                          this.plotter_.area.h,
-                          opts,
-                          this,
-                          tick_values);
+      if (indepType == 'date' || indepType == 'datetime') {
+        row.push(data.getValue(i, 0).getTime());
+      } else {
+        row.push(data.getValue(i, 0));
+      }
+      if (!this.getBooleanOption("errorBars")) {
+        for (j = 0; j < colIdx.length; j++) {
+          var col = colIdx[j];
+          row.push(data.getValue(i, col));
+          if (hasAnnotations &&
+              annotationCols.hasOwnProperty(col) &&
+              data.getValue(i, annotationCols[col][0]) !== null) {
+            var ann = {};
+            ann.series = data.getColumnLabel(col);
+            ann.xval = row[0];
+            ann.shortText = shortTextForAnnotationNum(annotations.length);
+            ann.text = '';
+            for (var k = 0; k < annotationCols[col].length; k++) {
+              if (k) ann.text += "\n";
+              ann.text += data.getValue(i, annotationCols[col][k]);
+            }
+            annotations.push(ann);
+          }
+        }
+
+        // Strip out infinities, which give dygraphs problems later on.
+        for (j = 0; j < row.length; j++) {
+          if (!isFinite(row[j])) row[j] = null;
+        }
+      } else {
+        for (j = 0; j < cols - 1; j++) {
+          row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
+        }
+      }
+      if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
+        outOfOrder = true;
+      }
+      ret.push(row);
     }
-  }
-};
 
-/**
- * Detects the type of the str (date or numeric) and sets the various
- * formatting attributes in this.attrs_ based on this type.
- * @param {string} str An x value.
- * @private
- */
-Dygraph.prototype.detectTypeFromString_ = function(str: string) {
-  var isDate = false;
-  var dashPos = str.indexOf('-');  // could be 2006-01-01 _or_ 1.0e-2
-  if ((dashPos > 0 && (str[dashPos-1] != 'e' && str[dashPos-1] != 'E')) ||
-      str.indexOf('/') >= 0 ||
-      isNaN(parseFloat(str))) {
-    isDate = true;
-  } else if (str.length == 8 && str > '19700101' && str < '20371231') {
-    // TODO(danvk): remove support for this format.
-    isDate = true;
-  }
+    if (outOfOrder) {
+      console.warn("DataTable is out of order; order it correctly to speed loading.");
+      ret.sort(function(a,b) { return a[0] - b[0]; });
+    }
+    this.rawData_ = ret;
 
-  this.setXAxisOptions_(isDate);
-};
-
-Dygraph.prototype.setXAxisOptions_ = function(isDate) {
-  if (isDate) {
-    this.attrs_.xValueParser = utils.dateParser;
-    this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
-    this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
-  } else {
-    /** @private (shut up, jsdoc!) */
-    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-    // TODO(danvk): use Dygraph.numberValueFormatter here?
-    /** @private (shut up, jsdoc!) */
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
-    this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
-  }
-};
-
-/**
- * @private
- * Parses a string in a special csv format.  We expect a csv file where each
- * line is a date point, and the first field in each line is the date string.
- * We also expect that all remaining fields represent series.
- * if the errorBars attribute is set, then interpret the fields as:
- * date, series1, stddev1, series2, stddev2, ...
- * @param {[Object]} data See above.
- *
- * @return [Object] An array with one entry for each row. These entries
- * are an array of cells in that row. The first entry is the parsed x-value for
- * the row. The second, third, etc. are the y-values. These can take on one of
- * three forms, depending on the CSV and constructor parameters:
- * 1. numeric value
- * 2. [ value, stddev ]
- * 3. [ low value, center value, high value ]
- */
-Dygraph.prototype.parseCSV_ = function(data: [object]) {
-  var ret = [];
-  var line_delimiter = utils.detectLineDelimiter(data);
-  var lines = data.split(line_delimiter || "\n");
-  var vals, j;
-
-  // Use the default delimiter or fall back to a tab if that makes sense.
-  var delim = this.getStringOption('delimiter');
-  if (lines[0].indexOf(delim) == -1 && lines[0].indexOf('\t') >= 0) {
-    delim = '\t';
-  }
-
-  var start = 0;
-  if (!('labels' in this.user_attrs_)) {
-    // User hasn't explicitly set labels, so they're (presumably) in the CSV.
-    start = 1;
-    this.attrs_.labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+    if (annotations.length > 0) {
+      this.setAnnotations(annotations, true);
+    }
     this.attributes_.reparseSeries();
   }
-  var line_no = 0;
 
-  var xParser;
-  var defaultParserSet = false;  // attempt to auto-detect x value type
-  var expectedCols = this.attr_("labels").length;
-  var outOfOrder = false;
-  for (var i = start; i < lines.length; i++) {
-    var line = lines[i];
-    line_no = i;
-    if (line.length === 0) continue;  // skip blank lines
-    if (line[0] == '#') continue;    // skip comment lines
-    var inFields = line.split(delim);
-    if (inFields.length < 2) continue;
+  /**
+   * Signals to plugins that the chart data has updated.
+   * This happens after the data has updated but before the chart has redrawn.
+   * @private
+   */
+  cascadeDataDidUpdateEvent_() {
+    // TODO(danvk): there are some issues checking xAxisRange() and using
+    // toDomCoords from handlers of this event. The visible range should be set
+    // when the chart is drawn, not derived from the data.
+    this.cascadeEvents_('dataDidUpdate', {});
+  }
 
-    var fields = [];
-    if (!defaultParserSet) {
-      this.detectTypeFromString_(inFields[0]);
-      xParser = this.getFunctionOption("xValueParser");
-      defaultParserSet = true;
+  /**
+   * Get the CSV data. If it's in a function, call that function. If it's in a
+   * file, do an XMLHttpRequest to get it.
+   * @private
+   */
+  start_() {
+    var data = this.file_;
+
+    // Functions can return references of all other types.
+    if (typeof data == 'function') {
+      data = data();
     }
-    fields[0] = xParser(inFields[0], this);
 
-    // If fractions are expected, parse the numbers as "A/B"
-    if (this.fractions_) {
-      for (j = 1; j < inFields.length; j++) {
-        // TODO(danvk): figure out an appropriate way to flag parse errors.
-        vals = inFields[j].split("/");
-        if (vals.length != 2) {
-          console.error('Expected fractional "num/den" values in CSV data ' +
-                        "but found a value '" + inFields[j] + "' on line " +
-                        (1 + i) + " ('" + line + "') which is not of this form.");
-          fields[j] = [0, 0];
+    if (utils.isArrayLike(data)) {
+      this.rawData_ = this.parseArray_(data);
+      this.cascadeDataDidUpdateEvent_();
+      this.predraw_();
+    } else if (typeof data == 'object' &&
+              typeof data.getColumnRange == 'function') {
+      // must be a DataTable from gviz.
+      this.parseDataTable_(data);
+      this.cascadeDataDidUpdateEvent_();
+      this.predraw_();
+    } else if (typeof data == 'string') {
+      // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
+      var line_delimiter = utils.detectLineDelimiter(data);
+      if (line_delimiter) {
+        this.loadedEvent_(data);
+      } else {
+        // REMOVE_FOR_IE
+        var req;
+        if (window.XMLHttpRequest) {
+          // Firefox, Opera, IE7, and other browsers will use the native object
+          req = new XMLHttpRequest();
         } else {
-          fields[j] = [utils.parseFloat_(vals[0], i, line),
-                       utils.parseFloat_(vals[1], i, line)];
+          // IE 5 and 6 will use the ActiveX control
+          req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        var caller = this;
+        req.onreadystatechange = function () {
+          if (req.readyState == 4) {
+            if (req.status === 200 ||  // Normal http
+                req.status === 0) {    // Chrome w/ --allow-file-access-from-files
+              caller.loadedEvent_(req.responseText);
+            }
+          }
+        };
+
+        req.open("GET", data, true);
+        req.send(null);
+      }
+    } else {
+      console.error("Unknown data format: " + (typeof data));
+    }
+  }
+
+  /**
+  * Changes various properties of the graph. These can include:
+  * <ul>
+  * <li>file: changes the source data for the graph</li>
+  * <li>errorBars: changes whether the data contains stddev</li>
+  * </ul>
+  *
+  * There's a huge variety of options that can be passed to this method. For a
+  * full list, see http://dygraphs.com/options.html.
+  *
+  * @param {Object} input_attrs The new properties and values
+  * @param {boolean} block_redraw Usually the chart is redrawn after every
+  *     call to updateOptions(). If you know better, you can pass true to
+  *     explicitly block the redraw. This can be useful for chaining
+  *     updateOptions() calls, avoiding the occasional infinite loop and
+  *     preventing redraws when it's not necessary (e.g. when updating a
+  *     callback).
+  */
+  updateOptions(input_attrs: object, block_redraw: boolean) {
+    if (typeof(block_redraw) == 'undefined') block_redraw = false;
+
+    // copyUserAttrs_ drops the "file" parameter as a convenience to us.
+    var file = input_attrs.file;
+    var attrs = Dygraph.copyUserAttrs_(input_attrs);
+    var prevNumAxes = this.attributes_.numAxes();
+
+    // TODO(danvk): this is a mess. Move these options into attr_.
+    if ('rollPeriod' in attrs) {
+      this.rollPeriod_ = attrs.rollPeriod;
+    }
+    if ('dateWindow' in attrs) {
+      this.dateWindow_ = attrs.dateWindow;
+    }
+
+    // TODO(danvk): validate per-series options.
+    // Supported:
+    // strokeWidth
+    // pointSize
+    // drawPoints
+    // highlightCircleSize
+
+    // Check if this set options will require new points.
+    var requiresNewPoints = utils.isPixelChangingOptionList(this.attr_("labels"), attrs);
+
+    utils.updateDeep(this.user_attrs_, attrs);
+
+    this.attributes_.reparseSeries();
+
+    if (prevNumAxes < this.attributes_.numAxes()) this.plotter_.clear();
+    if (file) {
+      // This event indicates that the data is about to change, but hasn't yet.
+      // TODO(danvk): support cancellation of the update via this event.
+      this.cascadeEvents_('dataWillUpdate', {});
+
+      this.file_ = file;
+      if (!block_redraw) this.start_();
+    } else {
+      if (!block_redraw) {
+        if (requiresNewPoints) {
+          this.predraw_();
+        } else {
+          this.renderGraph_(false);
         }
       }
-    } else if (this.getBooleanOption("errorBars")) {
-      // If there are error bars, values are (value, stddev) pairs
-      if (inFields.length % 2 != 1) {
-        console.error('Expected alternating (value, stdev.) pairs in CSV data ' +
-                      'but line ' + (1 + i) + ' has an odd number of values (' +
-                      (inFields.length - 1) + "): '" + line + "'");
+    }
+  }
+
+  /**
+   * Make a copy of input attributes, removing file as a convenience.
+   * @private
+   */
+  static copyUserAttrs_(attrs) {
+    var my_attrs = {};
+    for (var k in attrs) {
+      if (!attrs.hasOwnProperty(k)) continue;
+      if (k == 'file') continue;
+      if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
+    }
+    return my_attrs;
+  }
+
+  /**
+   * Resizes the dygraph. If no parameters are specified, resizes to fill the
+   * containing div (which has presumably changed size since the dygraph was
+   * instantiated. If the width/height are specified, the div will be resized.
+   *
+   * This is far more efficient than destroying and re-instantiating a
+   * Dygraph, since it doesn't have to reparse the underlying data.
+   *
+   * @param {number=} width Width (in pixels)
+   * @param {number=} height Height (in pixels)
+   */
+  resize(width: number | undefined, height: number | undefined) {
+    if (this.resize_lock) {
+      return;
+    }
+    this.resize_lock = true;
+
+    if ((width === null) != (height === null)) {
+      console.warn("Dygraph.resize() should be called with zero parameters or " +
+                  "two non-NULL parameters. Pretending it was zero.");
+      width = height = null;
+    }
+
+    var old_width = this.width_;
+    var old_height = this.height_;
+
+    if (width) {
+      this.maindiv_.style.width = width + "px";
+      this.maindiv_.style.height = height + "px";
+      this.width_ = width;
+      this.height_ = height;
+    } else {
+      this.width_ = this.maindiv_.clientWidth;
+      this.height_ = this.maindiv_.clientHeight;
+    }
+
+    if (old_width != this.width_ || old_height != this.height_) {
+      // Resizing a canvas erases it, even when the size doesn't change, so
+      // any resize needs to be followed by a redraw.
+      this.resizeElements_();
+      this.predraw_();
+    }
+
+    this.resize_lock = false;
+  }
+
+  /**
+   * Adjusts the number of points in the rolling average. Updates the graph to
+   * reflect the new averaging period.
+   * @param {number} length Number of points over which to average the data.
+   */
+  adjustRoll(length: number) {
+    this.rollPeriod_ = length;
+    this.predraw_();
+  }
+
+  /**
+   * Returns a boolean array of visibility statuses.
+   */
+  visibility() {
+    // Do lazy-initialization, so that this happens after we know the number of
+    // data series.
+    if (!this.getOption("visibility")) {
+      this.attrs_.visibility = [];
+    }
+    // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
+    while (this.getOption("visibility").length < this.numColumns() - 1) {
+      this.attrs_.visibility.push(true);
+    }
+    return this.getOption("visibility");
+  }
+
+  /**
+   * Changes the visibility of one or more series.
+   *
+   * @param {number|number[]|object} num the series index or an array of series indices
+   *                                     or a boolean array of visibility states by index
+   *                                     or an object mapping series numbers, as keys, to
+   *                                     visibility state (boolean values)
+   * @param {boolean} value the visibility state expressed as a boolean
+   */
+  setVisibility(num: number | number[] | object, value: boolean) {
+    var x = this.visibility();
+    var numIsObject = false;
+
+    if (!Array.isArray(num)) {
+      if (num !== null && typeof num === 'object') {
+        numIsObject = true;
+      } else {
+        num = [num];
       }
-      for (j = 1; j < inFields.length; j += 2) {
-        fields[(j + 1) / 2] = [utils.parseFloat_(inFields[j], i, line),
-                               utils.parseFloat_(inFields[j + 1], i, line)];
-      }
-    } else if (this.getBooleanOption("customBars")) {
-      // Bars are a low;center;high tuple
-      for (j = 1; j < inFields.length; j++) {
-        var val = inFields[j];
-        if (/^ *$/.test(val)) {
-          fields[j] = [null, null, null];
-        } else {
-          vals = val.split(";");
-          if (vals.length == 3) {
-            fields[j] = [ utils.parseFloat_(vals[0], i, line),
-                          utils.parseFloat_(vals[1], i, line),
-                          utils.parseFloat_(vals[2], i, line) ];
+    }
+
+    if (numIsObject) {
+      for (var i in num) {
+        if (num.hasOwnProperty(i)) {
+          if (i < 0 || i >= x.length) {
+            console.warn("Invalid series number in setVisibility: " + i);
           } else {
-            console.warn('When using customBars, values must be either blank ' +
-                         'or "low;center;high" tuples (got "' + val +
-                         '" on line ' + (1+i));
+            x[i] = num[i];
           }
         }
       }
     } else {
-      // Values are just numbers
-      for (j = 1; j < inFields.length; j++) {
-        fields[j] = utils.parseFloat_(inFields[j], i, line);
+      for (var i = 0; i < num.length; i++) {
+        if (typeof num[i] === 'boolean') {
+          if (i >= x.length) {
+            console.warn("Invalid series number in setVisibility: " + i);
+          } else {
+            x[i] = num[i];
+          }
+        } else {
+          if (num[i] < 0 || num[i] >= x.length) {
+            console.warn("Invalid series number in setVisibility: " + num[i]);
+          } else {
+            x[num[i]] = value;
+          }
+        }
       }
-    }
-    if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
-      outOfOrder = true;
     }
 
-    if (fields.length != expectedCols) {
-      console.error("Number of columns in line " + i + " (" + fields.length +
-                    ") does not agree with number of labels (" + expectedCols +
-                    ") " + line);
-    }
+    this.predraw_();
+  };
 
-    // If the user specified the 'labels' option and none of the cells of the
-    // first row parsed correctly, then they probably double-specified the
-    // labels. We go with the values set in the option, discard this row and
-    // log a warning to the JS console.
-    if (i === 0 && this.attr_('labels')) {
-      var all_null = true;
-      for (j = 0; all_null && j < fields.length; j++) {
-        if (fields[j]) all_null = false;
-      }
-      if (all_null) {
-        console.warn("The dygraphs 'labels' option is set, but the first row " +
-                     "of CSV data ('" + line + "') appears to also contain " +
-                     "labels. Will drop the CSV labels and use the option " +
-                     "labels.");
-        continue;
-      }
-    }
-    ret.push(fields);
+  /**
+   * How large of an area will the dygraph render itself in?
+   * This is used for testing.
+   * @return A {width: w, height: h} object.
+   * @private
+   */
+  size = function() {
+    return { width: this.width_, height: this.height_ };
   }
 
-  if (outOfOrder) {
-    console.warn("CSV is out of order; order it correctly to speed loading.");
-    ret.sort(function(a,b) { return a[0] - b[0]; });
+  /**
+   * Update the list of annotations and redraw the chart.
+   * See dygraphs.com/annotations.html for more info on how to use annotations.
+   * @param ann {Array} An array of annotation objects.
+   * @param suppressDraw {Boolean} Set to "true" to block chart redraw (optional).
+   */
+  setAnnotations(ann: Array<any>, suppressDraw: boolean) {
+    // Only add the annotation CSS rule once we know it will be used.
+    this.annotations_ = ann;
+    if (!this.layout_) {
+      console.warn("Tried to setAnnotations before dygraph was ready. " +
+                  "Try setting them in a ready() block. See " +
+                  "dygraphs.com/tests/annotation.html");
+      return;
+    }
+
+    this.layout_.setAnnotations(this.annotations_);
+    if (!suppressDraw) {
+      this.predraw_();
+    }
   }
 
-  return ret;
-};
+  /**
+   * Return the list of annotations.
+   */
+  annotations() {
+    return this.annotations_;
+  }
+
+  /**
+  * Get the list of label names for this graph. The first column is the
+  * x-axis, so the data series names start at index 1.
+  *
+  * Returns null when labels have not yet been defined.
+  */
+  getLabels() {
+    var labels = this.attr_("labels");
+    return labels ? labels.slice() : null;
+  }
+
+  /**
+  * Get the index of a series (column) given its name. The first column is the
+  * x-axis, so the data series start with index 1.
+  */
+  indexFromSetName(name) {
+    return this.setIndexByName_[name];
+  }
+
+  /**
+   * Find the row number corresponding to the given x-value.
+   * Returns null if there is no such x-value in the data.
+   * If there are multiple rows with the same x-value, this will return the
+   * first one.
+   * @param {number} xVal The x-value to look for (e.g. millis since epoch).
+   * @return {?number} The row number, which you can pass to getValue(), or null.
+   */
+  getRowForX(xVal: number): number | null {
+    var low = 0,
+        high = this.numRows() - 1;
+
+    while (low <= high) {
+      var idx = (high + low) >> 1;
+      var x = this.getValue(idx, 0);
+      if (x < xVal) {
+        low = idx + 1;
+      } else if (x > xVal) {
+        high = idx - 1;
+      } else if (low != idx) {  // equal, but there may be an earlier match.
+        high = idx;
+      } else {
+        return idx;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Trigger a callback when the dygraph has drawn itself and is ready to be
+   * manipulated. This is primarily useful when dygraphs has to do an XHR for the
+   * data (i.e. a URL is passed as the data source) and the chart is drawn
+   * asynchronously. If the chart has already drawn, the callback will fire
+   * immediately.
+   *
+   * This is a good place to call setAnnotation().
+   *
+   * @param {function(!Dygraph)} callback The callback to trigger when the chart
+   *     is ready.
+   */
+  ready(callback: (arg0: Dygraph) => void) {
+    if (this.is_initial_draw_) {
+      this.readyFns_.push(callback);
+    } else {
+      callback.call(this, this);
+    }
+  }
+
+  /**
+   * Add an event handler. This event handler is kept until the graph is
+   * destroyed with a call to graph.destroy().
+   *
+   * @param {!Node} elem The element to add the event to.
+   * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
+   * @param {function(Event):(boolean|undefined)} fn The function to call
+   *     on the event. The function takes one parameter: the event object.
+   * @private
+   */
+  addAndTrackEvent(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
+    utils.addEvent(elem, type, fn);
+    this.registeredEvents_.push({elem, type, fn});
+  }
+
+  removeTrackedEvents_() {
+    if (this.registeredEvents_) {
+      for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
+        var reg = this.registeredEvents_[idx];
+        utils.removeEvent(reg.elem, reg.type, reg.fn);
+      }
+    }
+
+    this.registeredEvents_ = [];
+  }
+
+}
+
 
 // In native format, all values must be dates or numbers.
 // This check isn't perfect but will catch most mistaken uses of strings.
@@ -2773,625 +3391,6 @@ function validateNativeFormat(data) {
   }
 }
 
-/**
- * The user has provided their data as a pre-packaged JS array. If the x values
- * are numeric, this is the same as dygraphs' internal format. If the x values
- * are dates, we need to convert them from Date objects to ms since epoch.
- * @param {!Array} data
- * @return {Object} data with numeric x values.
- * @private
- */
-Dygraph.prototype.parseArray_ = function(data: Array<any>): object {
-  // Peek at the first x value to see if it's numeric.
-  if (data.length === 0) {
-    console.error("Can't plot empty data set");
-    return null;
-  }
-  if (data[0].length === 0) {
-    console.error("Data set cannot contain an empty row");
-    return null;
-  }
-
-  validateNativeFormat(data);
-
-  var i;
-  if (this.attr_("labels") === null) {
-    console.warn("Using default labels. Set labels explicitly via 'labels' " +
-                 "in the options parameter");
-    this.attrs_.labels = [ "X" ];
-    for (i = 1; i < data[0].length; i++) {
-      this.attrs_.labels.push("Y" + i); // Not user_attrs_.
-    }
-    this.attributes_.reparseSeries();
-  } else {
-    var num_labels = this.attr_("labels");
-    if (num_labels.length != data[0].length) {
-      console.error("Mismatch between number of labels (" + num_labels + ")" +
-                    " and number of columns in array (" + data[0].length + ")");
-      return null;
-    }
-  }
-
-  if (utils.isDateLike(data[0][0])) {
-    // Some intelligent defaults for a date x-axis.
-    this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
-    this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
-
-    // Assume they're all dates.
-    var parsedData = utils.clone(data);
-    for (i = 0; i < data.length; i++) {
-      if (parsedData[i].length === 0) {
-        console.error("Row " + (1 + i) + " of data is empty");
-        return null;
-      }
-      if (parsedData[i][0] === null ||
-          typeof(parsedData[i][0].getTime) != 'function' ||
-          isNaN(parsedData[i][0].getTime())) {
-        console.error("x value in row " + (1 + i) + " is not a Date");
-        return null;
-      }
-      parsedData[i][0] = parsedData[i][0].getTime();
-    }
-    return parsedData;
-  } else {
-    // Some intelligent defaults for a numeric x-axis.
-    /** @private (shut up, jsdoc!) */
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
-    this.attrs_.axes.x.axisLabelFormatter = utils.numberAxisLabelFormatter;
-    return data;
-  }
-};
-
-/**
- * Parses a DataTable object from gviz.
- * The data is expected to have a first column that is either a date or a
- * number. All subsequent columns must be numbers. If there is a clear mismatch
- * between this.xValueParser_ and the type of the first column, it will be
- * fixed. Fills out rawData_.
- * @param {!google.visualization.DataTable} data See above.
- * @private
- */
-Dygraph.prototype.parseDataTable_ = function(data: google.visualization.DataTable) {
-  var shortTextForAnnotationNum = function(num) {
-    // converts [0-9]+ [A-Z][a-z]*
-    // example: 0=A, 1=B, 25=Z, 26=Aa, 27=Ab
-    // and continues like.. Ba Bb .. Za .. Zz..Aaa...Zzz Aaaa Zzzz
-    var shortText = String.fromCharCode(65 /* A */ + num % 26);
-    num = Math.floor(num / 26);
-    while ( num > 0 ) {
-      shortText = String.fromCharCode(65 /* A */ + (num - 1) % 26 ) + shortText.toLowerCase();
-      num = Math.floor((num - 1) / 26);
-    }
-    return shortText;
-  };
-
-  var cols = data.getNumberOfColumns();
-  var rows = data.getNumberOfRows();
-
-  var indepType = data.getColumnType(0);
-  if (indepType == 'date' || indepType == 'datetime') {
-    this.attrs_.xValueParser = utils.dateParser;
-    this.attrs_.axes.x.valueFormatter = utils.dateValueFormatter;
-    this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
-    this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
-  } else if (indepType == 'number') {
-    this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-    this.attrs_.axes.x.valueFormatter = function(x) { return x; };
-    this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
-    this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
-  } else {
-    throw new Error(
-          "only 'date', 'datetime' and 'number' types are supported " +
-          "for column 1 of DataTable input (Got '" + indepType + "')");
-  }
-
-  // Array of the column indices which contain data (and not annotations).
-  var colIdx = [];
-  var annotationCols = {};  // data index -> [annotation cols]
-  var hasAnnotations = false;
-  var i, j;
-  for (i = 1; i < cols; i++) {
-    var type = data.getColumnType(i);
-    if (type == 'number') {
-      colIdx.push(i);
-    } else if (type == 'string' && this.getBooleanOption('displayAnnotations')) {
-      // This is OK -- it's an annotation column.
-      var dataIdx = colIdx[colIdx.length - 1];
-      if (!annotationCols.hasOwnProperty(dataIdx)) {
-        annotationCols[dataIdx] = [i];
-      } else {
-        annotationCols[dataIdx].push(i);
-      }
-      hasAnnotations = true;
-    } else {
-      throw new Error(
-          "Only 'number' is supported as a dependent type with Gviz." +
-          " 'string' is only supported if displayAnnotations is true");
-    }
-  }
-
-  // Read column labels
-  // TODO(danvk): add support back for errorBars
-  var labels = [data.getColumnLabel(0)];
-  for (i = 0; i < colIdx.length; i++) {
-    labels.push(data.getColumnLabel(colIdx[i]));
-    if (this.getBooleanOption("errorBars")) i += 1;
-  }
-  this.attrs_.labels = labels;
-  cols = labels.length;
-
-  var ret = [];
-  var outOfOrder = false;
-  var annotations = [];
-  for (i = 0; i < rows; i++) {
-    var row = [];
-    if (typeof(data.getValue(i, 0)) === 'undefined' ||
-        data.getValue(i, 0) === null) {
-      console.warn("Ignoring row " + i +
-                   " of DataTable because of undefined or null first column.");
-      continue;
-    }
-
-    if (indepType == 'date' || indepType == 'datetime') {
-      row.push(data.getValue(i, 0).getTime());
-    } else {
-      row.push(data.getValue(i, 0));
-    }
-    if (!this.getBooleanOption("errorBars")) {
-      for (j = 0; j < colIdx.length; j++) {
-        var col = colIdx[j];
-        row.push(data.getValue(i, col));
-        if (hasAnnotations &&
-            annotationCols.hasOwnProperty(col) &&
-            data.getValue(i, annotationCols[col][0]) !== null) {
-          var ann = {};
-          ann.series = data.getColumnLabel(col);
-          ann.xval = row[0];
-          ann.shortText = shortTextForAnnotationNum(annotations.length);
-          ann.text = '';
-          for (var k = 0; k < annotationCols[col].length; k++) {
-            if (k) ann.text += "\n";
-            ann.text += data.getValue(i, annotationCols[col][k]);
-          }
-          annotations.push(ann);
-        }
-      }
-
-      // Strip out infinities, which give dygraphs problems later on.
-      for (j = 0; j < row.length; j++) {
-        if (!isFinite(row[j])) row[j] = null;
-      }
-    } else {
-      for (j = 0; j < cols - 1; j++) {
-        row.push([ data.getValue(i, 1 + 2 * j), data.getValue(i, 2 + 2 * j) ]);
-      }
-    }
-    if (ret.length > 0 && row[0] < ret[ret.length - 1][0]) {
-      outOfOrder = true;
-    }
-    ret.push(row);
-  }
-
-  if (outOfOrder) {
-    console.warn("DataTable is out of order; order it correctly to speed loading.");
-    ret.sort(function(a,b) { return a[0] - b[0]; });
-  }
-  this.rawData_ = ret;
-
-  if (annotations.length > 0) {
-    this.setAnnotations(annotations, true);
-  }
-  this.attributes_.reparseSeries();
-};
-
-/**
- * Signals to plugins that the chart data has updated.
- * This happens after the data has updated but before the chart has redrawn.
- * @private
- */
-Dygraph.prototype.cascadeDataDidUpdateEvent_ = function() {
-  // TODO(danvk): there are some issues checking xAxisRange() and using
-  // toDomCoords from handlers of this event. The visible range should be set
-  // when the chart is drawn, not derived from the data.
-  this.cascadeEvents_('dataDidUpdate', {});
-};
-
-/**
- * Get the CSV data. If it's in a function, call that function. If it's in a
- * file, do an XMLHttpRequest to get it.
- * @private
- */
-Dygraph.prototype.start_ = function() {
-  var data = this.file_;
-
-  // Functions can return references of all other types.
-  if (typeof data == 'function') {
-    data = data();
-  }
-
-  if (utils.isArrayLike(data)) {
-    this.rawData_ = this.parseArray_(data);
-    this.cascadeDataDidUpdateEvent_();
-    this.predraw_();
-  } else if (typeof data == 'object' &&
-             typeof data.getColumnRange == 'function') {
-    // must be a DataTable from gviz.
-    this.parseDataTable_(data);
-    this.cascadeDataDidUpdateEvent_();
-    this.predraw_();
-  } else if (typeof data == 'string') {
-    // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
-    var line_delimiter = utils.detectLineDelimiter(data);
-    if (line_delimiter) {
-      this.loadedEvent_(data);
-    } else {
-      // REMOVE_FOR_IE
-      var req;
-      if (window.XMLHttpRequest) {
-        // Firefox, Opera, IE7, and other browsers will use the native object
-        req = new XMLHttpRequest();
-      } else {
-        // IE 5 and 6 will use the ActiveX control
-        req = new ActiveXObject("Microsoft.XMLHTTP");
-      }
-
-      var caller = this;
-      req.onreadystatechange = function () {
-        if (req.readyState == 4) {
-          if (req.status === 200 ||  // Normal http
-              req.status === 0) {    // Chrome w/ --allow-file-access-from-files
-            caller.loadedEvent_(req.responseText);
-          }
-        }
-      };
-
-      req.open("GET", data, true);
-      req.send(null);
-    }
-  } else {
-    console.error("Unknown data format: " + (typeof data));
-  }
-};
-
-/**
- * Changes various properties of the graph. These can include:
- * <ul>
- * <li>file: changes the source data for the graph</li>
- * <li>errorBars: changes whether the data contains stddev</li>
- * </ul>
- *
- * There's a huge variety of options that can be passed to this method. For a
- * full list, see http://dygraphs.com/options.html.
- *
- * @param {Object} input_attrs The new properties and values
- * @param {boolean} block_redraw Usually the chart is redrawn after every
- *     call to updateOptions(). If you know better, you can pass true to
- *     explicitly block the redraw. This can be useful for chaining
- *     updateOptions() calls, avoiding the occasional infinite loop and
- *     preventing redraws when it's not necessary (e.g. when updating a
- *     callback).
- */
-Dygraph.prototype.updateOptions = function(input_attrs: object, block_redraw: boolean) {
-  if (typeof(block_redraw) == 'undefined') block_redraw = false;
-
-  // copyUserAttrs_ drops the "file" parameter as a convenience to us.
-  var file = input_attrs.file;
-  var attrs = Dygraph.copyUserAttrs_(input_attrs);
-  var prevNumAxes = this.attributes_.numAxes();
-
-  // TODO(danvk): this is a mess. Move these options into attr_.
-  if ('rollPeriod' in attrs) {
-    this.rollPeriod_ = attrs.rollPeriod;
-  }
-  if ('dateWindow' in attrs) {
-    this.dateWindow_ = attrs.dateWindow;
-  }
-
-  // TODO(danvk): validate per-series options.
-  // Supported:
-  // strokeWidth
-  // pointSize
-  // drawPoints
-  // highlightCircleSize
-
-  // Check if this set options will require new points.
-  var requiresNewPoints = utils.isPixelChangingOptionList(this.attr_("labels"), attrs);
-
-  utils.updateDeep(this.user_attrs_, attrs);
-
-  this.attributes_.reparseSeries();
-
-  if (prevNumAxes < this.attributes_.numAxes()) this.plotter_.clear();
-  if (file) {
-    // This event indicates that the data is about to change, but hasn't yet.
-    // TODO(danvk): support cancellation of the update via this event.
-    this.cascadeEvents_('dataWillUpdate', {});
-
-    this.file_ = file;
-    if (!block_redraw) this.start_();
-  } else {
-    if (!block_redraw) {
-      if (requiresNewPoints) {
-        this.predraw_();
-      } else {
-        this.renderGraph_(false);
-      }
-    }
-  }
-};
-
-/**
- * Make a copy of input attributes, removing file as a convenience.
- * @private
- */
-Dygraph.copyUserAttrs_ = function(attrs) {
-  var my_attrs = {};
-  for (var k in attrs) {
-    if (!attrs.hasOwnProperty(k)) continue;
-    if (k == 'file') continue;
-    if (attrs.hasOwnProperty(k)) my_attrs[k] = attrs[k];
-  }
-  return my_attrs;
-};
-
-/**
- * Resizes the dygraph. If no parameters are specified, resizes to fill the
- * containing div (which has presumably changed size since the dygraph was
- * instantiated. If the width/height are specified, the div will be resized.
- *
- * This is far more efficient than destroying and re-instantiating a
- * Dygraph, since it doesn't have to reparse the underlying data.
- *
- * @param {number=} width Width (in pixels)
- * @param {number=} height Height (in pixels)
- */
-Dygraph.prototype.resize = function(width: number | undefined, height: number | undefined) {
-  if (this.resize_lock) {
-    return;
-  }
-  this.resize_lock = true;
-
-  if ((width === null) != (height === null)) {
-    console.warn("Dygraph.resize() should be called with zero parameters or " +
-                 "two non-NULL parameters. Pretending it was zero.");
-    width = height = null;
-  }
-
-  var old_width = this.width_;
-  var old_height = this.height_;
-
-  if (width) {
-    this.maindiv_.style.width = width + "px";
-    this.maindiv_.style.height = height + "px";
-    this.width_ = width;
-    this.height_ = height;
-  } else {
-    this.width_ = this.maindiv_.clientWidth;
-    this.height_ = this.maindiv_.clientHeight;
-  }
-
-  if (old_width != this.width_ || old_height != this.height_) {
-    // Resizing a canvas erases it, even when the size doesn't change, so
-    // any resize needs to be followed by a redraw.
-    this.resizeElements_();
-    this.predraw_();
-  }
-
-  this.resize_lock = false;
-};
-
-/**
- * Adjusts the number of points in the rolling average. Updates the graph to
- * reflect the new averaging period.
- * @param {number} length Number of points over which to average the data.
- */
-Dygraph.prototype.adjustRoll = function(length: number) {
-  this.rollPeriod_ = length;
-  this.predraw_();
-};
-
-/**
- * Returns a boolean array of visibility statuses.
- */
-Dygraph.prototype.visibility = function() {
-  // Do lazy-initialization, so that this happens after we know the number of
-  // data series.
-  if (!this.getOption("visibility")) {
-    this.attrs_.visibility = [];
-  }
-  // TODO(danvk): it looks like this could go into an infinite loop w/ user_attrs.
-  while (this.getOption("visibility").length < this.numColumns() - 1) {
-    this.attrs_.visibility.push(true);
-  }
-  return this.getOption("visibility");
-};
-
-/**
- * Changes the visibility of one or more series.
- *
- * @param {number|number[]|object} num the series index or an array of series indices
- *                                     or a boolean array of visibility states by index
- *                                     or an object mapping series numbers, as keys, to
- *                                     visibility state (boolean values)
- * @param {boolean} value the visibility state expressed as a boolean
- */
-Dygraph.prototype.setVisibility = function(num: number | number[] | object, value: boolean) {
-  var x = this.visibility();
-  var numIsObject = false;
-
-  if (!Array.isArray(num)) {
-    if (num !== null && typeof num === 'object') {
-      numIsObject = true;
-    } else {
-      num = [num];
-    }
-  }
-
-  if (numIsObject) {
-    for (var i in num) {
-      if (num.hasOwnProperty(i)) {
-        if (i < 0 || i >= x.length) {
-          console.warn("Invalid series number in setVisibility: " + i);
-        } else {
-          x[i] = num[i];
-        }
-      }
-    }
-  } else {
-    for (var i = 0; i < num.length; i++) {
-      if (typeof num[i] === 'boolean') {
-        if (i >= x.length) {
-          console.warn("Invalid series number in setVisibility: " + i);
-        } else {
-          x[i] = num[i];
-        }
-      } else {
-        if (num[i] < 0 || num[i] >= x.length) {
-          console.warn("Invalid series number in setVisibility: " + num[i]);
-        } else {
-          x[num[i]] = value;
-        }
-      }
-    }
-  }
-
-  this.predraw_();
-};
-
-/**
- * How large of an area will the dygraph render itself in?
- * This is used for testing.
- * @return A {width: w, height: h} object.
- * @private
- */
-Dygraph.prototype.size = function() {
-  return { width: this.width_, height: this.height_ };
-};
-
-/**
- * Update the list of annotations and redraw the chart.
- * See dygraphs.com/annotations.html for more info on how to use annotations.
- * @param ann {Array} An array of annotation objects.
- * @param suppressDraw {Boolean} Set to "true" to block chart redraw (optional).
- */
-Dygraph.prototype.setAnnotations = function(ann: Array<any>, suppressDraw: boolean) {
-  // Only add the annotation CSS rule once we know it will be used.
-  this.annotations_ = ann;
-  if (!this.layout_) {
-    console.warn("Tried to setAnnotations before dygraph was ready. " +
-                 "Try setting them in a ready() block. See " +
-                 "dygraphs.com/tests/annotation.html");
-    return;
-  }
-
-  this.layout_.setAnnotations(this.annotations_);
-  if (!suppressDraw) {
-    this.predraw_();
-  }
-};
-
-/**
- * Return the list of annotations.
- */
-Dygraph.prototype.annotations = function() {
-  return this.annotations_;
-};
-
-/**
- * Get the list of label names for this graph. The first column is the
- * x-axis, so the data series names start at index 1.
- *
- * Returns null when labels have not yet been defined.
- */
-Dygraph.prototype.getLabels = function() {
-  var labels = this.attr_("labels");
-  return labels ? labels.slice() : null;
-};
-
-/**
- * Get the index of a series (column) given its name. The first column is the
- * x-axis, so the data series start with index 1.
- */
-Dygraph.prototype.indexFromSetName = function(name) {
-  return this.setIndexByName_[name];
-};
-
-/**
- * Find the row number corresponding to the given x-value.
- * Returns null if there is no such x-value in the data.
- * If there are multiple rows with the same x-value, this will return the
- * first one.
- * @param {number} xVal The x-value to look for (e.g. millis since epoch).
- * @return {?number} The row number, which you can pass to getValue(), or null.
- */
-Dygraph.prototype.getRowForX = function(xVal: number): number | null {
-  var low = 0,
-      high = this.numRows() - 1;
-
-  while (low <= high) {
-    var idx = (high + low) >> 1;
-    var x = this.getValue(idx, 0);
-    if (x < xVal) {
-      low = idx + 1;
-    } else if (x > xVal) {
-      high = idx - 1;
-    } else if (low != idx) {  // equal, but there may be an earlier match.
-      high = idx;
-    } else {
-      return idx;
-    }
-  }
-
-  return null;
-};
-
-/**
- * Trigger a callback when the dygraph has drawn itself and is ready to be
- * manipulated. This is primarily useful when dygraphs has to do an XHR for the
- * data (i.e. a URL is passed as the data source) and the chart is drawn
- * asynchronously. If the chart has already drawn, the callback will fire
- * immediately.
- *
- * This is a good place to call setAnnotation().
- *
- * @param {function(!Dygraph)} callback The callback to trigger when the chart
- *     is ready.
- */
-Dygraph.prototype.ready = function(callback: (arg0: Dygraph) => ) {
-  if (this.is_initial_draw_) {
-    this.readyFns_.push(callback);
-  } else {
-    callback.call(this, this);
-  }
-};
-
-/**
- * Add an event handler. This event handler is kept until the graph is
- * destroyed with a call to graph.destroy().
- *
- * @param {!Node} elem The element to add the event to.
- * @param {string} type The type of the event, e.g. 'click' or 'mousemove'.
- * @param {function(Event):(boolean|undefined)} fn The function to call
- *     on the event. The function takes one parameter: the event object.
- * @private
- */
-Dygraph.prototype.addAndTrackEvent = function(elem: Node, type: string, fn: (arg0: Event) => (boolean | undefined)) {
-  utils.addEvent(elem, type, fn);
-  this.registeredEvents_.push({elem, type, fn});
-};
-
-Dygraph.prototype.removeTrackedEvents_ = function() {
-  if (this.registeredEvents_) {
-    for (var idx = 0; idx < this.registeredEvents_.length; idx++) {
-      var reg = this.registeredEvents_[idx];
-      utils.removeEvent(reg.elem, reg.type, reg.fn);
-    }
-  }
-
-  this.registeredEvents_ = [];
-};
 
 
 // Installed plugins, in order of precedence (most-general to most-specific).
