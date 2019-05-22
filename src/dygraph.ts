@@ -101,6 +101,10 @@ class Dygraph {
   boundaryIds_: number[];
   setIndexByName_: {[seriesName: string]: number};
   datasetIndex_: number[];
+  lastx_: number;
+  lastRow_: number;
+  selPoints_: DygraphPointType[];
+  highlightSet_: string|null;
   registeredEvents_: {elem: Node|Window, type: string, fn: (e:Event) => void}[];
   eventListeners_: {[eventName: string]: [DygraphsPlugin, Function][]};
   attributes_: DygraphOptions;
@@ -1662,18 +1666,6 @@ class Dygraph {
           this.lastRow_,
           this.highlightSet_);
     }
-  }
-  lastx_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
-    throw new Error("Method not implemented.");
-  }
-  selPoints_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
-    throw new Error("Method not implemented.");
-  }
-  lastRow_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
-    throw new Error("Method not implemented.");
-  }
-  highlightSet_(arg0: this, event: MouseEvent, lastx_: any, selPoints_: any, lastRow_: any, highlightSet_: any) {
-    throw new Error("Method not implemented.");
   }
 
   /**
