@@ -68,8 +68,8 @@ export var VERTICAL = 2;
  * automated tests.
  * @private
  */
-export var getContext = function(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
-  return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
+export function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+  return canvas.getContext("2d");
 };
 
 /**
@@ -81,9 +81,9 @@ export var getContext = function(canvas: HTMLCanvasElement): CanvasRenderingCont
  * @private
  * TODO(danvk): eliminate this; just use addEventListener!
  */
-export var addEvent = function addEvent(elem: Node, type: string, fn: (e: Event) => void) {
+export function addEvent(elem: Node|Window, type: string, fn: (e: Event) => void) {
   elem.addEventListener(type, fn, false);
-};
+}
 
 /**
  * Remove an event handler.
@@ -93,9 +93,9 @@ export var addEvent = function addEvent(elem: Node, type: string, fn: (e: Event)
  *     on the event. The function takes one parameter: the event object.
  * TODO(danvk): eliminate this; just use removeEventListener!
  */
-export function removeEvent(elem: Node, type: string, fn: (e: Event) => void) {
+export function removeEvent(elem: Node|Window, type: string, fn: (e: Event) => void) {
   elem.removeEventListener(type, fn, false);
-};
+}
 
 /**
  * Cancels further processing of an event. This is useful to prevent default
@@ -230,7 +230,7 @@ export function isOK(x: number): boolean {
  * @return Whether the point has numeric x and y.
  * @private
  */
-export function isValidPoint(p: { x: number | null; y: number | null; yval: number | null; }, opt_allowNaNY?: boolean): boolean {
+export function isValidPoint(p: { x?: number | null; y?: number | null; yval?: number | null; }, opt_allowNaNY?: boolean): boolean {
   if (!p) return false;  // null or undefined object
   if (p.yval === null) return false;  // missing point
   if (p.x === null || p.x === undefined) return false;

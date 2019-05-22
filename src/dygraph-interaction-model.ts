@@ -11,7 +11,7 @@
  */
 
 import * as utils from './dygraph-utils';
-import {DygraphAny, DygraphInteractionContext, DygraphInteractionAxis, PluginClickEvent, PluginPointClickEvent, DygraphInteractionTouch} from './dygraph-types';
+import {DygraphAny, DygraphInteractionContext, PluginClickEvent, PluginPointClickEvent, DygraphInteractionTouch, DygraphAxisType} from './dygraph-types';
 
 type EventWrapper<T extends Event> = (e: T, g: DygraphAny, context: DygraphInteractionContext) => void;
 
@@ -119,7 +119,7 @@ export function startPan(event: MouseEvent, g: DygraphAny, context: DygraphInter
   context.axes = [];
   for (i = 0; i < g.axes_.length; i++) {
     axis = g.axes_[i];
-    var axis_data = {} as DygraphInteractionAxis;
+    var axis_data = {} as DygraphAxisType;
     var yRange = g.yAxisRange(i);
     // TODO(konigsberg): These values should be in |context|.
     // In log scale, initialTopValue, dragValueRange and unitsPerPixel are log scale.

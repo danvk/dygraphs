@@ -61,12 +61,6 @@ export interface DygraphInteractionContext {
   destroy(): void;
 }
 
-export interface DygraphInteractionAxis {
-  initialTopValue: number;
-  dragValueRange: number;
-  unitsPerPixel: number;
-}
-
 export interface DygraphInteractionTouch {
   pageX: number;
   pageY: number;
@@ -187,6 +181,9 @@ export interface Annotation {
    ticks: Tick[];
    extremeRange: [number, number];
    valueRange: [number, number];
+   initialTopValue: number;
+   dragValueRange: number;
+   unitsPerPixel: number;
  }
 
 /** Placeholder for TS conversion. Should be Dygraph. */
@@ -239,7 +236,7 @@ export interface PluginSelectEvent extends PluginEvent {
 
 export interface DygraphsPlugin {
   toString(): string;
-  activate(g: DygraphAny): void;
+  activate(g: DygraphAny): {[eventName: string]: (e: any) => void};
   layout?(e: PluginLayoutEvent): void;
   willDrawChart?(e: PluginDrawEvent): void;
   didDrawChart?(e: PluginDrawEvent): void;

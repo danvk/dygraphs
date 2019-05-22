@@ -68,7 +68,7 @@ import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
 import { DygraphsPlugin, DygraphPointType, Annotation, DygraphAxisType } from './dygraph-types';
-import DygraphDataHandler from './datahandler/datahandler';
+import DygraphDataHandler, { UnifiedPoint } from './datahandler/datahandler';
 
 declare let process;
 
@@ -101,13 +101,14 @@ class Dygraph {
   boundaryIds_: number[];
   setIndexByName_: {[seriesName: string]: number};
   datasetIndex_: number[];
-  registeredEvents_: {elem: Node, type: string, fn: (e:Event) => void}[];
+  registeredEvents_: {elem: Node|Window, type: string, fn: (e:Event) => void}[];
   eventListeners_: {[eventName: string]: [DygraphsPlugin, Function][]};
   attributes_: DygraphOptions;
-  plugins_: DygraphsPlugin[];
+  plugins_: PluginDict[];
   axes_: DygraphAxisType[];
   plotter_: DygraphCanvasRenderer;
   rawData_: any[];  // see comment in parseCSV_
+  rolledSeries_: UnifiedPoint[][];
   graphDiv: HTMLDivElement;
   canvas_: HTMLCanvasElement;
   hidden_: HTMLCanvasElement;
@@ -263,20 +264,19 @@ class Dygraph {
 
     // Activate plugins.
     this.plugins_ = [];
-    /** @type DygraphPlugin[] */
-    var plugins: DygraphPlugin[] = Dygraph.PLUGINS.concat(this.getOption('plugins'));
+    var plugins: any[] = Dygraph.PLUGINS.concat(this.getOption('plugins'));
     for (var i = 0; i < plugins.length; i++) {
       // the plugins option may contain either plugin classes or instances.
       // Plugin instances contain an activate method.
       var Plugin = plugins[i];  // either a constructor or an instance.
-      var pluginInstance;
+      let pluginInstance: DygraphsPlugin;
       if (typeof(Plugin.activate) !== 'undefined') {
         pluginInstance = Plugin;
       } else {
         pluginInstance = new Plugin();
       }
 
-      var pluginDict = {
+      var pluginDict: PluginDict = {
         plugin: pluginInstance,
         events: {},
         options: {},
@@ -301,12 +301,10 @@ class Dygraph {
         if (!plugin_dict.events.hasOwnProperty(eventName)) continue;
         var callback = plugin_dict.events[eventName];
 
-        var pair = [plugin_dict.plugin, callback];
         if (!(eventName in this.eventListeners_)) {
-          this.eventListeners_[eventName] = [pair];
-        } else {
-          this.eventListeners_[eventName].push(pair);
+          this.eventListeners_[eventName] = [];
         }
+        this.eventListeners_[eventName].push([plugin_dict.plugin, callback]);
       }
     }
 
@@ -590,9 +588,6 @@ class Dygraph {
     this.axes_ = saveAxes;
     return newAxes.map(axis => axis.extremeRange);
   }
-  rolledSeries_(rolledSeries_: any, arg1: null) {
-    throw new Error("Method not implemented.");
-  }
 
   /**
    * Returns the currently-visible y-range for an axis. This can be affected by
@@ -632,7 +627,7 @@ class Dygraph {
    * Note: use toDomXCoord instead of toDomCoords(x, null) and use toDomYCoord
    * instead of toDomCoords(null, y, axis).
    */
-  toDomCoords(x: number, y: number, axis?: 'y' | 'y2') {
+  toDomCoords(x: number, y: number, axis?: number) {
     return [ this.toDomXCoord(x), this.toDomYCoord(y, axis) ];
   }
 
@@ -658,7 +653,7 @@ class Dygraph {
    *
    * returns a single value or null if y is null.
    */
-  toDomYCoord(y: number, axis?: 'y' | 'y2') {
+  toDomYCoord(y: number, axis?: number) {
     var pct = this.toPercentYCoord(y, axis);
 
     if (pct === null) {
@@ -677,7 +672,7 @@ class Dygraph {
    * Note: use toDataXCoord instead of toDataCoords(x, null) and use toDataYCoord
    * instead of toDataCoords(null, y, axis).
    */
-  toDataCoords(x: number, y: number, axis?: 'y' | 'y2') {
+  toDataCoords(x: number, y: number, axis?: number) {
     return [ this.toDataXCoord(x), this.toDataYCoord(y, axis) ];
   }
 
@@ -883,15 +878,15 @@ class Dygraph {
       // The mouse has left the chart if:
       // 1. e.target is inside the chart
       // 2. e.relatedTarget is outside the chart
-      var target = e.target || e.fromElement;
-      var relatedTarget = e.relatedTarget || e.toElement;
+      var target = (e.target as Element) || e.fromElement;
+      var relatedTarget = (e.relatedTarget as Element) || e.toElement;
       if (utils.isNodeContainedBy(target, dygraph.graphDiv) &&
           !utils.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
         dygraph.mouseOut_(e);
       }
     };
 
-    this.addAndTrackEvent(document, 'mouseout', this.mouseOutHandler_);
+    this.addAndTrackEvent(window, 'mouseout', this.mouseOutHandler_);
     this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
     // Don't recreate and register the resize handler on subsequent calls.
@@ -903,7 +898,7 @@ class Dygraph {
 
       // Update when the window is resized.
       // TODO(danvk): drop frames depending on complexity of the chart.
-      this.addAndTrackEvent(document, 'resize', this.resizeHandler_);
+      this.addAndTrackEvent(window, 'resize', this.resizeHandler_);
     }
   }
 
@@ -961,7 +956,7 @@ class Dygraph {
     utils.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
     // remove window handlers
-    utils.removeEvent(window,'resize', this.resizeHandler_);
+    utils.removeEvent(window, 'resize', this.resizeHandler_);
     this.resizeHandler_ = null;
 
     removeRecursive(this.maindiv_);
@@ -1114,11 +1109,11 @@ class Dygraph {
                     "left": (area.x + 1) + "px",
                     "display": display
                   };
-    roller.size = "2";
-    roller.value = this.rollPeriod_;
+    roller.size = 2;
+    roller.value = '' + this.rollPeriod_;
     utils.update(roller.style, textAttr);
 
-    roller.onchange = () => this.adjustRoll(roller.value);
+    roller.onchange = () => this.adjustRoll(Number(roller.value));
   }
 
   /**
@@ -1127,7 +1122,7 @@ class Dygraph {
    * @private
    */
   createDragInterface_() {
-    var context = {
+    const context = {
       // Tracks whether the mouse is down right now
       isZooming: false,
       isPanning: false,  // is this drag part of a pan?
@@ -1169,7 +1164,7 @@ class Dygraph {
       tarp: new IFrameTarp(),
 
       // contextB is the same thing as this context object but renamed.
-      initializeMouseDown: function(event, g, contextB) {
+      initializeMouseDown: function(event: MouseEvent, g: Dygraph, contextB: typeof context) {
         // prevents mouse drags from selecting page text.
         if (event.preventDefault) {
           event.preventDefault();  // Firefox, Chrome, etc.
@@ -1199,8 +1194,7 @@ class Dygraph {
           context.draggingDate = null;
           context.dateRange = null;
           for (var i = 0; i < self.axes_.length; i++) {
-            delete self.axes_[i].draggingValue;
-            delete self.axes_[i].dragValueRange;
+            self.axes_[i].dragValueRange = null;
           }
         }
 
@@ -1233,7 +1227,7 @@ class Dygraph {
         context.destroy();
       };
 
-      this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+      this.addAndTrackEvent(window, 'mouseup', mouseUpHandler);
     }
   }
 
@@ -3175,10 +3169,10 @@ class Dygraph {
    * This is far more efficient than destroying and re-instantiating a
    * Dygraph, since it doesn't have to reparse the underlying data.
    *
-   * @param {number=} width Width (in pixels)
-   * @param {number=} height Height (in pixels)
+   * @param width Width (in pixels)
+   * @param height Height (in pixels)
    */
-  resize(width: number | undefined, height: number | undefined) {
+  resize(width?: number, height?: number) {
     if (this.resize_lock) {
       return;
     }
@@ -3408,7 +3402,7 @@ class Dygraph {
    *     on the event. The function takes one parameter: the event object.
    * @private
    */
-  addAndTrackEvent(elem: Node, type: string, fn: (e: Event) => void) {
+  addAndTrackEvent(elem: Node|Window, type: string, fn: (e: Event) => void) {
     utils.addEvent(elem, type, fn);
     this.registeredEvents_.push({elem, type, fn});
   }
@@ -3500,5 +3494,11 @@ function validateNativeFormat(data) {
   }
 }
 
+interface PluginDict {
+  plugin: DygraphsPlugin;
+  events: {[eventName: string]: (e: any) => void};
+  options: any;
+  pluginOptions: any;
+}
 
 export default Dygraph;
