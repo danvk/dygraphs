@@ -4,8 +4,8 @@
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
 
-import Dygraph from '../../src/dygraph';
-import DygraphInteraction from '../../src/dygraph-interaction-model';
+import Dygraph from '../../src-js/src/dygraph';
+import DygraphInteraction from '../../src-js/src/dygraph-interaction-model';
 import DygraphOps from './DygraphOps';
 
 describe("interaction-model", function() {

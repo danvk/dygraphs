@@ -4,7 +4,7 @@
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 
 describe("multi-csv", function() {
 

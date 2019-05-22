@@ -5,7 +5,7 @@ var Dygraph;
 if (window.Dygraph) {
   Dygraph = window.Dygraph;
 } else if (typeof(module) !== 'undefined') {
-  Dygraph = require('../dygraph');
+  Dygraph = require('../../src-js/src/dygraph');
 }
 
 /**

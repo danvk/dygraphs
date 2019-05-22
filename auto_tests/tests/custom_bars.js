@@ -4,8 +4,8 @@
  * @fileoverview Regression test based on some strange customBars data.
  * @author danvk@google.com (Dan Vanderkam)
  */
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
 import CanvasAssertions from './CanvasAssertions';
 import PixelSampler from './PixelSampler';
 import Proxy from './Proxy';

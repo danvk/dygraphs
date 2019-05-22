@@ -4,7 +4,7 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 
-import * as utils from '../../src/dygraph-utils';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 var Util = {};
 

@@ -1,5 +1,5 @@
-import Dygraph from '../../src/dygraph';
-import LegendPlugin from '../../src/plugins/legend';
+import Dygraph from '../../src-js/src/dygraph';
+import LegendPlugin from '../../src-js/src/plugins/legend';
 import Util from './Util';
 
 describe("plugins-legend", function() {

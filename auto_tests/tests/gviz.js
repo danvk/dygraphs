@@ -2,7 +2,7 @@
  * Unit tests for GViz data table support.
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 
 import Util from './Util';
 

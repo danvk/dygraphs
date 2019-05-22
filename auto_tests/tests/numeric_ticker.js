@@ -6,9 +6,9 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-import Dygraph from '../../src/dygraph';
-import * as DygraphTickers from '../../src/dygraph-tickers';
-import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+import Dygraph from '../../src-js/src/dygraph';
+import * as DygraphTickers from '../../src-js/src/dygraph-tickers';
+import DEFAULT_ATTRS from '../../src-js/src/dygraph-default-attrs';
 
 describe("numeric-ticker-tests", function() {
 

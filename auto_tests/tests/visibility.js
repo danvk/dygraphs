@@ -3,7 +3,7 @@
  * @author sergeyslepian@gmail.com
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 import Util from './Util';
 
 describe("visibility", function() {

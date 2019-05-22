@@ -4,7 +4,7 @@
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
 
-import * as utils from '../../src/dygraph-utils';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 describe("date-formats", function() {
 

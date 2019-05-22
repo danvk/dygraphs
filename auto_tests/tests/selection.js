@@ -6,8 +6,8 @@
  * @author danvk@google.com (Dan Vanderkam)
  */
 
-import Dygraph from '../../src/dygraph';
-import DefaultHandler from '../../src/datahandler/default';
+import Dygraph from '../../src-js/src/dygraph';
+import DefaultHandler from '../../src-js/src/datahandler/default';
 
 describe("selection", function() {
 

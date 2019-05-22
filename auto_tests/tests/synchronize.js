@@ -4,7 +4,7 @@
  * @author nyx@nyx.cz (Marek Janda)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 import '../../src/extras/synchronizer';  // Sets Dygraph.synchronize
 
 import DygraphOps from './DygraphOps';

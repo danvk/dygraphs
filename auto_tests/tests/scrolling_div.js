@@ -4,7 +4,7 @@
  * @author konigsberg@google.com (Robert Konigsbrg)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 import DygraphOps from './DygraphOps';
 
 describe("scrolling-div", function() {

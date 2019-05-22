@@ -5,9 +5,9 @@
  * @author paul.eric.felix@gmail.com (Paul Felix)
  */
 
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
-import RangeSelectorPlugin from '../../src/plugins/range-selector';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
+import RangeSelectorPlugin from '../../src-js/src/plugins/range-selector';
 
 import Util from './Util';
 import DygraphOps from './DygraphOps';

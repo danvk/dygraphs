@@ -4,7 +4,7 @@
  * @author danvk@google.com (Dan Vanderkam)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 
 import PixelSampler from './PixelSampler';
 

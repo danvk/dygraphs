@@ -4,7 +4,7 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-import * as utils from '../../src/dygraph-utils';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 describe("utils-tests", function() {
 

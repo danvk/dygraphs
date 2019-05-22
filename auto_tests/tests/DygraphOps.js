@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import * as utils from '../../src/dygraph-utils';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 /** 
  * @fileoverview Utility functions for Dygraphs.

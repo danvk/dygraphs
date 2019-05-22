@@ -4,9 +4,9 @@
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
 
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
-import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
+import DEFAULT_ATTRS from '../../src-js/src/dygraph-default-attrs';
 import Util from './Util';
 import {assertDeepCloseTo} from './custom_asserts';
 

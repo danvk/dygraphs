@@ -6,8 +6,8 @@
  * @author danvdk@gmail.com (Dan Vanderkam)
  */
 
-import * as DygraphTickers from '../../src/dygraph-tickers';
-import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+import * as DygraphTickers from '../../src-js/src/dygraph-tickers';
+import DEFAULT_ATTRS from '../../src-js/src/dygraph-default-attrs';
 
 describe("date-ticker-tests", function() {
 

@@ -25,7 +25,7 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 
 describe("dygraphs-sanity", function() {
 

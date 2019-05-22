@@ -4,10 +4,10 @@
  * @author gmadrid@gmail.com (George Madrid)
  */
 
-import Dygraph from '../../src/dygraph';
-import {Granularity, getDateAxis} from '../../src/dygraph-tickers';
-import * as utils from '../../src/dygraph-utils';
-import DEFAULT_ATTRS from '../../src/dygraph-default-attrs';
+import Dygraph from '../../src-js/src/dygraph';
+import {Granularity, getDateAxis} from '../../src-js/src/dygraph-tickers';
+import * as utils from '../../src-js/src/dygraph-utils';
+import DEFAULT_ATTRS from '../../src-js/src/dygraph-default-attrs';
 
 describe("two-digit-years", function() {
 

@@ -11,7 +11,7 @@
  *
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 import Util from './Util';
 
 import 'core-js/es6/promise';

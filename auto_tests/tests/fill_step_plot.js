@@ -4,8 +4,8 @@
  *
  * @author benoitboivin.pro@gmail.com (Benoit Boivin)
  */
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
 import CanvasAssertions from './CanvasAssertions';
 import Proxy from './Proxy';
 

@@ -2,8 +2,8 @@
  * @fileoverview Test cases for the option "drawGapEdgePoints"
  */
 
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 describe("draw-gap-edge-points", function() {
 

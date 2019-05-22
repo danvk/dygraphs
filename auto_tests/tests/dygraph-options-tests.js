@@ -2,9 +2,9 @@
  * @fileoverview Test cases for DygraphOptions.
  */
 
-import Dygraph from '../../src/dygraph';
-import DygraphOptions from '../../src/dygraph-options';
-import OPTIONS_REFERENCE from '../../src/dygraph-options-reference';
+import Dygraph from '../../src-js/src/dygraph';
+import DygraphOptions from '../../src-js/src/dygraph-options';
+import OPTIONS_REFERENCE from '../../src-js/src/dygraph-options-reference';
 
 describe("dygraph-options-tests", function() {
 

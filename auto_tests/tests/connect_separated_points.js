@@ -4,8 +4,8 @@
  * @author julian.eichstaedt@ch.sauter-bc.com (Fr. Sauter AG)
  */
 
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
 import CanvasAssertions from './CanvasAssertions';
 import Proxy from './Proxy';
 

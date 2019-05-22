@@ -4,8 +4,8 @@
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 
-import Dygraph from '../../src/dygraph';
-import * as utils from '../../src/dygraph-utils';
+import Dygraph from '../../src-js/src/dygraph';
+import * as utils from '../../src-js/src/dygraph-utils';
 
 import Util from './Util';
 import CanvasAssertions from './CanvasAssertions';

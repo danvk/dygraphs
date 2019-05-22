@@ -5,7 +5,7 @@
  * @author antrob@google.com (Anthony Robledo)
  */
 
-import Dygraph from '../../src/dygraph';
+import Dygraph from '../../src-js/src/dygraph';
 
 describe("update-options", function() {
 
