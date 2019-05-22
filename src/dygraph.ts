@@ -788,671 +788,670 @@ class Dygraph {
     return this.rawData_[row][col];
   }
 
+  /**
+   * Generates interface elements for the Dygraph: a containing div, a div to
+   * display the current point, and a textbox to adjust the rolling average
+   * period. Also creates the Renderer/Layout elements.
+   * @private
+   */
+  createInterface_() {
+    // Create the all-enclosing graph div
+    var enclosing = this.maindiv_;
 
+    this.graphDiv = document.createElement("div");
+
+    // TODO(danvk): any other styles that are useful to set here?
+    this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
+    this.graphDiv.style.position = 'relative';
+    enclosing.appendChild(this.graphDiv);
+
+    // Create the canvas for interactive parts of the chart.
+    this.canvas_ = utils.createCanvas();
+    this.canvas_.style.position = "absolute";
+
+    // ... and for static parts of the chart.
+    this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
+
+    this.canvas_ctx_ = utils.getContext(this.canvas_);
+    this.hidden_ctx_ = utils.getContext(this.hidden_);
+
+    this.resizeElements_();
+
+    // The interactive parts of the graph are drawn on top of the chart.
+    this.graphDiv.appendChild(this.hidden_);
+    this.graphDiv.appendChild(this.canvas_);
+    this.mouseEventElement_ = this.createMouseEventElement_();
+
+    // Create the grapher
+    this.layout_ = new DygraphLayout(this);
+
+    var dygraph = this;
+
+    this.mouseMoveHandler_ = function(e: MouseEvent) {
+      dygraph.mouseMove_(e);
+    };
+
+    this.mouseOutHandler_ = function(e: MouseEvent) {
+      // The mouse has left the chart if:
+      // 1. e.target is inside the chart
+      // 2. e.relatedTarget is outside the chart
+      var target = e.target || e.fromElement;
+      var relatedTarget = e.relatedTarget || e.toElement;
+      if (utils.isNodeContainedBy(target, dygraph.graphDiv) &&
+          !utils.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
+        dygraph.mouseOut_(e);
+      }
+    };
+
+    this.addAndTrackEvent(document, 'mouseout', this.mouseOutHandler_);
+    this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+
+    // Don't recreate and register the resize handler on subsequent calls.
+    // This happens when the graph is resized.
+    if (!this.resizeHandler_) {
+      this.resizeHandler_ = function(e: Event) {
+        dygraph.resize();
+      };
+
+      // Update when the window is resized.
+      // TODO(danvk): drop frames depending on complexity of the chart.
+      this.addAndTrackEvent(document, 'resize', this.resizeHandler_);
+    }
+  }
+
+  resizeElements_() {
+    this.graphDiv.style.width = this.width_ + "px";
+    this.graphDiv.style.height = this.height_ + "px";
+
+    var pixelRatioOption = this.getNumericOption('pixelRatio')
+
+    var canvasScale = pixelRatioOption || utils.getContextPixelRatio(this.canvas_ctx_);
+    this.canvas_.width = this.width_ * canvasScale;
+    this.canvas_.height = this.height_ * canvasScale;
+    this.canvas_.style.width = this.width_ + "px";    // for IE
+    this.canvas_.style.height = this.height_ + "px";  // for IE
+    if (canvasScale !== 1) {
+      this.canvas_ctx_.scale(canvasScale, canvasScale);
+    }
+
+    var hiddenScale = pixelRatioOption || utils.getContextPixelRatio(this.hidden_ctx_);
+    this.hidden_.width = this.width_ * hiddenScale;
+    this.hidden_.height = this.height_ * hiddenScale;
+    this.hidden_.style.width = this.width_ + "px";    // for IE
+    this.hidden_.style.height = this.height_ + "px";  // for IE
+    if (hiddenScale !== 1) {
+      this.hidden_ctx_.scale(hiddenScale, hiddenScale);
+    }
+  }
+
+  /**
+   * Detach DOM elements in the dygraph and null out all data references.
+   * Calling this when you're done with a dygraph can dramatically reduce memory
+   * usage. See, e.g., the tests/perf.html example.
+   */
+  destroy() {
+    this.canvas_ctx_.restore();
+    this.hidden_ctx_.restore();
+
+    // Destroy any plugins, in the reverse order that they were registered.
+    for (var i = this.plugins_.length - 1; i >= 0; i--) {
+      var p = this.plugins_.pop();
+      if (p.plugin.destroy) p.plugin.destroy();
+    }
+
+    var removeRecursive = function(node) {
+      while (node.hasChildNodes()) {
+        removeRecursive(node.firstChild);
+        node.removeChild(node.firstChild);
+      }
+    };
+
+    this.removeTrackedEvents_();
+
+    // remove mouse event handlers (This may not be necessary anymore)
+    utils.removeEvent(window, 'mouseout', this.mouseOutHandler_);
+    utils.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
+
+    // remove window handlers
+    utils.removeEvent(window,'resize', this.resizeHandler_);
+    this.resizeHandler_ = null;
+
+    removeRecursive(this.maindiv_);
+
+    var nullOut = function(obj) {
+      for (var n in obj) {
+        if (typeof(obj[n]) === 'object') {
+          obj[n] = null;
+        }
+      }
+    };
+    // These may not all be necessary, but it can't hurt...
+    nullOut(this.layout_);
+    nullOut(this.plotter_);
+    nullOut(this);
+  }
+
+  /**
+   * Creates the canvas on which the chart will be drawn. Only the Renderer ever
+   * draws on this particular canvas. All Dygraph work (i.e. drawing hover dots
+   * or the zoom rectangles) is done on this.canvas_.
+   * @param canvas The Dygraph canvas over which to overlay the plot
+   * @return The newly-created canvas
+   * @private
+   */
+  createPlotKitCanvas_(canvas: HTMLCanvasElement): object {
+    var h = utils.createCanvas();
+    h.style.position = "absolute";
+    // TODO(danvk): h should be offset from canvas. canvas needs to include
+    // some extra area to make it easier to zoom in on the far left and far
+    // right. h needs to be precisely the plot area, so that clipping occurs.
+    h.style.top = canvas.style.top;
+    h.style.left = canvas.style.left;
+    h.width = this.width_;
+    h.height = this.height_;
+    h.style.width = this.width_ + "px";    // for IE
+    h.style.height = this.height_ + "px";  // for IE
+    return h;
+  }
+
+  /**
+   * Creates an overlay element used to handle mouse events.
+   * @return The mouse event element.
+   * @private
+   */
+  createMouseEventElement_(): HTMLCanvasElement {
+    return this.canvas_;
+  };
+
+  /**
+   * Generate a set of distinct colors for the data series. This is done with a
+   * color wheel. Saturation/Value are customizable, and the hue is
+   * equally-spaced around the color wheel. If a custom set of colors is
+   * specified, that is used instead.
+   * @private
+   */
+  setColors_() {
+    var labels = this.getLabels();
+    var num = labels.length - 1;
+    this.colors_ = [];
+    this.colorsMap_ = {};
+
+    // These are used for when no custom colors are specified.
+    var sat = this.getNumericOption('colorSaturation') || 1.0;
+    var val = this.getNumericOption('colorValue') || 0.5;
+    var half = Math.ceil(num / 2);
+
+    var colors = this.getOption('colors');
+    var visibility = this.visibility();
+    for (var i = 0; i < num; i++) {
+      if (!visibility[i]) {
+        continue;
+      }
+      var label = labels[i + 1];
+      var colorStr = this.attributes_.getForSeries('color', label);
+      if (!colorStr) {
+        if (colors) {
+          colorStr = colors[i % colors.length];
+        } else {
+          // alternate colors for high contrast.
+          var idx = i % 2 ? (half + (i + 1)/ 2) : Math.ceil((i + 1) / 2);
+          var hue = (1.0 * idx / (1 + num));
+          colorStr = utils.hsvToRGB(hue, sat, val);
+        }
+      }
+      this.colors_.push(colorStr);
+      this.colorsMap_[label] = colorStr;
+    }
+  }
+
+  /**
+   * Return the list of colors. This is either the list of colors passed in the
+   * attributes or the autogenerated list of rgb(r,g,b) strings.
+   * This does not return colors for invisible series.
+   * @return The list of colors.
+   */
+  getColors(): string[] {
+    return this.colors_;
+  };
+
+  /**
+   * Returns a few attributes of a series, i.e. its color, its visibility, which
+   * axis it's assigned to, and its column in the original data.
+   * Returns null if the series does not exist.
+   * Otherwise, returns an object with column, visibility, color and axis properties.
+   * The "axis" property will be set to 1 for y1 and 2 for y2.
+   * The "column" property can be fed back into getValue(row, column) to get
+   * values for this series.
+   */
+  getPropertiesForSeries(series_name: string) {
+    var idx = -1;
+    var labels = this.getLabels();
+    for (var i = 1; i < labels.length; i++) {
+      if (labels[i] == series_name) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx == -1) return null;
+
+    return {
+      name: series_name,
+      column: idx,
+      visible: this.visibility()[idx - 1],
+      color: this.colorsMap_[series_name],
+      axis: 1 + this.attributes_.axisForSeries(series_name)
+    };
+  }
+
+  /**
+   * Create the text box to adjust the averaging period
+   * @private
+   */
+  createRollInterface_() {
+    // Create a roller if one doesn't exist already.
+    var roller = this.roller_;
+    if (!roller) {
+      this.roller_ = roller = document.createElement("input");
+      roller.type = "text";
+      roller.style.display = "none";
+      roller.className = 'dygraph-roller';
+      this.graphDiv.appendChild(roller);
+    }
+
+    var display = this.getBooleanOption('showRoller') ? 'block' : 'none';
+
+    var area = this.getArea();
+    var textAttr = {
+                    "top": (area.y + area.h - 25) + "px",
+                    "left": (area.x + 1) + "px",
+                    "display": display
+                  };
+    roller.size = "2";
+    roller.value = this.rollPeriod_;
+    utils.update(roller.style, textAttr);
+
+    roller.onchange = () => this.adjustRoll(roller.value);
+  }
+
+  /**
+   * Set up all the mouse handlers needed to capture dragging behavior for zoom
+   * events.
+   * @private
+   */
+  createDragInterface_() {
+    var context = {
+      // Tracks whether the mouse is down right now
+      isZooming: false,
+      isPanning: false,  // is this drag part of a pan?
+      is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
+      dragStartX: null, // pixel coordinates
+      dragStartY: null, // pixel coordinates
+      dragEndX: null, // pixel coordinates
+      dragEndY: null, // pixel coordinates
+      dragDirection: null,
+      prevEndX: null, // pixel coordinates
+      prevEndY: null, // pixel coordinates
+      prevDragDirection: null,
+      cancelNextDblclick: false,  // see comment in dygraph-interaction-model.js
+
+      // The value on the left side of the graph when a pan operation starts.
+      initialLeftmostDate: null,
+
+      // The number of units each pixel spans. (This won't be valid for log
+      // scales)
+      xUnitsPerPixel: null,
+
+      // TODO(danvk): update this comment
+      // The range in second/value units that the viewport encompasses during a
+      // panning operation.
+      dateRange: null,
+
+      // Top-left corner of the canvas, in DOM coords
+      // TODO(konigsberg): Rename topLeftCanvasX, topLeftCanvasY.
+      px: 0,
+      py: 0,
+
+      // Values for use with panEdgeFraction, which limit how far outside the
+      // graph's data boundaries it can be panned.
+      boundedDates: null, // [minDate, maxDate]
+      boundedValues: null, // [[minValue, maxValue] ...]
+
+      // We cover iframes during mouse interactions. See comments in
+      // dygraph-utils.js for more info on why this is a good idea.
+      tarp: new IFrameTarp(),
+
+      // contextB is the same thing as this context object but renamed.
+      initializeMouseDown: function(event, g, contextB) {
+        // prevents mouse drags from selecting page text.
+        if (event.preventDefault) {
+          event.preventDefault();  // Firefox, Chrome, etc.
+        } else {
+          event.returnValue = false;  // IE
+          event.cancelBubble = true;
+        }
+
+        var canvasPos = utils.findPos(g.canvas_);
+        contextB.px = canvasPos.x;
+        contextB.py = canvasPos.y;
+        contextB.dragStartX = utils.dragGetX_(event, contextB);
+        contextB.dragStartY = utils.dragGetY_(event, contextB);
+        contextB.cancelNextDblclick = false;
+        contextB.tarp.cover();
+      },
+      destroy: function() {
+        var context = this;
+        if (context.isZooming || context.isPanning) {
+          context.isZooming = false;
+          context.dragStartX = null;
+          context.dragStartY = null;
+        }
+
+        if (context.isPanning) {
+          context.isPanning = false;
+          context.draggingDate = null;
+          context.dateRange = null;
+          for (var i = 0; i < self.axes_.length; i++) {
+            delete self.axes_[i].draggingValue;
+            delete self.axes_[i].dragValueRange;
+          }
+        }
+
+        context.tarp.uncover();
+      }
+    };
+
+    var interactionModel = this.getOption("interactionModel");
+
+    // Self is the graph.
+    var self = this;
+
+    // Function that binds the graph and context to the handler.
+    var bindHandler = function(handler) {
+      return function(event) {
+        handler(event, self, context);
+      };
+    };
+
+    for (var eventName in interactionModel) {
+      if (!interactionModel.hasOwnProperty(eventName)) continue;
+      this.addAndTrackEvent(this.mouseEventElement_, eventName,
+          bindHandler(interactionModel[eventName]));
+    }
+
+    // If the user releases the mouse button during a drag, but not over the
+    // canvas, then it doesn't count as a zooming action.
+    if (!interactionModel.willDestroyContextMyself) {
+      var mouseUpHandler = function(event) {
+        context.destroy();
+      };
+
+      this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
+    }
+  }
+
+  /**
+   * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
+   * up any previous zoom rectangles that were drawn. This could be optimized to
+   * avoid extra redrawing, but it's tricky to avoid interactions with the status
+   * dots.
+   *
+   * @param direction the direction of the zoom rectangle. Acceptable
+   *     values are utils.HORIZONTAL and utils.VERTICAL.
+   * @param startX The X position where the drag started, in canvas
+   *     coordinates.
+   * @param endX The current X position of the drag, in canvas coords.
+   * @param startY The Y position where the drag started, in canvas
+   *     coordinates.
+   * @param endY The current Y position of the drag, in canvas coords.
+   * @param prevDirection the value of direction on the previous call to
+   *     this function. Used to avoid excess redrawing
+   * @param prevEndX The value of endX on the previous call to this
+   *     function. Used to avoid excess redrawing
+   * @param prevEndY The value of endY on the previous call to this
+   *     function. Used to avoid excess redrawing
+   * @private
+   */
+  drawZoomRect_(direction: number, startX: number, endX: number, startY: number,
+                endY: number, prevDirection: number, prevEndX: number,
+                prevEndY: number) {
+    var ctx = this.canvas_ctx_;
+
+    // Clean up from the previous rect if necessary
+    if (prevDirection == utils.HORIZONTAL) {
+      ctx.clearRect(Math.min(startX, prevEndX), this.layout_.getPlotArea().y,
+                    Math.abs(startX - prevEndX), this.layout_.getPlotArea().h);
+    } else if (prevDirection == utils.VERTICAL) {
+      ctx.clearRect(this.layout_.getPlotArea().x, Math.min(startY, prevEndY),
+                    this.layout_.getPlotArea().w, Math.abs(startY - prevEndY));
+    }
+
+    // Draw a light-grey rectangle to show the new viewing area
+    if (direction == utils.HORIZONTAL) {
+      if (endX && startX) {
+        ctx.fillStyle = "rgba(128,128,128,0.33)";
+        ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
+                    Math.abs(endX - startX), this.layout_.getPlotArea().h);
+      }
+    } else if (direction == utils.VERTICAL) {
+      if (endY && startY) {
+        ctx.fillStyle = "rgba(128,128,128,0.33)";
+        ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
+                    this.layout_.getPlotArea().w, Math.abs(endY - startY));
+      }
+    }
+  }
+
+  /**
+   * Clear the zoom rectangle (and perform no zoom).
+   * @private
+   */
+  clearZoomRect_() {
+    this.currentZoomRectArgs_ = null;
+    this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
+  }
+
+  /**
+   * Zoom to something containing [lowX, highX]. These are pixel coordinates in
+   * the canvas. The exact zoom window may be slightly larger if there are no data
+   * points near lowX or highX. Don't confuse this function with doZoomXDates,
+   * which accepts dates that match the raw data. This function redraws the graph.
+   *
+   * @param lowX The leftmost pixel value that should be visible.
+   * @param highX The rightmost pixel value that should be visible.
+   * @private
+   */
+  doZoomX_(lowX: number, highX: number) {
+    this.currentZoomRectArgs_ = null;
+    // Find the earliest and latest dates contained in this canvasx range.
+    // Convert the call to date ranges of the raw data.
+    var minDate = this.toDataXCoord(lowX);
+    var maxDate = this.toDataXCoord(highX);
+    this.doZoomXDates_(minDate, maxDate);
+  }
+
+  /**
+   * Zoom to something containing [minDate, maxDate] values. Don't confuse this
+   * method with doZoomX which accepts pixel coordinates. This function redraws
+   * the graph.
+   *
+   * @param minDate The minimum date that should be visible.
+   * @param maxDate The maximum date that should be visible.
+   * @private
+   */
+  doZoomXDates_(minDate: number, maxDate: number) {
+    // TODO(danvk): when xAxisRange is null (i.e. "fit to data", the animation
+    // can produce strange effects. Rather than the x-axis transitioning slowly
+    // between values, it can jerk around.)
+    var old_window = this.xAxisRange();
+    var new_window = [minDate, maxDate];
+    const zoomCallback = this.getFunctionOption('zoomCallback');
+    this.doAnimatedZoom(old_window, new_window, null, null, () => {
+      if (zoomCallback) {
+        zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+      }
+    });
+  }
+
+  /**
+   * Zoom to something containing [lowY, highY]. These are pixel coordinates in
+   * the canvas. This function redraws the graph.
+   *
+   * @param lowY The topmost pixel value that should be visible.
+   * @param highY The lowest pixel value that should be visible.
+   * @private
+   */
+  doZoomY_(lowY: number, highY: number) {
+    this.currentZoomRectArgs_ = null;
+    // Find the highest and lowest values in pixel range for each axis.
+    // Note that lowY (in pixels) corresponds to the max Value (in data coords).
+    // This is because pixels increase as you go down on the screen, whereas data
+    // coordinates increase as you go up the screen.
+    var oldValueRanges = this.yAxisRanges();
+    var newValueRanges = [];
+    for (var i = 0; i < this.axes_.length; i++) {
+      var hi = this.toDataYCoord(lowY, i);
+      var low = this.toDataYCoord(highY, i);
+      newValueRanges.push([low, hi]);
+    }
+
+    const zoomCallback = this.getFunctionOption('zoomCallback');
+    this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {
+      if (zoomCallback) {
+        const [minX, maxX] = this.xAxisRange();
+        zoomCallback.call(this, minX, maxX, this.yAxisRanges());
+      }
+    });
+  }
+
+  /**
+   * Transition function to use in animations. Returns values between 0.0
+   * (totally old values) and 1.0 (totally new values) for each frame.
+   * @private
+   */
+  static zoomAnimationFunction(frame: number, numFrames: number) {
+    var k = 1.5;
+    return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
+  }
+
+  /**
+   * Reset the zoom to the original view coordinates. This is the same as
+   * double-clicking on the graph.
+   */
+  resetZoom() {
+    const dirtyX = this.isZoomed('x');
+    const dirtyY = this.isZoomed('y');
+    const dirty = dirtyX || dirtyY;
+
+    // Clear any selection, since it's likely to be drawn in the wrong place.
+    this.clearSelection();
+
+    if (!dirty) return;
+
+    // Calculate extremes to avoid lack of padding on reset.
+    const [minDate, maxDate] = this.xAxisExtremes();
+
+    const animatedZooms = this.getBooleanOption('animatedZooms');
+    const zoomCallback = this.getFunctionOption('zoomCallback');
+
+    // TODO(danvk): merge this block w/ the code below.
+    // TODO(danvk): factor out a generic, public zoomTo method.
+    if (!animatedZooms) {
+      this.dateWindow_ = null;
+      this.axes_.forEach(axis => {
+        if (axis.valueRange) delete axis.valueRange;
+      });
+
+      this.drawGraph_();
+      if (zoomCallback) {
+        zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+      }
+      return;
+    }
+
+    var oldWindow=null, newWindow=null, oldValueRanges=null, newValueRanges=null;
+    if (dirtyX) {
+      oldWindow = this.xAxisRange();
+      newWindow = [minDate, maxDate];
+    }
+
+    if (dirtyY) {
+      oldValueRanges = this.yAxisRanges();
+      newValueRanges = this.yAxisExtremes();
+    }
+
+    this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
+        () => {
+          this.dateWindow_ = null;
+          this.axes_.forEach(axis => {
+            if (axis.valueRange) delete axis.valueRange;
+          });
+          if (zoomCallback) {
+            zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+          }
+        });
+  }
+
+  /**
+   * Combined animation logic for all zoom functions.
+   * either the x parameters or y parameters may be null.
+   * @private
+   */
+  doAnimatedZoom(oldXRange, newXRange, oldYRanges, newYRanges, callback) {
+    var steps = this.getBooleanOption("animatedZooms") ?
+        Dygraph.ANIMATION_STEPS : 1;
+
+    var windows = [];
+    var valueRanges = [];
+    var step, frac;
+
+    if (oldXRange !== null && newXRange !== null) {
+      for (step = 1; step <= steps; step++) {
+        frac = Dygraph.zoomAnimationFunction(step, steps);
+        windows[step-1] = [oldXRange[0]*(1-frac) + frac*newXRange[0],
+                          oldXRange[1]*(1-frac) + frac*newXRange[1]];
+      }
+    }
+
+    if (oldYRanges !== null && newYRanges !== null) {
+      for (step = 1; step <= steps; step++) {
+        frac = Dygraph.zoomAnimationFunction(step, steps);
+        var thisRange = [];
+        for (var j = 0; j < this.axes_.length; j++) {
+          thisRange.push([oldYRanges[j][0]*(1-frac) + frac*newYRanges[j][0],
+                          oldYRanges[j][1]*(1-frac) + frac*newYRanges[j][1]]);
+        }
+        valueRanges[step-1] = thisRange;
+      }
+    }
+
+    utils.repeatAndCleanup(step => {
+      if (valueRanges.length) {
+        for (var i = 0; i < this.axes_.length; i++) {
+          var w = valueRanges[step][i];
+          this.axes_[i].valueRange = [w[0], w[1]];
+        }
+      }
+      if (windows.length) {
+        this.dateWindow_ = windows[step];
+      }
+      this.drawGraph_();
+    }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
+  }
+
+  /**
+   * Get the current graph's area object.
+   *
+   * Returns: {x, y, w, h}
+   */
+  getArea() {
+    return this.plotter_.area;
+  }
 
 
 
 
 }
 
-/**
- * Generates interface elements for the Dygraph: a containing div, a div to
- * display the current point, and a textbox to adjust the rolling average
- * period. Also creates the Renderer/Layout elements.
- * @private
- */
-Dygraph.prototype.createInterface_ = function() {
-  // Create the all-enclosing graph div
-  var enclosing = this.maindiv_;
-
-  this.graphDiv = document.createElement("div");
-
-  // TODO(danvk): any other styles that are useful to set here?
-  this.graphDiv.style.textAlign = 'left';  // This is a CSS "reset"
-  this.graphDiv.style.position = 'relative';
-  enclosing.appendChild(this.graphDiv);
-
-  // Create the canvas for interactive parts of the chart.
-  this.canvas_ = utils.createCanvas();
-  this.canvas_.style.position = "absolute";
-
-  // ... and for static parts of the chart.
-  this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
-
-  this.canvas_ctx_ = utils.getContext(this.canvas_);
-  this.hidden_ctx_ = utils.getContext(this.hidden_);
-
-  this.resizeElements_();
-
-  // The interactive parts of the graph are drawn on top of the chart.
-  this.graphDiv.appendChild(this.hidden_);
-  this.graphDiv.appendChild(this.canvas_);
-  this.mouseEventElement_ = this.createMouseEventElement_();
-
-  // Create the grapher
-  this.layout_ = new DygraphLayout(this);
-
-  var dygraph = this;
-
-  this.mouseMoveHandler_ = function(e: MouseEvent) {
-    dygraph.mouseMove_(e);
-  };
-
-  this.mouseOutHandler_ = function(e: MouseEvent) {
-    // The mouse has left the chart if:
-    // 1. e.target is inside the chart
-    // 2. e.relatedTarget is outside the chart
-    var target = e.target || e.fromElement;
-    var relatedTarget = e.relatedTarget || e.toElement;
-    if (utils.isNodeContainedBy(target, dygraph.graphDiv) &&
-        !utils.isNodeContainedBy(relatedTarget, dygraph.graphDiv)) {
-      dygraph.mouseOut_(e);
-    }
-  };
-
-  this.addAndTrackEvent(document, 'mouseout', this.mouseOutHandler_);
-  this.addAndTrackEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-
-  // Don't recreate and register the resize handler on subsequent calls.
-  // This happens when the graph is resized.
-  if (!this.resizeHandler_) {
-    this.resizeHandler_ = function(e: Event) {
-      dygraph.resize();
-    };
-
-    // Update when the window is resized.
-    // TODO(danvk): drop frames depending on complexity of the chart.
-    this.addAndTrackEvent(document, 'resize', this.resizeHandler_);
-  }
-};
-
-Dygraph.prototype.resizeElements_ = function() {
-  this.graphDiv.style.width = this.width_ + "px";
-  this.graphDiv.style.height = this.height_ + "px";
-
-  var pixelRatioOption = this.getNumericOption('pixelRatio')
-
-  var canvasScale = pixelRatioOption || utils.getContextPixelRatio(this.canvas_ctx_);
-  this.canvas_.width = this.width_ * canvasScale;
-  this.canvas_.height = this.height_ * canvasScale;
-  this.canvas_.style.width = this.width_ + "px";    // for IE
-  this.canvas_.style.height = this.height_ + "px";  // for IE
-  if (canvasScale !== 1) {
-    this.canvas_ctx_.scale(canvasScale, canvasScale);
-  }
-
-  var hiddenScale = pixelRatioOption || utils.getContextPixelRatio(this.hidden_ctx_);
-  this.hidden_.width = this.width_ * hiddenScale;
-  this.hidden_.height = this.height_ * hiddenScale;
-  this.hidden_.style.width = this.width_ + "px";    // for IE
-  this.hidden_.style.height = this.height_ + "px";  // for IE
-  if (hiddenScale !== 1) {
-    this.hidden_ctx_.scale(hiddenScale, hiddenScale);
-  }
-};
-
-/**
- * Detach DOM elements in the dygraph and null out all data references.
- * Calling this when you're done with a dygraph can dramatically reduce memory
- * usage. See, e.g., the tests/perf.html example.
- */
-Dygraph.prototype.destroy = function() {
-  this.canvas_ctx_.restore();
-  this.hidden_ctx_.restore();
-
-  // Destroy any plugins, in the reverse order that they were registered.
-  for (var i = this.plugins_.length - 1; i >= 0; i--) {
-    var p = this.plugins_.pop();
-    if (p.plugin.destroy) p.plugin.destroy();
-  }
-
-  var removeRecursive = function(node) {
-    while (node.hasChildNodes()) {
-      removeRecursive(node.firstChild);
-      node.removeChild(node.firstChild);
-    }
-  };
-
-  this.removeTrackedEvents_();
-
-  // remove mouse event handlers (This may not be necessary anymore)
-  utils.removeEvent(window, 'mouseout', this.mouseOutHandler_);
-  utils.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
-
-  // remove window handlers
-  utils.removeEvent(window,'resize', this.resizeHandler_);
-  this.resizeHandler_ = null;
-
-  removeRecursive(this.maindiv_);
-
-  var nullOut = function(obj) {
-    for (var n in obj) {
-      if (typeof(obj[n]) === 'object') {
-        obj[n] = null;
-      }
-    }
-  };
-  // These may not all be necessary, but it can't hurt...
-  nullOut(this.layout_);
-  nullOut(this.plotter_);
-  nullOut(this);
-};
-
-/**
- * Creates the canvas on which the chart will be drawn. Only the Renderer ever
- * draws on this particular canvas. All Dygraph work (i.e. drawing hover dots
- * or the zoom rectangles) is done on this.canvas_.
- * @param {Object} canvas The Dygraph canvas over which to overlay the plot
- * @return {Object} The newly-created canvas
- * @private
- */
-Dygraph.prototype.createPlotKitCanvas_ = function(canvas: object): object {
-  var h = utils.createCanvas();
-  h.style.position = "absolute";
-  // TODO(danvk): h should be offset from canvas. canvas needs to include
-  // some extra area to make it easier to zoom in on the far left and far
-  // right. h needs to be precisely the plot area, so that clipping occurs.
-  h.style.top = canvas.style.top;
-  h.style.left = canvas.style.left;
-  h.width = this.width_;
-  h.height = this.height_;
-  h.style.width = this.width_ + "px";    // for IE
-  h.style.height = this.height_ + "px";  // for IE
-  return h;
-};
-
-/**
- * Creates an overlay element used to handle mouse events.
- * @return {Object} The mouse event element.
- * @private
- */
-Dygraph.prototype.createMouseEventElement_ = function(): object {
-  return this.canvas_;
-};
-
-/**
- * Generate a set of distinct colors for the data series. This is done with a
- * color wheel. Saturation/Value are customizable, and the hue is
- * equally-spaced around the color wheel. If a custom set of colors is
- * specified, that is used instead.
- * @private
- */
-Dygraph.prototype.setColors_ = function() {
-  var labels = this.getLabels();
-  var num = labels.length - 1;
-  this.colors_ = [];
-  this.colorsMap_ = {};
-
-  // These are used for when no custom colors are specified.
-  var sat = this.getNumericOption('colorSaturation') || 1.0;
-  var val = this.getNumericOption('colorValue') || 0.5;
-  var half = Math.ceil(num / 2);
-
-  var colors = this.getOption('colors');
-  var visibility = this.visibility();
-  for (var i = 0; i < num; i++) {
-    if (!visibility[i]) {
-      continue;
-    }
-    var label = labels[i + 1];
-    var colorStr = this.attributes_.getForSeries('color', label);
-    if (!colorStr) {
-      if (colors) {
-        colorStr = colors[i % colors.length];
-      } else {
-        // alternate colors for high contrast.
-        var idx = i % 2 ? (half + (i + 1)/ 2) : Math.ceil((i + 1) / 2);
-        var hue = (1.0 * idx / (1 + num));
-        colorStr = utils.hsvToRGB(hue, sat, val);
-      }
-    }
-    this.colors_.push(colorStr);
-    this.colorsMap_[label] = colorStr;
-  }
-};
-
-/**
- * Return the list of colors. This is either the list of colors passed in the
- * attributes or the autogenerated list of rgb(r,g,b) strings.
- * This does not return colors for invisible series.
- * @return {Array.<string>} The list of colors.
- */
-Dygraph.prototype.getColors = function(): Array<string> {
-  return this.colors_;
-};
-
-/**
- * Returns a few attributes of a series, i.e. its color, its visibility, which
- * axis it's assigned to, and its column in the original data.
- * Returns null if the series does not exist.
- * Otherwise, returns an object with column, visibility, color and axis properties.
- * The "axis" property will be set to 1 for y1 and 2 for y2.
- * The "column" property can be fed back into getValue(row, column) to get
- * values for this series.
- */
-Dygraph.prototype.getPropertiesForSeries = function(series_name) {
-  var idx = -1;
-  var labels = this.getLabels();
-  for (var i = 1; i < labels.length; i++) {
-    if (labels[i] == series_name) {
-      idx = i;
-      break;
-    }
-  }
-  if (idx == -1) return null;
-
-  return {
-    name: series_name,
-    column: idx,
-    visible: this.visibility()[idx - 1],
-    color: this.colorsMap_[series_name],
-    axis: 1 + this.attributes_.axisForSeries(series_name)
-  };
-};
-
-/**
- * Create the text box to adjust the averaging period
- * @private
- */
-Dygraph.prototype.createRollInterface_ = function() {
-  // Create a roller if one doesn't exist already.
-  var roller = this.roller_;
-  if (!roller) {
-    this.roller_ = roller = document.createElement("input");
-    roller.type = "text";
-    roller.style.display = "none";
-    roller.className = 'dygraph-roller';
-    this.graphDiv.appendChild(roller);
-  }
-
-  var display = this.getBooleanOption('showRoller') ? 'block' : 'none';
-
-  var area = this.getArea();
-  var textAttr = {
-                   "top": (area.y + area.h - 25) + "px",
-                   "left": (area.x + 1) + "px",
-                   "display": display
-                 };
-  roller.size = "2";
-  roller.value = this.rollPeriod_;
-  utils.update(roller.style, textAttr);
-
-  roller.onchange = () => this.adjustRoll(roller.value);
-};
-
-/**
- * Set up all the mouse handlers needed to capture dragging behavior for zoom
- * events.
- * @private
- */
-Dygraph.prototype.createDragInterface_ = function() {
-  var context = {
-    // Tracks whether the mouse is down right now
-    isZooming: false,
-    isPanning: false,  // is this drag part of a pan?
-    is2DPan: false,    // if so, is that pan 1- or 2-dimensional?
-    dragStartX: null, // pixel coordinates
-    dragStartY: null, // pixel coordinates
-    dragEndX: null, // pixel coordinates
-    dragEndY: null, // pixel coordinates
-    dragDirection: null,
-    prevEndX: null, // pixel coordinates
-    prevEndY: null, // pixel coordinates
-    prevDragDirection: null,
-    cancelNextDblclick: false,  // see comment in dygraph-interaction-model.js
-
-    // The value on the left side of the graph when a pan operation starts.
-    initialLeftmostDate: null,
-
-    // The number of units each pixel spans. (This won't be valid for log
-    // scales)
-    xUnitsPerPixel: null,
-
-    // TODO(danvk): update this comment
-    // The range in second/value units that the viewport encompasses during a
-    // panning operation.
-    dateRange: null,
-
-    // Top-left corner of the canvas, in DOM coords
-    // TODO(konigsberg): Rename topLeftCanvasX, topLeftCanvasY.
-    px: 0,
-    py: 0,
-
-    // Values for use with panEdgeFraction, which limit how far outside the
-    // graph's data boundaries it can be panned.
-    boundedDates: null, // [minDate, maxDate]
-    boundedValues: null, // [[minValue, maxValue] ...]
-
-    // We cover iframes during mouse interactions. See comments in
-    // dygraph-utils.js for more info on why this is a good idea.
-    tarp: new IFrameTarp(),
-
-    // contextB is the same thing as this context object but renamed.
-    initializeMouseDown: function(event, g, contextB) {
-      // prevents mouse drags from selecting page text.
-      if (event.preventDefault) {
-        event.preventDefault();  // Firefox, Chrome, etc.
-      } else {
-        event.returnValue = false;  // IE
-        event.cancelBubble = true;
-      }
-
-      var canvasPos = utils.findPos(g.canvas_);
-      contextB.px = canvasPos.x;
-      contextB.py = canvasPos.y;
-      contextB.dragStartX = utils.dragGetX_(event, contextB);
-      contextB.dragStartY = utils.dragGetY_(event, contextB);
-      contextB.cancelNextDblclick = false;
-      contextB.tarp.cover();
-    },
-    destroy: function() {
-      var context = this;
-      if (context.isZooming || context.isPanning) {
-        context.isZooming = false;
-        context.dragStartX = null;
-        context.dragStartY = null;
-      }
-
-      if (context.isPanning) {
-        context.isPanning = false;
-        context.draggingDate = null;
-        context.dateRange = null;
-        for (var i = 0; i < self.axes_.length; i++) {
-          delete self.axes_[i].draggingValue;
-          delete self.axes_[i].dragValueRange;
-        }
-      }
-
-      context.tarp.uncover();
-    }
-  };
-
-  var interactionModel = this.getOption("interactionModel");
-
-  // Self is the graph.
-  var self = this;
-
-  // Function that binds the graph and context to the handler.
-  var bindHandler = function(handler) {
-    return function(event) {
-      handler(event, self, context);
-    };
-  };
-
-  for (var eventName in interactionModel) {
-    if (!interactionModel.hasOwnProperty(eventName)) continue;
-    this.addAndTrackEvent(this.mouseEventElement_, eventName,
-        bindHandler(interactionModel[eventName]));
-  }
-
-  // If the user releases the mouse button during a drag, but not over the
-  // canvas, then it doesn't count as a zooming action.
-  if (!interactionModel.willDestroyContextMyself) {
-    var mouseUpHandler = function(event) {
-      context.destroy();
-    };
-
-    this.addAndTrackEvent(document, 'mouseup', mouseUpHandler);
-  }
-};
-
-/**
- * Draw a gray zoom rectangle over the desired area of the canvas. Also clears
- * up any previous zoom rectangles that were drawn. This could be optimized to
- * avoid extra redrawing, but it's tricky to avoid interactions with the status
- * dots.
- *
- * @param {number} direction the direction of the zoom rectangle. Acceptable
- *     values are utils.HORIZONTAL and utils.VERTICAL.
- * @param {number} startX The X position where the drag started, in canvas
- *     coordinates.
- * @param {number} endX The current X position of the drag, in canvas coords.
- * @param {number} startY The Y position where the drag started, in canvas
- *     coordinates.
- * @param {number} endY The current Y position of the drag, in canvas coords.
- * @param {number} prevDirection the value of direction on the previous call to
- *     this function. Used to avoid excess redrawing
- * @param {number} prevEndX The value of endX on the previous call to this
- *     function. Used to avoid excess redrawing
- * @param {number} prevEndY The value of endY on the previous call to this
- *     function. Used to avoid excess redrawing
- * @private
- */
-Dygraph.prototype.drawZoomRect_ = function(direction: number, startX: number, endX: number, startY: number,
-                                           endY: number, prevDirection: number, prevEndX: number,
-                                           prevEndY: number) {
-  var ctx = this.canvas_ctx_;
-
-  // Clean up from the previous rect if necessary
-  if (prevDirection == utils.HORIZONTAL) {
-    ctx.clearRect(Math.min(startX, prevEndX), this.layout_.getPlotArea().y,
-                  Math.abs(startX - prevEndX), this.layout_.getPlotArea().h);
-  } else if (prevDirection == utils.VERTICAL) {
-    ctx.clearRect(this.layout_.getPlotArea().x, Math.min(startY, prevEndY),
-                  this.layout_.getPlotArea().w, Math.abs(startY - prevEndY));
-  }
-
-  // Draw a light-grey rectangle to show the new viewing area
-  if (direction == utils.HORIZONTAL) {
-    if (endX && startX) {
-      ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(Math.min(startX, endX), this.layout_.getPlotArea().y,
-                   Math.abs(endX - startX), this.layout_.getPlotArea().h);
-    }
-  } else if (direction == utils.VERTICAL) {
-    if (endY && startY) {
-      ctx.fillStyle = "rgba(128,128,128,0.33)";
-      ctx.fillRect(this.layout_.getPlotArea().x, Math.min(startY, endY),
-                   this.layout_.getPlotArea().w, Math.abs(endY - startY));
-    }
-  }
-};
-
-/**
- * Clear the zoom rectangle (and perform no zoom).
- * @private
- */
-Dygraph.prototype.clearZoomRect_ = function() {
-  this.currentZoomRectArgs_ = null;
-  this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
-};
-
-/**
- * Zoom to something containing [lowX, highX]. These are pixel coordinates in
- * the canvas. The exact zoom window may be slightly larger if there are no data
- * points near lowX or highX. Don't confuse this function with doZoomXDates,
- * which accepts dates that match the raw data. This function redraws the graph.
- *
- * @param {number} lowX The leftmost pixel value that should be visible.
- * @param {number} highX The rightmost pixel value that should be visible.
- * @private
- */
-Dygraph.prototype.doZoomX_ = function(lowX: number, highX: number) {
-  this.currentZoomRectArgs_ = null;
-  // Find the earliest and latest dates contained in this canvasx range.
-  // Convert the call to date ranges of the raw data.
-  var minDate = this.toDataXCoord(lowX);
-  var maxDate = this.toDataXCoord(highX);
-  this.doZoomXDates_(minDate, maxDate);
-};
-
-/**
- * Zoom to something containing [minDate, maxDate] values. Don't confuse this
- * method with doZoomX which accepts pixel coordinates. This function redraws
- * the graph.
- *
- * @param {number} minDate The minimum date that should be visible.
- * @param {number} maxDate The maximum date that should be visible.
- * @private
- */
-Dygraph.prototype.doZoomXDates_ = function(minDate: number, maxDate: number) {
-  // TODO(danvk): when xAxisRange is null (i.e. "fit to data", the animation
-  // can produce strange effects. Rather than the x-axis transitioning slowly
-  // between values, it can jerk around.)
-  var old_window = this.xAxisRange();
-  var new_window = [minDate, maxDate];
-  const zoomCallback = this.getFunctionOption('zoomCallback');
-  this.doAnimatedZoom(old_window, new_window, null, null, () => {
-    if (zoomCallback) {
-      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
-    }
-  });
-};
-
-/**
- * Zoom to something containing [lowY, highY]. These are pixel coordinates in
- * the canvas. This function redraws the graph.
- *
- * @param {number} lowY The topmost pixel value that should be visible.
- * @param {number} highY The lowest pixel value that should be visible.
- * @private
- */
-Dygraph.prototype.doZoomY_ = function(lowY: number, highY: number) {
-  this.currentZoomRectArgs_ = null;
-  // Find the highest and lowest values in pixel range for each axis.
-  // Note that lowY (in pixels) corresponds to the max Value (in data coords).
-  // This is because pixels increase as you go down on the screen, whereas data
-  // coordinates increase as you go up the screen.
-  var oldValueRanges = this.yAxisRanges();
-  var newValueRanges = [];
-  for (var i = 0; i < this.axes_.length; i++) {
-    var hi = this.toDataYCoord(lowY, i);
-    var low = this.toDataYCoord(highY, i);
-    newValueRanges.push([low, hi]);
-  }
-
-  const zoomCallback = this.getFunctionOption('zoomCallback');
-  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {
-    if (zoomCallback) {
-      const [minX, maxX] = this.xAxisRange();
-      zoomCallback.call(this, minX, maxX, this.yAxisRanges());
-    }
-  });
-};
-
-/**
- * Transition function to use in animations. Returns values between 0.0
- * (totally old values) and 1.0 (totally new values) for each frame.
- * @private
- */
-Dygraph.zoomAnimationFunction = function(frame, numFrames) {
-  var k = 1.5;
-  return (1.0 - Math.pow(k, -frame)) / (1.0 - Math.pow(k, -numFrames));
-};
-
-/**
- * Reset the zoom to the original view coordinates. This is the same as
- * double-clicking on the graph.
- */
-Dygraph.prototype.resetZoom = function() {
-  const dirtyX = this.isZoomed('x');
-  const dirtyY = this.isZoomed('y');
-  const dirty = dirtyX || dirtyY;
-
-  // Clear any selection, since it's likely to be drawn in the wrong place.
-  this.clearSelection();
-
-  if (!dirty) return;
-
-  // Calculate extremes to avoid lack of padding on reset.
-  const [minDate, maxDate] = this.xAxisExtremes();
-
-  const animatedZooms = this.getBooleanOption('animatedZooms');
-  const zoomCallback = this.getFunctionOption('zoomCallback');
-
-  // TODO(danvk): merge this block w/ the code below.
-  // TODO(danvk): factor out a generic, public zoomTo method.
-  if (!animatedZooms) {
-    this.dateWindow_ = null;
-    this.axes_.forEach(axis => {
-      if (axis.valueRange) delete axis.valueRange;
-    });
-
-    this.drawGraph_();
-    if (zoomCallback) {
-      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
-    }
-    return;
-  }
-
-  var oldWindow=null, newWindow=null, oldValueRanges=null, newValueRanges=null;
-  if (dirtyX) {
-    oldWindow = this.xAxisRange();
-    newWindow = [minDate, maxDate];
-  }
-
-  if (dirtyY) {
-    oldValueRanges = this.yAxisRanges();
-    newValueRanges = this.yAxisExtremes();
-  }
-
-  this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
-      () => {
-        this.dateWindow_ = null;
-        this.axes_.forEach(axis => {
-          if (axis.valueRange) delete axis.valueRange;
-        });
-        if (zoomCallback) {
-          zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
-        }
-      });
-};
-
-/**
- * Combined animation logic for all zoom functions.
- * either the x parameters or y parameters may be null.
- * @private
- */
-Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, newYRanges, callback) {
-  var steps = this.getBooleanOption("animatedZooms") ?
-      Dygraph.ANIMATION_STEPS : 1;
-
-  var windows = [];
-  var valueRanges = [];
-  var step, frac;
-
-  if (oldXRange !== null && newXRange !== null) {
-    for (step = 1; step <= steps; step++) {
-      frac = Dygraph.zoomAnimationFunction(step, steps);
-      windows[step-1] = [oldXRange[0]*(1-frac) + frac*newXRange[0],
-                         oldXRange[1]*(1-frac) + frac*newXRange[1]];
-    }
-  }
-
-  if (oldYRanges !== null && newYRanges !== null) {
-    for (step = 1; step <= steps; step++) {
-      frac = Dygraph.zoomAnimationFunction(step, steps);
-      var thisRange = [];
-      for (var j = 0; j < this.axes_.length; j++) {
-        thisRange.push([oldYRanges[j][0]*(1-frac) + frac*newYRanges[j][0],
-                        oldYRanges[j][1]*(1-frac) + frac*newYRanges[j][1]]);
-      }
-      valueRanges[step-1] = thisRange;
-    }
-  }
-
-  utils.repeatAndCleanup(step => {
-    if (valueRanges.length) {
-      for (var i = 0; i < this.axes_.length; i++) {
-        var w = valueRanges[step][i];
-        this.axes_[i].valueRange = [w[0], w[1]];
-      }
-    }
-    if (windows.length) {
-      this.dateWindow_ = windows[step];
-    }
-    this.drawGraph_();
-  }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
-};
-
-/**
- * Get the current graph's area object.
- *
- * Returns: {x, y, w, h}
- */
-Dygraph.prototype.getArea = function() {
-  return this.plotter_.area;
-};
 
 /**
  * Convert a mouse event to DOM coordinates relative to the graph origin.
