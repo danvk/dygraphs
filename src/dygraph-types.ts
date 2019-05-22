@@ -229,6 +229,12 @@ export interface PluginLayoutEvent extends PluginEvent {
   reserveSpaceRight(px: number): Area;
 }
 
+export interface PluginSelectEvent extends PluginEvent {
+  selectedRow: number | undefined;
+  selectedX: number | undefined;
+  selectedPoints: DygraphPointType[];
+}
+
 export interface DygraphsPlugin {
   toString(): string;
   activate(g: DygraphAny): void;
@@ -236,5 +242,62 @@ export interface DygraphsPlugin {
   willDrawChart?(e: PluginDrawEvent): void;
   didDrawChart?(e: PluginDrawEvent): void;
   clearChart?(e: PluginEvent): void;
+  select?(e: PluginSelectEvent): void;
+  deselect?(e: PluginEvent): void;
+  predraw?(e: PluginEvent): void;
   destroy?(): void;
+}
+
+export interface SeriesLegendData {
+  /**
+   * Assigned or generated series color
+   */
+  color: string;
+  /**
+   * Series line dash
+   */
+  dashHTML: string;
+  /**
+   * Whether currently focused or not
+   */
+  isHighlighted: boolean;
+  /**
+   * Whether the series line is inside the selected/zoomed region
+   */
+  isVisible: boolean;
+  /**
+   * Assigned label to this series
+   */
+  label: string;
+  /**
+   * Generated label html for this series
+   */
+  labelHTML: string;
+  /**
+   * y value of this series
+   */
+  y: number;
+  /**
+   * Generated html for y value
+   */
+  yHTML: string;
+}
+
+export interface LegendData {
+  /**
+   * x value of highlighted points
+   */
+  x: number;
+  /**
+   * Generated HTML for x value
+   */
+  xHTML: string;
+  /**
+   * Series data for the highlighted points
+   */
+  series: SeriesLegendData[];
+  /**
+   * Dygraph object for this graph
+   */
+  dygraph: DygraphAny;
 }
