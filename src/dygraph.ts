@@ -71,7 +71,7 @@ import { DygraphsPlugin, DygraphPointType, Annotation, DygraphAxisType } from '.
 import DygraphDataHandler, { UnifiedPoint } from './datahandler/datahandler';
 import { GVizDataTable } from './dygraph-internal.externs';
 
-declare let process;
+declare let process: any;
 
 class Dygraph {
   static NAME = "Dygraph";
@@ -99,7 +99,7 @@ class Dygraph {
   height_: number;
   user_attrs_: {[option: string]: any};
   attrs_: {[option: string]: any};
-  boundaryIds_: number[];
+  boundaryIds_: [number, number][];
   setIndexByName_: {[seriesName: string]: number};
   datasetIndex_: number[];
   lastx_: number;
@@ -947,7 +947,7 @@ class Dygraph {
       if (p.plugin.destroy) p.plugin.destroy();
     }
 
-    var removeRecursive = function(node) {
+    var removeRecursive = function(node: Node) {
       while (node.hasChildNodes()) {
         removeRecursive(node.firstChild);
         node.removeChild(node.firstChild);
@@ -966,7 +966,7 @@ class Dygraph {
 
     removeRecursive(this.maindiv_);
 
-    var nullOut = function(obj) {
+    var nullOut = function(obj: any) {
       for (var n in obj) {
         if (typeof(obj[n]) === 'object') {
           obj[n] = null;
@@ -1127,6 +1127,7 @@ class Dygraph {
    * @private
    */
   createDragInterface_() {
+    // TODO(danvk): write an interface for this.
     const context = {
       // Tracks whether the mouse is down right now
       isZooming: false,
@@ -1213,8 +1214,8 @@ class Dygraph {
     var self = this;
 
     // Function that binds the graph and context to the handler.
-    var bindHandler = function(handler) {
-      return function(event) {
+    var bindHandler = function(handler: (e: any, g: Dygraph, context: any) => void) {
+      return function(event: Event) {
         handler(event, self, context);
       };
     };
@@ -1228,7 +1229,7 @@ class Dygraph {
     // If the user releases the mouse button during a drag, but not over the
     // canvas, then it doesn't count as a zooming action.
     if (!interactionModel.willDestroyContextMyself) {
-      var mouseUpHandler = function(event) {
+      var mouseUpHandler = function() {
         context.destroy();
       };
 
@@ -1440,12 +1441,18 @@ class Dygraph {
    * either the x parameters or y parameters may be null.
    * @private
    */
-  doAnimatedZoom(oldXRange, newXRange, oldYRanges, newYRanges, callback) {
+  doAnimatedZoom(
+    oldXRange: [number, number],
+    newXRange: [number, number],
+    oldYRanges: [number, number][],
+    newYRanges: [number, number][],
+    callback: () => void,
+  ) {
     var steps = this.getBooleanOption("animatedZooms") ?
         Dygraph.ANIMATION_STEPS : 1;
 
-    var windows = [];
-    var valueRanges = [];
+    var windows: [number, number][] = [];
+    var valueRanges: [number, number][][] = [];
     var step, frac;
 
     if (oldXRange !== null && newXRange !== null) {
@@ -1459,7 +1466,7 @@ class Dygraph {
     if (oldYRanges !== null && newYRanges !== null) {
       for (step = 1; step <= steps; step++) {
         frac = Dygraph.zoomAnimationFunction(step, steps);
-        var thisRange = [];
+        var thisRange: [number, number][] = [];
         for (var j = 0; j < this.axes_.length; j++) {
           thisRange.push([oldYRanges[j][0]*(1-frac) + frac*newYRanges[j][0],
                           oldYRanges[j][1]*(1-frac) + frac*newYRanges[j][1]]);
@@ -1673,7 +1680,7 @@ class Dygraph {
    * Fetch left offset from the specified set index or if not passed, the
    * first defined boundaryIds record (see bug #236).
    */
-  getLeftBoundary_(setIdx: number) {
+  getLeftBoundary_(setIdx: number): number {
     if (this.boundaryIds_[setIdx]) {
         return this.boundaryIds_[setIdx][0];
     } else {
@@ -1834,7 +1841,7 @@ class Dygraph {
         // Check if the point at the appropriate index is the point we're looking
         // for.  If it is, just use it, otherwise search the array for a point
         // in the proper place.
-        var setRow = row - this.getLeftBoundary_(setIdx);
+        const setRow: number = row - this.getLeftBoundary_(setIdx);
         if (setRow >= 0 && setRow < points.length && points[setRow].idx == row) {
           var point = points[setRow];
           if (point.yval !== null) this.selPoints_.push(point);
@@ -2093,13 +2100,13 @@ class Dygraph {
     seriesExtremes: number[],
     fillMethod: string
   ) {
-    var lastXval = null;
-    var prevPoint = null;
-    var nextPoint = null;
+    var lastXval: number = null;
+    var prevPoint: DygraphPointType = null;
+    var nextPoint: DygraphPointType = null;
     var nextPointIdx = -1;
 
     // Find the next stackable point starting from the given index.
-    var updateNextPoint = function(idx) {
+    var updateNextPoint = function(idx: number) {
       // If we've previously found a non-NaN point and haven't gone past it yet,
       // just use that.
       if (nextPointIdx >= idx) return;
@@ -2188,15 +2195,17 @@ class Dygraph {
   ): {
     points: DygraphPointType[][];
     extremes: {[seriesName: string]: [number, number]};
-    boundaryIds: number[];
+    boundaryIds: [number, number][];
   } {
-    var boundaryIds = [];
-    var points = [];
-    var cumulativeYval = [];  // For stacked series.
-    var extremes = {};  // series name -> [low, high]
-    var seriesIdx, sampleIdx;
-    var firstIdx, lastIdx;
-    var axisIdx;
+    var boundaryIds: [number, number][] = [];
+    var points: DygraphPointType[][] = [];
+    var cumulativeYval: number[][] = [];  // For stacked series.
+    var extremes: {[seriesName: string]: [number, number]} = {};
+    var seriesIdx: number;
+    var sampleIdx: number;
+    var firstIdx: number;
+    var lastIdx: number;
+    var axisIdx: number;
 
     // Loop over the fields (series).  Go from the last to the first,
     // because if they're stacked that's how we accumulate the values.
@@ -2260,19 +2269,29 @@ class Dygraph {
       }
 
       var seriesName = this.attr_("labels")[seriesIdx];
-      var seriesExtremes = this.dataHandler_.getExtremeYValues(series,
-          dateWindow, this.getBooleanOption("stepPlot",seriesName));
+      var seriesExtremes = this.dataHandler_.getExtremeYValues(
+        series,
+        dateWindow,
+        this.getBooleanOption("stepPlot",seriesName)
+      );
 
-      var seriesPoints = this.dataHandler_.seriesToPoints(series,
-          seriesName, boundaryIds[seriesIdx-1][0]);
+      var seriesPoints = this.dataHandler_.seriesToPoints(
+        series,
+        seriesName,
+        boundaryIds[seriesIdx-1][0]
+      );
 
       if (this.getBooleanOption("stackedGraph")) {
         axisIdx = this.attributes_.axisForSeries(seriesName);
         if (cumulativeYval[axisIdx] === undefined) {
           cumulativeYval[axisIdx] = [];
         }
-        Dygraph.stackPoints_(seriesPoints, cumulativeYval[axisIdx], seriesExtremes,
-                            this.getStringOption("stackedGraphNaNFill"));
+        Dygraph.stackPoints_(
+          seriesPoints,
+          cumulativeYval[axisIdx],
+          seriesExtremes,
+          this.getStringOption("stackedGraphNaNFill")
+        );
       }
 
       extremes[seriesName] = seriesExtremes;
@@ -2387,7 +2406,7 @@ class Dygraph {
    *   indices are into the axes_ array.
    */
   computeYAxes_() {
-    var axis, index, opts, v;
+    var axis, opts, v;
 
     // this.axes_ doesn't match this.attributes_.axes_.options. It's used for
     // data computation as well as options storage.
@@ -2431,7 +2450,7 @@ class Dygraph {
    * properties, e.g. 'Y1'.
    * @return {Object} The axis properties.
    */
-  axisPropertiesForSeries(series) {
+  axisPropertiesForSeries(series: string) {
     // TODO(danvk): handle errors.
     return this.axes_[this.attributes_.axisForSeries(series)];
   };
@@ -2439,12 +2458,12 @@ class Dygraph {
   /**
    * @private
    * Determine the value range and tick marks for each axis.
-   * @param {Object} extremes A mapping from seriesName -> [low, high]
+   * @param extremes A mapping from seriesName -> [low, high]
    * This fills in the valueRange and ticks fields in each entry of this.axes_.
    */
-  computeYAxisRanges_(extremes: object) {
-    var isNullUndefinedOrNaN = function(num) {
-      return isNaN(parseFloat(num));
+  computeYAxisRanges_(extremes: {[seriesName: string]: [number, number]}) {
+    var isNullUndefinedOrNaN = function(num: number) {
+      return isNaN(parseFloat(num as any));
     };
     var numAxes = this.attributes_.numAxes();
     var ypadCompat, span, series, ypad;
@@ -2644,8 +2663,8 @@ class Dygraph {
       this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
       this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
     } else {
-      this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.xValueParser = function(x: string) { return parseFloat(x); };
+      this.attrs_.axes.x.valueFormatter = function(x: string) { return x; };
       this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
       this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
     }
@@ -2864,8 +2883,7 @@ class Dygraph {
       return parsedData;
     } else {
       // Some intelligent defaults for a numeric x-axis.
-      /** @private (shut up, jsdoc!) */
-      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.axes.x.valueFormatter = function(x: number) { return x; };
       this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
       this.attrs_.axes.x.axisLabelFormatter = utils.numberAxisLabelFormatter;
       return data;
@@ -2905,8 +2923,8 @@ class Dygraph {
       this.attrs_.axes.x.ticker = DygraphTickers.dateTicker;
       this.attrs_.axes.x.axisLabelFormatter = utils.dateAxisLabelFormatter;
     } else if (indepType == 'number') {
-      this.attrs_.xValueParser = function(x) { return parseFloat(x); };
-      this.attrs_.axes.x.valueFormatter = function(x) { return x; };
+      this.attrs_.xValueParser = function(x: string) { return parseFloat(x); };
+      this.attrs_.axes.x.valueFormatter = function(x: number) { return x; };
       this.attrs_.axes.x.ticker = DygraphTickers.numericTicks;
       this.attrs_.axes.x.axisLabelFormatter = this.attrs_.axes.x.valueFormatter;
     } else {
@@ -2917,7 +2935,7 @@ class Dygraph {
 
     // Array of the column indices which contain data (and not annotations).
     var colIdx = [];
-    var annotationCols = {};  // data index -> [annotation cols]
+    var annotationCols: {[dataIndex: number]: number[]} = {};  // data index -> [annotation cols]
     var hasAnnotations = false;
     for (let i = 1; i < cols; i++) {
       var type = data.getColumnType(i);
@@ -3146,7 +3164,7 @@ class Dygraph {
    * @private
    */
   static copyUserAttrs_(attrs: {[option: string]: any}): {[option: string]: any} {
-    var my_attrs = {};
+    var my_attrs: {[option: string]: any} = {};
     for (var k in attrs) {
       if (!attrs.hasOwnProperty(k)) continue;
       if (k == 'file') continue;
@@ -3469,7 +3487,7 @@ class Dygraph {
 
 // In native format, all values must be dates or numbers.
 // This check isn't perfect but will catch most mistaken uses of strings.
-function validateNativeFormat(data) {
+function validateNativeFormat(data: (Date|number|number[])[][]) {
   const firstRow = data[0];
   const firstX = firstRow[0];
   if (typeof firstX !== 'number' && !utils.isDateLike(firstX)) {
