@@ -12,11 +12,6 @@
   <!-- Mocha -->
   <script src="../node_modules/mocha/mocha.js"></script>
   <script src="../node_modules/chai/chai.js"></script>
-  <script>
-  if (window.initMochaPhantomJS) {
-    window.initMochaPhantomJS();
-  }
-  </script>
 
   <script>
   var expect = chai.expect;
@@ -54,11 +49,7 @@
 
   <script>
     mocha.checkLeaks();
-    if (window.mochaPhantomJS) {
-      mochaPhantomJS.run();
-    } else {
-      mocha.run();
-    }
+    mocha.run();
   </script>
 </body>
 </html>

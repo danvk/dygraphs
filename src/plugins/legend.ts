@@ -184,7 +184,7 @@ class Legend implements DygraphsPlugin {
           isVisible: series.visible,
           color: series.color,
           isHighlighted: false,
-          y: -1,
+          y: undefined,
           yHTML: undefined,
         };
         data.series.push(seriesData);
