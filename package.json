@@ -48,6 +48,7 @@
     "jshint": "^2.5.10",
     "lcov-parse": "0.0.9",
     "mocha": "^2.1.0",
+    "mocha-chrome": "^2.0.0",
     "mocha-phantomjs": "3.5.3",
     "mocha-phantomjs-istanbul": "0.0.2",
     "parse-data-uri": "^0.2.0",
