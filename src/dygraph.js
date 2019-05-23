@@ -780,8 +780,8 @@ Dygraph.prototype.numRows = function() {
  *     were out of range.
  */
 Dygraph.prototype.getValue = function(row, col) {
-  if (row < 0 || row > this.rawData_.length) return null;
-  if (col < 0 || col > this.rawData_[row].length) return null;
+  if (row < 0 || row >= this.rawData_.length) return null;
+  if (col < 0 || col >= this.rawData_[row].length) return null;
 
   return this.rawData_[row][col];
 };
