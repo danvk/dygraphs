@@ -195,6 +195,7 @@ Legend.generateLegendHTML = function(g, x, sel_points, oneEmWidth, row) {
   var data = {
     dygraph: g,
     x: x,
+    i: row,
     series: []
   };
 
