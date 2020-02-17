@@ -2608,10 +2608,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
-  } else if (str.length == 8 && str > '19700101' && str < '20371231') {
-    // TODO(danvk): remove support for this format.
-    isDate = true;
-  }
+  } 
 
   this.setXAxisOptions_(isDate);
 };
