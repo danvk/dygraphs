@@ -457,8 +457,10 @@ DygraphInteraction.startTouch = function(event, g, context) {
     if (initialAngle > 90) initialAngle = 90 - initialAngle;
 
     context.touchDirections = {
-      x: (initialAngle < (90 - 45/2)),
-      y: (initialAngle > 45/2)
+      //x: (initialAngle < (90 - 45/2)),
+     // y: (initialAngle > 45/2)
+      x: true,
+      y: true
     };
   }
 
@@ -516,17 +518,24 @@ DygraphInteraction.moveTouch = function(event, g, context) {
   if (touches.length == 1) {
     xScale = 1.0;
     yScale = 1.0;
-  } else if (touches.length >= 2) {
+  } else {
+    xScale = 1.0;
+    yScale = 1.0;
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
-    xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
-
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
-    yScale = (touches[1].pageY - c_now.pageY) / initHalfHeight;
+    if (touches.length >= 2) {
+        if (Math.abs(initHalfWidth) > 50)
+          xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
+  
+        if (Math.abs(initHalfHeight) > 50) 
+          yScale = (touches[1].pageY - c_now.pageY) / initHalfHeight;
+    }
   }
 
   // Clip scaling to [1/8, 8] to prevent too much blowup.
   xScale = Math.min(8, Math.max(0.125, xScale));
   yScale = Math.min(8, Math.max(0.125, yScale));
+
 
   var didZoom = false;
   if (context.touchDirections.x) {
