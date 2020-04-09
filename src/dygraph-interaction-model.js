@@ -511,6 +511,10 @@ DygraphInteraction.moveTouch = function(event, g, context) {
   var dataHeight = context.initialRange.y[0] - context.initialRange.y[1];
   swipe.dataX = (swipe.pageX / g.plotter_.area.w) * dataWidth;
   swipe.dataY = (swipe.pageY / g.plotter_.area.h) * dataHeight;
+
+  const xExtremes = g.xAxisExtremes()
+  const yExtremes = g.yAxisExtremes()
+
   var xScale, yScale;
 
   // The residual bits are usually split into scale & rotate bits, but we split
@@ -524,11 +528,17 @@ DygraphInteraction.moveTouch = function(event, g, context) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
-        if (Math.abs(initHalfWidth) > 50)
-          xScale = (touches[1].pageX - c_now.pageX) / initHalfWidth;
+        const minAllowed = 50
+        if (Math.abs(initHalfWidth) > minAllowed) {
+          // sensitiveness dampening: smaller pinches count much less
+          const damp = 1 / (Math.abs(initHalfWidth) - minAllowed)
+          xScale = (touches[1].pageX - c_now.pageX + damp) / (initHalfWidth + damp);
+        }
   
-        if (Math.abs(initHalfHeight) > 50) 
-          yScale = (touches[1].pageY - c_now.pageY) / initHalfHeight;
+        if (Math.abs(initHalfHeight) > minAllowed)  {
+          const damp = 1 / (Math.abs(initHalfHeight) - minAllowed)
+          yScale = (touches[1].pageY - c_now.pageY + damp) / (initHalfHeight + damp);
+        }
     }
   }
 
@@ -543,7 +553,12 @@ DygraphInteraction.moveTouch = function(event, g, context) {
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
-
+    if (xExtremes[0] < xExtremes[1]) {
+        if (g.dateWindow_[0] < xExtremes[0])
+            g.dateWindow_[0] = xExtremes[0]
+        if (g.dateWindow_[1] > xExtremes[1])
+            g.dateWindow_[1] = xExtremes[1]
+    }
     didZoom = true;
   }
 
@@ -558,6 +573,12 @@ DygraphInteraction.moveTouch = function(event, g, context) {
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
+        if (yExtremes[i][0] <  yExtremes[i][1]) {
+            if (axis.valueRange[0] < yExtremes[i][0])
+                axis.valueRange[0] = yExtremes[i][0]
+            if (axis.valueRange[1] > yExtremes[i][1])
+                axis.valueRange[1] = yExtremes[i][1]
+        }
         didZoom = true;
       }
     }
