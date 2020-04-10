@@ -405,6 +405,15 @@ DygraphInteraction.endZoom = function(event, g, context) {
   context.dragStartY = null;
 };
 
+// isOutOfExtremes: checks that number p is out of extremes ex.
+// ex is a tuple [a, b], with a <= b
+function isOutOfExtremes(p, ex) {
+
+    return p < ex[0] || p > ex[1]
+
+    // note on ex[0] < ex[1]: sometimes extremes are invalid,
+    // ex[0] must be less than or equal to ex[1]
+}
 /**
  * @private
  */
@@ -429,6 +438,25 @@ DygraphInteraction.startTouch = function(event, g, context) {
   }
   context.initialTouches = touches;
 
+  let pinchCenter
+  if (touches.length >= 2) {
+    pinchCenter = {
+        pageX: 0.5 * (touches[0].pageX + touches[1].pageX),
+        pageY: 0.5 * (touches[0].pageY + touches[1].pageY),
+      
+        // TODO(danvk): remove
+        dataX: 0.5 * (touches[0].dataX + touches[1].dataX),
+        dataY: 0.5 * (touches[0].dataY + touches[1].dataY)
+    };
+
+    const xExtremes = g.xAxisExtremes()
+    const yExtremes = g.yAxisExtremes()
+    if (xExtremes[0] >= xExtremes[1] || isOutOfExtremes(pinchCenter.dataX, xExtremes))
+        context.pinchOutOfExtremes = true
+    if (yExtremes.find(yEx => yEx[0] >= yEx[1] || isOutOfExtremes(pinchCenter.dataY, yEx)))
+        context.pinchOutOfExtremes = true
+  }
+
   if (touches.length == 1) {
     // This is just a swipe.
     context.initialPinchCenter = touches[0];
@@ -438,15 +466,7 @@ DygraphInteraction.startTouch = function(event, g, context) {
     // In case there are 3+ touches, we ignore all but the "first" two.
 
     // only screen coordinates can be averaged (data coords could be log scale).
-    context.initialPinchCenter = {
-      pageX: 0.5 * (touches[0].pageX + touches[1].pageX),
-      pageY: 0.5 * (touches[0].pageY + touches[1].pageY),
-
-      // TODO(danvk): remove
-      dataX: 0.5 * (touches[0].dataX + touches[1].dataX),
-      dataY: 0.5 * (touches[0].dataY + touches[1].dataY)
-    };
-
+    context.initialPinchCenter = pinchCenter
     // Make pinches in a 45-degree swath around either axis 1-dimensional zooms.
     var initialAngle = 180 / Math.PI * Math.atan2(
         context.initialPinchCenter.pageY - touches[0].pageY,
@@ -519,7 +539,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
 
   // The residual bits are usually split into scale & rotate bits, but we split
   // them into x-scale and y-scale bits.
-  if (touches.length >= 2) {
+  if (touches.length >= 2 && !context.pinchOutOfExtremes) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
