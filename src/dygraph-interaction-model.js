@@ -515,16 +515,11 @@ DygraphInteraction.moveTouch = function(event, g, context) {
   const xExtremes = g.xAxisExtremes()
   const yExtremes = g.yAxisExtremes()
 
-  var xScale, yScale;
+  var xScale = 1.0, yScale = 1.0;
 
   // The residual bits are usually split into scale & rotate bits, but we split
   // them into x-scale and y-scale bits.
-  if (touches.length == 1) {
-    xScale = 1.0;
-    yScale = 1.0;
-  } else {
-    xScale = 1.0;
-    yScale = 1.0;
+  if (touches.length >= 2) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
