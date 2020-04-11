@@ -427,19 +427,23 @@ DygraphInteraction.startTouch = function(event, g, context) {
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
+    var rect = t.target.getBoundingClientRect()
     // we dispense with 'dragGetX_' because all touchBrowsers support pageX
     touches.push({
       pageX: t.pageX,
       pageY: t.pageY,
-      dataX: g.toDataXCoord(t.pageX),
-      dataY: g.toDataYCoord(t.pageY)
+      dataX: g.toDataXCoord(t.clientX-rect.left),
+      dataY: g.toDataYCoord(t.clientY-rect.top)
       // identifier: t.identifier
     });
   }
   context.initialTouches = touches;
 
-  let pinchCenter
+  var pinchCenter
+  context.pinchOutOfExtremes = false
   if (touches.length >= 2) {
+
+    // only screen coordinates can be averaged (data coords could be log scale).
     pinchCenter = {
         pageX: 0.5 * (touches[0].pageX + touches[1].pageX),
         pageY: 0.5 * (touches[0].pageY + touches[1].pageY),
@@ -465,8 +469,8 @@ DygraphInteraction.startTouch = function(event, g, context) {
     // It's become a pinch!
     // In case there are 3+ touches, we ignore all but the "first" two.
 
-    // only screen coordinates can be averaged (data coords could be log scale).
     context.initialPinchCenter = pinchCenter
+
     // Make pinches in a 45-degree swath around either axis 1-dimensional zooms.
     var initialAngle = 180 / Math.PI * Math.atan2(
         context.initialPinchCenter.pageY - touches[0].pageY,
@@ -477,8 +481,9 @@ DygraphInteraction.startTouch = function(event, g, context) {
     if (initialAngle > 90) initialAngle = 90 - initialAngle;
 
     context.touchDirections = {
+      //TODO: it does not seem to work well
       //x: (initialAngle < (90 - 45/2)),
-     // y: (initialAngle > 45/2)
+      //y: (initialAngle > 45/2)
       x: true,
       y: true
     };
