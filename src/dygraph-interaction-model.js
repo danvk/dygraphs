@@ -418,12 +418,13 @@ DygraphInteraction.startTouch = function(event, g, context) {
   var touches = [];
   for (var i = 0; i < event.touches.length; i++) {
     var t = event.touches[i];
+    var rect = t.target.getBoundingClientRect()
     // we dispense with 'dragGetX_' because all touchBrowsers support pageX
     touches.push({
       pageX: t.pageX,
       pageY: t.pageY,
-      dataX: g.toDataXCoord(t.pageX),
-      dataY: g.toDataYCoord(t.pageY)
+      dataX: g.toDataXCoord(t.clientX-rect.left),
+      dataY: g.toDataYCoord(t.clientY-rect.top)
       // identifier: t.identifier
     });
   }
