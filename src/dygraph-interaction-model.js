@@ -599,16 +599,27 @@ DygraphInteraction.moveTouch = function(event, g, context) {
       if (logscale) {
         // TODO(danvk): implement
       } else {
+        var oldValueRange = axis.valueRange
         axis.valueRange = [
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[1] - c_init.dataY) / yScale
         ];
-        if (yExtremes[i][0] <  yExtremes[i][1]) {
-            if (axis.valueRange[0] < yExtremes[i][0])
-                axis.valueRange[0] = yExtremes[i][0]
-            if (axis.valueRange[1] > yExtremes[i][1])
-                axis.valueRange[1] = yExtremes[i][1]
+        if (yExtremes[i][0] < yExtremes[i][1]) {
+            var pef = g.getNumericOption("panEdgeFraction") || 1/10
+            var a = yExtremes[i][0] - (yExtremes[i][1] - yExtremes[i][0]) * pef
+            var b = yExtremes[i][1] + (yExtremes[i][1] - yExtremes[i][0]) * pef
+            if (axis.valueRange[0] < a) {
+                axis.valueRange[0] = a
+                if (xScale == 1) // if it is a pan, do not scale
+                    axis.valueRange[1] = oldValueRange[1]
+            }
+            if (axis.valueRange[1] > b) {
+                axis.valueRange[1] = b
+                if (xScale == 1)
+                    axis.valueRange[0] = oldValueRange[0]
+            }
         }
+
         didZoom = true;
       }
     }
