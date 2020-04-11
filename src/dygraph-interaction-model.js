@@ -569,15 +569,25 @@ DygraphInteraction.moveTouch = function(event, g, context) {
 
   var didZoom = false;
   if (context.touchDirections.x) {
+    var oldDateWindow = g.dateWindow_
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[1] - c_init.dataX) / xScale
     ];
     if (xExtremes[0] < xExtremes[1]) {
-        if (g.dateWindow_[0] < xExtremes[0])
-            g.dateWindow_[0] = xExtremes[0]
-        if (g.dateWindow_[1] > xExtremes[1])
-            g.dateWindow_[1] = xExtremes[1]
+        var pef = g.getNumericOption("panEdgeFraction") || 1/10
+        var a = xExtremes[0] - (xExtremes[1] - xExtremes[0]) * pef
+        var b = xExtremes[1] + (xExtremes[1] - xExtremes[0]) * pef
+        if (g.dateWindow_[0] < a) {
+            g.dateWindow_[0] = a
+            if (xScale == 1) // if it is a pan, do not scale the window
+                g.dateWindow_[1] = oldDateWindow[1]
+        }
+        if (g.dateWindow_[1] > b) {
+            g.dateWindow_[1] = b
+            if (xScale == 1)
+                g.dateWindow_[0] = oldDateWindow[0]
+        }
     }
     didZoom = true;
   }
