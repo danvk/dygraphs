@@ -548,7 +548,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
-        const minAllowed = 50
+        const minAllowed = 5
         if (Math.abs(initHalfWidth) > minAllowed) {
           // sensitiveness dampening: smaller pinches count much less
           const damp = 1 / (Math.abs(initHalfWidth) - minAllowed)
