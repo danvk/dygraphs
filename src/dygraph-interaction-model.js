@@ -453,8 +453,8 @@ DygraphInteraction.startTouch = function(event, g, context) {
         dataY: 0.5 * (touches[0].dataY + touches[1].dataY)
     };
 
-    const xExtremes = g.xAxisExtremes()
-    const yExtremes = g.yAxisExtremes()
+    var xExtremes = g.xAxisExtremes()
+    var yExtremes = g.yAxisExtremes()
     if (xExtremes[0] >= xExtremes[1] || isOutOfExtremes(pinchCenter.dataX, xExtremes))
         context.pinchOutOfExtremes = true
     if (yExtremes.find(yEx => yEx[0] >= yEx[1] || isOutOfExtremes(pinchCenter.dataY, yEx)))
@@ -537,8 +537,8 @@ DygraphInteraction.moveTouch = function(event, g, context) {
   swipe.dataX = (swipe.pageX / g.plotter_.area.w) * dataWidth;
   swipe.dataY = (swipe.pageY / g.plotter_.area.h) * dataHeight;
 
-  const xExtremes = g.xAxisExtremes()
-  const yExtremes = g.yAxisExtremes()
+  var xExtremes = g.xAxisExtremes()
+  var yExtremes = g.yAxisExtremes()
 
   var xScale = 1.0, yScale = 1.0;
 
@@ -548,17 +548,18 @@ DygraphInteraction.moveTouch = function(event, g, context) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
-        const minAllowed = 5
-        if (Math.abs(initHalfWidth) > minAllowed) {
-          // sensitiveness dampening: smaller pinches count much less
-          const damp = 1 / (Math.abs(initHalfWidth) - minAllowed)
-          xScale = (touches[1].pageX - c_now.pageX + damp) / (initHalfWidth + damp);
-        }
+        // sensitiveness dampening: smaller pinches count much less
+        var nowHalfWidth = touches[1].pageX - c_now.pageX
+        var smallestHalfWidth = Math.min(Math.abs(nowHalfWidth), Math.abs(initHalfWidth))
+        var damp = 1 / smallestHalfWidth
+        xScale = (nowHalfWidth + damp) / (initHalfWidth + damp);
   
-        if (Math.abs(initHalfHeight) > minAllowed)  {
-          const damp = 1 / (Math.abs(initHalfHeight) - minAllowed)
-          yScale = (touches[1].pageY - c_now.pageY + damp) / (initHalfHeight + damp);
-        }
+        var nowHalfHeight = touches[1].pageY - c_now.pageY
+        var smallestHalfHeight = Math.min(Math.abs(nowHalfHeight), Math.abs(initHalfHeight))
+        var damp = 1 / smallestHalfHeight
+        yScale = (nowHalfHeight + damp) / (initHalfHeight + damp);
+
+        console.log(xScale, yScale)
     }
   }
 
