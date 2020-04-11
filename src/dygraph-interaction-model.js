@@ -548,18 +548,22 @@ DygraphInteraction.moveTouch = function(event, g, context) {
     var initHalfWidth = (initialTouches[1].pageX - c_init.pageX);
     var initHalfHeight = (initialTouches[1].pageY - c_init.pageY);
     if (touches.length >= 2) {
-        // sensitiveness dampening: smaller pinches count much less
-        var nowHalfWidth = touches[1].pageX - c_now.pageX
-        var smallestHalfWidth = Math.min(Math.abs(nowHalfWidth), Math.abs(initHalfWidth))
-        var damp = 1 / smallestHalfWidth
-        xScale = (nowHalfWidth + damp) / (initHalfWidth + damp);
-  
-        var nowHalfHeight = touches[1].pageY - c_now.pageY
-        var smallestHalfHeight = Math.min(Math.abs(nowHalfHeight), Math.abs(initHalfHeight))
-        var damp = 1 / smallestHalfHeight
-        yScale = (nowHalfHeight + damp) / (initHalfHeight + damp);
+        var minAllowed = 5
 
-        console.log(xScale, yScale)
+        if (Math.abs(initHalfWidth) > minAllowed) {
+            // sensitiveness dampening: smaller pinches count much less
+            var damp = 1 / (Math.abs(initHalfWidth)-minAllowed)
+            
+            var nowHalfWidth = touches[1].pageX - c_now.pageX
+            xScale = (nowHalfWidth + damp) / (initHalfWidth + damp);
+        }
+
+        if (Math.abs(initHalfHeight) > minAllowed) {
+            var damp = 1 / (Math.abs(initHalfHeight) - minAllowed)
+
+            var nowHalfHeight = touches[1].pageY - c_now.pageY
+            yScale = (nowHalfHeight + damp) / (initHalfHeight + damp);
+        }
     }
   }
 
