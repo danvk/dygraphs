@@ -572,7 +572,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
 
   var didZoom = false;
   if (context.touchDirections.x) {
-    var oldDateWindow = g.dateWindow_
+    var oldDateWindow = g.dateWindow_ || context.initialRange.x
     g.dateWindow_ = [
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[0] - c_init.dataX) / xScale,
       c_init.dataX - swipe.dataX / xScale + (context.initialRange.x[1] - c_init.dataX) / xScale
@@ -602,7 +602,7 @@ DygraphInteraction.moveTouch = function(event, g, context) {
       if (logscale) {
         // TODO(danvk): implement
       } else {
-        var oldValueRange = axis.valueRange
+        var oldValueRange = axis.valueRange || context.initialRange.y
         axis.valueRange = [
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[0] - c_init.dataY) / yScale,
           c_init.dataY - swipe.dataY / yScale + (context.initialRange.y[1] - c_init.dataY) / yScale
