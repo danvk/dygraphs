@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <title>dygraphs performance over time</title>
+  <script src="perf-data.js"></script>
+  <script src="http://dygraphs.com/dygraph-combined.js"></script>
+  <style type="text/css">
+    #chart {
+      left: 50px;
+      right: 50px;
+      height: 400px;
+    }
+  </style>
+</head>
+<div id=chart></div>
+<div id=description></div>
+
+<script type="text/javascript">
+  var ary = [];
+  for (var i = 0; i < data.length; i++) {
+    var mean = data[i][0];
+    var std = data[i][1];
+    ary.push([i, [mean, std]]);
+  }
+
+  g = new Dygraph(document.getElementById("chart"), ary, {
+    labels: [ "x", "Median Perf" ],
+    errorBars: true,
+    title: 'Performance over Time (Lower is Faster)',
+    ylabel: 'Median Perf (ms)',
+    xlabel: 'Commit in sequence',
+    highlightCallback: function(event, x, points, row, seriesName) {
+      var el = document.getElementById("description");
+      el.innerHTML = data[row][2] + ' ' + data[row][3];
+    }
+  });
+</script>
+</html>
+

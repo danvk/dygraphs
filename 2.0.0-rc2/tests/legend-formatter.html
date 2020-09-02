@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+<title>legendFormatter</title>
+<style>
+#demodiv {
+  width: 640px;
+  height: 480px;
+  display: inline-block;
+  vertical-align: top;
+}
+#legend {
+  display: inline-block;
+  vertical-align: top;
+}
+</style>
+
+<h2>legendFormatter</h2>
+<p>This page demonstrates use of <a href="../options.html#legendFormatter"><code>legendFormatter</code></a>, which can be used to create more complex legends than <code>valueFormatter</code>.</p>
+<div id="demodiv"></div>
+<div id="legend"></div>
+
+<script type="text/javascript" src="../dist/dygraph.js"></script>
+<script type="text/javascript">
+function legendFormatter(data) {
+  if (data.x == null) {
+    // This happens when there's no selection and {legend: 'always'} is set.
+    return '<br>' + data.series.map(function(series) { return series.dashHTML + ' ' + series.labelHTML }).join('<br>');
+  }
+
+  var html = this.getLabels()[0] + ': ' + data.xHTML;
+  data.series.forEach(function(series) {
+    if (!series.isVisible) return;
+    var labeledData = series.labelHTML + ': ' + series.yHTML;
+    if (series.isHighlighted) {
+      labeledData = '<b>' + labeledData + '</b>';
+    }
+    html += '<br>' + series.dashHTML + ' ' + labeledData;
+  });
+  return html;
+}
+
+new Dygraph(
+    document.getElementById("demodiv"),
+    function() {
+      var zp = function(x) { if (x < 10) return "0"+x; else return x; };
+      var r = "date,parabola,line,another line,sine wave\n";
+      for (var i=1; i<=31; i++) {
+      r += "200610" + zp(i);
+      r += "," + 10*(i*(31-i));
+      r += "," + 10*(8*i);
+      r += "," + 10*(250 - 8*i);
+      r += "," + 10*(125 + 125 * Math.sin(0.3*i));
+      r += "\n";
+      }
+      return r;
+    },
+    {
+      labelsDiv: document.getElementById('status'),
+      labelsKMB: true,
+      colors: ["rgb(51,204,204)",
+               "rgb(255,100,100)",
+               "#00DD55",
+               "rgba(50,50,200,0.4)"],
+      title: 'Interesting Shapes',
+      xlabel: 'Date',
+      ylabel: 'Count',
+      highlightSeriesOpts: { strokeWidth: 2 },
+      labelsDiv: document.getElementById('legend'),
+      legend: 'always',
+      legendFormatter: legendFormatter
+    }
+);
+</script>

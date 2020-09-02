@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>date scales</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript">
+      function granularity_checking_formatter(expected_granularity) {
+        return function(date, granularity) {
+          if (expected_granularity != granularity) {
+            throw "Granularity mismatch! Expected " + expected_granularity + ", got " + granularity;
+          }
+          return Dygraph.dateAxisFormatter(date, granularity);
+        };
+      }
+    </script>
+    <style type="text/css">
+      .dygraph {
+        width: 500px;
+        height: 200px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>This demo draws a chart using each date scale that dygraphs supports.</p>
+    <div id='dygraphs'></div>
+
+    <script type="text/javascript">
+      function genChart(gran_name, x_vals) {
+        var div = document.createElement('div');
+        div.className = 'dygraph';
+        document.getElementById('dygraphs').appendChild(div);
+
+        var gran = eval("Dygraph." + gran_name);
+        var data = [];
+        var xvs = x_vals.split(',');
+        for (var i = 0; i < xvs.length; i++) {
+          var row = [];
+          if (xvs[i].indexOf('/') == -1 && xvs[i].indexOf(':') >= 0) {
+            xvs[i] = '2000/01/01 ' + xvs[i];
+          }
+          row.push(new Date(xvs[i]));
+          row.push(2 * (i % 3));
+          data.push(row);
+        }
+        var g = new Dygraph(div, data, {
+                              title: gran_name,
+                              xAxisLabelFormatter: granularity_checking_formatter(gran),
+                              labels: ['Date', 'Y']
+                            });
+        return g;
+      }
+
+      genChart('SECONDLY',        "00:00:00,00:00:02,00:00:04,00:00:06,00:00:08");
+      genChart('TWO_SECONDLY',    "00:00:00,00:00:04,00:00:08,00:00:12,00:00:16");
+      genChart('FIVE_SECONDLY',   "00:00:00,00:00:10,00:00:20,00:00:30,00:00:40");
+      genChart('TEN_SECONDLY',    "00:00:00,00:00:20,00:00:40,00:01:00,00:01:20");
+      genChart('THIRTY_SECONDLY', "00:00:00,00:01:00,00:02:00,00:03:00,00:04:00");
+
+      genChart('MINUTELY',        "00:00:00,00:02:00,00:04:00,00:06:00,00:08:00");
+      genChart('TWO_MINUTELY',    "00:00:00,00:04:00,00:08:00,00:12:00,00:16:00");
+      genChart('FIVE_MINUTELY',   "00:00:00,00:10:00,00:20:00,00:30:00,00:40:00");
+      genChart('TEN_MINUTELY',    "00:00:00,00:20:00,00:40:00,01:00:00,01:20:00");
+      genChart('THIRTY_MINUTELY', "00:00:00,01:00:00,02:00:00,03:00:00,04:00:00");
+
+      genChart('HOURLY',     "00:00:00,02:00:00,04:00:00,06:00:00,08:00:00");
+      genChart('TWO_HOURLY', "00:00:00,04:00:00,08:00:00,12:00:00,16:00:00");
+      genChart('SIX_HOURLY', "00:00:00,12:00:00,2000/01/02,2000/01/02 12:00:00,2000/01/03");
+
+      genChart('DAILY',      "2000/01/01,2000/01/02,2000/01/03,2000/01/04,2000/01/05");
+      genChart('WEEKLY',     "2000/01/01,2000/01/14,2000/01/28,2000/02/03,2000/02/10");
+      genChart('MONTHLY',    "2000/01/01,2000/02/01,2000/03/01,2000/04/01,2000/05/01");
+      genChart('QUARTERLY',  "2000/01/01,2000/03/01,2000/06/01,2001/03/01");
+      genChart('BIANNUAL',   "2000,2001,2002,2003");
+      genChart('ANNUAL',     "2000,2001,2002,2003,2004,2005");
+      genChart('DECADAL',    "1900,1910,1920,1930,1940,1950");
+      genChart('CENTENNIAL', "1500,1600,1700,1800,1900,2000");
+
+      var num_grans = document.getElementsByClassName('dygraph').length;
+      if (num_grans != Dygraph.NUM_GRANULARITIES) {
+        throw "Dygraphs defines " + Dygraph.NUM_GRANULARITIES + " date granularities, " +
+              "but this page only tests " + num_grans;
+      }
+    </script>
+</body>
+</html>

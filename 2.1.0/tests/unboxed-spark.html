@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>dygraphs unboxed</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+      #div_spark {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <p>This shows dygraphs without any boxlike elements (i.e. axes or grids):</p>
+    <div id="div_g" style="width:600px; height:300px; border:1px solid white;"></div>
+
+    <script type="text/javascript">
+      var show_box = false;
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            data, {
+              axes : {
+                x : {
+                  drawGrid: show_box,
+                  drawAxis : show_box,
+                },
+                y : {
+                  drawGrid: show_box,
+                  drawAxis : show_box,
+                }
+              }
+            }
+          );
+
+      function toggleBox(btn) {
+        show_box = !show_box;
+        document.getElementById("div_g").style.border = show_box ? '1px solid black' : '1px solid white';
+        if (show_box) {
+          btn.innerHTML = 'Hide box';
+        } else {
+          btn.innerHTML = 'Show box';
+        }
+      }
+    </script>
+
+    <button onClick='toggleBox(this)'>Show box</button>
+
+    <!-- Dygraphs constructs a div inside of whatever div we pass in. So the container div can't be a span or have display: inline-block. We use a table to get the sparkline to display on the same line as the text. -->
+    <p>
+    <table><tr><td>This style can be used to produce interactive sparklines with dygraphs:</td><td><div id="div_spark" style="width:100px; height:20px;"></div></td></tr></table>
+    </p>
+
+    <script type="text/javascript">
+      var g2 = new Dygraph(
+            document.getElementById("div_spark"),
+            data, {
+              axes : {
+                x : {
+                  drawGrid: false,
+                  drawAxis : false,
+                },
+                y : {
+                  drawGrid: false,
+                  drawAxis : false,
+                }
+              },
+              strokeWidth: 1.0,
+              rollPeriod: 7,
+              labelsDiv: '',
+              highlightCircleSize: 2
+            }
+          );
+    </script>
+  </body>
+</html>

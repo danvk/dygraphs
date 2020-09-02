@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>noise</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <div id="div_g" style="width:600px; height:300px;"></div>
+    <br/>
+    <div id="div_g30" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+              legend: 'always',
+              ylabel: 'Percent Error',
+              title: 'Error Rates over Time (7-day rollup)'
+            }
+          );
+      g30 = new Dygraph(
+            document.getElementById("div_g30"),
+            NoisyData().replace(/,/g, "\t"), {
+              rollPeriod: 14,
+              errorBars: true,
+              legend: 'always',
+              labelsDivStyles: {
+                'textAlign': 'right',
+              },
+              labelsDivWidth: 170,
+              ylabel: 'Percent Error',
+              title: 'Error Rates over Time (14-day rollup)'
+            }
+          );
+    </script>
+  </body>
+</html>

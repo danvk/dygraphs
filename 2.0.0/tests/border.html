@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>gadget border</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #bordered {
+      border: 1px solid red;
+    }
+    .dygraph-legend {
+      border: 1px solid black;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Hopefully this stays in its border:</p>
+    <div id="bordered" style="width:600px; height:300px;"></div>
+    <script type="text/javascript">
+    var g = new Dygraph(document.getElementById('bordered'), data,
+    {
+      title: 'Chart Title',
+      xlabel: 'Date',
+      ylabel: 'Temperature (F)'
+    });
+    </script>
+  </body>
+</html>

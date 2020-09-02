@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="../tests/data.js"></script> 
+    <script type="text/javascript" src="../dygraph-dev.js"></script> 
+    <style>
+      #header {
+        background: #F1F1F1;
+        margin-bottom: 10px;
+      }
+      h1, ul.nav {
+        display: inline-block;
+      }
+      ul.nav {
+        vertical-align: middle;
+      }
+      code {
+        display: block;
+        white-space: pre-wrap;
+      }
+      #demodiv {
+        width: 100%;
+        height: 320px;
+      }
+      .dygraph-axis-label {
+        font-size: 12px;
+      }
+      .dygraph-title {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header"><div class="container">
+      <h1>dygraphs</h1>
+
+      <!-- TODO(danvk): fill in relevant links here -->
+      <ul class="nav nav-pills">
+        <li class="dropdown">
+          <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+          <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Options Reference</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">API Reference</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Data Format</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Annotations</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">CSS Reference</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Notes on Internet Explorer</a></li>
+            <li role="presentation" class="divider"></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Stack Overflow</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Mailing List</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Demo Gallery<b class="caret"></b></a>
+          <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+            <li role="presentation" class="divider"></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <li><a href="#">Download</a></li>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Project <b class="caret"></b></a>
+          <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com">Blog</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="http://github.com/danvk/dygraphs">Github</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://code.google.com/p/dygraphs/issues/list">Issue Tracker</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://code.google.com/p/dygraphs/issues/entry">Report a Bug</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+          </ul>
+        </li>
+      </ul> <!-- /tabs -->
+    </div></div>
+
+    <div class="container" id="main">
+      <h4>dygraphs is a fast, flexible open source JavaScript charting library.</h4>
+      <p>It allows users to explore and interpret dense data sets. Here's how it works:</p>
+
+      <div class="row">
+        <div class="col-lg-4">
+          <b>JavaScript</b>
+          <pre class="prettyprint">new Dygraph(div, "ny-vs-sf.txt", {
+  legend: 'always',
+  title: 'NY vs. SF',
+  showRoller: true,
+  rollPeriod: 14
+});</code>
+        </div>
+        <div class="col-lg-8">
+          <div id="demodiv"></div>
+        </div>
+      </div>
+      
+
+      <script type="text/javascript">
+        g = new Dygraph(
+          document.getElementById("demodiv"),
+          data_temp,
+          {
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            title: 'Temperatures in New York vs. San Francisco',
+            titleHeight: 24,
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            labelsDivStyles: { 'textAlign': 'right' },
+            axes: {
+              x: {
+                gridLineColor: 'rgb(196,196,196)'
+              }
+            }
+          }
+        );
+      </script>
+
+      <p>The chart is <i>interactive</i>: you can mouse over to highlight individual values. You can click and drag to zoom. Double-clicking will zoom you back out. You can change the number and hit enter to adjust the averaging period.</p>
+
+      <h3>Features</h3>
+      <ul>
+        <li>Handles <strong>huge data sets</strong>: dygraphs can plot millions of data points without getting bogged down.
+        <li><strong>Interactive out of the box</strong>: zoom, pan and mouseover are on by default.
+        <li>Strong support for <strong>error bars</strong> / confidence intervals.
+        <li><strong>Highly customizable</strong>: using options and custom callbacks, you can make dygraphs do almost anything.
+        <li>dygraphs is <strong>highly compatible</strong>: it works in all major browsers (including IE8). You can even <strong>pinch to zoom</strong> on mobile/tablet devices!
+      </ul>
+
+      <h3>Getting Started</h3>
+      <p>Start by <a href="download.html">downloading dygraphs</a>. Then read the <a href="tutorial.html">Tutorial</a> to learn how to use it, or just <a href="http://dygraphs.com/fiddle">play with dygraphs</a> on jsFiddle.</p>
+
+      <p>Once you've got your feet wet, look for inspiration in the <a href="gallery/">demo gallery</a> or our <a href="users.html">list of users</a>.</p>
+      
+    </div>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>fillGraph with per series fillAlpha</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+  </head>
+  <body>
+    <p>Filled, using default value</p>
+    <div id="div_g0" style="width:600px; height:300px;"></div>
+
+    <p>Filled, using global alpha value</p>
+    <div id="div_g1" style="width:600px; height:300px;"></div>
+
+    <p>Filled, using per series alpha values</p>
+    <div id="div_g2" style="width:600px; height:300px;"></div>
+
+    <p>Filled, using a mix of global and per series values</p>
+    <div id="div_g3" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      // Create some data for the charts
+      var gdata = "X,Y1,Y2\n";
+      for (var i = 0; i < 100; i++) {
+        gdata += i + "," + i + "," + (i * (100-i) * 100/(50*50)) + "\n";
+      }
+
+      // Just use the default values
+      var g0 = new Dygraph(
+        document.getElementById("div_g0"),
+        gdata,
+        {
+          fillGraph: true
+        }
+      );
+
+      var g1 = new Dygraph(
+        document.getElementById("div_g1"),
+        gdata,
+        {
+          fillGraph: true,
+          fillAlpha: 0.8
+        }
+      );
+
+      var g2 = new Dygraph(
+        document.getElementById("div_g2"),
+        gdata,
+        {
+          fillGraph: true,
+          series: {
+            Y1: { fillAlpha: 0.9 },
+            Y2: { fillAlpha: 0.1 }
+          }
+        }
+      );
+
+      var g3 = new Dygraph(
+        document.getElementById("div_g3"),
+        gdata,
+        {
+          fillGraph: true,
+          fillAlpha: 0.9,
+          series: {
+            Y2: { fillAlpha: 0.1 }
+          }
+        }
+      );
+
+
+    </script>
+  </body>
+</html>

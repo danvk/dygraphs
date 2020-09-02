@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>X Axis Label Formatting</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+  </head>
+  <body>
+    <p>Original data:</p>
+    <div id="normal" style="width:600px; height:300px;"></div>
+
+    <p>Same data, but offset by 2 hours with the date formatter:</p>
+    <div id="offby2" style="width:600px; height:300px;"></div>
+
+    <p>Same data, but always displaying HH:MM:SS:</p>
+    <div id="seconds" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      function HourlyData() {
+        return "" +
+          "Date,A,B\n" +
+          "2009/07/12 00:00:00,3,4\n" +
+          "2009/07/12 01:00:00,5,6\n" +
+          "2009/07/12 02:00:00,7,6\n" +
+          "2009/07/12 03:00:00,6,5\n" +
+          "2009/07/12 04:00:00,4,7\n" +
+          "2009/07/12 05:00:00,3,6\n" +
+          "2009/07/12 06:00:00,4,6"
+      }
+      function zeropad(x) {
+        return (x < 10) ? '0' + x : x;
+      }
+
+      var g1 = new Dygraph(
+            document.getElementById("normal"),
+            HourlyData()
+          );
+
+      var g2 = new Dygraph(
+            document.getElementById("offby2"),
+            HourlyData(),
+            { 
+              axes: {
+                x: {
+                  axisLabelFormatter: function(d, gran, opts) {
+                      return Dygraph.dateAxisLabelFormatter(new Date(d.getTime() + 7200*1000), gran, opts);
+                  }
+                }
+              }
+            });
+
+      var g3 = new Dygraph(
+            document.getElementById("seconds"),
+            HourlyData(),
+            { 
+              axes: {
+                x: {
+                  axisLabelWidth: 70,
+                  axisLabelFormatter: function(d, gran) {
+                    return zeropad(d.getHours()) + ":"
+                        + zeropad(d.getMinutes()) + ":"
+                        + zeropad(d.getSeconds());
+                  }
+                }
+              }
+            });
+    </script>
+  </body>
+</html>

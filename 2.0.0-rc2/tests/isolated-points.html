@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>isolated points</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+  </head>
+  <body>
+    <div id="graph"></div>
+    <script type="text/javascript">
+    var g = new Dygraph(
+      document.getElementById("graph"),
+      [
+        [ 1, 10, 11],
+        [ 2, 15, null],
+        [ 3, null, null],
+        [ 4, 20, 13],
+        [ 5, null, 10],
+        [ 6, 18, null],
+        [ 7, 12, 16]
+      ],
+      {
+        labels: ["X", "S1", "S2" ],
+        series: {
+          S1: {
+            drawGapEdgePoints: true
+          }
+        },
+        pointSize: 4,
+        showRoller: true
+      }
+    );
+    </script>
+  </body>
+</html>

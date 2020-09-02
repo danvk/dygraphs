@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="site.css">
+
+    <script src="bootstrap.min.js"></script>
+    <!--[if IE]><script src="excanvas.js"></script><![endif]-->
+    <script type="text/javascript" src="dygraph-combined.js"></script> 
+  </head>
+  <body>
+    <!--
+    "Fork me on github" banner:
+    <a href="http://github.com/danvk/dygraphs"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    -->
+
+    <div id="header" class="navbar navbar-fixed-top">
+      <div class="container">
+
+      <!-- .navbar-toggle is used as the toggle for collapsed navbar content -->
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <h1 class="navbar-brand"><a href="/">dygraphs</a></h1>
+
+      
+      <!-- Place everything within .navbar-collapse to hide it until above 768px -->
+      <div class="nav-collapse collapse navbar-responsive-collapse">
+
+        <!-- TODO(danvk): fill in relevant links here -->
+        <ul class="nav nav-pills">
+          <li class="dropdown">
+            <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+            <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="jsdoc/symbols/Dygraph.html">API Reference</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="data.html">Data Format</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="annotations.html">Annotations</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="css.html">CSS Reference</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="versions.html">Version History</a></li>
+              <li role="presentation" class="divider"></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="ie.html">Notes on Internet Explorer</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="gwt.html">Notes on GWT</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+            <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
+              <li role="presentation" class="divider"></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="tests/">Test Cases</a></li>
+            </ul>
+          </li>
+          <li><a class="xnavbar-link" href="/fiddle">Play</a></li>
+          <li><a class="xnavbar-link" href="download.html">Download</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+            <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com">Blog</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Stack Overflow</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://stackoverflow.com/questions/tagged/dygraphs">Ask a Question</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="https://groups.google.com/forum/#!forum/dygraphs-users">Mailing List</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+            <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="http://github.com/danvk/dygraphs">Source (Github)</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="https://code.google.com/p/dygraphs/issues/list">Issue Tracker</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="https://code.google.com/p/dygraphs/issues/entry">Report a Bug</a></li>
+            </ul>
+          </li>
+        </ul> <!-- /tabs -->
+      </div> <!-- /nav-collapse -->
+    </div> <!-- /container -->
+  </div> <!-- /navbar -->
+
+  <div class="container" id="main">
+    <div class="row">
+      <div class="col-lg-12">
+
+
+<h2>Legal Information</h2>
+
+<p>dygraphs is purely client-side JavaScript. It does not send your data to any servers &ndash; the data is processed entirely in the client's browser.</p>
+
+<p>dygraphs is available under the MIT license, included in LICENSE.txt.</p>
+
+<pre>dygraphs uses:
+ - rgbcolor.js (Public Domain)
+ - strftime.js (BSD License)
+ - excanvas.js (Apache License)
+ - YUI compressor (BSD License)
+ - JsDoc Toolkit (MIT license)
+ - stacktrace.js is public domain
+
+automated tests use:
+ - auto_tests/lib/jquery-1.4.2.js (MIT & GPL2)
+ - auto_tests/lib/Asserts.js (Apache 2.0 License)
+ - auto-tests/lib/JsTestDriver-1.3.3cjar (Apache 2.0 License
+
+Linter uses:
+ - JSHint (modified MIT license; prevents evil)
+
+rgbcolor: http://www.phpied.com/rgb-color-parser-in-javascript/
+strftime: http://tech.bluesmoon.info/2008/04/strftime-in-javascript.html
+excanvas: http://code.google.com/p/explorercanvas/
+yui compressor: http://developer.yahoo.com/yui/compressor/
+jsdoc toolkit: http://code.google.com/p/jsdoc-toolkit/
+
+jquery: http://code.jquery.com/jquery-1.4.2.js
+Asserts.js: http://www.google.com/codesearch/p?#3tsINRJRCro/trunk/JsTestDriver/src/com/google/jstestdriver/javascript/Asserts.js
+JSTestDriver: http://code.google.com/p/js-test-driver/
+
+JSHint: jshint.com
+</pre>
+
+    </div> <!--  .col-lg-12 -->
+  </div>  <!-- /div.row -->
+</div>  <!-- /div#main.container -->
+
+<!-- TODO(danvk): add a real footer -->
+<p>&nbsp;</p>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-769809-2']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
+  </body>
+</html>
+

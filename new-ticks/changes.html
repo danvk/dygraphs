@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Guide to making dygraphs changes</title>
+    <style type="text/css">
+      code { white-space: pre; border: 1px dashed black; display: inline; }
+      pre  { white-space: pre; border: 1px dashed black; }
+      body { max-width: 800px; }
+      ol > li { padding: 5px; }
+    </style>
+  </head>
+  <body>
+    <h2>Guide to making dygraphs changes</h2>
+
+    <p>So you've made a change to dygraphs and would like to contribute it back
+    to the open source project. Wonderful! This is a step-by-step guide
+    explaining how to do it.</p>
+
+    <p>The list of steps may look a bit daunting, but it's not too bad,
+    especially if you have any familiarity with git or github. If you run into
+    any problems while following the instructions, feel free to contact
+    dygraphs-users.</p>
+
+    <p>Why not just take patches? This process means less work for me (the
+    maintainer) and it also results in your name appearing in the list of
+    dygraphs commits. This lets you take credit for your work.</p>
+
+    <ol>
+      <li>Create an account on <a href="http://github.com">github</a>. This is
+      free, painless and will let you claim credit for your changes.
+
+      <li>Install git. github has a good writeup <a
+        href="http://help.github.com/git-installation-redirect">here</a>.
+
+      <li>Create a fork of the dygraphs repository on github by
+      clicking <a href="https://github.com/danvk/dygraphs">this link</a> and
+      then the "Fork" button.
+
+      <li>You should see a URL along the lines of
+      <code>git@github.com:yourname/dygraphs.git</code><br/>Copy this, open up a
+      terminal and run<br/>
+      <pre>git clone git@github.com:yourname/dygraphs.git</pre> This
+      pulls the dygraphs code down onto your local disk.
+
+      <li>cd into the dygraphs directory and make your changes.<br/>
+      If you've already got them somewhere else, just copy them over.<br/>
+      I try to adhere to Google's <a
+        href="http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml">
+        JS style guide</a> and would appreciate it if you try to as well.
+
+      <li>Be a good citizen!
+        <ul>
+          <li>If you've added a new feature, add a test for it (in the tests/
+          directory).
+          <li>If you've added a new option, add it to the list of options on the
+          documentation page (docs/index.html).
+        </ul>
+        You'll have to do this before I accept your changes, so you may as well
+        do it now
+
+      <li>Commit your changes locally: run
+        <pre>git add .
+git commit</pre>
+      Type in a description of your change. This will
+      eventually appear in the dygraphs <a
+        href="https://github.com/danvk/dygraphs/commits/master">commit list</a>.
+
+      <li>Push your changes to github by running <pre>git push</pre>This will
+        send your changes to your forked repository on github.
+
+      <li>Go to your fork of dygraphs on github (i.e.
+      github.com/yourname/dygraphs).<br/>
+      Click the "Pull Request" button.<br/>
+      This will send me an email with a pointer to your changes.
+
+      <li>I'll review your changes and (unless your code is perfect!) give you
+      some feedback. Make these suggested changes in your local git client and
+      re-run "git commit" and "git push" so that I can see them.
+
+      <li>Once your change is ready, I'll pull it into the main dygraphs
+      repository and publish it to the web.
+    </ol>
+
+  <!-- Google Analytics -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-769809-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+  </body>
+</html>

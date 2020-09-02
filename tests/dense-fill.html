@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>dense, filled plots</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <style>
+    .chart {
+      width: 800px;
+      height: 500px;
+    }
+    </style>
+  </head>
+  <body>
+  <p>These charts are substantially sped up by <a href="https://github.com/danvk/dygraphs/pull/462/">down-sampling.</a></p>
+    <div class="chart" data-opts='{"fillGraph":true}'></div>
+
+    <p>step plot, filled</p>
+    <div class="chart" data-opts='{"fillGraph":true,"stepPlot":true}'></div>
+
+    <script>
+      var data = [];
+      for (var i = 0; i < 10000; i++) {
+        data.push([i, Math.sin(i/1000), Math.cos(i/1000)]);
+      }
+
+      var chartDivs = document.querySelectorAll('.chart');
+      for (var i = 0; i < chartDivs.length; i++) {
+        var chartDiv = chartDivs[i];
+        var opts = {labels: ['X', 'sin', 'cos'], animatedZooms: true};
+        var thisOpts = JSON.parse(chartDiv.getAttribute('data-opts'));
+        for (var k in thisOpts) {
+          opts[k] = thisOpts[k];
+        }
+
+        new Dygraph(chartDivs[i], data, opts);
+      }
+    </script>
+  </body>
+</html>

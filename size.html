@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <title>dygraphs performance over time</title>
+  <script src="size-data.js"></script>
+  <script src="http://dygraphs.com/dygraph-combined.js"></script>
+  <style type="text/css">
+    #chart {
+      left: 50px;
+      right: 150px;
+      height: 400px;
+    }
+  </style>
+</head>
+<div id=chart></div>
+<div id=description></div>
+
+<h2>Biggest Size Increases</h2>
+<div id=increases></div>
+<h2>Biggest Size Decreases</h2>
+<div id=decreases></div>
+
+<script type="text/javascript">
+  var ary = [];
+  var sortable = [];
+  for (var i = 0; i < data.length; i++) {
+    var size = data[i][0];
+    var date = data[i][4];
+    if (date < '2009-12-01') continue;  // Don't care about the early days.
+    ary.push([i, size]);
+    if (i) {
+      sortable.push([size - data[i - 1][0], i]);
+    }
+  }
+
+  sortable.sort(function(a, b) { return a[0] - b[0] });
+
+  g = new Dygraph(document.getElementById("chart"), ary, {
+    labels: [ "x", "Size" ],
+    title: 'Minified JS Size over Time (bytes)',
+    xlabel: 'Commit in sequence',
+    valueRange: [0, null],
+    axes: {
+      y: { labelsKMG2: true }
+    },
+    highlightCallback: function(event, x, points, row, seriesName) {
+      var el = document.getElementById("description");
+      row = ary[row][0];
+      el.innerHTML = data[row][4] + ' ' + data[row][2] + ' ' + data[row][3];
+    },
+    fillGraph: true
+  });
+
+  var decrease_html = '<ol>', increase_html = '<ol>';
+  var fmt_line = function(delta, row) {
+    var commit = data[row][2];
+    var url = 'https://github.com/danvk/dygraphs/commit/' + commit;
+    return '<li>' + delta + ': ' + data[row][4] + ' <a href="' + url + '" target=_blank>' + commit + '</a> ' + data[row][3];
+  }
+  var n = sortable.length;
+  if (n > 20) {
+    for (var i = 0; i < 10; i++) {
+      decrease_html += fmt_line(sortable[i][0], sortable[i][1]);
+      increase_html += fmt_line(sortable[n - i - 1][0], sortable[n - i - 1][1]);
+    }
+  }
+  document.getElementById('decreases').innerHTML = decrease_html;
+  document.getElementById('increases').innerHTML = increase_html;
+</script>
+</html>
+

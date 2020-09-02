@@ -1,0 +1,55 @@
+<html>
+<head>
+  <link rel="stylesheet" href="mittens.css" type="text/css" /> 
+
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script> 
+  <script type="text/javascript"> 
+    google.load('visualization', '1');
+  </script> 
+  <script type="text/javascript" src="dygraph-combined.js"></script> 
+  <script type="text/javascript" src="dygraph.js"></script> 
+  <script type="text/javascript" src="dygraph-canvas.js"></script> 
+  <script type="text/javascript" src="mittens.js"></script> 
+  <script type="text/javascript" src="data.js"></script> 
+  <script type="text/javascript"> 
+    function draw() {
+      var opts = {
+        labelsKMB: true,
+        includeZero: true,
+        width: 670,
+        height: 350,
+        labelsDiv: 'line-legend',
+        labelsSeparateLines: false,
+        xAxisLabelFormatter: function(d, g) {
+          if (g == Dygraph.ANNUAL) {
+            return d.getFullYear();
+          } else {
+            return Dygraph.dateAxisFormatter(d, g);
+          }
+        },
+        labelsDivStyles: {
+          'text-size': '13px',
+        },
+        axisLabelFontSize: 13,
+        legend: 'always',
+        ylabel: 'Normalized Search Activity (&sigma;)',
+        yAxisLabelWidth: 40
+      };
+
+      var g = new Dygraph.GVizChart(document.getElementById('line-chart'));
+      g.draw(cd.getDataTable(), opts);
+    }
+
+    google.setOnLoadCallback(draw);
+  </script>
+</head>
+<body>
+  <div style='position: absolute; left: 50px; top: 50px;'>
+    <div id='line-legend'></div>
+    <div id='line-chart'></div>
+  </div>
+  <div id='info'>
+    Current state of the art
+  </div>
+</body>
+</html>

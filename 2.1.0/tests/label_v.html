@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>demo</title>
+    <!--
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body>
+    <div id="graph"></div>
+    <p>This demo shows how you can create labels and ticks independently of one another.</p>
+<script type="text/javascript">
+var g;
+
+function draw() {
+  g = new Dygraph(document.getElementById("graph"),
+                 data,
+                 {
+                     legend: 'always',
+                     animatedZooms: true,
+                     title: 'tick-less axis labels',
+                     labels: ['Hour of Week', 'X', 'Y'],
+                     axes: {
+                       y: {
+                         valueRange: [0, null]
+                       },
+                       x: {
+                       	 ticker: function(min, max, pixels) {
+                         	 return [
+                           	 { v: 0*24 + 24 },
+                           	 { label_v: 0*24 + 12, label: 'Sun' },
+                           	 { v: 1*24 + 24 },
+                             { label_v: 1*24 + 12, label: 'Mon' },
+                             { v: 2*24 + 24 },
+                             { label_v: 2*24 + 12, label: 'Tue' },
+                             { v: 3*24 + 24 },
+                             { label_v: 3*24 + 12, label: 'Wed' },
+                             { v: 4*24 + 24 },
+                             { label_v: 4*24 + 12, label: 'Thu' },
+                             { v: 5*24 + 24 },
+                             { label_v: 5*24 + 12, label: 'Fri' },
+                             { v: 6*24 + 24 },
+                             { label_v: 6*24 + 12, label: 'Sat' },
+                             { v: 7*24 + 24 },
+                           ]
+                         }
+                       }
+                     }
+                 });
+}
+
+var data = [];
+for (var i = 0; i < 168; i++) {
+  const h = i % 24;
+  data.push([
+    i,
+    250 + 100 * Math.sin(2 * Math.PI * (h-6)/24),
+    500 + 200 * Math.sin(2 * Math.PI * (h-6)/24)
+  ]);
+}
+
+draw();
+
+</script>
+</body>
+</html>

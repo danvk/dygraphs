@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Label styles</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Labels are transparent and repositioned:</p>
+    <div id="div_g14" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g14 = new Dygraph(
+            document.getElementById("div_g14"),
+            NoisyData, {
+              rollPeriod: 14,
+              errorBars: true,
+              labelsDivWidth: 100,
+              labelsDivStyles: {
+                'backgroundColor': 'transparent',
+              },
+              labelsSeparateLines: true,
+              yAxisLabelWidth: 20
+            }
+          );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>demo</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="excanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="dygraph-dev.js"></script>
+  </head>
+  <body>
+      <div id="demodiv" style="width:800px; height:320px;"></div>
+      <script type="text/javascript">
+        g = new Dygraph(
+          document.getElementById("demodiv"),
+          "ny-vs-sf.txt",
+          {
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            labelsDivStyles: { 'textAlign': 'right' }
+          }
+        );
+      </script>
+	</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Exported Symbols test</title>
+  </head>
+  <body>
+    <p>dygraphs exports these symbols into the global namespace:</p>
+    <ol id="list">
+    </ol>
+
+    <p>It exports these symbols inside each of those symbols:</p>
+    <ol id="list2">
+    </ol>
+
+    <script type="text/javascript">
+      var windowProps = {};
+      var newProps = [];
+      var k, i, html, level2props, sym, topSymbol;
+      for (k in window) {
+        windowProps[k] = true;
+      }
+    </script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript">
+      for (k in window) {
+        if (!windowProps.hasOwnProperty(k)) {
+          newProps.push(k);
+        }
+      }
+      newProps.sort();
+      html = '';
+      for (i = 0; i < newProps.length; i++) {
+        html += '<li>' + newProps[i] + '</li>\n';
+      }
+      document.getElementById('list').innerHTML = html;
+
+      level2props = [];
+      for (i = 0; i < newProps.length; i++) {
+        topSymbol = newProps[i];
+        for (k in window[topSymbol]) {
+          sym = topSymbol + '.' + k;
+          level2props.push(sym);
+        }
+      }
+
+      newProps.sort();
+      html = '';
+      for (i = 0; i < level2props.length; i++) {
+        html += '<li>' + level2props[i] + '</li>\n';
+      }
+      document.getElementById('list2').innerHTML = html;
+    </script>
+  </body>
+</html>

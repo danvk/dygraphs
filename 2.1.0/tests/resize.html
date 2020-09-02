@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>resize the window</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #div_g {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 40px;
+      bottom: 10px;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Resize the window. The dygraph will resize with it.</p>
+    <div id="div_g"></div>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true
+            }
+          );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Milliseconds date labels</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body>
+
+    <h2>Milliseconds display in date and time labels</h2>
+
+    <p>This shows how milliseconds are displayed when present.</p>
+
+    <div id="div_ms" style="width:600px; height:200px;"></div>
+    <div id="div_std" style="width:600px; height:200px;"></div>
+    
+    <p>You can check it by hovering over corresponding points and comparing
+    the value labels.</p>
+
+    <script type="text/javascript">
+      var values = (function () {
+        var rand10 = function () { return Math.round(10 * Math.random()); };
+        var a = [];
+        for (var n=0; n < 72; n++) {
+          a.push(rand10());
+        }
+        return a;
+      })();
+      function data(y,m,d,hh,mm,ss,ms) {
+        var a = [];
+        for (var n=0; n < 72; n++) {
+          a.push([new Date(Date.UTC(y, m, d, hh + n, mm, ss, ms)), values[n]]);
+        }
+        return a;
+      }
+      gms = new Dygraph(
+                   document.getElementById("div_ms"),
+                   data(2009, 6, 25, 14, 34, 56, 654),
+                   {
+                     labels: ['time with ms', 'random']
+                   }
+                 );
+      gstd = new Dygraph(
+                   document.getElementById("div_std"),
+                   data(2009, 6, 25, 14, 0, 0, 0),
+                   {
+                     labels: ['time', 'random']
+                   }
+                 );
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Label styles</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style>
+      .dygraph-legend {
+        background-color: rgba(200, 200, 255, 0.75);
+        padding: 4px;
+        border: 1px solid black;
+        border-radius: 10px;
+        box-shadow: 4px 4px 4px #888;
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Labels are styled with css3:</p>
+    <div id="div_g14" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g14 = new Dygraph(
+            document.getElementById("div_g14"),
+            NoisyData, {
+              rollPeriod: 14,
+              errorBars: true,
+              labelsSeparateLines: true,
+              axes: {
+                y: {
+                  axisLabelWidth: 20
+                }
+              }
+            }
+          );
+    </script>
+  </body>
+</html>

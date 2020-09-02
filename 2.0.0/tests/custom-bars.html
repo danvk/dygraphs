@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>custom bars</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Top and bottom of the bars stay mostly fixed while the middle varies.</p>
+    <div id="graph"></div>
+
+    <script type="text/javascript">
+      var g = new Dygraph(document.getElementById("graph"),
+                  [
+                    [1, [10,  10, 100]],
+                    [2, [15,  20, 110]],
+                    [3, [10,  30, 100]],
+                    [4, [15,  40, 110]],
+                    [5, [10, 120, 100]],
+                    [6, [15,  50, 110]],
+                    [7, [10,  70, 100]],
+                    [8, [15,  90, 110]],
+                    [9, [10,  50, 100]]
+                  ], {
+                    customBars: true,
+                    errorBars: true,
+                    labels: ['X', 'Y']
+                  }
+                 );
+    </script>
+  </body>
+</html>

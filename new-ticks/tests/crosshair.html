@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>crosshairs</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Hover, click and zoom to test the callbacks:</p>
+    <div id="div_g" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <script type="text/javascript">
+      var lines = [];
+      var xline;
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyData, {
+              rollPeriod: 7,
+              showRoller: true,
+              errorBars: true,
+
+              highlightCallback: function(e, x, pts) {
+                for (var i = 0; i < pts.length; i++) {
+                  var y = pts[i].canvasy;
+                  lines[i].style.display = "";
+                  lines[i].style.top = y + "px";
+                  if (i == 0) xline.style.left = pts[i].canvasx + "px";
+                }
+                xline.style.display = "";
+              },
+
+              unhighlightCallback: function(e) {
+                for (var i = 0; i < 2; i++) {
+                  lines[i].style.display = "none";
+                }
+                xline.style.display = "none";
+              }
+            }
+          );
+
+      for (var i = 0; i < 2; i++) {
+        var line = document.createElement("div");
+        line.style.display = "none";
+        line.style.width = "100%";
+        line.style.height = "1px";
+        line.style.backgroundColor = "black";
+        line.style.position = "absolute";
+        document.getElementById("div_g").appendChild(line);
+        lines.push(line);
+      }
+
+      xline = document.createElement("div");
+      xline.style.display = "none";
+      xline.style.width = "1px";
+      xline.style.height = "100%";
+      xline.style.top = "0px";
+      xline.style.backgroundColor = "black";
+      xline.style.position = "absolute";
+      document.getElementById("div_g").appendChild(xline);
+    </script>
+  </body>
+</html>

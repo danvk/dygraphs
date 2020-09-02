@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>dygraphs number display</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <style type="text/css">
+      .thinborder {
+        border: 1px solid black;
+        border-spacing: 0px;
+        border-collapse: collapse;
+      }
+      .thinborder td,
+      .thinborder th {
+        border: 1px solid black;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>dygraphs number display</h2>
+    <p>Dygraphs can display numbers in either scientific mode (fixed number of significant figures) or fixed-point mode (fixed number of digits after the decimal point). It is in fixed-point mode by default.</p>
+    <p>To switch to scientific mode, set the <i>sigFigs</i> option to the number of significant figures in your data.</p>
+    <p>In fixed-point mode, you can control the number of digits after the decimal using the <i>digitsAfterDecimal</i> option. For particularly large numbers, this format can get unwieldy (i.e. '100000000' for 100M is a bit lengthy). Once the numbers get to a certain length, dygraphs will switch over to scientific notation. This is controlled by the <i>maxNumberWidth</i> option.</p>
+
+    <div id='blah'></div>
+
+    <script type="text/javascript">
+      var nums = [
+        -1.234e10,
+        -1e10,
+        -1.23e4,
+        -123.456789,
+        -123,
+        -1,
+        -0.123456,
+        -0.1,
+        -0.001234567,
+        -0.001,
+        -0.0000000001,
+        0,
+        0.0000000001,
+        0.001,
+        0.001234567,
+        0.1,
+        0.123456,
+        1,
+        3,
+        3.14,
+        3.14159,
+        3.14159265,
+        3.14159265358,
+        123,
+        123.456789,
+        1.23e4,
+        1e5,
+        1e6,
+        1e7,
+        1e8,
+        1e9,
+        1e10,
+        1.234e10
+      ];
+
+    var scientific = [ 1, 2, 3, 4, 5, 6 ];
+    var fixed = [ [2, 6], [3, 6], [5, 6], [1, 10], [2, 10], [5, 10] ];
+
+    // Helper functions for generating an HTML table for holding the test
+    // results.
+    createRow = function(columnType, columns) {
+      var row = document.createElement('tr');
+      for (var i = 0; i  < columns.length; i ++) {
+        var th = document.createElement(columnType);
+        var text = document.createTextNode(columns[i]);
+        th.appendChild(text);
+        row.appendChild(th);
+      };
+      return row;
+    };
+
+    var html = '<table class=thinborder>';
+    html += '<tr><th>&nbsp;</th><th colspan=' + scientific.length + '>Scientific (sigFigs)</th><th colspan=' + fixed.length + '>Fixed (digitsAfterDecimal, maxNumberWidth)</th></tr>\n';
+    html += '<tr><th>Number</th>';
+    for (var i = 0; i < scientific.length; i++) {
+      html += '<th>' + scientific[i] + '</th>';
+    }
+    for (var i = 0; i < fixed.length; i++) {
+      html += '<th>' + fixed[i] + '</th>';
+    }
+    html += '</tr>\n';
+
+    var attr = {};
+    var opts = function(x) {
+      return attr[x];
+    };
+    for (var j = 0; j < nums.length; j++) {
+      var x = nums[j];
+      html += '<tr>';
+      html += '<td>' + x + '</td>';
+      for (var i = 0; i < scientific.length; i++) {
+        attr = { sigFigs: scientific[i] };
+        html += '<td>' + Dygraph.numberFormatter(x, opts) + '</td>';
+      }
+      for (var i = 0; i < fixed.length; i++) {
+        attr = { sigFigs: null, digitsAfterDecimal: fixed[i][0], maxNumberWidth: fixed[i][1] };
+        html += '<td>' + Dygraph.numberFormatter(x, opts) + '</td>';
+      }
+      html += '</tr>\n';
+    }
+
+    html += '</table>';
+    document.getElementById('blah').innerHTML = html;
+    </script>
+</body>
+</html>

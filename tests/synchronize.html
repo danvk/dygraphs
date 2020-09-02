@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>synchronize</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../src/extras/synchronizer.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style>
+      .chart { width: 500px; height: 300px; }
+      .chart-container { overflow: hidden; }
+      #div1 { float: left; }
+      #div2 { float: left; }
+      #div3 { float: left; clear: left; }
+      #div4 { float: left; }
+    </style>
+  </head>
+  <body>
+    <p>Zooming and panning on any of the charts will zoom and pan all the
+    others. Selecting points on one will select points on the others.</p>
+
+    <p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.
+    See the comments in that file for usage.</p>
+
+    <div class="chart-container">
+      <div id="div1" class="chart"></div>
+      <div id="div2" class="chart"></div>
+      <div id="div3" class="chart"></div>
+      <div id="div4" class="chart"></div>
+    </div>
+
+    <p>
+      Synchronize what?
+      <input type=checkbox id='chk-zoom' checked onChange='update()'><label for='chk-zoom'> Zoom</label>
+      <input type=checkbox id='chk-selection' checked onChange='update()'><label for='chk-selection'> Selection</label>
+      <input type=checkbox id='chk-range' checked onChange='update()'><label for='chk-range'> Range (y-axis)</label>
+    </p>
+
+    <script type="text/javascript">
+      gs = [];
+      var blockRedraw = false;
+      for (var i = 1; i <= 4; i++) {
+        gs.push(
+          new Dygraph(
+            document.getElementById("div" + i),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+            }
+          )
+        );
+      }
+      var sync = Dygraph.synchronize(gs);
+      
+      function update() {
+        var zoom = document.getElementById('chk-zoom').checked,
+            selection = document.getElementById('chk-selection').checked,
+            syncRange = document.getElementById('chk-range').checked;
+        document.getElementById('chk-range').disabled = !zoom;
+
+        sync.detach();
+        sync = Dygraph.synchronize(gs, {
+          zoom: zoom,
+          selection: selection,
+          range: syncRange
+        });
+      }
+    </script>
+  </body>
+</html>

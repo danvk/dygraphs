@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Temperatures with Range Selector</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #bordered {
+      border: 1px solid red;
+    }
+    #dark-background {
+      background-color: #101015;
+      color: white;
+    }
+    #darkbg1 .dygraph-axis-label, #darkbg2 .dygraph-axis-label {
+      color: white;
+    }
+    #noroll .dygraph-legend,
+    #roll14 .dygraph-legend,
+    #darkbg1 .dygraph-legend,
+    #darkbg2 .dygraph-legend {
+      text-align: right;
+    }
+    #darkbg1 .dygraph-legend {
+      background-color: #101015;
+    }
+    #darkbg2 .dygraph-legend {
+      background-color: #101015;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Demo of a graph with the range selector.</p>
+    <p>
+      No roll period.
+    </p>
+    <div id="noroll" style="width:800px; height:320px;"></div>
+
+    <h2 id="options">Range selector options</h2>
+    <p>Here's a view of how the various <a href="../options.html#Range%20Selector">range selector options</a> affect the display:</p>
+    <img width="954" height="354" src="range-selector-anatomy.png">
+
+    <p>
+      Roll period of 14 timesteps, various custom range selector options.
+    </p>
+    <div id="roll14" style="width:800px; height:320px;"></div>
+    <p>
+      Use the average of a specific subset of series to draw the mini plot (only the first series is used in this test).
+      The default behaviour is to compute the average of <em>all</em> series.
+    </p>
+    <div id="selectcombined" style="width:800px; height:320px;"></div>
+
+    <p>
+      Demo of range selecor without the chart. (interesting if multiple charts should be synced with one range selector).
+    </p>
+    <div id="nochart" style="width:800px; height:30px;"></div>
+    <div id="dark-background">
+      <p>Demo of range selector on dark background, with (left) and without (right) custom range selector gradient color.</p>
+      <div id="darkbg1" style="width:400px; height:300px;display:inline-block;"></div>
+      <div id="darkbg2" style="width:400px; height:300px;display:inline-block;"></div>
+    </div>
+    <p>Demo of range selector with stepPlot</p>
+    <div id="stepplot" style="width:800px; height:320px;"></div>
+
+    <script type="text/javascript">
+      g1 = new Dygraph(
+          document.getElementById("noroll"),
+          data_temp,
+          {
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            showRangeSelector: true
+          }
+      );
+      g2 = new Dygraph(
+          document.getElementById("roll14"),
+          data_temp,
+          {
+            rollPeriod: 14,
+            showRoller: true,
+            customBars: true,
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            legend: 'always',
+            xAxisHeight: 14,
+            showRangeSelector: true,
+            rangeSelectorHeight: 80,
+            rangeSelectorPlotStrokeColor: 'purple',
+            rangeSelectorPlotFillColor: 'black',
+            rangeSelectorBackgroundStrokeColor: 'orange',
+            rangeSelectorBackgroundLineWidth: 4,
+            rangeSelectorPlotLineWidth: 5,
+            rangeSelectorForegroundStrokeColor: 'brown',
+            rangeSelectorForegroundLineWidth: 8,
+            rangeSelectorAlpha: 0.5,
+            rangeSelectorPlotFillGradientColor: 'red'
+          }
+      );
+      g3 = new Dygraph(
+          document.getElementById("selectcombined"),
+          [
+            [0, 1, 4, 10],
+            [10, 2, 8, 19],
+            [25, 15, 4, 2],
+            [35, 0, 3, 2]
+          ],
+          {
+            title: 'Daily Temperatures in New York vs. San Francisco',
+            ylabel: 'Temperature (F)',
+            showRangeSelector: true,
+            labels: ['X', 'Y1', 'Y2', 'Y3'],
+            series: {
+              'Y1': { showInRangeSelector: true }
+            }
+          }
+      );
+      g4 = new Dygraph(
+          document.getElementById("nochart"),
+          [[0,1],[10,1]],
+          {
+            xAxisHeight: 30,
+            axes : {
+              x : {
+                drawAxis : false
+              }
+            },
+            labels: ['X', 'Y'],
+            showRangeSelector: true,
+            rangeSelectorHeight: 30
+          }
+      );
+      g5 = new Dygraph(
+          document.getElementById("darkbg1"),
+          data_temp,
+          {
+              rollPeriod: 14,
+              showRoller: true,
+              customBars: true,
+              title: 'Nightly Temperatures in NY vs. SF',
+              ylabel: 'Temperature (F)',
+              legend: 'always',
+              showRangeSelector: true,
+              rangeSelectorPlotFillColor: 'MediumSlateBlue',
+              rangeSelectorPlotFillGradientColor: 'rgba(123, 104, 238, 0)',
+              colorValue: 0.9,
+              fillAlpha: 0.4
+          }
+      );
+      g6 = new Dygraph(
+          document.getElementById("darkbg2"),
+          data_temp,
+          {
+              rollPeriod: 14,
+              showRoller: true,
+              customBars: true,
+              title: 'Nightly Temperatures in NY vs. SF',
+              ylabel: 'Temperature (F)',
+              legend: 'always',
+              showRangeSelector: true,
+              rangeSelectorPlotFillColor: 'MediumSlateBlue',
+              colorValue: 0.9,
+              fillAlpha: 0.4
+          }
+      );
+      g7 = new Dygraph(document.getElementById("stepplot"),
+                      "Date,Idle,Used\n" +
+                      "2008-05-07,70,30\n" +
+                      "2008-05-08,42,88\n" +
+                      "2008-05-09,88,42\n" +
+                      "2008-05-10,33,37\n" +
+                      "2008-05-11,30,35\n",
+                       {
+                          stepPlot: true,
+                          fillGraph: true,
+                          stackedGraph: true,
+                          includeZero: true,
+                          showRangeSelector: true
+                       });
+    </script>
+  </body>
+</html>

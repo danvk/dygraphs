@@ -1,0 +1,112 @@
+<html>
+<head>
+  <style type="text/css">
+  .dygraph-axis-label {
+    color: black;
+  }
+  #x-label {
+    font-weight: bold;
+    text-align: center;
+    z-index: 10;
+    overflow: hidden;
+    background: white;
+  }
+  .y-label {
+    font-weight: bold;
+    text-align: right;
+    z-index: 10;
+    overflow: hidden;
+    background: white;
+  }
+  #line-chart {
+    cursor: crosshair;
+  }
+  #zoom-out {
+    display: none;
+    position: absolute;
+    left: 70px;
+    top: 20px;
+    z-index: 20;
+  }
+  </style>
+  <link rel="stylesheet" href="mittens.css" type="text/css" /> 
+
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script> 
+  <script type="text/javascript"> 
+    google.load('visualization', '1');
+  </script> 
+  <script type="text/javascript" src="dygraph-combined.js"></script> 
+  <script type="text/javascript" src="dygraph.js"></script> 
+  <script type="text/javascript" src="dygraph-canvas.js"></script> 
+  <script type="text/javascript" src="mittens.js"></script> 
+  <script type="text/javascript" src="data.js"></script> 
+  <script type="text/javascript" src="interaction.js"></script> 
+  <script type="text/javascript"> 
+    function draw() {
+      var opts = {
+        labelsKMB: true,
+        includeZero: true,
+        width: 670,
+        height: 350,
+        labelsSeparateLines: false,
+        xAxisLabelFormatter: function(d, g) {
+          if (g == Dygraph.ANNUAL) {
+            return d.getFullYear();
+          } else {
+            return Dygraph.dateAxisFormatter(d, g);
+          }
+        },
+        labelsDivStyles: {
+          'font': '1em/1.6em Arial,sans-serif'
+        },
+        labelsDivWidth: 120,
+        axisLabelFontSize: 13,
+        legend: 'always',
+        ylabel: 'Normalized Search Activity (&sigma;)',
+        yAxisLabelWidth: 40,
+        gridLineColor: 'rgb(196,196,196)',
+        strokeWidth: 1.25,
+        colors: [ '#3366CC', '#DC3912' ],
+        drawCallback: function(g) {
+          if (g.isZoomed()) {
+            document.getElementById('zoom-out').style.display = 'block';
+          } else {
+            document.getElementById('zoom-out').style.display = 'none';
+          }
+        },
+        drawXGrid: false,
+        drawYGrid: false,
+        labelsSeparateLines: true,
+        yAxisLabelWidth: 60,
+        interactionModel: {
+          mousedown: Dygraph.defaultInteractionModel.mousedown,
+          mousemove: Dygraph.defaultInteractionModel.mousemove,
+          mouseup: Dygraph.defaultInteractionModel.mouseup,
+          mouseout: Dygraph.defaultInteractionModel.mouseout,
+          dblclick: Dygraph.defaultInteractionModel.dblclick,
+          mousewheel: scrollV3
+        }
+      };
+
+      g = new Dygraph.GVizChart(document.getElementById('line-chart'));
+      g.draw(cd.getDataTable(), opts);
+      lastClickedGraph = g.date_graph;
+    }
+
+    google.setOnLoadCallback(draw);
+  </script>
+</head>
+<body>
+  <div style='position: absolute; left: 50px; top: 50px;'>
+    <button id='zoom-out' onClick='restorePositioning(g)'>Reset</button>
+    <div id='line-legend'></div>
+    <div id='line-chart'></div>
+    <div id='x-label'></div>
+    <div id='y-label0' class='y-label'></div>
+    <div id='y-label1' class='y-label'></div>
+  </div>
+  <div id='info'>
+    Existing interaction model w/ crosshairs, zoom button.
+  </div>
+</body>
+</html>

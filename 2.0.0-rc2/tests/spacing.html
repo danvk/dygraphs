@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>spacing</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Wide</p>
+    <div id="div_g" style="width:800px; height:300px;"></div>
+
+    <p>Narrow</p>
+    <div id="div_g2" style="width:300px; height:200px;"></div>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            data, {
+              rollPeriod: 7,
+              axes: {
+                y: {
+                  pixelsPerLabel: 20
+                }
+              }
+            }
+          );
+      g2 = new Dygraph(
+            document.getElementById("div_g2"),
+            data, {
+              rollPeriod: 7,
+              axes: {
+                y: {
+                  pixelsPerLabel: 20
+                }
+              }
+            }
+          );
+    </script>
+  </body>
+</html>

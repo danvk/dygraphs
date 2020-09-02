@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>crosshairs</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="../src/extras/crosshair.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <p>Vertical crosshair:</p>
+    <div id="div_g_v" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <p>Horizontal crosshairs:</p>
+    <div id="div_g_h" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <p>Both crosshairs:</p>
+    <div id="div_g_b" style="width:600px; height:300px; position:relative;">
+    </div>
+
+    <script type="text/javascript">
+      gv = new Dygraph(
+        document.getElementById("div_g_v"),
+        NoisyData,
+        {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "vertical"
+            })
+          ]
+        }
+      );
+      gh = new Dygraph(
+        document.getElementById("div_g_h"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "horizontal"
+            })
+          ]
+        }
+      );
+      gb = new Dygraph(
+        document.getElementById("div_g_b"),
+        NoisyData, {
+          rollPeriod: 7,
+          showRoller: true,
+          errorBars: true,
+
+          plugins: [
+            new Dygraph.Plugins.Crosshair({
+              direction: "both"
+            })
+          ]
+        }
+      );
+    </script>
+  </body>
+</html>

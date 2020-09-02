@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Straw broom charts demo</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="../src/extras/synchronizer.js"></script>
+    <script type="text/javascript" src="../src/extras/rebase.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+
+    <style type="text/css">
+      #g1, #g2, #g3 {
+        width: 500px;
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <caption>Hover, click and zoom to test the rebase:</caption>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <h2>Value:</h2>
+            <div id="g1"></div>
+          </td>
+          <td>
+            <h2>Percent:</h2>
+            <div id="g2"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <h2>None:</h2>
+            <div id="g3"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script type="text/javascript">
+      var gs = [];
+      var rebaseOpts = [100, 'percent', null];
+      for (var i = 1; i <= 3; i++) {
+        var baseOpt = rebaseOpts.shift();
+        var rebase = new Dygraph.Plugins.Rebase(baseOpt);
+        gs.push(
+          new Dygraph(
+            document.getElementById("g" + i),
+            stockData,
+            { plugins: [rebase] }
+          )
+        );
+      }
+      Dygraph.synchronize(gs, { range: false });
+    </script>
+  </body>
+</html>

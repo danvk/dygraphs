@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Old y-axis range behavior</title>
+
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script src="data.js"></script>
+  </head>
+  <body>
+    <h2>Old y-axis range behavior</h2>
+    <p>In dygraphs 1.x, if you set a <code>valueRange</code> for the y-axis, zoomed in and then double-clicked to zoom out, then the chart would zoom out to the <code>valueRange</code> that you specified.</p>
+    <p>Starting with dygraphs 2, double-clicking will zoom out to the full range of the chart's data. This makes the x- and y-axes behave identically.</p>
+    <p>This demo shows you how to get the old behavior in dygraphs 2 using a plugin. View source to see how.</p>
+
+    <div id="demodiv" style="width: 800px; height: 300px;"></div>
+    <div id="demodiv2" style="width: 800px; height: 300px;"></div>
+
+    <script type="text/javascript">
+      const doubleClickZoomOutPlugin = {
+        activate: function(g) {
+          // Save the initial y-axis range for later.
+          const initialValueRange = g.getOption('valueRange');
+          return {
+            dblclick: e => {
+              e.dygraph.updateOptions({
+                dateWindow: null,  // zoom all the way out
+                valueRange: initialValueRange  // zoom to a specific y-axis range.
+              });
+              e.preventDefault();  // prevent the default zoom out action.
+            }
+          }
+        }
+      }
+
+      var gCustom = new Dygraph(
+              document.getElementById("demodiv"),
+              NoisyData,
+              {
+                legend: 'always',
+                title: 'Custom y-axis range on zoom out',
+                errorBars: true,
+                valueRange: [2, 6],
+                plugins: [
+                  doubleClickZoomOutPlugin
+                ],
+                animatedZooms: true
+              }
+          );
+
+      var gDefault = new Dygraph(
+              document.getElementById("demodiv2"),
+              NoisyData,
+              {
+                legend: 'always',
+                title: 'Default y-axis range on zoom out',
+                errorBars: true,
+                valueRange: [2, 6],
+                animatedZooms: true
+              }
+          );
+    </script>
+</body>
+</html>

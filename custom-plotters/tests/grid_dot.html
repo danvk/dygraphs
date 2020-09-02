@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Custom grid and Dot</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+
+  <body>
+    <p>Dot and lines should be extra large. Grid is red.</p>
+    <div id="div_g14" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      g14 = new Dygraph(
+            document.getElementById("div_g14"),
+            NoisyData, {
+              rollPeriod: 14,
+              errorBars: true,
+              gridLineColor: '#FF0000',
+              highlightCircleSize: 10,
+              strokeWidth: 3
+            }
+          );
+    </script>
+  </body>
+</html>

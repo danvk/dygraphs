@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>Daylight Savings</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+  </head>
+  <body>
+    <h2>DST</h2>
+    <p>This tests that tick marks don't break when the axis crosses into
+    daylight savings time.</p>
+
+    <div id="demodiv"></div>
+
+    <p>The tick marks should all be on day boundaries or nice hours (6, 12, 18),
+    rather than on odd time boundaries like 5, 11, 17 and 23.</p>
+
+    <script type="text/javascript">
+      g = new Dygraph(
+              document.getElementById("demodiv"),
+"Date/Time,Purchases\n" +
+"2010-11-05 00:00:00,167082\n" +
+"2010-11-06 00:00:00,168571\n" +
+"2010-11-07 00:00:00,177796\n" +
+"2010-11-08 00:00:00,165587\n" +
+"2010-11-09 00:00:00,164380\n",
+          { width: 1024 }
+          );
+    </script>
+</body>
+</html>

@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+<!-- saved from url=(0182)https://docs.google.com/spreadsheet/ar?id=tArllGe9QbtStidsGMNYxDA.08850126777738770451.4370587915621627355&action=1&tile=1&rpert=20&srow=0&erow=32&scol=0&ecol=10&fprt=false&tfe=qc_62 -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Simplified</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=8;IE=9;chrome=1;">
+        <style>
+            html {overflow:visible};
+        </style>
+    </head>
+    <body style="border:0px;margin:20px; max-width: 1000px;">
+        <style>
+          #tblMain {
+            width: 960px;
+          }
+          table tr:nth-child(even) {
+            background-color: #eee;
+          }
+          #tblMain td, th {
+            border: 1px solid white;
+            padding-top: 3px;
+            padding-bottom: 3px;
+          }
+          .tblGenFixed td {
+            padding:0 3px;
+            overflow:hidden;
+            white-space:normal;
+            letter-spacing:0;
+            word-spacing:0;
+            z-index:1;
+          }
+          .tblGenFixed td.s0 {
+            background-color:white;
+            color:#000000;
+          }
+          .tblGenFixed td.s2 {
+            background-color:white;
+            color:#000000;
+          }
+          .tblGenFixed td.s1 {
+            background-color:white;
+            color:#000000;
+          }
+          .tblGenFixed th {
+            background-color: #f2f3ef;
+            color:#666;
+          }
+          .tblGenFixed td.date-string {
+            color:#000000;
+          }
+          .tblGenFixed td.error {
+            color: white;
+            background-color: #CB000F;
+            text-align: center;
+          }
+          .tblGenFixed td.mixed {
+            color: white;
+            background-color: #CCA600;
+            background-color: #BBB;
+            text-align: center;
+          }
+          .tblGenFixed td.ok {
+            color: white;
+            background-color: #00882D;
+            text-align: center;
+          }
+          .tblGenFixed th.corner {
+            background-color: transparent;
+          }
+          .tblGenFixed tr.spacer td {
+            background-color: white;
+          }
+          .date-string {
+            font-family: monospace;
+          }
+          hr {
+            border: 0px;
+            height: 1px;
+            color: #999;
+            background-color: #999;
+            margin-top: 10px;
+            margin-bottom: 10px;
+          }
+
+          .test {
+            font-size: 80%;
+          }
+        </style>
+
+        <p>Welcome to your one-stop shop for cross-browser JavaScript Date
+          parsing behavior. This is not for the faint of heart. If you have
+          other date formats which you'd like to contribute to this table,
+          please <a href="mailto:danvdk@gmail.com">contact me</a>.
+        </p>
+
+        <p>For some context and rules of thumb, please head back to <a
+          href="http://blog.dygraphs.com/2012/03/javascript-and-dates-what-mess.html">JavaScript and Dates, What a Mess!</a>.</p>
+
+        <table border="0" cellpadding="0" cellspacing="0" class="tblGenFixed" id="tblMain">
+            <tbody>
+                <tr>
+                    <th class="corner" colspan=3> &nbsp; </th>
+                    <th class="browser" colspan=2> Chrome </th>
+                    <th class="browser" colspan=3> Firefox </th>
+                    <th class="browser" colspan=2> IE </th>
+                    <th class="browser" colspan=1> &nbsp; </th>
+                    <th class="browser" colspan=1> This browser </th>
+                </tr>
+                <tr>
+                    <th class="s1" style="width: 225px;"> dateString </th>
+                    <th class="version" style="width: 100px;"> Time Zone </th>
+                    <th class="version"> Meaning </th>
+                    <th class="version" style="width: 50px;"> &lt;10 </th>
+                    <th class="version" style="width: 50px;"> 12-18 </th>
+                    <th class="version" style="width: 50px;"> 1-3 </th>
+                    <th class="version" style="width: 50px;"> 4-9 </th>
+                    <th class="version" style="width: 50px;"> 10 </th>
+                    <th class="version" style="width: 50px;"> 6-8 </th>
+                    <th class="version" style="width: 50px;"> 9 </th>
+                    <th class="version" colspan=1> &nbsp; </th>
+                    <th class="version" id="thisbrowser" colspan=1> </th>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009/07/12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009/7/12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009/07/12 12:34 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning">  12:34:00 PM July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009/07/12 12:34:56 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 12:34:56 PM July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    These formats work across all browsers. Stick to them if
+                    possible.<br/>
+                    Note that if you specify hours, you must also
+                    specify minutes. Specifying hours alone does not work in any
+                    browser.
+                    <hr/>
+                </td></tr>
+
+                <tr>
+                    <td class="date-string"> 2009/07/12 12:34:56.789 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 12:34:56.789 PM, July 12, 2009 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    Don't try to specify milliseconds. Only recent versions of
+                    Chrome will understand you.
+                    <hr/>
+                </td></tr>
+
+                <tr>
+                    <td class="date-string"> 07/02/2012 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, July 2, 2012 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 7/2/2012 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, July 2, 2012 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 7/2/2012 12:34</td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 12:34 PM, July 2, 2012 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="3" class="ok"> ok </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    Somewhat surprisingly, these formats are also unambiguous.
+                    Date.parse favors US (MM/DD/YYYY) over non-US
+                    (DD/MM/YYYY) forms.<br/>
+                    These formats may be ambiguous to humans, however, so you
+                    should prefer YYYY/MM/DD if possible.
+                    <hr/>
+                </td></tr>
+
+
+                <tr>
+                    <td class="date-string"> 2009-7-12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"> </td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"> </td>
+                    <td style="display:none;"> </td>
+                    <td style="display:none;"> </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009-07-12 </td>
+                    <td class="s3"> UTC </td>
+                    <td class="meaning"> Midnight, July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"> </td>
+                    <td class="error"> Err </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"> </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr>
+                    <td class="date-string"> 2009-07-12 12:34 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 12:34:00 PM July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2009-07-12 12:34:56 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 12:34:56 PM July 12, 2009 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1-1-2012 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 1, 2012 </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    Using hyphens (-) instead of slashes (/) works in WebKit
+                    browsers, but not in IE or FF. Beware the UTC parse of
+                    YYYY-MM-DD!
+                    <hr/>
+                </td></tr>
+
+
+                <tr>
+                    <td class="date-string"> 1-1-12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 1, * </td>
+                    <td colspan="2" class="mixed"> 2012 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="2" class="mixed"> 1912 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1/1/12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 1, * </td>
+                    <td colspan="2" class="mixed"> 2012 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="mixed"> 1912 </td>
+                    <td colspan="2" class="mixed"> 1912 </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1-1-12 11:12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 11:12:00 AM January 1, * </td>
+                    <td colspan="2" class="mixed"> 2012 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="2" class="mixed"> 1912 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1/1/12 11:12 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 11:12:00 AM January 1, * </td>
+                    <td colspan="2" class="mixed"> 2012 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="mixed"> 1912 </td>
+                    <td colspan="2" class="mixed"> 1912 </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1-1-12 11:12:34.567 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 11:12:34 AM January 1, * </td>
+                    <td class="error"> Err </td>
+                    <td class="mixed"> 2012 </td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1/1/12 11:12:34.567 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> 11:12:34 AM January 1, * </td>
+                    <td class="error"> Err </td>
+                    <td class="mixed"> 2012 </td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1/2 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 2, * </td>
+                    <td colspan="2" class="mixed"> 2001 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1-2 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 2, * </td>
+                    <td colspan="2" class="mixed"> 2001 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1/2/3 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 2, * </td>
+                    <td colspan="2" class="mixed"> 2003 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="mixed"> 1903 </td>
+                    <td colspan="2" class="mixed"> 1903 </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 1-2-3 </td>
+                    <td class="s3"> Local </td>
+                    <td class="meaning"> Midnight, January 2, * </td>
+                    <td colspan="2" class="mixed"> 2003 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="3" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td style="display:none;"></td>
+                    <td colspan="2" class="mixed"> 1903 </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    If you don't specify a four-digit year, you'll get different
+                    centuries in different browsers.
+                    <hr/>
+                </td></tr>
+
+
+                <tr>
+                    <td class="date-string"> 2011-10-10T14:48:00+0200 </td>
+                    <td class="s3"> (explicit) </td>
+                    <td class="meaning"> 14:48:00 October 10, 2011 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td class="ok"> ok </td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+                <tr>
+                    <td class="date-string"> 2011-10-10T14:48:00 </td>
+                    <td class="s3"> UTC </td>
+                    <td class="meaning"> 14:48:00 October 10, 2011 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td class="error"> Err </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr>
+                    <td class="date-string"> 2000-01-02T12:34:56Z </td>
+                    <td class="s3"> UTC </td>
+                    <td class="meaning"> 12:34:56 January 2, 2000 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td class="error"> Err </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr>
+                    <td class="date-string"> 2000-01-02T12:34:56.789Z </td>
+                    <td class="s3"> UTC </td>
+                    <td class="meaning"> 12:34:56.789 January 2, 2000 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td class="error"> Err </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr>
+                    <td class="date-string"> 2000-01-02T12:34:56.789012Z </td>
+                    <td class="s3"> UTC </td>
+                    <td class="meaning"> 12:34:56 January 2, 2000 </td>
+                    <td class="error"> Err </td>
+                    <td class="ok"> ok </td>
+                    <td class="error"> Err </td>
+                    <td colspan="2" class="ok"> ok </td>
+                    <td style="display:none;"></td>
+                    <td colspan="2" class="error"> Err </td>
+                    <td style="display:none;"></td>
+                    <td colspan="1"> </td>
+                    <td colspan="1" class="test"> </td>
+                </tr>
+
+                <tr class="spacer"><td colspan="10">
+                    The <a
+                      href="http://www.iso.org/iso/date_and_time_format">ISO
+                      8601</a>-style formats guarantee an interpretation of your
+                    date string, but they have spotty support in older browsers.
+                </td></tr>
+
+            </tbody>
+        </table>
+    </body>
+
+    <script type="text/javascript"> // Comes from http://www.quirksmode.org/js/detect.html
+      var BrowserDetect = {
+        init: function () {
+          this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
+          this.version = this.searchVersion(navigator.userAgent)
+            || this.searchVersion(navigator.appVersion)
+            || "an unknown version";
+          this.OS = this.searchString(this.dataOS) || "an unknown OS";
+        },
+        searchString: function (data) {
+          for (var i=0;i<data.length;i++)  {
+            var dataString = data[i].string;
+            var dataProp = data[i].prop;
+            this.versionSearchString = data[i].versionSearch || data[i].identity;
+            if (dataString) {
+              if (dataString.indexOf(data[i].subString) != -1)
+                return data[i].identity;
+            }
+            else if (dataProp)
+              return data[i].identity;
+          }
+        },
+        searchVersion: function (dataString) {
+          var index = dataString.indexOf(this.versionSearchString);
+          if (index == -1) return;
+          return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
+        },
+        dataBrowser: [
+          {
+            string: navigator.userAgent,
+            subString: "Chrome",
+            identity: "Chrome"
+          },
+          {   string: navigator.userAgent,
+            subString: "OmniWeb",
+            versionSearch: "OmniWeb/",
+            identity: "OmniWeb"
+          },
+          {
+            string: navigator.vendor,
+            subString: "Apple",
+            identity: "Safari",
+            versionSearch: "Version"
+          },
+          {
+            prop: window.opera,
+            identity: "Opera",
+            versionSearch: "Version"
+          },
+          {
+            string: navigator.vendor,
+            subString: "iCab",
+            identity: "iCab"
+          },
+          {
+            string: navigator.vendor,
+            subString: "KDE",
+            identity: "Konqueror"
+          },
+          {
+            string: navigator.userAgent,
+            subString: "Firefox",
+            identity: "Firefox"
+          },
+          {
+            string: navigator.vendor,
+            subString: "Camino",
+            identity: "Camino"
+          },
+          {    // for newer Netscapes (6+)
+            string: navigator.userAgent,
+            subString: "Netscape",
+            identity: "Netscape"
+          },
+          {
+            string: navigator.userAgent,
+            subString: "MSIE",
+            identity: "Explorer",
+            versionSearch: "MSIE"
+          },
+          {
+            string: navigator.userAgent,
+            subString: "Gecko",
+            identity: "Mozilla",
+            versionSearch: "rv"
+          },
+          {     // for older Netscapes (4-)
+            string: navigator.userAgent,
+            subString: "Mozilla",
+            identity: "Netscape",
+            versionSearch: "Mozilla"
+          }
+        ],
+        dataOS : [
+          {
+            string: navigator.platform,
+            subString: "Win",
+            identity: "Windows"
+          },
+          {
+            string: navigator.platform,
+            subString: "Mac",
+            identity: "Mac"
+          },
+          {
+               string: navigator.userAgent,
+               subString: "iPhone",
+               identity: "iPhone/iPod"
+            },
+          {
+            string: navigator.platform,
+            subString: "Linux",
+            identity: "Linux"
+          }
+        ]
+      
+      };
+      BrowserDetect.init();
+    </script>
+    <script type="text/javascript">
+      var testTds = document.getElementsByClassName("test");
+      for(var idx = 0; idx < testTds.length; idx++) {
+        var testTd = testTds[idx];
+        var parent = testTd.parentElement;
+        var dateString = parent.getElementsByClassName("date-string")[0].textContent;
+        testTd.textContent = new Date(dateString.trim()).toString();
+      }
+
+      document.getElementById("thisbrowser").textContent =
+          BrowserDetect.browser + ' ' + BrowserDetect.version + ' on ' + BrowserDetect.OS;
+
+    </script>
+</html>        

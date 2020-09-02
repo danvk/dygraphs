@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../dist/dygraph.css">
+    <title>Stock chart</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+</head>
+<body>
+  <h2>Stock Chart demo</h2>
+  <div id="stock_div" style="width: 800px; height: 400px;"></div>
+
+  <script type="text/javascript">
+    g = new Dygraph(document.getElementById("stock_div"),
+        stockData,
+        {
+          customBars: true,
+          logscale: true
+        });
+
+    function setLog(val) {
+      g.updateOptions({ logscale: val });
+      document.getElementById("linear").disabled = !val;
+      document.getElementById("log").disabled = val;
+    }
+  </script>
+
+  <br/>
+  <div style="width: 800px; text-align: center;">
+  <input id="linear" type="button" value="Linear Scale" onClick="setLog(false)" />
+  &nbsp;
+  <input id="log" type="button" value="Log Scale" onClick="setLog(true)" disabled=true />
+  </div>
+</body>
+</html>

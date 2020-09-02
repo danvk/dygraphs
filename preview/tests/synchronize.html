@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <title>synchronize</title>
+    <!--[if IE]>
+    <script type="text/javascript" src="../excanvas.js"></script>
+    <![endif]-->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dygraph-dev.js"></script>
+
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+      #div1 { position: absolute; left: 10px; top: 30px; }
+      #div2 { position: absolute; left: 520px; top: 30px; }
+      #div3 { position: absolute; left: 10px; top: 340px; }
+      #div4 { position: absolute; left: 520px; top: 340px; }
+    </style>
+  </head>
+  <body>
+    <p>Zooming and panning on any of the charts will zoom and pan all the
+    others.</p>
+
+    <div id="div1" style="width:500px; height:300px;"></div>
+    <div id="div2" style="width:500px; height:300px;"></div>
+    <div id="div3" style="width:500px; height:300px;"></div>
+    <div id="div4" style="width:500px; height:300px;"></div>
+
+    <script type="text/javascript">
+      gs = [];
+      var blockRedraw = false;
+      var initialized = false;
+      for (var i = 1; i <= 4; i++) {
+        gs.push(
+          new Dygraph(
+            document.getElementById("div" + i),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+              drawCallback: function(me, initial) {
+                if (blockRedraw || initial) return;
+                blockRedraw = true;
+                var range = me.xAxisRange();
+                var yrange = me.yAxisRange();
+                for (var j = 0; j < 4; j++) {
+                  if (gs[j] == me) continue;
+                  gs[j].updateOptions( {
+                    dateWindow: range,
+                    valueRange: yrange
+                  } );
+                }
+                blockRedraw = false;
+              }
+            }
+          )
+        );
+      }
+    </script>
+  </body>
+</html>
