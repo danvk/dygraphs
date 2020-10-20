@@ -103,7 +103,6 @@ grid.prototype.willDrawChart = function(e) {
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, area.y);
-      ctx.closePath();
       ctx.stroke();
     });
     if (stroking) {
