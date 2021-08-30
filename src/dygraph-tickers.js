@@ -303,12 +303,12 @@ TICK_PLACEMENT[Granularity.SIX_HOURLY]      = {datefield: DateField.DATEFIELD_HH
 TICK_PLACEMENT[Granularity.DAILY]           = {datefield: DateField.DATEFIELD_D,  step:   1, spacing: 1000 * 86400};
 TICK_PLACEMENT[Granularity.TWO_DAILY]       = {datefield: DateField.DATEFIELD_D,  step:   2, spacing: 1000 * 86400 * 2};
 TICK_PLACEMENT[Granularity.WEEKLY]          = {datefield: DateField.DATEFIELD_D,  step:   7, spacing: 1000 * 604800};
-TICK_PLACEMENT[Granularity.MONTHLY]         = {datefield: DateField.DATEFIELD_M,  step:   1, spacing: 1000 * 7200  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 12
-TICK_PLACEMENT[Granularity.QUARTERLY]       = {datefield: DateField.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 4
-TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 / 2
-TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 1
-TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 10
-TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2524}; // 1e3 * 60 * 60 * 24 * 365.2524 * 100
+TICK_PLACEMENT[Granularity.MONTHLY]         = {datefield: DateField.DATEFIELD_M,  step:   1, spacing: 1000 * 7200  * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 / 12
+TICK_PLACEMENT[Granularity.QUARTERLY]       = {datefield: DateField.DATEFIELD_M,  step:   3, spacing: 1000 * 21600 * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 / 4
+TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,  step:   6, spacing: 1000 * 43200 * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 / 2
+TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 1
+TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 10
+TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 100
 
 
 /**
