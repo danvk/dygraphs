@@ -403,6 +403,10 @@ DygraphCanvasRenderer._Plotters = {
   fillPlotter: function(e) {
     DygraphCanvasRenderer._fillPlotter(e);
   },
+  
+  boxplotPlotter: function(e) {
+    DygraphCanvasRenderer._boxplotPlotter(e);
+  },
 
   errorPlotter: function(e) {
     DygraphCanvasRenderer._errorPlotter(e);
@@ -533,6 +537,108 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
     prevX = point.canvasx;
   }
   ctx.fill();
+};
+
+
+/** Displays a boxplot for each datapoint.
+ * 
+ * @author Vojtech Horky (vojtech.horky@gmail.com)
+ * @private
+ */
+DygraphCanvasRenderer._boxplotPlotter = function(e) {
+  if (!e.dygraph.getBooleanOption("boxplot")) {
+    return;
+  }
+    
+  var drawWhisker = function(ctx, width, x, box_y, whisker_y) {
+    ctx.beginPath();
+    ctx.moveTo(x,box_y);
+    ctx.lineTo(x,whisker_y);
+    ctx.moveTo(x - width/2, whisker_y);
+    ctx.lineTo(x + width/2, whisker_y);
+    ctx.stroke();
+  };
+  
+  var lighterColor = function(color) {
+    color.r = Math.floor(171 + color.r / 3);
+    color.g = Math.floor(171 + color.g / 3);
+    color.b = Math.floor(171 + color.b / 3);
+    return 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',0.5)';
+  };
+  
+  var recomputeY = function(e, normalizedY) {
+    return normalizedY * e.plotArea.h + e.plotArea.y;
+  };
+  
+  var ctx = e.drawingContext;
+  var points = e.points;
+  
+  // Ligher color for the box
+  ctx.fillStyle = lighterColor(Dygraph.toRGB_(e.color));
+  
+  // Find pseudo-optimal bar width. Determine the minimal gap between
+  // two points.
+  var getMinimalGap = function(points) {
+    var minGap = Infinity;
+    var prevX = null;
+    for (var i = 0; i < points.length; i++) {
+      if (points[i] === null) {
+        continue;
+      }
+      if (prevX === null) {
+        prevX = points[i].canvasx;
+        continue;
+      }
+      var gap = points[i].canvasx - prevX;
+      if (gap < minGap) {
+        minGap = gap;
+      }
+      prevX = points[i].canvasx;
+    }
+    return minGap;
+  };
+  
+  var drawBox = function(ctx, x, y, width, height, middleY) {
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeRect(x, y, width, height);
+    ctx.beginPath();
+    ctx.moveTo(x, middleY);
+    ctx.lineTo(x + width, middleY);
+    ctx.stroke();
+  };
+  
+  var drawWhisker = function(ctx, width, x, box_y, whisker_y) {
+    ctx.beginPath();
+    ctx.moveTo(x,box_y);
+    ctx.lineTo(x,whisker_y);
+    ctx.moveTo(x - width/2.0, whisker_y);
+    ctx.lineTo(x + width/2.0, whisker_y);
+    ctx.stroke();
+  };
+  
+  var boxHalfWidth = getMinimalGap(points) / 3.0;
+  
+  // Plot the actual points
+  for (var i = 0; i < points.length; i++) {
+    var p = points[i];
+    
+    var boxBottom = recomputeY(e, p.y_box[0]);
+    var boxMiddle = recomputeY(e, p.y_box[1]);
+    var boxTop = recomputeY(e, p.y_box[2]);
+    
+    var whiskerLow = recomputeY(e, p.y_whisker[0]);
+    var whiskerHigh = recomputeY(e, p.y_whisker[1]);
+    
+    var x = p.canvasx;
+    
+    drawBox(ctx, x - boxHalfWidth, boxTop,
+      2 * boxHalfWidth, boxBottom - boxTop, boxMiddle);
+    
+    if (!isNaN(whiskerLow)) {
+      drawWhisker(ctx, boxHalfWidth, x, boxTop, whiskerHigh);
+      drawWhisker(ctx, boxHalfWidth, x, boxBottom, whiskerLow);
+    }
+  }
 };
 
 

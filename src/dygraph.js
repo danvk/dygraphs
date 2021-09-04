@@ -58,6 +58,7 @@ import CustomBarsHandler from './datahandler/bars-custom';
 import DefaultFractionHandler from './datahandler/default-fractions';
 import FractionsBarsHandler from './datahandler/bars-fractions';
 import BarsHandler from './datahandler/bars';
+import BoxplotHandler from './datahandler/boxplot';
 
 import AnnotationsPlugin from './plugins/annotations';
 import AxesPlugin from './plugins/axes';
@@ -1962,6 +1963,8 @@ Dygraph.prototype.getHandlerClass_ = function() {
     handlerClass = CustomBarsHandler;
   } else if (this.getBooleanOption('errorBars')) {
     handlerClass = ErrorBarsHandler;
+  } else if (this.getBooleanOption('boxplot')) {
+    handlerClass = BoxplotHandler;
   } else {
     handlerClass = DefaultHandler;
   }
@@ -2733,6 +2736,49 @@ Dygraph.prototype.parseCSV_ = function(data) {
           }
         }
       }
+    } else if (this.getBooleanOption("boxplot")) {
+      // Boxplots needs five numbers but we allow also extra value for the
+      // actual point
+      // - median;first-quartile;third-quartile
+      // - mean;min;first-quartile;median;third-quartile;max
+      // - median;min;first-quartile;third-quartile;max
+      // However we always output a tuple of (mean := median if missing)
+      // [ mean, min, first-quartile, median, third-quartile, max ]
+      for (j = 1; j < inFields.length; j++) {
+        var val = inFields[j];
+        if (/^ *$/.test(val)) {
+          fields[j] = [null, null, null, null, null, null];
+        } else {
+          vals = val.split(";");
+          if (vals.length == 3) {
+            fields[j] = [ utils.parseFloat_(vals[0], i, line),
+                          null,
+                          utils.parseFloat_(vals[1], i, line),
+                          utils.parseFloat_(vals[0], i, line),
+                          utils.parseFloat_(vals[2], i, line),
+                          null ];
+          } else if (vals.length == 5) {
+            fields[j] = [ utils.parseFloat_(vals[0], i, line),
+                          utils.parseFloat_(vals[1], i, line),
+                          utils.parseFloat_(vals[2], i, line),
+                          utils.parseFloat_(vals[0], i, line),
+                          utils.parseFloat_(vals[3], i, line),
+                          utils.parseFloat_(vals[4], i, line) ];
+          } else if (vals.length == 6) {
+            fields[j] = [ utils.parseFloat_(vals[0], i, line),
+                          utils.parseFloat_(vals[1], i, line),
+                          utils.parseFloat_(vals[2], i, line),
+                          utils.parseFloat_(vals[3], i, line),
+                          utils.parseFloat_(vals[4], i, line),
+                          utils.parseFloat_(vals[5], i, line) ];
+          } else {
+            console.warn('When using boxplot, values must be either blank ' +
+                         'or "mean;min;first-quartile;median;third-quartile;max" ' +
+                         'or "median;min;first-quartile;third-quartile;max" tuples (got "' + val +
+                         '" on line ' + (1+i));
+          }
+        }
+      }
     } else {
       // Values are just numbers
       for (j = 1; j < inFields.length; j++) {
@@ -3452,6 +3498,7 @@ Dygraph.Plugins = {
 Dygraph.DataHandlers = {
   DefaultHandler,
   BarsHandler,
+  BoxplotHandler,
   CustomBarsHandler,
   DefaultFractionHandler,
   ErrorBarsHandler,

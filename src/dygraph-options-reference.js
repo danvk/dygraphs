@@ -570,6 +570,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "boolean",
     "description": "When set, parse each CSV cell as \"low;middle;high\". Error bars will be drawn for each point between low and high, with the series itself going through middle."
   },
+  "boxplot": {
+    "default": "false",
+    "labels": ["CSV parsing", "Boxplot"],
+    "type": "boolean",
+    "description": "When set, parse each CSV cell as \"mean;min;first-quartile;median;third-quartile;max\" or \"mean=median;min;first-quartile;third-quartile;max\" or \"mean=median;first-quartile;third-quartile\" (whiskers not drawn). Boxplot will be drawn for each point, with the series itself going through mean."
+  },
   "colorValue": {
     "default": "1.0",
     "labels": ["Data Series Colors"],
@@ -835,6 +841,7 @@ var flds = ['type', 'default', 'description'];
 var valid_cats = [
  'Annotations',
  'Axis display',
+ 'Boxplot',
  'Chart labels',
  'CSV parsing',
  'Callbacks',
