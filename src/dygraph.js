@@ -1464,14 +1464,18 @@ Dygraph.prototype.eventToDomCoords = function(event) {
 /**
  * Given a canvas X coordinate, find the closest row.
  * @param {number} domX graph-relative DOM X coordinate
+ * @param {seriesName} optional Restrict the search to the named series
  * Returns {number} row number.
  * @private
  */
-Dygraph.prototype.findClosestRow = function(domX) {
+Dygraph.prototype.findClosestRow = function(domX, seriesName) {
   var minDistX = Infinity;
   var closestRow = -1;
   var sets = this.layout_.points;
   for (var i = 0; i < sets.length; i++) {
+    if (seriesName !== undefined &&
+      this.layout_.setNames[i] != seriesName) continue;
+
     var points = sets[i];
     var len = points.length;
     for (var j = 0; j < len; j++) {
@@ -1497,13 +1501,17 @@ Dygraph.prototype.findClosestRow = function(domX) {
  *
  * @param {number} domX graph-relative DOM X coordinate
  * @param {number} domY graph-relative DOM Y coordinate
+ * @param {seriesName} optional Restrict the search to the named series
  * Returns: {row, seriesName, point}
  * @private
  */
-Dygraph.prototype.findClosestPoint = function(domX, domY) {
+Dygraph.prototype.findClosestPoint = function(domX, domY, seriesName) {
   var minDist = Infinity;
   var dist, dx, dy, point, closestPoint, closestSeries, closestRow;
   for ( var setIdx = this.layout_.points.length - 1 ; setIdx >= 0 ; --setIdx ) {
+    if (seriesName !== undefined &&
+      this.layout_.setNames[setIdx] != seriesName) continue;
+
     var points = this.layout_.points[setIdx];
     for (var i = 0; i < points.length; ++i) {
       point = points[i];
@@ -1601,19 +1609,49 @@ Dygraph.prototype.mouseMove_ = function(event) {
   var canvasx = canvasCoords[0];
   var canvasy = canvasCoords[1];
 
-  var highlightSeriesOpts = this.getOption("highlightSeriesOpts");
   var selectionChanged = false;
-  if (highlightSeriesOpts && !this.isSeriesLocked()) {
-    var closest;
-    if (this.getBooleanOption("stackedGraph")) {
-      closest = this.findStackedPoint(canvasx, canvasy);
-    } else {
-      closest = this.findClosestPoint(canvasx, canvasy);
+
+  var searchMode = this.getOption("selectMode");
+  var searchSeries = undefined;
+  var highlightSeries = undefined;
+
+  // If the series is locked, we can only search and highlight
+  // that series
+  if (this.isSeriesLocked()) {
+    searchSeries = this.highlightSet_;
+    if (this.getOption("highlightSeriesOpts")) {
+      highlightSeries = searchSeries;
     }
-    selectionChanged = this.setSelection(closest.row, closest.seriesName);
+
+  // If the graph is stacked AND we want to highlight the
+  // series, the selection will be based on the area
+  // of the graph under each series. Otherwise
+  // stacked graphs behave the same as non-stacked
+  } else if (this.getBooleanOption("stackedGraph") &&
+             this.getOption("highlightSeriesOpts")) {
+    
+    searchSeries = this.findStackedPoint(canvasx, canvasy).seriesName;
+    highlightSeries = searchSeries;
+  
+  // If series highlight is set on its own, we switch to
+  // euclidian mode since we want to highlight the closest
+  // series to the mouse
+  } else if (this.getOption("highlightSeriesOpts")) {
+    searchMode = 'euclidian';
+  }
+
+  if (searchMode == 'euclidian') {
+    var closestPoint = this.findClosestPoint(canvasx, canvasy, searchSeries);
+    if (this.getOption("highlightSeriesOpts")) {
+      highlightSeries = closestPoint.seriesName;
+    }
+
+    selectionChanged = this.setSelection(closestPoint.row, highlightSeries);
   } else {
-    var idx = this.findClosestRow(canvasx);
-    selectionChanged = this.setSelection(idx);
+    selectionChanged = this.setSelection(
+      this.findClosestRow(canvasx, searchSeries),
+      highlightSeries
+      );
   }
 
   var callback = this.getFunctionOption("highlightCallback");
@@ -1879,17 +1917,9 @@ Dygraph.prototype.clearSelection = function() {
 Dygraph.prototype.getSelection = function() {
   if (!this.selPoints_ || this.selPoints_.length < 1) {
     return -1;
+  } else {
+    return this.selPoints_[0].idx;
   }
-
-  for (var setIdx = 0; setIdx < this.layout_.points.length; setIdx++) {
-    var points = this.layout_.points[setIdx];
-    for (var row = 0; row < points.length; row++) {
-      if (points[row].x == this.selPoints_[0].x) {
-        return points[row].idx;
-      }
-    }
-  }
-  return -1;
 };
 
 /**
