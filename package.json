@@ -8,6 +8,7 @@
   "files": [
     "index.js",
     "index.es5.js",
+    "index.d.ts",
     "docs",
     "dist",
     "src",
@@ -65,7 +66,11 @@
     "test": "./scripts/run-tests.sh",
     "tests-ok": "./scripts/check-no-only.sh"
   },
+  "typings": "./index.d.ts",
   "pre-commit": [
     "tests-ok"
-  ]
+  ],
+  "dependencies": {
+    "@types/google.visualization": "0.0.33"
+  }
 }
