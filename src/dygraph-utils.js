@@ -96,7 +96,7 @@ export var getContext = function(canvas) {
  * @private
  */
 export var addEvent = function addEvent(elem, type, fn) {
-  elem.addEventListener(type, fn, false);
+  elem.addEventListener(type, fn, { passive: true });
 };
 
 /**
