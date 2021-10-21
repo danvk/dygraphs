@@ -107,12 +107,18 @@ Legend.prototype.select = function(e) {
     var area = e.dygraph.plotter_.area;
     var labelsDivWidth = this.legend_div_.offsetWidth;
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
+    // find the closest data point by checking the currently highlighted series,
+    // or fall back to using the first data point available
+    var highlightSeries = e.dygraph.getHighlightSeries()
+    var point = highlightSeries
+      ? points.find(p => p.name === highlightSeries)
+      : points[0]
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
     // offset 50 px to the right and down from the first selection point
     // 50 px is guess based on mouse cursor size
-    var leftLegend = points[0].x * area.w + 50;
-    var topLegend  = points[0].y * area.h - 50;
+    var leftLegend = point.x * area.w + 50;
+    var topLegend  = point.y * area.h - 50;
 
     // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
@@ -320,7 +326,7 @@ function generateLegendDashHTML(strokePattern, color, oneEmWidth) {
   var normalizedPattern = [];
   var loop;
 
-  // Compute the length of the pixels including the first segment twice, 
+  // Compute the length of the pixels including the first segment twice,
   // since we repeat it.
   for (i = 0; i <= strokePattern.length; i++) {
     strokePixelLength += strokePattern[i%strokePattern.length];
