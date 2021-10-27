@@ -757,13 +757,13 @@ export function createIterator(array, start, length, opt_predicate) {
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
 export var requestAnimFrame = (function() {
-  return window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          window.oRequestAnimationFrame      ||
-          window.msRequestAnimationFrame     ||
+  return window?.requestAnimationFrame       ||
+          window?.webkitRequestAnimationFrame ||
+          window?.mozRequestAnimationFrame    ||
+          window?.oRequestAnimationFrame      ||
+          window?.msRequestAnimationFrame     ||
           function (callback) {
-            window.setTimeout(callback, 1000 / 60);
+            window?.setTimeout(callback, 1000 / 60);
           };
 })();
 
