@@ -82,7 +82,9 @@ import RangeSelectorPlugin from "./plugins/range-selector";
  * options, see http://dygraphs.com/options.html.
  */
 var Dygraph = function (div, data, opts) {
-  this.__init__(div, data, opts);
+  if (window) { // We only want to load this in the browser
+    this.__init__(div, data, opts);
+  }
 };
 
 Dygraph.NAME = "Dygraph";
