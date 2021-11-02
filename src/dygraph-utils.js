@@ -14,7 +14,7 @@
 /*global Dygraph:false, Node:false */
 "use strict";
 
-import * as DygraphTickers from './dygraph-tickers';
+import * as DygraphTickers from "./dygraph-tickers";
 
 export var LOG_SCALE = 10;
 export var LN_TEN = Math.log(LOG_SCALE);
@@ -24,7 +24,7 @@ export var LN_TEN = Math.log(LOG_SCALE);
  * @param {number} x
  * @return {number}
  */
-export var log10 = function(x) {
+export var log10 = function (x) {
   return Math.log(x) / LN_TEN;
 };
 
@@ -35,7 +35,7 @@ export var log10 = function(x) {
  * @param {number} pct
  * @return {number}
  */
-export var logRangeFraction = function(r0, r1, pct) {
+export var logRangeFraction = function (r0, r1, pct) {
   // Computing the inverse of toPercentXCoord. The function was arrived at with
   // the following steps:
   //
@@ -56,7 +56,7 @@ export var logRangeFraction = function(r0, r1, pct) {
 
   var logr0 = log10(r0);
   var logr1 = log10(r1);
-  var exponent = logr0 + (pct * (logr1 - logr0));
+  var exponent = logr0 + pct * (logr1 - logr0);
   var value = Math.pow(LOG_SCALE, exponent);
   return value;
 };
@@ -83,8 +83,8 @@ export var VERTICAL = 2;
  * @return {!CanvasRenderingContext2D}
  * @private
  */
-export var getContext = function(canvas) {
-  return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
+export var getContext = function (canvas) {
+  return /** @type{!CanvasRenderingContext2D}*/ (canvas.getContext("2d"));
 };
 
 /**
@@ -108,7 +108,7 @@ export var addEvent = function addEvent(elem, type, fn) {
  */
 export function removeEvent(elem, type, fn) {
   elem.removeEventListener(type, fn, false);
-};
+}
 
 /**
  * Cancels further processing of an event. This is useful to prevent default
@@ -119,7 +119,7 @@ export function removeEvent(elem, type, fn) {
  * @private
  */
 export function cancelEvent(e) {
-  e = e ? e : window.event;
+  e = e ? e : window?.event;
   if (e.stopPropagation) {
     e.stopPropagation();
   }
@@ -130,7 +130,7 @@ export function cancelEvent(e) {
   e.cancel = true;
   e.returnValue = false;
   return false;
-};
+}
 
 /**
  * Convert hsv values to an rgb(r,g,b) string. Taken from MochiKit.Color. This
@@ -152,25 +152,49 @@ export function hsvToRGB(hue, saturation, value) {
     blue = value;
   } else {
     var i = Math.floor(hue * 6);
-    var f = (hue * 6) - i;
+    var f = hue * 6 - i;
     var p = value * (1 - saturation);
-    var q = value * (1 - (saturation * f));
-    var t = value * (1 - (saturation * (1 - f)));
+    var q = value * (1 - saturation * f);
+    var t = value * (1 - saturation * (1 - f));
     switch (i) {
-      case 1: red = q; green = value; blue = p; break;
-      case 2: red = p; green = value; blue = t; break;
-      case 3: red = p; green = q; blue = value; break;
-      case 4: red = t; green = p; blue = value; break;
-      case 5: red = value; green = p; blue = q; break;
+      case 1:
+        red = q;
+        green = value;
+        blue = p;
+        break;
+      case 2:
+        red = p;
+        green = value;
+        blue = t;
+        break;
+      case 3:
+        red = p;
+        green = q;
+        blue = value;
+        break;
+      case 4:
+        red = t;
+        green = p;
+        blue = value;
+        break;
+      case 5:
+        red = value;
+        green = p;
+        blue = q;
+        break;
       case 6: // fall through
-      case 0: red = value; green = t; blue = p; break;
+      case 0:
+        red = value;
+        green = t;
+        blue = p;
+        break;
     }
   }
   red = Math.floor(255 * red + 0.5);
   green = Math.floor(255 * green + 0.5);
   blue = Math.floor(255 * blue + 0.5);
-  return 'rgb(' + red + ',' + green + ',' + blue + ')';
-};
+  return "rgb(" + red + "," + green + "," + blue + ")";
+}
 
 /**
  * Find the coordinates of an object relative to the top left of the page.
@@ -181,14 +205,14 @@ export function hsvToRGB(hue, saturation, value) {
  */
 export function findPos(obj) {
   var p = obj.getBoundingClientRect(),
-      w = window,
-      d = document.documentElement;
+    w = window,
+    d = document.documentElement;
 
   return {
     x: p.left + (w.pageXOffset || d.scrollLeft),
-    y: p.top  + (w.pageYOffset || d.scrollTop)
-  }
-};
+    y: p.top + (w.pageYOffset || d.scrollTop),
+  };
+}
 
 /**
  * Returns the x-coordinate of the event in a coordinate system where the
@@ -199,8 +223,8 @@ export function findPos(obj) {
  * @private
  */
 export function pageX(e) {
-  return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
-};
+  return !e.pageX || e.pageX < 0 ? 0 : e.pageX;
+}
 
 /**
  * Returns the y-coordinate of the event in a coordinate system where the
@@ -211,8 +235,8 @@ export function pageX(e) {
  * @private
  */
 export function pageY(e) {
-  return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
-};
+  return !e.pageY || e.pageY < 0 ? 0 : e.pageY;
+}
 
 /**
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
@@ -223,7 +247,7 @@ export function pageY(e) {
  */
 export function dragGetX_(e, context) {
   return pageX(e) - context.px;
-};
+}
 
 /**
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
@@ -234,7 +258,7 @@ export function dragGetX_(e, context) {
  */
 export function dragGetY_(e, context) {
   return pageY(e) - context.py;
-};
+}
 
 /**
  * This returns true unless the parameter is 0, null, undefined or NaN.
@@ -246,7 +270,7 @@ export function dragGetY_(e, context) {
  */
 export function isOK(x) {
   return !!x && !isNaN(x);
-};
+}
 
 /**
  * @param {{x:?number,y:?number,yval:?number}} p The point to consider, valid
@@ -256,13 +280,13 @@ export function isOK(x) {
  * @private
  */
 export function isValidPoint(p, opt_allowNaNY) {
-  if (!p) return false;  // null or undefined object
-  if (p.yval === null) return false;  // missing point
+  if (!p) return false; // null or undefined object
+  if (p.yval === null) return false; // missing point
   if (p.x === null || p.x === undefined) return false;
   if (p.y === null || p.y === undefined) return false;
   if (isNaN(p.x) || (!opt_allowNaNY && isNaN(p.y))) return false;
   return true;
-};
+}
 
 /**
  * Number formatting function which mimics the behavior of %g in printf, i.e.
@@ -302,9 +326,10 @@ export function floatFormat(x, opt_precision) {
   //
   // Finally, the argument for toExponential() is the number of trailing digits,
   // so we take off 1 for the value before the '.'.
-  return (Math.abs(x) < 1.0e-3 && x !== 0.0) ?
-      x.toExponential(p - 1) : x.toPrecision(p);
-};
+  return Math.abs(x) < 1.0e-3 && x !== 0.0
+    ? x.toExponential(p - 1)
+    : x.toPrecision(p);
+}
 
 /**
  * Converts '9' to '09' (useful for dates)
@@ -313,8 +338,9 @@ export function floatFormat(x, opt_precision) {
  * @private
  */
 export function zeropad(x) {
-  if (x < 10) return "0" + x; else return "" + x;
-};
+  if (x < 10) return "0" + x;
+  else return "" + x;
+}
 
 /**
  * Date accessors to get the parts of a calendar date (year, month,
@@ -322,17 +348,17 @@ export function zeropad(x) {
  * and factory method to call the Date constructor with an array of arguments.
  */
 export var DateAccessorsLocal = {
-  getFullYear:     d => d.getFullYear(),
-  getMonth:        d => d.getMonth(),
-  getDate:         d => d.getDate(),
-  getHours:        d => d.getHours(),
-  getMinutes:      d => d.getMinutes(),
-  getSeconds:      d => d.getSeconds(),
-  getMilliseconds: d => d.getMilliseconds(),
-  getDay:          d => d.getDay(),
-  makeDate:        function(y, m, d, hh, mm, ss, ms) {
+  getFullYear: (d) => d.getFullYear(),
+  getMonth: (d) => d.getMonth(),
+  getDate: (d) => d.getDate(),
+  getHours: (d) => d.getHours(),
+  getMinutes: (d) => d.getMinutes(),
+  getSeconds: (d) => d.getSeconds(),
+  getMilliseconds: (d) => d.getMilliseconds(),
+  getDay: (d) => d.getDay(),
+  makeDate: function (y, m, d, hh, mm, ss, ms) {
     return new Date(y, m, d, hh, mm, ss, ms);
-  }
+  },
 };
 
 /**
@@ -341,17 +367,17 @@ export var DateAccessorsLocal = {
  * and factory method to call the Date constructor with an array of arguments.
  */
 export var DateAccessorsUTC = {
-  getFullYear:     d => d.getUTCFullYear(),
-  getMonth:        d => d.getUTCMonth(),
-  getDate:         d => d.getUTCDate(),
-  getHours:        d => d.getUTCHours(),
-  getMinutes:      d => d.getUTCMinutes(),
-  getSeconds:      d => d.getUTCSeconds(),
-  getMilliseconds: d => d.getUTCMilliseconds(),
-  getDay:          d => d.getUTCDay(),
-  makeDate:        function(y, m, d, hh, mm, ss, ms) {
+  getFullYear: (d) => d.getUTCFullYear(),
+  getMonth: (d) => d.getUTCMonth(),
+  getDate: (d) => d.getUTCDate(),
+  getHours: (d) => d.getUTCHours(),
+  getMinutes: (d) => d.getUTCMinutes(),
+  getSeconds: (d) => d.getUTCSeconds(),
+  getMilliseconds: (d) => d.getUTCMilliseconds(),
+  getDay: (d) => d.getUTCDay(),
+  makeDate: function (y, m, d, hh, mm, ss, ms) {
     return new Date(Date.UTC(y, m, d, hh, mm, ss, ms));
-  }
+  },
 };
 
 /**
@@ -368,11 +394,11 @@ export function hmsString_(hh, mm, ss, ms) {
     ret += ":" + zeropad(ss);
     if (ms) {
       var str = "" + ms;
-      ret += "." + ('000'+str).substring(str.length);
+      ret += "." + ("000" + str).substring(str.length);
     }
   }
   return ret;
-};
+}
 
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
@@ -395,7 +421,7 @@ export function dateString_(time, utc) {
   // Get a year string:
   var year = "" + y;
   // Get a 0 padded month string
-  var month = zeropad(m + 1);  //months are 0-offset, sigh
+  var month = zeropad(m + 1); //months are 0-offset, sigh
   // Get a 0 padded day string
   var day = zeropad(d);
   var frac = hh * 3600 + mm * 60 + ss + 1e-3 * ms;
@@ -404,7 +430,7 @@ export function dateString_(time, utc) {
     ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
-};
+}
 
 /**
  * Round a number to the specified number of digits past the decimal point.
@@ -415,8 +441,8 @@ export function dateString_(time, utc) {
  */
 export function round_(num, places) {
   var shift = Math.pow(10, places);
-  return Math.round(num * shift)/shift;
-};
+  return Math.round(num * shift) / shift;
+}
 
 /**
  * Implementation of binary search over an array.
@@ -432,8 +458,12 @@ export function round_(num, places) {
  * @private
  */
 export function binarySearch(val, arry, abs, low, high) {
-  if (low === null || low === undefined ||
-      high === null || high === undefined) {
+  if (
+    low === null ||
+    low === undefined ||
+    high === null ||
+    high === undefined
+  ) {
     low = 0;
     high = arry.length - 1;
   }
@@ -443,7 +473,7 @@ export function binarySearch(val, arry, abs, low, high) {
   if (abs === null || abs === undefined) {
     abs = 0;
   }
-  var validIndex = function(idx) {
+  var validIndex = function (idx) {
     return idx >= 0 && idx < arry.length;
   };
   var mid = parseInt((low + high) / 2, 10);
@@ -470,8 +500,8 @@ export function binarySearch(val, arry, abs, low, high) {
     }
     return binarySearch(val, arry, abs, mid + 1, high);
   }
-  return -1;  // can't actually happen, but makes closure compiler happy
-};
+  return -1; // can't actually happen, but makes closure compiler happy
+}
 
 /**
  * Parses a date, returning the number of milliseconds since epoch. This can be
@@ -492,22 +522,31 @@ export function dateParser(dateStr) {
   // inconsistencies. But if you specify "T" or "Z" (i.e. YYYY-MM-DDTHH:MM:SS),
   // then you probably know what you're doing, so we'll let you go ahead.
   // Issue: http://code.google.com/p/dygraphs/issues/detail?id=255
-  if (dateStr.search("-") == -1 ||
-      dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
+  if (
+    dateStr.search("-") == -1 ||
+    dateStr.search("T") != -1 ||
+    dateStr.search("Z") != -1
+  ) {
     d = dateStrToMillis(dateStr);
     if (d && !isNaN(d)) return d;
   }
 
-  if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
+  if (dateStr.search("-") != -1) {
+    // e.g. '2009-7-12' or '2009-07-12'
     dateStrSlashed = dateStr.replace("-", "/", "g");
     while (dateStrSlashed.search("-") != -1) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
     d = dateStrToMillis(dateStrSlashed);
-  } else if (dateStr.length == 8) {  // e.g. '20090712'
+  } else if (dateStr.length == 8) {
+    // e.g. '20090712'
     // TODO(danvk): remove support for this format. It's confusing.
-    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2) + "/" +
-        dateStr.substr(6,2);
+    dateStrSlashed =
+      dateStr.substr(0, 4) +
+      "/" +
+      dateStr.substr(4, 2) +
+      "/" +
+      dateStr.substr(6, 2);
     d = dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
@@ -519,7 +558,7 @@ export function dateParser(dateStr) {
     console.error("Couldn't parse " + dateStr + " as a date");
   }
   return d;
-};
+}
 
 /**
  * This is identical to JavaScript's built-in Date.parse() method, except that
@@ -531,7 +570,7 @@ export function dateParser(dateStr) {
  */
 export function dateStrToMillis(str) {
   return new Date(str).getTime();
-};
+}
 
 // These functions are all based on MochiKit.
 /**
@@ -542,7 +581,7 @@ export function dateStrToMillis(str) {
  * @return {!Object}
  */
 export function update(self, o) {
-  if (typeof(o) != 'undefined' && o !== null) {
+  if (typeof o != "undefined" && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
         self[k] = o[k];
@@ -550,7 +589,7 @@ export function update(self, o) {
     }
   }
   return self;
-};
+}
 
 /**
  * Copies all the properties from o to self.
@@ -563,13 +602,14 @@ export function update(self, o) {
 export function updateDeep(self, o) {
   // Taken from http://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
   function isNode(o) {
-    return (
-      typeof Node === "object" ? o instanceof Node :
-      typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
-    );
+    return typeof Node === "object"
+      ? o instanceof Node
+      : typeof o === "object" &&
+          typeof o.nodeType === "number" &&
+          typeof o.nodeName === "string";
   }
 
-  if (typeof(o) != 'undefined' && o !== null) {
+  if (typeof o != "undefined" && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
         if (o[k] === null) {
@@ -579,8 +619,8 @@ export function updateDeep(self, o) {
         } else if (isNode(o[k])) {
           // DOM objects are shallowly-copied.
           self[k] = o[k];
-        } else if (typeof(o[k]) == 'object') {
-          if (typeof(self[k]) != 'object' || self[k] === null) {
+        } else if (typeof o[k] == "object") {
+          if (typeof self[k] != "object" || self[k] === null) {
             self[k] = {};
           }
           updateDeep(self[k], o[k]);
@@ -591,7 +631,7 @@ export function updateDeep(self, o) {
     }
   }
   return self;
-};
+}
 
 /**
  * @param {*} o
@@ -599,18 +639,17 @@ export function updateDeep(self, o) {
  * @private
  */
 export function isArrayLike(o) {
-  var typ = typeof(o);
+  var typ = typeof o;
   if (
-      (typ != 'object' && !(typ == 'function' &&
-        typeof(o.item) == 'function')) ||
-      o === null ||
-      typeof(o.length) != 'number' ||
-      o.nodeType === 3
-     ) {
+    (typ != "object" && !(typ == "function" && typeof o.item == "function")) ||
+    o === null ||
+    typeof o.length != "number" ||
+    o.nodeType === 3
+  ) {
     return false;
   }
   return true;
-};
+}
 
 /**
  * @param {Object} o
@@ -618,12 +657,11 @@ export function isArrayLike(o) {
  * @private
  */
 export function isDateLike(o) {
-  if (typeof(o) != "object" || o === null ||
-      typeof(o.getTime) != 'function') {
+  if (typeof o != "object" || o === null || typeof o.getTime != "function") {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Note: this only seems to work for arrays.
@@ -642,7 +680,7 @@ export function clone(o) {
     }
   }
   return r;
-};
+}
 
 /**
  * Create a new canvas element.
@@ -651,8 +689,8 @@ export function clone(o) {
  * @private
  */
 export function createCanvas() {
-  return document.createElement('canvas');
-};
+  return document.createElement("canvas");
+}
 
 /**
  * Returns the context's pixel ratio, which is the ratio between the device
@@ -666,12 +704,14 @@ export function createCanvas() {
  */
 export function getContextPixelRatio(context) {
   try {
-    var devicePixelRatio = window.devicePixelRatio;
-    var backingStoreRatio = context.webkitBackingStorePixelRatio ||
-                            context.mozBackingStorePixelRatio ||
-                            context.msBackingStorePixelRatio ||
-                            context.oBackingStorePixelRatio ||
-                            context.backingStorePixelRatio || 1;
+    var devicePixelRatio = window?.devicePixelRatio;
+    var backingStoreRatio =
+      context.webkitBackingStorePixelRatio ||
+      context.mozBackingStorePixelRatio ||
+      context.msBackingStorePixelRatio ||
+      context.oBackingStorePixelRatio ||
+      context.backingStorePixelRatio ||
+      1;
     if (devicePixelRatio !== undefined) {
       return devicePixelRatio / backingStoreRatio;
     } else {
@@ -683,7 +723,7 @@ export function getContextPixelRatio(context) {
   } catch (e) {
     return 1;
   }
-};
+}
 
 /**
  * TODO(danvk): use @template here when it's better supported for classes.
@@ -704,12 +744,12 @@ export function Iterator(array, start, length, predicate) {
   this.end_ = Math.min(array.length, start + length);
   this.nextIdx_ = start - 1; // use -1 so initial advance works.
   this.next(); // ignoring result.
-};
+}
 
 /**
  * @return {Object}
  */
-Iterator.prototype.next = function() {
+Iterator.prototype.next = function () {
   if (!this.hasNext) {
     return null;
   }
@@ -750,21 +790,23 @@ Iterator.prototype.next = function() {
  */
 export function createIterator(array, start, length, opt_predicate) {
   return new Iterator(array, start, length, opt_predicate);
-};
+}
 
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
-export var requestAnimFrame = (function() {
-  return window?.requestAnimationFrame       ||
-          window?.webkitRequestAnimationFrame ||
-          window?.mozRequestAnimationFrame    ||
-          window?.oRequestAnimationFrame      ||
-          window?.msRequestAnimationFrame     ||
-          function (callback) {
-            window?.setTimeout(callback, 1000 / 60);
-          };
+export var requestAnimFrame = (function () {
+  return (
+    window?.requestAnimationFrame ||
+    window?.webkitRequestAnimationFrame ||
+    window?.mozRequestAnimationFrame ||
+    window?.oRequestAnimationFrame ||
+    window?.msRequestAnimationFrame ||
+    function (callback) {
+      window?.setTimeout(callback, 1000 / 60);
+    }
+  );
 })();
 
 /**
@@ -780,8 +822,12 @@ export var requestAnimFrame = (function() {
  * @param {function()} cleanupFn A function to call after all repeatFn calls.
  * @private
  */
-export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
-    cleanupFn) {
+export function repeatAndCleanup(
+  repeatFn,
+  maxFrames,
+  framePeriodInMillis,
+  cleanupFn
+) {
   var frameNumber = 0;
   var previousFrameNumber;
   var startTime = new Date().getTime();
@@ -794,7 +840,7 @@ export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
 
   (function loop() {
     if (frameNumber >= maxFrames) return;
-    requestAnimFrame.call(window, function() {
+    requestAnimFrame.call(window, function () {
       // Determine which frame to draw based on the delay so far.  Will skip
       // frames if necessary.
       var currentTime = new Date().getTime();
@@ -806,66 +852,67 @@ export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
       // total frame target, so our last call will cause a stutter, then jump to
       // the last call immediately.  If we're going to cause a stutter, better
       // to do it faster than slower.
-      var predictOvershootStutter = (frameNumber + frameDelta) > maxFrameArg;
-      if (predictOvershootStutter || (frameNumber >= maxFrameArg)) {
-        repeatFn(maxFrameArg);  // Ensure final call with maxFrameArg.
+      var predictOvershootStutter = frameNumber + frameDelta > maxFrameArg;
+      if (predictOvershootStutter || frameNumber >= maxFrameArg) {
+        repeatFn(maxFrameArg); // Ensure final call with maxFrameArg.
         cleanupFn();
       } else {
-        if (frameDelta !== 0) {  // Don't call repeatFn with duplicate frames.
+        if (frameDelta !== 0) {
+          // Don't call repeatFn with duplicate frames.
           repeatFn(frameNumber);
         }
         loop();
       }
     });
   })();
-};
+}
 
 // A whitelist of options that do not change pixel positions.
 var pixelSafeOptions = {
-  'annotationClickHandler': true,
-  'annotationDblClickHandler': true,
-  'annotationMouseOutHandler': true,
-  'annotationMouseOverHandler': true,
-  'axisLineColor': true,
-  'axisLineWidth': true,
-  'clickCallback': true,
-  'drawCallback': true,
-  'drawHighlightPointCallback': true,
-  'drawPoints': true,
-  'drawPointCallback': true,
-  'drawGrid': true,
-  'fillAlpha': true,
-  'gridLineColor': true,
-  'gridLineWidth': true,
-  'hideOverlayOnMouseOut': true,
-  'highlightCallback': true,
-  'highlightCircleSize': true,
-  'interactionModel': true,
-  'labelsDiv': true,
-  'labelsKMB': true,
-  'labelsKMG2': true,
-  'labelsSeparateLines': true,
-  'labelsShowZeroValues': true,
-  'legend': true,
-  'panEdgeFraction': true,
-  'pixelsPerYLabel': true,
-  'pointClickCallback': true,
-  'pointSize': true,
-  'rangeSelectorPlotFillColor': true,
-  'rangeSelectorPlotFillGradientColor': true,
-  'rangeSelectorPlotStrokeColor': true,
-  'rangeSelectorBackgroundStrokeColor': true,
-  'rangeSelectorBackgroundLineWidth': true,
-  'rangeSelectorPlotLineWidth': true,
-  'rangeSelectorForegroundStrokeColor': true,
-  'rangeSelectorForegroundLineWidth': true,
-  'rangeSelectorAlpha': true,
-  'showLabelsOnHighlight': true,
-  'showRoller': true,
-  'strokeWidth': true,
-  'underlayCallback': true,
-  'unhighlightCallback': true,
-  'zoomCallback': true
+  annotationClickHandler: true,
+  annotationDblClickHandler: true,
+  annotationMouseOutHandler: true,
+  annotationMouseOverHandler: true,
+  axisLineColor: true,
+  axisLineWidth: true,
+  clickCallback: true,
+  drawCallback: true,
+  drawHighlightPointCallback: true,
+  drawPoints: true,
+  drawPointCallback: true,
+  drawGrid: true,
+  fillAlpha: true,
+  gridLineColor: true,
+  gridLineWidth: true,
+  hideOverlayOnMouseOut: true,
+  highlightCallback: true,
+  highlightCircleSize: true,
+  interactionModel: true,
+  labelsDiv: true,
+  labelsKMB: true,
+  labelsKMG2: true,
+  labelsSeparateLines: true,
+  labelsShowZeroValues: true,
+  legend: true,
+  panEdgeFraction: true,
+  pixelsPerYLabel: true,
+  pointClickCallback: true,
+  pointSize: true,
+  rangeSelectorPlotFillColor: true,
+  rangeSelectorPlotFillGradientColor: true,
+  rangeSelectorPlotStrokeColor: true,
+  rangeSelectorBackgroundStrokeColor: true,
+  rangeSelectorBackgroundLineWidth: true,
+  rangeSelectorPlotLineWidth: true,
+  rangeSelectorForegroundStrokeColor: true,
+  rangeSelectorForegroundLineWidth: true,
+  rangeSelectorAlpha: true,
+  showLabelsOnHighlight: true,
+  showRoller: true,
+  strokeWidth: true,
+  underlayCallback: true,
+  unhighlightCallback: true,
+  zoomCallback: true,
 };
 
 /**
@@ -883,7 +930,7 @@ export function isPixelChangingOptionList(labels, attrs) {
 
   // Create a dictionary of series names for faster lookup.
   // If there are no labels, then the dictionary stays empty.
-  var seriesNamesDictionary = { };
+  var seriesNamesDictionary = {};
   if (labels) {
     for (var i = 1; i < labels.length; i++) {
       seriesNamesDictionary[labels[i]] = true;
@@ -892,10 +939,9 @@ export function isPixelChangingOptionList(labels, attrs) {
 
   // Scan through a flat (i.e. non-nested) object of options.
   // Returns true/false depending on whether new points are needed.
-  var scanFlatOptions = function(options) {
+  var scanFlatOptions = function (options) {
     for (var property in options) {
-      if (options.hasOwnProperty(property) &&
-          !pixelSafeOptions[property]) {
+      if (options.hasOwnProperty(property) && !pixelSafeOptions[property]) {
         return true;
       }
     }
@@ -907,16 +953,20 @@ export function isPixelChangingOptionList(labels, attrs) {
     if (!attrs.hasOwnProperty(property)) continue;
 
     // Find out of this field is actually a series specific options list.
-    if (property == 'highlightSeriesOpts' ||
-        (seriesNamesDictionary[property] && !attrs.series)) {
+    if (
+      property == "highlightSeriesOpts" ||
+      (seriesNamesDictionary[property] && !attrs.series)
+    ) {
       // This property value is a list of options for this series.
       if (scanFlatOptions(attrs[property])) return true;
-    } else if (property == 'series' || property == 'axes') {
+    } else if (property == "series" || property == "axes") {
       // This is twice-nested options list.
       var perSeries = attrs[property];
       for (var series in perSeries) {
-        if (perSeries.hasOwnProperty(series) &&
-            scanFlatOptions(perSeries[series])) {
+        if (
+          perSeries.hasOwnProperty(series) &&
+          scanFlatOptions(perSeries[series])
+        ) {
           return true;
         }
       }
@@ -928,15 +978,15 @@ export function isPixelChangingOptionList(labels, attrs) {
   }
 
   return false;
-};
+}
 
 export var Circles = {
-  DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
+  DEFAULT: function (g, name, ctx, canvasx, canvasy, color, radius) {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.arc(canvasx, canvasy, radius, 0, 2 * Math.PI, false);
     ctx.fill();
-  }
+  },
   // For more shapes, include extras/shapes.js
 };
 
@@ -948,24 +998,24 @@ export var Circles = {
 export function detectLineDelimiter(data) {
   for (var i = 0; i < data.length; i++) {
     var code = data.charAt(i);
-    if (code === '\r') {
+    if (code === "\r") {
       // Might actually be "\r\n".
-      if (((i + 1) < data.length) && (data.charAt(i + 1) === '\n')) {
-        return '\r\n';
+      if (i + 1 < data.length && data.charAt(i + 1) === "\n") {
+        return "\r\n";
       }
       return code;
     }
-    if (code === '\n') {
+    if (code === "\n") {
       // Might actually be "\n\r".
-      if (((i + 1) < data.length) && (data.charAt(i + 1) === '\r')) {
-        return '\n\r';
+      if (i + 1 < data.length && data.charAt(i + 1) === "\r") {
+        return "\n\r";
       }
       return code;
     }
   }
 
   return null;
-};
+}
 
 /**
  * Is one node contained by another?
@@ -982,8 +1032,8 @@ export function isNodeContainedBy(containee, container) {
   while (containeeNode && containeeNode !== container) {
     containeeNode = containeeNode.parentNode;
   }
-  return (containeeNode === container);
-};
+  return containeeNode === container;
+}
 
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
@@ -993,9 +1043,10 @@ export function pow(base, exp) {
     return 1.0 / Math.pow(base, -exp);
   }
   return Math.pow(base, exp);
-};
+}
 
-var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
+var RGBA_RE =
+  /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
 /**
  * Helper for toRGB_ which parses strings of the form:
@@ -1007,12 +1058,12 @@ function parseRGBA(rgbStr) {
   var bits = RGBA_RE.exec(rgbStr);
   if (!bits) return null;
   var r = parseInt(bits[1], 10),
-      g = parseInt(bits[2], 10),
-      b = parseInt(bits[3], 10);
+    g = parseInt(bits[2], 10),
+    b = parseInt(bits[3], 10);
   if (bits[4]) {
-    return {r: r, g: g, b: b, a: parseFloat(bits[4])};
+    return { r: r, g: g, b: b, a: parseFloat(bits[4]) };
   } else {
-    return {r: r, g: g, b: b};
+    return { r: r, g: g, b: b };
   }
 }
 
@@ -1030,14 +1081,14 @@ export function toRGB_(colorStr) {
   var rgb = parseRGBA(colorStr);
   if (rgb) return rgb;
 
-  var div = document.createElement('div');
+  var div = document.createElement("div");
   div.style.backgroundColor = colorStr;
-  div.style.visibility = 'hidden';
+  div.style.visibility = "hidden";
   document.body.appendChild(div);
-  var rgbStr = window.getComputedStyle(div, null).backgroundColor;
+  var rgbStr = window?.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   return parseRGBA(rgbStr);
-};
+}
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
@@ -1053,7 +1104,7 @@ export function isCanvasSupported(opt_canvasElement) {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()
@@ -1079,19 +1130,19 @@ export function parseFloat_(x, opt_line_no, opt_line) {
   // Looks like a parsing error.
   var msg = "Unable to parse '" + x + "' as a number";
   if (opt_line !== undefined && opt_line_no !== undefined) {
-    msg += " on line " + (1+(opt_line_no||0)) + " ('" + opt_line + "') of CSV.";
+    msg +=
+      " on line " + (1 + (opt_line_no || 0)) + " ('" + opt_line + "') of CSV.";
   }
   console.error(msg);
 
   return null;
-};
-
+}
 
 // Label constants for the labelsKMB and labelsKMG2 options.
 // (i.e. '100000' -> '100K')
-var KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
-var KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
-var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+var KMB_LABELS = ["K", "M", "B", "T", "Q"];
+var KMG2_BIG_LABELS = ["k", "M", "G", "T", "P", "E", "Z", "Y"];
+var KMG2_SMALL_LABELS = ["m", "u", "n", "p", "f", "a", "z", "y"];
 
 /**
  * @private
@@ -1101,28 +1152,30 @@ var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
  * @param {Dygraph} opts An options view
  */
 export function numberValueFormatter(x, opts) {
-  var sigFigs = opts('sigFigs');
+  var sigFigs = opts("sigFigs");
 
   if (sigFigs !== null) {
     // User has opted for a fixed number of significant figures.
     return floatFormat(x, sigFigs);
   }
 
-  var digits = opts('digitsAfterDecimal');
-  var maxNumberWidth = opts('maxNumberWidth');
+  var digits = opts("digitsAfterDecimal");
+  var maxNumberWidth = opts("maxNumberWidth");
 
-  var kmb = opts('labelsKMB');
-  var kmg2 = opts('labelsKMG2');
+  var kmb = opts("labelsKMB");
+  var kmg2 = opts("labelsKMG2");
 
   var label;
 
   // switch to scientific notation if we underflow or overflow fixed display.
-  if (x !== 0.0 &&
-      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-       Math.abs(x) < Math.pow(10, -digits))) {
+  if (
+    x !== 0.0 &&
+    (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
+      Math.abs(x) < Math.pow(10, -digits))
+  ) {
     label = x.toExponential(digits);
   } else {
-    label = '' + round_(x, digits);
+    label = "" + round_(x, digits);
   }
 
   if (kmb || kmg2) {
@@ -1150,12 +1203,10 @@ export function numberValueFormatter(x, opts) {
     }
     if (kmg2) {
       // TODO(danvk): clean up this logic. Why so different than kmb?
-      var x_parts = String(x.toExponential()).split('e-');
+      var x_parts = String(x.toExponential()).split("e-");
       if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
         if (x_parts[1] % 3 > 0) {
-          label = round_(x_parts[0] /
-              pow(10, (x_parts[1] % 3)),
-              digits);
+          label = round_(x_parts[0] / pow(10, x_parts[1] % 3), digits);
         } else {
           label = Number(x_parts[0]).toFixed(2);
         }
@@ -1165,7 +1216,7 @@ export function numberValueFormatter(x, opts) {
   }
 
   return label;
-};
+}
 
 /**
  * variant for use as an axisLabelFormatter.
@@ -1173,15 +1224,27 @@ export function numberValueFormatter(x, opts) {
  */
 export function numberAxisLabelFormatter(x, granularity, opts) {
   return numberValueFormatter.call(this, x, opts);
-};
+}
 
 /**
  * @type {!Array.<string>}
  * @private
  * @constant
  */
-var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
+var SHORT_MONTH_NAMES_ = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
@@ -1194,37 +1257,37 @@ var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'
  * @private
  */
 export function dateAxisLabelFormatter(date, granularity, opts) {
-  var utc = opts('labelsUTC');
+  var utc = opts("labelsUTC");
   var accessors = utc ? DateAccessorsUTC : DateAccessorsLocal;
 
   var year = accessors.getFullYear(date),
-      month = accessors.getMonth(date),
-      day = accessors.getDate(date),
-      hours = accessors.getHours(date),
-      mins = accessors.getMinutes(date),
-      secs = accessors.getSeconds(date),
-      millis = accessors.getMilliseconds(date);
+    month = accessors.getMonth(date),
+    day = accessors.getDate(date),
+    hours = accessors.getHours(date),
+    mins = accessors.getMinutes(date),
+    secs = accessors.getSeconds(date),
+    millis = accessors.getMilliseconds(date);
 
   if (granularity >= DygraphTickers.Granularity.DECADAL) {
-    return '' + year;
+    return "" + year;
   } else if (granularity >= DygraphTickers.Granularity.MONTHLY) {
-    return SHORT_MONTH_NAMES_[month] + '&#160;' + year;
+    return SHORT_MONTH_NAMES_[month] + "&#160;" + year;
   } else {
     var frac = hours * 3600 + mins * 60 + secs + 1e-3 * millis;
     if (frac === 0 || granularity >= DygraphTickers.Granularity.DAILY) {
       // e.g. '21 Jan' (%d%b)
-      return zeropad(day) + '&#160;' + SHORT_MONTH_NAMES_[month];
+      return zeropad(day) + "&#160;" + SHORT_MONTH_NAMES_[month];
     } else if (granularity < DygraphTickers.Granularity.SECONDLY) {
       // e.g. 40.310 (meaning 40 seconds and 310 milliseconds)
       var str = "" + millis;
-      return zeropad(secs) + "." + ('000'+str).substring(str.length);
+      return zeropad(secs) + "." + ("000" + str).substring(str.length);
     } else if (granularity > DygraphTickers.Granularity.MINUTELY) {
       return hmsString_(hours, mins, secs, 0);
     } else {
       return hmsString_(hours, mins, secs, millis);
     }
   }
-};
+}
 // alias in case anyone is referencing the old method.
 // Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
 
@@ -1236,5 +1299,5 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
  * @private
  */
 export function dateValueFormatter(d, opts) {
-  return dateString_(d, opts('labelsUTC'));
-};
+  return dateString_(d, opts("labelsUTC"));
+}

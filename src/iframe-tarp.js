@@ -15,41 +15,41 @@
  *   tarper.cover();
  *   var mouseUpHandler = function() {
  *     ...
- *     window.removeEventListener(mouseUpHandler);
+ *     window?.removeEventListener(mouseUpHandler);
  *     tarper.uncover();
  *   };
- *   window.addEventListener('mouseup', mouseUpHandler);
+ *   window?.addEventListener('mouseup', mouseUpHandler);
  * };
  *
  * @constructor
  */
-import * as utils from './dygraph-utils';
+import * as utils from "./dygraph-utils";
 
 function IFrameTarp() {
   /** @type {Array.<!HTMLDivElement>} */
   this.tarps = [];
-};
+}
 
 /**
  * Find all the iframes in the document and cover them with high z-index
  * transparent divs.
  */
-IFrameTarp.prototype.cover = function() {
+IFrameTarp.prototype.cover = function () {
   var iframes = document.getElementsByTagName("iframe");
   for (var i = 0; i < iframes.length; i++) {
     var iframe = iframes[i];
     var pos = utils.findPos(iframe),
-        x = pos.x,
-        y = pos.y,
-        width = iframe.offsetWidth,
-        height = iframe.offsetHeight;
+      x = pos.x,
+      y = pos.y,
+      width = iframe.offsetWidth,
+      height = iframe.offsetHeight;
 
     var div = document.createElement("div");
     div.style.position = "absolute";
-    div.style.left = x + 'px';
-    div.style.top = y + 'px';
-    div.style.width = width + 'px';
-    div.style.height = height + 'px';
+    div.style.left = x + "px";
+    div.style.top = y + "px";
+    div.style.width = width + "px";
+    div.style.height = height + "px";
     div.style.zIndex = 999;
     document.body.appendChild(div);
     this.tarps.push(div);
@@ -59,7 +59,7 @@ IFrameTarp.prototype.cover = function() {
 /**
  * Remove all the iframe covers. You should call this in a mouseup handler.
  */
-IFrameTarp.prototype.uncover = function() {
+IFrameTarp.prototype.uncover = function () {
   for (var i = 0; i < this.tarps.length; i++) {
     this.tarps[i].parentNode.removeChild(this.tarps[i]);
   }

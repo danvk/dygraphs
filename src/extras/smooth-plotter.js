@@ -2,8 +2,8 @@
 "use strict";
 
 var Dygraph;
-if (window.Dygraph) {
-  Dygraph = window.Dygraph;
+if (window?.Dygraph) {
+  Dygraph = window?.Dygraph;
 } else if (typeof(module) !== 'undefined') {
   Dygraph = require('../dygraph');
 }
@@ -134,7 +134,7 @@ smoothPlotter._getControlPoints = getControlPoints;  // for testing
 // older versions exported a global.
 // This will be removed in the future.
 // The preferred way to access smoothPlotter is via Dygraph.smoothPlotter.
-window.smoothPlotter = smoothPlotter;
+window?.smoothPlotter = smoothPlotter;
 Dygraph.smoothPlotter = smoothPlotter;
 
 })();
