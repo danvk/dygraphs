@@ -1112,6 +1112,10 @@ export function numberValueFormatter(x, opts) {
     return floatFormat(x, sigFigs);
   }
 
+  // shortcut 0 so later code does not need to worry about it
+  if (x === 0.0)
+    return '0';
+
   var digits = opts('digitsAfterDecimal');
   var maxNumberWidth = opts('maxNumberWidth');
 
@@ -1119,15 +1123,7 @@ export function numberValueFormatter(x, opts) {
   var kmg2 = opts('labelsKMG2');
 
   var label;
-
-  // switch to scientific notation if we underflow or overflow fixed display.
-  if (x !== 0.0 &&
-      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-       Math.abs(x) < Math.pow(10, -digits))) {
-    label = x.toExponential(digits);
-  } else {
-    label = '' + round_(x, digits);
-  }
+  var absx = Math.abs(x);
 
   if (kmb || kmg2) {
     var k;
@@ -1148,20 +1144,25 @@ export function numberValueFormatter(x, opts) {
       }
     }
 
-    var absx = Math.abs(x);
     var n;
     var j;
-    if (absx >= 1) {
+    if (absx >= k) {
       j = k_labels.length;
       while (j > 0) {
         n = pow(k, j);
         --j;
         if (absx >= n) {
-          label = round_(x / n, digits) + k_labels[j];
-          break;
+          // guaranteed to hit because absx >= k (pow(k, 1))
+          // if immensely large still switch to scientific notation
+          if ((absx / n) >= Math.pow(10, maxNumberWidth))
+            label = x.toExponential(digits);
+          else
+            label = round_(x / n, digits) + k_labels[j];
+          return label;
         }
       }
-    } else if (m_labels.length) {
+      // not reached, fall through safely though should it ever be
+    } else if ((absx < 1) && (m_labels.length > 0)) {
       j = 0;
       while (j < m_labels.length) {
         ++j;
@@ -1169,8 +1170,22 @@ export function numberValueFormatter(x, opts) {
         if ((absx * n) >= 1)
           break;
       }
-      label = round_(x * n, digits) + m_labels[j - 1];
+      // if _still_ too small, switch to scientific notation instead
+      if ((absx * n) < Math.pow(10, -digits))
+        label = x.toExponential(digits);
+      else
+        label = round_(x * n, digits) + m_labels[j - 1];
+      return label;
     }
+    // else fall through
+  }
+
+  if (absx >= Math.pow(10, maxNumberWidth) ||
+      absx < Math.pow(10, -digits)) {
+    // switch to scientific notation if we underflow or overflow fixed display
+    label = x.toExponential(digits);
+  } else {
+    label = '' + round_(x, digits);
   }
 
   return label;
