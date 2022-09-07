@@ -1088,10 +1088,14 @@ export function parseFloat_(x, opt_line_no, opt_line) {
 
 
 // Label constants for the labelsKMB and labelsKMG2 options.
-// (i.e. '100000' -> '100K')
-var KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
-var KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
-var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+// (i.e. '100000' -> '100k')
+var KMB_LABELS_LARGE = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB_LABELS_SMALL = [ 'm', 'µ', 'n', 'p', 'f', 'a', 'z', 'y' ];
+var KMG2_LABELS_LARGE = [ 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi' ];
+var KMG2_LABELS_SMALL = [ /* not provided in IEC 60027-2 */ ];
+/* if both are given (legacy/deprecated use only) */
+var KMB2_LABELS_LARGE = [ 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB2_LABELS_SMALL = KMB_LABELS_SMALL;
 
 /**
  * @private
@@ -1131,36 +1135,41 @@ export function numberValueFormatter(x, opts) {
     var m_labels = [];
     if (kmb) {
       k = 1000;
-      k_labels = KMB_LABELS;
+      k_labels = KMB_LABELS_LARGE;
+      m_labels = KMB_LABELS_SMALL;
     }
     if (kmg2) {
-      if (kmb) console.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
-      k_labels = KMG2_BIG_LABELS;
-      m_labels = KMG2_SMALL_LABELS;
+      k_labels = KMG2_LABELS_LARGE;
+      m_labels = KMG2_LABELS_SMALL;
+      if (kmb) {
+        k_labels = KMB2_LABELS_LARGE;
+        m_labels = KMB2_LABELS_SMALL;
+      }
     }
 
     var absx = Math.abs(x);
-    var n = pow(k, k_labels.length);
-    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
-      if (absx >= n) {
-        label = round_(x / n, digits) + k_labels[j];
-        break;
-      }
-    }
-    if (kmg2) {
-      // TODO(danvk): clean up this logic. Why so different than kmb?
-      var x_parts = String(x.toExponential()).split('e-');
-      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
-        if (x_parts[1] % 3 > 0) {
-          label = round_(x_parts[0] /
-              pow(10, (x_parts[1] % 3)),
-              digits);
-        } else {
-          label = Number(x_parts[0]).toFixed(2);
+    var n;
+    var j;
+    if (absx >= 1) {
+      j = k_labels.length;
+      while (j > 0) {
+        n = pow(k, j);
+        --j;
+        if (absx >= n) {
+          label = round_(x / n, digits) + k_labels[j];
+          break;
         }
-        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
       }
+    } else if (m_labels.length) {
+      j = 0;
+      while (j < m_labels.length) {
+        ++j;
+        n = pow(k, j);
+        if ((absx * n) >= 1)
+          break;
+      }
+      label = round_(x * n, digits) + m_labels[j - 1];
     }
   }
 
