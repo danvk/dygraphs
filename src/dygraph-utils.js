@@ -504,11 +504,6 @@ export function dateParser(dateStr) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
     d = dateStrToMillis(dateStrSlashed);
-  } else if (dateStr.length == 8) {  // e.g. '20090712'
-    // TODO(danvk): remove support for this format. It's confusing.
-    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2) + "/" +
-        dateStr.substr(6,2);
-    d = dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
     // "2009/07/12 12:34:56"
