@@ -2533,16 +2533,27 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     if (!ypadCompat) {
       // When using yRangePad, adjust the upper/lower bounds to add
       // padding unless the user has zoomed/panned the Y axis range.
+
+      y0 = axis.computedValueRange[0];
+      y1 = axis.computedValueRange[1];
+
+      // special case #781: if we have no sense of scale, center on the sole value.
+      if (y0 === y1) {
+        if(y0 === 0) {
+          y1 = 1;
+        } else {
+          var delta = Math.abs(y0 / 10);
+          y0 -= delta;
+          y1 += delta;
+        }
+      }
+
       if (logscale) {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
         var y0pct = ypad / (2 * ypad - 1);
         var y1pct = (ypad - 1) / (2 * ypad - 1);
         axis.computedValueRange[0] = utils.logRangeFraction(y0, y1, y0pct);
         axis.computedValueRange[1] = utils.logRangeFraction(y0, y1, y1pct);
       } else {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
         span = y1 - y0;
         axis.computedValueRange[0] = y0 - span * ypad;
         axis.computedValueRange[1] = y1 + span * ypad;
