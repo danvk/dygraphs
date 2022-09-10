@@ -4,6 +4,11 @@ language: node_js
 node_js:
   - 18
 
+addons:
+  apt:
+    packages:
+    - jsdoc-toolkit
+
 script: >
     npm run build &&
     npm run build-tests &&
