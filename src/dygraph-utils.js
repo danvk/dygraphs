@@ -1162,7 +1162,7 @@ export function numberValueFormatter(x, opts) {
         }
       }
       // not reached, fall through safely though should it ever be
-    } else if ((absx < 1) && (m_labels.length > 0)) {
+    } else if ((absx < 1) /* && (m_labels.length > 0) */) {
       j = 0;
       while (j < m_labels.length) {
         ++j;
