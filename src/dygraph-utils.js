@@ -1092,7 +1092,7 @@ export function parseFloat_(x, opt_line_no, opt_line) {
 var KMB_LABELS_LARGE = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
 var KMB_LABELS_SMALL = [ 'm', 'µ', 'n', 'p', 'f', 'a', 'z', 'y' ];
 var KMG2_LABELS_LARGE = [ 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi' ];
-var KMG2_LABELS_SMALL = [ /* not provided in IEC 60027-2 */ ];
+var KMG2_LABELS_SMALL = [ 'p-10', 'p-20', 'p-30', 'p-40', 'p-50', 'p-60', 'p-70', 'p-80' ];
 /* if both are given (legacy/deprecated use only) */
 var KMB2_LABELS_LARGE = [ 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
 var KMB2_LABELS_SMALL = KMB_LABELS_SMALL;

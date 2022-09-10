@@ -646,6 +646,29 @@ it('testSmallLabelKMB', function() {
                    Util.getYLabels());
 });
 
+it('testSmallLabelKMG2', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1 * (2**-20)]);
+  data.push([2, 2 * (2**-20)]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMG2: true
+        }
+      }
+    }
+  );
+
+  assert.deepEqual(['0', '256p-30', '512p-30', '768p-30', '1p-20', '1.25p-20', '1.5p-20', '1.75p-20', '2p-20'],
+                   Util.getYLabels());
+});
+
 it('testSmallLabelKMG2legacy', function() {
   var data = [];
   data.push([0, 0]);
