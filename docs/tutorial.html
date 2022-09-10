@@ -217,7 +217,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 <p style="clear:both;">Things to note here:</p>
 
 <ul>
-<li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYYMMDD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, &hellip;</li>
+<li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYY-MM-DD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, &hellip;</li>
 <li>The first line of the CSV file doesn't mention the error columns. In this case, it's just "Date,Series1,Series2".</li>
 <li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
 <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
@@ -389,7 +389,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 <ul>
   <li>If your chart doesn't display, be sure to check your browser's JavaScript error console. dygraphs makes every attempt to log errors and warnings, and these can often guide you in the right direction.</li>
   <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="http://www.getfirebug.com/">Firebug</a>.</li>
-  <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYYMMDD, series1, series2, </code>&hellip; . And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
+  <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYY-MM-DD, series1, series2, </code>&hellip; — the older YYYYMMDD as first column is <strong>not</strong> recognised as date any more but as number. And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
   <li>dygraphs are not happy when placed inside a <code>&lt;center&gt;</code> tag. This applies to the CSS <code>text-align</code> property as well. If you want to center a Dygraph, put it inside a table with <code>align = center</code> set.</li>
   <li>Don't set the <code>dateWindow</code> property to a date. It expects milliseconds since epoch, which can be obtained from a JavaScript Date object's valueOf method.</li>
   <li>Make sure you don't have any trailing commas in your call to the Dygraph constructor or in the options parameter. Firefox, Chrome and Safari ignore these but they can cause a graph to not display in Internet Explorer.</li>

@@ -67,7 +67,7 @@ Gallery.register(
       }
       annotations.push( {
         series: 'another line',
-        x: "20061013",
+        x: "2006-10-13",
         icon: 'images/dollar.png',
         width: 18,
         height: 23,
