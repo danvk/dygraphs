@@ -2608,10 +2608,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
-  } else if (str.length == 8 && str > '19700101' && str < '20371231') {
-    // TODO(danvk): remove support for this format.
-    isDate = true;
-  }
+  } 
 
   this.setXAxisOptions_(isDate);
 };
@@ -3103,6 +3100,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
   // copyUserAttrs_ drops the "file" parameter as a convenience to us.
   var file = input_attrs.file;
   var attrs = Dygraph.copyUserAttrs_(input_attrs);
+  var prevNumAxes = this.attributes_.numAxes();
 
   // TODO(danvk): this is a mess. Move these options into attr_.
   if ('rollPeriod' in attrs) {
@@ -3126,6 +3124,7 @@ Dygraph.prototype.updateOptions = function(input_attrs, block_redraw) {
 
   this.attributes_.reparseSeries();
 
+  if (prevNumAxes < this.attributes_.numAxes()) this.plotter_.clear();
   if (file) {
     // This event indicates that the data is about to change, but hasn't yet.
     // TODO(danvk): support cancellation of the update via this event.

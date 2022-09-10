@@ -59,7 +59,7 @@ Dygraph.prototype.yAxisRange;
 Dygraph.prototype.yAxisRanges;
 
 /** @type {function(?number, ?number, ?number): Array.<?number>} */
-Dygraph.prototype.toDomCoords
+Dygraph.prototype.toDomCoords;
 
 /** @type {function(?number): ?number} */
 Dygraph.prototype.toDomXCoord;
