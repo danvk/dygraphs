@@ -574,7 +574,7 @@ it('testLabelKMB', function() {
     }
   );
 
-  assert.deepEqual(["0", "500", "1K", "1.5K", "2K"], Util.getYLabels());
+  assert.deepEqual(["0", "500", "1k", "1.5k", "2k"], Util.getYLabels());
 });
 
 it('testLabelKMG2', function() {
@@ -596,7 +596,7 @@ it('testLabelKMG2', function() {
     }
   );
 
-  assert.deepEqual(["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+  assert.deepEqual(["0","256","512","768","1Ki","1.25Ki","1.5Ki","1.75Ki","2Ki"],
                    Util.getYLabels());
 });
 
@@ -618,7 +618,7 @@ it('testLabelKMG2_top', function() {
   );
 
   assert.deepEqual(
-      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+      ["0","256","512","768","1Ki","1.25Ki","1.5Ki","1.75Ki","2Ki"],
       Util.getYLabels());
 });
 
@@ -641,8 +641,7 @@ it('testSmallLabelKMB', function() {
     }
   );
 
-  // TODO(danvk): use prefixes here (e.g. m, µ, n)
-  assert.deepEqual(['0', '5.00e-7', '1.00e-6', '1.50e-6', '2.00e-6'],
+  assert.deepEqual(['0', '500n', '1µ', '1.5µ', '2µ'],
                    Util.getYLabels());
 });
 
@@ -865,13 +864,13 @@ it('testLabelsKMBPerAxis', function() {
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assert.deepEqual(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
+  assert.deepEqual(["0","500","1k","1.5k","2k"], Util.getYLabels(2));
 });
 
 /*
  * This test shows that you can override labelsKMG2 on the axis level.
  */
-it('testLabelsKMBG2IPerAxis', function() {
+it('testLabelsKMG2PerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -895,7 +894,7 @@ it('testLabelsKMBG2IPerAxis', function() {
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assert.deepEqual(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
+  assert.deepEqual(["0","500","1000","1.46Ki","1.95Ki"], Util.getYLabels(2));
 });
 
 /**
