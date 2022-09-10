@@ -4,9 +4,8 @@
 
 rm -rf jsdoc
 echo Generating JSDoc...
-java -jar jsdoc-toolkit/jsrun.jar \
-  jsdoc-toolkit/app/run.js \
-  -d=jsdoc -t=jsdoc-toolkit/templates/jsdoc \
+jsdoc \
+  -d=jsdoc \
   src/dygraph.js \
 | tee /tmp/dygraphs-jsdocerrors.txt
 
