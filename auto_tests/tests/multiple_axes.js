@@ -58,7 +58,7 @@ it('testBasicMultipleAxes', function() {
   );
 
   assert.deepEqual(["0","20","40","60","80","100"], Util.getYLabels("1"));
-  assert.deepEqual(["900K","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
+  assert.deepEqual(["900k","1.12M","1.34M","1.55M","1.77M","1.99M"], Util.getYLabels("2"));
 });
 
 it('testTwoAxisVisibility', function() {
@@ -198,7 +198,7 @@ it('testValueRangePerAxisOptions', function() {
     }
   );
   assert.deepEqual(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
-  assert.deepEqual(["900K","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
+  assert.deepEqual(["900k","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
   
   g.updateOptions(
     {

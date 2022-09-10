@@ -20,7 +20,7 @@ cp -r dist/auto_tests coverage/
 browserify coverage/auto_tests/tests/*.js -o coverage/tests.js
 
 # Run http-server and save its PID for cleanup
-http-server > /dev/null &
+http-server -p 8082 > /dev/null &
 SERVER_PID=$!
 function finish() {
   kill -TERM $SERVER_PID
@@ -34,7 +34,7 @@ sleep 1
 # This produces coverage/coverage.json
 phantomjs \
   ./node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee \
-  http://localhost:8080/auto_tests/coverage.html \
+  http://localhost:8082/auto_tests/coverage.html \
   spec '{"hooks": "mocha-phantomjs-istanbul", "coverageFile": "coverage/coverage.json"}'
 
 if [ $CI ]; then

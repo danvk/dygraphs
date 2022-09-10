@@ -268,7 +268,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Value display/formatting"],
     "type": "boolean",
-    "description": "Show k/M/G for kilo/Mega/Giga on y-axis. This is different than <code>labelsKMB</code> in that it uses base 2, not 10."
+    "description": "Show Ki/Mi/Gi for powers of 1024 on y-axis. If used together with <code>labelsKMB</code> (deprecated), K/M/G are used instead."
   },
   "delimiter": {
     "default": ",",
@@ -489,7 +489,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Value display/formatting"],
     "type": "boolean",
-    "description": "Show K/M/B for thousands/millions/billions on y-axis."
+    "description": "Show k/M/B for thousands/millions/billions on y-axis."
   },
   "rightGap": {
     "default": "5",

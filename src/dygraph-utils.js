@@ -1083,10 +1083,14 @@ export function parseFloat_(x, opt_line_no, opt_line) {
 
 
 // Label constants for the labelsKMB and labelsKMG2 options.
-// (i.e. '100000' -> '100K')
-var KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
-var KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
-var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+// (i.e. '100000' -> '100k')
+var KMB_LABELS_LARGE = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB_LABELS_SMALL = [ 'm', 'µ', 'n', 'p', 'f', 'a', 'z', 'y' ];
+var KMG2_LABELS_LARGE = [ 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi' ];
+var KMG2_LABELS_SMALL = [ 'p-10', 'p-20', 'p-30', 'p-40', 'p-50', 'p-60', 'p-70', 'p-80' ];
+/* if both are given (legacy/deprecated use only) */
+var KMB2_LABELS_LARGE = [ 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB2_LABELS_SMALL = KMB_LABELS_SMALL;
 
 /**
  * @private
@@ -1103,6 +1107,10 @@ export function numberValueFormatter(x, opts) {
     return floatFormat(x, sigFigs);
   }
 
+  // shortcut 0 so later code does not need to worry about it
+  if (x === 0.0)
+    return '0';
+
   var digits = opts('digitsAfterDecimal');
   var maxNumberWidth = opts('maxNumberWidth');
 
@@ -1110,15 +1118,7 @@ export function numberValueFormatter(x, opts) {
   var kmg2 = opts('labelsKMG2');
 
   var label;
-
-  // switch to scientific notation if we underflow or overflow fixed display.
-  if (x !== 0.0 &&
-      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-       Math.abs(x) < Math.pow(10, -digits))) {
-    label = x.toExponential(digits);
-  } else {
-    label = '' + round_(x, digits);
-  }
+  var absx = Math.abs(x);
 
   if (kmb || kmg2) {
     var k;
@@ -1126,37 +1126,61 @@ export function numberValueFormatter(x, opts) {
     var m_labels = [];
     if (kmb) {
       k = 1000;
-      k_labels = KMB_LABELS;
+      k_labels = KMB_LABELS_LARGE;
+      m_labels = KMB_LABELS_SMALL;
     }
     if (kmg2) {
-      if (kmb) console.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
-      k_labels = KMG2_BIG_LABELS;
-      m_labels = KMG2_SMALL_LABELS;
+      k_labels = KMG2_LABELS_LARGE;
+      m_labels = KMG2_LABELS_SMALL;
+      if (kmb) {
+        k_labels = KMB2_LABELS_LARGE;
+        m_labels = KMB2_LABELS_SMALL;
+      }
     }
 
-    var absx = Math.abs(x);
-    var n = pow(k, k_labels.length);
-    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
-      if (absx >= n) {
-        label = round_(x / n, digits) + k_labels[j];
-        break;
-      }
-    }
-    if (kmg2) {
-      // TODO(danvk): clean up this logic. Why so different than kmb?
-      var x_parts = String(x.toExponential()).split('e-');
-      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
-        if (x_parts[1] % 3 > 0) {
-          label = round_(x_parts[0] /
-              pow(10, (x_parts[1] % 3)),
-              digits);
-        } else {
-          label = Number(x_parts[0]).toFixed(2);
+    var n;
+    var j;
+    if (absx >= k) {
+      j = k_labels.length;
+      while (j > 0) {
+        n = pow(k, j);
+        --j;
+        if (absx >= n) {
+          // guaranteed to hit because absx >= k (pow(k, 1))
+          // if immensely large still switch to scientific notation
+          if ((absx / n) >= Math.pow(10, maxNumberWidth))
+            label = x.toExponential(digits);
+          else
+            label = round_(x / n, digits) + k_labels[j];
+          return label;
         }
-        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
       }
+      // not reached, fall through safely though should it ever be
+    } else if ((absx < 1) /* && (m_labels.length > 0) */) {
+      j = 0;
+      while (j < m_labels.length) {
+        ++j;
+        n = pow(k, j);
+        if ((absx * n) >= 1)
+          break;
+      }
+      // if _still_ too small, switch to scientific notation instead
+      if ((absx * n) < Math.pow(10, -digits))
+        label = x.toExponential(digits);
+      else
+        label = round_(x * n, digits) + m_labels[j - 1];
+      return label;
     }
+    // else fall through
+  }
+
+  if (absx >= Math.pow(10, maxNumberWidth) ||
+      absx < Math.pow(10, -digits)) {
+    // switch to scientific notation if we underflow or overflow fixed display
+    label = x.toExponential(digits);
+  } else {
+    label = '' + round_(x, digits);
   }
 
   return label;
