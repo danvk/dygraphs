@@ -646,11 +646,11 @@ it('testSmallLabelKMB', function() {
                    Util.getYLabels());
 });
 
-it('testSmallLabelKMG2', function() {
+it('testSmallLabelKMG2legacy', function() {
   var data = [];
   data.push([0, 0]);
-  data.push([1, 1e-6]);
-  data.push([2, 2e-6]);
+  data.push([1, 1 * (2**-20)]);
+  data.push([2, 2 * (2**-20)]);
 
   var g = new Dygraph(
     document.getElementById("graph"),
@@ -659,15 +659,14 @@ it('testSmallLabelKMG2', function() {
       labels: [ 'X', 'bar' ],
       axes : {
         y: {
+          labelsKMB: true,
           labelsKMG2: true
         }
       }
     }
   );
 
-  // TODO(danvk): this is strange--the values aren't on powers of two, and are
-  // these units really used for powers of two in <1? See issue #571.
-  assert.deepEqual(['0', '0.48u', '0.95u', '1.43u', '1.91u'],
+  assert.deepEqual(['0', '256n', '512n', '768n', '1µ', '1.25µ', '1.5µ', '1.75µ', '2µ'],
                    Util.getYLabels());
 });
 
