@@ -102,6 +102,8 @@ var replaceHTML = function(e, html) {
       html.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
     e.innerHTML = '';
     e.appendChild(html);
+  } else {
+    e.innerHTML = '' + html;
   }
 };
 
