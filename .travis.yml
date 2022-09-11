@@ -10,6 +10,7 @@ addons:
     - ed
     - jsdoc-toolkit
     - pax
+    - python-is-python2
 
 script: >
     npm run build &&
