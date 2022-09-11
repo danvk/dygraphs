@@ -3,7 +3,7 @@
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series:
 
-<img src="https://cloud.githubusercontent.com/assets/98301/5311286/eb760eea-7c10-11e4-9a59-1d144e51a15b.png" width="618" height="322">
+![sample graph](screenshot.png)
 
 Learn more about it at [dygraphs.com](http://www.dygraphs.com).
 
