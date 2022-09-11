@@ -66,6 +66,8 @@ scripts/generate-download.py > docs/download.html
 mkdir site
 cd docs
 ./ssi_expander.py "$PWD/../site"
+cd ../site
+rm -f NOTES TODO footer.html header.html ssi*.py
 cd ..
 pax -rw -l \
 	common \
