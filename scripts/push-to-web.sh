@@ -18,6 +18,6 @@ npm run build
 find . -print | egrep -v '\.git|node_modules' | xargs chmod a+rX
 
 # Copy everything to the site.
-rsync -avzr src src/extras common dist $site \
+rsync -avzr src src/extras dist $site \
 && \
 rsync -avzr --copy-links dist/* site/* $site/

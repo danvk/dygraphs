@@ -68,6 +68,7 @@ cd docs
 ./ssi_expander.py "$PWD/../site"
 cd ..
 pax -rw -l \
+	common \
 	gallery \
 	jsdoc \
 	tests \
