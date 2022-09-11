@@ -1,5 +1,8 @@
 dist: focal
 
+before_install:
+  - bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
+
 language: node_js
 node_js:
   - 18
