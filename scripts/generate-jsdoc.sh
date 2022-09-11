@@ -2,7 +2,21 @@
 #
 # Generates JSDoc in the /jsdoc dir. Clears any existing jsdoc there.
 
-rm -rf jsdoc
+set -e
+
+v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
+test -n "$v" || {
+  echo 'E: could not determine version'
+  exit 1
+}
+
+rm -rf jsdoc jsdoc.tmp
+mkdir jsdoc.tmp
+t=$PWD/jsdoc.tmp
+(cd /usr/share/jsdoc-toolkit/templates/jsdoc && pax -rw . "$t/")
+find jsdoc.tmp -type f -print0 | xargs -0r perl -pi -e \
+  "s! on [{][+]new Date[(][)][+][}]! for dygraph $v!g"
+
 echo Generating JSDoc...
 srcfiles=src/dygraph.js
 #srcfiles+=\ src/iframe-tarp.js
@@ -40,6 +54,7 @@ srcfiles+=\ src/extras/smooth-plotter.js
 srcfiles+=\ src/extras/synchronizer.js
 #srcfiles+=\ src/extras/unzoom.js
 jsdoc \
+  -t="$t" \
   -d=jsdoc \
   $srcfiles \
 2>&1 | tee /tmp/dygraphs-jsdocerrors.txt
@@ -49,6 +64,7 @@ ed -s /tmp/dygraphs-jsdocerrors.txt <<-\EOF
 	w
 	q
 EOF
+rm -rf jsdoc.tmp
 
 if [ -s /tmp/dygraphs-jsdocerrors.txt ]; then
   echo Please fix any jsdoc errors/warnings

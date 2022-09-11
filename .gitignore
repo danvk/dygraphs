@@ -7,5 +7,6 @@ docs/download.html
 docs/options.html
 env
 jsdoc
+jsdoc.tmp
 node_modules
 site
