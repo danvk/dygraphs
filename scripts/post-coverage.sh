@@ -1,4 +1,6 @@
 #!/bin/bash
-cat coverage/lcov.info | ./node_modules/.bin/coveralls
+if [ $CI ]; then
+  <coverage/lcov.info ./node_modules/.bin/coveralls
+fi
 
-echo ''  # reset exit code -- failure to post coverage shouldn't be an error.
+true  # reset exit code -- failure to post coverage shouldn't be an error.
