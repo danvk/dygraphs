@@ -9,4 +9,6 @@ env
 jsdoc
 jsdoc.tmp
 node_modules
+package-lock.json
 site
+src-es5/

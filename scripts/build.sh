@@ -67,7 +67,7 @@ mkdir docroot
 cd docs
 ./ssi_expander.py "$PWD/../docroot"
 cd ../docroot
-rm -f NOTES TODO footer.html header.html ssi*.py
+rm -f NOTES TODO footer.html header.html *.py *.pyc
 cd ..
 pax -rw -l \
 	common \
