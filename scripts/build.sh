@@ -55,3 +55,26 @@ babel src -d src-es5 --compact false
 # Remove temp files.
 rm dist/dygraph.tmp.js
 rm dist/dygraph.tmp.js.map
+
+# Build documentation
+rm -rf site
+scripts/generate-documentation.py > docs/options.html
+chmod a+r docs/options.html
+test -s docs/options.html || {
+  echo "generate-documentation.py failed"
+  exit 1
+}
+scripts/generate-jsdoc.sh
+scripts/generate-download.py > docs/download.html
+mkdir site
+cd docs
+./ssi_expander.py "$PWD/../site"
+cd ..
+pax -rw -l \
+	gallery \
+	jsdoc \
+	tests \
+	screenshot.png \
+	thumbnail.png \
+    site/
+rm -f docs/download.html docs/options.html

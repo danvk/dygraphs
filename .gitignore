@@ -1,8 +1,10 @@
-jsdoc
-docs/options.html
-node_modules
-env
-dist
-coverage
 *.log
 *.pyc
+coverage
+dist
+docs/download.html
+docs/options.html
+env
+jsdoc
+node_modules
+site

@@ -13,31 +13,11 @@ site=$1
 # Produce dist/*.js
 npm run build
 
-# Generate documentation.
-./scripts/generate-documentation.py > docs/options.html
-chmod a+r docs/options.html
-if [ -s docs/options.html ] ; then
-  ./scripts/generate-jsdoc.sh
-  ./scripts/generate-download.py > docs/download.html
+# Make sure everything will be readable on the web.
+# This is like "chmod -R a+rX", but excludes the .git and node_modules directories.
+find . -print | egrep -v '\.git|node_modules' | xargs chmod a+rX
 
-  temp_dir=$(mktemp -d /tmp/dygraphs-docs.XXXX)
-  cd docs
-  ./ssi_expander.py $temp_dir
-  cd ..
-
-  # Make sure everything will be readable on the web.
-  # This is like "chmod -R a+rX", but excludes the .git and node_modules directories.
-  find . -print | egrep -v '\.git|node_modules' | xargs chmod a+rX
-
-  # Copy everything to the site.
-  rsync -avzr src src/extras gallery common tests jsdoc dist $site \
-  && \
-  rsync -avzr --copy-links dist/* thumbnail.png screenshot.png $temp_dir/* $site/
-else
-  echo "generate-documentation.py failed"
-fi
-
-# Revert changes to docs.
-git checkout docs/download.html
-rm docs/options.html
-rm -rf $temp_dir
+# Copy everything to the site.
+rsync -avzr src src/extras common dist $site \
+&& \
+rsync -avzr --copy-links dist/* site/* $site/

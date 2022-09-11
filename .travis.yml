@@ -8,6 +8,7 @@ addons:
   apt:
     packages:
     - jsdoc-toolkit
+    - pax
 
 script: >
     npm run build &&
