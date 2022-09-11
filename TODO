@@ -15,3 +15,10 @@ deduplicate images
 
 missing usage of SSI, maybe? sync anyway:
 - gallery/index.html
+
+site generation is a pita
+- rsync?!
+- symlinks
+- no src-es5, especially for extras
+- copy of extras one level up
+- …
