@@ -1,3 +1,6 @@
+// This file is a superset of auto_tests/data/data.js
+// and only contains test data
+
 function data_nolabel() {
 return "" +
 "2007-01-01,62,39\n" +

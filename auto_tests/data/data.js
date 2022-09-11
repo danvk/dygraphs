@@ -1,4 +1,5 @@
-// This file is the same as tests/data.js
+// This file is mostly the same as tests/data.js
+// but some functions renamed and less functions
 
 function temperature_nolabel() {
 return "" +
