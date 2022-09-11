@@ -7,7 +7,9 @@
 /**
  * @fileoverview Description of this file.
  * @author danvk@google.com (Dan Vanderkam)
- *
+ */
+
+/*
  * A ticker is a function with the following interface:
  *
  * function(a, b, pixels, options_view, dygraph, forced_values);

@@ -9,8 +9,11 @@
  * string. Dygraph can handle multiple series with or without error bars. The
  * date/value ranges will be automatically set. Dygraph uses the
  * &lt;canvas&gt; tag, so it only works in FF1.5+.
+ * See the source or https://dygraphs.com/ for more information.
  * @author danvdk@gmail.com (Dan Vanderkam)
+ */
 
+/*
   Usage:
    <div id="graphdiv" style="width:800px; height:500px;"></div>
    <script type="text/javascript">
