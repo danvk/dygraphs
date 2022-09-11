@@ -3,6 +3,7 @@
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
 
+rm -rf dist
 mkdir -p dist
 
 # Create dist/dygraph.js
