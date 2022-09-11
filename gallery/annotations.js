@@ -26,7 +26,7 @@ Gallery.register(
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
                 var r = "date,parabola,line,another line,sine wave\n";
                 for (var i=1; i<=31; i++) {
-                  r += "200610" + zp(i);
+                  r += "2006-10-" + zp(i);
                   r += "," + 10*(i*(31-i));
                   r += "," + 10*(8*i);
                   r += "," + 10*(250 - 8*i);
@@ -59,7 +59,7 @@ Gallery.register(
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Stock Market Crash ' + x
         } );
@@ -84,7 +84,7 @@ Gallery.register(
         var x = last_ann + 2;
         annotations.push( {
           series: 'line',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Line ' + x,
           tickHeight: 10
