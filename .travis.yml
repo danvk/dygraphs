@@ -2,7 +2,7 @@ dist: focal
 
 before_install:
   - sudo bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
-  - npm install -g phantomjs@1.9.20
+  - env TMPDIR=/tmp npm install -g phantomjs@1.9.20
 
 language: node_js
 node_js:
