@@ -2,6 +2,7 @@ dist: focal
 
 before_install:
   - env TMPDIR=/tmp npm install -g phantomjs@1.9.20
+  - env TMPDIR=/tmp npm install
 
 addons:
   apt:
