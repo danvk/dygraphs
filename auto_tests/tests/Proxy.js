@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** 
+/**
  * @fileoverview A general purpose object proxy that logs all method calls.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

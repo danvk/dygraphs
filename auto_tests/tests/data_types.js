@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for DygraphOptions.
  */
 
@@ -29,6 +29,6 @@ describe("dygraph-data-types", function() {
       "20036000	4";
 
     var g = new Dygraph(graph, data, opts);
-    assert.deepEqual(4, g.rawData_.length); 
+    assert.deepEqual(4, g.rawData_.length);
   });
 });

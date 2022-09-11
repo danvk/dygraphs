@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for toDomCoords/toDataCoords
  *
  * @author danvk@google.com (Dan Vanderkam)
@@ -158,7 +158,7 @@ it('testYAxisLabelWidth', function() {
   assert.deepEqual([100, 0], g.toDomCoords(0, 100));
   assert.deepEqual([500, 486], g.toDomCoords(100, 0));
 
-  g.updateOptions({     
+  g.updateOptions({
     axes: { y: { axisLabelWidth: 50 }},
   });
   assert.deepEqual([50, 0], g.toDomCoords(0, 100));
@@ -219,7 +219,7 @@ it('testChartLogarithmic_YAxis', function() {
   assertDeepCloseTo([10, 4], g.toDataCoords(400, 0), epsilon);
   assertDeepCloseTo([10, 1], g.toDataCoords(400, 400), epsilon);
   assertDeepCloseTo([10, 2], g.toDataCoords(400, 200), epsilon);
-  
+
   assert.deepEqual([0, 0], g.toDomCoords(0, 4));
   assert.deepEqual([0, 400], g.toDomCoords(0, 1));
   assert.deepEqual([400, 0], g.toDomCoords(10, 4));
@@ -282,7 +282,7 @@ it('testChartLogarithmic_XAxis', function() {
   assert.closeTo(0.3333333333, g.toPercentXCoord(10), epsilon);
   assert.closeTo(0.6666666666, g.toPercentXCoord(100), epsilon);
   assert.closeTo(1, g.toPercentXCoord(1000), epsilon);
- 
+
   // Now zoom in and ensure that the methods return reasonable values.
   g.updateOptions({dateWindow: [ 10, 100 ]});
 

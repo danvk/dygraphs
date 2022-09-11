@@ -703,7 +703,7 @@ it('testLogScale', function() {
                       });
   var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
   assert.deepEqual(["5","10","20","50","100","200","500","1000"], nonEmptyLabels);
- 
+
   g.updateOptions({ logscale : false });
   assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
 });
@@ -745,7 +745,7 @@ it('testIncludeZero', function() {
                         labels: ['X', 'Y1']
                       });
   assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
- 
+
   g.updateOptions({ includeZero : false });
   assert.deepEqual(['500','600','700','800','900','1000'], Util.getYLabels());
 });
@@ -765,40 +765,40 @@ it('testAxisLabelFontSize', function() {
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({axisLabelFontSize : 8});
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px");
 
   g.updateOptions({
     axisLabelFontSize : null,
-    axes: { 
+    axes: {
       x: { axisLabelFontSize : 5 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
-    axes: { 
+    axes: {
       y: { axisLabelFontSize : 20 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px");
 
   g.updateOptions({
-    series: { 
+    series: {
       Y2: { axis : "y2" } // copy y2 series to y2 axis.
-    },  
-    axes: { 
+    },
+    axes: {
       y2: { axisLabelFontSize : 12 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px");
 });
 
 it('testAxisLabelFontSizeNull', function() {

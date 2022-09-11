@@ -21,7 +21,7 @@ import DefaultHandler from './default';
  */
 var DefaultFractionHandler = function() {
 };
-  
+
 DefaultFractionHandler.prototype = new DefaultHandler();
 
 DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {

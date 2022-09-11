@@ -1,7 +1,7 @@
 /*global Gallery,Dygraph,data */
 Gallery.register(
   'border',
-  { 
+  {
     name: "Border test",
     title: 'Graph stays within the border',
     setup: function(parent) {

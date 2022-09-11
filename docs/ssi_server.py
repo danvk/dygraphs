@@ -21,7 +21,7 @@ import tempfile
 
 class SSIRequestHandler(SimpleHTTPRequestHandler):
   """Adds minimal support for <!-- #include --> directives.
-  
+
   The key bit is translate_path, which intercepts requests and serves them
   using a temporary file which inlines the #includes.
   """

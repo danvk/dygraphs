@@ -25,7 +25,7 @@
               errorBars: true,
 
               underlayCallback: function(canvas, area, g) {
-                // Selecting a date in the middle of the graph. 
+                // Selecting a date in the middle of the graph.
                 var splitDate = new Date("2006-11-19").getTime();
                 var coords = g.toDomCoords(splitDate, 2.25);
 
@@ -50,7 +50,7 @@
                 // right: (x > 2006-11-19)
                 canvas.fillStyle = 'orange';
                 canvas.fillRect(splitX, area.y, rightSideWidth, topHeight);
-        
+
                 // Bottom section: y = (-Infinity, 2.25)
                 canvas.fillStyle = 'pink';
                 canvas.fillRect(area.x, splitY, area.w, bottomHeight);

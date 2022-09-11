@@ -2622,7 +2622,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
-  } 
+  }
 
   this.setXAxisOptions_(isDate);
 };

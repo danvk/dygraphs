@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Tests involving multiple y-axes.
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
@@ -199,7 +199,7 @@ it('testValueRangePerAxisOptions', function() {
   );
   assert.deepEqual(["40", "45", "50", "55", "60", "65"], Util.getYLabels("1"));
   assert.deepEqual(["900k","1.1M","1.3M","1.5M","1.7M","1.9M"], Util.getYLabels("2"));
-  
+
   g.updateOptions(
     {
       axes: {
@@ -221,12 +221,12 @@ it('testDrawPointCallback', function() {
 
   var results = { y : {}, y2 : {}};
   var firstCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
-    results.y[seriesName] = 1; 
+    results.y[seriesName] = 1;
     utils.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
 
   };
   var secondCallback = function(g, seriesName, ctx, canvasx, canvasy, color, radius) {
-    results.y2[seriesName] = 1; 
+    results.y2[seriesName] = 1;
     utils.Circles.DEFAULT(g, seriesName, ctx, canvasx, canvasy, color, radius);
   };
 

@@ -122,7 +122,7 @@ column:</p>
                   x : {
                     valueFormatter: Dygraph.dateString_,
                     valueParser: function(x) { return 1000*parseInt(x); },
-                    ticker: Dygraph.dateTicker                
+                    ticker: Dygraph.dateTicker
                   }
                 }
               });
@@ -295,7 +295,7 @@ with the array format. If you specify any of these, the values become arrays
 </code>
 
 <p>To specify missing data, set the value to null or NaN. You may not set a value
-inside an array to null or NaN. Use null or NaN instead of the entire array. 
+inside an array to null or NaN. Use null or NaN instead of the entire array.
 The only difference between the two is when the option
 <a href="options.html#conectSeparatedPoints">connectSeparatedPoints</a>
 true. In that case, the gaps created by nulls are filled in, and gaps

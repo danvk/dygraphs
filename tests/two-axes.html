@@ -62,7 +62,7 @@
             y2label: 'Secondary y-axis',
           }
       );
-      
+
       g2 = new Dygraph(
           document.getElementById("demodiv_y2_primary"),
           data,
@@ -93,7 +93,7 @@
             }
           }
       );
-      
+
       g3 = new Dygraph(
           document.getElementById("demodiv_two_grids"),
           data,
@@ -131,7 +131,7 @@
           y2label: 'Secondary y-axis',
         }
       );
-      
+
       g5 = new Dygraph(
        document.getElementById("demodiv_one_right"),
        data,
@@ -168,7 +168,7 @@
           }
         }
       );
-      
+
       function update(el) {
         g.updateOptions( { fillGraph: el.checked } );
         g2.updateOptions( { fillGraph: el.checked } );

@@ -11,4 +11,3 @@ def InlineIncludes(path):
       lambda x: file(x.group(1)).read(),
       content)
   return content
-

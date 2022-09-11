@@ -8,7 +8,7 @@
   </head>
   <body>
     <p>Plot which can be easily generated with different numbers of points for
-       benchmarking/profiling and improving performance of dygraphs.</p>    
+       benchmarking/profiling and improving performance of dygraphs.</p>
     <div id='parameters'>
       <p>Data to plot:
         <input type="radio" id="sine" name="group1" value="sine"
@@ -117,7 +117,7 @@
           for (var i = 0; i < millisecondss.length; i++) {
             avg+=millisecondss[i];
           }
-          avg/=millisecondss.length; 
+          avg/=millisecondss.length;
           document.getElementById('message').innerHTML =
               "Durations: " + millisecondss + "<br>Average: " + avg;
         }
@@ -142,7 +142,7 @@
 
         return millisecondss;
       };
-      
+
       setDataType = function(radiobutton) {
         dataType = radiobutton.value;
       };

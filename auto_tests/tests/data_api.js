@@ -103,7 +103,7 @@ it('testGetRowForXDuplicates', function() {
 // indexFromSeriesName should return a value even if the series is invisible
 // In 1.1.1, if you request the last set and it's invisible, the method returns undefined.
 it('testIndexFromSetNameOnInvisibleSet', function() {
-  
+
   var localOpts = utils.clone(opts);
   localOpts.visibility = [true, false];
 

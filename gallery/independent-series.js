@@ -161,4 +161,3 @@ Gallery.register(
     );
     }
   });
-

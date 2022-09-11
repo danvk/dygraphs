@@ -20,7 +20,7 @@ aside {
 }
 
 #subtitle a:visited {
-  color: blue;  
+  color: blue;
 }
 
 #workarea {
@@ -128,7 +128,7 @@ a {
 
 /* CSS for styled-chart-label */
 #workarea #styled-chart-labels .infotext {
-    
+
 }
 
 #workarea #styled-chart-labels #div_g .dygraph-label {

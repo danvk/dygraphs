@@ -6,7 +6,7 @@ Gallery.register(
     name: 'Annotation Gviz (broken)',
     title: 'Comparison of Gviz and Dygraphs annotated timelines',
     setup : function(parent) {
-      parent.innerHTML = 
+      parent.innerHTML =
           "<h3>Google AnnotatedTimeline:</h3>" +
           "<div id='gviz_div' style='width: 700px; height: 240px;'></div>" +
           "<h3>Dygraph.GVizChart:</h3>" +

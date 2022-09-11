@@ -1,7 +1,7 @@
 /**
  * @fileoverview Test cases for the per-axis grid options, including the new
  *               option "gridLinePattern".
- * 
+ *
  * @author david.eberlein@ch.sauter-bc.com (Fr. Sauter AG)
  */
 
@@ -301,7 +301,7 @@ it('testGridLinePattern', function() {
       if(pixelpos < 1 || pixelpos > 8) continue;
 
       // XXX: check what this looks like at master
-      
+
       // Ignore alpha
       var drawnPixel = sampler.rgbAtPixel(x, y);
       var pattern = (Math.floor((x) / 10)) % 2;

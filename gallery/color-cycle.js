@@ -28,7 +28,7 @@ Gallery.register(
                             height: 480,
                             colors: colorSets[0]
                           });
-  
+
       function change(event) {
         chart.updateOptions({colors: colorSets[event.target.id]});
       }

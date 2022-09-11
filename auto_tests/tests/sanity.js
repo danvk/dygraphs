@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 
-/** 
+/**
  * @fileoverview Test cases that ensure Dygraphs works at all.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

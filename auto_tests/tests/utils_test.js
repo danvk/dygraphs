@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Tests for stand-alone functions in dygraph-utils.js
  *
  * @author danvdk@gmail.com (Dan Vanderkam)

@@ -58,7 +58,7 @@ it('testMixedModeStepAndLineFilled', function() {
 
   var htx = g.hidden_ctx_;
 
-  var attrs = {};  
+  var attrs = {};
 
 
   for (var i = 0; i < data.length - 1; i++) {
@@ -129,11 +129,11 @@ it('testMixedModeStepAndLineStackedAndFilled', function() {
 
   var htx = g.hidden_ctx_;
 
-  var attrs = {};  
+  var attrs = {};
 
 
   for (var i = 0; i < data.length - 1; i++) {
-    
+
     var x1 = data[i][0];
     var x2 = data[i + 1][0];
     var y1base = 0;
@@ -164,12 +164,12 @@ it('testMixedModeStepAndLineStackedAndFilled', function() {
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
     // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
     // But a rectangle is completely tested with three of its four edges.
-    
+
     y1base = y1;
     y2base = y1;
     y1 += data[i][3];
     y2 += data[i + 1][3];
-    
+
     // Third series (line)
     // Test lines
     xy1 = g.toDomCoords(x1, y1);
@@ -188,7 +188,7 @@ it('testMixedModeStepAndLineStackedAndFilled', function() {
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
     // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
     // But a rectangle is completely tested with three of its four edges.
-    
+
     y1base = y1;
     y2base = y2;
     y1 += data[i][2];
@@ -217,7 +217,7 @@ it('testMixedModeStepAndLineStackedAndFilled', function() {
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
     // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
     // But a rectangle is completely tested with three of its four edges.
-    
+
     y1base = y1;
     y2base = y1;
     y1 += data[i][1];
@@ -262,8 +262,8 @@ it('testMixedModeStepAndLineErrorBars', function() {
     sigma: 1,
     labels: ["X", "Data1", "Data2"],
     series: {
-      Data1: {stepPlot: true},	
-      Data2: {stepPlot: false} 
+      Data1: {stepPlot: true},
+      Data2: {stepPlot: false}
     }
   };
   var data = [
@@ -279,19 +279,19 @@ it('testMixedModeStepAndLineErrorBars', function() {
 
   var htx = g.hidden_ctx_;
 
-  var attrs = {};  
+  var attrs = {};
 
   // Test first series (step)
   for (var i = 0; i < data.length - 1; i++) {
     var x1 = data[i][0];
     var x2 = data[i + 1][0];
-    
+
     var y1_middle = data[i][1][0];
     var y2_middle = data[i + 1][1][0];
-    
+
     var y1_top = y1_middle + data[i][1][1];
     var y2_top = y2_middle + data[i + 1][1][1];
-    
+
     var y1_bottom = y1_middle - data[i][1][1];
     var y2_bottom = y2_middle - data[i + 1][1][1];
     // Bottom line
@@ -308,7 +308,7 @@ it('testMixedModeStepAndLineErrorBars', function() {
     xy1 = g.toDomCoords(x1, y1_middle);
     xy2 = g.toDomCoords(x2, y1_middle);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    
+
     // Test edges of error bar areas(also drawn by dygraphs as lines)
     xy1 = g.toDomCoords(x1, y1_top);
     xy2 = g.toDomCoords(x2, y1_top);
@@ -323,7 +323,7 @@ it('testMixedModeStepAndLineErrorBars', function() {
     // But a rectangle is completely tested with three of its four edges.
   }
 
-  // Test second series (line)  
+  // Test second series (line)
   for (var i = 0; i < data.length - 1; i++) {
     // bottom line
     var xy1 = g.toDomCoords(data[i][0], (data[i][2][0] - data[i][2][1]));
@@ -360,8 +360,8 @@ it('testMixedModeStepAndLineCustomBars', function() {
     customBars: true,
 	labels: ["X", "Data1", "Data2"],
     series: {
-      Data1: {stepPlot: true},	
-      Data2: {stepPlot: false} 
+      Data1: {stepPlot: true},
+      Data2: {stepPlot: false}
     }
   };
   var data = [
@@ -377,38 +377,38 @@ it('testMixedModeStepAndLineCustomBars', function() {
 
   var htx = g.hidden_ctx_;
 
-  var attrs = {};  
+  var attrs = {};
 
   // Test first series (step)
   for (var i = 0; i < data.length - 1; i++) {
 
     var x1 = data[i][0];
     var x2 = data[i + 1][0];
-    
+
     var y1_middle = data[i][1][1];
     var y2_middle = data[i + 1][1][1];
-    
+
     var y1_top = data[i][1][2];
     var y2_top = data[i + 1][1][2];
-    
+
     var y1_bottom = data[i][1][0];
     var y2_bottom = data[i + 1][1][0];
-    
+
     // Bottom line
     var xy1 = g.toDomCoords(x1, y1_bottom);
     var xy2 = g.toDomCoords(x2, y1_bottom);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    
+
     // Top line
     xy1 = g.toDomCoords(x1, y1_top);
     xy2 = g.toDomCoords(x2, y1_top);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    
+
     // Middle line
     xy1 = g.toDomCoords(x1, y1_middle);
     xy2 = g.toDomCoords(x2, y1_middle);
     CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-    
+
     // Test edges of custom bar areas(also drawn by dygraphs as lines)
     xy1 = g.toDomCoords(x1, y1_top);
     xy2 = g.toDomCoords(x2, y1_top);
@@ -422,7 +422,7 @@ it('testMixedModeStepAndLineCustomBars', function() {
     // The last edge can not be tested via assertLineDrawn since it wasn't drawn as a line but via clossePath.
     // But a rectangle is completely tested with three of its four edges.
   }
-  
+
   // Test second series (line)
   for (var i = 0; i < data.length - 1; i++) {
     // Bottom line

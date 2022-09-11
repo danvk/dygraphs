@@ -67,7 +67,7 @@
         }
       );
     </script>
-    
+
     <p>5: Step chart with error bars:</p>
     <div id="graphdiv5"></div>
     <script type="text/javascript">
@@ -132,7 +132,7 @@
       }
     );
     </script>
-    
+
     <p>8: Stacked filled step chart:</p>
     <div id="graphdiv8"></div>
     <script type="text/javascript">
@@ -150,7 +150,7 @@
                           includeZero: true
                        });
     </script>
-	
+
 	<p>9: Mixed mode - step and line:</p>
     <div id="graphdiv9"></div>
     <script type="text/javascript">
@@ -166,14 +166,14 @@
 						  Idle: {stepPlot: true},
 						  Used: {stepPlot: false}
 						},
-						  
+
                         fillGraph: false,
                         stackedGraph: false,
                         includeZero: true
                       });
     </script>
-	
-	
+
+
 	<p>10: Mixed mode - step and line (filled):</p>
     <div id="graphdiv10"></div>
     <script type="text/javascript">
@@ -189,7 +189,7 @@
 						  Idle: {stepPlot: false},
 						  Used: {stepPlot: true}
 						},
-						  
+
                         fillGraph: true,
                         stackedGraph: false,
                         includeZero: true
@@ -211,14 +211,14 @@
 						  Idle: {stepPlot: false},
 						  Used: {stepPlot: true},
 						  NotUsed: {stepPlot: false},
-						  Active: {stepPlot: true}						     
+						  Active: {stepPlot: true}
                         },
                         fillGraph: true,
                         stackedGraph: true,
                         includeZero: true
                       });
     </script>
-	
+
 	<p>12: Mixed mode - step and line (errorbars):</p>
     <div id="graphdiv12"></div>
     <script type="text/javascript">
@@ -229,18 +229,18 @@
           [3, [80, 7], [112, 5]],
           [4, [55, 3], [100, 2]],
           [5, [69, 4], [85, 6]]
-        ],	
-        {		   
+        ],
+        {
           errorBars: true,
           labels: ["X", "Data1", "Data2"],
 		  series: {
-		    Data1: {stepPlot: true},	
-		    Data2: {stepPlot: false} 
+		    Data1: {stepPlot: true},
+		    Data2: {stepPlot: false}
 		  }
         }
 	  );
     </script>
-	
+
 	<p>13: Mixed mode - step and line (custombars):</p>
     <div id="graphdiv13"></div>
     <script type="text/javascript">
@@ -251,13 +251,13 @@
           [3, [75, 85, 90], [98, 107, 117]],
           [4, [55, 58, 61], [93, 102, 105]],
           [5, [69, 73, 85], [80, 85, 87]]
-        ],	
+        ],
         {
           customBars: true,
           labels: ["X", "Data1", "Data2"],
 		  series: {
-		    Data1: {stepPlot: true},	
-		    Data2: {stepPlot: false} 
+		    Data1: {stepPlot: true},
+		    Data2: {stepPlot: false}
 		  }
         }
 	  );

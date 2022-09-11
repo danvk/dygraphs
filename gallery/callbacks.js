@@ -6,7 +6,7 @@ Gallery.register(
     name: "Callbacks",
     title: "Hover, click and zoom to test the callbacks.",
     setup: function(parent) {
-      parent.innerHTML = 
+      parent.innerHTML =
           "<div id='div_g' style='width:600px; height:300px;'></div>" +
           "<button id='clear'>Clear list<Button>" +
           "<input type='checkbox' id='highlight' checked><label for='highlight'> Show 'highlight' events</label>" +
@@ -52,31 +52,31 @@ Gallery.register(
             rollPeriod: 7,
             showRoller: true,
             errorBars: true,
-  
+
             highlightCallback: function(e, x, pts, row) {
               if (document.getElementById('highlight').checked) {
                 s.innerHTML += "<b>Highlight</b> " + pts_info(e,x,pts,row) + "<br/>";
               }
             },
-  
+
             unhighlightCallback: function(e) {
               if (document.getElementById('unhighlight').checked) {
                 s.innerHTML += "<b>Unhighlight</b><br/>";
               }
             },
-  
+
             clickCallback: function(e, x, pts) {
               s.innerHTML += "<b>Click</b> " + pts_info(e,x,pts) + "<br/>";
             },
-  
+
             pointClickCallback: function(e, p) {
               s.innerHTML += "<b>Point Click</b> " + p.name + ": " + p.x + "<br/>";
             },
-  
+
             zoomCallback: function(minX, maxX, yRanges) {
               s.innerHTML += "<b>Zoom</b> [" + minX + ", " + maxX + ", [" + yRanges + "]]<br/>";
             },
-  
+
             drawCallback: function(g) {
               s.innerHTML += "<b>Draw</b> [" + g.xAxisRange() + "]<br/>";
             }

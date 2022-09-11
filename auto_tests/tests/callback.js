@@ -542,7 +542,7 @@ it('testFailedResponse', function() {
 });
 
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355 
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355
 it('testHighlightCallbackRow', function() {
   var highlightRow;
   var highlightCallback = function(e, x, pts, row) {

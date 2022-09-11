@@ -404,7 +404,7 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.

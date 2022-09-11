@@ -97,7 +97,7 @@ describe('gviz', function() {
              {v: 39463}, {v: null}, {v: null}]}
       ]
     });
-    
+
     var g = new Dygraph('graph', data, {displayAnnotations: true});
 
     var annEls = document.getElementsByClassName('dygraphDefaultAnnotation');

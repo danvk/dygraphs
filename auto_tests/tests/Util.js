@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Utility functions for Dygraphs.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

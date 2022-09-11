@@ -88,7 +88,7 @@ CustomBarsHandler.prototype.rollingAverage =
     if (count) {
       rollingData[i] = [
           originalData[i][0],
-          1.0 * mid / count, 
+          1.0 * mid / count,
           [ 1.0 * low / count,
             1.0 * high / count ] ];
     } else {

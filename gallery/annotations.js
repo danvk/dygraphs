@@ -2,7 +2,7 @@
 Gallery.register(
   'annotations',
   {
-    name: 'Annotations', 
+    name: 'Annotations',
     title: 'Dynamic Annotations Demo',
     setup: function(parent) {
       parent.innerHTML = [
@@ -19,7 +19,7 @@ Gallery.register(
       function nameAnnotation(ann) {
         return "(" + ann.series + ", " + ann.x + ")";
       }
-  
+
       var g = new Dygraph(
               document.getElementById("g_div"),
               function() {
@@ -129,11 +129,11 @@ Gallery.register(
           document.getElementById(nameAnnotation(ann)).style.fontWeight = 'normal';
           ann.div.style.backgroundColor = saveBg;
         },
-    
+
         pointClickCallback: function(event, p) {
           // Check if the point is already annotated.
           if (p.annotation) return;
-    
+
           // If not, add one.
           var ann = {
             series: p.name,
@@ -144,7 +144,7 @@ Gallery.register(
           var anns = g.annotations();
           anns.push(ann);
           g.setAnnotations(anns);
-    
+
           num++;
         }
       });

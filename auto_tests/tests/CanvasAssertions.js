@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** 
+/**
  * @fileoverview Assertions and other code used to test a canvas proxy.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

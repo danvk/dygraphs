@@ -138,7 +138,7 @@ it('testRollErrorBars', function() {
   var g = new Dygraph(graph, data, opts);
   var rolled = getRolledData(g, data, 1, 2);
   assert.deepEqual([1, 10, [8, 12]], rolled[0]);
- 
+
   // variance = sqrt( pow(error) * rollPeriod)
   var variance = Math.sqrt(2);
   for (var i=1;i<data.length;i++) {

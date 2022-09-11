@@ -41,7 +41,7 @@ function changeNbspToSpace(ticks) {
 it('testBasicDateTicker', function() {
   var opts = {labelsUTC: true};
   var options = createOptionsViewForAxis('x', opts);
-  
+
   var ticks = DygraphTickers.dateTicker(-1797534000000, 1255579200000, 800, options);
   var expected_ticks = [
       {"v":-1577923200000,"label":"1920"},
@@ -55,7 +55,7 @@ it('testBasicDateTicker', function() {
       {"v": 946684800000, "label":"2000"}
   ];
   assert.deepEqual(expected_ticks, ticks);
-  
+
   var start = Date.UTC(1999, 11, 31, 14, 0, 0);
   var end = Date.UTC(2000,  0,  1, 12, 0, 0);
   var granularity = DygraphTickers.Granularity.TWO_HOURLY;
@@ -82,7 +82,7 @@ it('testAllDateTickers', function() {
   var opts = {labelsUTC: true, pixelsPerLabel: 60};
   var options = createOptionsViewForAxis('x', opts);
 
-  // For granularities finer than MONTHLY, the first tick returned tick 
+  // For granularities finer than MONTHLY, the first tick returned tick
   // could lie outside [start_time, end_time] range in the original code.
   // In these tests, those spurious ticks are removed to test new behavior.
 
@@ -91,7 +91,7 @@ it('testAllDateTickers', function() {
     changeNbspToSpace(ticks);
     return ticks;
   };
-  
+
   assert.deepEqual([{"v":-1577923200000,"label":"1920"},{"v":-1262304000000,"label":"1930"},{"v":-946771200000,"label":"1940"},{"v":-631152000000,"label":"1950"},{"v":-315619200000,"label":"1960"},{"v":0,"label":"1970"},{"v":315532800000,"label":"1980"},{"v":631152000000,"label":"1990"},{"v":946684800000,"label":"2000"}], ticker(-1797552000000, 1255561200000, 800, options));
   assert.deepEqual([{"v":-5364662400000,"label":"1800"},{"v":-2208988800000,"label":"1900"}], ticker(-6122044800000, 189302400000, 480, options));
   assert.deepEqual([{"v":1041120000000,"label":"29 Dec"},{"v":1041724800000,"label":"05 Jan"},{"v":1042329600000,"label":"12 Jan"},{"v":1042934400000,"label":"19 Jan"},{"v":1043539200000,"label":"26 Jan"},{"v":1044144000000,"label":"02 Feb"},{"v":1044748800000,"label":"09 Feb"},{"v":1045353600000,"label":"16 Feb"}], ticker(1041120000000, 1045353600000, 640, options));

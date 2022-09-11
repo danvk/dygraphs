@@ -48,7 +48,7 @@ Gallery.register(
         );
       }
       var sync = Dygraph.synchronize(gs);
-      
+
       function update() {
         var zoom = document.getElementById('chk-zoom').checked;
         var selection = document.getElementById('chk-selection').checked;

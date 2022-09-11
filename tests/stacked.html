@@ -40,14 +40,14 @@
       for (var i = 0; i < 100; i++) {
         data += i + "," + i + "," + (100 - i) + "\n";
       }
-      
+
       var graphs = [];
 
       graphs.push(
           new Dygraph(
               document.getElementById("simple_div"),
               data));
-          
+
       graphs.push(
           new Dygraph(
               document.getElementById("stacked_div"),
@@ -69,7 +69,7 @@
           new Dygraph(
               document.getElementById("simple_missing_div"),
               missing_data));
-      
+
       graphs.push(
           new Dygraph(
               document.getElementById("stacked_missing_div"),
@@ -89,7 +89,7 @@
               document.getElementById("stacked_many_div"),
               many_data,
               { stackedGraph: true }));
-      
+
       function setSelection(row) {
         for (var i = 0; i < graphs.length; i++) {
           graphs[i].setSelection(row ? row : false);

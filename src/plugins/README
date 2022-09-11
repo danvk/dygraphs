@@ -33,7 +33,7 @@ legend.toString = function() {
 
 // This is called once the dygraph is ready. The chart data may not be
 // available yet, but the options specified in the constructor are.
-// 
+//
 // Proper tasks to do here include:
 // - Reading your own options
 // - DOM manipulation

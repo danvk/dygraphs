@@ -5,7 +5,7 @@
  */
 
 /**
- * @fileoverview DataHandler implementation for the combination 
+ * @fileoverview DataHandler implementation for the combination
  * of error bars and fractions options.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
@@ -101,7 +101,7 @@ FractionsBarsHandler.prototype.rollingAverage =
       }
     } else {
       stddev = den ? sigma * Math.sqrt(value * (1 - value) / den) : 1.0;
-      rollingData[i] = [ date, mult * value, 
+      rollingData[i] = [ date, mult * value,
                          [ mult * (value - stddev), mult * (value + stddev) ] ];
     }
   }

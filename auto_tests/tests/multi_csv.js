@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for how axis labels are chosen and formatted.
  *
  * @author dan@dygraphs.com (Dan Vanderkam)

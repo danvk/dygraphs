@@ -4,7 +4,7 @@ Gallery.register(
   {
     name: 'No Range',
     setup: function(parent) {
-      parent.innerHTML = 
+      parent.innerHTML =
           "<p>Line should be visible in the middle of the chart:</p>" +
           "<div id='blah'></div>" +
 
@@ -15,7 +15,7 @@ Gallery.register(
       new Dygraph(document.getElementById("blah"),
                   "X,Y\n10,12345\n11,12345\n",
                   { width: 640, height: 480 });
-  
+
       new Dygraph(document.getElementById("blah2"),
           "date,10M\n" +
           "2002-12-29,10000000.000000\n" +
