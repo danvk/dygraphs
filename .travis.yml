@@ -9,6 +9,8 @@ addons:
     packages:
     - ed
     - jsdoc-toolkit
+    - libjs-bootstrap
+    - libjs-jquery
     - pax
     - python-is-python2
 

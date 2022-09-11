@@ -2,6 +2,7 @@
 *.pyc
 coverage
 dist
+docroot
 docs/download.html
 docs/options.html
 env

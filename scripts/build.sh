@@ -54,7 +54,7 @@ rm dist/dygraph.tmp.js
 rm dist/dygraph.tmp.js.map
 
 # Build documentation
-rm -rf site
+rm -rf docroot
 scripts/generate-documentation.py > docs/options.html
 chmod a+r docs/options.html
 test -s docs/options.html || {
@@ -63,10 +63,10 @@ test -s docs/options.html || {
 }
 scripts/generate-jsdoc.sh
 scripts/generate-download.py > docs/download.html
-mkdir site
+mkdir docroot
 cd docs
-./ssi_expander.py "$PWD/../site"
-cd ../site
+./ssi_expander.py "$PWD/../docroot"
+cd ../docroot
 rm -f NOTES TODO footer.html header.html ssi*.py
 cd ..
 pax -rw -l \
@@ -76,5 +76,12 @@ pax -rw -l \
 	tests \
 	screenshot.png \
 	thumbnail.png \
-    site/
+    docroot/
 rm -f docs/download.html docs/options.html
+
+# This is for on the webserver
+rm -rf site
+mkdir site
+rsync -avzr src src/extras dist site
+rsync -avzr --copy-links dist/* docroot/* site/
+find site -print0 | xargs -0r chmod a+rX --
