@@ -11,6 +11,7 @@ addons:
     - jsdoc-toolkit
     - libjs-bootstrap
     - libjs-jquery
+    - libjs-jquery-ui
     - pax
 
 script: >
