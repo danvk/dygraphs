@@ -2,6 +2,8 @@
 '''
 This script copies the files in one directory to another, expanding any SSI
 <!-- #include --> statements it encounters along the way.
+Only files that end in '.html' are processed. Copy or symlink anything else
+manually.
 
 Usage:
 
@@ -11,6 +13,7 @@ If source_directory is not specified, then the current directory is used.
 '''
 
 import os
+import pathlib
 import ssi
 import sys
 
@@ -21,13 +24,13 @@ def process(source, dest):
       os.mkdir(dest_dir)
     assert os.path.isdir(dest_dir)
     for filename in filenames:
+      if not filename.endswith('.html'):
+        continue
       src_path = os.path.abspath(os.path.join(source, dirpath, filename))
       dest_path = os.path.join(dest_dir, filename)
-      if not filename.endswith('.html'):
-        os.symlink(src_path, dest_path)
-      else:
-        with open(dest_path, 'wb') as f:
-          f.write(ssi.InlineIncludes(src_path))
+      pathlib.Path(dest_path).unlink(missing_ok=True)
+      with open(dest_path, 'wb') as f:
+        f.write(ssi.InlineIncludes(src_path))
 
     # ignore hidden directories
     for dirname in dirnames[:]:

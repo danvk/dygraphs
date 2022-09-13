@@ -54,31 +54,8 @@ babel src -d src-es5 --compact false
 rm dist/dygraph.tmp.js
 rm dist/dygraph.tmp.js.map
 
-# Build documentation
-rm -rf docroot
-scripts/generate-documentation.py > docs/options.html
-chmod a+r docs/options.html
-test -s docs/options.html || {
-  echo "generate-documentation.py failed"
-  exit 1
-}
-scripts/generate-jsdoc.sh
-scripts/generate-download.py > docs/download.html
-mkdir docroot
-cd docs
-./ssi_expander.py "$PWD/../docroot"
-cd ../docroot
-rm -f NOTES TODO footer.html header.html *.py *.pyc
-cd ..
-pax -rw -l \
-	common \
-	gallery \
-	jsdoc \
-	tests \
-	screenshot.png \
-	thumbnail.png \
-    docroot/
-rm -f docs/download.html docs/options.html
+# Build documentation.
+scripts/build-docs.sh
 
 # This is for on the webserver
 rm -rf site

@@ -1,5 +1,4 @@
 *.log
-*.pyc
 coverage
 dist
 docroot
