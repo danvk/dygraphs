@@ -74,7 +74,7 @@ a {
 
 /* CSS for drawing tool */
 #workarea #drawing #tool_zoom {
-  background: url('images/tool-palette.png');
+  background: url('../common/tool-palette.png');
   background-position: 0px 0px;
   width: 32px;
   height: 33px;
@@ -82,14 +82,14 @@ a {
   display: inline-block;
 }
 #workarea #drawing #tool_pencil {
-  background: url('images/tool-palette.png');
+  background: url('../common/tool-palette.png');
   background-position: -32px 0px;
   width: 32px;
   height: 33px;
   display: inline-block;
 }
 #workarea #drawing #tool_eraser {
-  background: url('images/tool-palette.png');
+  background: url('../common/tool-palette.png');
   background-position: -64px 0px;
   width: 33px;
   height: 33px;

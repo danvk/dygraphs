@@ -21,7 +21,7 @@
 
     <style>
     #tool_zoom {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: 0px 0px;
       width: 32px;
       height: 33px;
@@ -29,14 +29,14 @@
       display: inline-block;
     }
     #tool_pencil {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: -32px 0px;
       width: 32px;
       height: 33px;
       display: inline-block;
     }
     #tool_eraser {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: -64px 0px;
       width: 33px;
       height: 33px;
@@ -125,9 +125,9 @@
 
       var dg_div = document.getElementById("draw_div");
       if (tool == 'pencil') {
-        dg_div.style.cursor = 'url(drawing/cursor-pencil.png) 2 30, auto';
+        dg_div.style.cursor = 'url(../common/cursor-pencil.png) 2 30, auto';
       } else if (tool == 'eraser') {
-        dg_div.style.cursor = 'url(drawing/cursor-eraser.png) 10 30, auto';
+        dg_div.style.cursor = 'url(../common/cursor-eraser.png) 10 30, auto';
       } else if (tool == 'zoom') {
         dg_div.style.cursor = 'crosshair';
       }
