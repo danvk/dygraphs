@@ -65,11 +65,11 @@ def search_files(type, files):
           text = text[idx:]
       braced_html = find_braces(text)
       if debug_tests:
-        print braced_html
+        print(braced_html)
 
       ms = re.findall(prop_re, braced_html)
       for opt in ms:
-        if debug_tests: print '\n'.join(ms)
+        if debug_tests: print('\n'.join(ms))
         if opt in docs and test_file not in docs[opt][type]:
           docs[opt][type].append(test_file)
 
@@ -80,12 +80,12 @@ if debug_tests: sys.exit(0)
 
 # Extract a labels list.
 labels = []
-for _, opt in docs.iteritems():
+for _, opt in docs.items():
   for label in opt['labels']:
     if label not in labels:
       labels.append(label)
 
-print """
+print("""
 <!--#include virtual="header.html" -->
 
 <!--
@@ -96,19 +96,19 @@ print """
 
 <link rel=stylesheet href="options.css" />
 
-"""
+""")
 
-print """
+print("""
 <div class="col-lg-3">
 <div class="dygraphs-side-nav affix-top" data-spy="affix" data-offset-top="0">
 <ul class='nav'>
   <li><a href="#usage">Usage</a>
-"""
+""")
 for label in sorted(labels):
-  print '  <li><a href="#%s">%s</a>\n' % (label, label)
-print '</ul></div></div>\n\n'
+  print('  <li><a href="#%s">%s</a>\n' % (label, label))
+print('</ul></div></div>\n\n')
 
-print """
+print("""
 <div id='content' class='col-lg-9'>
 <h2>Options Reference</h2>
 <p>Dygraphs tries to do a good job of displaying your data without any further configuration. But inevitably, you're going to want to tinker. Dygraphs provides a rich set of options for configuring its display and behavior.</p>
@@ -136,7 +136,7 @@ print """
 <p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
 
 <p>And, without further ado, here's the complete list of options:</p>
-"""
+""")
 
 def test_name(f):
   """Takes 'tests/demo.html' -> 'demo'"""
@@ -152,7 +152,7 @@ def urlify_gallery(f):
 
 
 for label in sorted(labels):
-  print '<a name="%s"></a><h3>%s</h3>\n' % (label, label)
+  print('<a name="%s"></a><h3>%s</h3>\n' % (label, label))
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -182,7 +182,7 @@ for label in sorted(labels):
     if not opt['default']: opt['default'] = '(missing)'
     if not opt['description']: opt['description'] = '(missing)'
 
-    print """
+    print("""
   <div class='option'><a name="%(name)s"></a><b>%(name)s</b>
   <a class="link" href="#%(name)s">#</a>
   <br/>
@@ -198,10 +198,10 @@ for label in sorted(labels):
           'default': opt['default'],
           'desc': opt['description'],
           'examples_html': examples_html,
-          'gallery_html': gallery_html}
+          'gallery_html': gallery_html})
 
 
-print """
+print("""
 <a name="point_properties"></a><h3>Point Properties</h3>
 Some callbacks take a point argument. Its properties are:<br/>
 <ul>
@@ -213,7 +213,7 @@ Some callbacks take a point argument. Its properties are:<br/>
 </div> <!-- #content -->
 
 <!--#include virtual="footer.html" -->
-"""
+""")
 
 # This page was super-helpful:
 # http://jsbeautifier.org/

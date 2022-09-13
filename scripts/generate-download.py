@@ -33,7 +33,7 @@ for release in releases[1:]:
     })
 
 
-print '''
+print('''
 <!--#include virtual="header.html" -->
 
 <!--
@@ -83,4 +83,4 @@ npm run build
     'version': releases[0]['version'],
     'current_html': current_html,
     'previous_lis': '\n'.join(previous_lis)
-    }
+    })

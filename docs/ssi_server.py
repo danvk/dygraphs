@@ -14,8 +14,8 @@ Run ./ssi_server.py in this directory and visit localhost:8000 for an example.
 
 import os
 import ssi
-from SimpleHTTPServer import SimpleHTTPRequestHandler
-import SimpleHTTPServer
+from http.server import SimpleHTTPRequestHandler
+import http.server
 import tempfile
 
 
@@ -67,4 +67,4 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-  SimpleHTTPServer.test(HandlerClass=SSIRequestHandler)
+  http.server.test(HandlerClass=SSIRequestHandler)
