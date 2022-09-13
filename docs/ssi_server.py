@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''
 Use this in the same way as Python's SimpleHTTPServer:
 
@@ -67,4 +67,9 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-  http.server.test(HandlerClass=SSIRequestHandler)
+  import sys
+  if len(sys.argv) > 1:
+    port = int(sys.argv[1])
+  else:
+    port = 8081
+  http.server.test(HandlerClass=SSIRequestHandler, port=port)

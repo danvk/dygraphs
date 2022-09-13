@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''
 This script copies the files in one directory to another, expanding any SSI
 <!-- #include --> statements it encounters along the way.
@@ -26,7 +26,8 @@ def process(source, dest):
       if not filename.endswith('.html'):
         os.symlink(src_path, dest_path)
       else:
-        file(dest_path, 'w').write(ssi.InlineIncludes(src_path))
+        with open(dest_path, 'wb') as f:
+          f.write(ssi.InlineIncludes(src_path))
 
     # ignore hidden directories
     for dirname in dirnames[:]:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Generates docs/download.html
 # Run:
@@ -6,7 +6,9 @@
 
 import json
 
-releases = json.load(file('releases.json'))
+with open('releases.json', 'rt',
+          encoding='UTF-8', errors='strict', newline=None) as infile:
+  releases = json.load(infile)
 
 def file_links(release):
   v = release['version']

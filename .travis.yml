@@ -12,7 +12,6 @@ addons:
     - libjs-bootstrap
     - libjs-jquery
     - pax
-    - python-is-python2
 
 script: >
     npm run build &&

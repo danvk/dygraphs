@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Generate docs/options.html
 
@@ -16,13 +16,15 @@ debug_tests = []  # [ 'tests/zoom.html' ]
 # Pull options reference JSON out of dygraph.js
 js = ''
 in_json = False
-for line in file('src/dygraph-options-reference.js'):
-  if '<JSON>' in line:
-    in_json = True
-  elif '</JSON>' in line:
-    in_json = False
-  elif in_json:
-    js += line
+with open('src/dygraph-options-reference.js', 'rt',
+          encoding='UTF-8', errors='strict', newline=None) as infile:
+  for line in infile:
+    if '<JSON>' in line:
+      in_json = True
+    elif '</JSON>' in line:
+      in_json = False
+    elif in_json:
+      js += line
 
 # TODO(danvk): better errors here.
 assert js
@@ -55,7 +57,9 @@ def search_files(type, files):
   prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
   for test_file in files:
     if os.path.isfile(test_file): # Basically skips directories
-      text = file(test_file).read()
+      with open(test_file, 'rt',
+                encoding='UTF-8', errors='strict', newline=None) as infile:
+        text = infile.read()
 
       # Hack for slipping past gallery demos that have title in their attributes
       # so they don't appear as reasons for the demo to have 'title' options.
