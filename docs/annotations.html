@@ -145,7 +145,7 @@ no-op: it simply causes the chart to refresh.</p>
 
 <p style="clear:both">Annotations are JavaScript dictionaries. The <code>series</code> and <code>x</code> fields are required: they indicate which point the annotation should be attached to. If specified, <code>shortText</code> will appear on the annotation "flag". If you don't specify <code>shortText</code>, you can specify <code>icon</code> instead to display a small picture. The <code>text</code> parameter specifies hovertext. If you highlight the annotation and leave the mouse still, it will appear.</p>
 
-<p>If you are using <a href="http://dygraphs.com/data.html#array">native format</a>, you need to pass in a numeric value for the <code>xval</code> field. For a numeric x-axis, simply pass in the x-value of the data point on which you wish to attach the annotation. For a date axis, pass in <code>Date.parse('YYYY/MM/DD')</code>. This returns milliseconds since epoch for the date. As an alternative, use the <code>x</code> field, see table below.</p>
+<p>If you are using <a href="data.html#array">native format</a>, you need to pass in a numeric value for the <code>xval</code> field. For a numeric x-axis, simply pass in the x-value of the data point on which you wish to attach the annotation. For a date axis, pass in <code>Date.parse('YYYY/MM/DD')</code>. This returns milliseconds since epoch for the date. As an alternative, use the <code>x</code> field, see table below.</p>
 
 <h3>Modifying Annotations</h3>
 <p>To remove or modify existing annotations, call the
