@@ -3,8 +3,8 @@
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
 
-rm -rf dist
-mkdir -p dist
+rm -rf dist disttmp
+mkdir dist disttmp
 
 # Create dist/dygraph.js
 browserify \
@@ -14,10 +14,10 @@ browserify \
   --debug \
   --standalone Dygraph \
   src/dygraph.js \
-  > dist/dygraph.tmp.js
+  >disttmp/dygraph.tmp.js
 
 # Create dist/dygraph.js.map
-cat dist/dygraph.tmp.js | exorcist --base . dist/dygraph.js.map > dist/dygraph.js
+exorcist --base . dist/dygraph.js.map <disttmp/dygraph.tmp.js >dist/dygraph.js
 
 # Create "production" bundle for minification
 browserify \
@@ -27,21 +27,21 @@ browserify \
   --debug \
   --standalone Dygraph \
   src/dygraph.js \
-  > dist/dygraph.tmp.js
+  >disttmp/dygraph.tmp.js
 
 # Create dist/dygraph.tmp.js.map
-cat dist/dygraph.tmp.js | exorcist --base . dist/dygraph.tmp.js.map > /dev/null
+exorcist --base . disttmp/dygraph.tmp.js.map <disttmp/dygraph.tmp.js >/dev/null
 
 header='/*! @license Copyright 2017 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
 
 # Create dist/dygraph.js.min{,.map}
 uglifyjs --compress --mangle \
   --preamble "$header" \
-  --in-source-map dist/dygraph.tmp.js.map \
+  --in-source-map disttmp/dygraph.tmp.js.map \
   --source-map-include-sources \
   --source-map dist/dygraph.min.js.map \
   -o dist/dygraph.min.js \
-  dist/dygraph.tmp.js
+  disttmp/dygraph.tmp.js
 
 # Minify CSS
 cp css/dygraph.css dist/
@@ -51,8 +51,7 @@ cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inlin
 babel src -d src-es5 --compact false
 
 # Remove temp files.
-rm dist/dygraph.tmp.js
-rm dist/dygraph.tmp.js.map
+rm -rf disttmp
 
 # Build documentation.
 scripts/build-docs.sh

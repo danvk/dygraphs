@@ -1,6 +1,7 @@
 *.log
 coverage
 dist
+disttmp
 docroot
 docs/download.html
 docs/options.html

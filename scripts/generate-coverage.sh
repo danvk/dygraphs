@@ -6,15 +6,18 @@
 set -o errexit
 set -x
 
+rm -rf disttmp
+mkdir disttmp
+
 # Generate per-file ES6 --> ES5 transpilations
-babel --retain-lines src --out-dir dist/src
-babel --retain-lines auto_tests/tests --out-dir dist/auto_tests/tests
+babel --retain-lines src --out-dir disttmp/src
+babel --retain-lines auto_tests/tests --out-dir disttmp/auto_tests/tests
 
 # Instrument the source code with Istanbul's __coverage__ variable.
-rm -rf coverage/*  # Clear out everything to ensure a hermetic run.
-mkdir -p coverage
-istanbul instrument --output coverage/src dist/src
-cp -r dist/auto_tests coverage/
+rm -rf coverage  # Clear out everything to ensure a hermetic run.
+mkdir coverage
+istanbul instrument --output coverage/src disttmp/src
+cp -r disttmp/auto_tests coverage/
 
 # Build a combined file for running the tests in-browser
 browserify coverage/auto_tests/tests/*.js -o coverage/tests.js
@@ -42,7 +45,7 @@ if [ $CI ]; then
   istanbul report --include coverage/*.json lcovonly
 
   # Monkey patch in the untransformed source paths.
-  perl -i -pe 's,dist/,,' coverage/lcov.info
+  perl -i -pe 's,dist(?:tmp)?/,,' coverage/lcov.info
   echo ''  # reset exit code -- failure to post coverage shouldn't be an error.
 
 else
@@ -57,3 +60,5 @@ else
   echo
 
 fi
+
+rm -rf disttmp

@@ -10,7 +10,7 @@ set -x
 set -o errexit
 site=$1
 
-# Produce dist/*.js
+# Produce dist/*.js and docroot/ and all in site/
 npm run build
 
 # Copy everything to the site.

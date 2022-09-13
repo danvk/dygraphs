@@ -11,7 +11,9 @@ else
 
   curl -O https://raw.githubusercontent.com/danvk/travis-weigh-in/master/weigh_in.py
   python weigh_in.py dist/dygraph.min.js
-  gzip -c dist/dygraph.min.js > dist/dygraph.min.js.gz
-  python weigh_in.py dist/dygraph.min.js.gz
+  mkdir -p disttmp
+  gzip -cn9 <dist/dygraph.min.js >disttmp/dygraph.min.js.gz
+  python weigh_in.py disttmp/dygraph.min.js.gz
+  rm -r disttmp
 
 fi
