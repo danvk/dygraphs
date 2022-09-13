@@ -8,10 +8,7 @@ missing licence:
 https://github.com/danvk/dygraphs/issues/1024
 
 embedded CDN jquery link:
-- docs/header.html
 - check every URL for more occurrences XXX TODO
-
-deduplicate images
 
 missing usage of SSI, maybe? sync anyway:
 - gallery/index.html
@@ -22,3 +19,6 @@ site generation is a pita
 - no src-es5, especially for extras
 - copy of extras one level up
 - …
+
+tmpfiles where they don’t belong
+- dygraphs-jsdocerrors.txt
