@@ -32,7 +32,7 @@ browserify \
 # Create dist/dygraph.tmp.js.map
 exorcist --base . disttmp/dygraph.tmp.js.map <disttmp/dygraph.tmp.js >/dev/null
 
-header='/*! @license Copyright 2017 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
+header='/*! @license Copyright 2022 Dan Vanderkam (danvdk@gmail.com) and others; MIT-licenced: https://opensource.org/licenses/MIT */'
 
 # Create dist/dygraph.js.min{,.map}
 uglifyjs --compress --mangle \

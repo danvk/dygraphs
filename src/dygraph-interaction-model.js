@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2011 Robert Konigsberg (konigsberg@google.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**

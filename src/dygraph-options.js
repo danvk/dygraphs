@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -384,9 +384,9 @@ DygraphOptions.prototype.warnInvalidOption_ = function(optionName) {
     WARNINGS[optionName] = true;
     var isSeries = (this.labels_.indexOf(optionName) >= 0);
     if (isSeries) {
-      console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://bit.ly/1tceaJs');
+      console.warn('Use new-style per-series options (saw ' + optionName + ' as top-level options key). See http://blog.dygraphs.com/2012/12/the-new-and-better-way-to-specify.html (The New and Better Way to Specify Series and Axis Options).');
     } else {
-      console.warn('Unknown option ' + optionName + ' (full list of options at dygraphs.com/options.html');
+      console.warn('Unknown option ' + optionName + ' - full list of options at https://dygraphs.com/options.html');
     }
     throw "invalid option " + optionName;
   }

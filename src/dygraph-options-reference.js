@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 "use strict";
@@ -820,7 +820,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(depends on data)",
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
-    "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
+    "description": "Custom DataHandler. This is an advanced customization. See https://docs.google.com/document/d/1IWmX4oDbQbVtUoRNzSRG3yMpoBQ7LseVCQhGnuOZz_A (Dygraphs DataHandler Proposal)."
   }
 }
 ;  // </JSON>

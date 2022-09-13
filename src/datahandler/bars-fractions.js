@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -87,7 +87,7 @@ FractionsBarsHandler.prototype.rollingAverage =
     var value = den ? num / den : 0.0;
     if (wilsonInterval) {
       // For more details on this confidence interval, see:
-      // http://en.wikipedia.org/wiki/Binomial_confidence_interval
+      // https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
       if (den) {
         var p = value < 0 ? 0 : value, n = den;
         var pm = sigma * Math.sqrt(p * (1 - p) / n + sigma * sigma / (4 * n * n));
