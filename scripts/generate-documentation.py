@@ -51,6 +51,8 @@ def find_braces(txt):
       level -= 1
   return out
 
+ext_tests = []
+
 def search_files(type, files):
   # Find text followed by a colon. These won't all be options, but those that
   # have the same name as a Dygraph option probably will be.
@@ -60,6 +62,10 @@ def search_files(type, files):
       with open(test_file, 'rt',
                 encoding='UTF-8', errors='strict', newline=None) as infile:
         text = infile.read()
+
+      if type == "tests":
+        if text.find('src="http') >= 0:
+          ext_tests.append(test_file)
 
       # Hack for slipping past gallery demos that have title in their attributes
       # so they don't appear as reasons for the demo to have 'title' options.
@@ -139,6 +145,8 @@ print("""
 
 <p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
 
+<p>Note: tests marked with ⚠ access external resources, such as Google’s jsapi.</p>
+
 <p>And, without further ado, here's the complete list of options:</p>
 """)
 
@@ -154,6 +162,12 @@ def urlify_gallery(f):
   """Takes 'gallery/demo.js' -> 'demo'"""
   return f.replace('gallery/', 'gallery/#g/').replace('.js', '')
 
+def test_fmt(f):
+  res = '<a href="%s">%s</a>' % (f, test_name(f))
+  if f in ext_tests:
+    res += '<b class="extlink">⚠</b>'
+  return res
+
 
 for label in sorted(labels):
   print('<a name="%s"></a><h3>%s</h3>\n' % (label, label))
@@ -165,8 +179,7 @@ for label in sorted(labels):
     if not tests:
       examples_html = '<font color=red>NONE</font>'
     else:
-      examples_html = ' '.join(
-        '<a href="%s">%s</a>' % (f, test_name(f)) for f in tests)
+      examples_html = ' '.join(test_fmt(f) for f in tests)
 
     gallery = opt['gallery']
     if not gallery:
