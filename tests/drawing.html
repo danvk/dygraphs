@@ -5,7 +5,7 @@
     <title>Dygraphs Drawing Demo</title>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     var start_date = new Date("2002/12/29").getTime();
     var end_date = new Date().getTime();
     data = [];
@@ -17,7 +17,7 @@
           dd = date.getDate();
       data.push( [ new Date(Date.UTC(yyyy, mm, dd)), 50 ]);
     }
-    </script>
+    //--><!]]></script>
 
     <style>
     #tool_zoom {
@@ -54,7 +54,7 @@
   </div>
   <div id="draw_div" style="width: 800px; height: 400px;"></div>
 
-  <script type="text/javascript">
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
     var isDrawing = false;
     var lastDrawRow = null, lastDrawValue = null;
     var tool = 'pencil';
@@ -199,6 +199,6 @@
           }
         });
         window.onmouseup = finishDraw;
-  </script>
+  //--><!]]></script>
 </body>
 </html>

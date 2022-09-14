@@ -12,13 +12,13 @@
   <!-- Mocha -->
   <script src="../node_modules/mocha/mocha.js"></script>
   <script src="../node_modules/chai/chai.js"></script>
-  <script>
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
   if (window.initMochaPhantomJS) {
     window.initMochaPhantomJS();
   }
-  </script>
+  //--><!]]></script>
 
-  <script>
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
   var expect = chai.expect;
   var assert = chai.assert;
   function cleanupAfterEach() {
@@ -43,7 +43,7 @@
       utils.getContext = _origFunc;
     });
   }
-  </script>
+  //--><!]]></script>
   <script>mocha.setup('bdd')</script>
 
   <!-- Test data -->
@@ -52,13 +52,13 @@
   <!-- Bundled tests -->
   <script src="../dist/tests.js"></script>
 
-  <script>
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
     mocha.checkLeaks();
     if (window.mochaPhantomJS) {
       mochaPhantomJS.run();
     } else {
       mocha.run();
     }
-  </script>
+  //--><!]]></script>
 </body>
 </html>

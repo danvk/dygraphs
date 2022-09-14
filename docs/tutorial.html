@@ -44,7 +44,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
 
         // containing div
@@ -56,7 +56,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         "2008-05-08,70\n" +
         "2008-05-09,80\n"
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
@@ -91,13 +91,13 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv2" style="width:500px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g2 = new Dygraph(
         document.getElementById("graphdiv2"),
         "temperatures.csv",
         {}
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
@@ -146,7 +146,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv3" style="width:500px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g3 = new Dygraph(
         document.getElementById("graphdiv3"),
         "temperatures.csv",
@@ -155,7 +155,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
           showRoller: true
         }
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
@@ -199,7 +199,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 <div class="codeoutput" style="float:left;">
   <h3 style="text-align:center">OUTPUT</h3>
   <div id="graphdiv4" style="width:480px; height:320px;"></div>
-  <script type="text/javascript">
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
     g4 = new Dygraph(
       document.getElementById("graphdiv4"),
       "twonormals.csv",
@@ -210,7 +210,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         valueRange: [50,125]
       }
     );
-  </script>
+  //--><!]]></script>
 </div>
 </div>
 
@@ -253,7 +253,7 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
 
 <div style="width:750px; text-align:center; font-weight: bold; font-size: 125%;">Batting Average for Ichiro Suzuki vs. Mariners (2004)</div>
 <div id="baseballdiv" style="width:750px; height:300px;"></div>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   new Dygraph(
     document.getElementById("baseballdiv"),
     "suzuki-mariners.txt",
@@ -264,7 +264,7 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
       rollPeriod: 15
     }
   );
-</script>
+//--><!]]></script>
 
 <b>Code:</b>
 <pre>
@@ -305,7 +305,7 @@ new Dygraph(
 <label for="ann"> Annotations</label>
 </p>
 
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   var stock_annotations = [
     {
       series: "Real",
@@ -363,7 +363,7 @@ new Dygraph(
       stockchart.setAnnotations([]);
     }
   }
-</script>
+//--><!]]></script>
 <!--
 
 Here is a script to regenerate the Dow Jones plot:

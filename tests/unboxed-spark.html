@@ -16,7 +16,7 @@
     <p>This shows dygraphs without any boxlike elements (i.e. axes or grids):</p>
     <div id="div_g" style="width:600px; height:300px; border:1px solid white;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var show_box = false;
       g = new Dygraph(
             document.getElementById("div_g"),
@@ -43,7 +43,7 @@
           btn.innerHTML = 'Show box';
         }
       }
-    </script>
+    //--><!]]></script>
 
     <button onClick='toggleBox(this)'>Show box</button>
 
@@ -52,7 +52,7 @@
     <table><tr><td>This style can be used to produce interactive sparklines with dygraphs:</td><td><div id="div_spark" style="width:100px; height:20px;"></div></td></tr></table>
     </p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var g2 = new Dygraph(
             document.getElementById("div_spark"),
             data, {
@@ -72,6 +72,6 @@
               highlightCircleSize: 2
             }
           );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

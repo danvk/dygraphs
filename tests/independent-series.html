@@ -75,7 +75,7 @@
     </td>
     </tr></table>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     var g1 = new Dygraph(
       document.getElementById("graph"),
       [
@@ -92,7 +92,7 @@
         drawPoints: true
       }
     );
-    </script>
+    //--><!]]></script>
 
     <h3>Encoding a gap</h3>
     <p>There's one extra wrinkle. What if one of the series has a missing
@@ -123,7 +123,7 @@
     <div id="graph3" style="float: right; margin-right: 50px; width: 400px; height: 300px;"></div>
     <p>The gap would normally be encoded as a null, or missing value. But when you use <code>connectSeparatedPoints</code>, that has a special meaning. Instead, you have to use <code>NaN</code>. This is a bit of a hack, but it gets the job done.</p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g2 = new Dygraph(
       document.getElementById("graph3"),
 "x,A,B  \n" +
@@ -140,7 +140,7 @@
         drawPoints: true
       }
     );
-    </script>
+    //--><!]]></script>
 
     <table><tr>
     <td valign=top>
@@ -203,7 +203,7 @@
     Therefore it is neither necessary that the next valid values are on the same point nor that they have the same index (index 4 for the green line and index 8 for the blue line).</p>
     <p>Use double click to unzoom and see the currently invisible points</p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g2 = new Dygraph(
       document.getElementById("graph2"),
 "x,A,B  \n" +
@@ -225,7 +225,7 @@
         dateWindow: [0,3]
       }
     );
-    </script>
+    //--><!]]></script>
 
     <table><tr>
     <td valign=top>

@@ -10,7 +10,7 @@
   <body>
     <h2>Layout Options Update</h2>
     <div id="chart" style="width:600px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g = new Dygraph(document.getElementById('chart'), data,
     {
       strokeWidth: 2
@@ -20,7 +20,7 @@
       g.updateOptions({strokeWidth:
           parseFloat(document.getElementById("strokeWidth").value)});
     }
-    </script>
+    //--><!]]></script>
 
     <p>Stroke Width:
     <input type=text id="strokeWidth" value="2.0" />

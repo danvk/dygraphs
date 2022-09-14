@@ -27,7 +27,7 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
 </head>
 <body>
 <div id="graphdiv"></div>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   g = new Dygraph(
         document.getElementById("graphdiv"),  // containing div
         "Date,Temperature\n" +                // the data series
@@ -36,7 +36,7 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
         "2008-05-09,80\n",
         { }                                   // the options
       );
-</script>
+//--><!]]></script>
 </body>
 </html>
 ```

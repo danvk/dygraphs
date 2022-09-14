@@ -9,7 +9,7 @@
   <body>
     <p>1: Simple line chart:</p>
     <div id="graphdiv1"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g1 = new Dygraph(document.getElementById("graphdiv1"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -17,11 +17,11 @@
                       "2008-05-09,80\n" +
                       "2008-05-10,55\n" +
                       "2008-05-11,69\n");
-    </script>
+    //--><!]]></script>
 
     <p>2: Simple step chart:</p>
     <div id="graphdiv2"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g2 = new Dygraph(document.getElementById("graphdiv2"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -32,11 +32,11 @@
                        {
                           stepPlot: true
                        });
-    </script>
+    //--><!]]></script>
 
     <p>3: Filled step chart:</p>
     <div id="graphdiv3"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g3 = new Dygraph(document.getElementById("graphdiv3"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -48,11 +48,11 @@
                           stepPlot: true,
                           fillGraph: true
                        });
-    </script>
+    //--><!]]></script>
 
     <p>4: Line chart with error bars:</p>
     <div id="graphdiv4"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g4 = new Dygraph(document.getElementById("graphdiv4"),
         [
           [1, [75, 2]],
@@ -66,11 +66,11 @@
            labels: ["X", "Data"]
         }
       );
-    </script>
+    //--><!]]></script>
 
     <p>5: Step chart with error bars:</p>
     <div id="graphdiv5"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g5 = new Dygraph(document.getElementById("graphdiv5"),
         [
           [1, [75, 2]],
@@ -85,11 +85,11 @@
            labels: ["X", "Data"]
         }
       );
-    </script>
+    //--><!]]></script>
 
     <p>6: Stepped chart with gaps from CSV:</p>
     <div id="graphdiv6"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g6 = new Dygraph(
       document.getElementById("graphdiv6"),
       "Date,GapSeries1,GapSeries2\n" +
@@ -104,11 +104,11 @@
         stepPlot: true
       }
     );
-    </script>
+    //--><!]]></script>
 
     <p>7: Stepped chart with gaps from native data:</p>
     <div id="graphdiv7"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g7 = new Dygraph(
       document.getElementById("graphdiv7"),
       [
@@ -131,11 +131,11 @@
         }
       }
     );
-    </script>
+    //--><!]]></script>
 
     <p>8: Stacked filled step chart:</p>
     <div id="graphdiv8"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv8"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
@@ -149,11 +149,11 @@
                           stackedGraph: true,
                           includeZero: true
                        });
-    </script>
+    //--><!]]></script>
 
-	<p>9: Mixed mode - step and line:</p>
+    <p>9: Mixed mode - step and line:</p>
     <div id="graphdiv9"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv9"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
@@ -162,21 +162,21 @@
                       "2008-05-10,63,37\n" +
                       "2008-05-11,35,65\n",
                       {
-		                series: {
-						  Idle: {stepPlot: true},
-						  Used: {stepPlot: false}
-						},
+                        series: {
+                          Idle: {stepPlot: true},
+                          Used: {stepPlot: false}
+                        },
 
                         fillGraph: false,
                         stackedGraph: false,
                         includeZero: true
                       });
-    </script>
+    //--><!]]></script>
 
 
-	<p>10: Mixed mode - step and line (filled):</p>
+    <p>10: Mixed mode - step and line (filled):</p>
     <div id="graphdiv10"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv10"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
@@ -185,20 +185,20 @@
                       "2008-05-10,63,37\n" +
                       "2008-05-11,35,65\n",
                       {
-		                series: {
-						  Idle: {stepPlot: false},
-						  Used: {stepPlot: true}
-						},
+                        series: {
+                          Idle: {stepPlot: false},
+                          Used: {stepPlot: true}
+                        },
 
                         fillGraph: true,
                         stackedGraph: false,
                         includeZero: true
                       });
-    </script>
+    //--><!]]></script>
 
-	<p>11: Mixed mode - step and line (stacked and filled):</p>
+    <p>11: Mixed mode - step and line (stacked and filled):</p>
     <div id="graphdiv11"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv11"),
                       "Date,Idle,Used,NotUsed,Active\n" +
                       "2008-05-07,60,30,5,5\n" +
@@ -207,21 +207,21 @@
                       "2008-05-10,50,17,23,10\n" +
                       "2008-05-11,35,25,35,5\n",
                       {
-		                series: {
-						  Idle: {stepPlot: false},
-						  Used: {stepPlot: true},
-						  NotUsed: {stepPlot: false},
-						  Active: {stepPlot: true}
+                        series: {
+                          Idle: {stepPlot: false},
+                          Used: {stepPlot: true},
+                          NotUsed: {stepPlot: false},
+                          Active: {stepPlot: true}
                         },
                         fillGraph: true,
                         stackedGraph: true,
                         includeZero: true
                       });
-    </script>
+    //--><!]]></script>
 
-	<p>12: Mixed mode - step and line (errorbars):</p>
+    <p>12: Mixed mode - step and line (errorbars):</p>
     <div id="graphdiv12"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv12"),
         [
           [1, [75, 2], [50, 3]],
@@ -233,17 +233,17 @@
         {
           errorBars: true,
           labels: ["X", "Data1", "Data2"],
-		  series: {
-		    Data1: {stepPlot: true},
-		    Data2: {stepPlot: false}
-		  }
+          series: {
+            Data1: {stepPlot: true},
+            Data2: {stepPlot: false}
+          }
         }
-	  );
-    </script>
+      );
+    //--><!]]></script>
 
-	<p>13: Mixed mode - step and line (custombars):</p>
+    <p>13: Mixed mode - step and line (custombars):</p>
     <div id="graphdiv13"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g8 = new Dygraph(document.getElementById("graphdiv13"),
         [
           [1, [73, 75, 78], [50, 55, 70]],
@@ -255,13 +255,13 @@
         {
           customBars: true,
           labels: ["X", "Data1", "Data2"],
-		  series: {
-		    Data1: {stepPlot: true},
-		    Data2: {stepPlot: false}
-		  }
+          series: {
+            Data1: {stepPlot: true},
+            Data2: {stepPlot: false}
+          }
         }
-	  );
-    </script>
+      );
+    //--><!]]></script>
 
   </body>
 </html>

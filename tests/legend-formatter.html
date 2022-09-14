@@ -20,7 +20,7 @@
 <div id="legend"></div>
 
 <script type="text/javascript" src="../dist/dygraph.js"></script>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
 function legendFormatter(data) {
   if (data.x == null) {
     // This happens when there's no selection and {legend: 'always'} is set.
@@ -70,4 +70,4 @@ new Dygraph(
       legendFormatter: legendFormatter
     }
 );
-</script>
+//--><!]]></script>

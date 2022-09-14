@@ -10,7 +10,7 @@
     <p>There should be an appropriate amount of padding at the top of the chart:</p>
     <div id="blah"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     function CSV() {
       var label = "X";
 
@@ -25,12 +25,12 @@
                   includeZero: true
                 });
 
-    </script>
+    //--><!]]></script>
 
     <p>The second series (which is entirely zero) should be visible, and the
     y-axis should go down to zero.</p>
     <div id="blah2"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
         var data=[
           ["2006-10-11",0,15228],
           ["2006-10-12",0,15219],
@@ -51,6 +51,6 @@
         var g2 = new Dygraph(document.getElementById("blah2"),
                     str,
                     { labels: [ "date", "zero", "non-zero" ] });
-    </script>
+    //--><!]]></script>
   </body>
 </html>
