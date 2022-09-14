@@ -628,7 +628,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display to the right of the chart's secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='http://dygraphs.com/tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the 'ylabel' option generally apply here as well. This label gets a 'dygraph-y2label' instead of a 'dygraph-ylabel' class."
+    "description": "Text to display to the right of the chart's secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the 'ylabel' option generally apply here as well. This label gets a 'dygraph-y2label' instead of a 'dygraph-ylabel' class."
   },
   "yLabelWidth": {
     "labels": ["Chart labels"],
@@ -706,7 +706,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(set when constructed)",
     "labels": ["Data"],
     "type": "string (URL of CSV or CSV), GViz DataTable or 2D Array",
-    "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='http://dygraphs.com/data.html'>Data Formats</a> page."
+    "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='data.html'>Data Formats</a> page."
   },
   "timingName": {
     "default": "null",
@@ -802,7 +802,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Configuration"],
     "type": "Object",
-    "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='http://dygraphs.com/per-axis.html'>per-series and per-axis options</a>."
+    "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='per-axis.html'>per-series and per-axis options</a>."
   },
   "series": {
     "default": "null",
@@ -820,7 +820,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(depends on data)",
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
-    "description": "Custom DataHandler. This is an advanced customisation. See <a href="datahandler-proposal.pdf"><tt>docs/datahandler-proposal.pdf</tt></a>."
+    "description": "Custom DataHandler. This is an advanced customisation. See <a href='datahandler-proposal.pdf'><tt>docs/datahandler-proposal.pdf</tt></a>."
   }
 }
 ;  // </JSON>

@@ -237,7 +237,7 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
   annotation demo.</a></p>
 
 <p>Here is another demonstration of
-<a href="http://danvk.org/dygraphs/tests/gviz.html">how to use dygraphs a GViz visualization</a>.
+<a href="https://dygraphs.com/tests/gviz.html">how to use dygraphs a GViz visualization</a>.
 </p>
 
 <h2 id="baseball">Charting Fractions</h2>
@@ -388,7 +388,7 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
 <ul>
   <li>If your chart doesn't display, be sure to check your browser's JavaScript error console. dygraphs makes every attempt to log errors and warnings, and these can often guide you in the right direction.</li>
-  <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="http://www.getfirebug.com/">Firebug</a>.</li>
+  <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="https://getfirebug.com/">Firebug</a>.</li>
   <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYY-MM-DD, series1, series2, </code>&hellip; — the older YYYYMMDD as first column is <strong>not</strong> recognised as date any more but as number. And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
   <li>dygraphs are not happy when placed inside a <code>&lt;center&gt;</code> tag. This applies to the CSS <code>text-align</code> property as well. If you want to center a Dygraph, put it inside a table with <code>align = center</code> set.</li>
   <li>Don't set the <code>dateWindow</code> property to a date. It expects milliseconds since epoch, which can be obtained from a JavaScript Date object's valueOf method.</li>

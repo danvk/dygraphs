@@ -57,16 +57,17 @@ jsdoc \
   -t="$t" \
   -d=jsdoc \
   $srcfiles \
-2>&1 | tee /tmp/dygraphs-jsdocerrors.txt
+2>&1 | tee jsdoc.tmp/.errs
 
-ed -s /tmp/dygraphs-jsdocerrors.txt <<-\EOF
+ed -s jsdoc.tmp/.errs <<-\EOF
 	1g/java .*jsrun.jar/d
 	w
 	q
 EOF
+if test -s jsdoc.tmp/.errs; then errs=true; else errs=false; fi
 rm -rf jsdoc.tmp
 
-if [ -s /tmp/dygraphs-jsdocerrors.txt ]; then
+if $errs; then
   echo Please fix any jsdoc errors/warnings
   exit 1
 fi

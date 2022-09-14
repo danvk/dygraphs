@@ -6,7 +6,7 @@ Gallery.register(
     setup: function(parent) {
       parent.innerHTML =
         "<p>This test demonstrates how annotations can be used with " +
-        "<a href='http://dygraphs.com/data.html#array'>native-format</a> data.</p>" +
+        "<a href='../data.html#array'>native-format</a> data.</p>" +
         "<div id='demodiv'></div>";
     },
     run: function() {

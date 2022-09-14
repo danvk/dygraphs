@@ -7,11 +7,9 @@ missing licence:
 - auto_tests/tests/update_options.js
 https://github.com/danvk/dygraphs/issues/1024
 
-embedded CDN jquery link:
-- check every URL for more occurrences XXX TODO
-
 missing usage of SSI, maybe? sync anyway:
 - gallery/index.html
+- … others in gallery/tests/…?
 
 site generation is a pita
 - rsync?!
@@ -19,6 +17,3 @@ site generation is a pita
 - no src-es5, especially for extras
 - copy of extras one level up
 - …
-
-tmpfiles where they don’t belong
-- dygraphs-jsdocerrors.txt
