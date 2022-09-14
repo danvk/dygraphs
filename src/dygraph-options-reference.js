@@ -820,7 +820,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(depends on data)",
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
-    "description": "Custom DataHandler. This is an advanced customization. See https://docs.google.com/document/d/1IWmX4oDbQbVtUoRNzSRG3yMpoBQ7LseVCQhGnuOZz_A (Dygraphs DataHandler Proposal)."
+    "description": "Custom DataHandler. This is an advanced customisation. See <a href="datahandler-proposal.pdf"><tt>docs/datahandler-proposal.pdf</tt></a>."
   }
 }
 ;  // </JSON>
