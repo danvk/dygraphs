@@ -65,16 +65,5 @@ The documentation and gallery uses Bootstrap and jQuery; see the
 relevant licence files of those external libraries for details.
 
 
-The following tests, when manually run, load Google’s JS API
-from their CDN (“phoning home”):
-- annotation-gviz.html
-- gviz.html
-- gviz-infinity.html
-- gviz-selection.html
-- numeric-axis.html
-- numeric-gviz.html
-- out-of-order.html
-
-
 The icons under common/ are CC0-licenced and adapted by mirabilos.
 In Debian, /usr/share/common-licenses/CC0-1.0 has the full text.
