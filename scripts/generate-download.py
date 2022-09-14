@@ -5,6 +5,12 @@
 # ./generate-download.py > docs/download.html
 
 import json
+import sys
+
+if len(sys.argv) > 1:
+  debian_text = '<p>The Debian version <tt>%s</tt>, which this documentation was built for, corresponds to that release (plus patches as applicable).</p>' % sys.argv[1]
+else:
+  debian_text = ''
 
 with open('releases.json', 'rt',
           encoding='UTF-8', errors='strict', newline=None) as infile:
@@ -50,6 +56,8 @@ print('''
 %(current_html)s
 </div>
 
+%(debian_text)s
+
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
 <pre>&lt;script href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
@@ -84,5 +92,6 @@ npm run build
 ''' % {
     'version': releases[0]['version'],
     'current_html': current_html,
+    'debian_text': debian_text,
     'previous_lis': '\n'.join(previous_lis)
     })
