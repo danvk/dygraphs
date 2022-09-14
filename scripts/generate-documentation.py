@@ -187,15 +187,18 @@ for label in sorted(labels):
     if not opt['description']: opt['description'] = '(missing)'
 
     print("""
-  <div class='option'><a name="%(name)s"></a><b>%(name)s</b>
+  <div class='option'><p>
+  <a name="%(name)s"></a><b>%(name)s</b>
   <a class="link" href="#%(name)s">#</a>
-  <br/>
-  <p>%(desc)s</p>
+  </p><p>
+  %(desc)s
+  </p><p>
   <i>Type: %(type)s</i><br/>%(parameters)s
-  <i>Default: %(default)s</i></p>
+  <i>Default: %(default)s</i>
+  </p><p>
   Gallery Samples: %(gallery_html)s<br/>
   Other Examples: %(examples_html)s<br/>
-  <br/></div>
+  </p></div>
   """ % { 'name': opt_name,
           'type': opt['type'],
           'parameters': parameters_html,
