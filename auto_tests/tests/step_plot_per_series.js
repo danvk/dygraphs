@@ -358,7 +358,7 @@ it('testMixedModeStepAndLineCustomBars', function() {
       }
     },
     customBars: true,
-	labels: ["X", "Data1", "Data2"],
+    labels: ["X", "Data1", "Data2"],
     series: {
       Data1: {stepPlot: true},
       Data2: {stepPlot: false}

@@ -442,8 +442,8 @@ it('testNaNErrorBars', function() {
 
   // Line should be drawn across the null gap.
   CanvasAssertions.assertLineDrawn(htx,
-	g.toDomCoords(data[2][0], data[2][1][1]),
-	g.toDomCoords(data[4][0], data[4][1][1]),
+        g.toDomCoords(data[2][0], data[2][1][1]),
+        g.toDomCoords(data[4][0], data[4][1][1]),
         attrs);
 
   // No line across the NaN gap, and a single line (not two)
