@@ -5,8 +5,7 @@
  *
  * Note: This plugin requires jQuery and jQuery UI Draggable.
  *
- * See high-level documentation at
- * https://docs.google.com/document/d/1OHNE8BNNmMtFlRQ969DACIYIJ9VVJ7w3dSPRJDEeIew/edit#
+ * See high-level documentation at ../../docs/hairlines-annotations.pdf
  */
 
 /*global Dygraph:false */
