@@ -61,7 +61,7 @@ print('''
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
 <pre>&lt;script href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
-&lt;link rel=&quot;stylesheet&quot; src=&quot;//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css&quot; /&gt;
+&lt;link rel=&#34;stylesheet&#34; src=&#34;//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css&#34; /&gt;
 </pre>
 
 <p>You can also install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>

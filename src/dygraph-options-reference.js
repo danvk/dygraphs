@@ -88,7 +88,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "A function to call when the zoom window is changed (either by zooming in or out). When animatedZooms is set, zoomCallback is called once at the end of the transition (it will not be called for intermediate frames)."
   },
   "pointClickCallback": {
-    "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
+    "snippet": "function(e, point){<br>  alert(point);<br>}",
     "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
     "type": "function(e, point)",
@@ -126,7 +126,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "parameters": [
       ["event", "the JavaScript mousemove event"],
       ["x", "the x-coordinate of the highlighted points"],
-      ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
+      ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, … ]</code>"],
       ["row", "integer index of the highlighted row in the data table, starting from 0"],
       ["seriesName", "name of the highlighted series, only present if highlightSeriesOpts is set."]
     ]
@@ -528,7 +528,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "clickCallback": {
-    "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
+    "snippet": "function(e, date_millis){<br>  alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(e, x, points)",
@@ -549,7 +549,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "Full range of the input is shown",
     "labels": ["Axis display"],
     "type": "Array of two numbers",
-    "example": "[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]",
+    "example": "[<br>  Date.parse('2006-01-01'),<br>  (new Date()).valueOf()<br>]",
     "description": "Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch. If the data for the x-axis is numeric, the values in dateWindow must also be numbers."
   },
   "showRoller": {

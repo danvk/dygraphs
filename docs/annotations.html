@@ -91,22 +91,22 @@ no-op: it simply causes the chart to refresh.</p>
     <div class="codeblock" style="float:left;width:400px;">
       <h3 style="text-align:center">HTML</h3>
   <pre>
-&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;script type=&#34;text/javascript&#34;&gt;
   g = new Dygraph(
-    document.getElementById(&quot;graphdiv&quot;),
-    &quot;Date,Temperature\n&quot; +
-    &quot;2008-05-07,75\n&quot; +
-    &quot;2008-05-08,70\n&quot; +
-    &quot;2008-05-09,80\n&quot;
+    document.getElementById(&#34;graphdiv&#34;),
+    &#34;Date,Temperature\n&#34; +
+    &#34;2008-05-07,75\n&#34; +
+    &#34;2008-05-08,70\n&#34; +
+    &#34;2008-05-09,80\n&#34;
   );
 
   g.ready(function() {
     g.setAnnotations([
     {
-      series: &quot;Temperature&quot;,
-      x: &quot;2008-05-08&quot;,
-      shortText: &quot;L&quot;,
-      text: &quot;Coldest Day&quot;
+      series: &#34;Temperature&#34;,
+      x: &#34;2008-05-08&#34;,
+      shortText: &#34;L&#34;,
+      text: &#34;Coldest Day&#34;
     }
     ]);
   });
@@ -175,7 +175,7 @@ available immediately after you call <code>new Dygraph</code> and so the call to
 g.ready(function() {
   // This is called when data.csv comes back and the chart draws.
   g.setAnnotations([
-    &hellip;
+    …
   ]);
 });
 </pre>
