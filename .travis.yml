@@ -12,6 +12,7 @@ addons:
     - libjs-bootstrap
     - libjs-jquery
     - libjs-jquery-ui
+    - mksh
     - pax
 
 script: >

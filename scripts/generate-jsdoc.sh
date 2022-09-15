@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 #
 # Generates JSDoc in the /jsdoc dir. Clears any existing jsdoc there.
 

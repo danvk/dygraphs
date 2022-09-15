@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 # This tracks the effect of pull requests on the size of dygraphs.
 # See https://github.com/danvk/travis-weigh-in
 set -o errexit

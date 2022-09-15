@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 
 # uncomment this to skip posting to coveralls.io
 # comment the line out to post

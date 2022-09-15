@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/mksh
 # This script generates the bundled JS files and pushes all content to a web site using rsync.
 
-if [ "$1" == "" ] ; then
+if [[ -n $1 ]]; then
   echo "usage: $0 destination"
   exit 1
 fi

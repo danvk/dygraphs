@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 # Generate code coverage data for posting to Coveralls.
 # This requires dist/*.js to be in place.
 # Output is coverage/lcov.info
@@ -25,7 +25,7 @@ browserify coverage/auto_tests/tests/*.js -o coverage/tests.js
 # Run http-server and save its PID for cleanup
 http-server -p 8082 > /dev/null &
 SERVER_PID=$!
-function finish() {
+function finish {
   kill -TERM $SERVER_PID
 }
 trap finish EXIT

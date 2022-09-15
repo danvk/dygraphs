@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 # This generates everything under dist:
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit

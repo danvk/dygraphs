@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 set -e
 
 v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
