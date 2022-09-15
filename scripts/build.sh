@@ -3,6 +3,13 @@
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
 
+rm -f LICENCE.js
+{
+  echo '/*'
+  sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
+  echo ' */'
+} >LICENCE.js
+
 rm -rf dist disttmp
 mkdir dist disttmp
 
@@ -13,6 +20,7 @@ browserify \
   -t [ envify --NODE_ENV development ] \
   --debug \
   --standalone Dygraph \
+  LICENCE.js \
   src/dygraph.js \
   >disttmp/dygraph.tmp.js
 
@@ -26,6 +34,7 @@ browserify \
   -t [ envify --NODE_ENV production ] \
   --debug \
   --standalone Dygraph \
+  LICENCE.js \
   src/dygraph.js \
   >disttmp/dygraph.tmp.js
 
@@ -51,7 +60,7 @@ cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inlin
 babel src -d src-es5 --compact false
 
 # Remove temp files.
-rm -rf disttmp
+rm -rf disttmp LICENCE.js
 
 # Build documentation.
 scripts/build-docs.sh

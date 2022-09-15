@@ -1,4 +1,5 @@
 *.log
+LICENCE.js
 coverage
 dist
 disttmp
