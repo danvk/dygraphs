@@ -49,6 +49,7 @@ uglifyjs --compress --mangle \
   --in-source-map disttmp/dygraph.tmp.js.map \
   --source-map-include-sources \
   --source-map dist/dygraph.min.js.map \
+  --source-map-url dygraph.min.js.map \
   -o dist/dygraph.min.js \
   disttmp/dygraph.tmp.js
 
