@@ -69,5 +69,7 @@ scripts/build-docs.sh
 rm -rf site
 mkdir site
 rsync -avzr src src/extras dist site
-rsync -avzr --copy-links dist/* docroot/* docroot/.* site/
+rsync -avzr --copy-links dist/* docroot/!(dist) docroot/.* site/
+ln -sf src/extras site/.extras # until we copy src-es5
+#ln -sf src-es5/extras site/.extras
 find site -print0 | xargs -0r chmod a+rX --

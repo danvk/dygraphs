@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="../dist/dygraph.css">
     <title>Plotters demo</title>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
-    <script type="text/javascript" src="../src/extras/smooth-plotter.js"></script>
+    <script type="text/javascript" src="../.extras/smooth-plotter.js"></script>
 
     <style type="text/css">
       body {
@@ -28,7 +28,11 @@
     <p class="smoother">Smoothing: <input type="range" id="smoothing-amount" min=0 max=0.7 step=0.01 value=0.33> <span id="smoothing-param">0.33</span></p>
     <div id="smooth-line" class="chart"></div>
 
-    <p>View source to see how this works. You'll have to source <code>extras/smooth-plotter.js</code> in addition to dygraphs to get this feature. See the <a href="../smooth-plotter.md">comment from the pull request that introduced this plotter</a> to learn more about how it smooths your curves.</p>
+    <p>View source to see how this works. You'll have to source <code>extras/smooth-plotter.js</code>
+    in addition to dygraphs to get this feature. (However, for better browser compatibility, use the
+    file from <tt>src-es5/extras/</tt> instead.) See the <a href="../smooth-plotter.md">comment
+    from the pull request that introduced this plotter</a> to learn more about how it smooths
+    your curves.</p>
 
 <script type="text/javascript"><!--//--><![CDATA[//><!--
 // Smooth line plotter
