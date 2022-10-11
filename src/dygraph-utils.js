@@ -119,7 +119,7 @@ export function removeEvent(elem, type, fn) {
  * @private
  */
 export function cancelEvent(e) {
-  e = e ? e : window?.event;
+  e = e ? e : window.event;
   if (e.stopPropagation) {
     e.stopPropagation();
   }
@@ -704,7 +704,7 @@ export function createCanvas() {
  */
 export function getContextPixelRatio(context) {
   try {
-    var devicePixelRatio = window?.devicePixelRatio;
+    var devicePixelRatio = window.devicePixelRatio;
     var backingStoreRatio =
       context.webkitBackingStorePixelRatio ||
       context.mozBackingStorePixelRatio ||
@@ -798,13 +798,13 @@ export function createIterator(array, start, length, opt_predicate) {
 //   Dygraph.requestAnimFrame.call(window, function() {})
 export var requestAnimFrame = (function () {
   return (
-    window?.requestAnimationFrame ||
-    window?.webkitRequestAnimationFrame ||
-    window?.mozRequestAnimationFrame ||
-    window?.oRequestAnimationFrame ||
-    window?.msRequestAnimationFrame ||
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
     function (callback) {
-      window?.setTimeout(callback, 1000 / 60);
+      window.setTimeout(callback, 1000 / 60);
     }
   );
 })();
@@ -1085,7 +1085,7 @@ export function toRGB_(colorStr) {
   div.style.backgroundColor = colorStr;
   div.style.visibility = "hidden";
   document.body.appendChild(div);
-  var rgbStr = window?.getComputedStyle(div, null).backgroundColor;
+  var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   return parseRGBA(rgbStr);
 }

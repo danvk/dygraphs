@@ -540,7 +540,7 @@ rangeSelector.prototype.initInteraction_ = function () {
   );
   this.setDefaultOption_("panEdgeFraction", 0.0001);
 
-  var dragStartEvent = window?.opera ? "mousedown" : "dragstart";
+  var dragStartEvent = window.opera ? "mousedown" : "dragstart";
   this.dygraph_.addAndTrackEvent(
     this.leftZoomHandle_,
     dragStartEvent,

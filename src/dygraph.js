@@ -82,7 +82,8 @@ import RangeSelectorPlugin from "./plugins/range-selector";
  * options, see http://dygraphs.com/options.html.
  */
 var Dygraph = function (div, data, opts) {
-  if (window) { // We only want to load this in the browser
+  if (window) {
+    // We only want to load this in the browser
     this.__init__(div, data, opts);
   }
 };
@@ -152,6 +153,12 @@ Dygraph.prototype.__init__ = function (div, file, attrs) {
   this.dateWindow_ = attrs.dateWindow || null;
 
   this.annotations_ = [];
+
+  if (attrs.annotations) {
+    this.annotations_ = attrs.annotations;
+  }
+
+  console.log("USING CUSTOM DYGRAPH");
 
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
@@ -835,6 +842,9 @@ Dygraph.prototype.createInterface_ = function () {
 
   // Create the grapher
   this.layout_ = new DygraphLayout(this);
+  if (this.annotations) {
+    this.layout_.setAnnotations(this.annotations_);
+  }
 
   var dygraph = this;
 
@@ -3286,7 +3296,7 @@ Dygraph.prototype.start_ = function () {
     } else {
       // REMOVE_FOR_IE
       var req;
-      if (window?.XMLHttpRequest) {
+      if (window.XMLHttpRequest) {
         // Firefox, Opera, IE7, and other browsers will use the native object
         req = new XMLHttpRequest();
       } else {

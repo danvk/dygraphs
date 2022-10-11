@@ -997,7 +997,7 @@ if (typeof process !== "undefined") {
 
     // Do a quick sanity check on the options reference.
     var warn = function (msg) {
-      if (window?.console) window?.console.warn(msg);
+      if (window.console) window.console.warn(msg);
     };
     var flds = ["type", "default", "description"];
     var valid_cats = [

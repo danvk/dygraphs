@@ -36,8 +36,8 @@
   "use strict";
 
   var Dygraph;
-  if (window?.Dygraph) {
-    Dygraph = window?.Dygraph;
+  if (window.Dygraph) {
+    Dygraph = window.Dygraph;
   } else if (typeof module !== "undefined") {
     Dygraph = require("../dygraph");
   }
