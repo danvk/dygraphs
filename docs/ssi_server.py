@@ -18,6 +18,8 @@ from http.server import SimpleHTTPRequestHandler
 import http.server
 import tempfile
 
+_errorfnp = None
+
 class SSIRequestHandler(SimpleHTTPRequestHandler):
   """Adds minimal support for <!-- #include --> directives.
 
@@ -47,7 +49,7 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
           break
 
     if fs_path.endswith('.html'):
-      content = ssi.InlineIncludes(fs_path)
+      content = ssi.InlineIncludes(fs_path, _errorfnp)
       fs_path = self.create_temp_file(fs_path, content)
     return fs_path
 
@@ -66,6 +68,9 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
   import sys
+  def _errorf(msg):
+    sys.stderr.write('ERROR: %s\n' % msg)
+  _errorfnp = _errorf
   if len(sys.argv) > 1:
     port = int(sys.argv[1])
   else:

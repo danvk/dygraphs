@@ -17,6 +17,10 @@ import pathlib
 import ssi
 import sys
 
+def _errorfn(msg):
+    sys.stderr.write('E: %s\n' % msg)
+    sys.exit(1)
+
 def process(source, dest):
   for dirpath, dirnames, filenames in os.walk(source):
     dest_dir = os.path.realpath(os.path.join(dest, os.path.relpath(dirpath, source)))
@@ -30,7 +34,7 @@ def process(source, dest):
       dest_path = os.path.join(dest_dir, filename)
       pathlib.Path(dest_path).unlink(missing_ok=True)
       with open(dest_path, 'wb') as f:
-        f.write(ssi.InlineIncludes(src_path))
+        f.write(ssi.InlineIncludes(src_path, _errorfn))
 
     # ignore hidden directories
     for dirname in dirnames[:]:
@@ -44,7 +48,6 @@ if __name__ == '__main__':
   elif len(sys.argv) == 3:
     source, dest = sys.argv[1:]
   else:
-    sys.stderr.write('Usage: %s [source_directory] destination_directory\n' % sys.argv[0])
-    sys.exit(1)
+    _errorfn('Usage: %s [source_directory] destination_directory' % sys.argv[0])
 
   process(source, dest)
