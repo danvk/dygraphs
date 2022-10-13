@@ -18,5 +18,3 @@ rm -f site2/dist/tests.js
 ln -s src/extras site2/
 # this can probably go }}}
 pax -rw src site2/
-cd site2
-ln -s dist/* ./
