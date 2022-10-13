@@ -11,4 +11,4 @@ cp -L .jslibs/* ../site2/.jslibs/
 cd ..
 pax -rw dist site2/
 rm -f site2/dist/tests.js
-pax -rw src site2/
+pax -rw src src-es5 site2/
