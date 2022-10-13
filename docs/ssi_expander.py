@@ -17,8 +17,8 @@ import pathlib
 import ssi
 import sys
 
-def _errorfn(msg):
-    sys.stderr.write('E: %s\n' % msg)
+def _errorfn(msg, fn):
+    sys.stderr.write('E: %s: %s\n' % (fn, msg))
     sys.exit(1)
 
 def process(source, dest):
