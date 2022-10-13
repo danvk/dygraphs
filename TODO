@@ -14,6 +14,5 @@ missing usage of SSI, maybe? sync anyway:
 site generation is a pita
 - rsync?!
 - symlinks
-- no src-es5, especially for extras
-- copy of extras one level up
+- extras (src/src-es5 is not actually needed)
 - …
