@@ -1,0 +1,11 @@
+a[href^="ftp://"]:after,
+a[href^="http://"]:after,
+a[href^="https://"]:after,
+a[href^="irc://"]:after,
+a[href^="mailto:"]:after,
+a[href^="news:"]:after,
+a[href^="nntp://"]:after {
+	content:url(vextlnk.png);
+	margin:0 0 0 3px;
+	white-space:nowrap;
+}
