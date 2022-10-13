@@ -8,7 +8,7 @@ import json
 import sys
 
 if len(sys.argv) > 1:
-  debian_text = '<p>The Debian version <tt>%s</tt>, which this documentation was built for, corresponds to that release (plus patches as applicable).</p>' % sys.argv[1]
+  debian_text = '<p>The Debian version <tt>%s</tt>, which this documentation was built for, corresponds to that release (plus patches as applicable). Note that, in the Debian package, most of the following links will not work for hopefully obvious reasons.</p>' % sys.argv[1]
 else:
   debian_text = ''
 
