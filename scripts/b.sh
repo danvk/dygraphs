@@ -11,10 +11,4 @@ cp -L .jslibs/* ../site2/.jslibs/
 cd ..
 pax -rw dist site2/
 rm -f site2/dist/tests.js
-# this can probably go {{{
-#cd src
-#pax -rw extras ../site2/
-#cd ..
-ln -s src/extras site2/
-# this can probably go }}}
 pax -rw src site2/
