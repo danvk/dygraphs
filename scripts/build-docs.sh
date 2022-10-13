@@ -32,7 +32,6 @@ rm -f NOTES TODO footer.html header.html *.py
 cd ..
 rm -f docs/download.html docs/options.html
 pax -rw -l \
-	LICENSE.txt \
 	common \
 	gallery \
 	jsdoc \

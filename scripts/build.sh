@@ -75,9 +75,9 @@ rm -rf site
 mkdir site
 cd docroot
 pax -rw . ../site/
-rm ../site/.jslibs/* ../site/dist
+rm ../site/.jslibs/* ../site/LICENSE.txt ../site/dist
 cp -L .jslibs/* ../site/.jslibs/
 cd ..
-pax -rw dist site/
+pax -rw LICENSE.txt dist site/
 rm -f site/dist/tests.js
 find site -print0 | xargs -0r chmod a+rX --
