@@ -2,8 +2,8 @@
 '''
 This script copies the files in one directory to another, expanding any SSI
 <!-- #include --> statements it encounters along the way.
-Only files that end in '.html' are processed. Copy or symlink anything else
-manually.
+Only files that end in '.html' are processed, with the exceptions of
+{header,footer}.html. Copy or symlink anything else manually.
 
 Usage:
 
@@ -29,6 +29,8 @@ def process(source, dest):
     assert os.path.isdir(dest_dir)
     for filename in filenames:
       if not filename.endswith('.html'):
+        continue
+      if filename in ('header.html', 'footer.html'):
         continue
       src_path = os.path.abspath(os.path.join(source, dirpath, filename))
       dest_path = os.path.join(dest_dir, filename)
