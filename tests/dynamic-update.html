@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Live random data</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h3 style="width:800px; text-align: center;">Live random data</h3>
@@ -31,7 +32,6 @@
         data.push([x, y]);
         g.updateOptions( { 'file': data } );
       }, 1000);
-
     //--><!]]></script>
 
     <p>This test is modeled after a <a

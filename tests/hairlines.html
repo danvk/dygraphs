@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Hairlines demo</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <!-- Include the Javascript for the plug-in -->
-    <script src="../.jslibs/jquery.min.js"></script>
-    <script src="../.jslibs/jquery-ui.min.js"></script>
-
     <link rel="stylesheet" href="../.jslibs/jquery-ui.min.css" />
+    <script type="text/javascript" src="../.jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src="../.jslibs/jquery-ui.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <script type="text/javascript" src="../extras/hairlines.js"></script>
     <script type="text/javascript" src="../extras/super-annotations.js"></script>
@@ -113,6 +114,7 @@
       <input dg-ann-field='text' type='text' size=30 value='{{text}}' />
       <div>{{x}}, {{series}}: {{y}}</div>
     </div>
+
     <script type="text/javascript"><!--//--><![CDATA[//><!--
     $(document).on('keyup', '.annotation-info input', function(e) {
       var $annotationDiv = $(this).parent('.annotation-info');
@@ -145,7 +147,6 @@
       <label for="hairline-closest"> Closest</label>
 
       <p>Learn more about the <a href="../hairlines-annotations.pdf">Hairlines/Super-annotations plugins and their APIs</a>.</p>
-
     </div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
@@ -334,5 +335,5 @@
 
       // TODO(danvk): demonstrate other annotations API methods.
     //--><!]]></script>
-</body>
+  </body>
 </html>

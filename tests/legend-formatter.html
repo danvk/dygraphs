@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-    <link rel="stylesheet" href="../dist/dygraph.css">
-<title>legendFormatter</title>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>legendFormatter</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
 <style>
 #demodiv {
   width: 640px;
@@ -13,13 +19,13 @@
   vertical-align: top;
 }
 </style>
-
+  </head>
+  <body>
 <h2>legendFormatter</h2>
 <p>This page demonstrates use of <a href="../options.html#legendFormatter"><code>legendFormatter</code></a>, which can be used to create more complex legends than <code>valueFormatter</code>.</p>
 <div id="demodiv"></div>
 <div id="legend"></div>
 
-<script type="text/javascript" src="../dist/dygraph.js"></script>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
 function legendFormatter(data) {
   if (data.x == null) {
@@ -71,3 +77,5 @@ new Dygraph(
     }
 );
 //--><!]]></script>
+  </body>
+</html>
