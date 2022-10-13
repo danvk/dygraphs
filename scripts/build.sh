@@ -59,6 +59,11 @@ cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inlin
 # Build ES5-compatible distribution
 babel src -d src-es5 --compact false
 
+# Add extras to dist, in ES5-compatible version
+cd src-es5
+pax -rw -l extras ../dist/
+cd ..
+
 # Remove temp files.
 rm -rf disttmp
 
