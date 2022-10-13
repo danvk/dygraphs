@@ -18,7 +18,7 @@ Gallery.register(
         '</style>',
         '<p>Zooming and panning on any of the charts will zoom and pan all the',
         'others. Selecting points on one will select points on the others.</p>',
-        '<p>To use this, source <a href="../src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
+        '<p>To use this, source <a href="../extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
         'See the comments in that file for usage. However, for better browser',
         'compatibility, use the file from <tt>src-es5/extras/</tt> instead.</p>',
         '<div class="chart-container">',
