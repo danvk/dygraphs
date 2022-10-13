@@ -1,4 +1,9 @@
 /**
+ * @license
+ * Part of dygraphs, see top-level LICENSE.txt file
+ * MIT-licenced: https://opensource.org/licenses/MIT
+ */
+/**
  * Synchronize zooming and/or selections between a set of dygraphs.
  *
  * Usage:

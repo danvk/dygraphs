@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Part of dygraphs, see top-level LICENSE.txt file
+ * MIT-licenced: https://opensource.org/licenses/MIT
+ */
 (function() {
 "use strict";
 
