@@ -70,7 +70,7 @@ rm -rf site
 mkdir site
 cd docroot
 pax -rw . ../site/
-rm ../site/.jslibs/*
+rm ../site/.jslibs/* ../site/dist
 cp -L .jslibs/* ../site/.jslibs/
 cd ..
 pax -rw dist site/

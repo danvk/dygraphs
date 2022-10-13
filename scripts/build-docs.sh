@@ -40,3 +40,4 @@ pax -rw -l \
 	thumbnail.png \
     docroot/
 rm -rf */__pycache__
+ln -s ../dist docroot/
