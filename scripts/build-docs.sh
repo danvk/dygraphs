@@ -28,7 +28,7 @@ cd docs
 pax -rw . ../docroot/
 ./ssi_expander.py ../docroot/
 cd ../docroot
-rm -f NOTES TODO footer.html header.html *.py
+rm -f NOTES TODO common footer.html header.html *.py
 cd ..
 rm -f docs/download.html docs/options.html
 pax -rw -l \
