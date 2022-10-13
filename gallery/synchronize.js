@@ -20,7 +20,7 @@ Gallery.register(
         'others. Selecting points on one will select points on the others.</p>',
         '<p>To use this, source <a href="../extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
         'See the comments in that file for usage. However, for better browser',
-        'compatibility, use the file from <tt>src-es5/extras/</tt> instead.</p>',
+        'compatibility, use the file from <tt>src-es5/extras/</tt> (<tt>dist/extras/</tt>) instead.</p>',
         '<div class="chart-container">',
         '  <div id="div1" class="chart"></div>',
         '  <div id="div2" class="chart"></div>',

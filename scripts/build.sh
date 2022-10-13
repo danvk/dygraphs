@@ -80,5 +80,4 @@ cp -L .jslibs/* ../site/.jslibs/
 cd ..
 pax -rw dist site/
 rm -f site/dist/tests.js
-pax -rw src src-es5 site/
 find site -print0 | xargs -0r chmod a+rX --
