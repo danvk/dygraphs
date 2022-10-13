@@ -23,7 +23,7 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
 <html>
 <head>
 <script type="text/javascript" src="dygraph.js"></script>
-<link rel="stylesheet" href="dygraph.css" />
+<link rel="stylesheet" type="text/css" href="dygraph.css" />
 </head>
 <body>
 <div id="graphdiv"></div>

@@ -61,8 +61,8 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
-<pre>&lt;script href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
-&lt;link rel=&#34;stylesheet&#34; src=&#34;//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css&#34; /&gt;
+<pre>&lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
 </pre>
 
 <p>You can also install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
@@ -86,7 +86,7 @@ npm run build
 %(previous_lis)s
 </ul>
 
-<p>See <a href="/versions.html">Version History</a> for more information on each release.</p>
+<p>See <a href="https://dygraphs.com/versions.html">Version History</a> for more information on each release.</p>
 
 <!--#include virtual="footer.html" -->''' % {
     'version': releases[0]['version'],
