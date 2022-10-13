@@ -17,6 +17,7 @@
   },
   {
     "version": "1.1.1",
+    "distsubdir": false,
     "files": [
       "dygraph-combined.js",
       "dygraph-combined-dev.js"
@@ -24,6 +25,7 @@
   },
   {
     "version": "1.1.0",
+    "distsubdir": false,
     "files": [
       "dygraph-combined.js",
       "dygraph-combined-dev.js"
@@ -31,12 +33,14 @@
   },
   {
     "version": "1.0.1",
+    "distsubdir": false,
     "files": [
       "dygraph-combined.js"
     ]
   },
   {
     "version": "1.0.0",
+    "distsubdir": false,
     "files": [
       "dygraph-combined.js"
     ]

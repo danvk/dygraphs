@@ -18,8 +18,12 @@ with open('releases.json', 'rt',
 
 def file_links(release):
   v = release['version']
-  return ['<a href="%(v)s/%(f)s">%(f)s</a>' % {
-    'f': f, 'v': v} for f in release['files']]
+  if 'distsubdir' in release and release['distsubdir'] == False:
+    sd = ''
+  else:
+    sd = 'dist/'
+  return ['<a href="%(v)s/%(sd)s%(f)s">%(f)s</a>' % {
+    'f': f, 'sd': sd, 'v': v} for f in release['files']]
 
 
 # Validation of releases.json
