@@ -3,6 +3,8 @@
 # To run the tests, run `npm run test`
 # To iterate on the tests, use `npm run watch`
 
+mkdir -p dist
+
 browserify \
   -v \
   -t babelify \
