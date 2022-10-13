@@ -25,7 +25,6 @@ afterEach(function() {
   utils.getContext = origFunc;
 });
 
-
 it('testFillStepPlotNullValues', function() {
   var opts = {
     labels: ["x","y"],

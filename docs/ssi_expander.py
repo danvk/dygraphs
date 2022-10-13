@@ -37,7 +37,6 @@ def process(source, dest):
       if dirname.startswith('.'):
         dirnames.remove(dirname)
 
-
 if __name__ == '__main__':
   if len(sys.argv) == 2:
     source = '.'

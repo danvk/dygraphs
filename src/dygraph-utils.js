@@ -1081,7 +1081,6 @@ export function parseFloat_(x, opt_line_no, opt_line) {
   return null;
 };
 
-
 // Label constants for the labelsKMB and labelsKMG2 options.
 // (i.e. '100000' -> '100k')
 var KMB_LABELS_LARGE = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
@@ -1200,7 +1199,6 @@ export function numberAxisLabelFormatter(x, granularity, opts) {
  * @constant
  */
 var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that

@@ -120,7 +120,6 @@ it('testEdgePointsCustomBars', function() {
 
   var attrs = {};
 
-
   // Test if values of the series1 are drawn correctly.
   // ------------------------------------
 
@@ -250,7 +249,6 @@ it('testEdgePointsErrorBars', function() {
 
   var attrs = {};
 
-
   // Test if values of the series1 are drawn correctly.
   // ------------------------------------
 
@@ -301,7 +299,6 @@ it('testEdgePointsErrorBars', function() {
   // Check if both points are connected at the left edge of the canvas and if the option "connectSeparatedPoints" works properly
   // even if the point is outside the visible range and only one series has a valid value for this point.
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, attrs);
-
 
   // Test if values of the series2 are drawn correctly.
   // ------------------------------------
@@ -398,7 +395,6 @@ it('testConnectSeparatedPointsPerSeries', function() {
     }
   });
   assertExpectedLinesDrawnPerSeries(htx, 5, 1, 2);
-
 
   Proxy.reset(htx);
   g.updateOptions({

@@ -44,7 +44,6 @@ it('testLegendEscape', function() {
   assert.equal(legendSpan.innerHTML, "&lt;script&gt;alert('XSS')&lt;/script&gt;");
 });
 
-
 it('should let labelsDiv be a string', function() {
   var labelsDiv = document.getElementById('label');
   var g = new Dygraph(graph, 'X,Y\n1,2\n', {labelsDiv: 'label'});

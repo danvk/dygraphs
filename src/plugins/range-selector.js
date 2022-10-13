@@ -531,7 +531,6 @@ rangeSelector.prototype.drawStaticLayer_ = function() {
   ctx.stroke();
 };
 
-
 /**
  * @private
  * Draws the mini plot in the background canvas.

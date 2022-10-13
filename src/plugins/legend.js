@@ -19,7 +19,6 @@ Current bits of jankiness:
 
 import * as utils from '../dygraph-utils';
 
-
 /**
  * Creates the legend, which appears when the user hovers over the chart.
  * The legend can be either a user-specified or generated div.
@@ -303,7 +302,6 @@ Legend.defaultFormatter = function(data) {
   }
   return html;
 };
-
 
 /**
  * Generates html for the "dash" displayed on the legend when using "legend: always".

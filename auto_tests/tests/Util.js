@@ -76,7 +76,6 @@ Util.assertStyleOfChildren = function(selector, property, expectedValue) {
   }
 };
 
-
 /**
  * Takes in an array of strings and returns an array of floats.
  */
@@ -87,7 +86,6 @@ Util.makeNumbers = function(ary) {
   }
   return ret;
 };
-
 
 /**
  * Sample a pixel from the canvas.

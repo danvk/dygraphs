@@ -30,7 +30,6 @@
 import * as utils from './dygraph-utils';
 import Dygraph from './dygraph';
 
-
 /**
  * @constructor
  *
@@ -534,7 +533,6 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   }
   ctx.fill();
 };
-
 
 /**
  * Proxy for CanvasRenderingContext2D which drops moveTo/lineTo calls which are

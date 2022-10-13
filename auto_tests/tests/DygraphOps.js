@@ -214,5 +214,4 @@ DygraphOps.dispatchMouseOut = function(g, x, y, custom) {
       custom);
 };
 
-
 export default DygraphOps;

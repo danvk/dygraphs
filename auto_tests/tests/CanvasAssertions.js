@@ -55,7 +55,6 @@ CanvasAssertions.cleanPathAttrs_ = function(calls) {
   }
 };
 
-
 /**
  * Assert that a line is drawn between the two points
  *

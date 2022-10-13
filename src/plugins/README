@@ -101,12 +101,10 @@ Plugin Events Reference:
 
 TODO(danvk): document all event properties for each event.
 
-
 Special methods:
 - (constructor)
 - activate
 - destroy
-
 
 ----------------
 

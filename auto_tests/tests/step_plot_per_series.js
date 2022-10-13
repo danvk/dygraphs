@@ -60,7 +60,6 @@ it('testMixedModeStepAndLineFilled', function() {
 
   var attrs = {};
 
-
   for (var i = 0; i < data.length - 1; i++) {
 
     var x1 = data[i][0];
@@ -130,7 +129,6 @@ it('testMixedModeStepAndLineStackedAndFilled', function() {
   var htx = g.hidden_ctx_;
 
   var attrs = {};
-
 
   for (var i = 0; i < data.length - 1; i++) {
 

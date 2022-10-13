@@ -78,7 +78,6 @@ it('testUpdateDeepDecoupled', function() {
   assert.equal("original", a.c.x);
 });
 
-
 it('testIterator_nopredicate', function() {
   var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   var iter = utils.createIterator(array, 1, 4);

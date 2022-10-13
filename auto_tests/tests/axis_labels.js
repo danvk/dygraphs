@@ -961,7 +961,6 @@ it('testDigitsAfterDecimalPerAxis', function() {
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: null }}});
   assert.deepEqual(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
 
-
   // digitsAfterDecimal is ignored for the x-axis.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 3 }}});
@@ -1058,7 +1057,6 @@ it('testLabelsCrossDstChange', function() {
   }
 });
 
-
 // Tests data which crosses a "fall back" at a high enough frequency that you
 // can see both 1:00 A.M.s.
 it('testLabelsCrossDstChangeHighFreq', function() {
@@ -1092,7 +1090,6 @@ it('testLabelsCrossDstChangeHighFreq', function() {
     '01:00', '01:05'  // 1 AM number two!
   ], Util.getXLabels());
 });
-
 
 // Tests data which crosses a "spring forward" at a low frequency.
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433

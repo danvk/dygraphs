@@ -56,5 +56,4 @@ it('testUpdateWhilePanning', function() {
   assert.deepEqual([-2, 2], g.yAxisRange());
 });
 
-
 });

@@ -18,7 +18,6 @@ from http.server import SimpleHTTPRequestHandler
 import http.server
 import tempfile
 
-
 class SSIRequestHandler(SimpleHTTPRequestHandler):
   """Adds minimal support for <!-- #include --> directives.
 
@@ -64,7 +63,6 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
 
     self.temp_files.append(path)
     return path
-
 
 if __name__ == '__main__':
   import sys

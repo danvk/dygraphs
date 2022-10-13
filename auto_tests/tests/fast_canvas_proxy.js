@@ -96,7 +96,6 @@ it('testSuperfluousSegmentsElided', function() {
                 ['moveTo', 3, 0]], extractMoveToAndLineToCalls(htx));
 });
 
-
 // For a more visual version of this test, see
 // https://gist.github.com/danvk/e98dbb24253c9b153696
 // The drawing commands in the following two tests are taken from there.

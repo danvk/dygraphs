@@ -385,7 +385,6 @@ it('testRangeSelectorInteraction', function() {
   assert(newXRange[1] < xRange[1], newXRange[1]+'<'+xRange[1]);
 });
 
-
 it('testRangeSelectorPositionIfXAxisNotDrawn', function() {
   var opts = {
     width: 480,
@@ -477,7 +476,6 @@ it('testSingleCombinedSeries', function() {
     ]
   }, combinedSeries);
 });
-
 
 // Tests that multiple series are averaged for the miniplot.
 it('testCombinedSeries', function() {

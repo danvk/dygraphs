@@ -69,5 +69,4 @@ it('testNoHoursDashed', function() {
   assert.equal("2012/03/16: Y: 0", Util.getLegend());
 });
 
-
 });

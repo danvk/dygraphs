@@ -115,7 +115,6 @@ Dygraph.ANIMATION_DURATION = 200;
  */
 Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
 
-
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
 
@@ -2150,7 +2149,6 @@ Dygraph.stackPoints_ = function(
   }
 };
 
-
 /**
  * Loop over all fields and create datasets, calculating extreme y-values for
  * each series and extreme x-indices as we go.
@@ -2562,7 +2560,6 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
         axis.computedValueRange[1] = y1 + span * ypad;
       }
     }
-
 
     if (independentTicks) {
       axis.independentTicks = independentTicks;
@@ -3427,7 +3424,6 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
 
   this.registeredEvents_ = [];
 };
-
 
 // Installed plugins, in order of precedence (most-general to most-specific).
 Dygraph.PLUGINS = [

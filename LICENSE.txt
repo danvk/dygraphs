@@ -60,10 +60,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
-
 The documentation and gallery uses Bootstrap and jQuery; see the
 relevant licence files of those external libraries for details.
-
 
 The icons under common/ are CC0-licenced and adapted by mirabilos.
 In Debian, /usr/share/common-licenses/CC0-1.0 has the full text.

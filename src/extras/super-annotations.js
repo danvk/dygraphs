@@ -402,7 +402,6 @@ annotations.prototype.destroy = function() {
   this.detachLabels();
 };
 
-
 // Public API
 
 /**
