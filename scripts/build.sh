@@ -68,6 +68,12 @@ scripts/build-docs.sh
 # This is for on the webserver
 rm -rf site
 mkdir site
-rsync -avzr src src/extras dist site
-rsync -avzr --copy-links dist/* docroot/* docroot/.* site/
+cd docroot
+pax -rw . ../site/
+rm ../site/.jslibs/*
+cp -L .jslibs/* ../site/.jslibs/
+cd ..
+pax -rw dist site/
+rm -f site/dist/tests.js
+pax -rw src src-es5 site/
 find site -print0 | xargs -0r chmod a+rX --
