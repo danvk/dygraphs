@@ -80,11 +80,10 @@ pre{
 
 /* When you visit dygraphs.com/options.html#errorBars, the fixed top nav
  * obscures the top 50px of content for that anchor. This is a workaround.
- * See https://stackoverflow.com/a/70397427/2171120
+ * See https://stackoverflow.com/a/55683966/2171120
  */
 :target {
-  margin-top: -50px;
-  padding-top: 50px;
+  scroll-margin-top: 50px;
 }
 
 a.link {
