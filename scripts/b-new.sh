@@ -4,8 +4,9 @@ header=$1
 
 rm -rf disttmp2
 mkdir disttmp2
-pax -rw -l LICENCE.js node_modules disttmp2/
+pax -rw -l node_modules disttmp2/
 
+print -- '"use strict";\n' | cat - LICENCE.js >disttmp2/LICENCE.js
 babel --compact false -d disttmp2/es5 src
 
 cd disttmp2
