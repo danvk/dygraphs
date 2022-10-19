@@ -166,11 +166,9 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
   utils.update(this.xAxis_.options, axis_opts["x"] || {});
 
+  if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
   // For "production" code, this gets removed by uglifyjs.
-  if (typeof(process) !== 'undefined') {
-    if (process.env.NODE_ENV != 'production') {
-      this.validateOptions_();
-    }
+    this.validateOptions_();
   }
 };
 
@@ -327,9 +325,8 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
+if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
 // For "production" code, this gets removed by uglifyjs.
-if (typeof(process) !== 'undefined') {
-if (process.env.NODE_ENV != 'production') {
 
 /**
  * Validate all options.
@@ -397,7 +394,6 @@ DygraphOptions.resetWarnings_ = function() {
   WARNINGS = {};
 };
 
-}
 }
 
 export default DygraphOptions;
