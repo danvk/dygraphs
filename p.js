@@ -49,6 +49,7 @@ if (outcode.map === null) {
 		...outcode.map,
 		"file": incode.map().file,
 	});
+	//const smc = new SourceMapConsumer(JSON.parse(inMap));
 	const smg = SourceMapGenerator.fromSourceMap(smc);
 	fs.writeFileSync('o2.map', smg.toString(), 'UTF-8');
 }
