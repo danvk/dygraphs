@@ -29,6 +29,7 @@ pax -rw . ../docroot/
 ./ssi_expander.py ../docroot/
 cd ../docroot
 rm -f NOTES TODO common footer.html header.html *.py
+mv README README-docs.txt
 cd ..
 rm -f docs/download.html docs/options.html
 pax -rw -l \
@@ -36,6 +37,7 @@ pax -rw -l \
 	gallery \
 	jsdoc \
 	tests \
+	README.md \
 	Screenshot.png \
 	thumbnail.png \
     docroot/
