@@ -9,6 +9,9 @@ cp LICENCE.js disttmp2/
 babel --compact false -d disttmp2/es5 src
 
 cd disttmp2
+find es5/ -type f -print0 | while IFS= read -d '' -r fn; do
+	print >>"$fn"
+done
 
 cp -r es5 src
 browserify \
