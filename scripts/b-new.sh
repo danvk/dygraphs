@@ -6,10 +6,11 @@ rm -rf disttmp2
 mkdir disttmp2
 pax -rw -l node_modules src disttmp2/
 
-cat - LICENCE.js <<'EOF' >disttmp2/LICENCE.js
-"use strict";
-
-EOF
+babel \
+  --compact false \
+  --source-maps inline \
+  -d disttmp2 \
+  LICENCE.js
 
 cd disttmp2
 PATH=$PWD/node_modules/.bin:$PATH
