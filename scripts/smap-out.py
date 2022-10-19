@@ -88,6 +88,7 @@ smap = json.loads(smap)
 with open(sys.argv[3], 'w') as f:
     json.dump(smap, f, ensure_ascii=False, allow_nan=False,
       indent=2, separators=(',', ': '))
+    f.write('\n')
 
 while lines[-1] == '\n':
     lines.pop()
