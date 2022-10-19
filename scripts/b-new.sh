@@ -22,6 +22,11 @@ babel \
   src
 rm -rf src
 
+# we could, in theory, remove the last line //# sourceMappingURL=…
+# from these files to make into src-es5/ now, would be identical
+# otherwise to whatever b-old.sh generated… but then, why not keep
+# these maps for users who need to debug especially the extras?
+
 cp -r es5 src
 browserify \
   -v \
