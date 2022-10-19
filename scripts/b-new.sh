@@ -4,7 +4,7 @@ header=$1
 
 rm -rf disttmp2
 mkdir disttmp2
-cp LICENCE.js disttmp2/
+pax -rw -l LICENCE.js node_modules disttmp2/
 
 babel --compact false -d disttmp2/es5 src
 
@@ -12,6 +12,7 @@ cd disttmp2
 find es5/ -type f -print0 | while IFS= read -d '' -r fn; do
 	print >>"$fn"
 done
+PATH=$PWD/node_modules/.bin:$PATH
 
 cp -r es5 src
 browserify \
