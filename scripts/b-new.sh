@@ -28,24 +28,26 @@ rm -rf src
 # these maps for users who need to debug especially the extras?
 
 cp -r es5 src
+../scripts/env-patcher.sh development src
 browserify \
   -v \
-  -t [ envify --NODE_ENV development ] \
   --debug \
   --standalone Dygraph \
   LICENCE.js \
   src/dygraph.js \
   >dygraph.tmp.js
+rm -rf src
 ../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
 
-#cp -r es5 src
+cp -r es5 src
+../scripts/env-patcher.sh production src
 browserify \
   -v \
-  -t [ envify --NODE_ENV production ] \
   --debug \
   --standalone Dygraph \
   src/dygraph.js \
   >dygraph.min.tmp.js
+rm -rf src
 ../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
 uglifyjs --compress --mangle \
