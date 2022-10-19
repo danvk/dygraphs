@@ -8,7 +8,7 @@
 
 var OPTIONS_REFERENCE = null;
 
-if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
+if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
 // For "production" code, this gets removed by uglifyjs.
 
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid

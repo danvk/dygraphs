@@ -367,7 +367,7 @@ Dygraph.prototype.toString = function() {
  * @return { ... } The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
-  if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
     // For "production" code, this gets removed by uglifyjs.
     if (typeof(OPTIONS_REFERENCE) === 'undefined') {
       console.error('Must include options reference JS for testing');

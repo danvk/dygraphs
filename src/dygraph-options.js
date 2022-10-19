@@ -166,7 +166,7 @@ DygraphOptions.prototype.reparseSeries = function() {
   }
   utils.update(this.xAxis_.options, axis_opts["x"] || {});
 
-  if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
   // For "production" code, this gets removed by uglifyjs.
     this.validateOptions_();
   }
@@ -325,7 +325,7 @@ DygraphOptions.prototype.seriesNames = function() {
   return this.labels_;
 };
 
-if ((typeof(process) !== 'undefined') && (process.env.NODE_ENV != 'production')) {
+if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
 // For "production" code, this gets removed by uglifyjs.
 
 /**
