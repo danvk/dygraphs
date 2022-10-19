@@ -18,7 +18,6 @@ browserify \
 
 # Create dist/dygraph.js.map
 exorcist --base . dist/dygraph.js.map <disttmp/dygraph.tmp.js >dist/dygraph.js
-rm LICENCE.js
 
 # Create "production" bundle for minification
 browserify \

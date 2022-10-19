@@ -29,7 +29,7 @@ pax -rw -l extras ../dist/
 cd ..
 
 # Remove temp files.
-rm -rf disttmp
+rm -rf LICENCE.js disttmp
 
 # Build documentation.
 scripts/build-docs.sh
