@@ -9,61 +9,19 @@ test -n "$v" || {
   exit 1
 }
 
-rm -rf dist disttmp
-mkdir dist disttmp
-
-# Create dist/dygraph.js
 rm -f LICENCE.js
 {
   echo '/*'
   sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
   echo ' */'
 } >LICENCE.js
-browserify \
-  -v \
-  -t babelify \
-  -t [ envify --NODE_ENV development ] \
-  --debug \
-  --standalone Dygraph \
-  LICENCE.js \
-  src/dygraph.js \
-  >disttmp/dygraph.tmp.js
-
-# Create dist/dygraph.js.map
-exorcist --base . dist/dygraph.js.map <disttmp/dygraph.tmp.js >dist/dygraph.js
-rm LICENCE.js
-
-# Create "production" bundle for minification
-browserify \
-  -v \
-  -t babelify \
-  -t [ envify --NODE_ENV production ] \
-  --debug \
-  --standalone Dygraph \
-  src/dygraph.js \
-  >disttmp/dygraph.tmp.js
-
-# Create dist/dygraph.tmp.js.map
-exorcist --base . disttmp/dygraph.tmp.js.map <disttmp/dygraph.tmp.js >/dev/null
-
 header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$v/LICENSE.txt (MIT) */"
 
-# Create dist/dygraph.js.min{,.map}
-uglifyjs --compress --mangle \
-  --preamble "$header" \
-  --in-source-map disttmp/dygraph.tmp.js.map \
-  --source-map-include-sources \
-  --source-map dist/dygraph.min.js.map \
-  --source-map-url dygraph.min.js.map \
-  -o dist/dygraph.min.js \
-  disttmp/dygraph.tmp.js
+mksh scripts/b-old.sh "$header"
 
 # Minify CSS
 cp css/dygraph.css dist/
 cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
-
-# Build ES5-compatible distribution
-babel src -d src-es5 --compact false
 
 # Add extras to dist, in ES5-compatible version
 cd src-es5
