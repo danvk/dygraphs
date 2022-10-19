@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const {
-	PrefixSource,
+	ReplaceSource,
 	SourceMapSource,
 } = require('webpack-sources');
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map');
@@ -15,9 +15,25 @@ const trimRE = /\n+\/\/# sourceMappingURL=.*\n*$/;
 
 var incode = new SourceMapSource(inScript.replace(trimRE, '\n'), 'o1.js', inMap);
 
-var prefixed = new PrefixSource('/*miau*/ ', incode);
+var replaceSource = incode.source();
+var replaceFrom = 'process.env.NODE_ENV';
+var replaceTo = '"development"';
+var indices = (function getAllIndices(haystack, needle) {
+	var i = -1;
+	var indices = [];
 
-var outcode = prefixed.sourceAndMap();
+	while ((i = haystack.indexOf(needle, i + 1)) !== -1)
+		indices.push(i);
+	return (indices);
+})(replaceSource, replaceFrom);
+
+var replaced = new ReplaceSource(incode);
+indices.forEach((beg) => {
+	var end = beg + replaceFrom.length - 1;
+	replaced.replace(beg, end, replaceTo);
+});
+
+var outcode = replaced.sourceAndMap();
 
 var outScript = outcode.source;
 if (!outScript.endsWith('\n'))
