@@ -36,7 +36,7 @@ browserify \
   LICENCE.js \
   src/dygraph.js \
   >dygraph.tmp.js
-exorcist --base . dygraph.js.map <dygraph.tmp.js >dygraph.js
+../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
 
 #cp -r es5 src
 browserify \
@@ -46,7 +46,7 @@ browserify \
   --standalone Dygraph \
   src/dygraph.js \
   >dygraph.min.tmp.js
-exorcist --base . dygraph.min.tmp.js.map <dygraph.min.tmp.js >/dev/null
+../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
 uglifyjs --compress --mangle \
   --preamble "$header" \
