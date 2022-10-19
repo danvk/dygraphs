@@ -4,20 +4,22 @@ header=$1
 
 rm -rf disttmp2
 mkdir disttmp2
-pax -rw -l node_modules disttmp2/
+pax -rw -l node_modules src disttmp2/
 
-print -- '"use strict";\n' | cat - LICENCE.js >disttmp2/LICENCE.js
+cat - LICENCE.js <<'EOF' >disttmp2/LICENCE.js
+"use strict";
+
+EOF
+
+cd disttmp2
+PATH=$PWD/node_modules/.bin:$PATH
+
 babel \
   --compact false \
   --source-maps inline \
-  -d disttmp2/es5 \
+  -d es5 \
   src
-
-cd disttmp2
-#find es5/ -type f -print0 | while IFS= read -d '' -r fn; do
-#	print >>"$fn"
-#done
-PATH=$PWD/node_modules/.bin:$PATH
+rm -rf src
 
 cp -r es5 src
 browserify \
