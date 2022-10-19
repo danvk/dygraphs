@@ -3,6 +3,12 @@
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
 
+v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
+test -n "$v" || {
+  echo 'E: could not determine version'
+  exit 1
+}
+
 rm -rf dist disttmp
 mkdir dist disttmp
 
@@ -40,7 +46,7 @@ browserify \
 # Create dist/dygraph.tmp.js.map
 exorcist --base . disttmp/dygraph.tmp.js.map <disttmp/dygraph.tmp.js >/dev/null
 
-header='/*! @license Copyright 2022 Dan Vanderkam (danvdk@gmail.com) and others; MIT-licenced: https://opensource.org/licenses/MIT */'
+header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$v/LICENSE.txt (MIT) */"
 
 # Create dist/dygraph.js.min{,.map}
 uglifyjs --compress --mangle \
