@@ -8,7 +8,7 @@ mkdir dist disttmp
 # Create dist/dygraph.js
 browserify \
   -v \
-  -t babelify \
+  -t [ babelify --compact false ] \
   -t [ envify --NODE_ENV development ] \
   --debug \
   --standalone Dygraph \
@@ -22,7 +22,7 @@ exorcist --base . dist/dygraph.js.map <disttmp/dygraph.tmp.js >dist/dygraph.js
 # Create "production" bundle for minification
 browserify \
   -v \
-  -t babelify \
+  -t [ babelify --compact false ] \
   -t [ envify --NODE_ENV production ] \
   --debug \
   --standalone Dygraph \
