@@ -36,7 +36,7 @@ pax -rw -l \
 	gallery \
 	jsdoc \
 	tests \
-	screenshot.png \
+	Screenshot.png \
 	thumbnail.png \
     docroot/
 rm -rf */__pycache__
