@@ -5,7 +5,8 @@ import base64
 import json
 import sys
 
-_leader = '//# sourceMappingURL=data:application/json;charset:utf-8;base64,'
+_b64leader = 'sourceMappingURL=data:application/json;charset=UTF-8;base64,'
+_linefmt = '//# %s%s\n'
 
 if len(sys.argv) != 4:
     sys.stderr.write('E: syntax: smap-in.py in.js in.map out.js\n')
@@ -14,7 +15,10 @@ if len(sys.argv) != 4:
 with open(sys.argv[1], 'r') as f:
     lines = f.readlines()
 
-if lines[-1].startswith('//# sourceMappingURL'):
+if lines[-1].startswith('//# sourceMappingURL='):
+    lines.pop()
+elif lines[-1].startswith('/*# sourceMappingURL='):
+    _linefmt = '/*# %s%s */\n'
     lines.pop()
 
 with open(sys.argv[2], 'r') as f:
@@ -28,7 +32,7 @@ while lines[-1] == '\n':
     lines.pop()
 if not lines[-1].endswith('\n'):
     lines.append('\n')
-lines.append('%s%s\n' % (_leader, smap))
+lines.append(_linefmt % (_b64leader, smap))
 
 with open(sys.argv[3], 'w') as f:
     f.writelines(lines)
