@@ -6,18 +6,23 @@ const {
 	ReplaceSource,
 	SourceMapSource,
 } = require('webpack-sources');
-const { SourceMapConsumer, SourceMapGenerator } = require('source-map');
+const {
+	SourceMapConsumer,
+	SourceMapGenerator,
+} = require('source-map');
 
 const inScript = fs.readFileSync('o1.js', 'UTF-8');
 const inMap = fs.readFileSync('o1.map', 'UTF-8');
 
 const trimRE = /\n+\/\/# sourceMappingURL=.*\n*$/;
 
-var incode = new SourceMapSource(inScript.replace(trimRE, '\n'), 'o1.js', inMap);
+// note don’t replace with newline, otherwise the result will have extra
+var incode = new SourceMapSource(inScript.replace(trimRE, ''),
+    'o1.js', inMap);
 
 var replaceSource = incode.source();
 var replaceFrom = 'process.env.NODE_ENV';
-var replaceTo = '"development"';
+var replaceTo = process.argv[2];
 var indices = (function getAllIndices(haystack, needle) {
 	var i = -1;
 	var indices = [];
@@ -38,18 +43,17 @@ var outcode = replaced.sourceAndMap();
 var outScript = outcode.source;
 if (!outScript.endsWith('\n'))
 	outScript += '\n';
-outScript += '//# sourceMappingURL=' + 'o2.map' + '\n';
-
+outScript += '//# sourceMappingURL=o2.map\n';
 fs.writeFileSync('o2.js', outScript, 'UTF-8');
+
 if (outcode.map === null) {
 	console.log('no output source map?');
-} else {
-//	fs.writeFileSync('o2.map', JSON.stringify(outcode.map), 'UTF-8');
-	const smc = new SourceMapConsumer({
-		...outcode.map,
-		"file": incode.map().file,
-	});
-	//const smc = new SourceMapConsumer(JSON.parse(inMap));
-	const smg = SourceMapGenerator.fromSourceMap(smc);
-	fs.writeFileSync('o2.map', smg.toString(), 'UTF-8');
+	process.exit(1);
 }
+const smc = new SourceMapConsumer({
+	...outcode.map,
+	"file": incode.map().file,
+});
+//const smc = new SourceMapConsumer(JSON.parse(inMap));
+const smg = SourceMapGenerator.fromSourceMap(smc);
+fs.writeFileSync('o2.map', smg.toString(), 'UTF-8');
