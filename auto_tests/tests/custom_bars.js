@@ -3,6 +3,7 @@
 /**
  * @fileoverview Regression test based on some strange customBars data.
  * @author danvk@google.com (Dan Vanderkam)
+ * @license MIT
  */
 import Dygraph from '../../src/dygraph';
 import * as utils from '../../src/dygraph-utils';

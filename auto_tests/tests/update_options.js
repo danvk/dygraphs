@@ -3,6 +3,7 @@
 /**
  * @fileoverview Tests for the updateOptions function.
  * @author antrob@google.com (Anthony Robledo)
+ * @license MIT
  */
 
 import Dygraph from '../../src/dygraph';
