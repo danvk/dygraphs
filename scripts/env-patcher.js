@@ -12,7 +12,7 @@ const inScript = fs.readFileSync('env-patcher.tmp.js', 'UTF-8');
 const inMap = fs.readFileSync('env-patcher.tmp.map', 'UTF-8');
 
 const thefile = inScript.split('\n');
-const ostr = 'process.env.NODE_ENV';
+const ostr = "typeof process !== 'undefined' && process.env.NODE_ENV != 'production'";
 const nstr = process.argv[2];
 const olen = ostr.length;
 const nlen = nstr.length;

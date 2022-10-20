@@ -33,7 +33,6 @@ Copyright (c) 2012 Google, Inc.
 The automatically added browser support shims are:
 
 Copyright (c) 2015 James Halliday <mail@substack.net>
-Copyright (c) 2013 Roman Shtylman <shtylman@gmail.com>
 
 The Debian packaging, bugfixes and vextlnk are provided by:
 

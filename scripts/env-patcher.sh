@@ -5,11 +5,9 @@ set -eo pipefail
 mydir=$(realpath "$0/..")
 
 if [[ $1 = development ]]; then
-#	rpl=true
-	rpl=\"$1\"
+	rpl=true
 elif [[ $1 = production ]]; then
-#	rpl=false
-	rpl=\"$1\"
+	rpl=false
 else
 	print -ru2 "$0: syntax error"
 	exit 1
