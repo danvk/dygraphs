@@ -54,8 +54,7 @@
     "pre-commit": "^1.0.6",
     "source-map": "^0.4.2",
     "uglify-js": "^2.5.0",
-    "watchify": "^3.4.0",
-    "webpack-sources": "^3.2.3"
+    "watchify": "^3.4.0"
   },
   "scripts": {
     "build": "./scripts/build.sh",
