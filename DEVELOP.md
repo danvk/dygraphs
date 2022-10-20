@@ -10,16 +10,15 @@ To install dependencies, run
 
     npm install
 
-To build dygraphs, run
+To build dygraphs and the tests, run
 
     npm run build
 
 To run the tests, run:
 
-    npm run build-tests
     npm run test
 
-To iterate on the code, run:
+To iterate on the code, install envify and run:
 
     npm run watch
 

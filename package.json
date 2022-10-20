@@ -61,7 +61,6 @@
     "coverage": "./scripts/generate-coverage.sh",
     "site": "./scripts/run-site.sh",
     "watch": "./scripts/watch.sh",
-    "build-tests": "./scripts/build-tests.sh",
     "test": "./scripts/run-tests.sh",
     "tests-ok": "./scripts/check-no-only.sh"
   },
