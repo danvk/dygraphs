@@ -8,6 +8,15 @@ test -n "$v" || {
   echo 'E: could not determine version'
   exit 1
 }
+if [[ $v = +([0-9]).+([0-9]).+([0-9])-* ]]; then
+	rv=${v%%-*}
+	IFS=.
+	set -A rv -- $rv
+	IFS=$' \t\n'
+	rv=$1.$2.$(($3-1))
+else
+	rv=$v
+fi
 
 rm -f LICENCE.js
 {
@@ -15,7 +24,7 @@ rm -f LICENCE.js
   sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
   echo ' */'
 } >LICENCE.js
-header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$v/LICENSE.txt (MIT) */"
+header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$rv/LICENSE.txt (MIT) */"
 
 # Build browser-compatible and ES5 versions in a subdirectory
 rm -rf dist disttmp src-es5
