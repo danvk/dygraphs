@@ -3,56 +3,82 @@
 
 const fs = require('fs');
 const {
-	ReplaceSource,
-	SourceMapSource,
-} = require('webpack-sources');
-const {
 	SourceMapConsumer,
 	SourceMapGenerator,
 } = require('source-map');
+const { relative } = require('source-map/lib/source-map/util');
 
 const inScript = fs.readFileSync('env-patcher.tmp.js', 'UTF-8');
 const inMap = fs.readFileSync('env-patcher.tmp.map', 'UTF-8');
 
-const trimRE = /\n+\/\/# sourceMappingURL=.*\n*$/;
+const thefile = inScript.split('\n');
+const ostr = 'process.env.NODE_ENV';
+const nstr = process.argv[2];
+const olen = ostr.length;
+const nlen = nstr.length;
+const dlen = nlen - olen;
+const rpl = {};
+var lno;
+for (lno = 0; lno < thefile.length; ++lno) {
+	const str = thefile[lno];
+	const col = str.indexOf(ostr);
+	if (col === -1)
+		continue;
+	if (str.indexOf(ostr, col + olen) !== -1) {
+		console.log("E: more than one occurrence in line " + lno);
+		console.log("N: for simplicity only one replacement is supported");
+		console.log("N: hint: uglify after transforming only");
+		process.exit(1);
+	}
+	rpl[lno + 1] = col;
+	thefile[lno] = str.substring(0, col) + nstr + str.substring(col + olen);
+}
 
-// note don’t replace with newline, otherwise the result will have extra
-var incode = new SourceMapSource(inScript.replace(trimRE, ''),
-    'env-patcher.tmp.js', inMap);
-
-var replaceSource = incode.source();
-var replaceFrom = 'process.env.NODE_ENV';
-var replaceTo = process.argv[2];
-var indices = (function getAllIndices(haystack, needle) {
-	var i = -1;
-	var indices = [];
-
-	while ((i = haystack.indexOf(needle, i + 1)) !== -1)
-		indices.push(i);
-	return (indices);
-})(replaceSource, replaceFrom);
-
-var replaced = new ReplaceSource(incode);
-indices.forEach((beg) => {
-	var end = beg + replaceFrom.length - 1;
-	replaced.replace(beg, end, replaceTo);
-});
-
-var outcode = replaced.sourceAndMap();
-
-var outScript = outcode.source;
-if (!outScript.endsWith('\n'))
-	outScript += '\n';
-outScript += '//# sourceMappingURL=env-patcher.tmp.map\n';
+const outScript = thefile.join('\n');
 fs.writeFileSync('env-patcher.tmp.js', outScript, 'UTF-8');
 
-if (outcode.map === null) {
-	console.log('no output source map?');
-	process.exit(1);
-}
-const smc = new SourceMapConsumer({
-	...outcode.map,
-	"file": incode.map().file,
+const smc = new SourceMapConsumer(JSON.parse(inMap));
+// like SourceMapGenerator.fromSourceMap()
+const sr = smc.sourceRoot;
+const smg = new SourceMapGenerator({
+	"file": smc.file,
+	"sourceRoot": sr,
 });
-const smg = SourceMapGenerator.fromSourceMap(smc);
+smc.eachMapping(function (omap) {
+	const l = omap.generatedLine;
+	var c = omap.generatedColumn;
+	const r = rpl[l];
+
+	if (r !== undefined) {
+		if (c >= r + olen)
+			c += dlen;
+		else if (c > r)
+			return;
+	}
+	var nmap = {
+		"generated": {
+			"line": l,
+			"column": c,
+		},
+	};
+	if (omap.source != null) {
+		if (sr == null)
+			nmap.source = omap.source;
+		else
+			nmap.source = relative(sr, omap.source);
+		nmap.original = {
+			"line": omap.originalLine,
+			"column": omap.originalColumn,
+		};
+		if (omap.name != null)
+			nmap.name = omap.name;
+	}
+	smg.addMapping(nmap);
+});
+smc.sources.forEach(function (sourceFile) {
+	const content = smc.sourceContentFor(sourceFile);
+	if (content != null)
+		smg.setSourceContent(sourceFile, content);
+});
+
 fs.writeFileSync('env-patcher.tmp.map', smg.toString(), 'UTF-8');
