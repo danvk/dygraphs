@@ -4,7 +4,7 @@ header=$1
 
 rm -rf disttmp2
 mkdir disttmp2
-pax -rw -l node_modules src disttmp2/
+pax -rw -l auto_tests node_modules src disttmp2/
 
 babel \
   --compact false \
@@ -18,9 +18,14 @@ PATH=$PWD/node_modules/.bin:$PATH
 babel \
   --compact false \
   --source-maps inline \
+  -d tests5 \
+  auto_tests
+babel \
+  --compact false \
+  --source-maps inline \
   -d es5 \
   src
-rm -rf src
+rm -rf auto_tests src
 
 # we could, in theory, remove the last line //# sourceMappingURL=…
 # from these files to make into src-es5/ now, would be identical
@@ -36,6 +41,13 @@ browserify \
   LICENCE.js \
   src/dygraph.js \
   >dygraph.tmp.js
+#../scripts/env-patcher.sh development tests5
+browserify \
+  -v \
+  --debug \
+  LICENCE.js \
+  tests5/tests/*.js \
+  >tests.js
 rm -rf src
 ../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
 
