@@ -3,6 +3,7 @@
 /**
  * @fileoverview Regression tests for range selector.
  * @author paul.eric.felix@gmail.com (Paul Felix)
+ * @license MIT
  */
 
 import Dygraph from '../../src/dygraph';
