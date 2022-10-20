@@ -3,6 +3,7 @@
 /**
  * @fileoverview Tests for the updateOptions function.
  * @author antrob@google.com (Anthony Robledo)
+ * @license MIT
  */
 
 import Dygraph from '../../src/dygraph';
@@ -10,7 +11,7 @@ import Dygraph from '../../src/dygraph';
 describe("update-options", function() {
 
 cleanupAfterEach();
-  
+
 var opts = {
   width: 480,
   height: 320,
@@ -74,7 +75,7 @@ it('testStrokeSingleSeries', function() {
   unwrapDrawGraph(graph);
   assert.isFalse(graph._testDrawCalled);
 });
- 
+
 it('testSingleSeriesRequiresNewPoints', function() {
   var graphDiv = document.getElementById("graph");
   var graph = new Dygraph(graphDiv, data, opts);

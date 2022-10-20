@@ -4,6 +4,7 @@
  * @fileoverview A class to facilitate sampling colors at particular pixels on a
  * dygraph.
  * @author danvk@google.com (Dan Vanderkam)
+ * @license MIT
  */
 
 'use strict';
