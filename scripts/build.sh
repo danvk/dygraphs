@@ -30,7 +30,8 @@ header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$rv/LICENSE.txt
 # Build browser-compatible and ES5 versions in a subdirectory
 rm -rf dist disttmp src-es5
 mkdir dist disttmp
-pax -rw -l auto_tests node_modules src disttmp/
+[[ ! -e node_modules ]] || pax -rw -l node_modules disttmp/
+pax -rw -l auto_tests src disttmp/
 
 babeljs \
   --config-file "$babelrc" \
@@ -40,7 +41,7 @@ babeljs \
   LICENCE.js
 
 cd disttmp
-PATH=$PWD/node_modules/.bin:$PATH
+[[ ! -e node_modules ]] || PATH=$PWD/node_modules/.bin:$PATH
 
 # ES5-compatible source
 babeljs \
