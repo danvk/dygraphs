@@ -32,9 +32,10 @@
   },
   "homepage": "https://github.com/danvk/dygraphs",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-core": "^5.8.25",
-    "babelify": "^6.3.0",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.2",
+    "@babel/plugin-transform-strict-mode": "^7.18.6",
+    "@babel/preset-env": "^7.20.2",
     "browserify": "^17.0.0",
     "chai": "^3.3.0",
     "clean-css": "^3.4.23",
