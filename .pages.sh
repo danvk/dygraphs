@@ -1,6 +1,9 @@
 #!/bin/sh
 set -ex
 
+: drop any pre-installed PhantomJS as they cause breakage
+bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
+
 mksh -c true || {
 	sudo apt-get install -y mksh
 	exec mksh "$0" "$@"
