@@ -1,6 +1,12 @@
 {
   "plugins": [
-    "@babel/plugin-transform-strict-mode"
+    "@babel/plugin-transform-strict-mode",
+    [
+      "add-module-exports",
+      {
+        "addDefaultProperty": true
+      }
+    ]
   ],
   "presets": [
     [
