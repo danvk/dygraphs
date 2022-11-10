@@ -1,9 +1,9 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
-// MIT-licenced: https://opensource.org/licenses/MIT
 
 /**
  * @fileoverview Regression tests for range selector.
  * @author paul.eric.felix@gmail.com (Paul Felix)
+ * @license MIT
  */
 
 import Dygraph from '../../src/dygraph';

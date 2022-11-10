@@ -1,7 +1,0 @@
-missing licence:
-- auto_tests/tests/PixelSampler.js
-- auto_tests/tests/css.js
-- auto_tests/tests/custom_bars.js
-- auto_tests/tests/selection.js
-- auto_tests/tests/update_options.js
-https://github.com/danvk/dygraphs/issues/1024

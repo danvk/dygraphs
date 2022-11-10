@@ -4,6 +4,7 @@
  * @fileoverview Regression test based on an optimization w/
  * unforeseen consequences.
  * @author danvk@google.com (Dan Vanderkam)
+ * @license MIT
  */
 
 import Dygraph from '../../src/dygraph';
