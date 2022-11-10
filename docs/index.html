@@ -7,6 +7,12 @@ pre.prettyprint {
 }
 </style>
 
+  <p style="border:3px inset red; margin:1em; padding:1ex; max-width:45em;"
+   id="mirrornote"><b>⚠</b> Please visit the official Dygraphs homepage
+   <a href="https://dygraphs.com/"><tt>https://dygraphs.com/</tt></a> instead.
+   You are reading this on a mirror, which may have outdated, incomplete
+   and/or locally patched information, and links may not work.</p>
+
   <h4>dygraphs is a fast, flexible open source JavaScript charting library.</h4>
   <p>It allows users to explore and interpret dense data sets. Here's how it works:</p>
 
@@ -29,6 +35,11 @@ pre.prettyprint {
   </div>
 
   <script type="text/javascript"><!--//--><![CDATA[//><!--
+    $(function () {
+	if (window.location.hostname === 'dygraphs.com')
+		document.getElementById('mirrornote').style.display = 'none';
+    });
+
     g = new Dygraph(
       document.getElementById("demodiv"),
       "ny-vs-sf.txt",
