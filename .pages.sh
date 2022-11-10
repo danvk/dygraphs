@@ -1,9 +1,6 @@
 #!/bin/sh
 set -ex
 
-: drop any pre-installed PhantomJS as they cause breakage
-bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
-
 mksh -c true || {
 	sudo apt-get install -y mksh
 	exec mksh "$0" "$@"
@@ -16,7 +13,11 @@ sudo apt-get install -y ed jsdoc-toolkit \
     libjs-bootstrap libjs-jquery libjs-jquery-ui \
     mksh pax
 
-npm install
+: drop any pre-installed PhantomJS as they cause breakage
+bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
+
+TMPDIR=/tmp npm install -g phantomjs@1.9.20
+TMPDIR=/tmp npm install
 
 npm run build
 npm run test
