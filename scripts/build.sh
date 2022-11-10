@@ -2,6 +2,7 @@
 # This generates everything under dist:
 # bundled JS, minified JS, minified CSS and source maps.
 set -o errexit
+babelrc=$PWD/babel.config.json
 
 v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
 test -n "$v" || {
@@ -31,7 +32,8 @@ rm -rf dist disttmp src-es5
 mkdir dist disttmp
 pax -rw -l auto_tests node_modules src disttmp/
 
-babel \
+babeljs \
+  --config-file "$babelrc" \
   --compact false \
   --source-maps inline \
   -d disttmp \
@@ -41,12 +43,14 @@ cd disttmp
 PATH=$PWD/node_modules/.bin:$PATH
 
 # ES5-compatible source
-babel \
+babeljs \
+  --config-file "$babelrc" \
   --compact false \
   --source-maps inline \
   -d tests5 \
   auto_tests
-babel \
+babeljs \
+  --config-file "$babelrc" \
   --compact false \
   --source-maps inline \
   -d es5 \

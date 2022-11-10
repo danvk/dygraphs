@@ -1,0 +1,15 @@
+{
+  "plugins": [
+    "@babel/plugin-transform-strict-mode"
+  ],
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "bugfixes": true,
+        "modules": "auto",
+        "spec": true
+      }
+    ]
+  ]
+}

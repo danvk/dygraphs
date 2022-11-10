@@ -4,14 +4,23 @@
 # Output is coverage/lcov.info
 
 set -o errexit
+babelrc=$PWD/babel.config.json
 set -x
 
 rm -rf disttmp
 mkdir disttmp
 
 # Generate per-file ES6 --> ES5 transpilations
-babel --retain-lines src --out-dir disttmp/src
-babel --retain-lines auto_tests/tests --out-dir disttmp/auto_tests/tests
+babeljs \
+  --config-file "$babelrc" \
+  --retain-lines \
+  --out-dir disttmp/src \
+  src
+babeljs \
+  --config-file "$babelrc" \
+  --retain-lines \
+  --out-dir disttmp/auto_tests/tests \
+  auto_tests/tests
 
 # Instrument the source code with Istanbul's __coverage__ variable.
 rm -rf coverage  # Clear out everything to ensure a hermetic run.
