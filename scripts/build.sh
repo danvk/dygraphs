@@ -8,6 +8,7 @@ else
 	babel_js=babeljs
 fi
 babelrc=$PWD/babel.config.json
+set -x
 
 v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
 test -n "$v" || {
