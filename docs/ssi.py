@@ -38,7 +38,7 @@ def InlineIncludes(path, errorfn):
   """Read a file, expanding <!-- #include --> statements."""
   content = _slurp(path)
   vars = {}
-  content = re.sub(br'<!-- *#include *virtual=[\'"]([^\'"]+)[\'"] *-->',
+  content = re.sub(br'<!-- *#include *virtual=[\'"]([^\'"]+)[\'"] *-->\s*',
       lambda x: _slurp(x.group(1)),
       content)
   content = re.sub(br'<!-- *#(set|echo) *var=[\'"]([^\'"]+)[\'"](?: *value=[\'"]([^\'"]+)[\'"])? *-->\s*',
