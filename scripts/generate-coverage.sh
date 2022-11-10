@@ -4,6 +4,11 @@
 # Output is coverage/lcov.info
 
 set -o errexit
+if [[ -e node_modules ]]; then
+	babel_js=babel
+else
+	babel_js=babeljs
+fi
 babelrc=$PWD/babel.config.json
 set -x
 
@@ -11,12 +16,12 @@ rm -rf disttmp
 mkdir disttmp
 
 # Generate per-file ES6 --> ES5 transpilations
-babeljs \
+$babel_js \
   --config-file "$babelrc" \
   --retain-lines \
   --out-dir disttmp/src \
   src
-babeljs \
+$babel_js \
   --config-file "$babelrc" \
   --retain-lines \
   --out-dir disttmp/auto_tests/tests \
