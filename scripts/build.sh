@@ -89,11 +89,11 @@ browserify \
 rm -rf src
 ../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
-uglifyjs --compress --mangle \
-  --preamble "$header" \
-  --in-source-map dygraph.min.tmp.js.map \
-  --source-map-include-sources \
-  --source-map dygraph.min.js.map \
+uglifyjs \
+  --compress \
+  --mangle \
+  --output-opts "preamble='$header'" \
+  --source-map "content='dygraph.min.tmp.js.map',includeSources=true,url='dygraph.min.js.map'" \
   -o dygraph.min.js \
   dygraph.min.tmp.js
 

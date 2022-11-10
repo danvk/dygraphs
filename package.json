@@ -52,7 +52,7 @@
     "phantomjs": "^1.9.7-8",
     "pre-commit": "^1.0.6",
     "source-map": "^0.6.1",
-    "uglify-js": "^2.5.0",
+    "uglify-js": "^3.17.3",
     "watchify": "^3.4.0"
   },
   "scripts": {
