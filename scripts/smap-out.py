@@ -85,6 +85,9 @@ smap = smap.group('b64')
 smap = base64.b64decode(smap.rstrip('\n'), validate=True).decode('UTF-8')
 smap = json.loads(smap)
 
+# clear "file" key as browserify writes the wrong one and it’s optional anyway
+smap.pop('file', None)
+
 with open(sys.argv[3], 'w') as f:
     json.dump(smap, f, ensure_ascii=False, allow_nan=False,
       indent=2, separators=(',', ': '))

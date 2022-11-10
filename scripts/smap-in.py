@@ -29,6 +29,9 @@ elif lines[-1].startswith('/*# sourceMappingURL='):
 with open(sys.argv[2], 'r') as f:
     smap = json.load(f)
 
+# clear "file" key as it’s inappropriate for embedded maps
+smap.pop('file', None)
+
 smap = json.dumps(smap, ensure_ascii=False, allow_nan=False,
   indent=None, separators=(',', ':'))
 smap = base64.b64encode(smap.encode('UTF-8')).decode('UTF-8')
