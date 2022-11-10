@@ -64,6 +64,8 @@ $babel_js \
   src
 rm -rf auto_tests src
 
+[[ -e node_modules ]] || ln -s /usr/share/nodejs/core-js .
+
 # dygraph.js{,.map} and tests.js
 cp -r es5 src
 ../scripts/env-patcher.sh development src
