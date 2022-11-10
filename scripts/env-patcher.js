@@ -6,7 +6,7 @@ const {
 	SourceMapConsumer,
 	SourceMapGenerator,
 } = require('source-map');
-const { relative } = require('source-map/lib/source-map/util');
+const { relative } = require('source-map/lib/util');
 
 const inScript = fs.readFileSync('env-patcher.tmp.js', 'UTF-8');
 const inMap = fs.readFileSync('env-patcher.tmp.map', 'UTF-8');
