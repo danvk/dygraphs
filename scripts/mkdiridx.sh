@@ -143,14 +143,14 @@ for dir in "$@"; do
 		d=${subdirs[i]}
 		dl=$(uri_escape "$d")
 		dh=${|xhtml_fesc "$d";}
-		print -r -- " <li><a href="${dl}/">${dh}/</a></li>"
+		print -r -- " <li><a href=\"${dl}/\">${dh}/</a></li>"
 	done
 	i=-1
 	while (( ++i < nfiles )); do
 		f=${files[i]}
 		fl=$(uri_escape "$f")
 		fh=${|xhtml_fesc "$f";}
-		print -r -- " <li><a href="${fl}">${fh}</a>${fwarns[i]:+$fw}</li>"
+		print -r -- " <li><a href=\"${fl}\">${fh}</a>${fwarns[i]:+$fw}</li>"
 	done
 	print -r -- '</ul>'
 	print -r -- "<p><address>$ah</address></p>"
