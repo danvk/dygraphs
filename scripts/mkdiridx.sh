@@ -122,7 +122,7 @@ for dir in "$@"; do
 	if [[ $dir = . ]]; then
 		t='Index of /'
 	else
-		t="Index of ${dir#./}"
+		t="Index of /${dir#./}"
 		t=${|xhtml_fesc "${t%%+(/)}/";}
 	fi
 	cat <<-EOF
