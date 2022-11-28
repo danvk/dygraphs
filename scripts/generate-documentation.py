@@ -165,7 +165,7 @@ def urlify_gallery(f):
 def test_fmt(f):
   res = '<a href="%s">%s</a>' % (f, test_name(f))
   if f in ext_tests:
-    res += '<b class="extlink">⚠</b>'
+    res += '<b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>'
   return res
 
 for label in sorted(labels):
