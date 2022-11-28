@@ -153,7 +153,7 @@ for dir in "$@"; do
 		print -r -- " <li><a href=\"${fl}\">${fh}</a>${fwarns[i]:+$fw}</li>"
 	done
 	print -r -- '</ul>'
-	print -r -- "<p><address>$ah</address></p>"
+	print -r -- "<address>$ah</address>"
 	print -r -- '</body></html>'
 	exec >&2
 done
