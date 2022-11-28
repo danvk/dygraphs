@@ -7,6 +7,9 @@ mksh -c true || {
 	exit 255
 }
 
+export LC_ALL=C
+unset LANGUAGE
+
 set -o pipefail
 
 sudo apt-get install -y ed jsdoc-toolkit \
@@ -28,3 +31,6 @@ scripts/weigh-in.sh
 echo dygraph.github.mirsolutions.de >site/CNAME
 rm -rf _site
 mv site _site
+cd _site
+find . -type d -print0 | sort -z | xargs -0 mksh ../scripts/mkdiridx.sh
+cd ..
