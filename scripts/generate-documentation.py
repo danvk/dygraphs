@@ -64,7 +64,7 @@ def search_files(type, files):
         text = infile.read()
 
       if type == "tests":
-        if text.find('src="http') >= 0:
+        if text.find("src=\"http") >= 0:
           ext_tests.append(test_file)
 
       # Hack for slipping past gallery demos that have title in their attributes
