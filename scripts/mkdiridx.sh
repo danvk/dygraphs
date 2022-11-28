@@ -153,6 +153,7 @@ for dir in "$@"; do
 		print -r -- " <li><a href=\"${fl}\">${fh}</a>${fwarns[i]:+$fw}</li>"
 	done
 	print -r -- '</ul>'
+	print -r -- '<!--@@@IFIMPRINT:<hr /><p>@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@</p>:FIIMPRINT@@@-->'
 	print -r -- "<address>$ah</address>"
 	print -r -- '</body></html>'
 	exec >&2
