@@ -25,6 +25,6 @@ npm run coverage
 scripts/post-coverage.sh
 scripts/weigh-in.sh
 
-echo dygraph.mirsolutions.de >site/CNAME
+echo dygraph.github.mirsolutions.de >site/CNAME
 rm -rf _site
 mv site _site
