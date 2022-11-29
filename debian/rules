@@ -14,6 +14,8 @@ export TZ
 shellescape='$(subst ','\'',$(1))'
 shellexport=$(1)=$(call shellescape,${$(1)})
 
+CLEANFILES+=	debian/mkdiridx.tmp
+
 # mostly ../.gitignore minus debian/copyright
 CLEANFILES+=	*.log
 CLEANFILES+=	LICENCE.js
@@ -41,6 +43,10 @@ execute_before_dh_clean:
 
 override_dh_auto_build:
 	scripts/build.sh
+	sed 's!^ah=.*$$!ah='\''<a href="../">libjs-dygraphs</a> manual integration tests'\''!' \
+	    <scripts/mkdiridx.sh >debian/mkdiridx.tmp
+	(cd site && exec mksh ../debian/mkdiridx.tmp ./tests)
+	rm debian/mkdiridx.tmp
 
 execute_after_dh_installdocs:
 	# replaced with symbolic links
