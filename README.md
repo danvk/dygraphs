@@ -75,7 +75,7 @@ Then open `tests/demo.html` in your browser.
 Read more about the dygraphs development process in the [developer guide](/DEVELOP.md).
 
 ## License(s)
-dygraphs is available under the MIT license, included in [LICENSE.txt](./LICENSE.txt).
+dygraphs is available under the MIT license, included in [LICENSE.txt](./debian/copyright).
 
 [cdnjs]: https://cdnjs.com/libraries/dygraph
 [the tutorial]: http://www.dygraphs.com/tutorial.html
