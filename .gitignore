@@ -1,7 +1,6 @@
 *.log
 LICENCE.js
 coverage
-debian/copyright
 dist
 disttmp
 docroot
