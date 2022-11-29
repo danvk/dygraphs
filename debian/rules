@@ -1,0 +1,49 @@
+#!/usr/bin/make -f
+
+ifeq (,$(filter terse,${DEB_BUILD_OPTIONS}))
+export DH_VERBOSE=1
+export V=1
+export VERBOSE=1
+endif
+
+LC_ALL:=C
+export LC_ALL
+TZ:=UTC
+export TZ
+
+shellescape='$(subst ','\'',$(1))'
+shellexport=$(1)=$(call shellescape,${$(1)})
+
+# mostly ../.gitignore minus debian/copyright
+CLEANFILES+=	*.log
+CLEANFILES+=	LICENCE.js
+CLEANFILES+=	coverage
+CLEANFILES+=	dist
+CLEANFILES+=	disttmp
+CLEANFILES+=	docroot
+CLEANFILES+=	docs/download.html
+CLEANFILES+=	docs/options.html
+CLEANFILES+=	env
+CLEANFILES+=	jsdoc
+CLEANFILES+=	jsdoc.tmp
+CLEANFILES+=	node_modules
+CLEANFILES+=	package-lock.json
+CLEANFILES+=	site
+CLEANFILES+=	src-es5
+
+execute_before_dh_clean:
+	echo | cat debian/copyright.in - LICENSE.txt >debian/copyright
+	chmod 644 debian/copyright
+	-rm -rf ${CLEANFILES}
+
+%:
+	dh $@ --buildsystem=none
+
+override_dh_auto_build:
+	scripts/build.sh
+
+execute_after_dh_installdocs:
+	# replaced with symbolic links
+	rm debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/.jslibs/*
+	rm debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/LICENSE.txt
+	rm -r debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/dist

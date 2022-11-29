@@ -1,0 +1,12 @@
+# so /usr/share/javascript/dygraphs/ contents are as expected
+usr/share/javascript/dygraphs usr/share/javascript/dygraphs/dist
+usr/share/javascript/dygraphs/src-es5/extras usr/share/javascript/dygraphs/extras
+# crosslink to existing locations
+usr/share/doc/libjs-dygraphs/copyright usr/share/doc/libjs-dygraphs/site/LICENSE.txt
+usr/share/javascript/dygraphs usr/share/doc/libjs-dygraphs/site/dist
+# for rendering the documentation
+usr/share/javascript/bootstrap/css/bootstrap.min.css usr/share/doc/libjs-dygraphs/site/.jslibs/bootstrap.min.css
+usr/share/javascript/bootstrap/js/bootstrap.min.js usr/share/doc/libjs-dygraphs/site/.jslibs/bootstrap.min.js
+usr/share/javascript/jquery-ui/jquery-ui.min.js usr/share/doc/libjs-dygraphs/site/.jslibs/jquery-ui.min.js
+usr/share/javascript/jquery-ui/themes/base/jquery-ui.min.css usr/share/doc/libjs-dygraphs/site/.jslibs/jquery-ui.min.css
+usr/share/javascript/jquery/jquery.min.js usr/share/doc/libjs-dygraphs/site/.jslibs/jquery.min.js

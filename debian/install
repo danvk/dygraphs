@@ -1,0 +1,10 @@
+# for use from webbrowser
+dist/dygraph.css* usr/share/javascript/dygraphs/
+dist/dygraph.js* usr/share/javascript/dygraphs/
+dist/dygraph.min.css* usr/share/javascript/dygraphs/
+dist/dygraph.min.js* usr/share/javascript/dygraphs/
+# for use from nodejs
+index.es5.js usr/share/javascript/dygraphs/
+index.js usr/share/javascript/dygraphs/
+src usr/share/javascript/dygraphs/
+src-es5 usr/share/javascript/dygraphs/

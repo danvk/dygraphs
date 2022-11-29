@@ -1,0 +1,5 @@
+dygraphs (2.1.1) unstable; urgency=medium
+
+  * Initial release. (Closes: #749603)
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 29 Nov 2022 18:41:21 +0100
