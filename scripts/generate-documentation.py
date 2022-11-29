@@ -35,6 +35,12 @@ for opt in docs:
   docs[opt]['tests'] = []
   docs[opt]['gallery'] = []
 
+encode_re = re.compile('[^A-Za-z0-9.-]')
+def encode_cb(match):
+  return ''.join(["_%02X" % x for x in match.group(0).encode('UTF-8')])
+def encode_anchor(name):
+  return encode_re.sub(encode_cb, name)
+
 # This is helpful for differentiating uses of options like 'width' and 'height'
 # from appearances of identically-named options in CSS.
 def find_braces(txt):
@@ -115,7 +121,7 @@ print("""
   <li><a href="#usage">Usage</a>
 """)
 for label in sorted(labels):
-  print('  <li><a href="#%s">%s</a>\n' % (label, label))
+  print('  <li><a href="#%s">%s</a>\n' % (encode_anchor(label), label))
 print('</ul></div></div>\n\n')
 
 print("""
@@ -169,7 +175,7 @@ def test_fmt(f):
   return res
 
 for label in sorted(labels):
-  print('<a name="%s"></a><h3>%s</h3>\n' % (label, label))
+  print('<a name="%s"></a><h3>%s</h3>\n' % (encode_anchor(label), label))
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -200,8 +206,8 @@ for label in sorted(labels):
 
     print("""
   <div class='option'><p>
-  <a name="%(name)s"></a><b>%(name)s</b>
-  <a class="link" href="#%(name)s">#</a>
+  <a name="%(namenc)s"></a><b>%(name)s</b>
+  <a class="link" href="#%(namenc)s">#</a>
   </p><p>
   %(desc)s
   </p><p>
@@ -212,6 +218,7 @@ for label in sorted(labels):
   Other Examples: %(examples_html)s<br/>
   </p></div>
   """ % { 'name': opt_name,
+          'namenc': encode_anchor(opt_name),
           'type': opt['type'],
           'parameters': parameters_html,
           'default': opt['default'],
