@@ -2,7 +2,10 @@ Document: dygraphs
 Title: dygraphs JavaScript charting library Pages
 Abstract: Documentation site for libjs-dygraphs
  .
- Best viewed by locally serving the document root, following symlinks.
+ Best viewed by locally serving the document root, following symlinks:
+  - cd /usr/share/doc/libjs-dygraphs/site
+  - python3 -m http.server 8888
+  - x-www-browser http://127.0.0.1:8888/  # in a second terminal
 Section: Programming/Javascript
 
 Format: HTML
