@@ -1,0 +1,10 @@
+# we do warn the user in all links to these, and they are never
+# run automatically anywhere; these are for manual functionality
+# testing by the developer
+libjs-dygraphs: privacy-breach-generic [<script type="text/javascript" src="https://www.google.com/jsapi">] (https://www.google.com/jsapi) [usr/share/doc/libjs-dygraphs/site/tests/*.html]
+
+# code may demand the dist subdirectory; this is the best way to add it
+libjs-dygraphs: symlink-is-self-recursive . [usr/share/javascript/dygraphs/dist]
+
+# lintian bug #1019235
+libjs-dygraphs: spelling-error-in-copyright licence license

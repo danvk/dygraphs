@@ -1,0 +1,21 @@
+# false positive: JSON, cannot be wrapped
+dygraphs source: source-is-missing [src/dygraph-options-reference.js]
+dygraphs source: source-contains-prebuilt-javascript-object [src/dygraph-options-reference.js]
+dygraphs source: very-long-line-length-in-source-file * [src/dygraph-options-reference.js:*]
+
+# false positive: deep equality tests, hand-written
+dygraphs source: source-is-missing [auto_tests/tests/date_ticker.js]
+dygraphs source: source-is-missing [auto_tests/tests/numeric_ticker.js]
+dygraphs source: source-contains-prebuilt-javascript-object [auto_tests/tests/date_ticker.js]
+dygraphs source: source-contains-prebuilt-javascript-object [auto_tests/tests/numeric_ticker.js]
+dygraphs source: very-long-line-length-in-source-file * [auto_tests/tests/date_ticker.js:*]
+dygraphs source: very-long-line-length-in-source-file * [auto_tests/tests/numeric_ticker.js:*]
+
+# thank you for your opinion, but this is correct as-is
+dygraphs source: absolute-symbolic-link-target-in-source
+
+# lintian is being cute
+dygraphs source: cute-field
+
+# no, thanks
+dygraphs source: no-dep5-copyright

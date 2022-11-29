@@ -47,3 +47,10 @@ execute_after_dh_installdocs:
 	rm debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/.jslibs/*
 	rm debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/LICENSE.txt
 	rm -r debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site/dist
+
+execute_after_dh_installexamples:
+	xz -4e debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/examples/tests.js
+
+execute_after_dh_compress:
+	(cd debian/libjs-dygraphs/usr/share/doc/libjs-dygraphs/site && \
+	    find . -name \*.gz -a \! -name \*.pdf.gz -exec gzip -d '{}' +)
