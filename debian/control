@@ -17,7 +17,6 @@ Build-Depends: debhelper-compat (= 13),
  python3,
  node-browserify,
  uglifyjs,
- xz-utils,
 Standards-Version: 4.6.1
 Rules-Requires-Root: no
 VCS-git: https://github.com/mirabilos/dygraphs
