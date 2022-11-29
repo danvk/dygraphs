@@ -107,7 +107,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "colors": {
     "default": "(see description)",
     "labels": ["Data Series Colors"],
-    "type": "array<string>",
+    "type": "Array of strings",
     "example": "['red', '#00FF00']",
     "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the 'color' option."
   },
@@ -377,7 +377,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "strokePattern": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "array<integer>",
+    "type": "Array of integers",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed lines."
   },
@@ -422,7 +422,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "gridLinePattern": {
     "default": "null",
     "labels": ["Grid"],
-    "type": "array<integer>",
+    "type": "Array of integers",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed gridlines."
   },
@@ -541,7 +541,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "labels": {
     "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
     "labels": ["Legend"],
-    "type": "array<string>",
+    "type": "Array of strings",
     "description": "A name for each data series, including the independent (X) series. For CSV files and DataTable objections, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged."
   },
   "dateWindow": {
@@ -812,7 +812,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "plugins": {
     "default": "[]",
     "labels": ["Configuration"],
-    "type": "Array<plugin>",
+    "type": "Array of plugins",
     "description": "Defines per-graph plugins. Useful for per-graph customization"
   },
   "dataHandler": {
