@@ -12,8 +12,6 @@ unset LANGUAGE
 
 set -o pipefail
 
-typeset -p | sed 's/^/I: env: /' >&2
-
 sudo apt-get install -y ed jsdoc-toolkit \
     libjs-bootstrap libjs-jquery libjs-jquery-ui \
     mksh pax
