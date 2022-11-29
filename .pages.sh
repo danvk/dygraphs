@@ -24,9 +24,8 @@ TMPDIR=/tmp npm install
 
 npm run build
 npm run test
-npm run coverage
-scripts/post-coverage.sh
-scripts/weigh-in.sh
+#npm run coverage && scripts/post-coverage.sh
+#scripts/weigh-in.sh
 
 echo dygraph.github.mirsolutions.de >site/CNAME
 rm -rf _site
