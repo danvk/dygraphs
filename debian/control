@@ -12,10 +12,11 @@ Build-Depends: debhelper-compat (= 13),
  libjs-jquery-ui,
  mksh,
  node-babel7,
+ node-browser-pack,
+ node-browserify,
  node-webpack-sources,
  pax,
  python3,
- node-browserify,
  uglifyjs,
 Standards-Version: 4.6.1
 Rules-Requires-Root: no

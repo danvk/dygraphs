@@ -33,7 +33,7 @@ Parts of the documentation are or make use of code that is:
 Copyright (c) 2012 Google, Inc.
 - Robert Konigsberg <konigsberg@google.com>
 
-The automatically added browser support shims are:
+The automatically added browser-pack shim is:
 
 Copyright (c) 2013, 2014 James Halliday <mail@substack.net>
 Copyright (c) 2013 Roman Shtylman <shtylman@gmail.com>
