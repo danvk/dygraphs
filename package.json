@@ -6,10 +6,10 @@
   "module": "index",
   "jsnext:main": "index",
   "files": [
-    "index.js",
-    "index.es5.js",
-    "docs",
     "dist",
+    "docroot",
+    "index.es5.js",
+    "index.js",
     "src",
     "src-es5"
   ],
