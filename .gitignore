@@ -2,6 +2,7 @@
 LICENCE.js
 _site
 coverage
+debian/copyright
 dist
 disttmp
 docroot

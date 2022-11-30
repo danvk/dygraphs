@@ -16,7 +16,7 @@ shellexport=$(1)=$(call shellescape,${$(1)})
 
 CLEANFILES+=	debian/mkdiridx.tmp
 
-# mostly ../.gitignore
+# mostly ../.gitignore minus debian/copyright
 CLEANFILES+=	*.log
 CLEANFILES+=	LICENCE.js
 CLEANFILES+=	coverage
@@ -34,6 +34,8 @@ CLEANFILES+=	site
 CLEANFILES+=	src-es5
 
 execute_before_dh_clean:
+	echo | cat debian/copyright.in - LICENSE.txt >debian/copyright
+	chmod 644 debian/copyright
 	-rm -rf ${CLEANFILES}
 
 %:
