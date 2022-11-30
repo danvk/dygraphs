@@ -1,4 +1,4 @@
-dygraphs is:
+dygraphs is MIT-licenced:
 
 Copyright (c) 2006, 2009, 2011, 2012, 2013, 2017
 	Dan Vanderkam <danvdk@gmail.com>
