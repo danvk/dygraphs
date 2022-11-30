@@ -1,5 +1,6 @@
 *.log
 LICENCE.js
+_site
 coverage
 dist
 disttmp
