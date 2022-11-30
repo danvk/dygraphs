@@ -51,6 +51,10 @@ Get dygraphs from NPM:
 
     npm install dygraphs
 
+**Do not install from the repository!** Always use a tarball install,
+which contains the prebuilt files; `npm` does not handle building the
+code on install from github.
+
 You'll find pre-built JS & CSS files in `node_modules/dygraphs/dist`. If you're
 using a module bundler like browserify or webpack, you can import dygraphs:
 
