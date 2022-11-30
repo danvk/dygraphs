@@ -31,7 +31,7 @@ rm -f LICENCE.js
   sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
   echo ' */'
 } >LICENCE.js
-header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$rv/debian/copyright (MIT) */"
+header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$rv/LICENSE.txt (MIT) */"
 
 # Build browser-compatible and ES5 versions in a subdirectory
 rm -rf dist disttmp src-es5
