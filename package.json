@@ -7,9 +7,9 @@
   "jsnext:main": "index",
   "files": [
     "dist",
-    "docroot",
     "index.es5.js",
     "index.js",
+    "site",
     "src",
     "src-es5"
   ],
