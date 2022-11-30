@@ -124,7 +124,7 @@ cd ..
 scripts/build-docs.sh
 
 # This is for on the webserver
-rm -rf site
+rm -rf site _site
 mkdir site
 cd docroot
 pax -rw . ../site/

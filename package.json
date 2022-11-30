@@ -6,10 +6,10 @@
   "module": "index",
   "jsnext:main": "index",
   "files": [
+    "_site",
     "dist",
     "index.es5.js",
     "index.js",
-    "site",
     "src",
     "src-es5"
   ],
@@ -63,6 +63,8 @@
     "build": "./scripts/build.sh",
     "coverage": "./scripts/generate-coverage.sh",
     "site": "./scripts/run-site.sh",
+    "prepack": "rm -rf _site && cp -Lr site _site && jdupes -rL dist _site src src-es5",
+    "postpack": "rm -rf _site",
     "watch": "./scripts/watch.sh",
     "test": "./scripts/run-tests.sh",
     "tests-ok": "./scripts/check-no-only.sh"
