@@ -804,6 +804,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "Object",
     "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='http://dygraphs.com/per-axis.html'>per-series and per-axis options</a>."
   },
+  "fixedyAxis": {
+    "default": "false",
+    "labels": ["Configuration"],
+    "type": "boolean",
+    "description": "Setting this option to true reverts the zoomout y-axis behavior to Dygraphs 1.x, making the y-axis fixed if set and not reset after zoomouts."
+  },
   "series": {
     "default": "null",
     "labels": ["Series"],

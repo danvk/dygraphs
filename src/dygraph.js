@@ -1350,14 +1350,18 @@ Dygraph.prototype.resetZoom = function() {
 
   const animatedZooms = this.getBooleanOption('animatedZooms');
   const zoomCallback = this.getFunctionOption('zoomCallback');
+  const fixedyAxis = this.getBooleanOption('fixedyAxis');
 
   // TODO(danvk): merge this block w/ the code below.
   // TODO(danvk): factor out a generic, public zoomTo method.
   if (!animatedZooms) {
     this.dateWindow_ = null;
-    this.axes_.forEach(axis => {
-      if (axis.valueRange) delete axis.valueRange;
-    });
+    if (!fixedyAxis) {
+      this.axes_.forEach(axis => {
+        if (axis.valueRange) delete axis.valueRange;
+      });
+    }
+
 
     this.drawGraph_();
     if (zoomCallback) {
@@ -1374,15 +1378,21 @@ Dygraph.prototype.resetZoom = function() {
 
   if (dirtyY) {
     oldValueRanges = this.yAxisRanges();
-    newValueRanges = this.yAxisExtremes();
+    newValueRanges = oldValueRanges
+
+    if (!fixedyAxis) {
+      newValueRanges = this.yAxisExtremes();
+    }
   }
 
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
       () => {
         this.dateWindow_ = null;
-        this.axes_.forEach(axis => {
-          if (axis.valueRange) delete axis.valueRange;
-        });
+        if (!fixedyAxis) {
+          this.axes_.forEach(axis => {
+            if (axis.valueRange) delete axis.valueRange;
+          });
+        }
         if (zoomCallback) {
           zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
         }
