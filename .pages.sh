@@ -1,8 +1,19 @@
 #!/bin/sh
+
+sudoapt() {
+	local _sudoapt_e=''
+
+	if command -v eatmydata >/dev/null 2>&1; then
+		_sudoapt_e=eatmydata
+	fi
+	sudo env DEBIAN_FRONTEND=noninteractive $_sudoapt_e apt-get "$@"
+}
+sudoagi='sudoapt --purge install --no-install-recommends -y'
+
 set -ex
 
 mksh -c true || {
-	sudo apt-get install -y mksh
+	$sudoagi mksh
 	exec mksh "$0" "$@"
 	exit 255
 }
@@ -12,18 +23,20 @@ unset LANGUAGE
 
 set -o pipefail
 
-sudo apt-get install -y eatmydata
-sudo eatmydata apt-get clean
-sudo eatmydata apt-get update
-sudo eatmydata apt-get install -y ed jsdoc-toolkit \
+$sudoagi eatmydata
+sudoapt clean
+sudoapt update
+sudoapt --purge dist-upgrade -y
+$sudoagi eatmydata git \
+    ed jsdoc-toolkit \
     libjs-bootstrap libjs-jquery libjs-jquery-ui \
-    mksh pax
+    mksh pax python3
 
 : drop any pre-installed PhantomJS as they cause breakage
 bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); do test -e "$x" || continue; found=1; rm -f "$x"; done; test $found = 1 || break; done'
 
-TMPDIR=/tmp eatmydata npm install -g phantomjs@1.9.20
-TMPDIR=/tmp eatmydata npm install
+eatmydata env TMPDIR=/tmp npm install -g phantomjs@1.9.20
+eatmydata env TMPDIR=/tmp npm install
 
 (eatmydata npm run clean || :)
 eatmydata npm run build
