@@ -25,6 +25,7 @@ bash -c 'set -o noglob; while true; do found=0; for x in $(which -a phantomjs); 
 TMPDIR=/tmp eatmydata npm install -g phantomjs@1.9.20
 TMPDIR=/tmp eatmydata npm install
 
+(eatmydata npm run clean || :)
 eatmydata npm run build
 eatmydata npm run test
 #npm run coverage && scripts/post-coverage.sh

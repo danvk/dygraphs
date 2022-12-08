@@ -61,6 +61,7 @@
   },
   "scripts": {
     "build": "./scripts/build.sh",
+    "clean": "git clean -dfx -e node_modules -e package-lock.json",
     "coverage": "./scripts/generate-coverage.sh",
     "site": "./scripts/run-site.sh",
     "prepack": "rm -rf _site && cp -Lr site _site && pax -rw -l LICENSE.txt README.md _site/ && jdupes -rL dist _site src src-es5",

@@ -17,6 +17,7 @@ To install dependencies, run:
 
 To build dygraphs and the tests, run:
 
+    npm run clean  # if necessary
     npm run build
 
 To run the tests, run:
