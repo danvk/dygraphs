@@ -59,10 +59,16 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 
 %(debian_text)s
 
+<p>There's a hosted version of dygraphs on <a href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
+
+<pre>&lt;script type="text/javascript" src="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css" href="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.css" /&gt;
+</pre>
+
 <p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
 <pre>&lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" type="text/css" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
+&lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
 </pre>
 
 <p>You can also install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>

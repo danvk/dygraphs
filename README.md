@@ -43,7 +43,7 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
 
 Learn more by reading [the tutorial][] and seeing demonstrations of what
 dygraphs can do in the [gallery][]. You can get `dygraph.js` and `dygraph.css`
-from [cdnjs][] or [from NPM][npm] (see below).
+from [UNPKG][], [cdnjs][] or [from NPM][npm] (see below).
 
 ## Usage with a module loader
 
@@ -81,6 +81,7 @@ Read more about the dygraphs development process in the [developer guide](/DEVEL
 ## License(s)
 dygraphs is available under the MIT license, included in [LICENSE.txt](./LICENSE.txt).
 
+[UNPKG]: https://unpkg.com/dygraphs/
 [cdnjs]: https://cdnjs.com/libraries/dygraph
 [the tutorial]: http://www.dygraphs.com/tutorial.html
 [gallery]: http://www.dygraphs.com/gallery
