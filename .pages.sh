@@ -28,8 +28,11 @@ TMPDIR=/tmp eatmydata npm install
 (eatmydata npm run clean || :)
 eatmydata npm run build
 eatmydata npm run test
-#npm run coverage && scripts/post-coverage.sh
-#scripts/weigh-in.sh
+if [[ $GITHUB_REPOSITORY = danvk/dygraphs ]]; then
+	eatmydata npm run coverage
+	eatmydata scripts/post-coverage.sh
+	eatmydata scripts/weigh-in.sh
+fi
 
 rm -rf _site
 mv site _site
