@@ -31,15 +31,20 @@ eatmydata npm run test
 #npm run coverage && scripts/post-coverage.sh
 #scripts/weigh-in.sh
 
-echo dygraph.github.mirsolutions.de >site/CNAME
 rm -rf _site
 mv site _site
 cd _site
 find . -type d -print0 | sort -z | xargs -0 mksh ../scripts/mkdiridx.sh
 if [[ $GITHUB_REF = refs/heads/debian && $GITHUB_REPOSITORY = mirabilos/dygraphs ]]; then
+	echo dygraph.github.mirsolutions.de >CNAME
+	imprint_text='<a href="https://github.com/mirabilos/Impressum/tree/master/dygraphs#imprint-text" xml:lang="de-DE-1901"><b>Impressum</b> und Datenschutzerklärung</a>'
+else
+	imprint_text=
+fi
+if [[ -n $imprint_text ]]; then
 	grep -FrlZ '@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@' . | \
 	    xargs -0 perl -pi -e '
-		s'\''<!--@@@IFIMPRINT:(.*?)@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@(.*?):FIIMPRINT@@@-->'\''$1.q{<a href="https://github.com/mirabilos/Impressum/tree/master/dygraphs#imprint-text" xml:lang="de-DE-1901"><b>Impressum</b> und Datenschutzerklärung</a>}.$2'\''eo
+		s'\''<!--@@@IFIMPRINT:(.*?)@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@(.*?):FIIMPRINT@@@-->'\''$1.q{'"$imprint_text"'}.$2'\''eo
 	    '
 fi
 cd ..
