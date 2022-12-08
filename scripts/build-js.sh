@@ -1,40 +1,34 @@
-#!/bin/sh
+#!/bin/mksh
 
 # initialisation
 set -e
-saveIFS=$IFS
-cd "$(dirname "$0")/.."
-cwd=$(pwd)
-if test -e node_modules; then
+set -o pipefail
+if [[ -e node_modules ]]; then
 	# NPM setup
 	babel_js=babel
 else
 	# Debian packaging
 	babel_js=babeljs
 fi
-babelrc=$cwd/babel.config.json
+babelrc=$PWD/babel.config.json
 set -x
 
 # obtain dygraphs version…
 v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
-if test -z "$v"; then
+if [[ -z $v ]]; then
 	echo >&2 'E: could not determine version'
 	exit 1
 fi
 # … as well as the version of the last release (for a snapshot)
-relv=$(echo "x$v" | sed 's/^x[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*//')
-case x$relv in
-(x-*)
+if [[ $v = +([0-9]).+([0-9]).+([0-9])-* ]]; then
 	relv=${v%%-*}
 	IFS=.
 	set -- $relv
-	IFS=$saveIFS
+	IFS=$' \t\n'
 	relv=$1.$2.$(($3 - 1))
-	;;
-(*)
+else
 	relv=$v
-	;;
-esac
+fi
 
 # licence headers for unminified and minified js, respectively
 rm -f LICENCE.js
@@ -51,7 +45,7 @@ header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$relv/LICENSE.t
 # copy/transform sources and licence info
 rm -rf dist disttmp src-es5
 mkdir disttmp
-if test -e node_modules; then
+if [[ -e node_modules ]]; then
 	pax -rw -l node_modules disttmp/
 fi
 pax -rw -l auto_tests src disttmp/
@@ -64,8 +58,8 @@ $babel_js \
     LICENCE.js
 
 cd disttmp
-if test -e node_modules; then
-	PATH=$cwd/disttmp/node_modules/.bin:$PATH
+if [[ -e node_modules ]]; then
+	PATH=$PWD/node_modules/.bin:$PATH
 	export PATH
 fi
 
@@ -85,7 +79,7 @@ $babel_js \
 rm -rf auto_tests src
 
 # get core-js from Debian, if needed, for XHR test
-test -e node_modules || ln -s /usr/share/nodejs/core-js .
+[[ -e node_modules ]] || ln -s /usr/share/nodejs/core-js .
 
 # bundle dygraph.js{,.map} and tests.js with dev env
 cp -r es5 src

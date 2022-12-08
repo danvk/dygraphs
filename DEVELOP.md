@@ -9,7 +9,7 @@ This is a step-by-step guide explaining how to do it.
 To install dependencies, run:
 
     # for building
-    apt-get install pax python3
+    apt-get install mksh pax python3
     # npm dev dependencies
     npm install
 
@@ -25,7 +25,7 @@ To run the tests, run:
 The prerequisites for a full “npm run build” are:
 
     # for building
-    apt-get install ed jsdoc-toolkit mksh pax
+    apt-get install ed jsdoc-toolkit mksh pax python3
     # for docs
     apt-get install libjs-bootstrap libjs-jquery libjs-jquery-ui
 

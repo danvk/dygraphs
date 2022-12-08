@@ -1,7 +1,8 @@
 #!/bin/mksh
 set -ex
 
-mksh scripts/build-js.sh
+# Build code, tests, browser bundles.
+scripts/build-js.sh
 
 # Build documentation.
 scripts/build-docs.sh

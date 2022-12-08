@@ -80,6 +80,7 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <p>Most distributions include a source map to facilitate debugging.</p>
 
 <p>To generate your own minified JS, install the prerequisites…</p><ul>
+<li><tt>mksh</tt></li>
 <li><tt>pax</tt></li>
 <li><tt>python3</tt></li>
 </ul><p>… and run:</p>
