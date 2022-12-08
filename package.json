@@ -41,6 +41,7 @@
     "browserify": "^17.0.0",
     "chai": "^3.3.0",
     "clean-css": "^5.3.1",
+    "clean-css-cli": "^5.6.1",
     "core-js": "^3.25.1",
     "coveralls": "^3.1.1",
     "globals": "^13.17.0",
