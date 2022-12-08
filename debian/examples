@@ -1,2 +1,0 @@
-# so we can run the tests compiled by Debian using upstream test harness
-dist/tests.js
