@@ -1,8 +1,9 @@
 body {
-  padding-top: 50px;  /* required for fixed header */
+  /* required for fixed header */
+  padding-top: 50px;
 }
 #header {
-  background: #f9f9f9;
+  background: #F9F9F9;
   margin-bottom: 10px;
   border-bottom: 1px solid lightgray;
 }
@@ -36,7 +37,7 @@ h1{
   margin-bottom: 20px;
 }
 pre{
-  background: #f9f9f9;
+  background: #F9F9F9;
 }
 /*
 #main {
@@ -50,7 +51,6 @@ pre{
   margin-top: 10px;
 }
 
-/* maybe just used on annotations.html ? */
 .thinborder {
   border-width: 1px;
   border-spacing: 0px;
@@ -69,8 +69,8 @@ pre{
 
 #current-release {
   font-size: 18px;
-  background: #f9f9f9;
-  /*
+  background: #F9F9F9;
+/*
   padding: 10px 15px;
   border: 1px dashed black;
 */
@@ -81,7 +81,8 @@ pre{
   margin-bottom: 0;
 }
 
-/* When you visit dygraphs.com/options.html#errorBars, the fixed top nav
+/*
+ * When you visit dygraphs.com/options.html#errorBars, the fixed top nav
  * obscures the top 50px of content for that anchor. This is a workaround.
  * See https://stackoverflow.com/a/55683966/2171120
  */
@@ -92,7 +93,7 @@ pre{
 a.link {
   visibility: hidden;
   text-decoration: none;
-  color: #777;
+  color: #777777;
 }
 .option:hover a.link {
   visibility: visible;
