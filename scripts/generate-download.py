@@ -80,19 +80,14 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <p>Most distributions include a source map to facilitate debugging.</p>
 
 <p>To generate your own minified JS, install the prerequisites…</p><ul>
-<li><tt>ed</tt></li>
-<li><tt>jsdoc-toolkit</tt></li>
-<li><tt>libjs-bootstrap</tt> (only needed for the site)</li>
-<li><tt>libjs-jquery</tt> (needed for site, gallery, hairlines test)</li>
-<li><tt>libjs-jquery-ui</tt> (needed for hairlines test only)</li>
-<li><tt>mksh</tt></li>
 <li><tt>pax</tt></li>
+<li><tt>python3</tt></li>
 </ul><p>… and run:</p>
 
 <pre>git clone https://github.com/danvk/dygraphs.git
 cd dygraphs
 npm install
-npm run build
+npm run build-jsonly
 </pre>
 
 <p>This will create a <tt>dygraph.min.css</tt> and a <tt>dygraph.min.js</tt>

@@ -62,6 +62,7 @@
   },
   "scripts": {
     "build": "./scripts/build.sh",
+    "build-jsonly": "./scripts/build-js.sh",
     "clean": "git clean -dfx -e node_modules -e package-lock.json",
     "coverage": "./scripts/generate-coverage.sh",
     "site": "./scripts/run-site.sh",
