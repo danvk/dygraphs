@@ -75,7 +75,6 @@ pre{
   border: 1px dashed black;
 */
   display: table;
-  margin-bottom: 50px;
 }
 #current-release p:last-child {
   margin-bottom: 0;
