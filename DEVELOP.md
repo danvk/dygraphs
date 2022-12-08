@@ -6,11 +6,16 @@ This is a step-by-step guide explaining how to do it.
 
 ### How-to
 
-To install dependencies, run
+To install dependencies, run:
 
+    # for building
+    apt-get install ed jsdoc-toolkit mksh pax
+    # for docs
+    apt-get install libjs-bootstrap libjs-jquery libjs-jquery-ui
+    # npm dev dependencies
     npm install
 
-To build dygraphs and the tests, run
+To build dygraphs and the tests, run:
 
     npm run build
 
