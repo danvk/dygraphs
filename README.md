@@ -69,7 +69,17 @@ Check out the [dygraphs-es6 repo][] for a fully-worked example.
 
 ## Development
 
-To get going, clone the repo and run:
+To get going, install the following Debian packages…
+
+ - `ed`
+ - `jsdoc-toolkit`
+ - `libjs-bootstrap` (only needed for the `site/`)
+ - `libjs-jquery` (needed for site, gallery, hairlines test)
+ - `libjs-jquery-ui` (needed for hairlines test only)
+ - `mksh`
+ - `pax`
+
+… clone the repo and run:
 
     npm install
     npm run build
