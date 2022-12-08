@@ -42,7 +42,7 @@
     "chai": "^3.3.0",
     "clean-css": "^3.4.23",
     "core-js": "^3.25.1",
-    "coveralls": "^2.11.2",
+    "coveralls": "^3.1.1",
     "globals": "^13.17.0",
     "http-server": "^13.0.2",
     "istanbul": "^0.4.0",
@@ -57,7 +57,7 @@
     "pre-commit": "^1.0.6",
     "source-map": "^0.6.1",
     "uglify-js": "^3.17.3",
-    "watchify": "^3.4.0"
+    "watchify": "^4.0.0"
   },
   "scripts": {
     "build": "./scripts/build.sh",
