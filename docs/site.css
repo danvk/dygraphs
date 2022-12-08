@@ -6,6 +6,9 @@ body {
   margin-bottom: 10px;
   border-bottom: 1px solid lightgray;
 }
+#main {
+  padding-top: 1ex;
+}
 code {
   white-space: pre-wrap;
   color: black;
