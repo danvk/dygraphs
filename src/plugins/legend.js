@@ -369,6 +369,6 @@ function generateLegendDashHTML(strokePattern, color, oneEmWidth) {
     }
   }
   return dash;
-};
+}
 
 export default Legend;
