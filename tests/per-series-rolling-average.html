@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../css/dygraph.css">
+    <title>Per Series Rolling Average</title>
+    <script type='text/javascript' src='https://code.jquery.com/jquery-1.11.3.min.js'></script>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+    <style type="text/css">
+    #graphdiv {
+      width:600px;
+      height: 300px;
+      left: 10px;
+      right: 10px;
+      top: 40px;
+      bottom: 10px;
+    }
+    </style>
+  </head>
+  <body>
+
+  <div id="graphdiv"> </div>
+
+  Check the boxes to apply the rolling average <br>
+
+  <input type="checkbox" href="#" id="high" name="high" />High (7 day rolling average)<br>
+  <input type="checkbox" href="#" id="low" name="low" />Low (30 day rolling average)
+
+  <script type="text/javascript">
+
+  var g = new Dygraph(document.getElementById('graphdiv'), data,
+    {
+       title: 'Per Series Rolling Average',     
+       xlabel: 'Date',
+       ylabel: 'Temperature (F)'	  
+      });
+
+  function updateRollPeriod(series, value) {
+    var seriesOpt = {};
+    seriesOpt[series] = { rollPeriod: value };
+    g.updateOptions ({ series: seriesOpt });
+  }
+
+  $("#high").change(function () {
+    if(this.checked) {
+      updateRollPeriod("High", 7);
+    } else {
+      updateRollPeriod("High", 1);
+    }
+  });
+
+  $("#low").change(function () {
+    if(this.checked) {
+      updateRollPeriod("Low", 30);
+    } else {
+      updateRollPeriod("Low", 1);
+    }
+  });	  
+  </script>
+  </body>
+</html>
