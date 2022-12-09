@@ -990,25 +990,36 @@ export function pow(base, exp) {
   return Math.pow(base, exp);
 }
 
+var RGBAxRE = /^#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})?$/;
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
 /**
  * Helper for toRGB_ which parses strings of the form:
+ * #RRGGBB (hex)
+ * #RRGGBBAA (hex)
  * rgb(123, 45, 67)
  * rgba(123, 45, 67, 0.5)
  * @return parsed {r,g,b,a?} tuple or null.
  */
 function parseRGBA(rgbStr) {
-  var bits = RGBA_RE.exec(rgbStr);
-  if (!bits) return null;
-  var r = parseInt(bits[1], 10),
-      g = parseInt(bits[2], 10),
-      b = parseInt(bits[3], 10);
-  if (bits[4]) {
-    return {r: r, g: g, b: b, a: parseFloat(bits[4])};
-  } else {
-    return {r: r, g: g, b: b};
-  }
+  var bits, r, g, b, a = null;
+  if ((bits = RGBAxRE.exec(rgbStr))) {
+    r = parseInt(bits[1], 16);
+    g = parseInt(bits[2], 16);
+    b = parseInt(bits[3], 16);
+    if (bits[4])
+      a = parseInt(bits[4], 16);
+  } else if ((bits = RGBA_RE.exec(rgbStr))) {
+    r = parseInt(bits[1], 10);
+    g = parseInt(bits[2], 10);
+    b = parseInt(bits[3], 10);
+    if (bits[4])
+      a = parseFloat(bits[4]);
+  } else
+    return null;
+  if (a !== null)
+    return { "r": r, "g": g, "b": b, "a": a };
+  return { "r": r, "g": g, "b": b };
 }
 
 /**
