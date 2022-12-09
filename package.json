@@ -54,7 +54,7 @@
     "mocha-phantomjs": "^3.6.0",
     "mocha-phantomjs-istanbul": "0.0.2",
     "parse-data-uri": "^0.2.0",
-    "phantomjs": "^1.9.20",
+    "phantomjs": "1.9.7-15",
     "phantomjs-function-bind-polyfill": "^1.0.0",
     "pre-commit": "^1.0.6",
     "source-map": "^0.6.1",
