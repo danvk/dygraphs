@@ -460,7 +460,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "legendFormatter": {
     "default": "null",
     "labels": ["Legend"],
-    "type": "function(data): string",
+    "type": "function(data): string or DocumentFragment node",
     "params": [
       [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/danvk/dygraphs/blob/master/docs/legend-formatter.md\">online</a>) for sample values." ]
     ],
