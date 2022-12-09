@@ -1163,9 +1163,6 @@ Dygraph.prototype.createDragInterface_ = function() {
   // Self is the graph.
   var self = this;
 
-  // For internal use only.
-  this.context_ = context;
-
   // Function that binds the graph and context to the handler.
   var bindHandler = function(handler) {
     return function(event) {
@@ -1596,9 +1593,6 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  // Disable expensive and invisible highlights during movement.
-  if (this.context_.isPanning || this.context_.isZooming)
-    return;
   // This prevents JS errors when mousing over the canvas before data loads.
   var points = this.layout_.points;
   if (points === undefined || points === null) return;
