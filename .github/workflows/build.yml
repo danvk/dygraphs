@@ -23,6 +23,7 @@
         },
         {
           "id": "deployment",
+          "if": "(github.repository == 'mirabilos/dygraphs')",
           "uses": "actions/deploy-pages@v1"
         }
       ]
