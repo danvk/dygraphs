@@ -92,7 +92,7 @@ var Dygraph = function(div, data, opts) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "2.1.2-alpha.1";
+Dygraph.VERSION = "2.1.2-alpha.2";
 
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
