@@ -30,15 +30,6 @@ else
 	relv=$v
 fi
 
-# licence headers for unminified and minified js, respectively
-rm -f LICENCE.js
-{
-	echo '/*'
-	sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
-	echo ' */'
-} >LICENCE.js
-header="/*! @license https://github.com/danvk/dygraphs/blob/v$relv/LICENSE.txt (MIT) */"
-
 # build ES5- and browser-compatible code in a subdirectory
 # and the code and test bundles as well as the minified CSS+JS
 
@@ -50,13 +41,11 @@ if [[ -e node_modules ]]; then
 fi
 pax -rw -l auto_tests src disttmp/
 
-$babel_js \
-    --config-file "$babelrc" \
-    --compact false \
-    --source-maps inline \
-    -d disttmp \
-    LICENCE.js
+# licence headers for unminified and minified js, respectively
+scripts/txt2js.sh LICENSE.txt disttmp/LICENCE.js
+header="/*! @license https://github.com/danvk/dygraphs/blob/v$relv/LICENSE.txt (MIT) */"
 
+# prepare for building; avoid bad relative paths
 cd disttmp
 if [[ -e node_modules ]]; then
 	PATH=$PWD/node_modules/.bin:$PATH
@@ -125,7 +114,7 @@ mkdir ../dist
 mv dygraph.js dygraph.js.map dygraph.min.js dygraph.min.js.map tests.js ../dist/
 mv es5 ../src-es5
 cd ..
-rm -rf LICENCE.js disttmp
+rm -rf disttmp
 
 # minify CSS
 cp css/dygraph.css dist/

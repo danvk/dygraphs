@@ -1,5 +1,4 @@
 *.log
-LICENCE.js
 _site
 coverage
 debian/copyright
