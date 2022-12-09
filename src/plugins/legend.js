@@ -90,22 +90,6 @@ var escapeHTML = function(str) {
   return str.replace(/&/g, "&amp;").replace(/"/g, "&#34;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-var isString = function(s) {
-    return typeof(s) === 'string' || s instanceof String;
-};
-
-var replaceHTML = function(e, html) {
-  if (isString(html)) {
-    e.innerHTML = html;
-  } else if (html instanceof Node &&
-      html.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
-    e.innerHTML = '';
-    e.appendChild(html);
-  } else {
-    e.innerHTML = '' + html;
-  }
-};
-
 Legend.prototype.select = function(e) {
   var xValue = e.selectedX;
   var points = e.selectedPoints;
@@ -147,7 +131,11 @@ Legend.prototype.select = function(e) {
   }
 
   var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
-  replaceHTML(this.legend_div_, html)
+  if (html instanceof Node && html.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+    this.legend_div_.innerHTML = '';
+    this.legend_div_.appendChild(html);
+  } else
+    this.legend_div_.innerHTML = html;
   this.legend_div_.style.display = '';
 };
 
@@ -162,7 +150,11 @@ Legend.prototype.deselect = function(e) {
   this.one_em_width_ = oneEmWidth;
 
   var html = Legend.generateLegendHTML(e.dygraph, undefined, undefined, oneEmWidth, null);
-  replaceHTML(this.legend_div_, html)
+  if (html instanceof Node && html.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+    this.legend_div_.innerHTML = '';
+    this.legend_div_.appendChild(html);
+  } else
+    this.legend_div_.innerHTML = html;
 };
 
 Legend.prototype.didDrawChart = function(e) {
