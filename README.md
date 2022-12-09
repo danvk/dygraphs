@@ -1,4 +1,3 @@
-(fork for Debian packaging)
 # dygraphs JavaScript charting library
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series:
