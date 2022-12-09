@@ -58,16 +58,6 @@ aside {
   vertical-align: bottom;
 }
 
-.subdued:link,
-.subdued:visited,
-.subdued:active {
-  color: #000;
-}
-
-.subdued:hover {
-  color: blue;
-}
-
 a {
   text-decoration: none;
 }
