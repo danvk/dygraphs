@@ -67,6 +67,7 @@ var DEFAULT_ATTRS = {
 
   interactionModel: DygraphInteraction.defaultModel,
   animatedZooms: false,  // (for now)
+  animateBackgroundFade: true,
 
   // Range selector options
   showRangeSelector: false,

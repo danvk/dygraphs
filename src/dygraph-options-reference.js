@@ -17,6 +17,12 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
 // most part, this just means that you should always use double quotes.
 OPTIONS_REFERENCE =  // <JSON>
 {
+  "animateBackgroundFade": {
+    "default": "true",
+    "labels": ["Overall display"],
+    "type": "boolean",
+    "description": "Activate an animation effect for a gradual fade."
+  },
   "xValueParser": {
     "default": "parseFloat() or Date.parse()*",
     "labels": ["CSV parsing"],
