@@ -37,7 +37,7 @@ rm -f LICENCE.js
 	sed -e 's/^/ * /' -e 's/  *$//' <LICENSE.txt
 	echo ' */'
 } >LICENCE.js
-header="/*! @license https://github.com/mirabilos/dygraphs/blob/v$relv/LICENSE.txt (MIT) */"
+header="/*! @license https://github.com/danvk/dygraphs/blob/v$relv/LICENSE.txt (MIT) */"
 
 # build ES5- and browser-compatible code in a subdirectory
 # and the code and test bundles as well as the minified CSS+JS

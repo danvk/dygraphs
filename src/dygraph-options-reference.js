@@ -462,9 +462,9 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Legend"],
     "type": "function(data): string",
     "params": [
-      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/mirabilos/dygraphs/blob/debian/docs/legend-formatter.md\">online</a>) for sample values." ]
+      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/danvk/dygraphs/blob/master/docs/legend-formatter.md\">online</a>) for sample values." ]
     ],
-    "description": "Set this to supply a custom formatter for the legend. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/mirabilos/dygraphs/blob/debian/docs/legend-formatter.md\">online</a>) and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
+    "description": "Set this to supply a custom formatter for the legend. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/danvk/dygraphs/blob/master/docs/legend-formatter.md\">online</a>) and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
   },
   "labelsShowZeroValues": {
     "default": "true",
