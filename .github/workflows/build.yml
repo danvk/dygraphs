@@ -4,12 +4,12 @@
     "group": "pages"
   },
   "jobs": {
-    "build": {
+    "build-and-pages": {
       "environment": {
         "name": "github-pages",
         "url": "${{ steps.deployment.outputs.page_url }}"
       },
-      "if": "(github.repository == 'danvk/dygraphs') || (github.repository == 'mirabilos/dygraphs')",
+      "if": "github.repository == 'mirabilos/dygraphs'",
       "runs-on": "ubuntu-latest",
       "steps": [
         {
@@ -23,13 +23,31 @@
         },
         {
           "id": "deployment",
-          "if": "(github.repository == 'mirabilos/dygraphs')",
           "uses": "actions/deploy-pages@v1"
+        }
+      ]
+    },
+    "build-split": {
+      "environment": {
+        "name": "GHA-output",
+        "url": "${{ steps.deployment.outputs.page_url }}"
+      },
+      "if": "github.repository == 'danvk/dygraphs'",
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v3"
+        },
+        {
+          "run": "./.pages.sh"
+        },
+        {
+          "uses": "actions/upload-pages-artifact@v1"
         }
       ]
     }
   },
-  "name": "build, test, upload to Pages",
+  "name": "build and test",
   "on": {
     "push": {
       "branches": [
