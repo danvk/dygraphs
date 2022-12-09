@@ -1,13 +1,15 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
  * @fileoverview Description of this file.
  * @author danvk@google.com (Dan Vanderkam)
- *
+ */
+
+/*
  * A ticker is a function with the following interface:
  *
  * function(a, b, pixels, options_view, dygraph, forced_values);
@@ -205,7 +207,6 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   return ticks;
 };
 
-
 /** @type {Ticker} */
 export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
   var chosen = pickDateTickGranularity(a, b, pixels, opts);
@@ -265,7 +266,6 @@ var DateField = {
   NUM_DATEFIELDS: 7
 };
 
-
 /**
  * The value of datefield will start at an even multiple of "step", i.e.
  *   if datefield=SS and step=5 then the first tick will be on a multiple of 5s.
@@ -309,7 +309,6 @@ TICK_PLACEMENT[Granularity.BIANNUAL]        = {datefield: DateField.DATEFIELD_M,
 TICK_PLACEMENT[Granularity.ANNUAL]          = {datefield: DateField.DATEFIELD_Y,  step:   1, spacing: 1000 * 86400   * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 1
 TICK_PLACEMENT[Granularity.DECADAL]         = {datefield: DateField.DATEFIELD_Y,  step:  10, spacing: 1000 * 864000  * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 10
 TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,  step: 100, spacing: 1000 * 8640000 * 365.2425}; // 1e3 * 60 * 60 * 24 * 365.2425 * 100
-
 
 /**
  * This is a list of human-friendly values at which to show tick marks on a log
@@ -402,7 +401,7 @@ export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
     // This will put the ticks on Sundays.
     start_date_offset = accessors.getDay(start_date);
   }
-  
+
   date_array[datefield] -= start_date_offset;
   for (var df = datefield + 1; df < DateField.NUM_DATEFIELDS; df++) {
     // The minimum value is 1 for the day of month, and 0 for all other fields.

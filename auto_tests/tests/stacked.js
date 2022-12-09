@@ -272,7 +272,7 @@ it('testInterpolationOptions', function() {
 });
 
 it('testMultiAxisInterpolation', function() {
-  // Setting 2 axes to test that each axis stacks separately 
+  // Setting 2 axes to test that each axis stacks separately
   var opts = {
     colors: ['#ff0000', '#00ff00', '#0000ff'],
     stackedGraph: true,

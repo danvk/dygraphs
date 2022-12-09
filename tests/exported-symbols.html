@@ -1,8 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Exported Symbols test</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <!-- see below for dygraph.js due to necessity -->
   </head>
   <body>
     <p>dygraphs exports these symbols into the global namespace:</p>
@@ -13,16 +17,16 @@
     <ol id="list2">
     </ol>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var windowProps = {};
       var newProps = [];
       var k, i, html, level2props, sym, topSymbol;
       for (k in window) {
         windowProps[k] = true;
       }
-    </script>
+    //--><!]]></script>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       for (k in window) {
         if (!windowProps.hasOwnProperty(k)) {
           newProps.push(k);
@@ -44,12 +48,12 @@
         }
       }
 
-      newProps.sort();
+      level2props.sort();
       html = '';
       for (i = 0; i < level2props.length; i++) {
         html += '<li>' + level2props[i] + '</li>\n';
       }
       document.getElementById('list2').innerHTML = html;
-    </script>
+    //--><!]]></script>
   </body>
 </html>

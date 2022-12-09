@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Label styles</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
+
     <style type="text/css">
       .dygraph-legend {
         background-color: rgba(200, 200, 255, 0.75) !important;
@@ -22,7 +25,7 @@
     </style>
   </head>
   <body>
-    <p>This page demonstrates different values for the <code><a href="http://dygraphs.com/options.html#legend">legend</a></code> option. Mouse over the charts to see the different behaviors.</p>
+    <p>This page demonstrates different values for the <code><a href="../options.html#legend">legend</a></code> option. Mouse over the charts to see the different behaviors.</p>
     <pre>legend: "follow":</pre>
     <div id="follow" style="width:600px; height:300px;"></div>
 
@@ -35,7 +38,7 @@
     <pre>legend: "onmouseover" (the default):</pre>
     <div id="default" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       function extend(obj1, obj2) {
         var obj = {};
         for (var k in obj1) {
@@ -72,7 +75,6 @@
             document.getElementById('default'),
             NoisyData,
             baseOpts);
-
-    </script>
+    //--><!]]></script>
   </body>
 </html>

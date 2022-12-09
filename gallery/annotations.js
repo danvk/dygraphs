@@ -2,7 +2,7 @@
 Gallery.register(
   'annotations',
   {
-    name: 'Annotations', 
+    name: 'Annotations',
     title: 'Dynamic Annotations Demo',
     setup: function(parent) {
       parent.innerHTML = [
@@ -19,14 +19,14 @@ Gallery.register(
       function nameAnnotation(ann) {
         return "(" + ann.series + ", " + ann.x + ")";
       }
-  
+
       var g = new Dygraph(
               document.getElementById("g_div"),
               function() {
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
                 var r = "date,parabola,line,another line,sine wave\n";
                 for (var i=1; i<=31; i++) {
-                  r += "200610" + zp(i);
+                  r += "2006-10-" + zp(i);
                   r += "," + 10*(i*(31-i));
                   r += "," + 10*(8*i);
                   r += "," + 10*(250 - 8*i);
@@ -59,7 +59,7 @@ Gallery.register(
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Stock Market Crash ' + x
         } );
@@ -67,8 +67,8 @@ Gallery.register(
       }
       annotations.push( {
         series: 'another line',
-        x: "20061013",
-        icon: 'images/dollar.png',
+        x: "2006-10-13",
+        icon: '../common/dollar.png',
         width: 18,
         height: 23,
         tickHeight: 4,
@@ -84,7 +84,7 @@ Gallery.register(
         var x = last_ann + 2;
         annotations.push( {
           series: 'line',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Line ' + x,
           tickHeight: 10
@@ -129,11 +129,11 @@ Gallery.register(
           document.getElementById(nameAnnotation(ann)).style.fontWeight = 'normal';
           ann.div.style.backgroundColor = saveBg;
         },
-    
+
         pointClickCallback: function(event, p) {
           // Check if the point is already annotated.
           if (p.annotation) return;
-    
+
           // If not, add one.
           var ann = {
             series: p.name,
@@ -144,7 +144,7 @@ Gallery.register(
           var anns = g.annotations();
           anns.push(ann);
           g.setAnnotations(anns);
-    
+
           num++;
         }
       });

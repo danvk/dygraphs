@@ -4,7 +4,7 @@ Gallery.register(
   {
     name: 'Negative values',
     setup: function(parent) {
-      parent.innerHTML = 
+      parent.innerHTML =
           "<p>All negatives (x-axis on top):</p>" +
           "<div id='g1' style='width:600px; height:200px;'></div>" +
 

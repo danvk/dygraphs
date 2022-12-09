@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>dygraph</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Minimal example of a dygraph chart:</p>
     <div id="graphdiv"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(document.getElementById("graphdiv"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
                       "2008-05-08,70\n" +
                       "2008-05-09,80\n");
-    </script>
+    //--><!]]></script>
 
     <p>Same data, specified in a parsed format:</p>
     <div id="graphdiv2"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g2 = new Dygraph(document.getElementById("graphdiv2"),
                        [ [ new Date("2008/05/07"), 75],
                          [ new Date("2008/05/08"), 70],
@@ -28,6 +30,6 @@
                        {
                                labels: [ "Date", "Temperature" ]
                        });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>demo</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <style type="text/css">
@@ -19,7 +22,7 @@
     <div style="position:absolute; left:200px; top: 200px;" id="g_div"></div>
     <div style="position:absolute; left:700px; top: 200px;" id="list"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var eventDiv = document.getElementById("events");
       function nameAnnotation(ann) {
         return "(" + ann.series + ", " + ann.x + ")";
@@ -34,7 +37,7 @@
                 var zp = function(x) { if (x < 10) return "0"+x; else return x; };
                 var r = "date,parabola,line,another line,sine wave\n";
                 for (var i=1; i<=31; i++) {
-                  r += "200610" + zp(i);
+                  r += "2006-10-" + zp(i);
                   r += "," + 10*(i*(31-i));
                   r += "," + 10*(8*i);
                   r += "," + 10*(250 - 8*i);
@@ -73,7 +76,7 @@
       for (var x = 10; x < 15; x += 2) {
         annotations.push( {
           series: 'sine wave',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Stock Market Crash ' + x
         } );
@@ -81,8 +84,8 @@
       }
       annotations.push( {
         series: 'another line',
-        x: "20061013",
-        icon: 'dollar.png',
+        x: "2006-10-13",
+        icon: '../common/dollar.png',
         width: 18,
         height: 23,
         tickHeight: 4,
@@ -96,7 +99,7 @@
       } );
       annotations.push( {
         series: 'parabola',
-        x: '20061012',
+        x: '2006-10-12',
         shortText: 'P',
         text: 'Parabola Annotation at same x-coord'
       } );
@@ -110,7 +113,7 @@
         var annnotations = g.annotations();
         annotations.push( {
           series: 'line',
-          x: "200610" + x,
+          x: "2006-10-" + x,
           shortText: x,
           text: 'Line ' + x,
           tickHeight: 10
@@ -173,6 +176,6 @@
           num++;
         }
       });
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

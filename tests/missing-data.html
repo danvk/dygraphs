@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>missing data</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <table>
@@ -20,7 +22,7 @@
     </td></tr>
     </table>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     g = new Dygraph(
       document.getElementById("graph"),
       "Date,GapSeries1,GapSeries2\n" +
@@ -84,7 +86,7 @@
         labels: [ "X", "Series1", "Series2" ]
       }
     );
-      
+
     g5 = new Dygraph(
         document.getElementById("graph5"),
         [
@@ -102,7 +104,7 @@
           labels: [ "X", "Series1", "Series2" ]
         }
     );
-      
+
     g6 = new Dygraph(
         document.getElementById("graph6"),
         [
@@ -119,6 +121,6 @@
           labels: [ "X", "Series1", "Series2"]
         }
     );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

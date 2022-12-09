@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>interaction model</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="interaction.js"></script>
   </head>
@@ -38,12 +40,12 @@
     <div id="div_g4" style="width:600px; height:300px;"></div>
     </td><td>
     Keep the mouse button pressed, and hover over all points
-    to mark them.   
+    to mark them.
     </td></tr>
 
     </table>
-        
-    <script type="text/javascript">
+
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       document.addEventListener("mousewheel", function() {
         lastClickedGraph = null;
       }, false);
@@ -75,7 +77,6 @@
            },
            underlayCallback : captureCanvas
       });
-    </script>
-
+    //--><!]]></script>
   </body>
 </html>

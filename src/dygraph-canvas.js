@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -29,7 +29,6 @@
 
 import * as utils from './dygraph-utils';
 import Dygraph from './dygraph';
-
 
 /**
  * @constructor
@@ -534,7 +533,6 @@ DygraphCanvasRenderer._errorPlotter = function(e) {
   }
   ctx.fill();
 };
-
 
 /**
  * Proxy for CanvasRenderingContext2D which drops moveTo/lineTo calls which are

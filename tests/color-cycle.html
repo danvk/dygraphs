@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>color cycles</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Different color cycles</p>
@@ -16,7 +18,7 @@
     <button type=button id=2 onClick="change(this)"> undefined</button>
     </p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var colorSets = [
         ['#284785', '#EE1111', '#8AE234'],
         ['#444444', '#888888', '#DDDDDD'],
@@ -35,6 +37,6 @@
       function change(el) {
         chart.updateOptions({colors: colorSets[el.id]});
       }
-    </script>
+    //--><!]]></script>
   </body>
 </html>

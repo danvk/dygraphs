@@ -1,7 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''
 This script copies the files in one directory to another, expanding any SSI
 <!-- #include --> statements it encounters along the way.
+Only files that end in '.html' are processed, with the exceptions of
+{header,footer}.html. Copy or symlink anything else manually.
 
 Usage:
 
@@ -11,8 +13,13 @@ If source_directory is not specified, then the current directory is used.
 '''
 
 import os
+import pathlib
 import ssi
 import sys
+
+def _errorfn(msg, fn):
+    sys.stderr.write('E: %s: %s\n' % (fn, msg))
+    sys.exit(1)
 
 def process(source, dest):
   for dirpath, dirnames, filenames in os.walk(source):
@@ -21,18 +28,20 @@ def process(source, dest):
       os.mkdir(dest_dir)
     assert os.path.isdir(dest_dir)
     for filename in filenames:
+      if not filename.endswith('.html'):
+        continue
+      if filename in ('header.html', 'footer.html'):
+        continue
       src_path = os.path.abspath(os.path.join(source, dirpath, filename))
       dest_path = os.path.join(dest_dir, filename)
-      if not filename.endswith('.html'):
-        os.symlink(src_path, dest_path)
-      else:
-        file(dest_path, 'w').write(ssi.InlineIncludes(src_path))
+      pathlib.Path(dest_path).unlink(missing_ok=True)
+      with open(dest_path, 'wb') as f:
+        f.write(ssi.InlineIncludes(src_path, _errorfn))
 
     # ignore hidden directories
     for dirname in dirnames[:]:
       if dirname.startswith('.'):
         dirnames.remove(dirname)
-
 
 if __name__ == '__main__':
   if len(sys.argv) == 2:
@@ -41,7 +50,6 @@ if __name__ == '__main__':
   elif len(sys.argv) == 3:
     source, dest = sys.argv[1:]
   else:
-    sys.stderr.write('Usage: %s [source_directory] destination_directory\n' % sys.argv[0])
-    sys.exit(1)
+    _errorfn('Usage: %s [source_directory] destination_directory' % sys.argv[0])
 
   process(source, dest)

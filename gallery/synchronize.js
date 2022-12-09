@@ -18,8 +18,9 @@ Gallery.register(
         '</style>',
         '<p>Zooming and panning on any of the charts will zoom and pan all the',
         'others. Selecting points on one will select points on the others.</p>',
-        '<p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
-        'See the comments in that file for usage.</p>',
+        '<p>To use this, source <a href="../extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.',
+        'See the comments in that file for usage. However, for better browser',
+        'compatibility, use the file from <tt>src-es5/extras/</tt> (<tt>dist/extras/</tt>) instead.</p>',
         '<div class="chart-container">',
         '  <div id="div1" class="chart"></div>',
         '  <div id="div2" class="chart"></div>',
@@ -48,7 +49,7 @@ Gallery.register(
         );
       }
       var sync = Dygraph.synchronize(gs);
-      
+
       function update() {
         var zoom = document.getElementById('chk-zoom').checked;
         var selection = document.getElementById('chk-selection').checked;

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>resize the window</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
+
     <style type="text/css">
     #div_g {
       position: absolute;
@@ -20,7 +23,7 @@
     <p>Resize the window. The dygraph will resize with it.</p>
     <div id="div_g"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
@@ -28,6 +31,6 @@
               errorBars: true
             }
           );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -1,57 +1,20 @@
-#!/bin/bash
-# This generates everything under dist:
-# bundled JS, minified JS, minified CSS and source maps.
-set -o errexit
+#!/bin/mksh
+set -ex
 
-mkdir -p dist
+# Build code, tests, browser bundles.
+scripts/build-js.sh
 
-# Create dist/dygraph.js
-browserify \
-  -v \
-  -t babelify \
-  -t [ envify --NODE_ENV development ] \
-  --debug \
-  --standalone Dygraph \
-  src/dygraph.js \
-  > dist/dygraph.tmp.js
+# Build documentation.
+scripts/build-docs.sh
 
-# Create dist/dygraph.js.map
-cat dist/dygraph.tmp.js | exorcist --base . dist/dygraph.js.map > dist/dygraph.js
-
-# Create "production" bundle for minification
-browserify \
-  -v \
-  -t babelify \
-  -t [ envify --NODE_ENV production ] \
-  --debug \
-  --standalone Dygraph \
-  src/dygraph.js \
-  > dist/dygraph.tmp.js
-
-# Create dist/dygraph.tmp.js.map
-cat dist/dygraph.tmp.js | exorcist --base . dist/dygraph.tmp.js.map > /dev/null
-
-header='/*! @license Copyright 2017 Dan Vanderkam (danvdk@gmail.com) MIT-licensed (http://opensource.org/licenses/MIT) */'
-
-# Create dist/dygraph.js.min{,.map}
-uglifyjs --compress --mangle \
-  --preamble "$header" \
-  --in-source-map dist/dygraph.tmp.js.map \
-  --source-map-include-sources \
-  --source-map dist/dygraph.min.js.map \
-  -o dist/dygraph.min.js \
-  dist/dygraph.tmp.js
-
-# Build GWT JAR
-jar -cf dist/dygraph-gwt.jar -C gwt org
-
-# Minify CSS
-cp css/dygraph.css dist/
-cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inline-sources
-
-# Build ES5-compatible distribution
-babel src -d src-es5 --compact false
-
-# Remove temp files.
-rm dist/dygraph.tmp.js
-rm dist/dygraph.tmp.js.map
+# This is for on the webserver
+rm -rf site _site
+mkdir site
+cd docroot
+pax -rw . ../site/
+rm ../site/.jslibs/* ../site/LICENSE.txt ../site/dist
+cp -L .jslibs/* ../site/.jslibs/
+cd ..
+pax -rw LICENSE.txt dist site/
+rm -f site/dist/tests.js
+find site -print0 | xargs -0r chmod a+rX --

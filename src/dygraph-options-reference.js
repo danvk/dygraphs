@@ -1,16 +1,15 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 "use strict";
 
 var OPTIONS_REFERENCE = null;
 
+if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
 // For "production" code, this gets removed by uglifyjs.
-if (typeof(process) !== 'undefined') {
-if (process.env.NODE_ENV != 'production') {
 
 // NOTE: in addition to parsing as JS, this snippet is expected to be valid
 // JSON. This assumption cannot be checked in JS, but it will be checked when
@@ -88,7 +87,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "A function to call when the zoom window is changed (either by zooming in or out). When animatedZooms is set, zoomCallback is called once at the end of the transition (it will not be called for intermediate frames)."
   },
   "pointClickCallback": {
-    "snippet": "function(e, point){<br>&nbsp;&nbsp;alert(point);<br>}",
+    "snippet": "function(e, point){<br>  alert(point);<br>}",
     "default": "null",
     "labels": ["Callbacks", "Interactive Elements"],
     "type": "function(e, point)",
@@ -108,7 +107,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "colors": {
     "default": "(see description)",
     "labels": ["Data Series Colors"],
-    "type": "array<string>",
+    "type": "Array of strings",
     "example": "['red', '#00FF00']",
     "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the 'color' option."
   },
@@ -126,7 +125,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "parameters": [
       ["event", "the JavaScript mousemove event"],
       ["x", "the x-coordinate of the highlighted points"],
-      ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, &hellip; ]</code>"],
+      ["points", "an array of highlighted points: <code>[ {name: 'series', yval: y-value}, … ]</code>"],
       ["row", "integer index of the highlighted row in the data table, starting from 0"],
       ["seriesName", "name of the highlighted series, only present if highlightSeriesOpts is set."]
     ]
@@ -268,7 +267,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Value display/formatting"],
     "type": "boolean",
-    "description": "Show k/M/G for kilo/Mega/Giga on y-axis. This is different than <code>labelsKMB</code> in that it uses base 2, not 10."
+    "description": "Show Ki/Mi/Gi for powers of 1024 on y-axis. If used together with <code>labelsKMB</code> (deprecated), K/M/G are used instead."
   },
   "delimiter": {
     "default": ",",
@@ -378,7 +377,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "strokePattern": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "array<integer>",
+    "type": "Array of integers",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed lines."
   },
@@ -423,7 +422,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "gridLinePattern": {
     "default": "null",
     "labels": ["Grid"],
-    "type": "array<integer>",
+    "type": "Array of integers",
     "example": "[10, 2, 5, 2]",
     "description": "A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed gridlines."
   },
@@ -463,9 +462,9 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Legend"],
     "type": "function(data): string",
     "params": [
-      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">here</a> for sample values." ]
+      [ "data", "An object containing information about the selection (or lack of a selection). This includes formatted values and series information. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/mirabilos/dygraphs/blob/debian/docs/legend-formatter.md\">online</a>) for sample values." ]
     ],
-    "description": "Set this to supply a custom formatter for the legend. See <a href=\"https://github.com/danvk/dygraphs/pull/683\">this comment</a> and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
+    "description": "Set this to supply a custom formatter for the legend. See <a href=\"legend-formatter.md\"><tt>docs/legend-formatter.md</tt></a> (<a href=\"https://github.com/mirabilos/dygraphs/blob/debian/docs/legend-formatter.md\">online</a>) and the <a href=\"tests/legend-formatter.html\">legendFormatter demo</a> for usage."
   },
   "labelsShowZeroValues": {
     "default": "true",
@@ -489,7 +488,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Value display/formatting"],
     "type": "boolean",
-    "description": "Show K/M/B for thousands/millions/billions on y-axis."
+    "description": "Show k/M/B for thousands/millions/billions on y-axis."
   },
   "rightGap": {
     "default": "5",
@@ -528,7 +527,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "description": "Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "clickCallback": {
-    "snippet": "function(e, date_millis){<br>&nbsp;&nbsp;alert(new Date(date_millis));<br>}",
+    "snippet": "function(e, date_millis){<br>  alert(new Date(date_millis));<br>}",
     "default": "null",
     "labels": ["Callbacks"],
     "type": "function(e, x, points)",
@@ -542,14 +541,14 @@ OPTIONS_REFERENCE =  // <JSON>
   "labels": {
     "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
     "labels": ["Legend"],
-    "type": "array<string>",
+    "type": "Array of strings",
     "description": "A name for each data series, including the independent (X) series. For CSV files and DataTable objections, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged."
   },
   "dateWindow": {
     "default": "Full range of the input is shown",
     "labels": ["Axis display"],
     "type": "Array of two numbers",
-    "example": "[<br>&nbsp;&nbsp;Date.parse('2006-01-01'),<br>&nbsp;&nbsp;(new Date()).valueOf()<br>]",
+    "example": "[<br>  Date.parse('2006-01-01'),<br>  (new Date()).valueOf()<br>]",
     "description": "Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch. If the data for the x-axis is numeric, the values in dateWindow must also be numbers."
   },
   "showRoller": {
@@ -628,7 +627,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display to the right of the chart's secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='http://dygraphs.com/tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the 'ylabel' option generally apply here as well. This label gets a 'dygraph-y2label' instead of a 'dygraph-ylabel' class."
+    "description": "Text to display to the right of the chart's secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the 'ylabel' option generally apply here as well. This label gets a 'dygraph-y2label' instead of a 'dygraph-ylabel' class."
   },
   "yLabelWidth": {
     "labels": ["Chart labels"],
@@ -706,7 +705,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(set when constructed)",
     "labels": ["Data"],
     "type": "string (URL of CSV or CSV), GViz DataTable or 2D Array",
-    "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='http://dygraphs.com/data.html'>Data Formats</a> page."
+    "description": "Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='data.html'>Data Formats</a> page."
   },
   "timingName": {
     "default": "null",
@@ -802,7 +801,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Configuration"],
     "type": "Object",
-    "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='http://dygraphs.com/per-axis.html'>per-series and per-axis options</a>."
+    "description": "Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='per-axis.html'>per-series and per-axis options</a>."
   },
   "series": {
     "default": "null",
@@ -813,14 +812,14 @@ OPTIONS_REFERENCE =  // <JSON>
   "plugins": {
     "default": "[]",
     "labels": ["Configuration"],
-    "type": "Array<plugin>",
+    "type": "Array of plugins",
     "description": "Defines per-graph plugins. Useful for per-graph customization"
   },
   "dataHandler": {
     "default": "(depends on data)",
     "labels": ["Data"],
     "type": "Dygraph.DataHandler",
-    "description": "Custom DataHandler. This is an advanced customization. See http://bit.ly/151E7Aq."
+    "description": "Custom DataHandler. This is an advanced customisation. See <a href='datahandler-proposal.pdf'><tt>docs/datahandler-proposal.pdf</tt></a>."
   }
 }
 ;  // </JSON>
@@ -882,7 +881,6 @@ for (var k in OPTIONS_REFERENCE) {
   }
 }
 
-}
 }
 
 export default OPTIONS_REFERENCE;

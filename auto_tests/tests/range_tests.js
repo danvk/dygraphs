@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 /**
  * @fileoverview Test valueRange and dateWindow changes.
  *
@@ -140,7 +139,6 @@ var zoom = function(g, xRange, yRange) {
   assertDeepCloseTo(yRange, g.yAxisRange(0), 0.2);
 }
 
-
 /**
  * Verify that when zoomed in by mouse operations, an empty call to
  * updateOptions doesn't change the displayed ranges.
@@ -201,7 +199,6 @@ it('testIncludeZeroIncludesZero', function() {
   assert.deepEqual([450, 1050], g.yAxisRange(0));
 });
 
-
 /**
  * Verify that includeZero range is properly specified per axis.
  */
@@ -226,7 +223,6 @@ it('testIncludeZeroPerAxis', function() {
         'y2': { includeZero: true }
       }
     });
-
 
   assert.deepEqual([44, 116], g.yAxisRange(0));
   assert.deepEqual([0, 121], g.yAxisRange(1));

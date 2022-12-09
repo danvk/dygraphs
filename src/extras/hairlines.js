@@ -1,12 +1,11 @@
 /**
  * @license
  * Copyright 2013 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  *
  * Note: This plugin requires jQuery and jQuery UI Draggable.
  *
- * See high-level documentation at
- * https://docs.google.com/document/d/1OHNE8BNNmMtFlRQ969DACIYIJ9VVJ7w3dSPRJDEeIew/edit#
+ * See high-level documentation at ../../docs/hairlines-annotations.pdf
  */
 
 /*global Dygraph:false */
@@ -370,7 +369,6 @@ hairlines.prototype.dblclick = function(e) {
 hairlines.prototype.destroy = function() {
   this.detachLabels();
 };
-
 
 // Public API
 

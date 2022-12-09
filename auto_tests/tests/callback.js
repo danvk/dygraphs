@@ -36,7 +36,6 @@ var data = "X,a,b,c\n" +
  "12,1,4,2\n" +
  "13,0,2,3\n";
 
-
 /**
  * This tests that when the function idxToRow_ returns the proper row and the onHiglightCallback
  * is properly called when the  first series is hidden (setVisibility = false)
@@ -67,7 +66,6 @@ it('testHighlightCallbackIsCalled', function() {
   //check there are only two points (because first series is hidden)
   assert.equal(2, h_pts.length);
 });
-
 
 /**
  * Test that drawPointCallback isn't called when drawPoints is false
@@ -541,8 +539,7 @@ it('testFailedResponse', function() {
   assert.isFalse(failed, "exception thrown during mouseout");
 });
 
-
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355 
+// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355
 it('testHighlightCallbackRow', function() {
   var highlightRow;
   var highlightCallback = function(e, x, pts, row) {
@@ -644,7 +641,6 @@ it('testDrawPointCallback_idx', function() {
     utils.Circles.DEFAULT.apply(this, arguments);
   };
 
-
   var testdata = [[10, 2], [11, 3], [12, NaN], [13, 2], [14, NaN], [15, 3]];
   var graphOpts = {
       labels: ['X', 'Y'],
@@ -667,7 +663,6 @@ it('testDrawPointCallback_idx', function() {
   g = new Dygraph(graph, testdata, graphOpts);
   assert.equal(3, indices.length);
   assert.deepEqual([1, 3, 5],indices);
-
 
   //Test that correct indices are passed to the callback when zoomed in.
   indices = []; // Reset for new test

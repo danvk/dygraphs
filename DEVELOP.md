@@ -6,20 +6,30 @@ This is a step-by-step guide explaining how to do it.
 
 ### How-to
 
-To install dependencies, run
+To install dependencies, run:
 
+    # for building
+    apt-get install mksh pax python3
+    # npm dev dependencies
     npm install
 
-To build dygraphs, run
+To build dygraphs and the tests, run:
 
-    npm run build
+    npm run clean  # if necessary
+    npm run build-jsonly
 
 To run the tests, run:
 
-    npm run build-tests
     npm run test
 
-To iterate on the code, run:
+The prerequisites for a full “npm run build” are:
+
+    # for building
+    apt-get install ed jsdoc-toolkit mksh pax python3
+    # for docs
+    apt-get install libjs-bootstrap libjs-jquery libjs-jquery-ui
+
+To iterate on the code, install envify and run:
 
     npm run watch
 

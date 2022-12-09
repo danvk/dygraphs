@@ -11,9 +11,7 @@ Gallery.register(
           "<div id='tool_pencil'></div>",
           "<div id='tool_eraser'></div>",
           "</div>",
-          "<div id='draw_div' style='width: 600px; height: 300px;'></div>",
-          "<p style='font-size: 10pt'>Toolbar/cursor icons are CC-licensed from ",
-          "<a href='http://www.fatcow.com/free-icons'>FatCow</a>.</p>"].join("\n");
+          "<div id='draw_div' style='width: 600px; height: 300px;'></div>"].join("\n");
     },
 
     run: function() {
@@ -105,9 +103,9 @@ Gallery.register(
 
         var dg_div = document.getElementById("draw_div");
         if (tool == 'pencil') {
-          dg_div.style.cursor = 'url(images/cursor-pencil.png) 2 30, auto';
+          dg_div.style.cursor = 'url(../common/cursor-pencil.png) 2 30, auto';
         } else if (tool == 'eraser') {
-          dg_div.style.cursor = 'url(images/cursor-eraser.png) 10 30, auto';
+          dg_div.style.cursor = 'url(../common/cursor-eraser.png) 10 30, auto';
         } else if (tool == 'zoom') {
           dg_div.style.cursor = 'crosshair';
         }

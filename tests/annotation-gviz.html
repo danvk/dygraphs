@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
+    <title>Google Visualisations annotations</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script type='text/javascript' src='http://www.google.com/jsapi'></script>
-    <script type='text/javascript'>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       google.load('visualization', '1', {'packages':['annotatedtimeline']});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
@@ -37,7 +42,7 @@
         var g = new Dygraph.GVizChart(document.getElementById("dg_div"));
         g.draw(data, {displayAnnotations: true, labelsKMB: true});
       }
-    </script>
+    //--><!]]></script>
   </head>
 
   <body>

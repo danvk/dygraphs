@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>gviz</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       google.load('visualization', '1', {packages: ['linechart']});
 
       function createDataTable(dateType) {
@@ -44,10 +47,9 @@
             document.getElementById('dygraphs_datetime')).draw(data, {
             });
 
-
       }
       google.setOnLoadCallback(drawVisualization);
-    </script>
+    //--><!]]></script>
   </head>
   <body>
     <p>gviz line chart:</p>

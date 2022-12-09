@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>numeric axis</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   </head>
   <body>
     <p>CSV data source:</p>
@@ -14,7 +17,7 @@
     <p>GViz data source:</p>
     <div id="gviz" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
             document.getElementById("div_g"),
             function() {
@@ -47,6 +50,6 @@
       }
 
       google.setOnLoadCallback(addGViz);
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+<!--#set var="pagetitle" value="tutorial" -->
 <!--#include virtual="header.html" -->
 
 <style>
@@ -15,36 +16,34 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeblock" style="float:left;width:400px;">
     <h3 style="text-align:center">HTML</h3>
   <pre>
-&lt;html&gt;
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
-&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div id=&quot;graphdiv&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;script type="text/javascript"
+  src="dygraph.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css"
+  src="dygraph.css" /&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div id="graphdiv"&gt;&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
   g = new Dygraph(
 
     // containing div
-    document.getElementById(&quot;graphdiv&quot;),
+    document.getElementById("graphdiv"),
 
     // CSV or path to a CSV file.
-    &quot;Date,Temperature\n&quot; +
-    &quot;2008-05-07,75\n&quot; +
-    &quot;2008-05-08,70\n&quot; +
-    &quot;2008-05-09,80\n&quot;
+    "Date,Temperature\n" +
+    "2008-05-07,75\n" +
+    "2008-05-08,70\n" +
+    "2008-05-09,80\n"
 
   );
 &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+&lt;/body&gt;&lt;/html&gt;
 </pre>
   </div>
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
 
         // containing div
@@ -56,48 +55,59 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         "2008-05-08,70\n" +
         "2008-05-09,80\n"
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
-<p style="clear:both">In order to keep this example self-contained, the second parameter is raw CSV data. The dygraphs library parses this data (including column headers), resizes its container to a reasonable default, calculates appropriate axis ranges and tick marks and draws the graph.</p>
+<p style="clear:both">In order to keep this example self-contained,
+ the second parameter is raw CSV data.
+ The dygraphs library parses this data (including column headers),
+ resizes its container to a reasonable default,
+ calculates appropriate axis ranges and tick marks and draws the graph.</p>
 
-<p>In most applications, it makes more sense to include a CSV file instead. If the second parameter to the constructor doesn't contain a newline, it will be interpreted as the path to a CSV file. The Dygraph will perform an XMLHttpRequest to retrieve this file and display the data when it becomes available. Make sure your CSV file is readable and serving from a place that understands XMLHttpRequest's! In particular, you cannot specify a CSV file using <code>"file:///"</code>. Here's an example: (data from <a href="http://www.wunderground.com/history/airport/KNUQ/2007/1/1/CustomHistory.html?dayend=31&amp;monthend=12&amp;yearend=2007&amp;req_city=NA&amp;req_state=NA&amp;req_statename=NA">Weather Underground</a>)</p>
+<p>In most applications, it makes more sense to include a CSV file instead.
+ If the second parameter to the constructor doesn't contain a newline,
+ it will be interpreted as the path to a CSV file.
+ The Dygraph will perform an XMLHttpRequest to retrieve this file
+ and display the data when it becomes available.
+ Make sure your CSV file is readable and serving from a place that
+ understands <tt>XMLHttpRequest</tt>s! In particular, you cannot
+ specify a CSV file using <code>"file:///"</code>. Here's an example:
+ (data from <a href="http://www.wunderground.com/history/airport/KNUQ/2007/1/1/CustomHistory.html?dayend=31&amp;monthend=12&amp;yearend=2007&amp;req_city=NA&amp;req_state=NA&amp;req_statename=NA">Weather Underground</a>)
+</p>
 
 <div class="example" style="clear:both;">
   <div class="codeblock" style="float:left;width:400px;">
     <h3 style="text-align:center">HTML</h3>
 <pre>
-&lt;html&gt;
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
-&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div id=&quot;graphdiv2&quot;
-  style=&quot;width:500px; height:300px;&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;script type="text/javascript"
+  src="dygraph.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css"
+  src="dygraph.css" /&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div id="graphdiv2"
+  style="width:500px; height:300px;"&gt;&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
   g2 = new Dygraph(
-    document.getElementById(&quot;graphdiv2&quot;),
-    &quot;temperatures.csv&quot;, // path to CSV file
+    document.getElementById("graphdiv2"),
+    "temperatures.csv", // path to CSV file
     {}          // options
   );
 &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+&lt;/body&gt;&lt;/html&gt;
 </pre>
   </div>
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv2" style="width:500px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g2 = new Dygraph(
         document.getElementById("graphdiv2"),
         "temperatures.csv",
         {}
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
@@ -120,33 +130,31 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeblock" style="float:left;width:400px;">
     <h3 style="text-align:center">HTML</h3>
 <pre>
-&lt;html&gt;
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
-&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div id=&quot;graphdiv3&quot;
-  style=&quot;width:500px; height:300px;&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;script type="text/javascript"
+  src="dygraph.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css"
+  src="dygraph.css" /&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div id="graphdiv3"
+  style="width:500px; height:300px;"&gt;&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
   g3 = new Dygraph(
-    document.getElementById(&quot;graphdiv3&quot;),
-    &quot;temperatures.csv&quot;,
+    document.getElementById("graphdiv3"),
+    "temperatures.csv",
     {
       rollPeriod: 7,
       showRoller: true
     }
   );
 &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+&lt;/body&gt;&lt;/html&gt;
 </pre>
   </div>
   <div class="codeoutput" style="float:left;">
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv3" style="width:500px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g3 = new Dygraph(
         document.getElementById("graphdiv3"),
         "temperatures.csv",
@@ -155,7 +163,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
           showRoller: true
         }
       );
-    </script>
+    //--><!]]></script>
   </div>
 </div>
 
@@ -163,7 +171,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 
 <h2>Error Bars</h2>
 
-<p>Another significant feature of the dygraphs library is the ability to display error bars around data series. One standard deviation must be specified for each data point. A <em>&plusmn;n</em> sigma band will be drawn around the data series at that point. If a moving average is being displayed, dygraphs will compute the standard deviation of the average at each point. I.E. <em>&sigma; = sqrt( (&sigma;<sub>1<sup>2</sup></sub> + &sigma;<sub>2<sup>2</sup></sub> + ... + &sigma;<sub>n<sup>2</sup></sub>) / n )</em></p>
+<p>Another significant feature of the dygraphs library is the ability to display error bars around data series. One standard deviation must be specified for each data point. A <em>±n</em> sigma band will be drawn around the data series at that point. If a moving average is being displayed, dygraphs will compute the standard deviation of the average at each point. I.E. <em>σ = sqrt( (σ<sub>1<sup>2</sup></sub> + σ<sub>2<sup>2</sup></sub> + ... + σ<sub>n<sup>2</sup></sub>) / n )</em></p>
 
 <p>Here's a demonstration. There are two data series. One is <code>N(100,10)</code> with a standard deviation of 10 specified at each point. The other is <code>N(80,20)</code> with a standard deviation of 20 specified at each point. The CSV file was generated using Octave and can be viewed at <a href="twonormals.csv">twonormals.csv</a>.</p>
 
@@ -171,19 +179,18 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <div class="codeblock" style="float:left;width:400px;">
     <h3 style="text-align:center">HTML</h3>
 <pre>
-&lt;html&gt;
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;
-  src=&quot;dygraph.js&quot;&gt;&lt;/script&gt;
-&lt;link rel=&quot;stylesheet&quot; src=&quot;dygraph.css&quot; /&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div id=&quot;graphdiv4&quot;
-  style=&quot;width:480px; height:320px;&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;script type="text/javascript"
+  src="dygraph.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css"
+  src="dygraph.css" /&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div id="graphdiv4"
+  style="width:480px; height:320px;"&gt;&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
   g4 = new Dygraph(
-    document.getElementById(&quot;graphdiv4&quot;),
-    &quot;twonormals.csv&quot;,
+    document.getElementById("graphdiv4"),
+    "twonormals.csv",
     {
       rollPeriod: 7,
       showRoller: true,
@@ -192,14 +199,13 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
     }
   );
 &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+&lt;/body&gt;&lt;/html&gt;
 </pre>
 </div>
 <div class="codeoutput" style="float:left;">
   <h3 style="text-align:center">OUTPUT</h3>
   <div id="graphdiv4" style="width:480px; height:320px;"></div>
-  <script type="text/javascript">
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
     g4 = new Dygraph(
       document.getElementById("graphdiv4"),
       "twonormals.csv",
@@ -210,24 +216,23 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         valueRange: [50,125]
       }
     );
-  </script>
+  //--><!]]></script>
 </div>
 </div>
 
 <p style="clear:both;">Things to note here:</p>
 
 <ul>
-<li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYYMMDD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, &hellip;</li>
+<li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYY-MM-DD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, …</li>
 <li>The first line of the CSV file doesn't mention the error columns. In this case, it's just "Date,Series1,Series2".</li>
 <li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
 <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
 </ul>
 
-
 <h2 id="gviz">GViz Data</h2>
 
 <p>The <a
-  href="http://code.google.com/apis/visualization/documentation/index.html">Google
+  href="https://developers.google.com/chart/interactive/docs/reference">Google
   Visualization API</a> provides a standard interface for describing data.
 Once you've specified your data using this API, you can plug in any
 GViz-compatible visualization. dygraphs is such a visualization. In
@@ -237,7 +242,7 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
   annotation demo.</a></p>
 
 <p>Here is another demonstration of
-<a href="http://danvk.org/dygraphs/tests/gviz.html">how to use dygraphs a GViz visualization</a>.
+<a href="tests/gviz.html">how to use dygraphs a GViz visualization</a>.
 </p>
 
 <h2 id="baseball">Charting Fractions</h2>
@@ -246,14 +251,14 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
 
 <ul>
   <li>The average of <code>a1/b1</code> and <code>a2/b2</code> is <code>(a1+a2)/(b1+b2)</code>, not <code>(a1/b1 + a2/b2)/2</code>.</li>
-  <li>The normal approximation is not always applicable and more sophisticated confidence intervals (e.g. the <a href="http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson confidence interval</a>) must be employed to avoid ratios that exceed 100% or go below 0%.</li>
+  <li>The normal approximation is not always applicable and more sophisticated confidence intervals (e.g. the <a href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson confidence interval</a>) must be employed to avoid ratios that exceed 100% or go below 0%.</li>
 </ul>
 
 <p>Fortunately, dygraphs handles both of these for you! Here's a chart and the command that generated it:</p>
 
 <div style="width:750px; text-align:center; font-weight: bold; font-size: 125%;">Batting Average for Ichiro Suzuki vs. Mariners (2004)</div>
 <div id="baseballdiv" style="width:750px; height:300px;"></div>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   new Dygraph(
     document.getElementById("baseballdiv"),
     "suzuki-mariners.txt",
@@ -264,13 +269,13 @@ see how this works, check out the <a href="tests/annotation-gviz.html">gviz
       rollPeriod: 15
     }
   );
-</script>
+//--><!]]></script>
 
 <b>Code:</b>
 <pre>
 new Dygraph(
-  document.getElementById(&quot;baseballdiv&quot;),
-  &quot;suzuki-mariners.txt&quot;,
+  document.getElementById("baseballdiv"),
+  "suzuki-mariners.txt",
   {
     fractions: true,
     errorBars: true,
@@ -305,7 +310,7 @@ new Dygraph(
 <label for="ann"> Annotations</label>
 </p>
 
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   var stock_annotations = [
     {
       series: "Real",
@@ -363,7 +368,7 @@ new Dygraph(
       stockchart.setAnnotations([]);
     }
   }
-</script>
+//--><!]]></script>
 <!--
 
 Here is a script to regenerate the Dow Jones plot:
@@ -388,8 +393,8 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 
 <ul>
   <li>If your chart doesn't display, be sure to check your browser's JavaScript error console. dygraphs makes every attempt to log errors and warnings, and these can often guide you in the right direction.</li>
-  <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="http://www.getfirebug.com/">Firebug</a>.</li>
-  <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYYMMDD, series1, series2, </code>&hellip; . And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
+  <li>Make sure your CSV files are readable! If your graph isn't showing up, the XMLHttpRequest for the CSV file may be failing. You can determine whether this is the case using tools like <a href="https://getfirebug.com/">Firebug</a>.</li>
+  <li>Make sure your CSV files are in the correct format. They must be of the form <code>YYYY-MM-DD, series1, series2, </code>… — the older YYYYMMDD as first column is <strong>not</strong> recognised as date any more but as number. And if you set the <code>errorBars</code> property, make sure you alternate data series and standard deviations.</li>
   <li>dygraphs are not happy when placed inside a <code>&lt;center&gt;</code> tag. This applies to the CSS <code>text-align</code> property as well. If you want to center a Dygraph, put it inside a table with <code>align = center</code> set.</li>
   <li>Don't set the <code>dateWindow</code> property to a date. It expects milliseconds since epoch, which can be obtained from a JavaScript Date object's valueOf method.</li>
   <li>Make sure you don't have any trailing commas in your call to the Dygraph constructor or in the options parameter. Firefox, Chrome and Safari ignore these but they can cause a graph to not display in Internet Explorer.</li>
@@ -400,6 +405,5 @@ perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high)
 <p>If you need to support Internet Explorer, check out our <a href="ie.html">notes on IE</a>.</p>
 
 <p>To get some inspiration, look at how the <a href="gallery/">charts in our gallery</a> are built.</p>
-
 
 <!--#include virtual="footer.html" -->

@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-/** 
+/**
  * @fileoverview Test cases that ensure Dygraphs works at all.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

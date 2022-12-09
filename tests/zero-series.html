@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>zero series</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Custom bars with a completely zero series. Both Y1 and Y2 should show.</p>
@@ -16,12 +18,12 @@
 </div>
 
     <div id="graphdiv" style="width:600px; height:300px;"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var g = new Dygraph(document.getElementById("graphdiv"),
           document.getElementById("data").innerHTML,
           {
             customBars: true
           });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

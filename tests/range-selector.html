@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Temperatures with Range Selector</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
+
     <style type="text/css">
     #bordered {
       border: 1px solid red;
@@ -39,7 +42,7 @@
     <div id="noroll" style="width:800px; height:320px;"></div>
 
     <h2 id="options">Range selector options</h2>
-    <p>Here's a view of how the various <a href="../options.html#Range%20Selector">range selector options</a> affect the display:</p>
+    <p>Here's a view of how the various <a href="../options.html#Range_20Selector">range selector options</a> affect the display:</p>
     <img width="954" height="354" src="range-selector-anatomy.png">
 
     <p>
@@ -64,7 +67,7 @@
     <p>Demo of range selector with stepPlot</p>
     <div id="stepplot" style="width:800px; height:320px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g1 = new Dygraph(
           document.getElementById("noroll"),
           data_temp,
@@ -180,6 +183,6 @@
                           includeZero: true,
                           showRangeSelector: true
                        });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

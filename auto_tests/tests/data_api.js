@@ -35,7 +35,6 @@ it('testBasicAccessors', function() {
   assert.equal(42, g.getValue(364, 2));
 });
 
-
 it('testAccessorsCustomBars', function() {
   var g = new Dygraph(graphDiv, data_temp_high_low, {
     customBars: true
@@ -52,7 +51,6 @@ it('testAccessorsCustomBars', function() {
   assert.deepEqual([37, 42, 47], g.getValue(1069, 1));
   assert.deepEqual([null, null, null], g.getValue(1069, 2));
 });
-
 
 // Regression test for #554.
 it('testGetRowForX', function() {
@@ -103,7 +101,7 @@ it('testGetRowForXDuplicates', function() {
 // indexFromSeriesName should return a value even if the series is invisible
 // In 1.1.1, if you request the last set and it's invisible, the method returns undefined.
 it('testIndexFromSetNameOnInvisibleSet', function() {
-  
+
   var localOpts = utils.clone(opts);
   localOpts.visibility = [true, false];
 

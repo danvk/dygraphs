@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Native format annotations</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
-    <p>This test demonstrates how annotations can be used with <a href="http://dygraphs.com/data.html#array">native-format</a> data.</p>
+    <p>This test demonstrates how annotations can be used with <a href="../data.html#array">native-format</a> data.</p>
 
     <div id="demodiv"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
               document.getElementById("demodiv"),
               [
@@ -34,6 +37,6 @@
         shortText: 'M',
         text: 'Marker'
       }]);
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

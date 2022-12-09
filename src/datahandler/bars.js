@@ -1,11 +1,11 @@
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
- * @fileoverview DataHandler base implementation for the "bar" 
+ * @fileoverview DataHandler base implementation for the "bar"
  * data formats. This implementation must be extended and the
  * extractSeries and rollingAverage must be implemented.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
@@ -31,13 +31,13 @@ BarsHandler.prototype = new DygraphDataHandler();
 //   (I get closure compiler errors if this isn't here.)
 /**
  * @override
- * @param {!Array.<Array>} rawData The raw data passed into dygraphs where 
+ * @param {!Array.<Array>} rawData The raw data passed into dygraphs where
  *     rawData[i] = [x,ySeries1,...,ySeriesN].
  * @param {!number} seriesIndex Index of the series to extract. All other
  *     series should be ignored.
  * @param {!DygraphOptions} options Dygraph options.
  * @return {Array.<[!number,?number,?]>} The series in the unified data format
- *     where series[i] = [x,y,{extras}]. 
+ *     where series[i] = [x,y,{extras}].
  */
 BarsHandler.prototype.extractSeries = function(rawData, seriesIndex, options) {
   // Not implemented here must be extended
@@ -45,7 +45,7 @@ BarsHandler.prototype.extractSeries = function(rawData, seriesIndex, options) {
 
 /**
  * @override
- * @param {!Array.<[!number,?number,?]>} series The series in the unified 
+ * @param {!Array.<[!number,?number,?]>} series The series in the unified
  *          data format where series[i] = [x,y,{extras}].
  * @param {!number} rollPeriod The number of points over which to average the data
  * @param {!DygraphOptions} options The dygraph options.

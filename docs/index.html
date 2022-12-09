@@ -1,3 +1,4 @@
+<!--#set var="pagetitle" value="main page" -->
 <!--#include virtual="header.html" -->
 
 <style>
@@ -6,12 +7,19 @@ pre.prettyprint {
 }
 </style>
 
+  <p style="border:3px inset red; margin:1em; padding:1ex; max-width:45em;"
+   id="mirrornote"><b>⚠</b> Please visit the official Dygraphs homepage
+   <a href="https://dygraphs.com/"><tt>https://dygraphs.com/</tt></a> instead.
+   You are reading this on a mirror, which may have outdated, incomplete
+   and/or locally patched information, or as part of the Debian package;
+   links may not work.</p>
+
   <h4>dygraphs is a fast, flexible open source JavaScript charting library.</h4>
   <p>It allows users to explore and interpret dense data sets. Here's how it works:</p>
 
   <div class="row">
     <div class="col-lg-4">
-      <b>This JavaScript&hellip;</b>
+      <b>This JavaScript…</b>
       <pre class="prettyprint">new Dygraph(div, "ny-vs-sf.txt", {
   legend: 'always',
   title: 'NYC vs. SF',
@@ -22,13 +30,17 @@ pre.prettyprint {
 });</pre>
     </div>
     <div class="col-lg-8">
-      <b>&hellip;makes this chart!</b>
+      <b>… makes this chart!</b>
       <div id="demodiv"></div>
     </div>
   </div>
 
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
+    $(function () {
+	if (window.location.hostname === 'dygraphs.com')
+		document.getElementById('mirrornote').style.display = 'none';
+    });
 
-  <script type="text/javascript">
     g = new Dygraph(
       document.getElementById("demodiv"),
       "ny-vs-sf.txt",
@@ -41,7 +53,7 @@ pre.prettyprint {
         legend: 'always'
       }
     );
-  </script>
+  //--><!]]></script>
 
   <p>The chart is <i>interactive</i>: you can mouse over to highlight individual values. You can click and drag to zoom. Double-clicking will zoom you back out. Shift-drag will pan. You can change the number and hit enter to adjust the averaging period.</p>
 
@@ -58,7 +70,7 @@ pre.prettyprint {
       </ul>
 
       <h3>Getting Started</h3>
-      <p>Start by <a href="download.html">downloading dygraphs</a>. Then read the <a href="tutorial.html">Tutorial</a> to learn how to use it, or just <a href="http://dygraphs.com/fiddle">play with dygraphs</a> on jsFiddle.</p>
+      <p>Start by <a href="download.html">downloading dygraphs</a>. Then read the <a href="tutorial.html">Tutorial</a> to learn how to use it, or just <a href="https://dygraphs.com/fiddle/">play with dygraphs</a> on jsFiddle.</p>
 
       <p>Once you've got your feet wet, look for inspiration in the <a href="gallery/">demo gallery</a> or check out our <a href="users.html">list of users</a>.</p>
 
@@ -83,8 +95,8 @@ const g = new Dygraph(div, data, {});</pre>
         <li><a href="jsdoc/symbols/Dygraph.html">API Reference</a>
         <li><a href="css.html">CSS Reference</a>
         <li><a href="data.html">Data format</a> documentation
-        <li><a href="http://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a> on Stack Overflow.</a>
-        <li><a href="https://groups.google.com/forum/#!forum/dygraphs-users">Mailing List</a>
+        <li><a href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a> on Stack Overflow.
+        <li><a href="https://groups.google.com/g/dygraphs-users">Mailing List</a>
         <li><a href="http://blog.dygraphs.com/">dygraphs blog</a>
         <li><a href="legal.html">Policy &amp; Licensing</a>
       </ul>

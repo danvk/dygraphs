@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>spacing</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -14,7 +16,7 @@
     <p>Narrow</p>
     <div id="div_g2" style="width:300px; height:200px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
             document.getElementById("div_g"),
             data, {
@@ -37,6 +39,6 @@
               }
             }
           );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

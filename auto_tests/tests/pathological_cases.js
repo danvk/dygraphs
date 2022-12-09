@@ -149,7 +149,6 @@ it('testDivAsString', function() {
   var g = new Dygraph('graph', data, {});
 });
 
-
 it('testConstantSeriesNegative', function() {
   var data = "X,Y\n" +
              "1,-1\n" +
@@ -160,7 +159,6 @@ it('testConstantSeriesNegative', function() {
   // g.yAxisRange()[0] < g.yAxisRange()[1] if it breaks in the future.
   assert.deepEqual([-1.1, -0.9], g.yAxisRange());
 });
-
 
 it('testConstantSeriesNegativeIncludeZero', function() {
   var data = "X,Y\n" +

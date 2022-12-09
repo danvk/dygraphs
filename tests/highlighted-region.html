@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Highlighted Region</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -13,7 +15,7 @@
 
     <p>When you zoom/pan, the region should remain highlighted.</p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       // A basic sinusoidal data series.
       var data = [];
       for (var i = 0; i < 1000; i++) {
@@ -27,7 +29,6 @@
       for (var i = highlight_start; i <= highlight_end; i++) {
         data[i][2] += 5.0;
       }
-
 
       var g = new Dygraph(
           document.getElementById("div_g"),
@@ -48,6 +49,6 @@
 
           }
       );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

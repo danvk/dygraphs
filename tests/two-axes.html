@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Multiple y-axes</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h2>Multiple y-axes</h2>
@@ -20,7 +22,7 @@
     <p>A single y-axis (right):</p>
     <div id="demodiv_one_right" style="width: 640; height: 350; border: 1px solid black"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var data = [];
       for (var i = 1; i <= 100; i++) {
         var m = "01", d = i;
@@ -62,7 +64,7 @@
             y2label: 'Secondary y-axis',
           }
       );
-      
+
       g2 = new Dygraph(
           document.getElementById("demodiv_y2_primary"),
           data,
@@ -93,7 +95,7 @@
             }
           }
       );
-      
+
       g3 = new Dygraph(
           document.getElementById("demodiv_two_grids"),
           data,
@@ -131,7 +133,7 @@
           y2label: 'Secondary y-axis',
         }
       );
-      
+
       g5 = new Dygraph(
        document.getElementById("demodiv_one_right"),
        data,
@@ -168,7 +170,7 @@
           }
         }
       );
-      
+
       function update(el) {
         g.updateOptions( { fillGraph: el.checked } );
         g2.updateOptions( { fillGraph: el.checked } );
@@ -176,8 +178,7 @@
         g4.updateOptions( { fillGraph: el.checked } );
         g5.updateOptions( { fillGraph: el.checked } );
       }
-    </script>
-
+    //--><!]]></script>
     <input type=checkbox id="check" onChange="update(this)"><label for="check"> Fill?</label>
-</body>
+  </body>
 </html>

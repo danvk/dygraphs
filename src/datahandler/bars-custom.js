@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -88,7 +88,7 @@ CustomBarsHandler.prototype.rollingAverage =
     if (count) {
       rollingData[i] = [
           originalData[i][0],
-          1.0 * mid / count, 
+          1.0 * mid / count,
           [ 1.0 * low / count,
             1.0 * high / count ] ];
     } else {

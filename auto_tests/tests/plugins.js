@@ -27,7 +27,7 @@ it('testWillDrawChart', function() {
 
   var plugin = (function() {
     var p = function() {
-    };  
+    };
 
     p.prototype.activate = function(g) {
       return {

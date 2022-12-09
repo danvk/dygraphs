@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>dygraphs Equation Plotter</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       function plot() {
         var eq = document.getElementById("eq").value;
         eval("fn = " + eq);
@@ -61,7 +64,7 @@
         document.getElementById("eq").value = presets[id][2];
         plot();
       }
-    </script>
+    //--><!]]></script>
   </head>
   <body onload="preset()">
     <p><b>Equation: </b><br/>

@@ -205,7 +205,6 @@ it('testAnnotationsDrawnInDrawCallback', function() {
   assert.deepEqual([true, false], calls);
 });
 
-
 // Test that annotations on the same point are stacked.
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=256
 it('testAnnotationsStacked', function() {
@@ -239,7 +238,6 @@ it('testAnnotationsStacked', function() {
   assert.equal(annEls[0].offsetLeft, annEls[1].offsetLeft);
   assert(annEls[1].offsetTop < annEls[0].offsetTop - 10);
 });
-
 
 // Test the .ready() method, which is most often used with setAnnotations().
 it('testReady', function() {

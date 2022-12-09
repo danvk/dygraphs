@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Custom grid and Dot</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
-
   <body>
     <p>Dot and lines should be extra large. Grid is red.</p>
     <div id="div_g14" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g14 = new Dygraph(
             document.getElementById("div_g14"),
             NoisyData, {
@@ -23,12 +24,12 @@
               strokeWidth: 3
             }
           );
-    </script>
-    
+    //--><!]]></script>
+
     <p>Use axis specific grid options. (independentTicks, gridLinePattern, ...)</p>
     <div id="div_g15" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var data = [];
       for (var i = 1; i <= 100; i++) {
         var m = "01", d = i;
@@ -79,6 +80,6 @@
               }
             }
           );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

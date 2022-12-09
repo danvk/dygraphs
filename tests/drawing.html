@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Dygraphs Drawing Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     var start_date = new Date("2002/12/29").getTime();
     var end_date = new Date().getTime();
     data = [];
@@ -17,11 +20,11 @@
           dd = date.getDate();
       data.push( [ new Date(Date.UTC(yyyy, mm, dd)), 50 ]);
     }
-    </script>
+    //--><!]]></script>
 
     <style>
     #tool_zoom {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: 0px 0px;
       width: 32px;
       height: 33px;
@@ -29,14 +32,14 @@
       display: inline-block;
     }
     #tool_pencil {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: -32px 0px;
       width: 32px;
       height: 33px;
       display: inline-block;
     }
     #tool_eraser {
-      background: url('drawing/tool-palette.png');
+      background: url('../common/tool-palette.png');
       background-position: -64px 0px;
       width: 33px;
       height: 33px;
@@ -46,7 +49,7 @@
       display: inline-block;
     }
     </style>
-</head>
+  </head>
 <body>
   <h2>Time Series Drawing Demo</h2>
   <div id='toolbar'>
@@ -54,7 +57,7 @@
   </div>
   <div id="draw_div" style="width: 800px; height: 400px;"></div>
 
-  <script type="text/javascript">
+  <script type="text/javascript"><!--//--><![CDATA[//><!--
     var isDrawing = false;
     var lastDrawRow = null, lastDrawValue = null;
     var tool = 'pencil';
@@ -125,9 +128,9 @@
 
       var dg_div = document.getElementById("draw_div");
       if (tool == 'pencil') {
-        dg_div.style.cursor = 'url(drawing/cursor-pencil.png) 2 30, auto';
+        dg_div.style.cursor = 'url(../common/cursor-pencil.png) 2 30, auto';
       } else if (tool == 'eraser') {
-        dg_div.style.cursor = 'url(drawing/cursor-eraser.png) 10 30, auto';
+        dg_div.style.cursor = 'url(../common/cursor-eraser.png) 10 30, auto';
       } else if (tool == 'zoom') {
         dg_div.style.cursor = 'crosshair';
       }
@@ -199,9 +202,6 @@
           }
         });
         window.onmouseup = finishDraw;
-  </script>
-
-  <p style='font-size: 10pt'>Toolbar/cursor icons are CC-licensed from <a
-  href="http://www.fatcow.com/free-icons">FatCow</a>.</p>
+  //--><!]]></script>
 </body>
 </html>

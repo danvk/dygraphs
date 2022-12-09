@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Hairlines demo</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
 
     <!-- Include the Javascript for the plug-in -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="../.jslibs/jquery-ui.min.css" />
+    <script type="text/javascript" src="../.jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src="../.jslibs/jquery-ui.min.js"></script>
 
-    <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css' />
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
-    <script type="text/javascript" src="../src/extras/hairlines.js"></script>
-    <script type="text/javascript" src="../src/extras/super-annotations.js"></script>
+    <script type="text/javascript" src="../extras/hairlines.js"></script>
+    <script type="text/javascript" src="../extras/super-annotations.js"></script>
 
-    <style>
+    <style type="text/css"><!--/*--><![CDATA[/*><!--*/
       #demodiv {
         position: absolute;
         left: 10px;
@@ -84,7 +87,7 @@
       .dygraph-annotation-line {
         box-shadow: 0 0 4px gray;
       }
-    </style>
+    /*]]>*/--></style>
   </head>
   <body>
     <h2>Hairlines Demo</h2>
@@ -113,7 +116,8 @@
       <input dg-ann-field='text' type='text' size=30 value='{{text}}' />
       <div>{{x}}, {{series}}: {{y}}</div>
     </div>
-    <script type="text/javascript">
+
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     $(document).on('keyup', '.annotation-info input', function(e) {
       var $annotationDiv = $(this).parent('.annotation-info');
       if (e.keyCode == 13 || e.keyCode == 10) {  // enter
@@ -126,7 +130,7 @@
       if (e.target.tagName == 'INPUT') return;
       $(this).find('.annotation-cancel').click();
     });
-    </script>
+    //--><!]]></script>
 
     <div id="demodiv"></div>
     <div id="status"></div>
@@ -144,12 +148,10 @@
       <input type=radio name="hairline-mode" id="hairline-closest">
       <label for="hairline-closest"> Closest</label>
 
-      <p>Learn more about the <a href="https://docs.google.com/document/d/1OHNE8BNNmMtFlRQ969DACIYIJ9VVJ7w3dSPRJDEeIew/edit">Hairlines/Super-annotations plugins and their APIs</a>.</p>
-
+      <p>Learn more about the <a href="../hairlines-annotations.pdf">Hairlines/Super-annotations plugins and their APIs</a>.</p>
     </div>
 
-
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var last_t = 0;
       var data = [];
       var fn = function(t) {
@@ -334,6 +336,6 @@
       });
 
       // TODO(danvk): demonstrate other annotations API methods.
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

@@ -28,7 +28,7 @@ import * as utils from './dygraph-utils';
 function IFrameTarp() {
   /** @type {Array.<!HTMLDivElement>} */
   this.tarps = [];
-};
+}
 
 /**
  * Find all the iframes in the document and cover them with high z-index

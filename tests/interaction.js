@@ -27,7 +27,7 @@ function upV3(event, g, context) {
 }
 
 // Take the offset of a mouse event on the dygraph canvas and
-// convert it to a pair of percentages from the bottom left. 
+// convert it to a pair of percentages from the bottom left.
 // (Not top left, bottom is where the lower value is.)
 function offsetToPercentage(g, offsetX, offsetY) {
   // This is calculating the pixel offset of the leftmost date.

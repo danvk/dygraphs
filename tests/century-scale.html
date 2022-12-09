@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>demo</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h2>Demo</h2>
@@ -15,12 +17,12 @@
     <div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
     </td>
     </tr></table>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
               document.getElementById("demodiv"),
               "Date,Value\n" +
               "1776/01/01,100\n" +
-              "1876/01/01,200\n" + 
+              "1876/01/01,200\n" +
               "1976/01/01,150\n",
               {
                 rollPeriod: 1,
@@ -35,6 +37,6 @@
                 height: 320
               }
           );
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

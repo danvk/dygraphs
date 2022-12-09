@@ -1,9 +1,12 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>isZoomed method</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -25,7 +28,7 @@
       </div>
       <div class="codeoutput" style="float:left;">
       <div id="zoomdiv"></div>
-      <script type="text/javascript">
+      <script type="text/javascript"><!--//--><![CDATA[//><!--
         var g = new Dygraph(
 
         // containing div
@@ -49,7 +52,7 @@
           }
         }
         );
-      </script>
+      //--><!]]></script>
       </div>
     </div>
 
@@ -60,23 +63,23 @@
   new Dygraph(
 
   // containing div
-  document.getElementById(&quot;zoomdiv&quot;),
+  document.getElementById(&#34;zoomdiv&#34;),
 
   // CSV or path to a CSV file.
-  &quot;Date,Temperature\n&quot; +
-  &quot;2011-01-07,75\n&quot; +
-  &quot;2011-01-08,70\n&quot; +
-  &quot;2011-01-09,90\n&quot; +
-  &quot;2011-01-10,30\n&quot; +
-  &quot;2011-01-11,40\n&quot; +
-  &quot;2011-01-12,60\n&quot; +
-  &quot;2011-01-13,70\n&quot; +
-  &quot;2011-01-14,40\n&quot;,
+  &#34;Date,Temperature\n&#34; +
+  &#34;2011-01-07,75\n&#34; +
+  &#34;2011-01-08,70\n&#34; +
+  &#34;2011-01-09,90\n&#34; +
+  &#34;2011-01-10,30\n&#34; +
+  &#34;2011-01-11,40\n&#34; +
+  &#34;2011-01-12,60\n&#34; +
+  &#34;2011-01-13,70\n&#34; +
+  &#34;2011-01-14,40\n&#34;,
   {
     drawCallback: function(me, initial) {
-    document.getElementById(&quot;zoomed&quot;).innerHTML = &quot;&quot; + me.isZoomed();
-    document.getElementById(&quot;zoomedX&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;x&quot;);
-    document.getElementById(&quot;zoomedY&quot;).innerHTML = &quot;&quot; + me.isZoomed(&quot;y&quot;);
+    document.getElementById(&#34;zoomed&#34;).innerHTML = &#34;&#34; + me.isZoomed();
+    document.getElementById(&#34;zoomedX&#34;).innerHTML = &#34;&#34; + me.isZoomed(&#34;x&#34;);
+    document.getElementById(&#34;zoomedY&#34;).innerHTML = &#34;&#34; + me.isZoomed(&#34;y&#34;);
     }
   }
   );

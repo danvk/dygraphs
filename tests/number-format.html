@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Test of number formatting</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>The default formatting mimics printf with %.<i>p</i>g where <i>p</i> is
@@ -23,7 +25,7 @@
     <br>
     <div id="content" style="font-family:'Courier New',monospace"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       // Helper functions for generating an HTML table for holding the test
       // results.
       createRow = function(columnType, columns) {
@@ -79,6 +81,6 @@
 
       document.getElementById('p_input').value = '4';
       updateTable();
-    </script>
+    //--><!]]></script>
   </body>
 </html>

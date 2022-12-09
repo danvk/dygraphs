@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Multiple y-axes with valueRange</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <h2>Multiple y-axes with valueRange</h2>
@@ -14,7 +16,7 @@
     <div id="demodiv_one" style="width: 640; height: 350; border: 1px solid black"></div>
     <p>Two-axis new valueRange y[40, 80] &amp; y2[1e6, 1.2e6] set:</p>
     <div id="demodiv_two" style="width: 640; height: 350; border: 1px solid black"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var data = [];
       for (var i = 1; i <= 100; i++) {
         var m = "01", d = i;
@@ -103,8 +105,6 @@
             y2label: 'Secondary y-axis'
           }
       );
-
-
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

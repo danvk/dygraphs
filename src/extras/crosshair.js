@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /*global Dygraph:false */

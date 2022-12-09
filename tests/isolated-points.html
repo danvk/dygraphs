@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>isolated points</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <div id="graph"></div>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     var g = new Dygraph(
       document.getElementById("graph"),
       [
@@ -31,6 +33,6 @@
         showRoller: true
       }
     );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/** 
+/**
  * @fileoverview Dygraphs options palette text area.
  *
  * @author konigsberg@google.com (Robert Konigsberg)

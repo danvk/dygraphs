@@ -1,3 +1,4 @@
+<!--#set var="pagetitle" value="CSS reference" -->
 <!--#include virtual="header.html" -->
 
 <h2>CSS Reference</h2>
@@ -14,7 +15,7 @@ drawn on the canvas and must by styled using dygraphs <a
 <p>This chart shows the CSS classes for chart labels:</p>
 
 <div id="demodiv"></div>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   g = new Dygraph(
       document.getElementById("demodiv"),
       "dow.txt",
@@ -35,7 +36,7 @@ drawn on the canvas and must by styled using dygraphs <a
           $('.dygraph-legend').text('.dygraph-legend');
         },
       });
-</script>
+//--><!]]></script>
 
 <p>The CSS classes for the chart labels are:</p>
 <ul>
@@ -45,8 +46,8 @@ drawn on the canvas and must by styled using dygraphs <a
   <li>y2-axis label: <code>.dygraph-label.dygraph-y2label</code>
 </ul>
 
-<p>The axis labels ("2000", "4000", "6000", &hellip; for the y-axis and "1920",
-"1930", "1940", &hellip; for the x-axis) also get CSS classes:</p>
+<p>The axis labels ("2000", "4000", "6000", … for the y-axis and "1920",
+"1930", "1940", … for the x-axis) also get CSS classes:</p>
 
 <ul>
   <li>x-axis: <code>.dygraph-axis-label.dygraph-axis-label-x</code>

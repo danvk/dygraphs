@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Test cases for a graph contained in a scrolling div
  *
  * @author konigsberg@google.com (Robert Konigsbrg)
@@ -9,7 +9,7 @@ import DygraphOps from './DygraphOps';
 
 describe("scrolling-div", function() {
 
-var point, g; 
+var point, g;
 
 beforeEach(function() {
 
@@ -58,7 +58,7 @@ var LOREM_IPSUM =
             }
           }
       );
-  
+
 });
 
 // This is usually something like 15, but for OS X Lion and its auto-hiding
@@ -78,7 +78,7 @@ var detectScrollbarWidth = function() {
   // Get the scrollbar width
   var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
 
-  // Delete the DIV 
+  // Delete the DIV
   document.body.removeChild(scrollDiv);
 
   return scrollbarWidth;

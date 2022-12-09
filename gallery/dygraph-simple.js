@@ -1,6 +1,6 @@
 /*global Gallery,Dygraph,data */
 Gallery.register(
-  'dygraph-simple',  
+  'dygraph-simple',
   {
     name: 'Minimal Example',
     setup: function(parent) {

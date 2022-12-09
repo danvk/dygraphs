@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Custom Circles</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
-    <script type="text/javascript" src="../src/extras/shapes.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../extras/shapes.js"></script>
   </head>
   <body>
     <h2>Custom circles and hover circles</h2>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       // Simple version
       var div = document.createElement('div');
       document.body.appendChild(div);
@@ -36,7 +38,6 @@
               }
             }
         });
-
 
       // Fancy demos
       var smile = function(g, series, ctx, cx, cy, color, radius) {
@@ -153,6 +154,6 @@
               highlightCircleSize: 10,
               strokeWidth: 2,
             }});
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

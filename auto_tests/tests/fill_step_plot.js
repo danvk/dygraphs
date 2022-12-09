@@ -25,7 +25,6 @@ afterEach(function() {
   utils.getContext = origFunc;
 });
 
-
 it('testFillStepPlotNullValues', function() {
   var opts = {
     labels: ["x","y"],
@@ -54,7 +53,7 @@ it('testFillStepPlotNullValues', function() {
   var y2 = 0;
   var xy1 = g.toDomCoords(x1, y1);
   var xy2 = g.toDomCoords(x2, y2);
-  
+
   // Check if a line is drawn between the previous y and the bottom of the chart
   CanvasAssertions.assertLineDrawn(htx, xy1, xy2, {});
 });

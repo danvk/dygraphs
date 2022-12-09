@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>no-visibility</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -15,7 +17,7 @@
     <p>This graph's specified value range should be respected.</p>
     <div id="div_g2" style="width:400px; height:200px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
@@ -33,7 +35,6 @@
               valueRange: [100, 200]
             }
           );
-    </script>
-
+    //--><!]]></script>
   </body>
 </html>

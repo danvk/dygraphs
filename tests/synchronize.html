@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>synchronize</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
-    <script type="text/javascript" src="../src/extras/synchronizer.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../extras/synchronizer.js"></script>
     <script type="text/javascript" src="data.js"></script>
+
     <style>
       .chart { width: 500px; height: 300px; }
       .chart-container { overflow: hidden; }
@@ -20,8 +23,9 @@
     <p>Zooming and panning on any of the charts will zoom and pan all the
     others. Selecting points on one will select points on the others.</p>
 
-    <p>To use this, source <a href="https://github.com/danvk/dygraphs/blob/master/src/extras/synchronizer.js"><code>extras/synchronizer.js</code></a> on your page.
-    See the comments in that file for usage.</p>
+    <p>To use this, source <a href="../extras/synchronizer.js"><code>extras/synchronizer.js</code></a>
+    on your page. See the comments in that file for usage. However, for better browser compatibility,
+    use the file from <tt>src-es5/extras/</tt> (<tt>dist/extras/</tt>) instead.</p>
 
     <div class="chart-container">
       <div id="div1" class="chart"></div>
@@ -37,7 +41,7 @@
       <input type=checkbox id='chk-range' checked onChange='update()'><label for='chk-range'> Range (y-axis)</label>
     </p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       gs = [];
       var blockRedraw = false;
       for (var i = 1; i <= 4; i++) {
@@ -52,7 +56,7 @@
         );
       }
       var sync = Dygraph.synchronize(gs);
-      
+
       function update() {
         var zoom = document.getElementById('chk-zoom').checked,
             selection = document.getElementById('chk-selection').checked,
@@ -66,6 +70,6 @@
           range: syncRange
         });
       }
-    </script>
+    //--><!]]></script>
   </body>
 </html>

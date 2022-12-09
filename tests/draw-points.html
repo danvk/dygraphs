@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>individual points</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -12,7 +14,7 @@
     <div id="g" style="width:600px; height:300px;"></div>
     <div id="g2" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var g1 = new Dygraph(
           document.getElementById("g"),
           NoisyData, {
@@ -30,6 +32,6 @@
             drawPoints: false
           }
         );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -1,0 +1,45 @@
+{
+  "concurrency": {
+    "cancel-in-progress": true,
+    "group": "pages"
+  },
+  "jobs": {
+    "build": {
+      "environment": {
+        "name": "github-pages",
+        "url": "${{ steps.deployment.outputs.page_url }}"
+      },
+      "if": "(github.repository == 'danvk/dygraphs') || (github.repository == 'mirabilos/dygraphs')",
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v3"
+        },
+        {
+          "run": "./.pages.sh"
+        },
+        {
+          "uses": "actions/upload-pages-artifact@v1"
+        },
+        {
+          "id": "deployment",
+          "uses": "actions/deploy-pages@v1"
+        }
+      ]
+    }
+  },
+  "name": "build, test, upload to Pages",
+  "on": {
+    "push": {
+      "branches": [
+        "debian",
+        "master"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read",
+    "id-token": "write",
+    "pages": "write"
+  }
+}

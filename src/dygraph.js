@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -9,33 +9,36 @@
  * string. Dygraph can handle multiple series with or without error bars. The
  * date/value ranges will be automatically set. Dygraph uses the
  * &lt;canvas&gt; tag, so it only works in FF1.5+.
+ * See the source or https://dygraphs.com/ for more information.
  * @author danvdk@gmail.com (Dan Vanderkam)
+ */
 
+/*
   Usage:
    <div id="graphdiv" style="width:800px; height:500px;"></div>
-   <script type="text/javascript">
+   <script type="text/javascript"><!--//--><![CDATA[//><!--
      new Dygraph(document.getElementById("graphdiv"),
                  "datafile.csv",  // CSV file with headers
                  { }); // options
-   </script>
+   //--><!]]></script>
 
  The CSV file is of the form
 
    Date,SeriesA,SeriesB,SeriesC
-   YYYYMMDD,A1,B1,C1
-   YYYYMMDD,A2,B2,C2
+   YYYY-MM-DD,A1,B1,C1
+   YYYY-MM-DD,A2,B2,C2
 
  If the 'errorBars' option is set in the constructor, the input should be of
  the form
    Date,SeriesA,SeriesB,...
-   YYYYMMDD,A1,sigmaA1,B1,sigmaB1,...
-   YYYYMMDD,A2,sigmaA2,B2,sigmaB2,...
+   YYYY-MM-DD,A1,sigmaA1,B1,sigmaB1,...
+   YYYY-MM-DD,A2,sigmaA2,B2,sigmaB2,...
 
  If the 'fractions' option is set, the input should be of the form:
 
    Date,SeriesA,SeriesB,...
-   YYYYMMDD,A1/B1,A2/B2,...
-   YYYYMMDD,A1/B1,A2/B2,...
+   YYYY-MM-DD,A1/B1,A2/B2,...
+   YYYY-MM-DD,A1/B1,A2/B2,...
 
  And error bars will be calculated automatically using a binomial distribution.
 
@@ -89,7 +92,7 @@ var Dygraph = function(div, data, opts) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "2.1.0";
+Dygraph.VERSION = "2.1.2-alpha.1";
 
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
@@ -111,7 +114,6 @@ Dygraph.ANIMATION_DURATION = 200;
  * This causes all the lines to be drawn over all the fills/error bars.
  */
 Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
-
 
 // Used for initializing annotation CSS rules only once.
 Dygraph.addedAnnotationCSS = false;
@@ -365,17 +367,15 @@ Dygraph.prototype.toString = function() {
  * @return { ... } The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
-  // For "production" code, this gets removed by uglifyjs.
-  if (typeof(process) !== 'undefined') {
-    if (process.env.NODE_ENV != 'production') {
-      if (typeof(OPTIONS_REFERENCE) === 'undefined') {
-        console.error('Must include options reference JS for testing');
-      } else if (!OPTIONS_REFERENCE.hasOwnProperty(name)) {
-        console.error('Dygraphs is using property ' + name + ', which has no ' +
-                      'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
-        // Only log this error once.
-        OPTIONS_REFERENCE[name] = true;
-      }
+  if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
+    // For "production" code, this gets removed by uglifyjs.
+    if (typeof(OPTIONS_REFERENCE) === 'undefined') {
+      console.error('Must include options reference JS for testing');
+    } else if (!OPTIONS_REFERENCE.hasOwnProperty(name)) {
+      console.error('Dygraphs is using property ' + name + ', which has no ' +
+                    'entry in the Dygraphs.OPTIONS_REFERENCE listing.');
+      // Only log this error once.
+      OPTIONS_REFERENCE[name] = true;
     }
   }
   return seriesName ? this.attributes_.getForSeries(name, seriesName) : this.attributes_.get(name);
@@ -780,8 +780,8 @@ Dygraph.prototype.numRows = function() {
  *     were out of range.
  */
 Dygraph.prototype.getValue = function(row, col) {
-  if (row < 0 || row > this.rawData_.length) return null;
-  if (col < 0 || col > this.rawData_[row].length) return null;
+  if (row < 0 || row >= this.rawData_.length) return null;
+  if (col < 0 || col >= this.rawData_[row].length) return null;
 
   return this.rawData_[row][col];
 };
@@ -2147,7 +2147,6 @@ Dygraph.stackPoints_ = function(
   }
 };
 
-
 /**
  * Loop over all fields and create datasets, calculating extreme y-values for
  * each series and extreme x-indices as we go.
@@ -2533,22 +2532,32 @@ Dygraph.prototype.computeYAxisRanges_ = function(extremes) {
     if (!ypadCompat) {
       // When using yRangePad, adjust the upper/lower bounds to add
       // padding unless the user has zoomed/panned the Y axis range.
+
+      y0 = axis.computedValueRange[0];
+      y1 = axis.computedValueRange[1];
+
+      // special case #781: if we have no sense of scale, center on the sole value.
+      if (y0 === y1) {
+        if(y0 === 0) {
+          y1 = 1;
+        } else {
+          var delta = Math.abs(y0 / 10);
+          y0 -= delta;
+          y1 += delta;
+        }
+      }
+
       if (logscale) {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
         var y0pct = ypad / (2 * ypad - 1);
         var y1pct = (ypad - 1) / (2 * ypad - 1);
         axis.computedValueRange[0] = utils.logRangeFraction(y0, y1, y0pct);
         axis.computedValueRange[1] = utils.logRangeFraction(y0, y1, y1pct);
       } else {
-        y0 = axis.computedValueRange[0];
-        y1 = axis.computedValueRange[1];
         span = y1 - y0;
         axis.computedValueRange[0] = y0 - span * ypad;
         axis.computedValueRange[1] = y1 + span * ypad;
       }
     }
-
 
     if (independentTicks) {
       axis.independentTicks = independentTicks;
@@ -2608,7 +2617,7 @@ Dygraph.prototype.detectTypeFromString_ = function(str) {
       str.indexOf('/') >= 0 ||
       isNaN(parseFloat(str))) {
     isDate = true;
-  } 
+  }
 
   this.setXAxisOptions_(isDate);
 };
@@ -3413,7 +3422,6 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
 
   this.registeredEvents_ = [];
 };
-
 
 // Installed plugins, in order of precedence (most-general to most-specific).
 Dygraph.PLUGINS = [

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>visibility</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
@@ -23,8 +25,7 @@
 
     <p>g.visibility() = <span id="visibility"></span></p>
 
-
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyDataABC, {
@@ -44,7 +45,6 @@
         g.setVisibility(parseInt(el.id), el.checked);
         setStatus();
       }
-    </script>
-
+    //--><!]]></script>
   </body>
 </html>

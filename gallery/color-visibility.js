@@ -28,7 +28,7 @@ Gallery.register(
             colors: ['#284785', '#EE1111', '#8AE234'],
             visibility: [true, true, true]
           });
-  
+
       $('input[type=checkbox]').click(function() {
         var el = this;
         g.setVisibility(el.id, el.checked);

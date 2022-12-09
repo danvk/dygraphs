@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>X Axis Label Formatting</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Original data:</p>
@@ -16,7 +18,7 @@
     <p>Same data, but always displaying HH:MM:SS:</p>
     <div id="seconds" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       function HourlyData() {
         return "" +
           "Date,A,B\n" +
@@ -40,7 +42,7 @@
       var g2 = new Dygraph(
             document.getElementById("offby2"),
             HourlyData(),
-            { 
+            {
               axes: {
                 x: {
                   axisLabelFormatter: function(d, gran, opts) {
@@ -53,7 +55,7 @@
       var g3 = new Dygraph(
             document.getElementById("seconds"),
             HourlyData(),
-            { 
+            {
               axes: {
                 x: {
                   axisLabelWidth: 70,
@@ -65,6 +67,6 @@
                 }
               }
             });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

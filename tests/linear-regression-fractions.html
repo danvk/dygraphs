@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Linear Regression</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
 
     <style type="text/css">
@@ -18,7 +21,7 @@
 
     <div id="demodiv" style="width: 480px; height: 320px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var data = "X,Y1,Y2\n";
       for (var i = 0; i < 120; i++) {
         // data.push([i,
@@ -124,9 +127,8 @@
           ctx.restore();
         }
       }
-      
-    </script>
-    
+    //--><!]]></script>
+
     <div style="position: absolute; left: 500px; top: 150px;">
     <input type=button style="color: green;" value="Regression (Y1)" onClick="regression(1)" />
     <br/><br/>
@@ -134,5 +136,5 @@
     <br/><br/>
     <input type=button value="Clear Lines" onClick="clearLines()" />
     </div>
-</body>
+  </body>
 </html>

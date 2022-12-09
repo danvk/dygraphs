@@ -574,7 +574,7 @@ it('testLabelKMB', function() {
     }
   );
 
-  assert.deepEqual(["0", "500", "1K", "1.5K", "2K"], Util.getYLabels());
+  assert.deepEqual(["0", "500", "1k", "1.5k", "2k"], Util.getYLabels());
 });
 
 it('testLabelKMG2', function() {
@@ -596,7 +596,7 @@ it('testLabelKMG2', function() {
     }
   );
 
-  assert.deepEqual(["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+  assert.deepEqual(["0","256","512","768","1Ki","1.25Ki","1.5Ki","1.75Ki","2Ki"],
                    Util.getYLabels());
 });
 
@@ -618,7 +618,7 @@ it('testLabelKMG2_top', function() {
   );
 
   assert.deepEqual(
-      ["0","256","512","768","1k","1.25k","1.5k","1.75k","2k"],
+      ["0","256","512","768","1Ki","1.25Ki","1.5Ki","1.75Ki","2Ki"],
       Util.getYLabels());
 });
 
@@ -641,16 +641,15 @@ it('testSmallLabelKMB', function() {
     }
   );
 
-  // TODO(danvk): use prefixes here (e.g. m, µ, n)
-  assert.deepEqual(['0', '5.00e-7', '1.00e-6', '1.50e-6', '2.00e-6'],
+  assert.deepEqual(['0', '500n', '1µ', '1.5µ', '2µ'],
                    Util.getYLabels());
 });
 
 it('testSmallLabelKMG2', function() {
   var data = [];
   data.push([0, 0]);
-  data.push([1, 1e-6]);
-  data.push([2, 2e-6]);
+  data.push([1, 1 * (2**-20)]);
+  data.push([2, 2 * (2**-20)]);
 
   var g = new Dygraph(
     document.getElementById("graph"),
@@ -665,9 +664,31 @@ it('testSmallLabelKMG2', function() {
     }
   );
 
-  // TODO(danvk): this is strange--the values aren't on powers of two, and are
-  // these units really used for powers of two in <1? See issue #571.
-  assert.deepEqual(['0', '0.48u', '0.95u', '1.43u', '1.91u'],
+  assert.deepEqual(['0', '256p-30', '512p-30', '768p-30', '1p-20', '1.25p-20', '1.5p-20', '1.75p-20', '2p-20'],
+                   Util.getYLabels());
+});
+
+it('testSmallLabelKMG2legacy', function() {
+  var data = [];
+  data.push([0, 0]);
+  data.push([1, 1 * (2**-20)]);
+  data.push([2, 2 * (2**-20)]);
+
+  var g = new Dygraph(
+    document.getElementById("graph"),
+    data,
+    {
+      labels: [ 'X', 'bar' ],
+      axes : {
+        y: {
+          labelsKMB: true,
+          labelsKMG2: true
+        }
+      }
+    }
+  );
+
+  assert.deepEqual(['0', '256n', '512n', '768n', '1µ', '1.25µ', '1.5µ', '1.75µ', '2µ'],
                    Util.getYLabels());
 });
 
@@ -682,7 +703,7 @@ it('testLogScale', function() {
                       });
   var nonEmptyLabels = Util.getYLabels().filter(function(x) { return x.length > 0; });
   assert.deepEqual(["5","10","20","50","100","200","500","1000"], nonEmptyLabels);
- 
+
   g.updateOptions({ logscale : false });
   assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
 });
@@ -724,7 +745,7 @@ it('testIncludeZero', function() {
                         labels: ['X', 'Y1']
                       });
   assert.deepEqual(['0','200','400','600','800','1000'], Util.getYLabels());
- 
+
   g.updateOptions({ includeZero : false });
   assert.deepEqual(['500','600','700','800','900','1000'], Util.getYLabels());
 });
@@ -744,40 +765,40 @@ it('testAxisLabelFontSize', function() {
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({axisLabelFontSize : 8});
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "8px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "8px");
 
   g.updateOptions({
     axisLabelFontSize : null,
-    axes: { 
+    axes: {
       x: { axisLabelFontSize : 5 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
   assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "14px");
 
   g.updateOptions({
-    axes: { 
+    axes: {
       y: { axisLabelFontSize : 20 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y"), "20px");
 
   g.updateOptions({
-    series: { 
+    series: {
       Y2: { axis : "y2" } // copy y2 series to y2 axis.
-    },  
-    axes: { 
+    },
+    axes: {
       y2: { axisLabelFontSize : 12 },
-    }   
-  }); 
+    }
+  });
 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px"); 
-  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px"); 
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-x"), "5px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y1"), "20px");
+  assertFontSize(document.querySelectorAll(".dygraph-axis-label-y2"), "12px");
 });
 
 it('testAxisLabelFontSizeNull', function() {
@@ -843,13 +864,13 @@ it('testLabelsKMBPerAxis', function() {
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assert.deepEqual(["0","500","1K","1.5K","2K"], Util.getYLabels(2));
+  assert.deepEqual(["0","500","1k","1.5k","2k"], Util.getYLabels(2));
 });
 
 /*
  * This test shows that you can override labelsKMG2 on the axis level.
  */
-it('testLabelsKMBG2IPerAxis', function() {
+it('testLabelsKMG2PerAxis', function() {
   var g = new Dygraph(
       document.getElementById("graph"),
       "x,a,b\n" +
@@ -873,7 +894,7 @@ it('testLabelsKMBG2IPerAxis', function() {
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
   assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
-  assert.deepEqual(["0","500","1000","1.46k","1.95k"], Util.getYLabels(2));
+  assert.deepEqual(["0","500","1000","1.46Ki","1.95Ki"], Util.getYLabels(2));
 });
 
 /**
@@ -939,7 +960,6 @@ it('testDigitsAfterDecimalPerAxis', function() {
   assert.deepEqual(["0.005","0.0055","0.006","0.0065","0.007","0.0075","0.008"], Util.getYLabels(2));
   g.updateOptions({ axes: { y2: { digitsAfterDecimal: null }}});
   assert.deepEqual(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
-
 
   // digitsAfterDecimal is ignored for the x-axis.
   // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
@@ -1037,7 +1057,6 @@ it('testLabelsCrossDstChange', function() {
   }
 });
 
-
 // Tests data which crosses a "fall back" at a high enough frequency that you
 // can see both 1:00 A.M.s.
 it('testLabelsCrossDstChangeHighFreq', function() {
@@ -1071,7 +1090,6 @@ it('testLabelsCrossDstChangeHighFreq', function() {
     '01:00', '01:05'  // 1 AM number two!
   ], Util.getXLabels());
 });
-
 
 // Tests data which crosses a "spring forward" at a low frequency.
 // Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433

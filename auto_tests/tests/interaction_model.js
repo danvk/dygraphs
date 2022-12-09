@@ -291,7 +291,6 @@ it('testIsZoomed_both', function() {
   DygraphOps.dispatchMouseMove_Point(g, 100, 130);
   DygraphOps.dispatchMouseUp_Point(g, 100, 130);
 
-
   assert.isTrue(g.isZoomed());
   assert.isTrue(g.isZoomed("x"));
   assert.isTrue(g.isZoomed("y"));
@@ -335,7 +334,6 @@ it('testIsZoomed_updateOptions_both', function() {
   assert.isTrue(g.isZoomed("x"));
   assert.isTrue(g.isZoomed("y"));
 });
-
 
 it('testCorrectAxisValueRangeAfterUnzoom', function() {
   var g = new Dygraph(document.getElementById("graph"),

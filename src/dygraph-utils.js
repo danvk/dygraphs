@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licensed (http://opensource.org/licenses/MIT)
+ * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
 /**
@@ -108,7 +108,7 @@ export var addEvent = function addEvent(elem, type, fn) {
  */
 export function removeEvent(elem, type, fn) {
   elem.removeEventListener(type, fn, false);
-};
+}
 
 /**
  * Cancels further processing of an event. This is useful to prevent default
@@ -130,7 +130,7 @@ export function cancelEvent(e) {
   e.cancel = true;
   e.returnValue = false;
   return false;
-};
+}
 
 /**
  * Convert hsv values to an rgb(r,g,b) string. Taken from MochiKit.Color. This
@@ -170,7 +170,7 @@ export function hsvToRGB(hue, saturation, value) {
   green = Math.floor(255 * green + 0.5);
   blue = Math.floor(255 * blue + 0.5);
   return 'rgb(' + red + ',' + green + ',' + blue + ')';
-};
+}
 
 /**
  * Find the coordinates of an object relative to the top left of the page.
@@ -188,7 +188,7 @@ export function findPos(obj) {
     x: p.left + (w.pageXOffset || d.scrollLeft),
     y: p.top  + (w.pageYOffset || d.scrollTop)
   }
-};
+}
 
 /**
  * Returns the x-coordinate of the event in a coordinate system where the
@@ -200,7 +200,7 @@ export function findPos(obj) {
  */
 export function pageX(e) {
   return (!e.pageX || e.pageX < 0) ? 0 : e.pageX;
-};
+}
 
 /**
  * Returns the y-coordinate of the event in a coordinate system where the
@@ -212,7 +212,7 @@ export function pageX(e) {
  */
 export function pageY(e) {
   return (!e.pageY || e.pageY < 0) ? 0 : e.pageY;
-};
+}
 
 /**
  * Converts page the x-coordinate of the event to pixel x-coordinates on the
@@ -223,7 +223,7 @@ export function pageY(e) {
  */
 export function dragGetX_(e, context) {
   return pageX(e) - context.px;
-};
+}
 
 /**
  * Converts page the y-coordinate of the event to pixel y-coordinates on the
@@ -234,7 +234,7 @@ export function dragGetX_(e, context) {
  */
 export function dragGetY_(e, context) {
   return pageY(e) - context.py;
-};
+}
 
 /**
  * This returns true unless the parameter is 0, null, undefined or NaN.
@@ -246,7 +246,7 @@ export function dragGetY_(e, context) {
  */
 export function isOK(x) {
   return !!x && !isNaN(x);
-};
+}
 
 /**
  * @param {{x:?number,y:?number,yval:?number}} p The point to consider, valid
@@ -262,7 +262,7 @@ export function isValidPoint(p, opt_allowNaNY) {
   if (p.y === null || p.y === undefined) return false;
   if (isNaN(p.x) || (!opt_allowNaNY && isNaN(p.y))) return false;
   return true;
-};
+}
 
 /**
  * Number formatting function which mimics the behavior of %g in printf, i.e.
@@ -304,7 +304,7 @@ export function floatFormat(x, opt_precision) {
   // so we take off 1 for the value before the '.'.
   return (Math.abs(x) < 1.0e-3 && x !== 0.0) ?
       x.toExponential(p - 1) : x.toPrecision(p);
-};
+}
 
 /**
  * Converts '9' to '09' (useful for dates)
@@ -314,7 +314,7 @@ export function floatFormat(x, opt_precision) {
  */
 export function zeropad(x) {
   if (x < 10) return "0" + x; else return "" + x;
-};
+}
 
 /**
  * Date accessors to get the parts of a calendar date (year, month,
@@ -372,7 +372,7 @@ export function hmsString_(hh, mm, ss, ms) {
     }
   }
   return ret;
-};
+}
 
 /**
  * Convert a JS date (millis since epoch) to a formatted string.
@@ -404,7 +404,7 @@ export function dateString_(time, utc) {
     ret += " " + hmsString_(hh, mm, ss, ms);
   }
   return ret;
-};
+}
 
 /**
  * Round a number to the specified number of digits past the decimal point.
@@ -416,7 +416,7 @@ export function dateString_(time, utc) {
 export function round_(num, places) {
   var shift = Math.pow(10, places);
   return Math.round(num * shift)/shift;
-};
+}
 
 /**
  * Implementation of binary search over an array.
@@ -471,7 +471,7 @@ export function binarySearch(val, arry, abs, low, high) {
     return binarySearch(val, arry, abs, mid + 1, high);
   }
   return -1;  // can't actually happen, but makes closure compiler happy
-};
+}
 
 /**
  * Parses a date, returning the number of milliseconds since epoch. This can be
@@ -504,11 +504,6 @@ export function dateParser(dateStr) {
       dateStrSlashed = dateStrSlashed.replace("-", "/");
     }
     d = dateStrToMillis(dateStrSlashed);
-  } else if (dateStr.length == 8) {  // e.g. '20090712'
-    // TODO(danvk): remove support for this format. It's confusing.
-    dateStrSlashed = dateStr.substr(0,4) + "/" + dateStr.substr(4,2) + "/" +
-        dateStr.substr(6,2);
-    d = dateStrToMillis(dateStrSlashed);
   } else {
     // Any format that Date.parse will accept, e.g. "2009/07/12" or
     // "2009/07/12 12:34:56"
@@ -519,7 +514,7 @@ export function dateParser(dateStr) {
     console.error("Couldn't parse " + dateStr + " as a date");
   }
   return d;
-};
+}
 
 /**
  * This is identical to JavaScript's built-in Date.parse() method, except that
@@ -531,7 +526,7 @@ export function dateParser(dateStr) {
  */
 export function dateStrToMillis(str) {
   return new Date(str).getTime();
-};
+}
 
 // These functions are all based on MochiKit.
 /**
@@ -550,7 +545,7 @@ export function update(self, o) {
     }
   }
   return self;
-};
+}
 
 /**
  * Copies all the properties from o to self.
@@ -591,7 +586,7 @@ export function updateDeep(self, o) {
     }
   }
   return self;
-};
+}
 
 /**
  * @param {*} o
@@ -610,7 +605,7 @@ export function isArrayLike(o) {
     return false;
   }
   return true;
-};
+}
 
 /**
  * @param {Object} o
@@ -623,7 +618,7 @@ export function isDateLike(o) {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Note: this only seems to work for arrays.
@@ -642,7 +637,7 @@ export function clone(o) {
     }
   }
   return r;
-};
+}
 
 /**
  * Create a new canvas element.
@@ -652,7 +647,7 @@ export function clone(o) {
  */
 export function createCanvas() {
   return document.createElement('canvas');
-};
+}
 
 /**
  * Returns the context's pixel ratio, which is the ratio between the device
@@ -683,7 +678,7 @@ export function getContextPixelRatio(context) {
   } catch (e) {
     return 1;
   }
-};
+}
 
 /**
  * TODO(danvk): use @template here when it's better supported for classes.
@@ -704,7 +699,7 @@ export function Iterator(array, start, length, predicate) {
   this.end_ = Math.min(array.length, start + length);
   this.nextIdx_ = start - 1; // use -1 so initial advance works.
   this.next(); // ignoring result.
-};
+}
 
 /**
  * @return {Object}
@@ -750,7 +745,7 @@ Iterator.prototype.next = function() {
  */
 export function createIterator(array, start, length, opt_predicate) {
   return new Iterator(array, start, length, opt_predicate);
-};
+}
 
 // Shim layer with setTimeout fallback.
 // From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -818,7 +813,7 @@ export function repeatAndCleanup(repeatFn, maxFrames, framePeriodInMillis,
       }
     });
   })();
-};
+}
 
 // A whitelist of options that do not change pixel positions.
 var pixelSafeOptions = {
@@ -928,7 +923,7 @@ export function isPixelChangingOptionList(labels, attrs) {
   }
 
   return false;
-};
+}
 
 export var Circles = {
   DEFAULT : function(g, name, ctx, canvasx, canvasy, color, radius) {
@@ -965,7 +960,7 @@ export function detectLineDelimiter(data) {
   }
 
   return null;
-};
+}
 
 /**
  * Is one node contained by another?
@@ -983,7 +978,7 @@ export function isNodeContainedBy(containee, container) {
     containeeNode = containeeNode.parentNode;
   }
   return (containeeNode === container);
-};
+}
 
 // This masks some numeric issues in older versions of Firefox,
 // where 1.0/Math.pow(10,2) != Math.pow(10,-2).
@@ -993,7 +988,7 @@ export function pow(base, exp) {
     return 1.0 / Math.pow(base, -exp);
   }
   return Math.pow(base, exp);
-};
+}
 
 var RGBA_RE = /^rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})(?:,\s*([01](?:\.\d+)?))?\)$/;
 
@@ -1037,7 +1032,7 @@ export function toRGB_(colorStr) {
   var rgbStr = window.getComputedStyle(div, null).backgroundColor;
   document.body.removeChild(div);
   return parseRGBA(rgbStr);
-};
+}
 
 /**
  * Checks whether the browser supports the &lt;canvas&gt; tag.
@@ -1053,7 +1048,7 @@ export function isCanvasSupported(opt_canvasElement) {
     return false;
   }
   return true;
-};
+}
 
 /**
  * Parses the value as a floating point number. This is like the parseFloat()
@@ -1084,14 +1079,17 @@ export function parseFloat_(x, opt_line_no, opt_line) {
   console.error(msg);
 
   return null;
-};
-
+}
 
 // Label constants for the labelsKMB and labelsKMG2 options.
-// (i.e. '100000' -> '100K')
-var KMB_LABELS = [ 'K', 'M', 'B', 'T', 'Q' ];
-var KMG2_BIG_LABELS = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
-var KMG2_SMALL_LABELS = [ 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' ];
+// (i.e. '100000' -> '100k')
+var KMB_LABELS_LARGE = [ 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB_LABELS_SMALL = [ 'm', 'µ', 'n', 'p', 'f', 'a', 'z', 'y' ];
+var KMG2_LABELS_LARGE = [ 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi' ];
+var KMG2_LABELS_SMALL = [ 'p-10', 'p-20', 'p-30', 'p-40', 'p-50', 'p-60', 'p-70', 'p-80' ];
+/* if both are given (legacy/deprecated use only) */
+var KMB2_LABELS_LARGE = [ 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ];
+var KMB2_LABELS_SMALL = KMB_LABELS_SMALL;
 
 /**
  * @private
@@ -1108,6 +1106,10 @@ export function numberValueFormatter(x, opts) {
     return floatFormat(x, sigFigs);
   }
 
+  // shortcut 0 so later code does not need to worry about it
+  if (x === 0.0)
+    return '0';
+
   var digits = opts('digitsAfterDecimal');
   var maxNumberWidth = opts('maxNumberWidth');
 
@@ -1115,15 +1117,7 @@ export function numberValueFormatter(x, opts) {
   var kmg2 = opts('labelsKMG2');
 
   var label;
-
-  // switch to scientific notation if we underflow or overflow fixed display.
-  if (x !== 0.0 &&
-      (Math.abs(x) >= Math.pow(10, maxNumberWidth) ||
-       Math.abs(x) < Math.pow(10, -digits))) {
-    label = x.toExponential(digits);
-  } else {
-    label = '' + round_(x, digits);
-  }
+  var absx = Math.abs(x);
 
   if (kmb || kmg2) {
     var k;
@@ -1131,41 +1125,65 @@ export function numberValueFormatter(x, opts) {
     var m_labels = [];
     if (kmb) {
       k = 1000;
-      k_labels = KMB_LABELS;
+      k_labels = KMB_LABELS_LARGE;
+      m_labels = KMB_LABELS_SMALL;
     }
     if (kmg2) {
-      if (kmb) console.warn("Setting both labelsKMB and labelsKMG2. Pick one!");
       k = 1024;
-      k_labels = KMG2_BIG_LABELS;
-      m_labels = KMG2_SMALL_LABELS;
+      k_labels = KMG2_LABELS_LARGE;
+      m_labels = KMG2_LABELS_SMALL;
+      if (kmb) {
+        k_labels = KMB2_LABELS_LARGE;
+        m_labels = KMB2_LABELS_SMALL;
+      }
     }
 
-    var absx = Math.abs(x);
-    var n = pow(k, k_labels.length);
-    for (var j = k_labels.length - 1; j >= 0; j--, n /= k) {
-      if (absx >= n) {
-        label = round_(x / n, digits) + k_labels[j];
-        break;
-      }
-    }
-    if (kmg2) {
-      // TODO(danvk): clean up this logic. Why so different than kmb?
-      var x_parts = String(x.toExponential()).split('e-');
-      if (x_parts.length === 2 && x_parts[1] >= 3 && x_parts[1] <= 24) {
-        if (x_parts[1] % 3 > 0) {
-          label = round_(x_parts[0] /
-              pow(10, (x_parts[1] % 3)),
-              digits);
-        } else {
-          label = Number(x_parts[0]).toFixed(2);
+    var n;
+    var j;
+    if (absx >= k) {
+      j = k_labels.length;
+      while (j > 0) {
+        n = pow(k, j);
+        --j;
+        if (absx >= n) {
+          // guaranteed to hit because absx >= k (pow(k, 1))
+          // if immensely large still switch to scientific notation
+          if ((absx / n) >= Math.pow(10, maxNumberWidth))
+            label = x.toExponential(digits);
+          else
+            label = round_(x / n, digits) + k_labels[j];
+          return label;
         }
-        label += m_labels[Math.floor(x_parts[1] / 3) - 1];
       }
+      // not reached, fall through safely though should it ever be
+    } else if ((absx < 1) /* && (m_labels.length > 0) */) {
+      j = 0;
+      while (j < m_labels.length) {
+        ++j;
+        n = pow(k, j);
+        if ((absx * n) >= 1)
+          break;
+      }
+      // if _still_ too small, switch to scientific notation instead
+      if ((absx * n) < Math.pow(10, -digits))
+        label = x.toExponential(digits);
+      else
+        label = round_(x * n, digits) + m_labels[j - 1];
+      return label;
     }
+    // else fall through
+  }
+
+  if (absx >= Math.pow(10, maxNumberWidth) ||
+      absx < Math.pow(10, -digits)) {
+    // switch to scientific notation if we underflow or overflow fixed display
+    label = x.toExponential(digits);
+  } else {
+    label = '' + round_(x, digits);
   }
 
   return label;
-};
+}
 
 /**
  * variant for use as an axisLabelFormatter.
@@ -1173,7 +1191,7 @@ export function numberValueFormatter(x, opts) {
  */
 export function numberAxisLabelFormatter(x, granularity, opts) {
   return numberValueFormatter.call(this, x, opts);
-};
+}
 
 /**
  * @type {!Array.<string>}
@@ -1181,7 +1199,6 @@ export function numberAxisLabelFormatter(x, granularity, opts) {
  * @constant
  */
 var SHORT_MONTH_NAMES_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 
 /**
  * Convert a JS date to a string appropriate to display on an axis that
@@ -1224,9 +1241,7 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
       return hmsString_(hours, mins, secs, millis);
     }
   }
-};
-// alias in case anyone is referencing the old method.
-// Dygraph.dateAxisFormatter = Dygraph.dateAxisLabelFormatter;
+}
 
 /**
  * Return a string version of a JS date for a value label. This respects the
@@ -1237,4 +1252,4 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
  */
 export function dateValueFormatter(d, opts) {
   return dateString_(d, opts('labelsUTC'));
-};
+}

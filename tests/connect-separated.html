@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>connect separated</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Connecting separated points.  All three of the series should have their points
@@ -19,7 +21,7 @@
   Series 2 <button id="Series2" onclick="change(this)">disabled</button>
   Series 3 <button id="Series3" onclick="change(this)">disabled</button>
 </p>
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var g = new Dygraph(document.getElementById("graphdiv"),
       [
         [ new Date("2009/12/01"), 10, 10, 10],
@@ -55,6 +57,6 @@
           }
         }
       }
-    </script>
+    //--><!]]></script>
   </body>
 </html>

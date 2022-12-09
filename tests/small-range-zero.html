@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>no range</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>There should be an appropriate amount of padding at the top of the chart:</p>
     <div id="blah"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
     function CSV() {
       var label = "X";
-      
+
       return "date," + label + "\n20091206,2659329.631743\n20091213,2772361.123362\n20091220,2737584.647191\n20091227,2720000.550414\n20100103,2910306.897977\n20100110,2901385.313093\n20100117,2903041.312099\n20100124,2966455.128911\n";
     }
 
@@ -25,12 +27,12 @@
                   includeZero: true
                 });
 
-    </script>
-    
+    //--><!]]></script>
+
     <p>The second series (which is entirely zero) should be visible, and the
     y-axis should go down to zero.</p>
     <div id="blah2"></div>
-    <script type="text/javascript"> 
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
         var data=[
           ["2006-10-11",0,15228],
           ["2006-10-12",0,15219],
@@ -51,6 +53,6 @@
         var g2 = new Dygraph(document.getElementById("blah2"),
                     str,
                     { labels: [ "date", "zero", "non-zero" ] });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

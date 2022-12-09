@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>stacked</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Simple graph:</p>
@@ -35,19 +37,19 @@
         </select>
     </div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       data = "X,x,100-x\n";
       for (var i = 0; i < 100; i++) {
         data += i + "," + i + "," + (100 - i) + "\n";
       }
-      
+
       var graphs = [];
 
       graphs.push(
           new Dygraph(
               document.getElementById("simple_div"),
               data));
-          
+
       graphs.push(
           new Dygraph(
               document.getElementById("stacked_div"),
@@ -69,7 +71,7 @@
           new Dygraph(
               document.getElementById("simple_missing_div"),
               missing_data));
-      
+
       graphs.push(
           new Dygraph(
               document.getElementById("stacked_missing_div"),
@@ -89,12 +91,12 @@
               document.getElementById("stacked_many_div"),
               many_data,
               { stackedGraph: true }));
-      
+
       function setSelection(row) {
         for (var i = 0; i < graphs.length; i++) {
           graphs[i].setSelection(row ? row : false);
         }
       }
-    </script>
+    //--><!]]></script>
   </body>
 </html>

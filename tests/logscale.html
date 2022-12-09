@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>log scale</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
-
   </head>
-
   <body>
     <center>
       <input id='ylog' type="button" value="y log scale" onclick="setLogScale('y', true)">
@@ -23,18 +24,18 @@
     <h2>X axis of numbers</h2>
     <div id="div_g1" style="width:600px; height:300px;"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       function data0() {
         return "Date,A\n" +
-        "20101201,5\n"+
-        "20101202,10\n"+
-        "20101203,-1\n"+
-        "20101204,250\n"+
-        "20101205,1000\n"+
-        "20101206,30\n"+
-        "20101207,80\n"+
-        "20101208,100\n"+
-        "20101209,500\n"+
+        "2010-12-01,5\n"+
+        "2010-12-02,10\n"+
+        "2010-12-03,-1\n"+
+        "2010-12-04,250\n"+
+        "2010-12-05,1000\n"+
+        "2010-12-06,30\n"+
+        "2010-12-07,80\n"+
+        "2010-12-08,100\n"+
+        "2010-12-09,500\n"+
         "";
       };
       function data1() {
@@ -77,7 +78,6 @@
       }
 
       setLogScale('y', true);
-    </script>
-
+    //--><!]]></script>
   </body>
 </html>

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>valueFormatter and axisLabelFormatter</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body style="max-width: 800px;">
     <h2>Multiple y-axes</h2>
@@ -20,7 +22,7 @@
       <li>y2alf = secondary y-axis axisLabelFormatter
     </ul>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var data = [];
       for (var i = 1; i <= 100; i++) {
         var m = "01", d = i;
@@ -85,6 +87,6 @@
             }
           }
       );
-    </script>
-</body>
+    //--><!]]></script>
+  </body>
 </html>

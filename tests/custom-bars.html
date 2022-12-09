@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>custom bars</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
     <p>Top and bottom of the bars stay mostly fixed while the middle varies.</p>
     <div id="graph"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var g = new Dygraph(document.getElementById("graph"),
                   [
                     [1, [10,  10, 100]],
@@ -29,6 +31,6 @@
                     labels: ['X', 'Y']
                   }
                  );
-    </script>
+    //--><!]]></script>
   </body>
 </html>

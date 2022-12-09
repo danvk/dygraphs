@@ -1,3 +1,4 @@
+<!--#set var="pagetitle" value="data format" -->
 <!--#include virtual="header.html" -->
 
 <style type="text/css">
@@ -122,7 +123,7 @@ column:</p>
                   x : {
                     valueFormatter: Dygraph.dateString_,
                     valueParser: function(x) { return 1000*parseInt(x); },
-                    ticker: Dygraph.dateTicker                
+                    ticker: Dygraph.dateTicker
                   }
                 }
               });
@@ -173,7 +174,7 @@ reasons not to:</p>
 <ul>
   <li>If you set both <i>fractions</i> and <i>errorBars</i>, then the
 denominator is interpreted as a sample size and dygraphs will plot <a
-  href="http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson
+  href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Wilson
   binomial proportion confidence intervals</a> around each point.
 
   <li>If you set <i>showRoller</i>, then dygraphs will combine the values as
@@ -209,8 +210,8 @@ standard deviations: sqrt(std1 + std2 + std3 + ... + stdN)/N.</p>
 <h5>Custom error bars</h5>
 <p>Sometimes your data has asymetric uncertainty or you want to specify
 something else with the error bars around a point. One example of this is
-the "temperatures" demo on the <a href="http://danvk.org/dygraphs">dygraphs
-  home page.</a>, where the point is the daily average and the bars denote
+the "temperatures" demo on the <a href="index.html">dygraphs
+home page.</a>, where the point is the daily average and the bars denote
 the low and high temperatures for the day.</p>
 
 <p>To specify this format, set the <i>customBars</i> option. Your CSV values
@@ -228,7 +229,6 @@ Here's an example:</p>
 <p>The middle value need not lie between the low and high values. If you set
 a rolling period, the three values will all be averaged independently.</p>
 
-
 <a name="url"></a>
 <h3>URL</h3>
 <p>If you pass in a URL, dygraphs will issue an XMLHttpRequest for it and
@@ -239,7 +239,6 @@ attempt to parse the returned data as CSV.
 in text format (as opposed to a CSV file with an HTML header). You can see
 what the response looks like by checking your JS console or by requesting
 the URL yourself.</p>
-
 
 <a name="array"></a>
 <h3>Array (native format)</h3>
@@ -295,9 +294,9 @@ with the array format. If you specify any of these, the values become arrays
 </code>
 
 <p>To specify missing data, set the value to null or NaN. You may not set a value
-inside an array to null or NaN. Use null or NaN instead of the entire array. 
+inside an array to null or NaN. Use null or NaN instead of the entire array.
 The only difference between the two is when the option
-<a href="options.html#conectSeparatedPoints">connectSeparatedPoints</a>
+<a href="options.html#connectSeparatedPoints">connectSeparatedPoints</a>
 true. In that case, the gaps created by nulls are filled in, and gaps
 created by NaNs are preserved.
 </p>
@@ -317,7 +316,7 @@ Functions can return strings, arrays, data tables, URLs, or any other data type.
 <a name="datatable"></a>
 <h3>DataTable</h3>
 <p>You can also specify a Google Visualization Library <a
-  href="http://code.google.com/apis/visualization/documentation/reference.html#DataTable">DataTable</a>
+  href="https://developers.google.com/chart/interactive/docs/reference#DataTable">DataTable</a>
 object as your input data. This lets you easily switch between dygraphs and
 other gviz visualizations such as the Annotated Timeline. It also lets you
 embed a Dygraph in a Google Spreadsheet.</p>

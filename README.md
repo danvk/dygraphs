@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/danvk/dygraphs.svg?branch=markdown-readme)](https://travis-ci.org/danvk/dygraphs) [![Coverage Status](https://img.shields.io/coveralls/danvk/dygraphs.svg)](https://coveralls.io/r/danvk/dygraphs)
+(fork for Debian packaging)
 # dygraphs JavaScript charting library
 
 The dygraphs JavaScript library produces interactive, zoomable charts of time series:
 
-<img src="https://cloud.githubusercontent.com/assets/98301/5311286/eb760eea-7c10-11e4-9a59-1d144e51a15b.png" width="618" height="322">
+![sample graph](Screenshot.png)
 
 Learn more about it at [dygraphs.com](http://www.dygraphs.com).
 
@@ -23,11 +23,11 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
 <html>
 <head>
 <script type="text/javascript" src="dygraph.js"></script>
-<link rel="stylesheet" href="dygraph.css" />
+<link rel="stylesheet" type="text/css" href="dygraph.css" />
 </head>
 <body>
 <div id="graphdiv"></div>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
   g = new Dygraph(
         document.getElementById("graphdiv"),  // containing div
         "Date,Temperature\n" +                // the data series
@@ -36,14 +36,14 @@ Get help with dygraphs by browsing the  on [Stack Overflow][] (preferred) and [G
         "2008-05-09,80\n",
         { }                                   // the options
       );
-</script>
+//--><!]]></script>
 </body>
 </html>
 ```
 
 Learn more by reading [the tutorial][] and seeing demonstrations of what
 dygraphs can do in the [gallery][]. You can get `dygraph.js` and `dygraph.css`
-from [cdnjs][] or [from NPM][npm] (see below).
+from [UNPKG][], [cdnjs][] or [from NPM][npm] (see below).
 
 ## Usage with a module loader
 
@@ -51,7 +51,11 @@ Get dygraphs from NPM:
 
     npm install dygraphs
 
-You'll find pre-built JS & CSS files in `node_modules/dygraphs/dist`. If you're
+**Do not install from the git repository!** Always use a tarball install,
+which contains the prebuilt files; `npm` fails to build the source code
+on install from github. (The tarball from the GitHub Registry is fine.)
+
+You'll find pre-built JS & CSS files in `node_modules/dygraphs/dist/`. If you're
 using a module bundler like browserify or webpack, you can import dygraphs:
 
 ```js
@@ -65,18 +69,25 @@ Check out the [dygraphs-es6 repo][] for a fully-worked example.
 
 ## Development
 
-To get going, clone the repo and run:
+To get going, install the following Debian packages…
+
+ - `mksh`
+ - `pax`
+ - `python3`
+
+… clone the repo and run:
 
     npm install
-    npm run build
+    npm run build-jsonly
 
 Then open `tests/demo.html` in your browser.
 
 Read more about the dygraphs development process in the [developer guide](/DEVELOP.md).
 
 ## License(s)
-dygraphs is available under the MIT license, included in LICENSE.txt.
+dygraphs is available under the MIT license, included in [LICENSE.txt](./LICENSE.txt).
 
+[UNPKG]: https://unpkg.com/dygraphs/
 [cdnjs]: https://cdnjs.com/libraries/dygraph
 [the tutorial]: http://www.dygraphs.com/tutorial.html
 [gallery]: http://www.dygraphs.com/gallery

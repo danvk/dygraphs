@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>perf</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="data.js"></script>
   </head>
   <body>
     <div id="div_g" style="width:600px; height:300px;"></div>
     <div id="status"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var num_tests = 250;
       var times = [];
       var start = new Date;
@@ -41,7 +43,7 @@
           labels: [ "Iteration", "Time (ms)" ]
         }
         );
-    </script>
+    //--><!]]></script>
 
     <p><b>Some numbers on a MacBook Pro 2.53 GHz Core 2 Duo</b><br/>
     <table border="1"><tbody>

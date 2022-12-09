@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/mksh
 # Checks that no ".only" has made it into tests. This should never be committed,
 # since it will disable the vast majority of tests.
 

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>labelsKMB</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>labelsKMB:</p>
@@ -22,7 +24,7 @@
     <p>The curves are exponentials. Zooming in should reveal each of the 'K',
     'M', 'B', etc. labels.</p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       function round(num, places) {
         var shift = Math.pow(10, places);
         return Math.round(num * shift)/shift;
@@ -67,6 +69,6 @@
         labelsKMG2: true,
         labels: ['Base', 'Power']
       });
-    </script>
+    //--><!]]></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview Tests for stand-alone functions in dygraph-utils.js
  *
  * @author danvdk@gmail.com (Dan Vanderkam)
@@ -77,7 +77,6 @@ it('testUpdateDeepDecoupled', function() {
   b.c.x = "new value";
   assert.equal("original", a.c.x);
 });
-
 
 it('testIterator_nopredicate', function() {
   var array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];

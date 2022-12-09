@@ -6,15 +6,15 @@
  * This can be done with
  *
  *     npm install http-server
- *     http-server
- *     open http://localhost:8080/auto_tests/runner.html
+ *     http-server -p 8081
+ *     open http://localhost:8081/auto_tests/runner.html
  *
  */
 
 import Dygraph from '../../src/dygraph';
 import Util from './Util';
 
-import 'core-js/es6/promise';
+import 'core-js/es/promise';
 
 function dygraphPromise(div, data, opts) {
   return new Promise((resolve, reject) => {

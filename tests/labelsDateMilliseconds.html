@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Milliseconds date labels</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
-
     <h2>Milliseconds display in date and time labels</h2>
 
     <p>This shows how milliseconds are displayed when present.</p>
 
     <div id="div_ms" style="width:600px; height:200px;"></div>
     <div id="div_std" style="width:600px; height:200px;"></div>
-    
+
     <p>You can check it by hovering over corresponding points and comparing
     the value labels.</p>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var values = (function () {
         var rand10 = function () { return Math.round(10 * Math.random()); };
         var a = [];
@@ -46,7 +49,6 @@
                      labels: ['time', 'random']
                    }
                  );
-    </script>
-
+    //--><!]]></script>
   </body>
 </html>

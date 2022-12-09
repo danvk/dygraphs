@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 '''
 Use this in the same way as Python's SimpleHTTPServer:
 
@@ -14,14 +14,15 @@ Run ./ssi_server.py in this directory and visit localhost:8000 for an example.
 
 import os
 import ssi
-from SimpleHTTPServer import SimpleHTTPRequestHandler
-import SimpleHTTPServer
+from http.server import SimpleHTTPRequestHandler
+import http.server
 import tempfile
 
+_errorfnp = None
 
 class SSIRequestHandler(SimpleHTTPRequestHandler):
   """Adds minimal support for <!-- #include --> directives.
-  
+
   The key bit is translate_path, which intercepts requests and serves them
   using a temporary file which inlines the #includes.
   """
@@ -48,7 +49,7 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
           break
 
     if fs_path.endswith('.html'):
-      content = ssi.InlineIncludes(fs_path)
+      content = ssi.InlineIncludes(fs_path, _errorfnp)
       fs_path = self.create_temp_file(fs_path, content)
     return fs_path
 
@@ -65,6 +66,13 @@ class SSIRequestHandler(SimpleHTTPRequestHandler):
     self.temp_files.append(path)
     return path
 
-
 if __name__ == '__main__':
-  SimpleHTTPServer.test(HandlerClass=SSIRequestHandler)
+  import sys
+  def _errorf(msg):
+    sys.stderr.write('ERROR: %s\n' % msg)
+  _errorfnp = _errorf
+  if len(sys.argv) > 1:
+    port = int(sys.argv[1])
+  else:
+    port = 8081
+  http.server.test(HandlerClass=SSIRequestHandler, port=port)

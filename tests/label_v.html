@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>demo</title>
-    <!--
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
-    -->
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <div id="graph"></div>
     <p>This demo shows how you can create labels and ticks independently of one another.</p>
-<script type="text/javascript">
+<script type="text/javascript"><!--//--><![CDATA[//><!--
 var g;
 
 function draw() {
@@ -26,11 +27,11 @@ function draw() {
                          valueRange: [0, null]
                        },
                        x: {
-                       	 ticker: function(min, max, pixels) {
-                         	 return [
-                           	 { v: 0*24 + 24 },
-                           	 { label_v: 0*24 + 12, label: 'Sun' },
-                           	 { v: 1*24 + 24 },
+                         ticker: function(min, max, pixels) {
+                           return [
+                             { v: 0*24 + 24 },
+                             { label_v: 0*24 + 12, label: 'Sun' },
+                             { v: 1*24 + 24 },
                              { label_v: 1*24 + 12, label: 'Mon' },
                              { v: 2*24 + 24 },
                              { label_v: 2*24 + 12, label: 'Tue' },
@@ -62,6 +63,6 @@ for (var i = 0; i < 168; i++) {
 
 draw();
 
-</script>
-</body>
+//--><!]]></script>
+  </body>
 </html>

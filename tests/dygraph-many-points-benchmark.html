@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../dist/dygraph.css">
+    <meta charset="UTF-8">
     <title>Benchmarking for Plots with Many Points</title>
-    <script type="text/javascript" src="../dist/dygraph.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
   </head>
   <body>
     <p>Plot which can be easily generated with different numbers of points for
-       benchmarking/profiling and improving performance of dygraphs.</p>    
+       benchmarking/profiling and improving performance of dygraphs.</p>
     <div id='parameters'>
       <p>Data to plot:
         <input type="radio" id="sine" name="group1" value="sine"
@@ -40,7 +42,7 @@
     <div id="metrics"></div>
     <div id="metaperformance"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
       var graph = null;
       var metrics = null;
       var dataType = "sine";
@@ -117,7 +119,7 @@
           for (var i = 0; i < millisecondss.length; i++) {
             avg+=millisecondss[i];
           }
-          avg/=millisecondss.length; 
+          avg/=millisecondss.length;
           document.getElementById('message').innerHTML =
               "Durations: " + millisecondss + "<br>Average: " + avg;
         }
@@ -142,7 +144,7 @@
 
         return millisecondss;
       };
-      
+
       setDataType = function(radiobutton) {
         dataType = radiobutton.value;
       };
@@ -191,6 +193,6 @@
       if (values["go"]) {
         updatePlot();
       }
-    </script>
+    //--><!]]></script>
   </body>
 </html>
