@@ -9,6 +9,7 @@
         "name": "github-pages",
         "url": "${{ steps.deployment.outputs.page_url }}"
       },
+      "if": "(github.repository == 'danvk/dygraphs') || (github.repository == 'mirabilos/dygraphs')",
       "runs-on": "ubuntu-latest",
       "steps": [
         {
@@ -31,7 +32,8 @@
   "on": {
     "push": {
       "branches": [
-        "debian"
+        "debian",
+        "master"
       ]
     }
   },
