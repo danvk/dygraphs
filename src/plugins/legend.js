@@ -109,9 +109,13 @@ Legend.prototype.select = function(e) {
     // find the closest data point by checking the currently highlighted series,
     // or fall back to using the first data point available
     var highlightSeries = e.dygraph.getHighlightSeries()
-    var point = highlightSeries ?
-     points.find(p => p.name === highlightSeries) :
-     points[0];
+    var point;
+    if (highlightSeries) {
+      point = points.find(p => p.name === highlightSeries);
+      if (!point)
+        point = points[0];
+    } else
+      point = points[0];
     // determine floating [left, top] coordinates of the legend div
     // within the plotter_ area
     // offset 50 px to the right and down from the first selection point
