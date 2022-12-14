@@ -19,6 +19,10 @@
   overflow: hidden;
 }
 
+.dygraph-legend[dir="rtl"] {
+  text-align: right;
+}
+
 /* styles for a solid line in the legend */
 .dygraph-legend-line {
   display: inline-block;
