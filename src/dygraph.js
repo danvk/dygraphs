@@ -806,6 +806,8 @@ Dygraph.prototype.createInterface_ = function() {
   // Create the canvas for interactive parts of the chart.
   this.canvas_ = utils.createCanvas();
   this.canvas_.style.position = "absolute";
+  this.canvas_.style.top = 0;
+  this.canvas_.style.left = 0;
 
   // ... and for static parts of the chart.
   this.hidden_ = this.createPlotKitCanvas_(this.canvas_);
