@@ -40,6 +40,7 @@ Copyright (c) 2018 Philipp Simon Schmidt <github@philippsimon.de>
 The Debian packaging, bugfixes and vextlnk are provided by:
 
 Copyright (c) 2022 mirabilos <t.glaser@tarent.de>
+                   Deutsche Telekom LLCTO
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
