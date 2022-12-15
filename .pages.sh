@@ -26,7 +26,7 @@ set -o pipefail
 $sudoagi eatmydata
 sudoapt clean
 sudoapt update
-sudoapt --purge dist-upgrade -y
+#sudoapt --purge dist-upgrade -y
 $sudoagi eatmydata git \
     ed jsdoc-toolkit \
     libjs-bootstrap libjs-jquery libjs-jquery-ui \
