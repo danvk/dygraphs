@@ -11,6 +11,17 @@ div.parameters {
   padding-left: 15px;
   margin-bottom: 10px;
 }
+div.parameters table {
+  width: 100%;
+}
+div.parameters th {
+  font-style: italic;
+  font-weight: normal;
+  text-align: right;
+  vertical-align: top;
+  white-space: nowrap;
+  padding-right: 1em;
+}
 #main { margin-top: 0; }
 .row { margin-top: 0; }
 .dygraphs-side-nav .nav>li>a {

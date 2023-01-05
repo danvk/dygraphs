@@ -195,8 +195,8 @@ for label in sorted(labels):
 
     if 'parameters' in opt:
       parameters = opt['parameters']
-      parameters_html = '\n'.join("<i>%s</i>: %s<br/>" % (p[0], p[1]) for p in parameters)
-      parameters_html = "\n  </p><div class='parameters'>\n%s\n  </div><p>" % (parameters_html);
+      parameters_html = '\n'.join("<tr><th>%s:</th><td>%s</td></tr>" % (p[0], p[1]) for p in parameters)
+      parameters_html = "\n  </p><div class='parameters'><table>\n%s\n  </table></div><p>" % (parameters_html);
     else:
       parameters_html = ''
 
