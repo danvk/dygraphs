@@ -1,4 +1,5 @@
 *.log
+__pycache__
 _site
 coverage
 debian/copyright
