@@ -58,11 +58,13 @@ def find_braces(txt):
   return out
 
 ext_tests = []
+gallery_files = {}
 
 def search_files(type, files):
   # Find text followed by a colon. These won't all be options, but those that
   # have the same name as a Dygraph option probably will be.
   prop_re = re.compile(r'\b([a-zA-Z0-9]+) *:')
+  gf_re = re.compile(r'//galleryActive=(true|false)$', re.MULTILINE)
   for test_file in files:
     if os.path.isfile(test_file): # Basically skips directories
       with open(test_file, 'rt',
@@ -76,6 +78,13 @@ def search_files(type, files):
       # Hack for slipping past gallery demos that have title in their attributes
       # so they don't appear as reasons for the demo to have 'title' options.
       if type == "gallery":
+        ga = re.findall(gf_re, text)
+        if ga:
+          ga = ga[0] == "true"
+        else:
+          # not annotated; should be None but default to True for compat
+          ga = True #None
+        gallery_files[test_file] = ga
         idx = text.find("function(")
         if idx >= 0:
           text = text[idx:]
