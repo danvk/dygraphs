@@ -184,7 +184,10 @@ def test_fmt(f):
   return res
 
 def gallery_fmt(f):
-  res = '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f))
+  if gallery_files[f]:
+    res = '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f))
+  else:
+    res = '<font color="#9999FF" title="inactive">%s</a>' % gallery_name(f)
   return res
 
 for label in sorted(labels):
