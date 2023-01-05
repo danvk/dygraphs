@@ -184,14 +184,14 @@ for label in sorted(labels):
     if not tests:
       examples_html = '<font color=red>NONE</font>'
     else:
-      examples_html = '; '.join(test_fmt(f) for f in sorted(tests))
+      examples_html = '; '.join(test_fmt(f) for f in sorted(tests, key=test_name))
 
     gallery = opt['gallery']
     if not gallery:
       gallery_html = '<font color=red>NONE</font>'
     else:
       gallery_html = '; '.join(
-        '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f)) for f in sorted(gallery))
+        '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f)) for f in sorted(gallery, key=gallery_name))
 
     if 'parameters' in opt:
       parameters = opt['parameters']
