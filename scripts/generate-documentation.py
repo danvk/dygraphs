@@ -80,19 +80,22 @@ def search_files(type, files):
         if idx >= 0:
           text = text[idx:]
       braced_html = find_braces(text)
-      if debug_tests:
+      if test_file in debug_tests:
         print(braced_html)
+        print("====")
 
       ms = re.findall(prop_re, braced_html)
+      if test_file in debug_tests:
+        print('\n'.join(ms))
       for opt in ms:
-        if debug_tests: print('\n'.join(ms))
         if opt in docs and test_file not in docs[opt][type]:
           docs[opt][type].append(test_file)
 
 search_files("tests", glob.glob("tests/*.html"))
 search_files("gallery", glob.glob("gallery/*.js")) #TODO add grep "Gallery.register\("
 
-if debug_tests: sys.exit(0)
+if debug_tests:
+  sys.exit(0)
 
 # Extract a labels list.
 labels = []
