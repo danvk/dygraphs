@@ -13,14 +13,30 @@ div.parameters {
 }
 div.parameters table {
   width: 100%;
+  table-layout: auto;
 }
 div.parameters th {
   font-style: italic;
   font-weight: normal;
   text-align: right;
   vertical-align: top;
+  width: 2em; /* more due to nowrap and table-layout=auto */
   white-space: nowrap;
-  padding-right: 1em;
+  padding-right: 0.5em;
+}
+table.gallerylinks {
+  width: 100%;
+  table-layout: auto;
+  margin-bottom: 12px;
+}
+table.gallerylinks th {
+  font-style: normal;
+  font-weight: normal;
+  text-align: right;
+  vertical-align: top;
+  width: 2em; /* more due to nowrap and table-layout=auto */
+  white-space: nowrap;
+  padding-right: 0.5em;
 }
 #main { margin-top: 0; }
 .row { margin-top: 0; }

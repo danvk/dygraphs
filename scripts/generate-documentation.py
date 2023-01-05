@@ -213,10 +213,10 @@ for label in sorted(labels):
   </p><p>
   <i>Type: %(type)s</i><br/>%(parameters)s
   <i>Default: %(default)s</i>
-  </p><p>
-  Gallery Samples: %(gallery_html)s<br/>
-  Other Examples: %(examples_html)s<br/>
-  </p></div>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td>%(gallery_html)s</td></tr>
+  <tr><th>Other Examples:</th><td>%(examples_html)s</td></tr>
+  </table></div>
   """ % { 'name': opt_name,
           'namenc': encode_anchor(opt_name),
           'type': opt['type'],
