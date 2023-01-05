@@ -81,12 +81,12 @@ def search_files(type, files):
           text = text[idx:]
       braced_html = find_braces(text)
       if test_file in debug_tests:
-        print(braced_html)
-        print("====")
+        print("\033[0m" + re.sub(prop_re, lambda m: "\033[1;31m" + m.group(0) + "\033[0m", braced_html))
+        print("\033[1;34m==================================================================\033[0m")
 
       ms = re.findall(prop_re, braced_html)
       if test_file in debug_tests:
-        print('\n'.join(ms))
+        print('\n'.join(sorted(set(ms))))
       for opt in ms:
         if opt in docs and test_file not in docs[opt][type]:
           docs[opt][type].append(test_file)
