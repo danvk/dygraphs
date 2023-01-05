@@ -115,17 +115,14 @@ print("""<!--#set var="pagetitle" value="options reference" -->
 
 <link rel="stylesheet" type="text/css" href="options.css" />
 
-""")
-
-print("""
 <div class="col-lg-3">
 <div class="dygraphs-side-nav affix-top" data-spy="affix" data-offset-top="0">
 <ul class='nav'>
   <li><a href="#usage">Usage</a>
-""")
+""".strip())
 for label in sorted(labels):
-  print('  <li><a href="#%s">%s</a>\n' % (encode_anchor(label), label))
-print('</ul></div></div>\n\n')
+  print('  <li><a href="#%s">%s</a>' % (encode_anchor(label), label))
+print('</ul></div></div>\n')
 
 print("""
 <div id='content' class='col-lg-9'>
@@ -177,6 +174,10 @@ def test_fmt(f):
     res += '<b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>'
   return res
 
+def gallery_fmt(f):
+  res = '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f))
+  return res
+
 for label in sorted(labels):
   print('<a name="%s"></a><h3>%s</h3>\n' % (encode_anchor(label), label))
 
@@ -193,8 +194,7 @@ for label in sorted(labels):
     if not gallery:
       gallery_html = '<font color=red>NONE</font>'
     else:
-      gallery_html = '; '.join(
-        '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f)) for f in sorted(gallery, key=gallery_name))
+      gallery_html = '; '.join(gallery_fmt(f) for f in sorted(gallery, key=gallery_name))
 
     if 'parameters' in opt:
       parameters = opt['parameters']
