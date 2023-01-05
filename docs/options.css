@@ -9,6 +9,7 @@ p.option {
 }
 div.parameters {
   padding-left: 15px;
+  margin-bottom: 10px;
 }
 #main { margin-top: 0; }
 .row { margin-top: 0; }
