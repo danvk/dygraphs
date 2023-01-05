@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global NoisyData */
+//galleryActive=false
 Gallery.register(
   'callbacks',
   {

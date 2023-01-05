@@ -1,6 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global NoisyData,downV3,moveV3,upV3,clickV3,dblClickV3,scrollV3,restorePositioning,downV4,moveV4,upV4,dblClickV4,captureCanvas */
-
+//galleryActive=true
 Gallery.register(
   'interaction',
   {

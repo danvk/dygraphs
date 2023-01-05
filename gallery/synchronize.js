@@ -1,6 +1,7 @@
 /*global Gallery,Dygraph,data */
 /*jshint loopfunc:true */
 /*global NoisyData */
+//galleryActive=true
 Gallery.register(
   'synchronize',
   {

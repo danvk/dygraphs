@@ -1,5 +1,7 @@
 // Use this as a template for new Gallery entries.
 /*global Gallery,Dygraph,data */
+// Set this to true upon adding to index.html
+//galleryActive=false
 Gallery.register(
   'id',
   {

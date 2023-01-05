@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global stockData */
+//galleryActive=true
 Gallery.register(
   'stock',
   {

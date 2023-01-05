@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global data_temp */
+//galleryActive=true
 Gallery.register(
   'range-selector',
   {

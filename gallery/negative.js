@@ -1,4 +1,5 @@
 /*global Gallery,Dygraph,data */
+//galleryActive=false
 Gallery.register(
   'negative',
   {

@@ -82,8 +82,8 @@ def search_files(type, files):
         if ga:
           ga = ga[0] == "true"
         else:
-          # not annotated; should be None but default to True for compat
-          ga = True #None
+          # not annotated
+          ga = None
         gallery_files[test_file] = ga
         idx = text.find("function(")
         if idx >= 0:

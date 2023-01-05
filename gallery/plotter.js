@@ -1,6 +1,7 @@
 /*global Gallery,Dygraph,data */
 /*jshint evil:true */
 /*global fn */
+//galleryActive=true
 Gallery.register(
   'plotter',
   {

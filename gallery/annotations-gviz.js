@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global google */
+//galleryActive=false
 Gallery.register(
   'annotations-gviz',
   {

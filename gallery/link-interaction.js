@@ -1,4 +1,5 @@
 /*global Gallery,Dygraph,data */
+//galleryActive=true
 Gallery.register(
   'link-interaction',
   {

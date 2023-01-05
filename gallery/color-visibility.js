@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data,$ */
 /*jshint unused:false */
+//galleryActive=false
 Gallery.register(
   'color-visibility',
   {

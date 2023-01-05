@@ -1,5 +1,6 @@
 /*global Gallery,Dygraph,data */
 /*global NoisyData */
+//galleryActive=true
 Gallery.register(
   'resize',
   {
