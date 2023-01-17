@@ -139,6 +139,12 @@ Legend.prototype.select = function(e) {
     e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
+  } else if (legendMode === 'onmouseover' && this.is_generated_div_) {
+    // synchronise this with Legend.prototype.predraw below
+    var area = e.dygraph.plotter_.area;
+    var labelsDivWidth = this.legend_div_.offsetWidth;
+    this.legend_div_.style.left = area.x + area.w - labelsDivWidth - 1 + "px";
+    this.legend_div_.style.top = area.y + "px";
   }
 
   this.legend_div_.style.display = '';
@@ -181,7 +187,8 @@ Legend.prototype.predraw = function(e) {
 
   // TODO(danvk): only use real APIs for this.
   e.dygraph.graphDiv.appendChild(this.legend_div_);
-  var area = e.dygraph.getArea();
+  // synchronise this with Legend.prototype.select above
+  var area = e.dygraph.plotter_.area;
   var labelsDivWidth = this.legend_div_.offsetWidth;
   this.legend_div_.style.left = area.x + area.w - labelsDivWidth - 1 + "px";
   this.legend_div_.style.top = area.y + "px";
