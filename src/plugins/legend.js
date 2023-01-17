@@ -101,6 +101,13 @@ Legend.prototype.select = function(e) {
     return;
   }
 
+  var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
+  if (html instanceof Node && html.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+    this.legend_div_.innerHTML = '';
+    this.legend_div_.appendChild(html);
+  } else
+    this.legend_div_.innerHTML = html;
+
   if (legendMode === 'follow') {
     // create floating legend div
     var area = e.dygraph.plotter_.area;
@@ -134,12 +141,6 @@ Legend.prototype.select = function(e) {
     this.legend_div_.style.top = topLegend + "px";
   }
 
-  var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
-  if (html instanceof Node && html.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-    this.legend_div_.innerHTML = '';
-    this.legend_div_.appendChild(html);
-  } else
-    this.legend_div_.innerHTML = html;
   this.legend_div_.style.display = '';
 };
 
