@@ -107,6 +107,8 @@ Legend.prototype.select = function(e) {
     this.legend_div_.appendChild(html);
   } else
     this.legend_div_.innerHTML = html;
+  // must be done now so offsetWidth isn’t 0…
+  this.legend_div_.style.display = '';
 
   if (legendMode === 'follow') {
     // create floating legend div
@@ -146,8 +148,6 @@ Legend.prototype.select = function(e) {
     this.legend_div_.style.left = area.x + area.w - labelsDivWidth - 1 + "px";
     this.legend_div_.style.top = area.y + "px";
   }
-
-  this.legend_div_.style.display = '';
 };
 
 Legend.prototype.deselect = function(e) {
