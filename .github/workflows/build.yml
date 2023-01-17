@@ -54,7 +54,8 @@
         "debian",
         "master"
       ]
-    }
+    },
+    "workflow_dispatch": null
   },
   "permissions": {
     "contents": "read",
