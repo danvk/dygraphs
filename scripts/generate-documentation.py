@@ -160,7 +160,7 @@ print("""
 
 <p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
 
-<p>Note: tests marked with ⚠ access external resources, such as Google’s jsapi.</p>
+<p><strong>Note:</strong> tests marked with ⚠ access external resources, such as Google’s jsapi.</p>
 
 <p>And, without further ado, here's the complete list of options:</p>
 """)
