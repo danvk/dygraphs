@@ -63,7 +63,9 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
  the second parameter is raw CSV data.
  The dygraphs library parses this data (including column headers),
  resizes its container to a reasonable default,
- calculates appropriate axis ranges and tick marks and draws the graph.</p>
+ calculates appropriate axis ranges and tick marks and draws the graph.
+ <strong>Make sure the container does <em>not</em> have any padding.</strong>
+</p>
 
 <p>In most applications, it makes more sense to include a CSV file instead.
  If the second parameter to the constructor doesn't contain a newline,

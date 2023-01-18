@@ -78,7 +78,7 @@ import GVizChart from './dygraph-gviz';
  *
  * @constructor
  * @param {div | String} div A div or the id of a div into which to construct
- * the chart.
+ * the chart. Must not have any padding.
  * @param {String | Function} file A file containing CSV data or a function
  * that returns this data. The most basic expected format for each line is
  * "YYYY/MM/DD,val1,val2,...". For more information, see
@@ -158,6 +158,13 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Clear the div. This ensure that, if multiple dygraphs are passed the same
   // div, then only one will be drawn.
   div.innerHTML = "";
+
+  const resolved = window.getComputedStyle(div, null);
+  if (resolved.paddingLeft !== "0px" ||
+      resolved.paddingRight !== "0px" ||
+      resolved.paddingTop !== "0px" ||
+      resolved.paddingBottom !== "0px")
+    console.error('Main div contains padding; graph will misbehave');
 
   // For historical reasons, the 'width' and 'height' options trump all CSS
   // rules _except_ for an explicit 'width' or 'height' on the div.
