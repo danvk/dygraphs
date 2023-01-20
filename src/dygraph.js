@@ -1733,7 +1733,13 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
 
     // Redraw only the highlighted series in the interactive canvas (not the
     // static plot canvas, which is where series are usually drawn).
-    this.plotter_._renderLineChart(this.highlightSet_, ctx);
+    if(utils.isArrayLike(this.highlightSet_)) {
+      for( var i = 0; i < this.highlightSet_.length; i++) {
+        this.plotter_._renderLineChart(this.highlightSet_[i], ctx);
+      }
+    } else {
+      this.plotter_._renderLineChart(this.highlightSet_, ctx);
+    }
   } else if (this.previousVerticalX_ >= 0) {
     // Determine the maximum highlight circle size.
     var maxCircleSize = 0;
@@ -1783,8 +1789,8 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  *
  * @param {number} row Row number that should be highlighted (i.e. appear with
  * hover dots on the chart).
- * @param {seriesName} optional series name to highlight that series with the
- * the highlightSeriesOpts setting.
+ * @param {seriesName} optional series name(string, or array of strings) to
+ * highlight with the the highlightSeriesOpts setting.
  * @param { locked } optional If true, keep seriesName selected when mousing
  * over the graph, disabling closest-series highlighting. Call clearSelection()
  * to unlock it.
@@ -1830,7 +1836,9 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
   }
 
   if (opt_seriesName !== undefined) {
-    if (this.highlightSet_ !== opt_seriesName) changed = true;
+    var stringifiedNew = utils.isArrayLike(opt_seriesName)?opt_seriesName.join():opt_seriesName;
+    var stringifiedOld = utils.isArrayLike(this.highlightSet_)?this.highlightSet_.join():this.highlightSet_;
+    if (stringifiedOld !== stringifiedNew) changed = true;
     this.highlightSet_ = opt_seriesName;
   }
 

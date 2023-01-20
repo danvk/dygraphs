@@ -51,6 +51,20 @@ it('testSetGetSelectionDense', function() {
   assert.equal(3, g.getSelection());
 });
 
+it('testSetGetSelectionMulti', function() {
+  var graph = document.getElementById("graph");
+  var g = new Dygraph(graph,
+    "X,Y,Z\n" +
+    "1,1,1\n" +
+    "50,50,50\n" +
+    "50.0001,50.0001,50.0001\n" +
+    "100,100,100\n"
+  );
+
+  g.setSelection(false, ['Y','Z']);
+  assert.deepEqual(['Y','Z'], g.getHighlightSeries());
+});
+
 it('testSetGetSelectionMissingPoints', function() {
   var dataHandler = function() {};
   dataHandler.prototype = new DefaultHandler();
