@@ -85,7 +85,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "no",
     "labels": ["Overall display"],
     "type": "string",
-    "description": "Whether to add a ResizeObserver to the main div (\"passive\") and additionally make it resizable (\"horizontal\", \"vertical\", \"both\"). In any case, if the main div has CSS \"overflow:visible;\" it will be changed to \"overflow:hidden;\" to make CSS resizing possible."
+    "description": "Whether to add a ResizeObserver to the container div (\"passive\") and additionally make it resizable (\"horizontal\", \"vertical\", \"both\"). In any case, if the container div has CSS \"overflow:visible;\" it will be changed to \"overflow:hidden;\" to make CSS resizing possible. Note that this is distinct from resizing the graph when the window size changes, which is always active; this feature adds user-resizable “handles” to the container div."
   },
   "zoomCallback": {
     "default": "null",
@@ -121,13 +121,13 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Data Series Colors"],
     "type": "Array of strings",
     "example": "['red', '#00FF00']",
-    "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the 'color' option."
+    "description": "List of colors for the data series. These can be of the form \"#AABBCC\" or \"rgb(255,100,200)\" or \"yellow\", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the “color” option."
   },
   "connectSeparatedPoints": {
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Usually, when Dygraphs encounters a missing value in a data series, it interprets this as a gap and draws it as such. If, instead, the missing values represents an x-value for which only a different series has data, then you'll want to connect the dots by setting this to true. To explicitly include a gap with this option set, use a value of NaN."
+    "description": "Usually, when Dygraphs encounters a missing value in a data series, it interprets this as a gap and draws it as such. If, instead, the missing values represents an x-value for which only a different series has data, then you’ll want to connect the dots by setting this to true. To explicitly include a gap with this option set, use a value of NaN."
   },
   "highlightCallback": {
     "default": "null",
@@ -162,7 +162,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Interactive Elements"],
     "type": "Object",
-    "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also 'highlightCallback'. Example: highlightSeriesOpts: { strokeWidth: 3 }."
+    "description": "When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also “highlightCallback”. Example: highlightSeriesOpts: { strokeWidth: 3 }."
   },
   "highlightSeriesBackgroundAlpha": {
     "default": "0.5",
@@ -174,7 +174,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "rgb(255, 255, 255)",
     "labels": ["Interactive Elements"],
     "type": "string",
-    "description": "Sets the background color used to fade out the series in conjunction with 'highlightSeriesBackgroundAlpha'."
+    "description": "Sets the background color used to fade out the series in conjunction with “highlightSeriesBackgroundAlpha”."
   },
   "includeZero": {
     "default": "false",
@@ -215,7 +215,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "function(num or millis, opts, seriesName, dygraph, row, col)",
     "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. .",
     "parameters": [
-      ["num_or_millis", "The value to be formatted. This is always a number. For date axes, it's millis since epoch. You can call new Date(millis) to get a Date object."],
+      ["num_or_millis", "The value to be formatted. This is always a number. For date axes, it’s millis since epoch. You can call new Date(millis) to get a Date object."],
       ["opts", "This is a function you can call to access various options (e.g. opts('labelsKMB')). It returns per-axis values for the option when available."],
       ["seriesName", "The name of the series from which the point came, e.g. 'X', 'Y', 'A', etc."],
       ["dygraph", "The dygraph object for which the formatting is being done"],
@@ -314,7 +314,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "(devicePixelRatio / context.backingStoreRatio)",
     "labels": ["Overall display"],
     "type": "float",
-    "description": "Overrides the pixel ratio scaling factor for the canvas's 2d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1, at the expense of resolution."
+    "description": "Overrides the pixel ratio scaling factor for the canvas’ 2d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1, at the expense of resolution."
   },
   "interactionModel": {
     "default": "...",
@@ -334,7 +334,7 @@ OPTIONS_REFERENCE =  // <JSON>
       [ "dygraph" , "the reference graph" ],
       [ "vals" , "" ]
     ],
-    "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you'll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis."
+    "description": "This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you’ll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis."
   },
   "xAxisHeight": {
     "default": "(null)",
@@ -364,7 +364,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Legend"],
     "type": "DOM element or string",
-    "example": "<code style='font-size: small'>document.getElementById('foo')</code>or<code>'foo'",
+    "example": "<code style='font-size: small'>document.getElementById('foo')</code> or <code>'foo'</code>",
     "description": "Show data labels in an external div, rather than on the graph.  This value can either be a div element or a div id."
   },
   "fractions": {
@@ -429,7 +429,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "rgb(128,128,128)",
     "labels": ["Grid"],
     "type": "red, blue",
-    "description": "The color of the gridlines. This may be set on a per-axis basis to define each axis' grid separately."
+    "description": "The color of the gridlines. This may be set on a per-axis basis to define each axis’ grid separately."
   },
   "gridLinePattern": {
     "default": "null",
@@ -524,7 +524,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Axis display"],
     "type": "boolean",
-    "description": "When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph's visible area. Otherwise, draw the axes at the bottom or left graph edge as usual."
+    "description": "When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph’s visible area. Otherwise, draw the axes at the bottom or left graph edge as usual."
   },
   "xRangePad": {
     "default": "0",
@@ -609,7 +609,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Annotations"],
     "type": "boolean",
-    "description": "Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google's AnnotatedTimeLine chart."
+    "description": "Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google’s AnnotatedTimeLine chart."
   },
   "panEdgeFraction": {
     "default": "null",
@@ -621,37 +621,37 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display above the chart. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the 'dygraph-label' or 'dygraph-title' classes."
+    "description": "Text to display above the chart. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-title” classes."
   },
   "titleHeight": {
     "default": "18",
     "labels": ["Chart labels"],
     "type": "integer",
-    "description": "Height of the chart title, in pixels. This also controls the default font size of the title. If you style the title on your own, this controls how much space is set aside above the chart for the title's div."
+    "description": "Height of the chart title, in pixels. This also controls the default font size of the title. If you style the title on your own, this controls how much space is set aside above the chart for the title’s div."
   },
   "xlabel": {
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display below the chart's x-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the 'dygraph-label' or 'dygraph-xlabel' classes."
+    "description": "Text to display below the chart’s x-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-xlabel” classes."
   },
   "xLabelHeight": {
     "labels": ["Chart labels"],
     "type": "integer",
     "default": "18",
-    "description": "Height of the x-axis label, in pixels. This also controls the default font size of the x-axis label. If you style the label on your own, this controls how much space is set aside below the chart for the x-axis label's div."
+    "description": "Height of the x-axis label, in pixels. This also controls the default font size of the x-axis label. If you style the label on your own, this controls how much space is set aside below the chart for the x-axis label’s div."
   },
   "ylabel": {
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display to the left of the chart's y-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the 'dygraph-label' or 'dygraph-ylabel' classes. The text will be rotated 90 degrees by default, so CSS rules may behave in unintuitive ways. No additional space is set aside for a y-axis label. If you need more space, increase the width of the y-axis tick labels using the yAxisLabelWidth option. If you need a wider div for the y-axis label, either style it that way with CSS (but remember that it's rotated, so width is controlled by the 'height' property) or set the yLabelWidth option."
+    "description": "Text to display to the left of the chart’s y-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-ylabel” classes. The text will be rotated 90 degrees by default, so CSS rules may behave in unintuitive ways. No additional space is set aside for a y-axis label. If you need more space, increase the width of the y-axis tick labels using the yAxisLabelWidth option. If you need a wider div for the y-axis label, either style it that way with CSS (but remember that it’s rotated, so width is controlled by the “height” property) or set the yLabelWidth option."
   },
   "y2label": {
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display to the right of the chart's secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the 'ylabel' option generally apply here as well. This label gets a 'dygraph-y2label' instead of a 'dygraph-ylabel' class."
+    "description": "Text to display to the right of the chart’s secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the “ylabel” option generally apply here as well. This label gets a “dygraph-y2label” instead of a “dygraph-ylabel” class."
   },
   "yLabelWidth": {
     "labels": ["Chart labels"],
@@ -663,7 +663,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "true for x and y, false for y2",
     "labels": ["Grid"],
     "type": "boolean",
-    "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis' grid separately."
+    "description" : "Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis’ grid separately."
   },
   "independentTicks": {
     "default": "true for y, false for y2",
@@ -681,7 +681,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "0.3",
     "labels": ["Grid"],
     "type": "float",
-    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawGrid option. This may be set on a per-axis basis to define each axis' grid separately."
+    "description" : "Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawGrid option. This may be set on a per-axis basis to define each axis’ grid separately."
   },
   "axisLineWidth": {
     "default": "0.3",
@@ -711,19 +711,19 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Value display/formatting"],
     "type": "integer",
-    "description": "By default, dygraphs displays numbers with a fixed number of digits after the decimal point. If you'd prefer to have a fixed number of significant figures, set this option to that number of sig figs. A value of 2, for instance, would cause 1 to be display as 1.0 and 1234 to be displayed as 1.23e+3."
+    "description": "By default, dygraphs displays numbers with a fixed number of digits after the decimal point. If you’d prefer to have a fixed number of significant figures, set this option to that number of sig figs. A value of 2, for instance, would cause 1 to be display as 1.0 and 1234 to be displayed as 1.23e+3."
   },
   "digitsAfterDecimal" : {
     "default": "2",
     "labels": ["Value display/formatting"],
     "type": "integer",
-    "description": "Unless it's run in scientific mode (see the <code>sigFigs</code> option), dygraphs displays numbers with <code>digitsAfterDecimal</code> digits after the decimal point. Trailing zeros are not displayed, so with a value of 2 you'll get '0', '0.1', '0.12', '123.45' but not '123.456' (it will be rounded to '123.46'). Numbers with absolute value less than 0.1^digitsAfterDecimal (i.e. those which would show up as '0.00') will be displayed in scientific notation."
+    "description": "Unless it’s run in scientific mode (see the <code>sigFigs</code> option), dygraphs displays numbers with <code>digitsAfterDecimal</code> digits after the decimal point. Trailing zeros are not displayed, so with a value of 2 you’ll get '0', '0.1', '0.12', '123.45' but not '123.456' (it will be rounded to '123.46'). Numbers with absolute value less than 0.1^digitsAfterDecimal (i.e. those which would show up as '0.00') will be displayed in scientific notation."
   },
   "maxNumberWidth" : {
     "default": "6",
     "labels": ["Value display/formatting"],
     "type": "integer",
-    "description": "When displaying numbers in normal (not scientific) mode, large numbers will be displayed with many trailing zeros (e.g. 100000000 instead of 1e9). This can lead to unwieldy y-axis labels. If there are more than <code>maxNumberWidth</code> digits to the left of the decimal in a number, dygraphs will switch to scientific notation, even when not operating in scientific mode. If you'd like to see all those digits, set this to something large, like 20 or 30."
+    "description": "When displaying numbers in normal (not scientific) mode, large numbers will be displayed with many trailing zeros (e.g. 100000000 instead of 1e9). This can lead to unwieldy y-axis labels. If there are more than <code>maxNumberWidth</code> digits to the left of the decimal in a number, dygraphs will switch to scientific notation, even when not operating in scientific mode. If you’d like to see all those digits, set this to something large, like 20 or 30."
   },
   "file": {
     "default": "(set when constructed)",
@@ -813,7 +813,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "null",
     "labels": ["Range Selector"],
     "type": "boolean",
-    "description": "Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the visible series. Setting it for one series will result in that series being charted alone in the range selector. Once it's set for a single series, it needs to be set for all series which should be included (regardless of visibility)."
+    "description": "Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the visible series. Setting it for one series will result in that series being charted alone in the range selector. Once it’s set for a single series, it needs to be set for all series which should be included (regardless of visibility)."
   },
   "animatedZooms": {
     "default": "false",
