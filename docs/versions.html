@@ -29,11 +29,64 @@
 
 <table class="versions">
   <tr>
-    <td>2.1.2<p class="date">2022-12-15</p></td>
+    <td>2.2.0<p class="date">2023-01-25</p></td>
     <td class="notes">
-      Intermediate release to test the current development state
-      and the releasing process. The full changes will be listed
-      with the 2.2.0 release.
+      <p>Breaking changes:</p><ul>
+        <li>Stop parsing the deprecated 8-digit ‘YYYYMMDD’ date format (#984) (#985) (#1023)</li>
+        <li>GWT “support” is no longer pertinent as we cannot recompile the binary JAR; the latter is still available from the website for now</li>
+      </ul>
+      <p>New features:</p><ul>
+        <li>Add option to colour the range selector’s veil (#856)</li>
+        <li>Added strokeStyle option to crosshair plugin (#955)</li>
+        <li>Support DocumentFragment as a result from a legendFormatter function (#958) (#959)</li>
+        <li>Add data index to legendFormatter data (#965)</li>
+        <li>Implement #RRGGBB[AA] hex colour parsing</li>
+        <li>Make animateBackgroundFade into an option</li>
+        <li>Add new “resizable” option using ResizeObserver on maindiv + CSS</li>
+        <li>Add offset config for legend div in follow mode (#946)</li>
+      </ul>
+      <p>Bugfixes:</p><ul>
+        <li>Fix duplicate annotation when having duplicate points (#826)</li>
+        <li>Make sure that canvasx and canvasy properties are initialised from the start (#896)</li>
+        <li>Fix issue #781 when the y range is zero (#909)</li>
+        <li>Synchroniser now calls highlightCallback (#935)</li>
+        <li>Fix drawAxes to allow one of two Y axes to be drawn (#936)</li>
+        <li>LEGEND: Don’t show Y if value is undefined (#853) (#947)</li>
+        <li>Fixed 'Cannot read property 'length' of undefined' issue (#962) (#963)</li>
+        <li>Two fixes in the calculations of pinch-zoom (#990)</li>
+        <li>Fix for double paint of grid of x-axis (#1007)</li>
+        <li>Fix number of days in a year (#1012)</li>
+        <li>Fix labelsKMB and labelsKMG2 (#571) (#994) (#1022)</li>
+        <li>Fix label position in onmouseover legend mode was never updated</li>
+        <li>Fix several cases of mispositioning/missizing by enabling elements before using offsetWidth etc.</li>
+        <li>Make it possible to use logscale (and sigma, wilsonInterval) per-axis (#986)</li>
+      </ul>
+      <p>Other user-visible changes:</p><ul>
+        <li>Documentation is now shipped (mostly self-contained) in the release</li>
+        <li>Tests that use Google JSAPI are now marked ⚠ and no other external content is loaded anywhere</li>
+        <li>Calculate legend positioning relative to closest data point (#1013)</li>
+        <li>Add missing documentation about annotations xval option (#992)</li>
+        <li>source mapping URLs are now correct</li>
+        <li>Ship ES5 versions of extras, use them in examples</li>
+        <li>Fix documentation/website HTML/CSS/JS bugs</li>
+        <li>On the website, external links are now clearly labelled</li>
+        <li>The documentation and website now have browsable subdirectories by manually generated directory index files</li>
+        <li>Link to UNPKG as CDN as well (to keep neutral; use of CDNs in websites violates the EU-GDPR)</li>
+        <li>Most issues with right-to-left languages should now be fixed (#1019)</li>
+        <li>Document that Dygraph will misbehave if the main div has padding</li>
+      </ul>
+      <p>Internal refactors/fixes:</p><ul>
+        <li>Use link href, not link src (#904)</li>
+        <li>Add missing semicolon in externs (#964)</li>
+        <li>Large build system improvements relying in large parts on Debian and GHA</li>
+        <li>Full licence review as part of uploading to Debian (#1029); drop embedded code copies</li>
+        <li>Fix some JSDoc warnings</li>
+        <li>Update to contemporary versions of Python 3, jQuery, Babel, etc.</li>
+        <li>Add copies of design documents that were previously only available on Google Docs or part of GitHub issues to offline documentation</li>
+        <li>Nuke useless semicola after function declaration bodies</li>
+        <li>Fix closure type annotation in hairlines.js</li>
+        <li>Remove already commented-out obsolete, or redundant, code</li>
+      </ul>
     </td>
   </tr>
   <tr>

@@ -1,56 +1,56 @@
 [
   {
-    "version": "2.1.2",
     "files": [
       "dygraph.min.js",
       "dygraph.js",
       "dygraph.css"
-    ]
+    ],
+    "version": "2.2.0"
   },
   {
-    "version": "2.1.0",
     "files": [
       "dygraph.min.js",
       "dygraph.js",
       "dygraph.css"
-    ]
+    ],
+    "version": "2.1.0"
   },
   {
-    "version": "2.0.0",
     "files": [
       "dygraph.min.js",
       "dygraph.js",
       "dygraph.css"
-    ]
+    ],
+    "version": "2.0.0"
   },
   {
-    "version": "1.1.1",
     "distsubdir": false,
     "files": [
       "dygraph-combined.js",
       "dygraph-combined-dev.js"
-    ]
+    ],
+    "version": "1.1.1"
   },
   {
-    "version": "1.1.0",
     "distsubdir": false,
     "files": [
       "dygraph-combined.js",
       "dygraph-combined-dev.js"
-    ]
+    ],
+    "version": "1.1.0"
   },
   {
-    "version": "1.0.1",
     "distsubdir": false,
     "files": [
       "dygraph-combined.js"
-    ]
+    ],
+    "version": "1.0.1"
   },
   {
-    "version": "1.0.0",
     "distsubdir": false,
     "files": [
       "dygraph-combined.js"
-    ]
+    ],
+    "version": "1.0.0"
   }
 ]

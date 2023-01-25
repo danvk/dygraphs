@@ -71,7 +71,7 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 &lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
 </pre>
 
-<p>You can also install dygraphs using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
+<p>But note that use of CDNs violates the EU-GDPR. You can also install dygraphs locally into your project instead using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
 
 <pre>$ npm install dygraphs
   # dygraphs is now in node_modules/dygraphs/dist/dygraph.{css,js} for
