@@ -1,17 +1,12 @@
 <!--#set var="pagetitle" value="data format" -->
 <!--#include virtual="header.html" -->
 
-<style type="text/css">
-  code { white-space: pre; border: 1px dashed black; display: block; }
-  pre  { white-space: pre; border: 1px dashed black; }
-</style>
-
 <h2>dygraphs Data Format</h2>
 
 <p>When you create a Dygraph object, your code looks something like
 this:</p>
 
-<code>
+<code class="sitedata">
   g = new Dygraph(document.getElementById("div"),
                   <i>data</i>,
                   { <i>options</i> });
@@ -48,7 +43,7 @@ interpreted. These are:</p>
 <a name="csv"></a>
   <h3>CSV</h3>
 <p>Here's an example of what CSV data should look like:</p>
-<pre>
+<pre class="sitedata">
 Date,Series1,Series2
 2009/07/12,100,200  # comments are OK on data lines
 2009/07/19,150,201
@@ -68,7 +63,7 @@ labels when you hover over the dygraph, it's likely because your first line
 contains data but is being parsed as a label. The solution is to either add
 a header line or specify the labels like this:</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(el,
               "2009/07/12,100,200\n" +
               "2009/07/19,150,201\n",
@@ -113,7 +108,7 @@ to make sure that everything gets displayed properly.<p>
 <p>Here's code which parses a CSV file with unix timestamps in the first
 column:</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(el,
               "Date,Series1,Series2\n" +
               "1247382000,100,200\n" +
@@ -158,7 +153,7 @@ explicit ranges.</p>
 interpreted as ratios between zero and one. This is often the case if you're
 plotting a percentage.</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(el,
               "X,Frac1,Frac2\n" +
               "1,1/2,3/4\n"+
@@ -190,7 +185,7 @@ standard deviation. If you specify the <i>errorBars</i> option, dygraphs
 will look for alternating value and standard deviation columns in your CSV
 data.  Here's what it should look like:</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(el,
               "X,Y1,Y2\n" +
               "1,10,5,20,5\n" +
@@ -218,7 +213,7 @@ the low and high temperatures for the day.</p>
 should each be three numbers separated by semicolons ("low;mid;high").
 Here's an example:</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(el,
               "X,Y1,Y2\n" +
               "1,10;20;30,20;5;25\n" +
@@ -253,7 +248,7 @@ uncertainties.</p>
 
 <p>Here's an example of "native format":</p>
 
-<code>
+<code class="sitedata">
   new Dygraph(document.getElementById("graphdiv2"),
               [
                 [1,10,100],
@@ -275,7 +270,7 @@ option. There's no other way to set them.</p>
 object in the first column. Otherwise, specify a number. Here's a sample
 array with dates on the x-axis:</p>
 
-<code>
+<code class="sitedata">
   [
     [ new Date("2009/07/12"), 100, 200 ],
     [ new Date("2009/07/19"), 150, 220 ]
@@ -287,7 +282,7 @@ array with dates on the x-axis:</p>
 with the array format. If you specify any of these, the values become arrays
 (rather than numbers). Here's what the format looks like for each one:</p>
 
-<code>
+<code class="sitedata">
   <i>errorBars</i>: [x, [value1, std1], [value2, std2], ...]
   <i>fractions</i>: [x, [num1, den1], [num2, den2], ...]
   <i>customBars</i>: [x, [low1, val1, high1], [low2, val2, high2], ...]
@@ -307,7 +302,7 @@ created by NaNs are preserved.
 <p>You can specify a function that returns any of the other types. If
 <i>x</i> is a valid piece of dygraphs input, then so is</p>
 
-<code>
+<code class="sitedata">
   function() { return x; }
 </code>
 
@@ -324,7 +319,7 @@ embed a Dygraph in a Google Spreadsheet.</p>
 <p>You'll need to set your first column's type to one of "number", "date"
 or "datetime".</p>
 
-<pre>
+<pre class="sitedata">
 DataTable TODO:
 - When to use Dygraph.GvizWrapper
 - how to specify fractions

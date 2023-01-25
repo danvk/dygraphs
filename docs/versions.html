@@ -1,28 +1,6 @@
 <!--#set var="pagetitle" value="version history" -->
 <!--#include virtual="header.html" -->
 
-<style>
-  .versions {
-    margin-top: 20px;
-  }
-  .versions td {
-    vertical-align: top;
-  }
-  td.notes {
-    padding-bottom: 20px;
-  }
-  .versions td:first-child {
-    text-align: right;
-    padding-right: 20px;
-    font-weight: bold;
-  }
-  .date {
-    font-size: small;
-    color: darkgray;
-    font-weight: normal;
-  }
-</style>
-
 <h2>Version History</h2>
 
 <p>For links to download each release, see the <a href="/download.html">Downloads</a> page.</p>
@@ -66,9 +44,9 @@
         <li>Tests that use Google JSAPI are now marked ⚠ and no other external content is loaded anywhere</li>
         <li>Calculate legend positioning relative to closest data point (#1013)</li>
         <li>Add missing documentation about annotations xval option (#992)</li>
-        <li>source mapping URLs are now correct</li>
-        <li>Ship ES5 versions of extras, use them in examples</li>
-        <li>Fix documentation/website HTML/CSS/JS bugs</li>
+        <li>source mapping URLs are now correct (#1027)</li>
+        <li>Ship ES5 versions of extras (#952), use them in examples</li>
+        <li>Fix documentation/website HTML/CSS/JS bugs (#979) (#1008)</li>
         <li>On the website, external links are now clearly labelled</li>
         <li>The documentation and website now have browsable subdirectories by manually generated directory index files</li>
         <li>Link to UNPKG as CDN as well (to keep neutral; use of CDNs in websites violates the EU-GDPR)</li>
@@ -79,7 +57,7 @@
         <li>Use link href, not link src (#904)</li>
         <li>Add missing semicolon in externs (#964)</li>
         <li>Large build system improvements relying in large parts on Debian and GHA</li>
-        <li>Full licence review as part of uploading to Debian (#1029); drop embedded code copies</li>
+        <li>Full licence review as part of uploading to Debian (#1024) (#1025) (#1029); drop embedded code copies</li>
         <li>Fix some JSDoc warnings</li>
         <li>Update to contemporary versions of Python 3, jQuery, Babel, etc.</li>
         <li>Add copies of design documents that were previously only available on Google Docs or part of GitHub issues to offline documentation</li>

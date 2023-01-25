@@ -97,3 +97,47 @@ a.link {
 .option:hover a.link {
   visibility: visible;
 }
+
+/* stuff for specific pages */
+
+/* index.html */
+pre.prettyprint {
+  margin-top: 28px;
+}
+
+/* data.html */
+code.sitedata {
+  white-space: pre;
+  border: 1px dashed black;
+  display: block;
+}
+pre.sitedata {
+  white-space: pre;
+  border: 1px dashed black;
+}
+
+/* tutorial.html */
+.tutannotation {
+  font-size: 12px !important;
+}
+
+/* versions.html */
+.versions {
+  margin-top: 20px;
+}
+.versions td {
+  vertical-align: top;
+}
+.versions td.notes {
+  padding-bottom: 20px;
+}
+.versions td:first-child {
+  text-align: right;
+  padding-right: 20px;
+  font-weight: bold;
+}
+.versions .date {
+  font-size: small;
+  color: darkgray;
+  font-weight: normal;
+}
