@@ -411,7 +411,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "true",
     "labels": ["Error Bars"],
     "type": "boolean",
-    "description": "Use in conjunction with the \"fractions\" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1."
+    "description": "Use in conjunction with the \"fractions\" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1. This option cannot be set per axis."
   },
   "fillGraph": {
     "default": "false",
@@ -585,7 +585,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "2.0",
     "labels": ["Error Bars"],
     "type": "float",
-    "description": "When errorBars is set, shade this many standard deviations above/below each point."
+    "description": "When errorBars is set, shade this many standard deviations above/below each point. This option cannot be set per axis."
   },
   "customBars": {
     "default": "false",
