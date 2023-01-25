@@ -81,6 +81,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "integer",
     "description": "Height, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored."
   },
+  "resizable": {
+    "default": "no",
+    "labels": ["Overall display"],
+    "type": "string",
+    "description": "Whether to add a ResizeObserver to the main div (\"passive\") and additionally make it resizable (\"horizontal\", \"vertical\", \"both\")."
+  },
   "zoomCallback": {
     "default": "null",
     "labels": ["Callbacks"],

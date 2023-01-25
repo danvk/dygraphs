@@ -863,6 +863,30 @@ Dygraph.prototype.createInterface_ = function() {
     // Update when the window is resized.
     // TODO(danvk): drop frames depending on complexity of the chart.
     this.addAndTrackEvent(window, 'resize', this.resizeHandler_);
+
+    this.resizeObserver_ = null;
+    var resizeMode = this.getStringOption('resizable');
+    if ((typeof(ResizeObserver) === 'undefined') &&
+        (resizeMode !== "no")) {
+      console.error('ResizeObserver unavailable; ignoring resizable property');
+      resizeMode = "no";
+    }
+    if (resizeMode === "horizontal" ||
+        resizeMode === "vertical" ||
+        resizeMode === "both") {
+      enclosing.style.resize = resizeMode;
+    } else if (resizeMode !== "passive") {
+      resizeMode = "no";
+    }
+    if (resizeMode !== "no") {
+      const maindivOverflow = window.getComputedStyle(enclosing).overflow;
+      if (window.getComputedStyle(enclosing).overflow === 'visible') {
+        console.warn('Hiding overflow on main div to make it resizable');
+        enclosing.style.overflow = 'hidden';
+      }
+      this.resizeObserver_ = new ResizeObserver(this.resizeHandler_);
+      this.resizeObserver_.observe(enclosing);
+    }
   }
 };
 
@@ -919,8 +943,12 @@ Dygraph.prototype.destroy = function() {
   utils.removeEvent(window, 'mouseout', this.mouseOutHandler_);
   utils.removeEvent(this.mouseEventElement_, 'mousemove', this.mouseMoveHandler_);
 
-  // remove window handlers
-  utils.removeEvent(window,'resize', this.resizeHandler_);
+  // dispose of resizing handlers
+  if (this.resizeObserver_) {
+    this.resizeObserver_.disconnect();
+    this.resizeObserver_ = null;
+  }
+  utils.removeEvent(window, 'resize', this.resizeHandler_);
   this.resizeHandler_ = null;
 
   removeRecursive(this.maindiv_);
