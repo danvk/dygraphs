@@ -7,7 +7,7 @@ Copyright (c) 2011, 2013 Robert Konigsberg <konigsberg@google.com>
 Copyright (c) 2013 David Eberlein <david.eberlein@ch.sauter-bc.com>
 Copyright (c) 2013 Google, Inc.
 Copyright (c) 2015 Petr Shevtsov <petr.shevtsov@gmail.com>
-Copyright (c) 2022 mirabilos <t.glaser@tarent.de>
+Copyright (c) 2022, 2023 mirabilos <t.glaser@tarent.de>
                    Deutsche Telekom LLCTO
 and numerous contributors (see git log)
 
