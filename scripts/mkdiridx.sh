@@ -82,6 +82,15 @@ function xhtml_fesc {
 set -eo pipefail
 print -ru2 "I: mkdiridx.sh beginning"
 
+while [[ $1 = --* ]]; do
+	if [[ $1 = --ah && -n $2 ]]; then
+		ah=$2
+		shift 2
+	else
+		break
+	fi
+done
+
 trap 'print -ru2 "E: could not grep for extjs tests"; exit 1' USR1
 (grep -FrlZ 'src="http' . || kill -USR1 $$) |&
 set -A exttests
