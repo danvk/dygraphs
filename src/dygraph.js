@@ -1874,7 +1874,7 @@ Dygraph.prototype.setSelection = function setSelection(row, opt_seriesName,
     if (opt_trigger_highlight_callback) {
       var callback = this.getFunctionOption("highlightCallback");
       if (callback) {
-        var event = null;
+        var event = {};
         callback.call(this, event,
           this.lastx_,
           this.selPoints_,
