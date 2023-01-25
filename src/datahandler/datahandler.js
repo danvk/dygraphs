@@ -183,7 +183,7 @@ handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
  * @param {!Array.<Dygraph.PointType>} points The points passed to
  *          the plotter.
  * @param {!Object} axis The axis on which the series will be plotted.
- * @param {!boolean} logscale Weather or not to use a logscale.
+ * @param {!boolean} logscale Whether or not to use a logscale.
  */
 handler.prototype.onLineEvaluated = function(points, axis, logscale) {
 };
