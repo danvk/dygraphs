@@ -47,6 +47,7 @@ var DEFAULT_ATTRS = {
   stackedGraph: false,
   stackedGraphNaNFill: 'all',
   hideOverlayOnMouseOut: true,
+  resizable: 'no',
 
   legend: 'onmouseover',
   stepPlot: false,
