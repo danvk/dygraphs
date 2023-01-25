@@ -85,7 +85,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "no",
     "labels": ["Overall display"],
     "type": "string",
-    "description": "Whether to add a ResizeObserver to the main div (\"passive\") and additionally make it resizable (\"horizontal\", \"vertical\", \"both\")."
+    "description": "Whether to add a ResizeObserver to the main div (\"passive\") and additionally make it resizable (\"horizontal\", \"vertical\", \"both\"). In any case, if the main div has CSS \"overflow:visible;\" it will be changed to \"overflow:hidden;\" to make CSS resizing possible."
   },
   "zoomCallback": {
     "default": "null",

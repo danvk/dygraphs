@@ -880,10 +880,8 @@ Dygraph.prototype.createInterface_ = function() {
     }
     if (resizeMode !== "no") {
       const maindivOverflow = window.getComputedStyle(enclosing).overflow;
-      if (window.getComputedStyle(enclosing).overflow === 'visible') {
-        console.warn('Hiding overflow on main div to make it resizable');
+      if (window.getComputedStyle(enclosing).overflow === 'visible')
         enclosing.style.overflow = 'hidden';
-      }
       this.resizeObserver_ = new ResizeObserver(this.resizeHandler_);
       this.resizeObserver_.observe(enclosing);
     }
