@@ -201,7 +201,7 @@ DygraphLayout.prototype._evaluateLimits = function() {
     axis.yrange = axis.maxyval - axis.minyval;
     axis.yscale = (axis.yrange !== 0 ? 1.0 / axis.yrange : 1.0);
 
-    if (this.dygraph_.getOption("logscale")) {
+    if (this.dygraph_.getOption("logscale") || axis.logscale) {
       axis.ylogrange = utils.log10(axis.maxyval) - utils.log10(axis.minyval);
       axis.ylogscale = (axis.ylogrange !== 0 ? 1.0 / axis.ylogrange : 1.0);
       if (!isFinite(axis.ylogrange) || isNaN(axis.ylogrange)) {
