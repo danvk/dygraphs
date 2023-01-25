@@ -15,11 +15,20 @@
     <p>labelsKMG2:</p>
     <div id="labelsKMG2" style="width:600px; height: 300px;"></div>
 
+    <p>labelsKMG2 together with labelsKMB (legacy, violates standards):</p>
+    <div id="labelsKMB2" style="width:600px; height: 300px;"></div>
+
     <p>labelsKMG2 with yValueFormatter:</p>
     <div id="labelsKMG2yValueFormatter" style="width:600px; height: 300px;"></div>
 
+    <p>labelsKMB with very small numbers:</p>
+    <div id="labelsKMBSmallNumbers" style="width:600px; height: 300px;"></div>
+
     <p>labelsKMG2 with very small numbers:</p>
     <div id="labelsKMG2SmallNumbers" style="width:600px; height: 300px;"></div>
+
+    <p>labelsKMG2 together with labelsKMB (legacy, violates standards) with very small numbers:</p>
+    <div id="labelsKMB2SmallNumbers" style="width:600px; height: 300px;"></div>
 
     <p>The curves are exponentials. Zooming in should reveal each of the 'K',
     'M', 'B', etc. labels.</p>
@@ -51,7 +60,12 @@
         labelsKMB: true,
         labels: ['Base', 'Power']
       });
-      var g2 = new Dygraph(document.getElementById("labelsKMG2"), data, {
+      var g1 = new Dygraph(document.getElementById("labelsKMG2"), data, {
+        labelsKMG2: true,
+        labels: ['Base', 'Power']
+      });
+      var g2 = new Dygraph(document.getElementById("labelsKMB2"), data, {
+        labelsKMB: true,
         labelsKMG2: true,
         labels: ['Base', 'Power']
       });
@@ -64,8 +78,16 @@
         },
         labels: ['Base', 'Power']
       });
-
-      var g4 = new Dygraph(document.getElementById("labelsKMG2SmallNumbers"), smalldata, {
+      var g4 = new Dygraph(document.getElementById("labelsKMBSmallNumbers"), smalldata, {
+        labelsKMB: true,
+        labels: ['Base', 'Power']
+      });
+      var g5 = new Dygraph(document.getElementById("labelsKMG2SmallNumbers"), smalldata, {
+        labelsKMG2: true,
+        labels: ['Base', 'Power']
+      });
+      var g6 = new Dygraph(document.getElementById("labelsKMB2SmallNumbers"), smalldata, {
+        labelsKMB: true,
         labelsKMG2: true,
         labels: ['Base', 'Power']
       });
