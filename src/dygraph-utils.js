@@ -136,10 +136,10 @@ export function cancelEvent(e) {
  * Convert hsv values to an rgb(r,g,b) string. Taken from MochiKit.Color. This
  * is used to generate default series colors which are evenly spaced on the
  * color wheel.
- * @param { number } hue Range is 0.0-1.0.
- * @param { number } saturation Range is 0.0-1.0.
- * @param { number } value Range is 0.0-1.0.
- * @return { string } "rgb(r,g,b)" where r, g and b range from 0-255.
+ * @param {number} hue Range is 0.0-1.0.
+ * @param {number} saturation Range is 0.0-1.0.
+ * @param {number} value Range is 0.0-1.0.
+ * @return {string} "rgb(r,g,b)" where r, g and b range from 0-255.
  * @private
  */
 export function hsvToRGB(hue, saturation, value) {

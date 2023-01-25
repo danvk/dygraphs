@@ -371,7 +371,7 @@ Dygraph.prototype.toString = function() {
  * @param {string} [seriesName] The name of the series to which the option
  * will be applied. If no per-series value of this option is available, then
  * the global value is returned. This is optional.
- * @return { ... } The value of the option.
+ * @return {...} The value of the option.
  */
 Dygraph.prototype.attr_ = function(name, seriesName) {
   if (typeof process !== 'undefined' && process.env.NODE_ENV != 'production') {
@@ -461,7 +461,7 @@ Dygraph.prototype.getOptionForAxis = function(name, axis) {
 /**
  * @private
  * @param {string} axis The name of the axis (i.e. 'x', 'y' or 'y2')
- * @return { ... } A function mapping string -> option value
+ * @return {...} A function mapping string -> option value
  */
 Dygraph.prototype.optionsViewForAxis_ = function(axis) {
   var self = this;
@@ -1811,13 +1811,15 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * hover dots on the chart).
  * @param {seriesName} optional series name to highlight that series with the
  * the highlightSeriesOpts setting.
- * @param { locked } optional If true, keep seriesName selected when mousing
+ * @param {locked} optional If true, keep seriesName selected when mousing
  * over the graph, disabling closest-series highlighting. Call clearSelection()
  * to unlock it.
- * @param { trigger_highlight_callback } optional If true, trigger any
+ * @param {trigger_highlight_callback} optional If true, trigger any
  * user-defined highlightCallback if highlightCallback has been set.
  */
-Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked, opt_trigger_highlight_callback) {
+Dygraph.prototype.setSelection = function setSelection(row, opt_seriesName,
+                                                       opt_locked,
+                                                       opt_trigger_highlight_callback) {
   // Extract the points we've selected
   this.selPoints_ = [];
 
