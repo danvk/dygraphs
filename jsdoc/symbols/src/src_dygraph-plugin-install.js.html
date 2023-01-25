@@ -1,0 +1,27 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global Dygraph:false */</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="COMM">// This file defines the ordering of the plugins.</span><span class="WHIT">
+<span class='line'>  4</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='line'>  5</span> </span><span class="COMM">// The ordering is from most-general to most-specific.</span><span class="WHIT">
+<span class='line'>  6</span> </span><span class="COMM">// This means that, in an event cascade, plugins which have registered for that</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="COMM">// event will be called in reverse order.</span><span class="WHIT">
+<span class='line'>  8</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='line'>  9</span> </span><span class="COMM">// This is most relevant for plugins which register a layout event, e.g.</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="COMM">// Axes, Legend and ChartLabels.</span><span class="WHIT">
+<span class='line'> 11</span> 
+<span class='line'> 12</span> </span><span class="NAME">Dygraph.PLUGINS.push</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.Legend</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.Axes</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.RangeSelector</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">// Has to be before ChartLabels so that its callbacks are called after ChartLabels' callbacks.</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.ChartLabels</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.Annotations</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">  </span><span class="NAME">Dygraph.Plugins.Grid</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span></pre></body></html>
