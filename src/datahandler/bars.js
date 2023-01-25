@@ -70,7 +70,7 @@ BarsHandler.prototype.onPointsCreated_ = function(series, points) {
 };
 
 /** @inheritDoc */
-BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
+BarsHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
   var minY = null, maxY = null, y;
 
   var firstIdx = 0;

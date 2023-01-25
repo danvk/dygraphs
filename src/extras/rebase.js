@@ -42,7 +42,7 @@
     return value * base / initial;
   };
 
-  RebaseHandler.prototype.getExtremeYValues = function(series, dateWindow, options) {
+  RebaseHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
     var minY = null, maxY = null, y;
     var firstIdx = 0, lastIdx = series.length - 1;
     var initial = series[firstIdx][1];

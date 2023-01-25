@@ -168,11 +168,11 @@ handler.prototype.rollingAverage = function(series, rollPeriod, options) {
  *     data format where series[i] = [x, y, {extras}].
  * @param {!Array.<number>} dateWindow The x-value range to display with
  *     the format: [min, max].
- * @param {!DygraphOptions} options The dygraph options.
+ * @param {boolean} stepPlot Whether the stepPlot option is set.
  * @return {Array.<number>} The low and high extremes of the series in the
  *     given window with the format: [low, high].
  */
-handler.prototype.getExtremeYValues = function(series, dateWindow, options) {
+handler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
 };
 
 /**

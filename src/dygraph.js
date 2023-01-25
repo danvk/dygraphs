@@ -2289,7 +2289,7 @@ Dygraph.prototype.gatherDatasets_ = function(rolledSeries, dateWindow) {
 
     var seriesName = this.attr_("labels")[seriesIdx];
     var seriesExtremes = this.dataHandler_.getExtremeYValues(series,
-        dateWindow, this.getBooleanOption("stepPlot",seriesName));
+        dateWindow, this.getBooleanOption("stepPlot", seriesName));
 
     var seriesPoints = this.dataHandler_.seriesToPoints(series,
         seriesName, boundaryIds[seriesIdx-1][0]);

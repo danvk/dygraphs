@@ -77,8 +77,7 @@ DefaultHandler.prototype.rollingAverage = function(originalData, rollPeriod,
 };
 
 /** @inheritDoc */
-DefaultHandler.prototype.getExtremeYValues = function(series, dateWindow,
-    options) {
+DefaultHandler.prototype.getExtremeYValues = function getExtremeYValues(series, dateWindow, stepPlot) {
   var minY = null, maxY = null, y;
   var firstIdx = 0, lastIdx = series.length - 1;
 
