@@ -1814,8 +1814,10 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
  * @param { locked } optional If true, keep seriesName selected when mousing
  * over the graph, disabling closest-series highlighting. Call clearSelection()
  * to unlock it.
+ * @param { trigger_highlight_callback } optional If true, trigger any
+ * user-defined highlightCallback if highlightCallback has been set.
  */
-Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
+Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked, opt_trigger_highlight_callback) {
   // Extract the points we've selected
   this.selPoints_ = [];
 
@@ -1866,6 +1868,18 @@ Dygraph.prototype.setSelection = function(row, opt_seriesName, opt_locked) {
 
   if (changed) {
     this.updateSelection_(undefined);
+
+    if (opt_trigger_highlight_callback) {
+      var callback = this.getFunctionOption("highlightCallback");
+      if (callback) {
+        var event = null;
+        callback.call(this, event,
+          this.lastx_,
+          this.selPoints_,
+          this.lastRow_,
+          this.highlightSet_);
+      }
+    }
   }
   return changed;
 };
