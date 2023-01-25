@@ -469,6 +469,18 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "string",
     "description": "When to display the legend. By default, it only appears when a user mouses over the chart. Set it to \"always\" to always display a legend of some sort, \"never\" to hide it. When set to \"follow\", legend follows highlighted points."
   },
+  "legendFollowOffsetX": {
+    "default": "50",
+    "labels": ["Legend"],
+    "type": "integer",
+    "description": "Number of pixels to use as horizontal offset from the point for a “floating” legend (\"follow\" mode). This should be positive (to the right) because the legend flips over to the left side if it’s too wide."
+  },
+  "legendFollowOffsetY": {
+    "default": "-50",
+    "labels": ["Legend"],
+    "type": "integer",
+    "description": "Number of pixels to use as vertical offset from the point for a “floating” legend (\"follow\" mode)."
+  },
   "legendFormatter": {
     "default": "null",
     "labels": ["Legend"],
