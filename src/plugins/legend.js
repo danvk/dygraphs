@@ -140,7 +140,6 @@ Legend.prototype.select = function(e) {
       leftLegend = leftLegend - 2 * followOffsetX - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
 
-    e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
   } else if (legendMode === 'onmouseover' && this.is_generated_div_) {
