@@ -803,6 +803,12 @@ OPTIONS_REFERENCE =  // <JSON>
     "type": "float (0.0 - 1.0)",
     "description": "The transparency of the veil that is drawn over the unselected portions of the range selector mini plot. A value of 0 represents full transparency and the unselected portions of the mini plot will appear as normal. A value of 1 represents full opacity and the unselected portions of the mini plot will be hidden."
   },
+  "rangeSelectorVeilColour": {
+    "default": "null",
+    "labels": ["Range Selector"],
+    "type": "string",
+    "description": "The fillStyle for the veil of the range selector (e.g. \"rgba(240, 240, 240, 0.6)\"); if set, the rangeSelectorAlpha option is ignored."
+  },
   "showInRangeSelector": {
     "default": "null",
     "labels": ["Range Selector"],
