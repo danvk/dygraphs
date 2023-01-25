@@ -28,8 +28,9 @@ ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
   var x, y, variance, point;
-  var sigma = options.get("sigma");
-  var logScale = options.get('logscale');
+  const seriesLabel = options.get("labels")[i];
+  const logScale = options.getForSeries("logscale", seriesLabel);
+  const sigma = options.getForSeries("sigma", seriesLabel);
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -60,10 +61,11 @@ ErrorBarsHandler.prototype.extractSeries = function(rawData, i, options) {
 
 /** @inheritDoc */
 ErrorBarsHandler.prototype.rollingAverage =
-    function(originalData, rollPeriod, options) {
+    function(originalData, rollPeriod, options, i) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
-  var sigma = options.get("sigma");
+  const seriesLabel = options.get("labels")[i];
+  const sigma = options.getForSeries("sigma", seriesLabel);
 
   var i, j, y, v, sum, num_ok, stddev, variance, value;
 

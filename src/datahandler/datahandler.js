@@ -156,9 +156,10 @@ handler.prototype.onPointsCreated_ = function(series, points) {
  *          data format where series[i] = [x,y,{extras}].
  * @param {!number} rollPeriod The number of points over which to average the data
  * @param {!DygraphOptions} options The dygraph options.
+ * @param {!number} seriesIndex Index of the series this was extracted from.
  * @return {!Array.<[!number,?number,?]>} the rolled series.
  */
-handler.prototype.rollingAverage = function(series, rollPeriod, options) {
+handler.prototype.rollingAverage = function(series, rollPeriod, options, seriesIndex) {
 };
 
 /**

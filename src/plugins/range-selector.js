@@ -663,7 +663,7 @@ rangeSelector.prototype.computeCombinedSeriesAndLimits_ = function() {
     if (!includeSeries[i]) continue;
     var series = dataHandler.extractSeries(g.rawData_, i, options);
     if (g.rollPeriod() > 1) {
-      series = dataHandler.rollingAverage(series, g.rollPeriod(), options);
+      series = dataHandler.rollingAverage(series, g.rollPeriod(), options, i);
     }
 
     rolledSeries.push(series);

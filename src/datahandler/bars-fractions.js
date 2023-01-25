@@ -30,8 +30,9 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   var series = [];
   var x, y, point, num, den, value, stddev, variance;
   var mult = 100.0;
-  var sigma = options.get("sigma");
-  var logScale = options.get('logscale');
+  const seriesLabel = options.get("labels")[i];
+  const logScale = options.getForSeries("logscale", seriesLabel);
+  const sigma = options.getForSeries("sigma", seriesLabel);
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -65,11 +66,12 @@ FractionsBarsHandler.prototype.extractSeries = function(rawData, i, options) {
 
 /** @inheritDoc */
 FractionsBarsHandler.prototype.rollingAverage =
-    function(originalData, rollPeriod, options) {
+    function(originalData, rollPeriod, options, i) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
-  var sigma = options.get("sigma");
-  var wilsonInterval = options.get("wilsonInterval");
+  const seriesLabel = options.get("labels")[i];
+  const sigma = options.getForSeries("sigma", seriesLabel);
+  const wilsonInterval = options.getForSeries("wilsonInterval", seriesLabel);
 
   var low, high, i, stddev;
   var num = 0;

@@ -28,7 +28,8 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
   // TODO(danvk): pre-allocate series here.
   var series = [];
   var x, y, point;
-  var logScale = options.get('logscale');
+  const seriesLabel = options.get("labels")[i];
+  const logScale = options.getForSeries("logscale", seriesLabel);
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -56,7 +57,7 @@ CustomBarsHandler.prototype.extractSeries = function(rawData, i, options) {
 
 /** @inheritDoc */
 CustomBarsHandler.prototype.rollingAverage =
-    function(originalData, rollPeriod, options) {
+    function(originalData, rollPeriod, options, i) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
   var y, low, high, mid,count, i, extremes;

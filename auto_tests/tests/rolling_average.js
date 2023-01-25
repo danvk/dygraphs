@@ -95,8 +95,8 @@ it('testRollShortFractions', function() {
   var graph = document.getElementById("graph");
   var g = new Dygraph(graph, data2, opts);
 
-  var rolled1 = g.dataHandler_.rollingAverage(data1, 1, g);
-  var rolled2 = g.dataHandler_.rollingAverage(data2, 1, g);
+  var rolled1 = g.dataHandler_.rollingAverage(data1, 1, g, 1);
+  var rolled2 = g.dataHandler_.rollingAverage(data2, 1, g, 1);
 
   assert.deepEqual(rolled1[0], rolled2[0]);
 });
@@ -232,7 +232,7 @@ it('testRollFractionsBarsWilson', function() {
 
 var getRolledData = function(g, data, seriesIdx, rollPeriod){
   var options = g.attributes_;
-  return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options);
+  return g.dataHandler_.rollingAverage(g.dataHandler_.extractSeries(data, seriesIdx, options), rollPeriod, options, seriesIdx);
 };
 
 });

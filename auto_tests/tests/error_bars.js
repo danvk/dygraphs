@@ -217,7 +217,7 @@ it('testRollingAveragePreservesNaNs', function() {
   assert(isNaN(in_series[5][2][0]));
   assert(isNaN(in_series[5][2][1]));
 
-  var out_series = g.dataHandler_.rollingAverage(in_series, 1, g.attributes_);
+  var out_series = g.dataHandler_.rollingAverage(in_series, 1, g.attributes_, 1);
   assert(isNaN(out_series[5][1]));
   assert(isNaN(out_series[5][2][0]));
   assert(isNaN(out_series[5][2][1]));

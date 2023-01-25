@@ -29,7 +29,8 @@ DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {
   var series = [];
   var x, y, point, num, den, value;
   var mult = 100.0;
-  var logScale = options.get('logscale');
+  const seriesLabel = options.get("labels")[i];
+  const logScale = options.getForSeries("logscale", seriesLabel);
   for ( var j = 0; j < rawData.length; j++) {
     x = rawData[j][0];
     point = rawData[j][i];
@@ -60,7 +61,7 @@ DefaultFractionHandler.prototype.extractSeries = function(rawData, i, options) {
 };
 
 DefaultFractionHandler.prototype.rollingAverage = function(originalData, rollPeriod,
-    options) {
+    options, i) {
   rollPeriod = Math.min(rollPeriod, originalData.length);
   var rollingData = [];
 
