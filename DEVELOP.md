@@ -9,7 +9,7 @@ This is a step-by-step guide explaining how to do it.
 To install dependencies, run:
 
     # for building
-    apt-get install mksh pax python3
+    apt-get install jq mksh pax python3
     # npm dev dependencies
     npm install
 

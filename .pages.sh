@@ -28,7 +28,7 @@ sudoapt clean
 sudoapt update
 #sudoapt --purge dist-upgrade -y
 $sudoagi eatmydata git \
-    ed jsdoc-toolkit \
+    ed jq jsdoc-toolkit \
     libjs-bootstrap libjs-jquery libjs-jquery-ui \
     mksh pax python3
 

@@ -70,6 +70,7 @@ Check out the [dygraphs-es6 repo][] for a fully-worked example.
 
 To get going, install the following Debian packages…
 
+ - `jq`
  - `mksh`
  - `pax`
  - `python3`
