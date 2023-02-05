@@ -62,7 +62,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "drawPointCallback": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize, idx)",
     "parameters": [
       [ "g" , "the reference graph" ],
       [ "seriesName" , "the name of the series" ],
