@@ -339,7 +339,7 @@ var PREFERRED_LOG_TICK_VALUES = (function() {
  * @return {number} The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
-var pickDateTickGranularity = function(a, b, pixels, opts) {
+export var pickDateTickGranularity = function(a, b, pixels, opts) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   for (var i = 0; i < Granularity.NUM_GRANULARITIES; i++) {
     var num_ticks = numDateTicks(a, b, i);
