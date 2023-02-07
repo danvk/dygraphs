@@ -58,8 +58,15 @@ while IFS= read -pr line; do
 			fi
 			line=${line#'# '}
 			line=${line%')'}
-			print -r '  <tr>'
-			print -r "    <td>${line%' ('*}<p class=\"date\">${line##*' ('}</p></td>"
+			title=${line%' ('*}
+			tag=$title
+			if [[ $tag = v+([0-9.]) ]]; then
+				title="<a href=\"#$tag\" title=\"link\">&#x1F517;</a>"$title
+			else
+				tag=
+			fi
+			print -r "  <tr${tag:+ id=\"$tag\"}>"
+			print -r "    <td>$title<p class=\"date\">${line##*' ('}</p></td>"
 			print -r '    <td class="notes">'
 			in_tr=1
 			continue
