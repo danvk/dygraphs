@@ -206,6 +206,8 @@ def gallery_fmt(f):
 
 for label in sorted(labels):
   print('<a name="%s"></a><h3>%s</h3>' % (encode_anchor(label), label))
+  if cats[label]:
+    print('<p>%s</p>' % cats[label])
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]

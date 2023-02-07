@@ -877,7 +877,7 @@ const valid_cats =  // <JSON>
   "Data": "",
   "Debugging": "",
   "Deprecated": "",
-  "Error Bars": "",
+  "Error Bars": "These are actually high/low bands, not error bars; the misnomer is historic.",
   "Grid": "",
   "Interactive Elements": "",
   "Legend": "",
