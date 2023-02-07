@@ -179,7 +179,8 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         var opts = {
           dateWindow: me.xAxisRange()
         };
-        if (syncOpts.range) opts.valueRange = me.yAxisRange();
+        if (syncOpts.range)
+          opts.valueRange = me.yAxisRange();
 
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) {
@@ -191,7 +192,8 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
 
           // Only redraw if there are new options
           if (arraysAreEqual(opts.dateWindow, gs[j].getOption('dateWindow')) &&
-              arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange'))) {
+              (!syncOpts.range ||
+               arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange')))) {
             continue;
           }
 
