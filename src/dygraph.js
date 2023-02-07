@@ -1727,7 +1727,7 @@ Dygraph.prototype.updateSelection_ = function(opt_animFraction) {
   /*var defaultPrevented = */
   this.cascadeEvents_('select', {
     selectedRow: this.lastRow_ === -1 ? undefined : this.lastRow_,
-    selectedX: this.lastx_ === -1 ? undefined : this.lastx_,
+    selectedX: this.lastx_ === null ? undefined : this.lastx_,
     selectedPoints: this.selPoints_
   });
   // TODO(danvk): use defaultPrevented here?
@@ -1856,7 +1856,7 @@ Dygraph.prototype.setSelection = function setSelection(row, opt_seriesName,
   if (this.selPoints_.length) {
     this.lastx_ = this.selPoints_[0].xval;
   } else {
-    this.lastx_ = -1;
+    this.lastx_ = null;
   }
 
   if (opt_seriesName !== undefined) {
@@ -1917,7 +1917,7 @@ Dygraph.prototype.clearSelection = function() {
   this.canvas_ctx_.clearRect(0, 0, this.width_, this.height_);
   this.fadeLevel = 0;
   this.selPoints_ = [];
-  this.lastx_ = -1;
+  this.lastx_ = null;
   this.lastRow_ = -1;
   this.highlightSet_ = null;
 };

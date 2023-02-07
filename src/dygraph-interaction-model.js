@@ -44,7 +44,7 @@ DygraphInteraction.maybeTreatMouseOpAsClick = function(event, g, context) {
   var regionHeight = Math.abs(context.dragEndY - context.dragStartY);
 
   if (regionWidth < 2 && regionHeight < 2 &&
-      g.lastx_ !== undefined && g.lastx_ != -1) {
+      g.lastx_ !== undefined && g.lastx_ !== null) {
     DygraphInteraction.treatMouseOpAsClick(g, event, context);
   }
 
