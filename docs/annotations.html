@@ -1,18 +1,7 @@
 <!--#set var="pagetitle" value="annotations" -->
 <!--#include virtual="header.html" -->
 
-<style type="text/css">
-  code { white-space: pre; }
-  pre  { white-space: pre; }
-  .annotation {
-    font-size: 12px !important;
-  }
-  .dygraph-legend {
-    width: 300px;
-  }
-</style>
-
-<h2>dygraphs Annotations</h2>
+<h2>dygraphs Annotations</h2><div class="annotationpage">
 
 <p>dygraphs lets you add annotations (markers) to individual points on your
 chart. These markers have a short bit of text or an icon that's displayed
@@ -200,9 +189,9 @@ g.ready(function() {
 
 <table class="thinborder">
 <tr><th>Property</th><th>Description</th></tr>
-<tr><td><code>series</code></td> <td><i>(required)</i> The name of the series to which the annotated point belongs.</td></tr>
+<tr><td><code>series</code></td><td><i>(required)</i> The name of the series to which the annotated point belongs.</td></tr>
 <tr><td><code>x</code></td><td><i>(required unless xval is given)</i> The x value of the point. This should be the same as the value you specified in your CSV file, e.g. "2010-09-13". As an alternative, use the <code>xval</code> field.</td></tr>
-<tr><td><code>xval</code></td><td><i>(required unless x is given)</i> The numeric x value of the point, milliseconds since the epoch for a Date x axis (see <a href="#xvalformat">above</a>). As an alternative, use the <code>x</code> field.</td></td></tr>
+<tr><td><code>xval</code></td><td><i>(required unless x is given)</i> The numeric x value of the point, milliseconds since the epoch for a Date x axis (see <a href="#xvalformat">above</a>). As an alternative, use the <code>x</code> field.</td></tr>
 <tr><td><code>shortText</code></td><td>Text that will appear on the annotation's flag.</td></tr>
 <tr><td><code>text</code></td><td>A longer description of the annotation which will appear when the user hovers over it.</td></tr>
 <tr><td><code>icon</code></td><td>Specify in place of <code>shortText</code> to mark the annotation with an image rather than text. If you specify this, you must specify <code>width</code> and <code>height</code>.</td></tr>
@@ -243,4 +232,5 @@ specified globally (for all annotations) or on a per-annotation basis:</p>
 <p>Again, check out the <a href="tests/annotation.html">annotations demo</a>
 for concrete examples of usage of all these handlers.</p>
 
+<!-- /.annotationpage --></div>
 <!--#include virtual="footer.html" -->

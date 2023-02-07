@@ -100,6 +100,24 @@ a.link {
 
 /* stuff for specific pages */
 
+/* annotations.html */
+.annotationpage code,
+.annotationpage pre {
+  white-space: pre;
+}
+.annotationpage .annotation {
+  font-size: 12px !important;
+}
+.annotationpage .dygraph-legend {
+  width: 350px;
+}
+.annotationpage table {
+  margin-bottom: 10px;
+}
+.annotationpage table i {
+  margin-right: 1ex;
+}
+
 /* index.html */
 pre.prettyprint {
   margin-top: 28px;
