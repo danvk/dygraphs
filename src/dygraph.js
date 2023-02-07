@@ -147,7 +147,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
-  this.file_ = file;
+  this.file_ = Array.isArray(file) && !file.length ? [[0]] : file;
   this.rollPeriod_ = attrs.rollPeriod || Dygraph.DEFAULT_ROLL_PERIOD;
   this.previousVerticalX_ = -1;
   this.fractions_ = attrs.fractions || false;
