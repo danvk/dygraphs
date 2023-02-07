@@ -174,7 +174,19 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
     var g = gs[i];
     g.updateOptions({
       drawCallback: function(me, initial) {
-        if (block || initial) return;
+        if (block || initial) {
+          // call the user’s drawCallback even if we are blocked
+          for (let j = 0; j < gs.length; j++) {
+            if (gs[j] == me) {
+              if (prevCallbacks[j] && prevCallbacks[j].drawCallback) {
+                prevCallbacks[j].drawCallback.apply(this, arguments);
+              }
+              break;
+            }
+          }
+          return;
+        }
+
         block = true;
         var opts = {
           dateWindow: me.xAxisRange()
@@ -182,7 +194,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         if (syncOpts.range)
           opts.valueRange = me.yAxisRange();
 
-        for (var j = 0; j < gs.length; j++) {
+        for (let j = 0; j < gs.length; j++) {
           if (gs[j] == me) {
             if (prevCallbacks[j] && prevCallbacks[j].drawCallback) {
               prevCallbacks[j].drawCallback.apply(this, arguments);
