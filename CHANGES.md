@@ -1,3 +1,29 @@
+# next (git)
+
+## Breaking changes
+- …
+
+## New features
+- Permit initialising with `[]` as “no data yet” indicator (#597)
+
+## Bugfixes
+- Fix synchroniser not calling users drawCallback when blocked (#953)
+  plus do not redraw unnecessarily
+- Documentation fixes and improvements including self-checks where possible
+- Fix missing legend for x == -1 (#1002)
+
+## Other user-visible changes
+- Fix issue #611 in the drawing demo gallery (#953)
+- `jq` is now also required to build
+- Fix typos, wordings, apostrophes, etc.
+- Export pickDateTickGranularity so overriding dateTicker is easier
+- Error bars are now properly called high/low bands (#1004), but the options stay the same for compatibility
+
+## Internal refactors/fixes
+- Shrink tests.js source map and make its build reproducible on Debian
+- tests/resizable.html exposes the graph object, for quick F12 in-browser use
+- Generate versions.html and release notes from new top-level CHANGES.md
+
 # v2.2.0 (2023-01-25)
 
 This is the first “full” release after v2.1.0 with the following news:

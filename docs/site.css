@@ -148,3 +148,6 @@ pre.sitedata {
 .versions ul {
   padding-left: 1.2em;
 }
+.versions td.notes h4:first-child {
+  margin-top: 0;
+}
