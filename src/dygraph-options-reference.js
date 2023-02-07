@@ -566,7 +566,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "[\"X\", \"Y1\", \"Y2\", ...]*",
     "labels": ["Legend"],
     "type": "Array of strings",
-    "description": "A name for each data series, including the independent (X) series. For CSV files and DataTable objections, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged."
+    "description": "A distinct name for each data series, including the independent (X) series. For CSV files and DataTable objects, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged. Make sure no two names are the same!"
   },
   "dateWindow": {
     "default": "Full range of the input is shown",
