@@ -45,10 +45,10 @@
     <h2>Multi-column Bar Chart</h2>
     <div id="multibar" class="chart"></div>
 
-    <h2>Mixed Error Bars and Lines</h2>
+    <h2>Mixed high/low bands and lines</h2>
     <p>You can tweak the standard plotters list to achieve effects which would
     be difficult otherwise, e.g. drawing series with only confidence intervals
-    and showing error bars only for some series.</p>
+    and showing high/low bands only for some series.</p>
     <div id="mixed-error" class="chart"></div>
 
     <h2>Smooth Lines</h2>
@@ -312,7 +312,7 @@ var candleData = "Date,Open,Close,High,Low\n" +
               plotter: multiColumnBarPlotter
             });
 
-    // Mixed Error Bars and Lines
+    // Mixed high/low bands and lines
     g5 = new Dygraph(
             document.getElementById("mixed-error"),
             NoisyData(),

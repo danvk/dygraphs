@@ -417,7 +417,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["Data Line display"],
     "type": "boolean",
-    "description": "Should the area underneath the graph be filled? This option is not compatible with error bars. This may be set on a <a href='per-axis.html'>per-series</a> basis."
+    "description": "Should the area underneath the graph be filled? This option is not compatible with <tt>customBars</tt> nor <tt>errorBars</tt>. This may be set on a <a href='per-axis.html'>per-series</a> basis."
   },
   "highlightCircleSize": {
     "default": "3",
@@ -591,7 +591,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "false",
     "labels": ["CSV parsing", "Error Bars"],
     "type": "boolean",
-    "description": "When set, parse each CSV cell as \"low;middle;high\". Error bars will be drawn for each point between low and high, with the series itself going through middle."
+    "description": "When set, parse each CSV cell as \"low;middle;high\". Custom high/low bands will be drawn for each point between low and high, with the series itself going through middle."
   },
   "colorValue": {
     "default": "1.0",
@@ -699,7 +699,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "0.15",
     "labels": ["Error Bars", "Data Series Colors"],
     "type": "float (0.0 - 1.0)",
-    "description" : "Error bars (or custom bars) for each series are drawn in the same color as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the error bars will not be drawn, whereas a value of 1.0 means that the error bars will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point."
+    "description" : "Custom or sigma-based high/low bands for each series are drawn in the same colour as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the bands will not be drawn, whereas a value of 1.0 means that the bands will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point."
   },
   "axisLabelWidth": {
     "default": "50 (y-axis), 60 (x-axis)",

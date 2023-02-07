@@ -165,11 +165,21 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 
 <p style="clear:both;">A rolling average can be set using the text box in the lower left-hand corner of the graph (the showRoller attribute is what makes this appear). Also note that we've explicitly set the size of the chart div.</p>
 
-<h2>Error Bars</h2>
+<h2>Bands</h2>
 
-<p>Another significant feature of the dygraphs library is the ability to display error bars around data series. One standard deviation must be specified for each data point. A <em>±n</em> sigma band will be drawn around the data series at that point. If a moving average is being displayed, dygraphs will compute the standard deviation of the average at each point. I.E. <em>σ = sqrt( (σ<sub>1<sup>2</sup></sub> + σ<sub>2<sup>2</sup></sub> + ... + σ<sub>n<sup>2</sup></sub>) / n )</em></p>
+<p>Another significant feature of the dygraphs library is the ability to
+ display high/low bands around data series. One standard deviation must
+ be specified for each data point. A <em>±n</em> sigma band will be
+ drawn around the data series at that point. If a moving average is
+ being displayed, dygraphs will compute the standard deviation of the
+ average at each point. I.E. <em>σ = sqrt( (σ<sub>1<sup>2</sup></sub> +
+ σ<sub>2<sup>2</sup></sub> + ... + σ<sub>n<sup>2</sup></sub>) / n )</em></p>
 
-<p>Here's a demonstration. There are two data series. One is <code>N(100,10)</code> with a standard deviation of 10 specified at each point. The other is <code>N(80,20)</code> with a standard deviation of 20 specified at each point. The CSV file was generated using Octave and can be viewed at <a href="twonormals.csv">twonormals.csv</a>.</p>
+<p>Here's a demonstration. There are two data series. One is
+ <code>N(100,10)</code> with a standard deviation of 10 specified at
+ each point. The other is <code>N(80,20)</code> with a standard
+ deviation of 20 specified at each point. The CSV file was generated
+ using Octave and can be viewed at <a href="twonormals.csv">twonormals.csv</a>.</p>
 
 <div class="example" style="clear:both;">
   <div class="codeblock" style="float:left;width:400px;">
@@ -219,10 +229,22 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 <p style="clear:both;">Things to note here:</p>
 
 <ul>
-<li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYY-MM-DD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, …</li>
-<li>The first line of the CSV file doesn't mention the error columns. In this case, it’s just "Date,Series1,Series2".</li>
-<li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
-<li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
+<li>The option is named <tt>errorBars</tt> for historical reasons.</li>
+<li>The <strong>errorBars</strong> option affects both the
+  interpretation of the CSV file and the display of the graph. When
+  <strong>errorBars</strong> is set to true, each line is interpreted as
+  <em>YYYY-MM-DD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>,
+  <em>sigma_B</em>, …</li>
+<li>The first line of the CSV file doesn’t mention the extra columns.
+  In this case, it’s just "Date,Series1,Series2". (Which breaks the
+  CSV file format. This is an unfortunate historic accident.)</li>
+<li>The averaging visibly affects the high/low bands. This is most clear
+  if you crank up the rolling period to something like 100 days. For the
+  earliest dates, there won’t be 100 data points to average so the
+  signal will be noisier. The high/low bands get smaller like sqrt(N)
+  going forward in time until there’s a full 100 points to average.</li>
+<li>The high/low bands are partially transparent. This can be seen when
+  they overlap one another.</li>
 </ul>
 
 <h2 id="gviz">GViz Data</h2>
@@ -281,15 +303,15 @@ new Dygraph(
 );
 </pre>
 
-<p>The <code>fractions</code> option indicates that the values in each column should be parsed as fractions (e.g. "1/2" instead of "0.5"). The <code>errorBars</code> option indicates that we'd like to see a confidence interval around each data point. By default, when <code>fractions</code> is set, you get a Wilson confidence interval. If you look carefully at the chart, you can see that the error bars are asymmetric.</p>
+<p>The <code>fractions</code> option indicates that the values in each column should be parsed as fractions (e.g. "1/2" instead of "0.5"). The <code>errorBars</code> option indicates that we'd like to see a confidence interval around each data point. By default, when <code>fractions</code> is set, you get a Wilson confidence interval. If you look carefully at the chart, you can see that the high/low bands are asymmetric.</p>
 
 <p>A couple things to notice about this chart:</p>
 
 <ul>
-  <li>The error bars for Ichiro's batting average are larger than for the Mariners', since he has far fewer at bats than his team.</li>
+  <li>The high/low bands for Ichiro's batting average are larger than for the Mariners', since he has far fewer at bats than his team.</li>
   <li>dygraphs makes it easy to see "batting average over the last 30 games". This is ordinarily quite difficult to compute. It makes it clear where the "hot" and "cold" part of Suzuki's season were.</li>
   <li>If you set the averaging period to something large, like 200, you'll see the team's and player's batting average through that game. The final number is the overall batting average for the season.</li>
-  <li>Where the error bars do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.</li>
+  <li>Where the high/low bands do not overlap, we can say with 95% confidence that the series differ. There is a better than 95% chance that Ichiro was a better hitter than his team as a whole in 2004, the year he won the batting title.</li>
 </ul>
 
 <h2 id="stock">One last demo</h2>

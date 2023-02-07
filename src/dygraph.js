@@ -6,8 +6,8 @@
 
 /**
  * @fileoverview Creates an interactive, zoomable graph based on a CSV file or
- * string. Dygraph can handle multiple series with or without error bars. The
- * date/value ranges will be automatically set. Dygraph uses the
+ * string. Dygraph can handle multiple series with or without high/low bands.
+ * The date/value ranges will be automatically set. Dygraph uses the
  * &lt;canvas&gt; tag, so it only works in FF1.5+.
  * See the source or https://dygraphs.com/ for more information.
  * @author danvdk@gmail.com (Dan Vanderkam)
@@ -40,7 +40,7 @@
    YYYY-MM-DD,A1/B1,A2/B2,...
    YYYY-MM-DD,A1/B1,A2/B2,...
 
- And error bars will be calculated automatically using a binomial distribution.
+ And high/low bands will be calculated automatically using a binomial distribution.
 
  For further documentation and examples, see http://dygraphs.com/
  */
@@ -107,11 +107,11 @@ Dygraph.ANIMATION_DURATION = 200;
  * Standard plotters. These may be used by clients.
  * Available plotters are:
  * - Dygraph.Plotters.linePlotter: draws central lines (most common)
- * - Dygraph.Plotters.errorPlotter: draws error bars
+ * - Dygraph.Plotters.errorPlotter: draws high/low bands
  * - Dygraph.Plotters.fillPlotter: draws fills under lines (used with fillGraph)
  *
  * By default, the plotter is [fillPlotter, errorPlotter, linePlotter].
- * This causes all the lines to be drawn over all the fills/error bars.
+ * This causes all the lines to be drawn over all the fills/bands.
  */
 Dygraph.Plotters = DygraphCanvasRenderer._Plotters;
 
@@ -2085,7 +2085,7 @@ Dygraph.prototype.predraw_ = function() {
  * xval_* and yval_* are the original unscaled data values,
  * while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
  * yval_stacked is the cumulative Y value used for stacking graphs,
- * and bottom/top/minus/plus are used for error bar graphs.
+ * and bottom/top/minus/plus are used for high/low band graphs.
  *
  * @typedef {{
  *     idx: number,
@@ -2764,7 +2764,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
         }
       }
     } else if (this.getBooleanOption("errorBars")) {
-      // If there are error bars, values are (value, stddev) pairs
+      // If there are sigma-based high/low bands, values are (value, stddev) pairs
       if (inFields.length % 2 != 1) {
         console.error('Expected alternating (value, stdev.) pairs in CSV data ' +
                       'but line ' + (1 + i) + ' has an odd number of values (' +
@@ -2775,7 +2775,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
                                utils.parseFloat_(inFields[j + 1], i, line)];
       }
     } else if (this.getBooleanOption("customBars")) {
-      // Bars are a low;center;high tuple
+      // Custom high/low bands are a low;centre;high tuple
       for (j = 1; j < inFields.length; j++) {
         var val = inFields[j];
         if (/^ *$/.test(val)) {
@@ -2849,7 +2849,7 @@ function validateNativeFormat(data) {
     const val = firstRow[i];
     if (val === null || val === undefined) continue;
     if (typeof val === 'number') continue;
-    if (utils.isArrayLike(val)) continue;  // e.g. error bars or custom bars.
+    if (utils.isArrayLike(val)) continue;  // e.g. errorBars or customBars
     throw new Error(`Expected number or array but got ${typeof val}: ${val}.`);
   }
 }

@@ -183,7 +183,7 @@ denominator is interpreted as a sample size and dygraphs will plot <a
 <p>Often you have a measurement and also a measure of its uncertainty: a
 standard deviation. If you specify the <i>errorBars</i> option, dygraphs
 will look for alternating value and standard deviation columns in your CSV
-data.  Here's what it should look like:</p>
+data and plot them as high/low bands. Here's what it should look like:</p>
 
 <code class="sitedata">
   new Dygraph(el,
@@ -202,11 +202,16 @@ confidence interval. If you want more or less confidence, you can set the
 average of your values in each rolling period and the RMS value of your
 standard deviations: sqrt(std1 + std2 + std3 + ... + stdN)/N.</p>
 
-<h5>Custom error bars</h5>
+<p>Note that this function is called <tt>errorBars</tt> for hysterical
+ raisins; these are drawn as high/low bands of confidence intervals
+ around the graph lines, not as actual error bars vertically bisecting
+ the data points.</p>
+
+<h5>Custom high/low bands</h5>
 <p>Sometimes your data has asymetric uncertainty or you want to specify
-something else with the error bars around a point. One example of this is
+something else with the high/low bands. One example of this is
 the "temperatures" demo on the <a href="index.html">dygraphs
-home page.</a>, where the point is the daily average and the bars denote
+home page.</a>, where the point is the daily average and the bands denote
 the low and high temperatures for the day.</p>
 
 <p>To specify this format, set the <i>customBars</i> option. Your CSV values

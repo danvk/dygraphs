@@ -5,7 +5,7 @@
  */
 
 /**
- * @fileoverview DataHandler implementation for the error bars option.
+ * @fileoverview DataHandler implementation for the errorBars option.
  * @author David Eberlein (david.eberlein@ch.sauter-bc.com)
  */
 

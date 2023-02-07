@@ -5,8 +5,8 @@ Gallery.register(
   // Get a better name.
   'temperature-sf-ny',
   {
-    name: 'Roll Periods and Error Bars',
-    title: 'Demo of a graph with many data points and custom error bars.',
+    name: 'roll periods and high/low bands',
+    title: 'Demo of a graph with many data points and custom high/low bands.',
     setup: function(parent) {
       parent.innerHTML = [
           "<style>.dygraph-legend { text-align: right; }</style>",
