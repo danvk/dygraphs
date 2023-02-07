@@ -226,6 +226,12 @@ for label in sorted(labels):
 
     if 'parameters' in opt:
       parameters = opt['parameters']
+      type_want = 'function(%s)' % ', '.join(p[0] for p in parameters)
+      if opt['type'] == type_want:
+        pass
+      else:
+        assert opt['type'].startswith(type_want + ' → '), \
+         "%s type does not match %s" % (opt_name, type_want)
       parameters_html = '\n'.join("<tr><th>%s:</th><td>%s</td></tr>" % (p[0], p[1]) for p in parameters)
       parameters_html = "\n  </p><div class='parameters'><table>\n%s\n  </table></div><p>" % (parameters_html);
     else:

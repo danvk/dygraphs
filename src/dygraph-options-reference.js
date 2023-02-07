@@ -145,7 +145,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "drawHighlightPointCallback": {
     "default": "null",
     "labels": ["Data Line display"],
-    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize)",
+    "type": "function(g, seriesName, canvasContext, cx, cy, color, pointSize, idx)",
     "parameters": [
       ["g", "the reference graph"],
       ["seriesName", "the name of the series"],
@@ -212,7 +212,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "valueFormatter": {
     "default": "Depends on the type of your data.",
     "labels": ["Legend", "Value display/formatting"],
-    "type": "function(num or millis, opts, seriesName, dygraph, row, col)",
+    "type": "function(num_or_millis, opts, seriesName, dygraph, row, col)",
     "description": "Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. .",
     "parameters": [
       ["num_or_millis", "The value to be formatted. This is always a number. For date axes, it’s millis since epoch. You can call new Date(millis) to get a Date object."],
@@ -325,7 +325,7 @@ OPTIONS_REFERENCE =  // <JSON>
   "ticker": {
     "default": "Dygraph.dateTicker or Dygraph.numericTicks",
     "labels": ["Axis display"],
-    "type": "function(min, max, pixels, opts, dygraph, vals) -> [{v: ..., label: ...}, ...]",
+    "type": "function(min, max, pixels, opts, dygraph, vals) → [{v: …, label: …}, …]",
     "parameters": [
       ["min", ""],
       ["max", ""],
@@ -541,9 +541,9 @@ OPTIONS_REFERENCE =  // <JSON>
   "axisLabelFormatter": {
     "default": "Depends on the data type",
     "labels": ["Axis display"],
-    "type": "function(number or Date, granularity, opts, dygraph)",
+    "type": "function(number_or_Date, granularity, opts, dygraph)",
     "parameters": [
-      ["number or date", "Either a number (for a numeric axis) or a Date object (for a date axis)"],
+      ["number_or_Date", "Either a number (for a numeric axis) or a Date object (for a date axis)"],
       ["granularity", "specifies how fine-grained the axis is. For date axes, this is a reference to the time granularity enumeration, defined in dygraph-tickers.js, e.g. Dygraph.WEEKLY."],
       ["opts", "a function which provides access to various options on the dygraph, e.g. opts('labelsKMB')."],
       ["dygraph", "the referenced graph"]
