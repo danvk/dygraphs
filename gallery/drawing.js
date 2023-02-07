@@ -118,9 +118,9 @@ Gallery.register(
             valueRange: valueRange,
             labels: [ 'Date', 'Value' ],
             interactionModel: {
-              // the next line is required when using the 
+              // the next line is required when using the
               // defaultInteractionModel mousedown function.
-              willDestroyContextMyself: true, 
+              willDestroyContextMyself: true,
               mousedown: function (event, g, context) {
                 if (tool == 'zoom') {
                   Dygraph.defaultInteractionModel.mousedown(event, g, context);
@@ -145,15 +145,17 @@ Gallery.register(
                 }
               },
               mouseup: function(event, g, context) {
-                // note that the defaultInteractionModel dynamically binds 
+                // note that the defaultInteractionModel dynamically binds
                 // it's own mouseup event inside the mousedown handler
                 if (tool != 'zoom') {
                   finishDraw();
                 }
               },
               mouseout: function(event, g, context) {
-                // note that the defaultInteractionModel does not use mouseout event, instead it
-                // detects when the mouse is outside the chart using a dynamically bound mousemove event 
+                // note that the defaultInteractionModel does not use
+                // the mouseout event, instead it detects when the mouse
+                // is outside the chart using a dynamically bound
+                // mousemove event
               },
               dblclick: function(event, g, context) {
                 Dygraph.defaultInteractionModel.dblclick(event, g, context);
