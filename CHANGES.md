@@ -24,7 +24,7 @@ This is the first “full” release after v2.1.0 with the following news:
 - Synchroniser now calls highlightCallback (#935)
 - Fix drawAxes to allow one of two Y axes to be drawn (#936)
 - LEGEND: Don’t show Y if value is undefined (#853) (#947)
-- Fixed 'Cannot read property 'length' of undefined' issue (#962) (#963)
+- Fixed “Cannot read property 'length' of undefined” issue (#962) (#963)
 - Two fixes in the calculations of pinch-zoom (#990)
 - Fix for double paint of grid of x-axis (#1007)
 - Fix number of days in a year (#1012)
@@ -61,3 +61,94 @@ This is the first “full” release after v2.1.0 with the following news:
 - Nuke useless semicola after function declaration bodies
 - Fix closure type annotation in hairlines.js
 - Remove already commented-out obsolete, or redundant, code
+
+# v2.1.0 (2017-12-08)
+
+## New features
+- Double click event can be captured and cancelled by plugins
+- setAnnotations’s second parameter is now an optional boolean
+- Add `pixelRatio` option, which may allow improved performance on smaller screens by controlling the canvas’ pixel ratio
+- X-axis label and tick logic can now operate at millisecond-level granularity
+
+## Bug fixes
+- Repair a bug in “Custom interaction modals” demo
+
+## Internal refactors/fixes
+- Fix various spelling mistakes
+- Fix a couple of type signatures in dygraph-externs.js
+
+# v2.0.0 (2017-01-11)
+
+## Breaking changes
+- JS files were renamed to dygraph.js and dygraph.min.js.
+- There’s now a dygraph.css file that you must include.
+- Dropped support for OldIE and other non-standard browsers. dygraphs works in IE11. I’m not sure about IE9 and IE10.
+- Double-click to unzoom zooms all the way out (and ignores valueRange).
+- Dropped old-style per-axis/per-series options.
+
+## New features
+- Add a legendFormatter option
+- `this` is the Dygraph object in all callbacks
+- pass through (row, col) to valueFormatter
+- Option to not sync range in extras/synchronizer.js
+- Additional options for styling the range selector
+- getRowForX method
+- setVisibility can set the visibility of multiple series at once.
+- crosshair plugin extra
+- rebase/straw broom plugin
+- highlightSeriesBackgroundColor option
+- yAxisExtremes() method.
+- Passing strings in native format now throws. (Previously it kinda sorta worked.)
+
+## Bug fixes
+- Selections are always cleared with animations
+- synchronizer calls previously-set callbacks
+- synchronizer only syncs when graphs are ready
+- Reset on synchronized graphs failed
+- fix to improve synchronizer performance
+- binary search bug fix in synchronizer
+- Fix range selection when chart is located inside fullscreen element
+- fillAlpha can be set per-series when fillGraph is set.
+- xRangePad was ignored on unzoom
+- Allow selected points where canvas-y coordinate is 0
+- Using valueRange with Logscale and yRangePad has unexpected results
+- With “drawGapEdgePoints”, unwanted point often drawn at beginning of chart
+
+## Other user-visible changes
+- “legend: follow” positioning changes
+
+## Internal refactors
+- Code moved into a “src/“ directory
+- Tests use Mocha instead of jstd
+- dygraphs is split into ES6 modules and uses some ES6 features (e.g. arrows and destructuring).
+- dygraphs is built using babel & browserify
+- Code coverage is tracked continuously
+- Bundle size is now tracked continuously
+
+# v1.1.1 (2015-06-01)
+
+- Set `this` to the dygraph in all callbacks.
+- Minor bug fixes.
+
+# v1.1.0 (2014-12-03)
+
+## Highlights
+- dygraphs is now “retina” compatible.
+- Dramatically improved performance for filled charts (i.e. fillGraph)
+- More sensible date ticks: “Jan 08” → “Jan 2008”, “29Jan” → “29 Jan”
+- Using a non-existent option now throws (w/ dygraph-combined-dev.js)
+- x-axis log scales
+- The `labelsUTC` option forces UTC formatting for all labels.
+- The new DataHandler system allows for more flexibility in data loading.
+- `this` is set to the dygraph in all callbacks.
+- dygraphs has shrunk, because we moved some stuff into “extras” (133 KiB → 122 KiB)
+
+This will be the last major release to support browsers without a native <canvas> implementation. See [blog post](http://blog.dygraphs.com/2014/12/dygraphs-110.html) for more details.
+
+# v1.0.1 (2013-08-29)
+
+Minor bug fixes and updates to web site.
+
+# v1.0.0 (2013-08-14)
+
+Initial Release. See [blog post](http://blog.dygraphs.com/2013/08/announcing-dygraphs-100.html).
