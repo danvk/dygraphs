@@ -201,7 +201,7 @@ def gallery_fmt(f):
   if gallery_files[f]:
     res = '<a href="%s">%s</a>' % (urlify_gallery(f), gallery_name(f))
   else:
-    res = '<font color="#9999FF" title="inactive">%s</a>' % gallery_name(f)
+    res = '<font color="#9999FF" title="inactive">%s</font>' % gallery_name(f)
   return res
 
 for label in sorted(labels):
