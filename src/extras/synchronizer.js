@@ -158,8 +158,11 @@ var synchronize = function(/* dygraphs..., opts */) {
   };
 };
 
-function arraysAreEqual(a, b) {
-  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+function arraysAreEqualOrBothNULL(a, b) {
+  if (a === null && b === null)
+    return true;
+  if (!Array.isArray(a) || !Array.isArray(b))
+    return false;
   var i = a.length;
   if (i !== b.length) return false;
   while (i--) {
@@ -177,9 +180,9 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         if (block || initial) return;
         block = true;
         var opts = {
+          valueRange: syncOpts.range ? me.yAxisRange() : null,
           dateWindow: me.xAxisRange()
         };
-        if (syncOpts.range) opts.valueRange = me.yAxisRange();
 
         for (var j = 0; j < gs.length; j++) {
           if (gs[j] == me) {
@@ -190,8 +193,8 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
           }
 
           // Only redraw if there are new options
-          if (arraysAreEqual(opts.dateWindow, gs[j].getOption('dateWindow')) &&
-              arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange'))) {
+          if (arraysAreEqualOrBothNULL(opts.dateWindow, gs[j].getOption('dateWindow')) &&
+              arraysAreEqualOrBothNULL(opts.valueRange, gs[j].getOption('valueRange'))) {
             continue;
           }
 
