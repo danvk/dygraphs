@@ -17,6 +17,7 @@
 - Fix typos, wordings, apostrophes, etc.
 - Export `pickDateTickGranularity` so overriding `dateTicker` is easier
 - Error bars are now properly called high/low bands (#1004), but the options stay the same for compatibility
+- Document annotations xval for Date better (#970)
 
 ## Internal refactors/fixes
 - Shrink `tests.js` source map and make its build reproducible on Debian

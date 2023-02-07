@@ -144,16 +144,23 @@ no-op: it simply causes the chart to refresh.</p>
 </div>
 </div>
 
-<p style="clear:both">Annotations are JavaScript dictionaries.
- The <code>series</code> and <code>x</code> fields are required:
- they indicate which point the annotation should be attached to.
- If specified, <code>shortText</code> will appear on the annotation "flag".
- If you don't specify <code>shortText</code>, you can specify
- <code>icon</code> instead to display a small picture.
- The <code>text</code> parameter specifies hovertext.
- If you highlight the annotation and leave the mouse still, it will appear.</p>
+<p style="clear:both">Annotations are JavaScript dictionaries. The
+ <code>series</code> and either <code>x</code> or <code>xval</code>
+ fields are required: they indicate which point the annotation should be
+ attached to. If specified, <code>shortText</code> will appear on the
+ annotation "flag". If you don't specify <code>shortText</code>, you can
+ specify <code>icon</code> instead to display a small picture. The
+ <code>text</code> parameter specifies hovertext. If you highlight the
+ annotation and leave the mouse still, it will appear.</p>
 
-<p>If you are using <a href="data.html#array">native format</a>, you need to pass in a numeric value for the <code>xval</code> field. For a numeric x-axis, simply pass in the x-value of the data point on which you wish to attach the annotation. For a date axis, pass in <code>Date.parse('YYYY/MM/DD')</code>. This returns milliseconds since epoch for the date. As an alternative, use the <code>x</code> field, see table below.</p>
+<p id="xvalformat">If you are using the <a href="data.html#array">native
+ data format</a>, you need to pass in a numeric value for the
+ <code>xval</code> field. For a numeric x axis, simply pass in the x
+ value of the data point on which you wish to attach the annotation. For
+ a Date axis, pass in milliseconds since the epoch, for example from
+ <code>Date.parse('YYYY/MM/DD')</code>,
+ <code>dateObject.getTime()</code> or <code>moment().valueOf()</code>.
+ As an alternative, use the <code>x</code> field, see table below.</p>
 
 <h3>Modifying Annotations</h3>
 <p>To remove or modify existing annotations, call the
@@ -192,10 +199,10 @@ g.ready(function() {
 <p>These properties can all be set in the dictionary for an annotation. The use of each one is demonstrated on the <a href="tests/annotation.html">annotations demo</a> page.</p>
 
 <table class="thinborder">
-<tr> <td><b>Property</b></td><td><b>Description</b></td> </tr>
-<tr><td><code>series</code></td> <td><i>Required</i> The name of the series to which the annotated point belongs.</td></tr>
-<tr><td><code>x</code></td><td><i>Required</i> The x value of the point. This should be the same as the value you specified in your CSV file, e.g. "2010-09-13". As an alternative, use the <code>xval</code> field.</td></tr>
-<tr><td><code>xval</code></td><td><i>Required</i> The numeric x value of the point. E.g. if you specified in your CSV file "2010-09-13", set xval to Date.parse("2010-09-13"). As an alternative, use the <code>x</code> field.</td></td></tr>
+<tr><th>Property</th><th>Description</th></tr>
+<tr><td><code>series</code></td> <td><i>(required)</i> The name of the series to which the annotated point belongs.</td></tr>
+<tr><td><code>x</code></td><td><i>(required unless xval is given)</i> The x value of the point. This should be the same as the value you specified in your CSV file, e.g. "2010-09-13". As an alternative, use the <code>xval</code> field.</td></tr>
+<tr><td><code>xval</code></td><td><i>(required unless x is given)</i> The numeric x value of the point, milliseconds since the epoch for a Date x axis (see <a href="#xvalformat">above</a>). As an alternative, use the <code>x</code> field.</td></td></tr>
 <tr><td><code>shortText</code></td><td>Text that will appear on the annotation's flag.</td></tr>
 <tr><td><code>text</code></td><td>A longer description of the annotation which will appear when the user hovers over it.</td></tr>
 <tr><td><code>icon</code></td><td>Specify in place of <code>shortText</code> to mark the annotation with an image rather than text. If you specify this, you must specify <code>width</code> and <code>height</code>.</td></tr>
@@ -218,7 +225,7 @@ g.ready(function() {
 specified globally (for all annotations) or on a per-annotation basis:</p>
 
 <table class="thinborder">
-<tr><td><b>Per-point field</b></td><td><b>Global option</b></td></tr>
+<tr><th>Per-point field</th><th>Global option</th></tr>
 <tr><td><code>clickHandler</code></td>    <td><code>annotationClickHandler</code></td></tr>
 <tr><td><code>mouseOverHandler</code></td><td><code>annotationMouseOverHandler</code></td></tr>
 <tr><td><code>mouseOutHandler</code></td> <td><code>annotationMouseOutHandler</code></td></tr>
@@ -231,7 +238,7 @@ specified globally (for all annotations) or on a per-annotation basis:</p>
   annotationClickHandler: function(annotation, point, dygraph, event) {
     // ... access/modify annotation.series, annotation.x, ...
   }
-}); </pre>
+});</pre>
 
 <p>Again, check out the <a href="tests/annotation.html">annotations demo</a>
 for concrete examples of usage of all these handlers.</p>
