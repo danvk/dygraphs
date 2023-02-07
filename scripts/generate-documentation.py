@@ -14,21 +14,29 @@ import sys
 debug_tests = []  # [ 'tests/zoom.html' ]
 
 # Pull options reference JSON out of dygraph.js
-js = ''
+js = []
 in_json = False
+numjson = 0
 with open('src/dygraph-options-reference.js', 'rt',
           encoding='UTF-8', errors='strict', newline=None) as infile:
   for line in infile:
     if '<JSON>' in line:
       in_json = True
+      js.append('')
     elif '</JSON>' in line:
       in_json = False
+      numjson += 1
     elif in_json:
-      js += line
+      js[numjson] += line
 
 # TODO(danvk): better errors here.
-assert js
-docs = json.loads(js)
+assert in_json == False
+assert len(js) == 2
+assert numjson == 2
+assert js[0]
+assert js[1]
+docs = json.loads(js[0])
+cats = json.loads(js[1])
 
 # Go through the tests and find uses of each option.
 for opt in docs:
@@ -112,6 +120,11 @@ for _, opt in docs.items():
   for label in opt['labels']:
     if label not in labels:
       labels.append(label)
+
+for label in labels:
+  assert label in cats, "unknown label: " + label
+for label in cats:
+  assert label in labels, "unused label: " + label
 
 print("""<!--#set var="pagetitle" value="options reference" -->
 <!--#include virtual="header.html" -->

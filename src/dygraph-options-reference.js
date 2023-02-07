@@ -859,51 +859,51 @@ OPTIONS_REFERENCE =  // <JSON>
 // most part, this just means that you should always use double quotes.
 
 // Do a quick sanity check on the options reference.
-var warn = function(msg) { if (window.console) window.console.warn(msg); };
-var flds = ['type', 'default', 'description'];
-var valid_cats = [
- 'Annotations',
- 'Axis display',
- 'Chart labels',
- 'CSV parsing',
- 'Callbacks',
- 'Data',
- 'Data Line display',
- 'Data Series Colors',
- 'Error Bars',
- 'Grid',
- 'Interactive Elements',
- 'Range Selector',
- 'Legend',
- 'Overall display',
- 'Rolling Averages',
- 'Series',
- 'Value display/formatting',
- 'Zooming',
- 'Debugging',
- 'Configuration',
- 'Deprecated'
-];
-var i;
-var cats = {};
-for (i = 0; i < valid_cats.length; i++) cats[valid_cats[i]] = true;
-
-for (var k in OPTIONS_REFERENCE) {
+const warn = function warn(msg) {
+  if (window.console)
+    window.console.warn(msg);
+};
+const flds = ['type', 'default', 'description'];
+const valid_cats =  // <JSON>
+{
+  "Annotations": "",
+  "Axis display": "",
+  "CSV parsing": "",
+  "Callbacks": "",
+  "Chart labels": "",
+  "Configuration": "",
+  "Data Line display": "",
+  "Data Series Colors": "",
+  "Data": "",
+  "Debugging": "",
+  "Deprecated": "",
+  "Error Bars": "",
+  "Grid": "",
+  "Interactive Elements": "",
+  "Legend": "",
+  "Overall display": "",
+  "Range Selector": "",
+  "Rolling Averages": "",
+  "Series": "",
+  "Value display/formatting": ""
+}
+;  // </JSON>
+for (let k in OPTIONS_REFERENCE) {
   if (!OPTIONS_REFERENCE.hasOwnProperty(k)) continue;
   var op = OPTIONS_REFERENCE[k];
-  for (i = 0; i < flds.length; i++) {
+  for (let i = 0; i < flds.length; i++) {
     if (!op.hasOwnProperty(flds[i])) {
       warn('Option ' + k + ' missing "' + flds[i] + '" property');
     } else if (typeof(op[flds[i]]) != 'string') {
       warn(k + '.' + flds[i] + ' must be of type string');
     }
   }
-  var labels = op.labels;
+  let labels = op.labels;
   if (typeof(labels) !== 'object') {
     warn('Option "' + k + '" is missing a "labels": [...] option');
   } else {
-    for (i = 0; i < labels.length; i++) {
-      if (!cats.hasOwnProperty(labels[i])) {
+    for (let i = 0; i < labels.length; i++) {
+      if (!valid_cats.hasOwnProperty(labels[i])) {
         warn('Option "' + k + '" has label "' + labels[i] +
              '", which is invalid.');
       }
