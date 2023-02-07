@@ -8,6 +8,7 @@ disttmp
 docroot
 docs/download.html
 docs/options.html
+docs/versions.html
 dygraphs-2.*.tgz
 env
 jsdoc

@@ -13,15 +13,20 @@ else
   dv=
 fi
 
-rm -f docs/download.html docs/options.html
-scripts/generate-documentation.py >docs/options.html
-chmod a+r docs/options.html
-test -s docs/options.html || {
-  echo "generate-documentation.py failed"
-  exit 1
-}
-scripts/generate-jsdoc.sh
+rm -f docs/download.html docs/options.html docs/versions.html
 scripts/generate-download.py ${dv:+"$dv"} >docs/download.html
+scripts/generate-documentation.py >docs/options.html
+scripts/generate-versions.sh >docs/versions.html
+chmod a+r docs/download.html docs/options.html docs/versions.html
+for file in docs/download.html docs/options.html docs/versions.html; do
+  test -s "$file" || {
+    echo >&2 "E: generating $file failed"
+    exit 1
+  }
+done
+
+scripts/generate-jsdoc.sh
+
 rm -rf docroot
 mkdir docroot
 cd docs
@@ -31,7 +36,7 @@ cd ../docroot
 rm -f NOTES TODO common footer.html header.html *.py
 mv README README-docs.txt
 cd ..
-rm -f docs/download.html docs/options.html
+rm -f docs/download.html docs/options.html docs/versions.html
 pax -rw -l \
 	common \
 	gallery \
