@@ -16,6 +16,15 @@
 
 import * as DygraphTickers from './dygraph-tickers';
 
+/**
+ * @param {*} o
+ * @return {string}
+ * @private
+ */
+export function type(o) {
+  return (o === null ? 'null' : typeof(o));
+}
+
 export var LOG_SCALE = 10;
 export var LN_TEN = Math.log(LOG_SCALE);
 
@@ -559,28 +568,29 @@ export function updateDeep(self, o) {
   // via https://stackoverflow.com/q/384286/2171120
   function isNode(o) {
     return (
-      typeof Node === "object" ? o instanceof Node :
-      typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
+      type(Node) === "object" ? o instanceof Node :
+      type(o) === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
     );
   }
 
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
-        if (o[k] === null) {
+        const v = o[k];
+        if (v === null) {
           self[k] = null;
-        } else if (isArrayLike(o[k])) {
-          self[k] = o[k].slice();
-        } else if (isNode(o[k])) {
+        } else if (isArrayLike(v)) {
+          self[k] = v.slice();
+        } else if (isNode(v)) {
           // DOM objects are shallowly-copied.
-          self[k] = o[k];
-        } else if (typeof(o[k]) == 'object') {
+          self[k] = v;
+        } else if (typeof(v) == 'object') {
           if (typeof(self[k]) != 'object' || self[k] === null) {
             self[k] = {};
           }
-          updateDeep(self[k], o[k]);
+          updateDeep(self[k], v);
         } else {
-          self[k] = o[k];
+          self[k] = v;
         }
       }
     }
@@ -590,21 +600,33 @@ export function updateDeep(self, o) {
 
 /**
  * @param {*} o
+ * @return {string}
+ * @private
+ */
+export function typeArrayLike(o) {
+  if (o === null)
+    return 'null';
+  const t = typeof(o);
+  if ((t === 'object' ||
+       (t === 'function' && typeof(o.item) === 'function')) &&
+      typeof(o.length) === 'number' &&
+      o.nodeType !== 3)
+    return 'array';
+  return t;
+}
+
+/**
+ * @param {*} o
  * @return {boolean}
  * @private
  */
 export function isArrayLike(o) {
-  var typ = typeof(o);
-  if (
-      (typ != 'object' && !(typ == 'function' &&
-        typeof(o.item) == 'function')) ||
-      o === null ||
-      typeof(o.length) != 'number' ||
-      o.nodeType === 3
-     ) {
-    return false;
-  }
-  return true;
+  const t = typeof(o);
+  return (o !== null &&
+          (t === 'object' ||
+           (t === 'function' && typeof(o.item) === 'function')) &&
+          typeof(o.length) === 'number' &&
+          o.nodeType !== 3);
 }
 
 /**
@@ -613,11 +635,8 @@ export function isArrayLike(o) {
  * @private
  */
 export function isDateLike(o) {
-  if (typeof(o) != "object" || o === null ||
-      typeof(o.getTime) != 'function') {
-    return false;
-  }
-  return true;
+  return (o !== null && typeof(o) === 'object' &&
+          typeof(o.getTime) === 'function');
 }
 
 /**

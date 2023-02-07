@@ -147,7 +147,7 @@ Dygraph.prototype.__init__ = function(div, file, attrs) {
   // Copy the important bits into the object
   // TODO(danvk): most of these should just stay in the attrs_ dictionary.
   this.maindiv_ = div;
-  this.file_ = Array.isArray(file) && !file.length ? [[0]] : file;
+  this.file_ = file;
   this.rollPeriod_ = attrs.rollPeriod || Dygraph.DEFAULT_ROLL_PERIOD;
   this.previousVerticalX_ = -1;
   this.fractions_ = attrs.fractions || false;
@@ -951,7 +951,7 @@ Dygraph.prototype.destroy = function() {
 
   removeRecursive(this.maindiv_);
 
-  var nullOut = function(obj) {
+  var nullOut = function nullOut(obj) {
     for (var n in obj) {
       if (typeof(obj[n]) === 'object') {
         obj[n] = null;
@@ -2865,8 +2865,7 @@ function validateNativeFormat(data) {
 Dygraph.prototype.parseArray_ = function(data) {
   // Peek at the first x value to see if it's numeric.
   if (data.length === 0) {
-    console.error("Can't plot empty data set");
-    return null;
+    data = [[0]];
   }
   if (data[0].length === 0) {
     console.error("Data set cannot contain an empty row");
@@ -3092,17 +3091,18 @@ Dygraph.prototype.start_ = function() {
     data = data();
   }
 
-  if (utils.isArrayLike(data)) {
+  const datatype = utils.typeArrayLike(data);
+  if (datatype == 'array') {
     this.rawData_ = this.parseArray_(data);
     this.cascadeDataDidUpdateEvent_();
     this.predraw_();
-  } else if (typeof data == 'object' &&
+  } else if (datatype == 'object' &&
              typeof data.getColumnRange == 'function') {
     // must be a DataTable from gviz.
     this.parseDataTable_(data);
     this.cascadeDataDidUpdateEvent_();
     this.predraw_();
-  } else if (typeof data == 'string') {
+  } else if (datatype == 'string') {
     // Heuristic: a newline means it's CSV data. Otherwise it's an URL.
     var line_delimiter = utils.detectLineDelimiter(data);
     if (line_delimiter) {
@@ -3132,7 +3132,7 @@ Dygraph.prototype.start_ = function() {
       req.send(null);
     }
   } else {
-    console.error("Unknown data format: " + (typeof data));
+    console.error("Unknown data format: " + datatype);
   }
 };
 

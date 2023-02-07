@@ -899,7 +899,7 @@ for (let k in OPTIONS_REFERENCE) {
     }
   }
   let labels = op.labels;
-  if (typeof(labels) !== 'object') {
+  if (!Array.isArray(labels)) {
     warn('Option "' + k + '" is missing a "labels": [...] option');
   } else {
     for (let i = 0; i < labels.length; i++) {
