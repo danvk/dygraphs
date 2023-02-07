@@ -1,8 +1,8 @@
 This is intended to be a catch-all for legend formatting needs. This
-[comes](http://stackoverflow.com/a/25090552/388951)
-[up](http://stackoverflow.com/a/24175648/388951)
-[often](http://stackoverflow.com/a/18211338/388951) in Stack Overflow
-[questions](http://stackoverflow.com/a/23354308/388951) which can’t be
+[comes](https://stackoverflow.com/a/25090552/2171120)
+[up](https://stackoverflow.com/a/24175648/2171120)
+[often](https://stackoverflow.com/a/18211338/2171120) in Stack Overflow
+[questions](https://stackoverflow.com/a/23354308/2171120) which can’t be
 easily answered with `valueFormatter`. Nowadays I wave my hands and say
 "write your own legend, either as a plugin or using `highlightCallback`
 and `unhighlightCallback`." This is a simpler option.

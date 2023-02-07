@@ -40,7 +40,7 @@ it('testDoesntCreateScrollbars', function() {
 
   // Adding the graph shouldn't cause the width of the page to change.
   // (essentially, we're checking that we don't end up with a scrollbar)
-  // See http://stackoverflow.com/a/2146905/388951
+  // See https://stackoverflow.com/a/2146905/2171120
   assert.equal(cw, document.body.clientWidth);
   assert.equal(sw, document.body.scrollWidth);
 });

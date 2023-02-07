@@ -96,7 +96,7 @@ dygraphs is available under the MIT license, included in [LICENSE.txt](./LICENSE
 [on mouseover]: http://dygraphs.com/tests/legend-values.html
 [averaging period]: http://dygraphs.com/tests/temperature-sf-ny.html
 [options]: http://www.dygraphs.com/options.html
-[Stack Overflow]: http://stackoverflow.com/questions/tagged/dygraphs?sort=votes&pageSize=50
+[Stack Overflow]: https://stackoverflow.com/questions/tagged/dygraphs?sort=votes&pageSize=50
 [Google Groups]: http://groups.google.com/group/dygraphs-users
 [gviz]: http://dygraphs.com/data.html#datatable
 [npm]: https://www.npmjs.com/package/dygraphs

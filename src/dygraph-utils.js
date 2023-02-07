@@ -556,7 +556,7 @@ export function update(self, o) {
  * @private
  */
 export function updateDeep(self, o) {
-  // Taken from http://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
+  // via https://stackoverflow.com/q/384286/2171120
   function isNode(o) {
     return (
       typeof Node === "object" ? o instanceof Node :

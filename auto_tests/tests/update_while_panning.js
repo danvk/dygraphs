@@ -1,7 +1,7 @@
 /**
  * @fileoverview Regression test for a bug involving data update while panning.
  *
- * See http://stackoverflow.com/questions/9528173
+ * See https://stackoverflow.com/q/9528173/2171120
  *
  * @author dan@dygraphs.com (Dan Vanderkam)
  */
