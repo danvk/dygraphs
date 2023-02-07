@@ -47,7 +47,9 @@ it('testOnePoint', function() {
 
 it('testCombinations', function() {
   var dataSets = {
-    empty: [],
+    nil: null,
+    issue597: [],
+    empty: [[]],
     onePoint: [[10, 2]],
     nanPoint: [[10, NaN]],
     nanPoints: [[10, NaN], [20, NaN]],
@@ -111,7 +113,7 @@ it('testCombinations', function() {
         box.appendChild(gdiv);
         graph.appendChild(box);
 
-        var cols = data && data[0] ? data[0].length : 0;
+        var cols = data && data[0] ? data[0].length : (dataName == 'issue597') ? 1 : 0;
         opts.labels = ['X', 'A', 'B', 'C'].slice(0, cols);
 
         var g = new Dygraph(gdiv, data, opts);
@@ -119,7 +121,13 @@ it('testCombinations', function() {
         if (dataName == 'empty') {
           assert.deepEqual(logs, {
             log: [], warn: [],
-            error: ["Can't plot empty data set"]
+            error: ["Data set cannot contain an empty row"]
+          });
+          logs.error = [];  // reset
+        } else if (dataName == 'nil') {
+          assert.deepEqual(logs, {
+            log: [], warn: [],
+            error: ["Unknown data format: null"]
           });
           logs.error = [];  // reset
         } else {
