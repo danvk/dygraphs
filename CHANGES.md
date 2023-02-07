@@ -1,4 +1,4 @@
-# v2.2.0
+# v2.2.0 (2023-01-25)
 
 This is the first “full” release after v2.1.0 with the following news:
 
