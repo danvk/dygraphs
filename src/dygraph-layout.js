@@ -48,8 +48,8 @@ var DygraphLayout = function(dygraph) {
   this.annotations = [];
   this.yAxes_ = null;
 
-  // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs, but xticks and
-  // yticks are outputs. Clean this up.
+  // TODO(danvk): it's odd that xTicks_ and yTicks_ are inputs,
+  // but xticks and yticks are outputs. Clean this up.
   this.xTicks_ = null;
   this.yTicks_ = null;
 };

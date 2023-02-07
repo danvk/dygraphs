@@ -916,8 +916,8 @@ export function isPixelChangingOptionList(labels, attrs) {
         }
       }
     } else {
-      // If this was not a series specific option list, check if it's a pixel
-      // changing property.
+      // If this was not a series specific option list,
+      // check if it's a pixel-changing property.
       if (!pixelSafeOptions[property]) return true;
     }
   }

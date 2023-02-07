@@ -59,7 +59,7 @@ y-values.</p>
 <h4>Headers</h4>
 <p>If you don't specify the <i>labels</i> option, dygraphs will look at the
 first line of your CSV data to get the labels. If you see numbers for series
-labels when you hover over the dygraph, it's likely because your first line
+labels when you hover over the dygraph, it’s likely because your first line
 contains data but is being parsed as a label. The solution is to either add
 a header line or specify the labels like this:</p>
 
@@ -75,7 +75,7 @@ a header line or specify the labels like this:</p>
 the x values is. They're either dates or numbers. To make this
 determination, it looks at the first column of the first row ("2009/07/12"
 in the example above). Here's the heuristic: if it contains a '-' or a '/',
-or otherwise doesn't parse as a float, the it's a date. Otherwise, it's a
+or otherwise doesn’t parse as a float, then it’s a date. Otherwise, it’s a
 number.</p>
 
 <p>Once the type is determined, that doesn't mean all the values will parse
@@ -242,7 +242,7 @@ from JavaScript) then you're better off producing an array than CSV data.
 This saves the cost of parsing the CSV data and also avoids common parser
 errors.</p>
 
-<p>The downside is that it's harder to look at your data (you'll need to use
+<p>The downside is that it’s harder to look at your data (you'll need to use
 a JS debugger) and that the data format is a bit less clear for values with
 uncertainties.</p>
 

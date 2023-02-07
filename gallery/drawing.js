@@ -138,7 +138,7 @@ Gallery.register(
               },
               mousemove: function (event, g, context) {
                 // note that the defaultInteractionModel dynamically binds
-                // it's own mousemove event inside the mousedown handler
+                // its own mousemove event inside the mousedown handler
                 if (tool != 'zoom') {
                   if (!isDrawing) return;
                   setPoint(event, g, context);
@@ -146,7 +146,7 @@ Gallery.register(
               },
               mouseup: function(event, g, context) {
                 // note that the defaultInteractionModel dynamically binds
-                // it's own mouseup event inside the mousedown handler
+                // its own mouseup event inside the mousedown handler
                 if (tool != 'zoom') {
                   finishDraw();
                 }

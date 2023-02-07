@@ -120,7 +120,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <li>The data is very spiky. A moving average would be easier to interpret.</li>
 </ul>
 
-<p>This problem can be fixed by specifying the appropriate options in the "additional options" parameter to the Dygraph constructor. To set the number of days for a moving average, use the <code>rollPeriod</code> option. Here's how it's done:</p>
+<p>This problem can be fixed by specifying the appropriate options in the "additional options" parameter to the Dygraph constructor. To set the number of days for a moving average, use the <code>rollPeriod</code> option. Here’s how it’s done:</p>
 
 <div class="example" style="clear:both;">
   <div class="codeblock" style="float:left;width:400px;">
@@ -220,7 +220,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 
 <ul>
 <li>The <strong>errorBars</strong> option affects both the interpretation of the CSV file and the display of the graph. When <strong>errorBars</strong> is set to true, each line is interpreted as <em>YYYY-MM-DD</em>, <em>A</em>, <em>sigma_A</em>, <em>B</em>, <em>sigma_B</em>, …</li>
-<li>The first line of the CSV file doesn't mention the error columns. In this case, it's just "Date,Series1,Series2".</li>
+<li>The first line of the CSV file doesn't mention the error columns. In this case, it’s just "Date,Series1,Series2".</li>
 <li>The averaging visibly affects the error bars. This is most clear if you crank up the rolling period to something like 100 days. For the earliest dates, there won't be 100 data points to average so the signal will be noisier. The error bars get smaller like sqrt(N) going forward in time until there's a full 100 points to average.</li>
 <li>The error bars are partially transparent. This can be seen when they overlap one another.</li>
 </ul>
