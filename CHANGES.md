@@ -21,7 +21,7 @@
 ## Internal refactors/fixes
 - Shrink `tests.js` source map and make its build reproducible on Debian
 - `tests/resizable.html` exposes the graph object, for quick F12 in-browser use
-- Generate `versions.html` and release notes from new top-level `CHANGES.md`
+- Generate `versions.html` and release notes from new top-level [`CHANGES.md`](https://github.com/danvk/dygraphs/blob/master/CHANGES.md)
 
 # v2.2.0 (2023-01-25)
 
