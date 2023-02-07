@@ -118,6 +118,9 @@ Gallery.register(
             valueRange: valueRange,
             labels: [ 'Date', 'Value' ],
             interactionModel: {
+              // the next line is required when using the 
+              // defaultInteractionModel mousedown function.
+              willDestroyContextMyself: true, 
               mousedown: function (event, g, context) {
                 if (tool == 'zoom') {
                   Dygraph.defaultInteractionModel.mousedown(event, g, context);
@@ -134,24 +137,23 @@ Gallery.register(
                 }
               },
               mousemove: function (event, g, context) {
-                if (tool == 'zoom') {
-                  Dygraph.defaultInteractionModel.mousemove(event, g, context);
-                } else {
+                // note that the defaultInteractionModel dynamically binds
+                // it's own mousemove event inside the mousedown handler
+                if (tool != 'zoom') {
                   if (!isDrawing) return;
                   setPoint(event, g, context);
                 }
               },
               mouseup: function(event, g, context) {
-                if (tool == 'zoom') {
-                  Dygraph.defaultInteractionModel.mouseup(event, g, context);
-                } else {
+                // note that the defaultInteractionModel dynamically binds 
+                // it's own mouseup event inside the mousedown handler
+                if (tool != 'zoom') {
                   finishDraw();
                 }
               },
               mouseout: function(event, g, context) {
-                if (tool == 'zoom') {
-                  Dygraph.defaultInteractionModel.mouseout(event, g, context);
-                }
+                // note that the defaultInteractionModel does not use mouseout event, instead it
+                // detects when the mouse is outside the chart using a dynamically bound mousemove event 
               },
               dblclick: function(event, g, context) {
                 Dygraph.defaultInteractionModel.dblclick(event, g, context);
