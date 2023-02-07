@@ -126,7 +126,8 @@ for label in labels:
 for label in cats:
   assert label in labels, "unused label: " + label
 
-print("""<!--#set var="pagetitle" value="options reference" -->
+print("""
+<!--#set var="pagetitle" value="options reference" -->
 <!--#include virtual="header.html" -->
 
 <!--
@@ -144,7 +145,7 @@ print("""<!--#set var="pagetitle" value="options reference" -->
 """.strip())
 for label in sorted(labels):
   print('  <li><a href="#%s">%s</a>' % (encode_anchor(label), label))
-print('</ul></div></div>\n')
+print('</ul></div></div>')
 
 print("""
 <div id='content' class='col-lg-9'>
@@ -204,7 +205,7 @@ def gallery_fmt(f):
   return res
 
 for label in sorted(labels):
-  print('<a name="%s"></a><h3>%s</h3>\n' % (encode_anchor(label), label))
+  print('<a name="%s"></a><h3>%s</h3>' % (encode_anchor(label), label))
 
   for opt_name in sorted(docs.keys()):
     opt = docs[opt_name]
@@ -245,7 +246,7 @@ for label in sorted(labels):
   <tr><th>Gallery Samples:</th><td>%(gallery_html)s</td></tr>
   <tr><th>Other Examples:</th><td>%(examples_html)s</td></tr>
   </table></div>
-  """ % { 'name': opt_name,
+  """.rstrip() % { 'name': opt_name,
           'namenc': encode_anchor(opt_name),
           'type': opt['type'],
           'parameters': parameters_html,
