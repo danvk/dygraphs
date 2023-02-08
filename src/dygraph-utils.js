@@ -556,6 +556,16 @@ export function update(self, o) {
   return self;
 }
 
+// internal: check if o is a DOM node, and we know it’s not null
+var _isNode = (Node !== null && typeof(Node) === 'object') ?
+  function _isNode(o) {
+    return (o instanceof Node);
+  } : function _isNode(o) {
+    return (typeof(o) === 'object' &&
+            typeof(o.nodeType) === 'number' &&
+            typeof(o.nodeName) === 'string');
+};
+
 /**
  * Copies all the properties from o to self.
  *
@@ -565,14 +575,6 @@ export function update(self, o) {
  * @private
  */
 export function updateDeep(self, o) {
-  // via https://stackoverflow.com/q/384286/2171120
-  function isNode(o) {
-    return (
-      type(Node) === "object" ? o instanceof Node :
-      type(o) === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
-    );
-  }
-
   if (typeof(o) != 'undefined' && o !== null) {
     for (var k in o) {
       if (o.hasOwnProperty(k)) {
@@ -581,7 +583,7 @@ export function updateDeep(self, o) {
           self[k] = null;
         } else if (isArrayLike(v)) {
           self[k] = v.slice();
-        } else if (isNode(v)) {
+        } else if (_isNode(v)) {
           // DOM objects are shallowly-copied.
           self[k] = v;
         } else if (typeof(v) == 'object') {
@@ -610,7 +612,7 @@ export function typeArrayLike(o) {
   if ((t === 'object' ||
        (t === 'function' && typeof(o.item) === 'function')) &&
       typeof(o.length) === 'number' &&
-      o.nodeType !== 3)
+      o.nodeType !== 3 && o.nodeType !== 4)
     return 'array';
   return t;
 }
@@ -626,7 +628,7 @@ export function isArrayLike(o) {
           (t === 'object' ||
            (t === 'function' && typeof(o.item) === 'function')) &&
           typeof(o.length) === 'number' &&
-          o.nodeType !== 3);
+          o.nodeType !== 3 && o.nodeType !== 4);
 }
 
 /**
