@@ -16,33 +16,40 @@
  * See tests/straw-broom.html for demo.
  */
 
-/*global Dygraph:false */
-
-(function() {
-
-  "use strict";
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_rebase_closure() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
 
   // Matches DefaultHandler.parseFloat
-  var parseFloat = function(val) {
+  var parseFloat = function parseFloat(val) {
     if (val === null) return NaN;
     return val;
   };
 
-  Dygraph.DataHandlers.RebaseHandler = function(baseOpt) {
+  Dygraph.DataHandlers.RebaseHandler = function RebaseHandler(baseOpt) {
     this.baseOpt = baseOpt;
   };
 
-  var RebaseHandler =  Dygraph.DataHandlers.RebaseHandler;
+  var RebaseHandler = Dygraph.DataHandlers.RebaseHandler;
   RebaseHandler.prototype = new Dygraph.DataHandlers.DefaultHandler();
 
-  RebaseHandler.rebase = function(value, initial, base) {
+  RebaseHandler.rebase = function rebase(value, initial, base) {
     if (base === "percent") {
       return (value / initial - 1) * 100;
     }
     return value * base / initial;
   };
 
-  RebaseHandler.prototype.getExtremeYValues = function(series, dateWindow, stepPlot) {
+  RebaseHandler.prototype.getExtremeYValues = function getExtremeYValues(series, dateWindow, stepPlot) {
     var minY = null, maxY = null, y;
     var firstIdx = 0, lastIdx = series.length - 1;
     var initial = series[firstIdx][1];
@@ -65,7 +72,7 @@
     return [ minY, maxY ];
   };
 
-  RebaseHandler.prototype.seriesToPoints = function(series, setName, boundaryIdStart){
+  RebaseHandler.prototype.seriesToPoints = function seriesToPoints(series, setName, boundaryIdStart) {
     var points = [];
     var firstIdx = 0;
     var lastIdx = series.length - 1;
@@ -95,9 +102,9 @@
     return points;
   };
 
-  Dygraph.Plugins.Rebase = (function() {
-    var rebase = function(baseOpt) {
-      var isNum = function(v) {
+  Dygraph.Plugins.Rebase = (function _rebase_inner_closure() {
+    var rebase = function rebase(baseOpt) {
+      var isNum = function isNum(v) {
         return !isNaN(v) && (typeof v === 'number' || {}.toString.call(v) === '[object Number]');
       };
       if (baseOpt === "percent" || isNum(baseOpt)) {
@@ -107,11 +114,11 @@
       }
     };
 
-    rebase.prototype.toString = function() {
+    rebase.prototype.toString = function toString() {
       return "Rebase Plugin";
     };
 
-    rebase.prototype.activate = function(g) {
+    rebase.prototype.activate = function activate(g) {
       if (this.baseOpt_ === null) {
         return;
       }
@@ -120,17 +127,17 @@
       };
     };
 
-    rebase.prototype.predraw = function(e) {
+    rebase.prototype.predraw = function predraw(e) {
       var g = e.dygraph;
 
       if (this.baseOpt_ === "percent") {
         g.updateOptions({
           axes: {
             y: {
-              axisLabelFormatter: function(y) {
+              axisLabelFormatter: function axisLabelFormatter(y) {
                 return y + '%';
               },
-              valueFormatter: function(y) {
+              valueFormatter: function valueFormatter(y) {
                 return Math.round(y * 100) / 100 + '%';
               }
             }
@@ -143,4 +150,6 @@
 
     return rebase;
   })();
+
+/* closure and loader wrapper */
 })();

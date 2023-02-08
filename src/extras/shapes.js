@@ -11,7 +11,18 @@
  * See tests/custom-circles.html for usage.
  */
 
-(function() {
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_shapes_closure() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
 
 /**
  * @param {!CanvasRenderingContext2D} ctx the canvas context
@@ -23,7 +34,7 @@
  * @param {number=} delta the angle shift for each line. If missing, creates a
  *     regular polygon.
  */
-var regularShape = function(
+var regularShape = function regularShape(
     ctx, sides, radius, cx, cy, rotationRadians, delta) {
   rotationRadians = rotationRadians || 0;
   delta = delta || Math.PI * 2 / sides;
@@ -32,7 +43,7 @@ var regularShape = function(
   var initialAngle = rotationRadians;
   var angle = initialAngle;
 
-  var computeCoordinates = function() {
+  var computeCoordinates = function computeCoordinates() {
     var x = cx + (Math.sin(angle) * radius);
     var y = cy + (-Math.cos(angle) * radius);
     return [x, y];
@@ -60,8 +71,8 @@ var regularShape = function(
  * @return {Function}
  * @private
  */
-var shapeFunction = function(sides, rotationRadians, delta) {
-  return function(g, name, ctx, cx, cy, color, radius) {
+var shapeFunction = function shapeFunction(sides, rotationRadians, delta) {
+  return function shapedFunction(g, name, ctx, cx, cy, color, radius) {
     ctx.strokeStyle = color;
     ctx.fillStyle = "white";
     regularShape(ctx, sides, radius, cx, cy, rotationRadians, delta);
@@ -74,7 +85,7 @@ var customCircles = {
   DIAMOND : shapeFunction(4),
   PENTAGON : shapeFunction(5),
   HEXAGON : shapeFunction(6),
-  CIRCLE : function(g, name, ctx, cx, cy, color, radius) {
+  CIRCLE : function CIRCLE(g, name, ctx, cx, cy, color, radius) {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.fillStyle = "white";
@@ -83,7 +94,7 @@ var customCircles = {
     ctx.stroke();
   },
   STAR : shapeFunction(5, 0, 4 * Math.PI / 5),
-  PLUS : function(g, name, ctx, cx, cy, color, radius) {
+  PLUS : function PLUS(g, name, ctx, cx, cy, color, radius) {
     ctx.strokeStyle = color;
 
     ctx.beginPath();
@@ -98,7 +109,7 @@ var customCircles = {
     ctx.closePath();
     ctx.stroke();
   },
-  EX : function(g, name, ctx, cx, cy, color, radius) {
+  EX : function EX(g, name, ctx, cx, cy, color, radius) {
     ctx.strokeStyle = color;
 
     ctx.beginPath();
@@ -120,4 +131,5 @@ for (var k in customCircles) {
   Dygraph.Circles[k] = customCircles[k];
 }
 
+/* closure and loader wrapper */
 })();

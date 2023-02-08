@@ -8,9 +8,20 @@
  * See high-level documentation at ../../docs/hairlines-annotations.pdf
  */
 
-/*global Dygraph:false */
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_hairlines_wrapper() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
 
-Dygraph.Plugins.Hairlines = (function() {
+Dygraph.Plugins.Hairlines = (function _extras_hairlines_closure() {
 
 "use strict";
 
@@ -28,7 +39,7 @@ Dygraph.Plugins.Hairlines = (function() {
 // double-click to unzoom. This sets that delay period.
 var CLICK_DELAY_MS = 300;
 
-var hairlines = function(opt_options) {
+var hairlines = function hairlines(opt_options) {
   /** @private {!Array.<!Hairline>} */
   this.hairlines_ = [];
 
@@ -43,11 +54,11 @@ var hairlines = function(opt_options) {
   this.divFiller_ = opt_options['divFiller'] || null;
 };
 
-hairlines.prototype.toString = function() {
+hairlines.prototype.toString = function toString() {
   return "Hairlines Plugin";
 };
 
-hairlines.prototype.activate = function(g) {
+hairlines.prototype.activate = function activate(g) {
   this.dygraph_ = g;
   this.hairlines_ = [];
 
@@ -59,7 +70,7 @@ hairlines.prototype.activate = function(g) {
   };
 };
 
-hairlines.prototype.detachLabels = function() {
+hairlines.prototype.detachLabels = function detachLabels() {
   for (var i = 0; i < this.hairlines_.length; i++) {
     var h = this.hairlines_[i];
     $(h.lineDiv).remove();
@@ -69,7 +80,7 @@ hairlines.prototype.detachLabels = function() {
   this.hairlines_ = [];
 };
 
-hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
+hairlines.prototype.hairlineWasDragged = function hairlineWasDragged(h, event, ui) {
   var area = this.dygraph_.getArea();
   var oldXVal = h.xval;
   h.xval = this.dygraph_.toDataXCoord(ui.position.left);
@@ -86,7 +97,7 @@ hairlines.prototype.hairlineWasDragged = function(h, event, ui) {
 
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
-hairlines.prototype.createHairline = function(props) {
+hairlines.prototype.createHairline = function createHairline(props) {
   var h;
   var self = this;
 
@@ -116,7 +127,7 @@ hairlines.prototype.createHairline = function(props) {
   $([$infoDiv.get(0), $lineContainerDiv.get(0)])
     .draggable({
       'axis': 'x',
-      'drag': function(event, ui) {
+      'drag': function dragWrapper_(event, ui) {
         self.hairlineWasDragged(h, event, ui);
       }
       // TODO(danvk): set cursor here
@@ -130,14 +141,14 @@ hairlines.prototype.createHairline = function(props) {
   }, props);
 
   var that = this;
-  $infoDiv.on('click', '.hairline-kill-button', function(e) {
+  $infoDiv.on('click', '.hairline-kill-button', function clickEvent_(e) {
     that.removeHairline(h);
     $(that).triggerHandler('hairlineDeleted', {
       xval: h.xval
     });
     $(that).triggerHandler('hairlinesChanged', {});
     e.stopPropagation();  // don't want .click() to trigger, below.
-  }).on('click', function() {
+  }).on('click', function clickHandler_() {
     that.moveHairlineToTop(h);
   });
 
@@ -145,7 +156,7 @@ hairlines.prototype.createHairline = function(props) {
 };
 
 // Moves a hairline's divs to the top of the z-ordering.
-hairlines.prototype.moveHairlineToTop = function(h) {
+hairlines.prototype.moveHairlineToTop = function moveHairlineToTop(h) {
   var div = this.dygraph_.graphDiv;
   $(h.infoDiv).appendTo(div);
   $(h.lineDiv).appendTo(div);
@@ -156,7 +167,7 @@ hairlines.prototype.moveHairlineToTop = function(h) {
 };
 
 // Positions existing hairline divs.
-hairlines.prototype.updateHairlineDivPositions = function() {
+hairlines.prototype.updateHairlineDivPositions = function updateHairlineDivPositions() {
   var g = this.dygraph_;
   var layout = this.dygraph_.getArea();
   var chartLeft = layout.x, chartRight = layout.x + layout.w;
@@ -166,7 +177,7 @@ hairlines.prototype.updateHairlineDivPositions = function() {
   box.push(box[0] + layout.w);
   box.push(box[1] + layout.h);
 
-  $.each(this.hairlines_, function(idx, h) {
+  $.each(this.hairlines_, function iterateHairlines_(idx, h) {
     var left = g.toDomXCoord(h.xval);
     h.domX = left;  // See comments in this.dataDidUpdate
     $(h.lineDiv).css({
@@ -185,8 +196,8 @@ hairlines.prototype.updateHairlineDivPositions = function() {
 };
 
 // Sets styles on the hairline (i.e. "selected")
-hairlines.prototype.updateHairlineStyles = function() {
-  $.each(this.hairlines_, function(idx, h) {
+hairlines.prototype.updateHairlineStyles = function updateHairlineStyles() {
+  $.each(this.hairlines_, function iterateHairlines_(idx, h) {
     $([h.infoDiv, h.lineDiv]).toggleClass('selected', h.selected);
   });
 };
@@ -199,7 +210,7 @@ hairlines.prototype.updateHairlineStyles = function() {
 //   g.getValue(prevRow, 0) < g.getValue(row, 0) < g.getValue(nextRow, 0)
 //   g.getValue(row, col) != null, NaN or undefined.
 // Returns [prevRow, nextRow]. Either can be null (but not both).
-hairlines.findPrevNextRows = function(g, xval, col) {
+hairlines.findPrevNextRows = function findPrevNextRows(g, xval, col) {
   var prevRow = null, nextRow = null;
   var numRows = g.numRows();
   for (var row = 0; row < numRows; row++) {
@@ -219,13 +230,13 @@ hairlines.findPrevNextRows = function(g, xval, col) {
 };
 
 // Fills out the info div based on current coordinates.
-hairlines.prototype.updateHairlineInfo = function() {
+hairlines.prototype.updateHairlineInfo = function updateHairlineInfo() {
   var mode = 'closest';
 
   var g = this.dygraph_;
   var xRange = g.xAxisRange();
   var that = this;
-  $.each(this.hairlines_, function(idx, h) {
+  $.each(this.hairlines_, function iterateHairlines_(idx, h) {
     // To use generateLegendHTML, we synthesize an array of selected points.
     var selPoints = [];
     var labels = g.getLabels();
@@ -291,15 +302,15 @@ hairlines.prototype.updateHairlineInfo = function() {
 
 // After a resize, the hairline divs can get dettached from the chart.
 // This reattaches them.
-hairlines.prototype.attachHairlinesToChart_ = function() {
+hairlines.prototype.attachHairlinesToChart_ = function attachHairlinesToChart_() {
   var div = this.dygraph_.graphDiv;
-  $.each(this.hairlines_, function(idx, h) {
+  $.each(this.hairlines_, function iterateHairlines_(idx, h) {
     $([h.lineDiv, h.infoDiv]).appendTo(div);
   });
 };
 
 // Deletes a hairline and removes it from the chart.
-hairlines.prototype.removeHairline = function(h) {
+hairlines.prototype.removeHairline = function removeHairline(h) {
   var idx = this.hairlines_.indexOf(h);
   if (idx >= 0) {
     this.hairlines_.splice(idx, 1);
@@ -309,7 +320,7 @@ hairlines.prototype.removeHairline = function(h) {
   }
 };
 
-hairlines.prototype.didDrawChart = function(e) {
+hairlines.prototype.didDrawChart = function didDrawChart(e) {
   var g = e.dygraph;
 
   // Early out in the (common) case of zero hairlines.
@@ -321,19 +332,19 @@ hairlines.prototype.didDrawChart = function(e) {
   this.updateHairlineStyles();
 };
 
-hairlines.prototype.dataDidUpdate = function(e) {
+hairlines.prototype.dataDidUpdate = function dataDidUpdate(e) {
   // When the data in the chart updates, the hairlines should stay in the same
   // position on the screen. didDrawChart stores a domX parameter for each
   // hairline. We use that to reposition them on data updates.
   var g = this.dygraph_;
-  $.each(this.hairlines_, function(idx, h) {
+  $.each(this.hairlines_, function iterateHairlines_(idx, h) {
     if (h.hasOwnProperty('domX')) {
       h.xval = g.toDataXCoord(h.domX);
     }
   });
 };
 
-hairlines.prototype.click = function(e) {
+hairlines.prototype.click = function click(e) {
   if (this.addTimer_) {
     // Another click is in progress; ignore this one.
     return;
@@ -343,7 +354,7 @@ hairlines.prototype.click = function(e) {
   var xval = this.dygraph_.toDataXCoord(e.canvasx);
 
   var that = this;
-  this.addTimer_ = setTimeout(function() {
+  this.addTimer_ = setTimeout(function click_tmo_() {
     that.addTimer_ = null;
     that.hairlines_.push(that.createHairline({xval: xval}));
 
@@ -359,14 +370,14 @@ hairlines.prototype.click = function(e) {
   }, CLICK_DELAY_MS);
 };
 
-hairlines.prototype.dblclick = function(e) {
+hairlines.prototype.dblclick = function dblclick(e) {
   if (this.addTimer_) {
     clearTimeout(this.addTimer_);
     this.addTimer_ = null;
   }
 };
 
-hairlines.prototype.destroy = function() {
+hairlines.prototype.destroy = function destroy() {
   this.detachLabels();
 };
 
@@ -387,7 +398,7 @@ hairlines.prototype.destroy = function() {
  * @param {!Hairline} h Internal hairline.
  * @return {!PublicHairline} Restricted public view of the hairline.
  */
-hairlines.prototype.createPublicHairline_ = function(h) {
+hairlines.prototype.createPublicHairline_ = function createPublicHairline_(h) {
   return {
     xval: h.xval,
     interpolated: h.interpolated,
@@ -399,7 +410,7 @@ hairlines.prototype.createPublicHairline_ = function(h) {
  * @return {!Array.<!PublicHairline>} The current set of hairlines, ordered
  *     from back to front.
  */
-hairlines.prototype.get = function() {
+hairlines.prototype.get = function get() {
   var result = [];
   for (var i = 0; i < this.hairlines_.length; i++) {
     var h = this.hairlines_[i];
@@ -416,7 +427,7 @@ hairlines.prototype.get = function() {
  * @param {!Array.<!PublicHairline>} hairlines The new set of hairlines,
  *     ordered from back to front.
  */
-hairlines.prototype.set = function(hairlines) {
+hairlines.prototype.set = function set(hairlines) {
   // Re-use divs from the old hairlines array so far as we can.
   // They're already correctly z-ordered.
   var anyCreated = false;
@@ -454,4 +465,7 @@ hairlines.prototype.set = function(hairlines) {
 
 return hairlines;
 
+})();
+
+/* loader wrapper */
 })();

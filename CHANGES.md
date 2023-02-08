@@ -10,6 +10,7 @@
 - Fix synchroniser not calling user’s `drawCallback` when blocked (#953) plus do not redraw unnecessarily
 - Documentation fixes and improvements including self-checks where possible
 - Fix missing legend for `x == -1` (#1002)
+- Allow ES6-importing the extras (#848) (#989) (#1009)
 
 ## Other user-visible changes
 - Fix issue #611 in the drawing demo gallery (#953)

@@ -18,14 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/*global Dygraph:false */
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_unzoom_wrapper() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
 
 /**
  * @fileoverview Plug-in for providing unzoom-on-hover.
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-Dygraph.Plugins.Unzoom = (function() {
+Dygraph.Plugins.Unzoom = (function _extras_unzoom_closure() {
 
   "use strict";
 
@@ -34,7 +45,7 @@ Dygraph.Plugins.Unzoom = (function() {
    *
    * @constructor
    */
-  var unzoom = function() {
+  var unzoom = function unzoom() {
     this.button_ = null;
 
     // True when the mouse is over the canvas. Must be tracked
@@ -43,17 +54,17 @@ Dygraph.Plugins.Unzoom = (function() {
     this.over_ = false;
   };
 
-  unzoom.prototype.toString = function() {
+  unzoom.prototype.toString = function toString() {
     return 'Unzoom Plugin';
   };
 
-  unzoom.prototype.activate = function(g) {
+  unzoom.prototype.activate = function activate(g) {
     return {
       willDrawChart: this.willDrawChart
     };
   };
 
-  unzoom.prototype.willDrawChart = function(e) {
+  unzoom.prototype.willDrawChart = function willDrawChart(e) {
     var g = e.dygraph;
 
     if (this.button_ !== null) {
@@ -75,31 +86,34 @@ Dygraph.Plugins.Unzoom = (function() {
     parent.insertBefore(this.button_, parent.firstChild);
 
     var self = this;
-    this.button_.onclick = function() {
+    this.button_.onclick = function onclick() {
       g.resetZoom();
     };
 
-    g.addAndTrackEvent(parent, 'mouseover', function() {
+    g.addAndTrackEvent(parent, 'mouseover', function mouseover() {
       if (g.isZoomed()) {
         self.show(true);
       }
       self.over_ = true;
     });
 
-    g.addAndTrackEvent(parent, 'mouseout', function() {
+    g.addAndTrackEvent(parent, 'mouseout', function mouseout() {
       self.show(false);
       self.over_ = false;
     });
   };
 
-  unzoom.prototype.show = function(enabled) {
+  unzoom.prototype.show = function show(enabled) {
     this.button_.style.display = enabled ? '' : 'none';
   };
 
-  unzoom.prototype.destroy = function() {
+  unzoom.prototype.destroy = function destroy() {
     this.button_.parentElement.removeChild(this.button_);
   };
 
   return unzoom;
 
+})();
+
+/* loader wrapper */
 })();

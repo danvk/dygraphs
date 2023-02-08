@@ -8,9 +8,20 @@
  * See high-level documentation at ../../docs/hairlines-annotations.pdf
  */
 
-/*global Dygraph:false */
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_superAnnotations_wrapper() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
 
-Dygraph.Plugins.SuperAnnotations = (function() {
+Dygraph.Plugins.SuperAnnotations = (function _extras_superAnnotations_closure() {
 
 "use strict";
 
@@ -27,7 +38,7 @@ Dygraph.Plugins.SuperAnnotations = (function() {
  * } Annotation
  */
 
-var annotations = function(opt_options) {
+var annotations = function annotations(opt_options) {
   /* @type {!Array.<!Annotation>} */
   this.annotations_ = [];
   // Used to detect resizes (which require the divs to be repositioned).
@@ -41,11 +52,11 @@ var annotations = function(opt_options) {
   }, opt_options['defaultAnnotationProperties']);
 };
 
-annotations.prototype.toString = function() {
+annotations.prototype.toString = function toString() {
   return "SuperAnnotations Plugin";
 };
 
-annotations.prototype.activate = function(g) {
+annotations.prototype.activate = function activate(g) {
   this.dygraph_ = g;
   this.annotations_ = [];
 
@@ -55,7 +66,7 @@ annotations.prototype.activate = function(g) {
   };
 };
 
-annotations.prototype.detachLabels = function() {
+annotations.prototype.detachLabels = function detachLabels() {
   for (var i = 0; i < this.annotations_.length; i++) {
     var a = this.annotations_[i];
     $(a.lineDiv).remove();
@@ -65,7 +76,7 @@ annotations.prototype.detachLabels = function() {
   this.annotations_ = [];
 };
 
-annotations.prototype.annotationWasDragged = function(a, event, ui) {
+annotations.prototype.annotationWasDragged = function annotationWasDragged(a, event, ui) {
   var g = this.dygraph_;
   var area = g.getArea();
   var oldYFrac = a.yFrac;
@@ -87,7 +98,7 @@ annotations.prototype.annotationWasDragged = function(a, event, ui) {
   $(this).triggerHandler('annotationsChanged', {});
 };
 
-annotations.prototype.makeAnnotationEditable = function(a) {
+annotations.prototype.makeAnnotationEditable = function makeAnnotationEditable(a) {
   if (a.editable == true) return;
   this.moveAnnotationToTop(a);
 
@@ -102,7 +113,7 @@ annotations.prototype.makeAnnotationEditable = function(a) {
 
 // This creates the hairline object and returns it.
 // It does not position it and does not attach it to the chart.
-annotations.prototype.createAnnotation = function(a) {
+annotations.prototype.createAnnotation = function createAnnotation(a) {
   var self = this;
 
   var color = this.getColorForSeries_(a.series);
@@ -133,14 +144,14 @@ annotations.prototype.createAnnotation = function(a) {
   var that = this;
 
   $infoDiv.draggable({
-    'start': function(event, ui) {
+    'start': function draggableStart(event, ui) {
       $(this).css({'bottom': ''});
       a.isDragging = true;
     },
-    'drag': function(event, ui) {
+    'drag': function draggableDrag(event, ui) {
       self.annotationWasDragged(a, event, ui);
     },
-    'stop': function(event, ui) {
+    'stop': function draggableStop(event, ui) {
       $(this).css({'top': ''});
       a.isDragging = false;
       self.updateAnnotationDivPositions();
@@ -150,23 +161,23 @@ annotations.prototype.createAnnotation = function(a) {
   });
 
   // TODO(danvk): use 'on' instead of delegate/dblclick
-  $infoDiv.on('click', '.annotation-kill-button', function() {
+  $infoDiv.on('click', '.annotation-kill-button', function clickKill() {
     that.removeAnnotation(a);
     $(that).triggerHandler('annotationDeleted', a);
     $(that).triggerHandler('annotationsChanged', {});
   });
 
-  $infoDiv.on('dblclick', function() {
+  $infoDiv.on('dblclick', function dblclick() {
     that.makeAnnotationEditable(a);
   });
-  $infoDiv.on('click', '.annotation-update', function() {
+  $infoDiv.on('click', '.annotation-update', function clickUpdate() {
     self.extractUpdatedProperties_($infoDiv.get(0), a);
     a.editable = false;
     self.updateAnnotationInfo();
     $(that).triggerHandler('annotationEdited', a);
     $(that).triggerHandler('annotationsChanged', {});
   });
-  $infoDiv.on('click', '.annotation-cancel', function() {
+  $infoDiv.on('click', '.annotation-cancel', function clickCancel() {
     a.editable = false;
     self.updateAnnotationInfo();
     $(that).triggerHandler('cancelEditAnnotation', a);
@@ -179,7 +190,7 @@ annotations.prototype.createAnnotation = function(a) {
 // Returns a 2-element array, [row, col], which can be used with
 // dygraph.getValue() to get the value at this point.
 // Returns null if there's no match.
-annotations.prototype.findPointIndex_ = function(series, xval) {
+annotations.prototype.findPointIndex_ = function findPointIndex_(series, xval) {
   var col = this.dygraph_.getLabels().indexOf(series);
   if (col == -1) return null;
 
@@ -198,7 +209,7 @@ annotations.prototype.findPointIndex_ = function(series, xval) {
   return null;
 };
 
-annotations.prototype.getColorForSeries_ = function(series) {
+annotations.prototype.getColorForSeries_ = function getColorForSeries_(series) {
   var colors = this.dygraph_.getColors();
   var col = this.dygraph_.getLabels().indexOf(series);
   if (col == -1) return null;
@@ -207,7 +218,7 @@ annotations.prototype.getColorForSeries_ = function(series) {
 };
 
 // Moves a hairline's divs to the top of the z-ordering.
-annotations.prototype.moveAnnotationToTop = function(a) {
+annotations.prototype.moveAnnotationToTop = function moveAnnotationToTop(a) {
   var div = this.dygraph_.graphDiv;
   $(a.infoDiv).appendTo(div);
   $(a.lineDiv).appendTo(div);
@@ -218,7 +229,7 @@ annotations.prototype.moveAnnotationToTop = function(a) {
 };
 
 // Positions existing hairline divs.
-annotations.prototype.updateAnnotationDivPositions = function() {
+annotations.prototype.updateAnnotationDivPositions = function updateAnnotationDivPositions() {
   var layout = this.dygraph_.getArea();
   var chartLeft = layout.x, chartRight = layout.x + layout.w;
   var chartTop = layout.y, chartBottom = layout.y + layout.h;
@@ -231,7 +242,7 @@ annotations.prototype.updateAnnotationDivPositions = function() {
   var g = this.dygraph_;
 
   var that = this;
-  $.each(this.annotations_, function(idx, a) {
+  $.each(this.annotations_, function annotationsLoop_(idx, a) {
     var row_col = that.findPointIndex_(a.series, a.xval);
     if (row_col == null) {
       $([a.lineDiv, a.infoDiv]).hide();
@@ -277,12 +288,12 @@ annotations.prototype.updateAnnotationDivPositions = function() {
 };
 
 // Fills out the info div based on current coordinates.
-annotations.prototype.updateAnnotationInfo = function() {
+annotations.prototype.updateAnnotationInfo = function updateAnnotationInfo() {
   var g = this.dygraph_;
 
   var that = this;
   var templateDiv = $('#annotation-template').get(0);
-  $.each(this.annotations_, function(idx, a) {
+  $.each(this.annotations_, function annotationsLoop_(idx, a) {
     // We should never update an editable div -- doing so may kill unsaved
     // edits to an annotation.
     $(a.infoDiv).toggleClass('editable', !!a.editable);
@@ -295,7 +306,7 @@ annotations.prototype.updateAnnotationInfo = function() {
  * @param {!Annotation} a Internal annotation
  * @return {!PublicAnnotation} a view of the annotation for the public API.
  */
-annotations.prototype.createPublicAnnotation_ = function(a, opt_props) {
+annotations.prototype.createPublicAnnotation_ = function createPublicAnnotation_(a, opt_props) {
   var displayAnnotation = $.extend({}, a, opt_props);
   delete displayAnnotation['infoDiv'];
   delete displayAnnotation['lineDiv'];
@@ -306,7 +317,7 @@ annotations.prototype.createPublicAnnotation_ = function(a, opt_props) {
 
 // Fill out a div using the values in the annotation object.
 // The div's html is expected to have text of the form "{{key}}"
-annotations.prototype.getTemplateHTML = function(div, a) {
+annotations.prototype.getTemplateHTML = function getTemplateHTML(div, a) {
   var g = this.dygraph_;
   var row_col = this.findPointIndex_(a.series, a.xval);
   if (row_col == null) return;  // perhaps it's no longer a real point?
@@ -334,8 +345,8 @@ annotations.prototype.getTemplateHTML = function(div, a) {
 // Update the annotation object by looking for elements with a 'dg-ann-field'
 // attribute. For example, <input type='text' dg-ann-field='text' /> will have
 // its value placed in the 'text' attribute of the annotation.
-annotations.prototype.extractUpdatedProperties_ = function(div, a) {
-  $(div).find('[dg-ann-field]').each(function(idx, el) {
+annotations.prototype.extractUpdatedProperties_ = function extractUpdatedProperties_(div, a) {
+  $(div).find('[dg-ann-field]').each(function fieldLoop_(idx, el) {
     var k = $(el).attr('dg-ann-field');
     var v = $(el).val();
     a[k] = v;
@@ -344,9 +355,9 @@ annotations.prototype.extractUpdatedProperties_ = function(div, a) {
 
 // After a resize, the hairline divs can get dettached from the chart.
 // This reattaches them.
-annotations.prototype.attachAnnotationsToChart_ = function() {
+annotations.prototype.attachAnnotationsToChart_ = function attachAnnotationsToChart_() {
   var div = this.dygraph_.graphDiv;
-  $.each(this.annotations_, function(idx, a) {
+  $.each(this.annotations_, function annotationsLoop_(idx, a) {
     // Re-attaching an editable div to the DOM can clear its focus.
     // This makes typing really difficult!
     if (a.editable) return;
@@ -356,7 +367,7 @@ annotations.prototype.attachAnnotationsToChart_ = function() {
 };
 
 // Deletes a hairline and removes it from the chart.
-annotations.prototype.removeAnnotation = function(a) {
+annotations.prototype.removeAnnotation = function removeAnnotation(a) {
   var idx = this.annotations_.indexOf(a);
   if (idx >= 0) {
     this.annotations_.splice(idx, 1);
@@ -366,7 +377,7 @@ annotations.prototype.removeAnnotation = function(a) {
   }
 };
 
-annotations.prototype.didDrawChart = function(e) {
+annotations.prototype.didDrawChart = function didDrawChart(e) {
   var g = e.dygraph;
 
   // Early out in the (common) case of zero annotations.
@@ -377,7 +388,7 @@ annotations.prototype.didDrawChart = function(e) {
   this.updateAnnotationInfo();
 };
 
-annotations.prototype.pointClick = function(e) {
+annotations.prototype.pointClick = function pointClick(e) {
   // Prevent any other behavior based on this click, e.g. creation of a hairline.
   e.preventDefault();
 
@@ -398,7 +409,7 @@ annotations.prototype.pointClick = function(e) {
   this.makeAnnotationEditable(a);
 };
 
-annotations.prototype.destroy = function() {
+annotations.prototype.destroy = function destroy() {
   this.detachLabels();
 };
 
@@ -418,7 +429,7 @@ annotations.prototype.destroy = function() {
  * @return {!Array.<!PublicAnnotation>} The current set of annotations, ordered
  *     from back to front.
  */
-annotations.prototype.get = function() {
+annotations.prototype.get = function get() {
   var result = [];
   for (var i = 0; i < this.annotations_.length; i++) {
     result.push(this.createPublicAnnotation_(this.annotations_[i]));
@@ -434,7 +445,7 @@ annotations.prototype.get = function() {
  * @param {!Array.<!PublicAnnotation>} annotations The new set of annotations,
  *     ordered from back to front.
  */
-annotations.prototype.set = function(annotations) {
+annotations.prototype.set = function set(annotations) {
   // Re-use divs from the old annotations array so far as we can.
   // They're already correctly z-ordered.
   var anyCreated = false;
@@ -470,4 +481,7 @@ annotations.prototype.set = function(annotations) {
 
 return annotations;
 
+})();
+
+/* loader wrapper */
 })();

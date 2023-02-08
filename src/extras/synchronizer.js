@@ -3,6 +3,7 @@
  * Part of dygraphs, see top-level LICENSE.txt file
  * MIT-licenced: https://opensource.org/licenses/MIT
  */
+
 /**
  * Synchronize zooming and/or selections between a set of dygraphs.
  *
@@ -36,18 +37,21 @@
  * You may also set `range: false` if you wish to only sync the x-axis.
  * The `range` option has no effect unless `zoom` is true (the default).
  */
-(function() {
-/* global Dygraph:false */
-'use strict';
 
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_synchronizer_closure() {
+'use strict';
 var Dygraph;
 if (window.Dygraph) {
   Dygraph = window.Dygraph;
 } else if (typeof(module) !== 'undefined') {
   Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
 }
+/* end of loader wrapper header */
 
-var synchronize = function(/* dygraphs..., opts */) {
+var synchronize = function synchronize(/* dygraphs..., opts */) {
   if (arguments.length === 0) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
@@ -61,7 +65,7 @@ var synchronize = function(/* dygraphs..., opts */) {
   var dygraphs = [];
   var prevCallbacks = [];
 
-  var parseOpts = function(obj) {
+  var parseOpts = function parseOpts(obj) {
     if (!(obj instanceof Object)) {
       throw 'Last argument must be either Dygraph or Object.';
     } else {
@@ -111,7 +115,7 @@ var synchronize = function(/* dygraphs..., opts */) {
   var readycount = dygraphs.length;
   for (var i = 0; i < dygraphs.length; i++) {
     var g = dygraphs[i];
-    g.ready( function() {
+    g.ready(function onReady_() {
       if (--readycount == 0) {
         // store original callbacks
         var callBackTypes = ['drawCallback', 'highlightCallback', 'unhighlightCallback'];
@@ -137,7 +141,7 @@ var synchronize = function(/* dygraphs..., opts */) {
   }
 
   return {
-    detach: function() {
+    detach: function detach() {
       for (var i = 0; i < dygraphs.length; i++) {
         var g = dygraphs[i];
         if (opts.zoom) {
@@ -173,7 +177,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
     g.updateOptions({
-      drawCallback: function(me, initial) {
+      drawCallback: function synchronizer_drawCallback(me, initial) {
         if (block || initial) {
           // call the user’s drawCallback even if we are blocked
           for (let j = 0; j < gs.length; j++) {
@@ -223,7 +227,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
     var g = gs[i];
 
     g.updateOptions({
-      highlightCallback: function(event, x, points, row, seriesName) {
+      highlightCallback: function synchronizer_highlightCallback(event, x, points, row, seriesName) {
         if (block) return;
         block = true;
         var me = this;
@@ -241,7 +245,7 @@ function attachSelectionHandlers(gs, prevCallbacks) {
         }
         block = false;
       },
-      unhighlightCallback: function(event) {
+      unhighlightCallback: function synchronizer_unhighlightCallback(event) {
         if (block) return;
         block = true;
         var me = this;
@@ -262,4 +266,5 @@ function attachSelectionHandlers(gs, prevCallbacks) {
 
 Dygraph.synchronize = synchronize;
 
+/* closure and loader wrapper */
 })();

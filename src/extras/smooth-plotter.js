@@ -3,15 +3,19 @@
  * Part of dygraphs, see top-level LICENSE.txt file
  * MIT-licenced: https://opensource.org/licenses/MIT
  */
-(function() {
-"use strict";
 
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_smoothPlotter_closure() {
+'use strict';
 var Dygraph;
 if (window.Dygraph) {
   Dygraph = window.Dygraph;
 } else if (typeof(module) !== 'undefined') {
   Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
 }
+/* end of loader wrapper header */
 
 /**
  * Given three sequential points, p0, p1 and p2, find the left and right
@@ -142,4 +146,5 @@ smoothPlotter._getControlPoints = getControlPoints;  // for testing
 window.smoothPlotter = smoothPlotter;
 Dygraph.smoothPlotter = smoothPlotter;
 
+/* closure and loader wrapper */
 })();

@@ -4,9 +4,20 @@
  * MIT-licenced: https://opensource.org/licenses/MIT
  */
 
-/*global Dygraph:false */
-/*jshint globalstrict: true */
-Dygraph.Plugins.Crosshair = (function() {
+/* loader wrapper to allow browser use and ES6 imports */
+(function _extras_crosshair_wrapper() {
+'use strict';
+var Dygraph;
+if (window.Dygraph) {
+  Dygraph = window.Dygraph;
+} else if (typeof(module) !== 'undefined') {
+  Dygraph = require('../dygraph');
+  if (typeof(Dygraph.NAME) === 'undefined' && typeof(Dygraph.default) !== 'undefined')
+    Dygraph = Dygraph.default;
+}
+/* end of loader wrapper header */
+
+Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
   "use strict";
 
   /**
@@ -15,14 +26,14 @@ Dygraph.Plugins.Crosshair = (function() {
    * @constructor
    */
 
-  var crosshair = function(opt_options) {
+  var crosshair = function crosshair(opt_options) {
     this.canvas_ = document.createElement("canvas");
     opt_options = opt_options || {};
     this.direction_ = opt_options.direction || null;
     this.strokeStyle_ = opt_options.strokeStyle || "rgba(0, 0, 0, 0.3)";
   };
 
-  crosshair.prototype.toString = function() {
+  crosshair.prototype.toString = function toString() {
     return "Crosshair Plugin";
   };
 
@@ -30,7 +41,7 @@ Dygraph.Plugins.Crosshair = (function() {
    * @param {Dygraph} g Graph instance.
    * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
    */
-  crosshair.prototype.activate = function(g) {
+  crosshair.prototype.activate = function activate(g) {
     g.graphDiv.appendChild(this.canvas_);
 
     return {
@@ -39,7 +50,7 @@ Dygraph.Plugins.Crosshair = (function() {
     };
   };
 
-  crosshair.prototype.select = function(e) {
+  crosshair.prototype.select = function select(e) {
     if (this.direction_ === null) {
       return;
     }
@@ -75,14 +86,17 @@ Dygraph.Plugins.Crosshair = (function() {
     ctx.closePath();
   };
 
-  crosshair.prototype.deselect = function(e) {
+  crosshair.prototype.deselect = function deselect(e) {
     var ctx = this.canvas_.getContext("2d");
     ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
   };
 
-  crosshair.prototype.destroy = function() {
+  crosshair.prototype.destroy = function destroy() {
     this.canvas_ = null;
   };
 
   return crosshair;
+})();
+
+/* loader wrapper */
 })();
