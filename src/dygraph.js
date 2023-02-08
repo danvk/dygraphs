@@ -2789,7 +2789,7 @@ Dygraph.prototype.parseCSV_ = function(data) {
           } else {
             console.warn('When using customBars, values must be either blank ' +
                          'or "low;center;high" tuples (got "' + val +
-                         '" on line ' + (1+i));
+                         '" on line ' + (1+i) + ')');
           }
         }
       }
@@ -3220,7 +3220,7 @@ Dygraph.copyUserAttrs_ = function(attrs) {
 /**
  * Resizes the dygraph. If no parameters are specified, resizes to fill the
  * containing div (which has presumably changed size since the dygraph was
- * instantiated. If the width/height are specified, the div will be resized.
+ * instantiated). If the width/height are specified, the div will be resized.
  *
  * This is far more efficient than destroying and re-instantiating a
  * Dygraph, since it doesn't have to reparse the underlying data.

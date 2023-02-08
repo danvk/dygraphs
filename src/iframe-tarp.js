@@ -19,7 +19,7 @@
  *     tarper.uncover();
  *   };
  *   window.addEventListener('mouseup', mouseUpHandler);
- * };
+ * });
  *
  * @constructor
  */

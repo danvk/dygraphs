@@ -669,7 +669,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "default": "true for y, false for y2",
     "labels": ["Axis display", "Grid"],
     "type": "boolean",
-    "description": "Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: 1.) y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) 2.) y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) 3.) y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) 4.) y=false, y2=false: Invalid configuration causes an error."
+    "description": "Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: [1.] y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) [2.] y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) [3.] y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) [4.] y=false, y2=false: Invalid configuration causes an error."
   },
   "drawAxis": {
     "default": "true for x and y, false for y2",

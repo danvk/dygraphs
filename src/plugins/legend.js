@@ -174,7 +174,7 @@ Legend.prototype.didDrawChart = function(e) {
 };
 
 // Right edge should be flush with the right edge of the charting area (which
-// may not be the same as the right edge of the div, if we have two y-axes.
+// may not be the same as the right edge of the div, if we have two y-axes).
 // TODO(danvk): is any of this really necessary? Could just set "right" in "activate".
 /**
  * Position the labels div so that:

@@ -261,7 +261,7 @@ rangeSelector.prototype.initInteraction_ = function() {
   var tarp = new IFrameTarp();
 
   // functions, defined below.  Defining them this way (rather than with
-  // "function foo() {...}" makes JSHint happy.
+  // "function foo() {...}") makes JSHint happy.
   var toXDataWindow, onZoomStart, onZoom, onZoomEnd, doZoom, isMouseInPanZone,
       onPanStart, onPan, onPanEnd, doPan, onCanvasHover;
 
