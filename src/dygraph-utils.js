@@ -557,7 +557,8 @@ export function update(self, o) {
 }
 
 // internal: check if o is a DOM node, and we know it’s not null
-var _isNode = (Node !== null && typeof(Node) === 'object') ?
+var _isNode = (typeof(Node) !== 'undefined' &&
+               Node !== null && typeof(Node) === 'object') ?
   function _isNode(o) {
     return (o instanceof Node);
   } : function _isNode(o) {
