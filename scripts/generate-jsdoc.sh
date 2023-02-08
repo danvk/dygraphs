@@ -48,10 +48,10 @@ srcfiles+=\ src/plugins/grid.js
 #srcfiles+=\ src/extras/crosshair.js
 #srcfiles+=\ src/extras/hairlines.js
 #srcfiles+=\ src/extras/rebase.js
-srcfiles+=\ src/extras/shapes.js
-srcfiles+=\ src/extras/smooth-plotter.js
+#srcfiles+=\ src/extras/shapes.js
+#srcfiles+=\ src/extras/smooth-plotter.js
 #srcfiles+=\ src/extras/super-annotations.js
-srcfiles+=\ src/extras/synchronizer.js
+#srcfiles+=\ src/extras/synchronizer.js
 #srcfiles+=\ src/extras/unzoom.js
 jsdoc \
   -t="$t" \
