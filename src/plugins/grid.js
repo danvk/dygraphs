@@ -61,7 +61,7 @@ grid.prototype.willDrawChart = function(e) {
     ticks = layout.yticks;
     ctx.save();
     // draw grids for the different y axes
-    ticks.forEach(function (tick) {
+    ticks.forEach(tick => {
       if (!tick.has_tick) return;
       var axis = tick.axis;
       if (drawGrid[axis]) {
@@ -81,7 +81,7 @@ grid.prototype.willDrawChart = function(e) {
 
         ctx.restore();
       }
-    }.bind(this));
+    });
     ctx.restore();
   }
 
@@ -96,7 +96,7 @@ grid.prototype.willDrawChart = function(e) {
     }
     ctx.strokeStyle = g.getOptionForAxis('gridLineColor', 'x');
     ctx.lineWidth = g.getOptionForAxis('gridLineWidth', 'x');
-    ticks.forEach(function (tick) {
+    ticks.forEach(tick => {
       if (!tick.has_tick) return;
       x = halfUp(area.x + tick.pos * area.w);
       y = halfDown(area.y + area.h);
@@ -104,7 +104,7 @@ grid.prototype.willDrawChart = function(e) {
       ctx.moveTo(x, y);
       ctx.lineTo(x, area.y);
       ctx.stroke();
-    }.bind(this));
+    });
     if (stroking) {
       if (ctx.setLineDash) ctx.setLineDash([]);
     }
