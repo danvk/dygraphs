@@ -26,6 +26,7 @@
 - `tests/resizable.html` exposes the graph object, for quick F12 in-browser use
 - Generate `versions.html` and release notes from new top-level [`CHANGES.md`](https://github.com/danvk/dygraphs/blob/master/CHANGES.md)
 - Modularise dygraphs/tests setup so we can now also test the minified prod css/js (#1028)
+- Generate stable orig tarballs for releases ourselves (we still use the NPM ones for binary tarballs)
 
 # v2.2.0 (2023-01-25)
 

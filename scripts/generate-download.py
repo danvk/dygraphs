@@ -34,6 +34,7 @@ for idx, release in enumerate(releases):
       'Releases should be in reverse chronological order in releases.json')
 
 current_html = '<p>' + ('</p><p>'.join(file_links(releases[0]))) + '</p>'
+current_link = 'https://github.com/danvk/dygraphs/releases/tag/v' + releases[0]['version']
 
 previous_lis = []
 for release in releases[1:]:
@@ -58,6 +59,8 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <div id="current-release" class="panel">
 %(current_html)s
 </div>
+
+<p>For recent releases, <a href="%(current_link)s">GitHub Releases</a> hosts both source tarball (<tt>dygraphs_%(version)s.orig.tar.gz</tt>, basically the git repository packaged up) and binary release (<tt>dygraphs-%(version)s.tgz</tt>, identical with what was uploaded to NPM). The latter contains the precompiled CSS and JS files in both readable and minified forms as well as a copy of the documentation site, ideal for end users. The former only contains the source code needed to build all of it; distro packagers will want that file.</p>
 
 <p>There's a hosted version of dygraphs on <a href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
 
@@ -105,6 +108,7 @@ npm run build-jsonly
 <!--#include virtual="footer.html" -->''' % {
     'version': releases[0]['version'],
     'current_html': current_html,
+    'current_link': current_link,
     'debian_text': debian_text,
     'previous_lis': '\n'.join(previous_lis)
     })
