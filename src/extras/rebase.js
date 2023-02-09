@@ -152,4 +152,5 @@ if (window.Dygraph) {
   })();
 
 /* closure and loader wrapper */
+Dygraph._required('dygraphs/src/extras/rebase.js', /* exports */ {});
 })();

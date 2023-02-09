@@ -132,4 +132,5 @@ for (var k in customCircles) {
 }
 
 /* closure and loader wrapper */
+Dygraph._required('dygraphs/src/extras/shapes.js', /* exports */ {});
 })();

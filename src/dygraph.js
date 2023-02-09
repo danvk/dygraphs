@@ -94,6 +94,16 @@ var Dygraph = function(div, data, opts) {
 Dygraph.NAME = "Dygraph";
 Dygraph.VERSION = "2.2.1-alpha.0";
 
+// internal autoloader workaround
+Dygraph._req_ = null; // set by xfrmmodmap-dy.js
+var addtorequire = {};
+Dygraph._required = function _required(what, towhat) {
+  addtorequire[what] = towhat;
+};
+Dygraph._require = function require(what) {
+  return (what in addtorequire ? addtorequire[what] : Dygraph._req_(what));
+};
+
 // Various default values
 Dygraph.DEFAULT_ROLL_PERIOD = 1;
 Dygraph.DEFAULT_WIDTH = 480;

@@ -20,5 +20,12 @@ trap finish EXIT
 # possible racing conditions
 sleep 1
 
+if [[ $1 = min ]]; then
+  shift
+  fn=runner-min.html
+else
+  fn=runner.html
+fi
+
 # Start the tests
-mocha-phantomjs http://localhost:8081/auto_tests/runner.html "$@"
+mocha-phantomjs http://localhost:8081/auto_tests/$fn "$@"

@@ -41,6 +41,7 @@ eatmydata env TMPDIR=/tmp npm install
 (eatmydata npm run clean || :)
 eatmydata npm run build
 eatmydata npm run test
+eatmydata npm run test-min
 if [[ $GITHUB_REPOSITORY = danvk/dygraphs ]]; then
 	eatmydata npm run coverage
 	eatmydata scripts/post-coverage.sh

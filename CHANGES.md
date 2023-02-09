@@ -25,6 +25,7 @@
 - Shrink `tests.js` source map and make its build reproducible on Debian
 - `tests/resizable.html` exposes the graph object, for quick F12 in-browser use
 - Generate `versions.html` and release notes from new top-level [`CHANGES.md`](https://github.com/danvk/dygraphs/blob/master/CHANGES.md)
+- Modularise dygraphs/tests setup so we can now also test the minified prod css/js (#1028)
 
 # v2.2.0 (2023-01-25)
 

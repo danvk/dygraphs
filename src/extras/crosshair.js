@@ -99,4 +99,5 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
 })();
 
 /* loader wrapper */
+Dygraph._required('dygraphs/src/extras/crosshair.js', /* exports */ {});
 })();

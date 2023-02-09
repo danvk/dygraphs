@@ -71,6 +71,7 @@
     "postpack": "rm -rf _site",
     "watch": "./scripts/watch.sh",
     "test": "./scripts/run-tests.sh",
+    "test-min": "./scripts/run-tests.sh min",
     "tests-ok": "./scripts/check-no-only.sh"
   },
   "pre-commit": [

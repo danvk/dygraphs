@@ -147,4 +147,5 @@ window.smoothPlotter = smoothPlotter;
 Dygraph.smoothPlotter = smoothPlotter;
 
 /* closure and loader wrapper */
+Dygraph._required('dygraphs/src/extras/smooth-plotter.js', /* exports */ {});
 })();

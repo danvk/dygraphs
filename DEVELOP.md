@@ -20,7 +20,8 @@ To build dygraphs and the tests, run:
 
 To run the tests, run:
 
-    npm run test
+    npm run test       # on the unminified bundle
+    npm run test-min   # on the .min.{css,js}
 
 The prerequisites for a full “npm run build” are:
 

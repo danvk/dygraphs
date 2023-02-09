@@ -116,4 +116,5 @@ Dygraph.Plugins.Unzoom = (function _extras_unzoom_closure() {
 })();
 
 /* loader wrapper */
+Dygraph._required('dygraphs/src/extras/unzoom.js', /* exports */ {});
 })();

@@ -76,14 +76,16 @@ cp -r es5 src
 browserify \
     -v \
     --debug \
-    --standalone Dygraph \
+    -p ../scripts/xfrmmodmap-dy.js \
+    --full-paths \
     LICENCE.js \
     src/dygraph.js \
     >dygraph.tmp.js
 browserify \
     -v \
     --debug \
-    LICENCE.js \
+    -p ../scripts/xfrmmodmap-t.js \
+    --full-paths \
     tests5/tests/*.js \
     >tests.tmp.js
 rm -rf src
@@ -100,7 +102,8 @@ cp -r es5 src
 browserify \
     -v \
     --debug \
-    --standalone Dygraph \
+    -p ../scripts/xfrmmodmap-dy.js \
+    --full-paths \
     src/dygraph.js \
     >dygraph.min.tmp.js
 rm -rf src
