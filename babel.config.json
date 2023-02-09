@@ -8,8 +8,7 @@
       "@babel/env",
       {
         "bugfixes": true,
-        "modules": "auto",
-        "spec": true
+        "modules": "auto"
       }
     ]
   ]
