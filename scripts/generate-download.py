@@ -8,7 +8,11 @@ import json
 import sys
 
 if len(sys.argv) > 1:
-  debian_text = '<p>The Debian version <tt>%s</tt>, which this documentation was built for, corresponds to the subsequently mentioned release (plus patches as applicable). Note that, in the Debian package, most of the following links will not work for hopefully obvious reasons.</p>' % sys.argv[1]
+  debian_text = '''<p>The Debian version <tt>%s</tt>, which this documentation
+ was built for, corresponds to the subsequently mentioned release (plus
+ patches as applicable). Note that, in the Debian package, most of the
+ following links will not work for hopefully obvious reasons.</p>
+  '''.strip() % sys.argv[1]
 else:
   debian_text = ''
 
@@ -54,27 +58,41 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 
 %(debian_text)s
 
-<p>The current version of dygraphs is <b>%(version)s</b>. Most users will want to download minified files for this version:</p>
+<p>The current version of dygraphs is <b>%(version)s</b>.
+ Most users will want to download minified files for this version:</p>
 
 <div id="current-release" class="panel">
 %(current_html)s
 </div>
 
-<p>For recent releases, <a href="%(current_link)s">GitHub Releases</a> hosts both source tarball (<tt>dygraphs_%(version)s.orig.tar.gz</tt>, basically the git repository packaged up) and binary release (<tt>dygraphs-%(version)s.tgz</tt>, identical with what was uploaded to NPM). The latter contains the precompiled CSS and JS files in both readable and minified forms as well as a copy of the documentation site, ideal for end users. The former only contains the source code needed to build all of it; distro packagers will want that file.</p>
+<p>For recent releases, <a href="%(current_link)s">GitHub
+ Releases</a> hosts both source tarball
+ (<tt>dygraphs_%(version)s.orig.tar.gz</tt>, basically
+ the git repository packaged up) and binary release
+ (<tt>dygraphs-%(version)s.tgz</tt>, identical with
+ what was uploaded to NPM). The latter contains the precompiled
+ CSS and JS files in both readable and minified forms as well as
+ a copy of the documentation site, ideal for end users.
+ The former only contains the source code needed to build all of it;
+ distro packagers will want that file.</p>
 
-<p>There's a hosted version of dygraphs on <a href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
+<p>There's a hosted version of dygraphs on <a
+ href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
 
 <pre>&lt;script type="text/javascript" src="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
 &lt;link rel="stylesheet" type="text/css" href="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.css" /&gt;
 </pre>
 
-<p>There's a hosted version of dygraphs on <a href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
+<p>There's a hosted version of dygraphs on <a
+ href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
 <pre>&lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
 &lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
 </pre>
 
-<p>But note that use of CDNs violates the EU-GDPR. You can also install dygraphs locally into your project instead using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
+<p>But note that use of CDNs violates the EU-GDPR. Besides the tarballs
+ (see above) you can also install dygraphs locally into your project
+ instead using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
 
 <pre>$ npm install dygraphs
   # dygraphs is now in node_modules/dygraphs/dist/dygraph.{css,js} for
@@ -103,7 +121,8 @@ npm run build-jsonly
 %(previous_lis)s
 </ul>
 
-<p>See <a href="https://dygraphs.com/versions.html">Version History</a> for more information on each release.</p>
+<p>See <a href="https://dygraphs.com/versions.html">Version History</a>
+ for more information on each release.</p>
 
 <!--#include virtual="footer.html" -->''' % {
     'version': releases[0]['version'],

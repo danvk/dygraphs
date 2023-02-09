@@ -150,7 +150,10 @@ print('</ul></div></div>')
 print("""
 <div id='content' class='col-lg-9'>
 <h2>Options Reference</h2>
-<p>Dygraphs tries to do a good job of displaying your data without any further configuration. But inevitably, you're going to want to tinker. Dygraphs provides a rich set of options for configuring its display and behavior.</p>
+<p>Dygraphs tries to do a good job of displaying your data
+ without any further configuration. But inevitably,
+ you’re going to want to tinker. Dygraphs provides a rich set of options
+ for configuring its display and behaviour.</p>
 
 <a name="usage"></a><h3>Usage</h3>
 <p>You specify options in the third parameter to the dygraphs constructor:</p>
@@ -163,18 +166,24 @@ print("""
                 });
 </pre>
 
-<p>After you've created a Dygraph, you can change an option by calling the <code>updateOptions</code> method:</p>
+<p>After you've created a Dygraph, you can change an option by calling the
+ <code>updateOptions</code> method:</p>
 <pre>g.updateOptions({
                   new_option1: value1,
                   new_option2: value2
                 });
 </pre>
 
-<p>Some options can be set on a per-axis and per-series basis. See the docs on <a href="per-axis.html">per-axis and per-series options</a> to learn how to do this. The options which may be set in this way are marked as such on this page.</p>
+<p>Some options can be set on a per-axis and per-series basis.
+ See the docs on <a href="per-axis.html">per-axis and per-series options</a>
+ to learn how to do this. The options which may be set in this way
+ are marked as such on this page.</p>
 
-<p>For options which are functions (e.g. callbacks and formatters), the value of <code>this</code> is set to the Dygraph object.</p>
+<p>For options which are functions (e.g. callbacks and formatters),
+ the value of <code>this</code> is set to the Dygraph object.</p>
 
-<p><strong>Note:</strong> tests marked with ⚠ access external resources, such as Google’s jsapi.</p>
+<p><strong>Note:</strong> tests marked with ⚠ access external resources,
+ such as Google’s jsapi.</p>
 
 <p>And, without further ado, here's the complete list of options:</p>
 """)
