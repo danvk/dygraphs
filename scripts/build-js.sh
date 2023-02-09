@@ -91,8 +91,8 @@ browserify \
 rm -rf src
 ../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
 ../scripts/smap-out.py tests.tmp.js tests.tmp2.js tests.tmp.map
-jq 'del(.sourcesContent)' <tests.tmp.map | perl -MCwd -pe \
-    's!"((?:\.\./)+)!Cwd::realpath($1) eq "/" ? "\"/" : $&!e;' \
+jq . <tests.tmp.map | perl -MCwd -pe \
+    's!^ *"((?:\.\./)+)!Cwd::realpath($1) eq "/" ? "\"/" : $&!e;' \
     >tests.tmp2.map
 ../scripts/smap-in.py tests.tmp2.js tests.tmp2.map tests.js #--nonl
 
