@@ -1113,7 +1113,9 @@ Dygraph.prototype.createRollInterface_ = function() {
   roller.value = this.rollPeriod_;
   utils.update(roller.style, textAttr);
 
-  roller.onchange = () => this.adjustRoll(roller.value);
+  roller.onchange = function onchange() {
+    return this.adjustRoll(roller.value);
+  }.bind(this);
 };
 
 /**
@@ -1328,11 +1330,11 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
   const zoomCallback = this.getFunctionOption('zoomCallback');
-  this.doAnimatedZoom(old_window, new_window, null, null, () => {
+  this.doAnimatedZoom(old_window, new_window, null, null, function animatedZoomCallback() {
     if (zoomCallback) {
       zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
     }
-  });
+  }.bind(this));
 };
 
 /**
@@ -1358,12 +1360,12 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   }
 
   const zoomCallback = this.getFunctionOption('zoomCallback');
-  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, () => {
+  this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function animatedZoomCallback() {
     if (zoomCallback) {
       const [minX, maxX] = this.xAxisRange();
       zoomCallback.call(this, minX, maxX, this.yAxisRanges());
     }
-  });
+  }.bind(this));
 };
 
 /**
@@ -1423,7 +1425,7 @@ Dygraph.prototype.resetZoom = function() {
   }
 
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
-      () => {
+      function animatedZoomCallback() {
         this.dateWindow_ = null;
         this.axes_.forEach(axis => {
           if (axis.valueRange) delete axis.valueRange;
@@ -1431,7 +1433,7 @@ Dygraph.prototype.resetZoom = function() {
         if (zoomCallback) {
           zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
         }
-      });
+      }.bind(this));
 };
 
 /**
@@ -1467,7 +1469,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     }
   }
 
-  utils.repeatAndCleanup(step => {
+  utils.repeatAndCleanup(function cleanupStep(step) {
     if (valueRanges.length) {
       for (var i = 0; i < this.axes_.length; i++) {
         var w = valueRanges[step][i];
@@ -1478,7 +1480,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
       this.dateWindow_ = windows[step];
     }
     this.drawGraph_();
-  }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
+  }.bind(this), steps, Dygraph.ANIMATION_DURATION / steps, callback);
 };
 
 /**

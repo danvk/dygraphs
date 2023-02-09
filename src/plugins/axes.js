@@ -164,7 +164,7 @@ axes.prototype.willDrawChart = function(e) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
-      layout.yticks.forEach(tick => {
+      layout.yticks.forEach(function perTick(tick) {
         if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x;
         var sgn = 1;
@@ -212,7 +212,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.ylabels_.push(label);
-      });
+      }.bind(this));
     }
 
     // draw a vertical line on the left to separate the chart from the labels.
@@ -249,7 +249,7 @@ axes.prototype.willDrawChart = function(e) {
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       var getAxisOption = makeOptionGetter('x');
-      layout.xticks.forEach(tick => {
+      layout.xticks.forEach(function perTick(tick) {
         if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x + tick.pos * area.w;
         y = area.y + area.h;
@@ -280,7 +280,7 @@ axes.prototype.willDrawChart = function(e) {
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
         this.xlabels_.push(label);
-      });
+      }.bind(this));
     }
 
     context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');
