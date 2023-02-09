@@ -1,5 +1,5 @@
 #!/bin/mksh
-# © 2019, 2023 mirabilos <tg@debian.org> Ⓕ CC0
+# © 2019, 2023 mirabilos <tg@debian.org> Ⓕ CC0 or MirBSD or MIT
 
 thisprojecttopdir=dygraphs-
 thisprojectprefix=dygraphs_
