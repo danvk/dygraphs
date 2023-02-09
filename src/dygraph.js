@@ -74,7 +74,8 @@ import GVizChart from './dygraph-gviz';
 "use strict";
 
 /**
- * Creates an interactive, zoomable chart.
+ * @class Creates an interactive, zoomable chart.
+ * @name Dygraph
  *
  * @constructor
  * @param {div | String} div A div or the id of a div into which to construct
@@ -87,7 +88,7 @@ import GVizChart from './dygraph-gviz';
  * whether the input data contains error ranges. For a complete list of
  * options, see http://dygraphs.com/options.html.
  */
-var Dygraph = function(div, data, opts) {
+var Dygraph = function Dygraph(div, data, opts) {
   this.__init__(div, data, opts);
 };
 
@@ -1469,7 +1470,7 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     }
   }
 
-  utils.repeatAndCleanup(function cleanupStep(step) {
+  utils.repeatAndCleanup(function (step) {
     if (valueRanges.length) {
       for (var i = 0; i < this.axes_.length; i++) {
         var w = valueRanges[step][i];

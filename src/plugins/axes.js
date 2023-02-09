@@ -164,7 +164,7 @@ axes.prototype.willDrawChart = function(e) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
-      layout.yticks.forEach(function perTick(tick) {
+      layout.yticks.forEach(function (tick) {
         if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x;
         var sgn = 1;
@@ -249,7 +249,7 @@ axes.prototype.willDrawChart = function(e) {
   if (g.getOptionForAxis('drawAxis', 'x')) {
     if (layout.xticks) {
       var getAxisOption = makeOptionGetter('x');
-      layout.xticks.forEach(function perTick(tick) {
+      layout.xticks.forEach(function (tick) {
         if (tick.label === undefined) return;  // this tick only has a grid line.
         x = area.x + tick.pos * area.w;
         y = area.y + area.h;
