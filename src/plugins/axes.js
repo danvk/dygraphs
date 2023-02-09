@@ -160,6 +160,8 @@ axes.prototype.willDrawChart = function(e) {
     };
   };
 
+  const that = this;
+
   if (g.getOptionForAxis('drawAxis', 'y') || g.getOptionForAxis('drawAxis', 'y2')) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
@@ -183,7 +185,7 @@ axes.prototype.willDrawChart = function(e) {
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
-        context.lineTo(halfUp(x - sgn * this.attr_('axisTickSize')), halfDown(y));
+        context.lineTo(halfUp(x - sgn * that.attr_('axisTickSize')), halfDown(y));
         context.closePath();
         context.stroke();
         */
@@ -211,8 +213,8 @@ axes.prototype.willDrawChart = function(e) {
         }
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
-        this.ylabels_.push(label);
-      }.bind(this));
+        that.ylabels_.push(label);
+      });
     }
 
     // draw a vertical line on the left to separate the chart from the labels.
@@ -257,7 +259,7 @@ axes.prototype.willDrawChart = function(e) {
         /* Tick marks are currently clipped, so don't bother drawing them.
         context.beginPath();
         context.moveTo(halfUp(x), halfDown(y));
-        context.lineTo(halfUp(x), halfDown(y + this.attr_('axisTickSize')));
+        context.lineTo(halfUp(x), halfDown(y + that.attr_('axisTickSize')));
         context.closePath();
         context.stroke();
         */
@@ -279,8 +281,8 @@ axes.prototype.willDrawChart = function(e) {
         label.style.left = left + 'px';
         label.style.width = getAxisOption('axisLabelWidth') + 'px';
         containerDiv.appendChild(label);
-        this.xlabels_.push(label);
-      }.bind(this));
+        that.xlabels_.push(label);
+      });
     }
 
     context.strokeStyle = g.getOptionForAxis('axisLineColor', 'x');

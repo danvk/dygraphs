@@ -1114,9 +1114,10 @@ Dygraph.prototype.createRollInterface_ = function() {
   roller.value = this.rollPeriod_;
   utils.update(roller.style, textAttr);
 
+  const that = this;
   roller.onchange = function onchange() {
-    return this.adjustRoll(roller.value);
-  }.bind(this);
+    return that.adjustRoll(roller.value);
+  };
 };
 
 /**
@@ -1331,11 +1332,12 @@ Dygraph.prototype.doZoomXDates_ = function(minDate, maxDate) {
   var old_window = this.xAxisRange();
   var new_window = [minDate, maxDate];
   const zoomCallback = this.getFunctionOption('zoomCallback');
+  const that = this;
   this.doAnimatedZoom(old_window, new_window, null, null, function animatedZoomCallback() {
     if (zoomCallback) {
-      zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+      zoomCallback.call(that, minDate, maxDate, that.yAxisRanges());
     }
-  }.bind(this));
+  });
 };
 
 /**
@@ -1361,12 +1363,13 @@ Dygraph.prototype.doZoomY_ = function(lowY, highY) {
   }
 
   const zoomCallback = this.getFunctionOption('zoomCallback');
+  const that = this;
   this.doAnimatedZoom(null, null, oldValueRanges, newValueRanges, function animatedZoomCallback() {
     if (zoomCallback) {
-      const [minX, maxX] = this.xAxisRange();
-      zoomCallback.call(this, minX, maxX, this.yAxisRanges());
+      const [minX, maxX] = that.xAxisRange();
+      zoomCallback.call(that, minX, maxX, that.yAxisRanges());
     }
-  }.bind(this));
+  });
 };
 
 /**
@@ -1425,16 +1428,17 @@ Dygraph.prototype.resetZoom = function() {
     newValueRanges = this.yAxisExtremes();
   }
 
+  const that = this;
   this.doAnimatedZoom(oldWindow, newWindow, oldValueRanges, newValueRanges,
       function animatedZoomCallback() {
-        this.dateWindow_ = null;
-        this.axes_.forEach(axis => {
+        that.dateWindow_ = null;
+        that.axes_.forEach(axis => {
           if (axis.valueRange) delete axis.valueRange;
         });
         if (zoomCallback) {
-          zoomCallback.call(this, minDate, maxDate, this.yAxisRanges());
+          zoomCallback.call(that, minDate, maxDate, that.yAxisRanges());
         }
-      }.bind(this));
+      });
 };
 
 /**
@@ -1470,18 +1474,19 @@ Dygraph.prototype.doAnimatedZoom = function(oldXRange, newXRange, oldYRanges, ne
     }
   }
 
+  const that = this;
   utils.repeatAndCleanup(function (step) {
     if (valueRanges.length) {
-      for (var i = 0; i < this.axes_.length; i++) {
+      for (var i = 0; i < that.axes_.length; i++) {
         var w = valueRanges[step][i];
-        this.axes_[i].valueRange = [w[0], w[1]];
+        that.axes_[i].valueRange = [w[0], w[1]];
       }
     }
     if (windows.length) {
-      this.dateWindow_ = windows[step];
+      that.dateWindow_ = windows[step];
     }
-    this.drawGraph_();
-  }.bind(this), steps, Dygraph.ANIMATION_DURATION / steps, callback);
+    that.drawGraph_();
+  }, steps, Dygraph.ANIMATION_DURATION / steps, callback);
 };
 
 /**
