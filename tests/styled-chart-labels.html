@@ -29,6 +29,10 @@
       margin: 5px;
       padding: 2px;
     }
+    .actuallychart {
+      width: 100%;
+      height: 100%;
+    }
     .dygraph-legend {
       text-align: right;
       background: none;
@@ -39,10 +43,10 @@
     <p>In this chart, each chart label is styled independently. View source to
     see how it works.</p>
 
-    <div class="chart" id="div_g" style="width:600px; height:300px;"></div>
+    <div class="chart" style="width:600px; height:300px;"><div class="actuallychart" id="div_g"></div></div>
 
     <p>This version of the chart uses the default styles:</p>
-    <div class="chart" id="div_g2" style="width:600px; height:300px;"></div>
+    <div class="chart" style="width:600px; height:300px;"><div class="actuallychart" id="div_g2"></div></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
       g = new Dygraph(
