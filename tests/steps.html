@@ -12,6 +12,7 @@
     <p>1: Simple line chart:</p>
     <div id="graphdiv1"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g1 = new Dygraph(document.getElementById("graphdiv1"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -19,11 +20,13 @@
                       "2008-05-09,80\n" +
                       "2008-05-10,55\n" +
                       "2008-05-11,69\n");
+    });
     //--><!]]></script>
 
     <p>2: Simple step chart:</p>
     <div id="graphdiv2"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g2 = new Dygraph(document.getElementById("graphdiv2"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -34,11 +37,13 @@
                        {
                           stepPlot: true
                        });
+    });
     //--><!]]></script>
 
     <p>3: Filled step chart:</p>
     <div id="graphdiv3"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g3 = new Dygraph(document.getElementById("graphdiv3"),
                       "Date,Temperature\n" +
                       "2008-05-07,75\n" +
@@ -50,11 +55,13 @@
                           stepPlot: true,
                           fillGraph: true
                        });
+    });
     //--><!]]></script>
 
     <p>4: Line chart with high/low bands:</p>
     <div id="graphdiv4"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g4 = new Dygraph(document.getElementById("graphdiv4"),
         [
           [1, [75, 2]],
@@ -68,11 +75,13 @@
            labels: ["X", "Data"]
         }
       );
+    });
     //--><!]]></script>
 
     <p>5: Step chart with high/low bands:</p>
     <div id="graphdiv5"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g5 = new Dygraph(document.getElementById("graphdiv5"),
         [
           [1, [75, 2]],
@@ -87,11 +96,13 @@
            labels: ["X", "Data"]
         }
       );
+    });
     //--><!]]></script>
 
     <p>6: Stepped chart with gaps from CSV:</p>
     <div id="graphdiv6"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
     g6 = new Dygraph(
       document.getElementById("graphdiv6"),
       "Date,GapSeries1,GapSeries2\n" +
@@ -106,11 +117,13 @@
         stepPlot: true
       }
     );
+    });
     //--><!]]></script>
 
     <p>7: Stepped chart with gaps from native data:</p>
     <div id="graphdiv7"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
     g7 = new Dygraph(
       document.getElementById("graphdiv7"),
       [
@@ -133,11 +146,13 @@
         }
       }
     );
+    });
     //--><!]]></script>
 
     <p>8: Stacked filled step chart:</p>
     <div id="graphdiv8"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g8 = new Dygraph(document.getElementById("graphdiv8"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
@@ -151,12 +166,14 @@
                           stackedGraph: true,
                           includeZero: true
                        });
+    });
     //--><!]]></script>
 
     <p>9: Mixed mode - step and line:</p>
     <div id="graphdiv9"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g8 = new Dygraph(document.getElementById("graphdiv9"),
+    Dygraph.onDOMready(function onDOMready() {
+      g9 = new Dygraph(document.getElementById("graphdiv9"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
                       "2008-05-08,12,88\n" +
@@ -173,12 +190,14 @@
                         stackedGraph: false,
                         includeZero: true
                       });
+    });
     //--><!]]></script>
 
     <p>10: Mixed mode - step and line (filled):</p>
     <div id="graphdiv10"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g8 = new Dygraph(document.getElementById("graphdiv10"),
+    Dygraph.onDOMready(function onDOMready() {
+      g10 = new Dygraph(document.getElementById("graphdiv10"),
                       "Date,Idle,Used\n" +
                       "2008-05-07,70,30\n" +
                       "2008-05-08,12,88\n" +
@@ -195,12 +214,14 @@
                         stackedGraph: false,
                         includeZero: true
                       });
+    });
     //--><!]]></script>
 
     <p>11: Mixed mode - step and line (stacked and filled):</p>
     <div id="graphdiv11"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g8 = new Dygraph(document.getElementById("graphdiv11"),
+    Dygraph.onDOMready(function onDOMready() {
+      g11 = new Dygraph(document.getElementById("graphdiv11"),
                       "Date,Idle,Used,NotUsed,Active\n" +
                       "2008-05-07,60,30,5,5\n" +
                       "2008-05-08,12,73,5,10\n" +
@@ -218,12 +239,14 @@
                         stackedGraph: true,
                         includeZero: true
                       });
+    });
     //--><!]]></script>
 
     <p>12: Mixed mode - step and line (high/low bands):</p>
     <div id="graphdiv12"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g8 = new Dygraph(document.getElementById("graphdiv12"),
+    Dygraph.onDOMready(function onDOMready() {
+      g12 = new Dygraph(document.getElementById("graphdiv12"),
         [
           [1, [75, 2], [50, 3]],
           [2, [70, 5], [90, 4]],
@@ -240,12 +263,14 @@
           }
         }
       );
+    });
     //--><!]]></script>
 
     <p>13: Mixed mode - step and line (custombars):</p>
     <div id="graphdiv13"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g8 = new Dygraph(document.getElementById("graphdiv13"),
+    Dygraph.onDOMready(function onDOMready() {
+      g13 = new Dygraph(document.getElementById("graphdiv13"),
         [
           [1, [73, 75, 78], [50, 55, 70]],
           [2, [65, 70, 75], [83, 91, 99]],
@@ -262,6 +287,7 @@
           }
         }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

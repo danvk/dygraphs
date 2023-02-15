@@ -19,6 +19,7 @@
     <div id="demodiv2" style="width: 800px; height: 300px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       const doubleClickZoomOutPlugin = {
         activate: function(g) {
           // Save the initial y-axis range for later.
@@ -61,6 +62,7 @@
                 animatedZooms: true
               }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

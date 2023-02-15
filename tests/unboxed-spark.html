@@ -20,6 +20,7 @@
     <div id="div_g" style="width:600px; height:300px; border:1px solid white;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var show_box = false;
       g = new Dygraph(
             document.getElementById("div_g"),
@@ -27,17 +28,17 @@
               axes : {
                 x : {
                   drawGrid: show_box,
-                  drawAxis : show_box,
+                  drawAxis: show_box,
                 },
                 y : {
                   drawGrid: show_box,
-                  drawAxis : show_box,
+                  drawAxis: show_box,
                 }
               }
             }
           );
 
-      function toggleBox(btn) {
+      toggleBox = function toggleBox(btn) {
         show_box = !show_box;
         document.getElementById("div_g").style.border = show_box ? '1px solid black' : '1px solid white';
         if (show_box) {
@@ -46,27 +47,32 @@
           btn.innerHTML = 'Show box';
         }
       }
+    });
     //--><!]]></script>
 
     <button onClick='toggleBox(this)'>Show box</button>
 
-    <!-- Dygraphs constructs a div inside of whatever div we pass in. So the container div can't be a span or have display: inline-block. We use a table to get the sparkline to display on the same line as the text. -->
+    <!-- Dygraphs constructs a div inside of whatever div we pass in. So the
+         container div can't be a span or have display: inline-block. We use a
+         table to get the sparkline to display on the same line as the text.
+      -->
     <p>
     <table><tr><td>This style can be used to produce interactive sparklines with dygraphs:</td><td><div id="div_spark" style="width:100px; height:20px;"></div></td></tr></table>
     </p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      var g2 = new Dygraph(
+    Dygraph.onDOMready(function onDOMready() {
+      g2 = new Dygraph(
             document.getElementById("div_spark"),
             data, {
               axes : {
                 x : {
                   drawGrid: false,
-                  drawAxis : false,
+                  drawAxis: false,
                 },
                 y : {
                   drawGrid: false,
-                  drawAxis : false,
+                  drawAxis: false,
                 }
               },
               strokeWidth: 1.0,
@@ -75,6 +81,7 @@
               highlightCircleSize: 2
             }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

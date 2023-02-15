@@ -18,6 +18,7 @@
     </td>
     </tr></table>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
               document.getElementById("demodiv"),
               "Date,Value\n" +
@@ -37,6 +38,7 @@
                 height: 320
               }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

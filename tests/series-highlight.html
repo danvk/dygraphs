@@ -17,6 +17,7 @@
   <body>
     <h2>Series highlighting demo</h2>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
 
 var getData = function(numSeries, numRows, isStacked) {
   var data = [];
@@ -77,6 +78,8 @@ makeGraph("few", 20, 50, false);
 makeGraph("few", 10, 20, true);
 makeGraph("many", 75, 50, false);
 makeGraph("many", 40, 50, true);
+
+});
 //--><!]]></script>
   </body>
 </html>

@@ -26,16 +26,6 @@
     <p>g.visibility() = <span id="visibility"></span></p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      g = new Dygraph(
-            document.getElementById("div_g"),
-            NoisyDataABC, {
-              rollPeriod: 7,
-              errorBars: true,
-              visibility: [false, true, true]
-            }
-          );
-      setStatus();
-
       function setStatus() {
         document.getElementById("visibility").innerHTML =
           g.visibility().toString();
@@ -45,6 +35,18 @@
         g.setVisibility(parseInt(el.id), el.checked);
         setStatus();
       }
+
+    Dygraph.onDOMready(function onDOMready() {
+      g = new Dygraph(
+            document.getElementById("div_g"),
+            NoisyDataABC, {
+              rollPeriod: 7,
+              errorBars: true,
+              visibility: [false, true, true]
+            }
+          );
+      setStatus();
+    });
     //--><!]]></script>
   </body>
 </html>

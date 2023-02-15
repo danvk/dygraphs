@@ -40,6 +40,7 @@
     </tr></table>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g2 = new Dygraph(document.getElementById("graphdiv2"),
                        data_nolabel,
                        {
@@ -59,6 +60,7 @@
                          labelsDiv: "labels3",
                          labelsShowZeroValues: false
                        });
+    });
     //--><!]]></script>
   </body>
 </html>

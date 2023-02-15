@@ -19,6 +19,7 @@
     <div id="div_gs" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             function HourlyData() {
@@ -67,6 +68,7 @@
               return ret;
             }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

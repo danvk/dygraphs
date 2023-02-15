@@ -37,6 +37,8 @@
                ]);
       }
       var orig_range = [ r[0][0].valueOf(), r[r.length - 1][0].valueOf() ];
+
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             r, {
@@ -48,6 +50,7 @@
               labels: ["Date", "a", "b"]
             }
           );
+    });
 
       var desired_range = null;
       function approach_range() {

@@ -37,6 +37,7 @@
     <p>This chart shows a continuous series which crosses a "spring forward". The x-axis ticks should skip from 1:55AM to 3:00AM.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
               document.getElementById("demodiv"),
 "Date/Time,Purchases\n" +
@@ -88,6 +89,7 @@
           dst_data_spring,
           { width: 1024, labels: ['Date', 'Value'] }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

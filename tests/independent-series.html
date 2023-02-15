@@ -79,7 +79,8 @@
     </tr></table>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-    var g1 = new Dygraph(
+    Dygraph.onDOMready(function onDOMready() {
+     g1 = new Dygraph(
       document.getElementById("graph"),
       [
         [1, null, 3],
@@ -94,7 +95,8 @@
         connectSeparatedPoints: true,
         drawPoints: true
       }
-    );
+     );
+    });
     //--><!]]></script>
 
     <h3>Encoding a gap</h3>
@@ -127,7 +129,8 @@
     <p>The gap would normally be encoded as a null, or missing value. But when you use <code>connectSeparatedPoints</code>, that has a special meaning. Instead, you have to use <code>NaN</code>. This is a bit of a hack, but it gets the job done.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-    g2 = new Dygraph(
+    Dygraph.onDOMready(function onDOMready() {
+     g3 = new Dygraph(
       document.getElementById("graph3"),
 "x,A,B  \n" +
 "1,,3   \n" +
@@ -142,7 +145,8 @@
         connectSeparatedPoints: true,
         drawPoints: true
       }
-    );
+     );
+    });
     //--><!]]></script>
 
     <table><tr>
@@ -207,7 +211,8 @@
     <p>Use double click to unzoom and see the currently invisible points</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-    g2 = new Dygraph(
+    Dygraph.onDOMready(function onDOMready() {
+     g2 = new Dygraph(
       document.getElementById("graph2"),
 "x,A,B  \n" +
 "0,2,1   \n" +
@@ -227,7 +232,8 @@
         highlightCircleSize: 5,
         dateWindow: [0,3]
       }
-    );
+     );
+    });
     //--><!]]></script>
 
     <table><tr>

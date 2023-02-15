@@ -28,6 +28,8 @@
 <div id="legend"></div>
 
 <script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
+
 function legendFormatter(data) {
   if (data.x == null) {
     // This happens when there's no selection and {legend: 'always'} is set.
@@ -77,6 +79,8 @@ new Dygraph(
       legendFormatter: legendFormatter
     }
 );
+
+});
 //--><!]]></script>
   </body>
 </html>

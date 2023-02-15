@@ -44,6 +44,7 @@
     </table>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var gs = [];
       var rebaseOpts = [100, 'percent', null];
       for (var i = 1; i <= 3; i++) {
@@ -58,6 +59,7 @@
         );
       }
       Dygraph.synchronize(gs, { range: false });
+    });
     //--><!]]></script>
   </body>
 </html>

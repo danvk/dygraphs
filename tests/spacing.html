@@ -17,6 +17,7 @@
     <div id="div_g2" style="width:300px; height:200px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             data, {
@@ -39,6 +40,7 @@
               }
             }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

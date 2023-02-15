@@ -19,6 +19,7 @@
     <div id="g3" style="width:600px; height:200px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var negs = [];
       var mixed = [];
       var pos = [];
@@ -42,6 +43,7 @@
         document.getElementById("g3"),
         pos, { labels: [ 'x', 'y1', 'y2' ] }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -49,6 +49,7 @@
     <div class="chart" style="width:600px; height:300px;"><div class="actuallychart" id="div_g2"></div></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             data, {
@@ -73,6 +74,7 @@
               strokeWidth: 1.5
             }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

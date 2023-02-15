@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       google.load('visualization', '1');
 
       function createDataTable(dateType) {
@@ -61,15 +62,15 @@
 
       }
 
-      function setSelection() {
+      setSelection = function setSelection() {
           var sel = [{column: 1, row: 2}, {column: 2, row: 2}];
           chart.setSelection(sel);
       }
-      function clearSelection() {
+      clearSelection = function clearSelection() {
           var sel = [];
           chart.setSelection(sel);
       }
-      function getChartSelection() {
+      getChartSelection = function getChartSelection() {
           var sel = chart.getSelection();
 
           var html = '<p>Selection: [';
@@ -82,6 +83,7 @@
           document.getElementById('output').innerHTML += html;
       }
       google.setOnLoadCallback(drawVisualization);
+    });
     //--><!]]></script>
   </head>
   <body>

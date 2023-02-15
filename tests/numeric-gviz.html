@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       google.load("visualization", "1", {"packages":[ "columnchart"]});
       google.setOnLoadCallback(drawchart);
 
@@ -24,6 +25,7 @@
                 "graph"));
           chart.draw(data, {errorBars: true, showRoller: true, includeZero: true });
       }
+    });
     //--><!]]></script>
   </head>
   <body>

@@ -16,6 +16,7 @@
     <div id="dg2" style="width:600px; height:300px;">Loading...</div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var frac_str =
                   "X,Frac1,Frac2\n" +
                   "1,1/2,3/4\n"+
@@ -36,6 +37,7 @@
                     errorBars: true,
                     showRoller: true
                   });
+    });
     //--><!]]></script>
   </body>
 </html>

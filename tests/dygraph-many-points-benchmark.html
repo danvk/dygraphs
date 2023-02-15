@@ -43,6 +43,7 @@
     <div id="metaperformance"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var graph = null;
       var metrics = null;
       var dataType = "sine";
@@ -193,6 +194,7 @@
       if (values["go"]) {
         updatePlot();
       }
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -16,6 +16,7 @@
     <p>When you zoom/pan, the region should remain highlighted.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       // A basic sinusoidal data series.
       var data = [];
       for (var i = 0; i < 1000; i++) {
@@ -49,6 +50,7 @@
 
           }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

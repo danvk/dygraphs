@@ -22,11 +22,13 @@
     <p>Hopefully this stays in its border:</p>
     <div id="bordered" style="width:600px; height:300px;"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-    var g = new Dygraph(document.getElementById('bordered'), data,
-    {
-      title: 'Chart Title',
-      xlabel: 'Date',
-      ylabel: 'Temperature (F)'
+    Dygraph.onDOMready(function onDOMready() {
+      g = new Dygraph(document.getElementById('bordered'), data,
+        {
+          title: 'Chart Title',
+          xlabel: 'Date',
+          ylabel: 'Temperature (F)'
+        });
     });
     //--><!]]></script>
   </body>

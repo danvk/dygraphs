@@ -38,6 +38,7 @@
     </div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       data = "X,x,100-x\n";
       for (var i = 0; i < 100; i++) {
         data += i + "," + i + "," + (100 - i) + "\n";
@@ -92,11 +93,12 @@
               many_data,
               { stackedGraph: true }));
 
-      function setSelection(row) {
+      setSelection = function setSelection(row) {
         for (var i = 0; i < graphs.length; i++) {
           graphs[i].setSelection(row ? row : false);
         }
       }
+    });
     //--><!]]></script>
   </body>
 </html>

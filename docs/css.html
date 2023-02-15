@@ -16,6 +16,7 @@ drawn on the canvas and must by styled using dygraphs <a
 
 <div id="demodiv"></div>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
   g = new Dygraph(
       document.getElementById("demodiv"),
       "dow.txt",
@@ -43,6 +44,7 @@ drawn on the canvas and must by styled using dygraphs <a
           $('.dygraph-legend').text('.dygraph-legend');
         },
       });
+});
 //--><!]]></script>
 
 <p>The CSS classes for the chart labels are:</p>

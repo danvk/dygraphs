@@ -73,6 +73,7 @@
     <div id="rangeselectorveil" style="width:800px; height:320px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g1 = new Dygraph(
           document.getElementById("noroll"),
           data_temp,
@@ -205,6 +206,7 @@
             dateWindow: [5, 20],
           }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

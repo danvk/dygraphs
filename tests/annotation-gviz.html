@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       google.load('visualization', '1', {'packages':['annotatedtimeline']});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
@@ -42,6 +43,7 @@
         var g = new Dygraph.GVizChart(document.getElementById("dg_div"));
         g.draw(data, {displayAnnotations: true, labelsKMB: true});
       }
+    });
     //--><!]]></script>
   </head>
 

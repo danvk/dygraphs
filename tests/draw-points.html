@@ -12,9 +12,11 @@
   <body>
     <p>with points:</p>
     <div id="g" style="width:600px; height:300px;"></div>
+    <p>without points:</p>
     <div id="g2" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var g1 = new Dygraph(
           document.getElementById("g"),
           NoisyData, {
@@ -32,6 +34,7 @@
             drawPoints: false
           }
         );
+    });
     //--><!]]></script>
   </body>
 </html>

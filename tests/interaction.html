@@ -46,20 +46,21 @@
     </table>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       document.addEventListener("mousewheel", function() {
         lastClickedGraph = null;
       }, false);
       document.addEventListener("click", function() { lastClickedGraph = null; }, false);
-      var g = new Dygraph(document.getElementById("div_g"),
+      g = new Dygraph(document.getElementById("div_g"),
            NoisyData, { errorBars : true });
       var s = document.getElementById("g2_console");
-      var g2 = new Dygraph(document.getElementById("div_g2"),
+      g2 = new Dygraph(document.getElementById("div_g2"),
            NoisyData,
            {
              errorBars : true,
              interactionModel: {}
            });
-      var g3 = new Dygraph(document.getElementById("div_g3"),
+      g3 = new Dygraph(document.getElementById("div_g3"),
            NoisyData, { errorBars : true, interactionModel : {
         'mousedown' : downV3,
         'mousemove' : moveV3,
@@ -68,7 +69,7 @@
         'dblclick' : dblClickV3,
         'mousewheel' : scrollV3
       }});
-      var g4 = new Dygraph(document.getElementById("div_g4"),
+      g4 = new Dygraph(document.getElementById("div_g4"),
            NoisyData, { errorBars : true, drawPoints : true, interactionModel : {
             'mousedown' : downV4,
             'mousemove' : moveV4,
@@ -77,6 +78,7 @@
            },
            underlayCallback : captureCanvas
       });
+    });
     //--><!]]></script>
   </body>
 </html>

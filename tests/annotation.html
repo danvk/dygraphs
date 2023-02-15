@@ -23,6 +23,7 @@
     <div style="position:absolute; left:700px; top: 200px;" id="list"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var eventDiv = document.getElementById("events");
       function nameAnnotation(ann) {
         return "(" + ann.series + ", " + ann.x + ")";
@@ -108,7 +109,7 @@
         g.setAnnotations(annotations);
       }
 
-      function add() {
+      add = function add() {
         var x = last_ann + 2;
         var annnotations = g.annotations();
         annotations.push( {
@@ -122,7 +123,7 @@
         g.setAnnotations(annotations);
       }
 
-      function bottom(el) {
+      bottom = function bottom(el) {
         var to_bottom = true;
         if (el.value != 'Shove to bottom') to_bottom = false;
 
@@ -176,6 +177,7 @@
           num++;
         }
       });
+    });
     //--><!]]></script>
   </body>
 </html>

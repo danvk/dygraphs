@@ -27,6 +27,7 @@
     //--><!]]></script>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       for (k in window) {
         if (!windowProps.hasOwnProperty(k)) {
           newProps.push(k);
@@ -54,6 +55,7 @@
         html += '<li>' + level2props[i] + '</li>\n';
       }
       document.getElementById('list2').innerHTML = html;
+    });
     //--><!]]></script>
   </body>
 </html>

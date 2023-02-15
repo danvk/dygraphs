@@ -30,6 +30,7 @@
     time boundaries.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var data = (function() {
         var rand10 = function () { return Math.round(10 * Math.random()); };
         var a = []
@@ -53,6 +54,7 @@
                      labels: ['UTC', 'random']
                    }
                  );
+    });
     //--><!]]></script>
   </body>
 </html>

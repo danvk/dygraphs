@@ -34,6 +34,7 @@
     'M', 'B', etc. labels.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       function round(num, places) {
         var shift = Math.pow(10, places);
         return Math.round(num * shift)/shift;
@@ -91,6 +92,7 @@
         labelsKMG2: true,
         labels: ['Base', 'Power']
       });
+    });
     //--><!]]></script>
   </body>
 </html>

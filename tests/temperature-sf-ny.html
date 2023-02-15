@@ -29,6 +29,7 @@
     </p>
     <div id="roll14" style="width:800px; height:320px;"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g1 = new Dygraph(
           document.getElementById("noroll"),
           data_temp,
@@ -51,6 +52,7 @@
             legend: 'always',
           }
       );
+    });
     //--><!]]></script>
   </body>
 </html>

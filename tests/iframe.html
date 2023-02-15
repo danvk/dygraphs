@@ -43,6 +43,7 @@
     happen.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var data = function() {
         var zp = function(x) { if (x < 10) return "0"+x; else return x; };
         var r = "date,parabola,line,another line,sine wave\n";
@@ -67,6 +68,7 @@
                 showRangeSelector: true
               }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -19,6 +19,7 @@
     </td>
     </tr></table>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
               document.getElementById("demodiv"),
               function() {
@@ -48,6 +49,7 @@
                 valueRange: [3000, 0]  // Reverse y-axis
               }
           );
+    });
     //--><!]]></script>
   </body>
 </html>

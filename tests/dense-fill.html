@@ -23,6 +23,7 @@
     <div class="chart" data-opts='{"fillGraph":true,"stepPlot":true}'></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var data = [];
       for (var i = 0; i < 10000; i++) {
         data.push([i, Math.sin(i/1000), Math.cos(i/1000)]);
@@ -39,6 +40,7 @@
 
         new Dygraph(chartDivs[i], data, opts);
       }
+    });
     //--><!]]></script>
   </body>
 </html>

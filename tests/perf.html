@@ -14,6 +14,7 @@
     <div id="status"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var num_tests = 250;
       var times = [];
       var start = new Date;
@@ -43,6 +44,7 @@
           labels: [ "Iteration", "Time (ms)" ]
         }
         );
+    });
     //--><!]]></script>
 
     <p><b>Some numbers on a MacBook Pro 2.53 GHz Core 2 Duo</b><br/>

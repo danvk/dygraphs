@@ -58,6 +58,7 @@
   <div id="draw_div" style="width: 800px; height: 400px;"></div>
 
   <script type="text/javascript"><!--//--><![CDATA[//><!--
+  Dygraph.onDOMready(function onDOMready() {
     var isDrawing = false;
     var lastDrawRow = null, lastDrawValue = null;
     var tool = 'pencil';
@@ -114,7 +115,7 @@
       lastDrawValue = null;
     }
 
-    function change_tool(tool_div) {
+    change_tool = function change_tool(tool_div) {
       var ids = ['tool_zoom', 'tool_pencil', 'tool_eraser'];
       for (var i = 0; i < ids.length; i++) {
         var div = document.getElementById(ids[i]);
@@ -209,6 +210,7 @@
           }
         });
         window.onmouseup = finishDraw;
+  });
   //--><!]]></script>
 </body>
 </html>

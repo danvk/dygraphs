@@ -43,6 +43,7 @@
       </p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
@@ -83,30 +84,31 @@
         elem.innerHTML = "valueRange : [" + ranges + "]";
       }
 
-      function zoomGraphX(minDate, maxDate) {
+      zoomGraphX = function zoomGraphX(minDate, maxDate) {
         g.updateOptions({
           dateWindow: [minDate, maxDate]
         });
         showXDimensions(minDate, maxDate);
       }
 
-      function zoomGraphY(minValue, maxValue) {
+      zoomGraphY = function zoomGraphY(minValue, maxValue) {
         g.updateOptions({
           valueRange: [minValue, maxValue]
         });
         showYDimensions(g.yAxisRanges());
       }
 
-      function unzoomGraph() {
+      unzoomGraph = function unzoomGraph() {
         g.updateOptions({
           dateWindow: null,
           valueRange: null
         });
       }
 
-      function panEdgeFraction(value) {
+      panEdgeFraction = function panEdgeFraction(value) {
         g.updateOptions({ panEdgeFraction : value });
       }
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -14,6 +14,7 @@
     <div id="demodiv"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
               document.getElementById("demodiv"),
               [
@@ -37,6 +38,7 @@
         shortText: 'M',
         text: 'Marker'
       }]);
+    });
     //--><!]]></script>
   </body>
 </html>

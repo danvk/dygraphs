@@ -25,6 +25,7 @@
     <div id="div_g1" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       function data0() {
         return "Date,A\n" +
         "2010-12-01,5\n"+
@@ -62,7 +63,7 @@
       var g1 = new Dygraph(document.getElementById("div_g1"), data1, {});
       var graphs = [ g0, g1 ];
       var scales = { x : false, y : false };
-      function setLogScale(axis, val) {
+      setLogScale = function setLogScale(axis, val) {
         if (axis === 'y') {
           for (var idx = 0; idx < graphs.length; idx++) {
             graphs[idx].updateOptions({ logscale: val });
@@ -78,6 +79,7 @@
       }
 
       setLogScale('y', true);
+    });
     //--><!]]></script>
   </body>
 </html>

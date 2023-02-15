@@ -13,6 +13,7 @@
     </style>
   </head>
   <body>
+    <p>XXX broken, needs updating to Dygraphs 2 API</p>
     <h2>Linear Regression Demo</h2>
     <p>Click the buttons to generate linear regressions over either data
     series. If you zoom in and click the regression button, the regression will
@@ -22,6 +23,7 @@
     <div id="demodiv" style="width: 480px; height: 320px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var data = [];
       for (var i = 0; i < 120; i++) {
         data.push([i,
@@ -50,7 +52,7 @@
       // if coeffs = [ null, [1, 2], null ] then we draw a regression for series 1
       // only. The regression line is y = 1 + 2 * x.
       var coeffs = [ null, null, null ];
-      function regression(series) {
+      regression = function regression(series) {
         // Only run the regression over visible points.
         var range = g.xAxisRange();
 
@@ -129,10 +131,11 @@
         g.updateOptions(new_opts);
       }
 
-      function clearLines() {
+      clearLines = function clearLines() {
         for (var i = 0; i < coeffs.length; i++) coeffs[i] = null;
         updateChart();
       }
+    });
     //--><!]]></script>
 
     <div style="position: absolute; left: 500px; top: 150px;">

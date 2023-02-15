@@ -55,6 +55,7 @@
     <p>See the <a href="smooth-plots.html">smooth-plots demo</a> for an example of a custom plotter which connects points using bezier curves instead of straight lines.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       // Darken a color
       function darkenColor(colorStr) {
         // Defined in dygraph-utils.js
@@ -328,6 +329,7 @@ var candleData = "Date,Open,Close,High,Low\n" +
                 }
               }
             });
+    });
     //--><!]]></script>
   </body>
 </html>

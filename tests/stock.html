@@ -14,12 +14,14 @@
   <div id="stock_div" style="width: 800px; height: 400px;"></div>
 
   <script type="text/javascript"><!--//--><![CDATA[//><!--
-    g = new Dygraph(document.getElementById("stock_div"),
+    Dygraph.onDOMready(function onDOMready() {
+      g = new Dygraph(document.getElementById("stock_div"),
         stockData,
         {
           customBars: true,
           logscale: true
         });
+    });
 
     function setLog(val) {
       g.updateOptions({ logscale: val });

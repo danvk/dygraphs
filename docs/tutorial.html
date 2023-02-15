@@ -18,6 +18,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 &lt;/head&gt;&lt;body&gt;
 &lt;div id="graphdiv"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
+Dygraph.onDOMready(function onDOMready() {
   g = new Dygraph(
 
     // containing div
@@ -30,6 +31,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
     "2008-05-09,80\n"
 
   );
+});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre>
@@ -38,8 +40,8 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
-
         // containing div
         document.getElementById("graphdiv"),
 
@@ -49,12 +51,17 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         "2008-05-08,70\n" +
         "2008-05-09,80\n"
       );
+    });
     //--><!]]></script>
   </div>
 </div>
 
 <p style="clear:both">In order to keep this example self-contained,
- the second parameter is raw CSV data.
+ the second parameter is raw CSV data. You can use your favourite
+ “defer until DOM is ready” method (e.g. <a
+ href="http://api.prototypejs.org/dom/document/observe/index.html">Prototype</a> or <a
+ href="https://api.jquery.com/ready/">jQuery</a>); dygraphs includes a
+ small self-contained one that can be used if nothing else is available.
  The dygraphs library parses this data (including column headers),
  resizes its container to a reasonable default,
  calculates appropriate axis ranges and tick marks and draws the graph.
@@ -85,11 +92,13 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 &lt;div id="graphdiv2"
   style="width:500px; height:300px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
+Dygraph.onDOMready(function onDOMready() {
   g2 = new Dygraph(
     document.getElementById("graphdiv2"),
     "temperatures.csv", // path to CSV file
-    {}          // options
+    {}                  // options
   );
+});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre>
@@ -98,11 +107,13 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv2" style="width:500px; height:300px;"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g2 = new Dygraph(
         document.getElementById("graphdiv2"),
         "temperatures.csv",
         {}
       );
+    });
     //--><!]]></script>
   </div>
 </div>
@@ -135,6 +146,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 &lt;div id="graphdiv3"
   style="width:500px; height:300px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
+Dygraph.onDOMready(function onDOMready() {
   g3 = new Dygraph(
     document.getElementById("graphdiv3"),
     "temperatures.csv",
@@ -143,6 +155,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
       showRoller: true
     }
   );
+});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre>
@@ -151,6 +164,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
     <h3 style="text-align:center">OUTPUT</h3>
     <div id="graphdiv3" style="width:500px; height:300px;"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g3 = new Dygraph(
         document.getElementById("graphdiv3"),
         "temperatures.csv",
@@ -159,6 +173,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
           showRoller: true
         }
       );
+    });
     //--><!]]></script>
   </div>
 </div>
@@ -194,6 +209,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
 &lt;div id="graphdiv4"
   style="width:480px; height:320px;"&gt;&lt;/div&gt;
 &lt;script type="text/javascript"&gt;
+Dygraph.onDOMready(function onDOMready() {
   g4 = new Dygraph(
     document.getElementById("graphdiv4"),
     "twonormals.csv",
@@ -204,6 +220,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
       valueRange: [50,125]
     }
   );
+});
 &lt;/script&gt;
 &lt;/body&gt;&lt;/html&gt;
 </pre>
@@ -212,6 +229,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
   <h3 style="text-align:center">OUTPUT</h3>
   <div id="graphdiv4" style="width:480px; height:320px;"></div>
   <script type="text/javascript"><!--//--><![CDATA[//><!--
+  Dygraph.onDOMready(function onDOMready() {
     g4 = new Dygraph(
       document.getElementById("graphdiv4"),
       "twonormals.csv",
@@ -222,6 +240,7 @@ and <code>dygraph.css</code> CSS file. Then instantiate a <code>Dygraph</code> o
         valueRange: [50,125]
       }
     );
+  });
   //--><!]]></script>
 </div>
 </div>
@@ -279,6 +298,7 @@ annotation demo<b
 <div style="width:750px; text-align:center; font-weight: bold; font-size: 125%;">Batting Average for Ichiro Suzuki vs. Mariners (2004)</div>
 <div id="baseballdiv" style="width:750px; height:300px;"></div>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
   new Dygraph(
     document.getElementById("baseballdiv"),
     "suzuki-mariners.txt",
@@ -289,6 +309,7 @@ annotation demo<b
       rollPeriod: 15
     }
   );
+});
 //--><!]]></script>
 
 <b>Code:</b>
@@ -331,7 +352,8 @@ new Dygraph(
 </p>
 
 <script type="text/javascript"><!--//--><![CDATA[//><!--
-  var stock_annotations = [
+Dygraph.onDOMready(function onDOMready() {
+  stock_annotations = [
     {
       series: "Real",
       x: "1929-08-15",
@@ -376,6 +398,7 @@ new Dygraph(
       }
     }
   );
+});
 
   function stockchange(el) {
     stockchart.setVisibility(el.id, el.checked);
@@ -402,7 +425,7 @@ curl 'http://data.bls.gov/PDQ/servlet/SurveyOutputServlet?series_id=CUUR0000SA0&
 sed '1,/Series Id,Year,/d' cpi-u.txt | sed '/^$/,$d' | cut -d, -f2,3,4 | perl -ne 'print if /,M(0[0-9]|1[012]),/' | perl -pe 's/(\d{4}),M(\d{2}),/$1-$2\t/g' > cpi-u.tsv
 
 # Merge:
-join -t'     ' cpi-u.tsv monthly-djia.tsv > annotated-djia.tsv
+join -t'	' cpi-u.tsv monthly-djia.tsv > annotated-djia.tsv
 perl -ne 'BEGIN{print "Month,Nominal,Real\n"} chomp; ($m,$cpi,$low,$close,$high) = split /\t/; $cpi /= 100.0; print "$m-15,$low;$close;$high,",($low/$cpi),";",($close/$cpi),";",($high/$cpi),"\n"' annotated-djia.tsv > dow.txt
 
 -->

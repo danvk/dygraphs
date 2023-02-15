@@ -20,6 +20,7 @@
     the value labels.</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var values = (function () {
         var rand10 = function () { return Math.round(10 * Math.random()); };
         var a = [];
@@ -49,6 +50,7 @@
                      labels: ['time', 'random']
                    }
                  );
+    });
     //--><!]]></script>
   </body>
 </html>

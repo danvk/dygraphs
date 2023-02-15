@@ -42,6 +42,7 @@
     </p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       gs = [];
       var blockRedraw = false;
       for (var i = 1; i <= 4; i++) {
@@ -57,7 +58,7 @@
       }
       var sync = Dygraph.synchronize(gs);
 
-      function update() {
+      update = function update() {
         var zoom = document.getElementById('chk-zoom').checked,
             selection = document.getElementById('chk-selection').checked,
             syncRange = document.getElementById('chk-range').checked;
@@ -70,6 +71,7 @@
           range: syncRange
         });
       }
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -19,11 +19,13 @@
 
     <div id="graphdiv" style="width:600px; height:300px;"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       var g = new Dygraph(document.getElementById("graphdiv"),
           document.getElementById("data").innerHTML,
           {
             customBars: true
           });
+    });
     //--><!]]></script>
   </body>
 </html>

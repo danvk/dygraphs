@@ -17,9 +17,11 @@
   Usage:
    <div id="graphdiv" style="width:800px; height:500px;"></div>
    <script type="text/javascript"><!--//--><![CDATA[//><!--
+   $(function onDOMready() {
      new Dygraph(document.getElementById("graphdiv"),
                  "datafile.csv",  // CSV file with headers
                  { }); // options
+   });
    //--><!]]></script>
 
  The CSV file is of the form

@@ -39,6 +39,8 @@
     learn more about how it smooths your curves.</p>
 
 <script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
+
 // Smooth line plotter
 var functionData = [];
 var vs = [10, 20, 40, 0, 30, 15, 25, 60, 35, 45];
@@ -78,6 +80,8 @@ smoothRangeEl.addEventListener('input', function() {
   smoothPlotter.smoothing = param;
   document.getElementById('smoothing-param').innerHTML = param;
   drawSmoothPlot();
+});
+
 });
 //--><!]]></script>
   </body>

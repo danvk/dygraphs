@@ -39,6 +39,7 @@
     <div id="default" style="width:600px; height:300px;"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       function extend(obj1, obj2) {
         var obj = {};
         for (var k in obj1) {
@@ -75,6 +76,7 @@
             document.getElementById('default'),
             NoisyData,
             baseOpts);
+    });
     //--><!]]></script>
   </body>
 </html>

@@ -26,23 +26,24 @@
     </style>
   </head>
   <body>
-  <p>There are four options which fundmanentally change the behavior of the standard plotter:</p>
+  <p>There are four options which fundamentally change the behaviour of the standard plotter:</p>
   <ol>
-    <li> errorBars / customBars
-    <li> stepPlot
-    <li> fillGraph
-    <li> strokePattern
+    <li>errorBars / customBars</li>
+    <li>stepPlot</li>
+    <li>fillGraph</li>
+    <li>strokePattern</li>
   </ol>
 
   <p>This page exhaustively checks all combinations of these parameters.</p>
 
-  <div id=container> </div>
-  <div id=results> <b>Valid combinations</b>
+  <div id="container"> </div>
+  <div id="results"> <b>Valid combinations</b>
     <ol id='results-ol'>
     </ol>
   </div>
 
   <script type="text/javascript"><!--//--><![CDATA[//><!--
+  Dygraph.onDOMready(function onDOMready() {
     // NOTE: this is an odd thing to do; dygraphs should really throw here.
     console.warn = function(x) {
       throw new Error(x);
@@ -89,6 +90,7 @@
         });
       });
     });
+  });
   //--><!]]></script>
   </body>
 </html>

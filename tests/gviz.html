@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       google.load('visualization', '1', {packages: ['linechart']});
 
       function createDataTable(dateType) {
@@ -49,6 +50,7 @@
 
       }
       google.setOnLoadCallback(drawVisualization);
+    });
     //--><!]]></script>
   </head>
   <body>

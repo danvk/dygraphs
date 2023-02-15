@@ -10,6 +10,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       // Capture warnings, since these are what we want in this test.
       Dygraph.prototype.warn = function(msg) {
         console.log(msg);
@@ -56,6 +57,7 @@
 
       }
       google.setOnLoadCallback(drawVisualization);
+    });
     //--><!]]></script>
   </head>
   <body>

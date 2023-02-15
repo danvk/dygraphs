@@ -23,7 +23,8 @@
     </table>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-    g = new Dygraph(
+    Dygraph.onDOMready(function onDOMready() {
+     g = new Dygraph(
       document.getElementById("graph"),
       "Date,GapSeries1,GapSeries2\n" +
       "2009/12/01,10,10\n" +
@@ -120,7 +121,8 @@
           connectSeparatedPoints: false,
           labels: [ "X", "Series1", "Series2"]
         }
-    );
+     );
+    });
     //--><!]]></script>
   </body>
 </html>

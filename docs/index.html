@@ -33,20 +33,19 @@
     $(function () {
 	if (window.location.hostname === 'dygraphs.com')
 		document.getElementById('mirrornote').style.display = 'none';
-    });
 
-    g = new Dygraph(
-      document.getElementById("demodiv"),
-      "ny-vs-sf.txt",
-      {
-        rollPeriod: 14,
-        showRoller: true,
-        customBars: true,
-        title: 'NYC vs. SF',
-        ylabel: 'Temperature (F)',
-        legend: 'always'
-      }
-    );
+	g = new Dygraph(
+	    document.getElementById("demodiv"),
+	    "ny-vs-sf.txt", {
+		rollPeriod: 14,
+		showRoller: true,
+		customBars: true,
+		title: 'NYC vs. SF',
+		ylabel: 'Temperature (F)',
+		legend: 'always'
+	    }
+	  );
+    });
   //--><!]]></script>
 
   <p>The chart is <i>interactive</i>: you can mouse over to highlight individual values. You can click and drag to zoom. Double-clicking will zoom you back out. Shift-drag will pan. You can change the number and hit enter to adjust the averaging period.</p>

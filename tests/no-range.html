@@ -16,6 +16,7 @@
     <div id="blah2"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
     var g1 = new Dygraph(document.getElementById("blah"),
                 "X,Y\n10,12345\n11,12345\n",
                 { width: 640, height: 480 });
@@ -31,6 +32,7 @@
 "2003-02-09,10000000.000000\n" +
 "2003-02-16,10000000.000000\n",
                 { width: 640, height: 480, includeZero: true, labelsKMB: true });
+    });
     //--><!]]></script>
   </body>
 </html>

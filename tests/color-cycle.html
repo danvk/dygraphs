@@ -19,7 +19,8 @@
     </p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
-      var colorSets = [
+    Dygraph.onDOMready(function onDOMready() {
+      colorSets = [
         ['#284785', '#EE1111', '#8AE234'],
         ['#444444', '#888888', '#DDDDDD'],
         null
@@ -33,6 +34,7 @@
                             height: 480,
                             colors: colorSets[0]
                           });
+    });
 
       function change(el) {
         chart.updateOptions({colors: colorSets[el.id]});

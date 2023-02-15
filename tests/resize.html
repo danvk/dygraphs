@@ -25,6 +25,7 @@
     <div id="div_g"></div>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
       g = new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
@@ -32,6 +33,7 @@
               errorBars: true
             }
           );
+    });
     //--><!]]></script>
   </body>
 </html>
