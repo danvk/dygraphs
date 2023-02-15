@@ -645,7 +645,7 @@ OPTIONS_REFERENCE =  // <JSON>
     "labels": ["Chart labels"],
     "type": "string",
     "default": "null",
-    "description": "Text to display to the left of the chart’s y-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-ylabel” classes. The text will be rotated 90 degrees by default, so CSS rules may behave in unintuitive ways. No additional space is set aside for a y-axis label. If you need more space, increase the width of the y-axis tick labels using the yAxisLabelWidth option. If you need a wider div for the y-axis label, either style it that way with CSS (but remember that it’s rotated, so width is controlled by the “height” property) or set the yLabelWidth option."
+    "description": "Text to display to the left of the chart’s y-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-ylabel” classes. The text will be rotated 90 degrees by default, so CSS rules may behave in unintuitive ways. No additional space is set aside for a y-axis label. If you need more space, increase the width of the y-axis tick labels using the per-axis <tt>axisLabelWidth</tt> option on the y axis. If you need a wider div for the y-axis label, either style it that way with CSS (but remember that it’s rotated, so width is controlled by the “height” property) or set the yLabelWidth option."
   },
   "y2label": {
     "labels": ["Chart labels"],

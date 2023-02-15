@@ -47,14 +47,17 @@ Gallery.register(
               axis: 'Y3'  // use the same y-axis as series Y3
             },
             axes: {
+              y: {
+                axisLabelWidth: 60
+              },
               y2: {
                 // set axis-related properties here
-                labelsKMB: true
+                labelsKMB: true,
+                axisLabelWidth: 60
               }
             },
             ylabel: 'Primary y-axis',
-            y2label: 'Secondary y-axis',
-            yAxisLabelWidth: 60
+            y2label: 'Secondary y-axis'
           }
       );
 

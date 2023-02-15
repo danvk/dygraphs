@@ -31,7 +31,14 @@ drawn on the canvas and must by styled using dygraphs <a
             axis: 'y2'
           }
         },
-        yAxisLabelWidth: 70,
+        axes: {
+          y: {
+            axisLabelWidth: 75
+          },
+          y2: {
+            axisLabelWidth: 75
+          }
+        },
         drawCallback: function() {
           $('.dygraph-legend').text('.dygraph-legend');
         },

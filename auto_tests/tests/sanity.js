@@ -89,7 +89,7 @@ it('testYAxisRange_custom', function() {
  *
  * This is based on the assumption that 20 pixels are dedicated to the
  * axis label and tick marks.
- * TODO(konigsberg): change yAxisLabelWidth to 0 (or 20) and try again.
+ * TODO(konigsberg): change axis.y.axisLabelWidth to 0 (or 20) and try again.
  */
 it('testToDomYCoord', function() {
   var graph = document.getElementById("graph");
