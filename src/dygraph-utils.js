@@ -1286,3 +1286,77 @@ export function dateAxisLabelFormatter(date, granularity, opts) {
 export function dateValueFormatter(d, opts) {
   return dateString_(d, opts('labelsUTC'));
 }
+
+// stuff for simple onDOMready implementation
+var deferDOM_callbacks = [];
+var deferDOM_handlerCalled = false;
+
+// onDOMready once DOM is ready
+/**
+ * Simple onDOMready implementation
+ * @param {function()} cb The callback to run once the DOM is ready.
+ * @return {boolean} whether the DOM is currently ready
+ */
+function deferDOM_ready(cb) {
+  if (typeof(cb) === "function")
+    cb();
+  return (true);
+}
+
+/**
+ * Setup a simple onDOMready implementation on the given objct.
+ * @param {*} self the object to update .onDOMready on
+ * @private
+ */
+export function setupDOMready(self) {
+  // only attach if there’s a DOM
+  if (typeof(document) !== "undefined") {
+    // called by browser
+    const handler = function deferDOM_handler() {
+      /* execute only once */
+      if (deferDOM_handlerCalled)
+        return;
+      deferDOM_handlerCalled = true;
+      /* subsequent calls must not enqueue */
+      self.onDOMready = deferDOM_ready;
+      /* clear event handlers */
+      document.removeEventListener("DOMContentLoaded", handler, false);
+      window.removeEventListener("load", handler, false);
+      /* run user callbacks */
+      for (let i = 0; i < deferDOM_callbacks.length; ++i)
+        deferDOM_callbacks[i]();
+      deferDOM_callbacks = null; //gc
+    };
+
+    // make callable (mutating, do not copy)
+    self.onDOMready = function deferDOM_initial(cb) {
+      /* if possible, skip all that */
+      if (document.readyState === "complete") {
+        self.onDOMready = deferDOM_ready;
+        return (deferDOM_ready(cb));
+      }
+      // onDOMready, after setup, before DOM is ready
+      const enqfn = function deferDOM_enqueue(cb) {
+        if (typeof(cb) === "function")
+          deferDOM_callbacks.push(cb);
+        return (false);
+      };
+      /* subsequent calls will enqueue */
+      self.onDOMready = enqfn;
+      /* set up handler */
+      document.addEventListener("DOMContentLoaded", handler, false);
+      /* last resort: always works, but later than possible */
+      window.addEventListener("load", handler, false);
+      /* except if DOM got ready in the meantime */
+      if (document.readyState === "complete") {
+        /* undo all that attaching */
+        handler();
+        /* goto finish */
+        self.onDOMready = deferDOM_ready;
+        return (deferDOM_ready(cb));
+      }
+      /* just enqueue that */
+      return (enqfn(cb));
+    };
+  }
+}

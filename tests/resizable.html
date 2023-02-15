@@ -13,6 +13,7 @@
     <h2>Demo for resizable</h2>
     <div id="demodiv"></div>
     <script type="text/javascript"><!--//--><![CDATA[//><!--
+      Dygraph.onDOMready(function onDOMready() {
 	thegraph = new Dygraph('demodiv', data_temp, {
 		title: 'NYC vs. SF',
 		showRoller: true,
@@ -21,6 +22,7 @@
 		ylabel: 'Temperature (°F)',
 		resizable: "both"
 	});
+      });
     //--><!]]></script>
   </body>
 </html>
