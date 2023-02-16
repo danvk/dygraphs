@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>dygraphs unboxed</title>
@@ -56,9 +56,9 @@
          container div can't be a span or have display: inline-block. We use a
          table to get the sparkline to display on the same line as the text.
       -->
-    <p>
+    <p></p>
     <table><tr><td>This style can be used to produce interactive sparklines with dygraphs:</td><td><div id="div_spark" style="width:100px; height:20px;"></div></td></tr></table>
-    </p>
+    <p>Disable the legend though, otherwise it’s not very interactive…</p>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
     Dygraph.onDOMready(function onDOMready() {
@@ -78,6 +78,7 @@
               strokeWidth: 1.0,
               rollPeriod: 7,
               labelsDiv: '',
+              legend: 'never',
               highlightCircleSize: 2
             }
           );
