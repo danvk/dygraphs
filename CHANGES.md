@@ -29,6 +29,7 @@
 - Document annotations xval for Date better (#970)
 - Document more strongly that series labels must be unique (#960)
 - Remove references to nōn-existing `yAxisLabelWidth` option
+- Fix jsFiddle links from gallery
 
 ## Internal refactors/fixes
 - Shrink `tests.js` source map and make its build reproducible on Debian
