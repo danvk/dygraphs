@@ -8,7 +8,7 @@
 
 ## New features
 - Permit initialising with `[]` as “no data yet” indicator (#597)
-- The modularisation of the test setup also allows stable access to exported functions (e.g. `Dygraph._require('dygraphs/src/dygraph-utils.js').numberValueFormatter`) which makes writing one’s own value formatters easier (as usual, proceed with care, exports with an underscore are internal)
+- The modularisation of the test setup also allows stable access to exported functions (e.g. `Dygraph._require('dygraphs/src/dygraph-utils.js').numberValueFormatter`) which makes writing one’s own value formatters easier (as usual, proceed with care, exports with an underscore are internal); see <https://dygraphs.com/tests/exported-symbols.html> for the exposed surface
 - Provide Dygraph.onDOMready(cb) as lightweight jQuery(cb)/… alternative, to keep the demos/tests self-contained
 
 ## Bugfixes

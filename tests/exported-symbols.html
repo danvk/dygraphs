@@ -9,6 +9,10 @@
     <!-- see below for dygraph.js due to necessity -->
   </head>
   <body>
+    <p><em>Do</em> note that anything with an underscore <tt>_</tt> is
+     considered internal, not an API, and subject to change without notice,
+     unless specifically promised otherwise.</p>
+
     <p>dygraphs exports these symbols into the global namespace:</p>
     <ol id="list">
     </ol>
@@ -28,6 +32,12 @@
     <p>New second-level and <tt>Dygraph.{Circles,Plugins}</tt> elements after loading extras:</p>
     <ol id="list5">
     </ol>
+
+    <p>The following surface can be reached via the “require” system.
+     Most of this is considered internal and possibe subject to change
+     at few or no notice even if not, in ipso, underscore-tagged.</p>
+    <ul id="list6">
+    </ul>
 
     <script type="text/javascript"><!--//--><![CDATA[//><!--
       exportedSymbolsTest_windowProps = {};
@@ -154,6 +164,54 @@
 	for (i = 0; i < newl2props.length; i++)
 	  html += '<li>' + newl2props[i] + '</li>\n';
 	document.getElementById('list5').innerHTML = html;
+
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function () {
+	  if (xhr.readyState !== 4)
+	    return;
+	  var data = JSON.parse(xhr.responseText)["sources"];
+	  var elts = [];
+	  var recurse = function (prefix, element) {
+	    var t = typeof(element);
+	    if (t === 'function') {
+	      elts.push(prefix + ' → ' + t + ' ' + element.name + '()');
+	      return;
+	    }
+	    if (t === 'number') {
+	      elts.push(prefix + ' → ' + t + ' = ' + element);
+	      return;
+	    }
+	    if (t === 'boolean') {
+	      elts.push(prefix + ' → ' + t + ' = ' + (element ? 'true' : 'false'));
+	      return;
+	    }
+	    if (t === 'string') {
+	      elts.push(prefix + ' → ' + t + ' = ' + JSON.stringify(element));
+	      return;
+	    }
+	    elts.push(prefix + ' → ' + t);
+	    if (t !== 'object')
+	      return;
+	    for (var k in element)
+	      if (element.hasOwnProperty(k))
+	        recurse(prefix + '.' + k, element[k]);
+	  };
+	  for (i = 0; i < data.length; ++i)
+	    if (data[i].startsWith("src/"))
+	      recurse("Dygraph._require('dygraphs/" + data[i] + "')",
+	              Dygraph._require('dygraphs/' + data[i]));
+	  elts.sort();
+	  var p = document.getElementById('list6');
+	  for (i = 0; i < elts.length; ++i) {
+	    var e = document.createElement('li');
+	    var t = document.createElement('tt');
+	    t.innerText = elts[i];
+	    e.appendChild(t);
+	    p.appendChild(e);
+	  }
+	};
+	xhr.open("GET", "../dist/dygraph.js.map", true);
+	xhr.send();
       };
       loadscripts();
     });
