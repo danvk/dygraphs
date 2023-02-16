@@ -1308,7 +1308,7 @@ function deferDOM_ready(cb) {
  * @param {*} self the object to update .onDOMready on
  * @private
  */
-export function setupDOMready(self) {
+export function setupDOMready_(self) {
   // only attach if there’s a DOM
   if (typeof(document) !== "undefined") {
     // called by browser

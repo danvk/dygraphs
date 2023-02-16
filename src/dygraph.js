@@ -3551,6 +3551,6 @@ Dygraph.Granularity = DygraphTickers.Granularity;
 Dygraph.getDateAxis = DygraphTickers.getDateAxis;
 Dygraph.floatFormat = utils.floatFormat;
 
-utils.setupDOMready(Dygraph);
+utils.setupDOMready_(Dygraph);
 
 export default Dygraph;
