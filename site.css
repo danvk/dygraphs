@@ -1,0 +1,171 @@
+body {
+  /* required for fixed header */
+  padding-top: 50px;
+}
+#header {
+  background: #F9F9F9;
+  margin-bottom: 10px;
+  border-bottom: 1px solid lightgray;
+}
+#main {
+  padding-top: 1ex;
+}
+code {
+  white-space: pre-wrap;
+  color: black;
+  background: transparent;
+}
+#demodiv {
+  width: 100%;
+  height: 320px;
+  margin-bottom: 10px;
+}
+@media screen and (max-width: 768px) {
+  /* aspect ratio is weird on phones */
+  #demodiv {
+    height: 200px;
+  }
+}
+.dygraph-axis-label {
+  font-size: 12px;
+}
+.dygraph-title {
+  font-size: 16px;
+}
+h1{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+pre{
+  background: #F9F9F9;
+}
+/*
+#main {
+  margin-top: 30px;
+}
+.row {
+  margin-top: 30px;
+}
+*/
+.row.smalltop {
+  margin-top: 10px;
+}
+
+.thinborder {
+  border-width: 1px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: black;
+  border-collapse: collapse;
+}
+
+.thinborder td,
+.thinborder th {
+  border-width: 1px;
+  padding: 5px;
+  border-style: solid;
+  border-color: black;
+}
+
+#current-release {
+  font-size: 18px;
+  background: #F9F9F9;
+/*
+  padding: 10px 15px;
+  border: 1px dashed black;
+*/
+  display: table;
+}
+#current-release p:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * When you visit dygraphs.com/options.html#errorBars, the fixed top nav
+ * obscures the top 50px of content for that anchor. This is a workaround.
+ * See https://stackoverflow.com/a/55683966/2171120
+ */
+:target {
+  scroll-margin-top: 50px;
+}
+
+a.link {
+  visibility: hidden;
+  text-decoration: none;
+  color: #777777;
+}
+.option:hover a.link {
+  visibility: visible;
+}
+
+/* stuff for specific pages */
+
+/* annotations.html */
+.annotationpage code,
+.annotationpage pre {
+  white-space: pre;
+}
+.annotationpage .annotation {
+  font-size: 12px !important;
+}
+.annotationpage .dygraph-legend {
+  width: 350px;
+}
+.annotationpage table {
+  margin-bottom: 10px;
+}
+.annotationpage table i {
+  margin-right: 1ex;
+}
+
+/* index.html */
+pre.prettyprint {
+  margin-top: 28px;
+}
+
+/* data.html */
+code.sitedata {
+  white-space: pre;
+  border: 1px dashed black;
+  display: block;
+}
+pre.sitedata {
+  white-space: pre;
+  border: 1px dashed black;
+}
+
+/* tutorial.html */
+.tutannotation {
+  font-size: 12px !important;
+}
+
+/* versions.html */
+.versions {
+  margin-top: 20px;
+}
+.versions td {
+  vertical-align: top;
+}
+.versions td.notes {
+  padding-bottom: 20px;
+}
+.versions td:first-child {
+  text-align: right;
+  padding-right: 20px;
+  font-weight: bold;
+}
+.versions .date {
+  font-size: small;
+  color: darkgray;
+  font-weight: normal;
+}
+.moveup {
+  /* match margin-bottom on p/ul in bootstrap */
+  margin-top: -10px;
+}
+.versions ul {
+  padding-left: 1.2em;
+}
+.versions td.notes h4:first-child {
+  margin-top: 0;
+}

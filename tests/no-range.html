@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>no range</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body>
+    <p>Line should be visible in the middle of the chart:</p>
+    <div id="blah"></div>
+
+    <p>Line should be visible ~90% up the chart:</p>
+    <div id="blah2"></div>
+
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
+    var g1 = new Dygraph(document.getElementById("blah"),
+                "X,Y\n10,12345\n11,12345\n",
+                { width: 640, height: 480 });
+
+    var g2 = new Dygraph(document.getElementById("blah2"),
+"date,10M\n" +
+"2002-12-29,10000000.000000\n" +
+"2003-01-05,10000000.000000\n" +
+"2003-01-12,10000000.000000\n" +
+"2003-01-19,10000000.000000\n" +
+"2003-01-26,10000000.000000\n" +
+"2003-02-02,10000000.000000\n" +
+"2003-02-09,10000000.000000\n" +
+"2003-02-16,10000000.000000\n",
+                { width: 640, height: 480, includeZero: true, labelsKMB: true });
+    });
+    //--><!]]></script>
+  </body>
+</html>

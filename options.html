@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dygraphs — options reference</title>
+
+    <link rel="stylesheet" type="text/css" href=".jslibs/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="common/vextlnk.css" />
+    <link rel="stylesheet" type="text/css" href="site.css" />
+
+    <script type="text/javascript" src=".jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src=".jslibs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="dist/dygraph.js"></script>
+  </head>
+  <body>
+    <nav id="header" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-responsive-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">dygraphs</a>
+        </div><!-- /navbar-header -->
+        <div class="collapse navbar-collapse" id="navbar-responsive-collapse">
+
+          <!-- TODO(danvk): fill in relevant links here -->
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+              <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="jsdoc/symbols/Dygraph.html">API Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="data.html">Data Format</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="annotations.html">Annotations</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="css.html">CSS Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="versions.html">Version History</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="ie.html">Notes on Internet Explorer</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tests/">Test Cases</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://dygraphs.com/fiddle/">Play</a></li>
+              </ul>
+            </li>
+            <li><a class="xnavbar-link" href="download.html">Download</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+              <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com/">Blog</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/tagged/dygraphs">Stack Overflow</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://groups.google.com/g/dygraphs-users">Mailing List</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+              <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs">Source (Github)</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues">Issue Tracker</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues/new">Report a Bug</a></li>
+              </ul>
+            </li>
+          </ul><!-- /navbar-nav -->
+
+        </div><!-- /navbar-responsive-collapse -->
+      </div><!-- container-fluid -->
+    </nav>
+
+    <div class="container" id="main">
+      <div class="row">
+        <div class="col-lg-12">
+<!--
+  DO NOT EDIT THIS FILE!
+
+  This file is generated by generate-documentation.py.
+-->
+
+<link rel="stylesheet" type="text/css" href="options.css" />
+
+<div class="col-lg-3">
+<div class="dygraphs-side-nav affix-top" data-spy="affix" data-offset-top="0">
+<ul class='nav'>
+  <li><a href="#usage">Usage</a>
+  <li><a href="#Annotations">Annotations</a>
+  <li><a href="#Axis_20display">Axis display</a>
+  <li><a href="#CSV_20parsing">CSV parsing</a>
+  <li><a href="#Callbacks">Callbacks</a>
+  <li><a href="#Chart_20labels">Chart labels</a>
+  <li><a href="#Configuration">Configuration</a>
+  <li><a href="#Data">Data</a>
+  <li><a href="#Data_20Line_20display">Data Line display</a>
+  <li><a href="#Data_20Series_20Colors">Data Series Colors</a>
+  <li><a href="#Debugging">Debugging</a>
+  <li><a href="#Deprecated">Deprecated</a>
+  <li><a href="#Error_20Bars">Error Bars</a>
+  <li><a href="#Grid">Grid</a>
+  <li><a href="#Interactive_20Elements">Interactive Elements</a>
+  <li><a href="#Legend">Legend</a>
+  <li><a href="#Overall_20display">Overall display</a>
+  <li><a href="#Range_20Selector">Range Selector</a>
+  <li><a href="#Rolling_20Averages">Rolling Averages</a>
+  <li><a href="#Series">Series</a>
+  <li><a href="#Value_20display_2Fformatting">Value display/formatting</a>
+</ul></div></div>
+
+<div id='content' class='col-lg-9'>
+<h2>Options Reference</h2>
+<p>Dygraphs tries to do a good job of displaying your data
+ without any further configuration. But inevitably,
+ you’re going to want to tinker. Dygraphs provides a rich set of options
+ for configuring its display and behaviour.</p>
+
+<a name="usage"></a><h3>Usage</h3>
+<p>You specify options in the third parameter to the dygraphs constructor:</p>
+<pre>g = new Dygraph(div,
+                data,
+                {
+                  option1: value1,
+                  option2: value2,
+                  ...
+                });
+</pre>
+
+<p>After you've created a Dygraph, you can change an option by calling the
+ <code>updateOptions</code> method:</p>
+<pre>g.updateOptions({
+                  new_option1: value1,
+                  new_option2: value2
+                });
+</pre>
+
+<p>Some options can be set on a per-axis and per-series basis.
+ See the docs on <a href="per-axis.html">per-axis and per-series options</a>
+ to learn how to do this. The options which may be set in this way
+ are marked as such on this page.</p>
+
+<p>For options which are functions (e.g. callbacks and formatters),
+ the value of <code>this</code> is set to the Dygraph object.</p>
+
+<p><strong>Note:</strong> tests marked with ⚠ access external resources,
+ such as Google’s jsapi.</p>
+
+<p>And, without further ado, here's the complete list of options:</p>
+
+<a name="Annotations"></a><h3>Annotations</h3>
+
+  <div class='option'><p>
+  <a name="annotationClickHandler"></a><b>annotationClickHandler</b>
+  <a class="link" href="#annotationClickHandler">#</a>
+  </p><p>
+  If provided, this function is called whenever the user clicks on an annotation.
+  </p><p>
+  <i>Type: function(annotation, point, dygraph, event)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>annotation:</th><td>the annotation left</td></tr>
+<tr><th>point:</th><td>the point associated with the annotation</td></tr>
+<tr><th>dygraph:</th><td>the reference graph</td></tr>
+<tr><th>event:</th><td>the mouse event</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="annotationDblClickHandler"></a><b>annotationDblClickHandler</b>
+  <a class="link" href="#annotationDblClickHandler">#</a>
+  </p><p>
+  If provided, this function is called whenever the user double-clicks on an annotation.
+  </p><p>
+  <i>Type: function(annotation, point, dygraph, event)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>annotation:</th><td>the annotation left</td></tr>
+<tr><th>point:</th><td>the point associated with the annotation</td></tr>
+<tr><th>dygraph:</th><td>the reference graph</td></tr>
+<tr><th>event:</th><td>the mouse event</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="annotationMouseOutHandler"></a><b>annotationMouseOutHandler</b>
+  <a class="link" href="#annotationMouseOutHandler">#</a>
+  </p><p>
+  If provided, this function is called whenever the user mouses out of an annotation.
+  </p><p>
+  <i>Type: function(annotation, point, dygraph, event)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>annotation:</th><td>the annotation left</td></tr>
+<tr><th>point:</th><td>the point associated with the annotation</td></tr>
+<tr><th>dygraph:</th><td>the reference graph</td></tr>
+<tr><th>event:</th><td>the mouse event</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="annotationMouseOverHandler"></a><b>annotationMouseOverHandler</b>
+  <a class="link" href="#annotationMouseOverHandler">#</a>
+  </p><p>
+  If provided, this function is called whenever the user mouses over an annotation.
+  </p><p>
+  <i>Type: function(annotation, point, dygraph, event)</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="displayAnnotations"></a><b>displayAnnotations</b>
+  <a class="link" href="#displayAnnotations">#</a>
+  </p><p>
+  Only applies when Dygraphs is used as a GViz chart. Causes string columns following a data series to be interpreted as annotations on points in that series. This is the same format used by Google’s AnnotatedTimeLine chart.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">annotations-gviz</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation-gviz.html">annotation-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b></td></tr>
+  </table></div>
+<a name="Axis_20display"></a><h3>Axis display</h3>
+
+  <div class='option'><p>
+  <a name="axis"></a><b>axis</b>
+  <a class="link" href="#axis">#</a>
+  </p><p>
+  Set to either 'y1' or 'y2' to assign a series to a y-axis (primary or secondary). Must be set per-series.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: (none)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/steps.html">steps</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisLabelFontSize"></a><b>axisLabelFontSize</b>
+  <a class="link" href="#axisLabelFontSize">#</a>
+  </p><p>
+  Size of the font (in pixels) to use in the axis labels, both x- and y-axis.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 14</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisLabelFormatter"></a><b>axisLabelFormatter</b>
+  <a class="link" href="#axisLabelFormatter">#</a>
+  </p><p>
+  Function to call to format the tick values that appear along an axis. This is usually set on a <a href='per-axis.html'>per-axis</a> basis.
+  </p><p>
+  <i>Type: function(number_or_Date, granularity, opts, dygraph)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>number_or_Date:</th><td>Either a number (for a numeric axis) or a Date object (for a date axis)</td></tr>
+<tr><th>granularity:</th><td>specifies how fine-grained the axis is. For date axes, this is a reference to the time granularity enumeration, defined in dygraph-tickers.js, e.g. Dygraph.WEEKLY.</td></tr>
+<tr><th>opts:</th><td>a function which provides access to various options on the dygraph, e.g. opts('labelsKMB').</td></tr>
+<tr><th>dygraph:</th><td>the referenced graph</td></tr>
+  </table></div><p>
+  <i>Default: Depends on the data type</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/value-axis-formatters.html">value-axis-formatters</a>; <a href="tests/x-axis-formatter.html">x-axis-formatter</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisLabelWidth"></a><b>axisLabelWidth</b>
+  <a class="link" href="#axisLabelWidth">#</a>
+  </p><p>
+  Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls the width of the y-axis. Note that for the x-axis, this is independent from pixelsPerLabel, which controls the spacing between labels.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 50 (y-axis), 60 (x-axis)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a>; <a href="tests/x-axis-formatter.html">x-axis-formatter</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisLineColor"></a><b>axisLineColor</b>
+  <a class="link" href="#axisLineColor">#</a>
+  </p><p>
+  Color of the x- and y-axis lines. Accepts any value which the HTML canvas strokeStyle attribute understands, e.g. 'black' or 'rgb(0, 100, 255)'.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: black</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">demo</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/demo.html">demo</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/rtl.html">rtl</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisLineWidth"></a><b>axisLineWidth</b>
+  <a class="link" href="#axisLineWidth">#</a>
+  </p><p>
+  Thickness (in pixels) of the x- and y-axis lines.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 0.3</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="axisTickSize"></a><b>axisTickSize</b>
+  <a class="link" href="#axisTickSize">#</a>
+  </p><p>
+  The size of the line to display next to each tick mark on x- or y-axes.
+  </p><p>
+  <i>Type: number</i><br />
+  <i>Default: 3.0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="dateWindow"></a><b>dateWindow</b>
+  <a class="link" href="#dateWindow">#</a>
+  </p><p>
+  Initially zoom in on a section of the graph. Is of the form [earliest, latest], where earliest/latest are milliseconds since epoch. If the data for the x-axis is numeric, the values in dateWindow must also be numbers.
+  </p><p>
+  <i>Type: Array of two numbers</i><br />
+  <i>Default: Full range of the input is shown</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a>; <font color="#9999FF" title="inactive">interaction-api</font>; <a href="gallery/#g/link-interaction">link-interaction</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/dateWindow.html">dateWindow</a>; <a href="tests/daylight-savings.html">daylight-savings</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawAxesAtZero"></a><b>drawAxesAtZero</b>
+  <a class="link" href="#drawAxesAtZero">#</a>
+  </p><p>
+  When set, draw the X axis at the Y=0 position and the Y axis at the X=0 position if those positions are inside the graph’s visible area. Otherwise, draw the axes at the bottom or left graph edge as usual.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/linear-regression">linear-regression</a></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawAxis"></a><b>drawAxis</b>
+  <a class="link" href="#drawAxis">#</a>
+  </p><p>
+  Whether to draw the specified axis. This may be set on a per-axis basis to define the visibility of each axis separately. Setting this to false also prevents axis ticks from being drawn and reclaims the space for the chart grid/lines.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true for x and y, false for y2</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="includeZero"></a><b>includeZero</b>
+  <a class="link" href="#includeZero">#</a>
+  </p><p>
+  Usually, dygraphs will use the range of the data plus some padding to set the range of the y-axis. If this option is set, the y-axis will always include zero, typically as the lowest value. This can be used to avoid exaggerating the variance in the data
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">no-range</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/no-range.html">no-range</a>; <a href="tests/numeric-gviz.html">numeric-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/plotters.html">plotters</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/small-range-zero.html">small-range-zero</a>; <a href="tests/steps.html">steps</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="independentTicks"></a><b>independentTicks</b>
+  <a class="link" href="#independentTicks">#</a>
+  </p><p>
+  Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: [1.] y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) [2.] y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) [3.] y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) [4.] y=false, y2=false: Invalid configuration causes an error.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true for y, false for y2</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/two-axes.html">two-axes</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsUTC"></a><b>labelsUTC</b>
+  <a class="link" href="#labelsUTC">#</a>
+  </p><p>
+  Show date/time labels according to UTC (instead of local time).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/labelsDateUTC.html">labelsDateUTC</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="logscale"></a><b>logscale</b>
+  <a class="link" href="#logscale">#</a>
+  </p><p>
+  When set for the y-axis or x-axis, the graph shows that axis in log scale. Any values less than or equal to zero are not displayed. Showing log scale with ranges that go below zero will result in an unviewable graph.
+
+ Not compatible with showZero. connectSeparatedPoints is ignored. This is ignored for date-based x-axes.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/stock">stock</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/logscale.html">logscale</a>; <a href="tests/stock.html">stock</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="panEdgeFraction"></a><b>panEdgeFraction</b>
+  <a class="link" href="#panEdgeFraction">#</a>
+  </p><p>
+  A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% passed the edges of the displayed values. null means no bounds.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pixelsPerLabel"></a><b>pixelsPerLabel</b>
+  <a class="link" href="#pixelsPerLabel">#</a>
+  </p><p>
+  Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks. This is set on a <a href='per-axis.html'>per-axis</a> basis.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 70 (x-axis) or 30 (y-axes)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/hairlines.html">hairlines</a>; <a href="tests/spacing.html">spacing</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="ticker"></a><b>ticker</b>
+  <a class="link" href="#ticker">#</a>
+  </p><p>
+  This lets you specify an arbitrary function to generate tick marks on an axis. The tick marks are an array of (value, label) pairs. The built-in functions go to great lengths to choose good tick marks so, if you set this option, you’ll most likely want to call one of them and modify the result. See dygraph-tickers.js for an extensive discussion. This is set on a <a href='per-axis.html'>per-axis</a> basis.
+  </p><p>
+  <i>Type: function(min, max, pixels, opts, dygraph, vals) → [{v: …, label: …}, …]</i><br />
+  </p><div class='parameters'><table>
+<tr><th>min:</th><td></td></tr>
+<tr><th>max:</th><td></td></tr>
+<tr><th>pixels:</th><td></td></tr>
+<tr><th>opts:</th><td></td></tr>
+<tr><th>dygraph:</th><td>the reference graph</td></tr>
+<tr><th>vals:</th><td></td></tr>
+  </table></div><p>
+  <i>Default: Dygraph.dateTicker or Dygraph.numericTicks</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/label_v.html">label_v</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="valueRange"></a><b>valueRange</b>
+  <a class="link" href="#valueRange">#</a>
+  </p><p>
+  Explicitly set the vertical range of the graph to [low, high]. This may be set on a per-axis basis to define each y-axis separately. If either limit is unspecified, it will be calculated automatically (e.g. [null, 30] to automatically calculate just the lower bound)
+  </p><p>
+  <i>Type: Array of two numbers</i><br />
+  <i>Default: Full range of the input is shown</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <font color="#9999FF" title="inactive">interaction-api</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/dynamic-update.html">dynamic-update</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="xAxisHeight"></a><b>xAxisHeight</b>
+  <a class="link" href="#xAxisHeight">#</a>
+  </p><p>
+  Height, in pixels, of the x-axis. If not set explicitly, this is computed based on axisLabelFontSize and axisTickSize.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: (null)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="xRangePad"></a><b>xRangePad</b>
+  <a class="link" href="#xRangePad">#</a>
+  </p><p>
+  Add the specified amount of extra space (in pixels) around the X-axis value range to ensure points at the edges remain visible.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="yRangePad"></a><b>yRangePad</b>
+  <a class="link" href="#yRangePad">#</a>
+  </p><p>
+  If set, add the specified amount of extra space (in pixels) around the Y-axis value range to ensure points at the edges remain visible. If unset, use the traditional Y padding algorithm.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+<a name="CSV_20parsing"></a><h3>CSV parsing</h3>
+
+  <div class='option'><p>
+  <a name="customBars"></a><b>customBars</b>
+  <a class="link" href="#customBars">#</a>
+  </p><p>
+  When set, parse each CSV cell as "low;middle;high". Custom high/low bands will be drawn for each point between low and high, with the series itself going through middle.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/stock">stock</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-bars.html">custom-bars</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/steps.html">steps</a>; <a href="tests/stock.html">stock</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/zero-series.html">zero-series</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="delimiter"></a><b>delimiter</b>
+  <a class="link" href="#delimiter">#</a>
+  </p><p>
+  The delimiter to look for when separating fields of a CSV file. Setting this to a tab is not usually necessary, since tab-delimited data is auto-detected.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: ,</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="errorBars"></a><b>errorBars</b>
+  <a class="link" href="#errorBars">#</a>
+  </p><p>
+  Does the data contain standard deviations? Setting this to true alters the input format (see above).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <a href="gallery/#g/resizable">resizable</a>; <a href="gallery/#g/resize">resize</a>; <a href="gallery/#g/synchronize">synchronize</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a>; <a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/custom-bars.html">custom-bars</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/draw-points.html">draw-points</a>; <a href="tests/fractions.html">fractions</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/interaction.html">interaction</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/numeric-gviz.html">numeric-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/perf.html">perf</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/resize.html">resize</a>; <a href="tests/steps.html">steps</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/underlay-callback.html">underlay-callback</a>; <a href="tests/visibility.html">visibility</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="fractions"></a><b>fractions</b>
+  <a class="link" href="#fractions">#</a>
+  </p><p>
+  When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/fractions.html">fractions</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="xValueParser"></a><b>xValueParser</b>
+  <a class="link" href="#xValueParser">#</a>
+  </p><p>
+  A function which parses x-values (i.e. the dependent series). Must return a number, even when the values are dates. In this case, millis since epoch are used. This is used primarily for parsing CSV data. *=Dygraphs is slightly more accepting in the dates which it will parse. See code for details.
+  </p><p>
+  <i>Type: function(str) -> number</i><br />
+  <i>Default: parseFloat() or Date.parse()*</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+<a name="Callbacks"></a><h3>Callbacks</h3>
+
+  <div class='option'><p>
+  <a name="clickCallback"></a><b>clickCallback</b>
+  <a class="link" href="#clickCallback">#</a>
+  </p><p>
+  A function to call when the canvas is clicked.
+  </p><p>
+  <i>Type: function(e, x, points)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>e:</th><td>The event object for the click</td></tr>
+<tr><th>x:</th><td>The x value that was clicked (for dates, this is milliseconds since epoch)</td></tr>
+<tr><th>points:</th><td>The closest points along that date. See <a href='#point_properties'>Point properties</a> for details.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/highlighted-series">highlighted-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawCallback"></a><b>drawCallback</b>
+  <a class="link" href="#drawCallback">#</a>
+  </p><p>
+  When set, this callback gets called every time the dygraph is drawn. This includes the initial draw, after zooming and repeatedly while panning.
+  </p><p>
+  <i>Type: function(dygraph, is_initial)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>dygraph:</th><td>The graph being drawn</td></tr>
+<tr><th>is_initial:</th><td>True if this is the initial draw, false for subsequent draws.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a>; <a href="tests/is-zoomed.html">is-zoomed</a>; <a href="tests/linear-regression-addseries.html">linear-regression-addseries</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="highlightCallback"></a><b>highlightCallback</b>
+  <a class="link" href="#highlightCallback">#</a>
+  </p><p>
+  When set, this callback gets called every time a new point is highlighted.
+  </p><p>
+  <i>Type: function(event, x, points, row, seriesName)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>event:</th><td>the JavaScript mousemove event</td></tr>
+<tr><th>x:</th><td>the x-coordinate of the highlighted points</td></tr>
+<tr><th>points:</th><td>an array of highlighted points: <code>[ {name: 'series', yval: y-value}, … ]</code></td></tr>
+<tr><th>row:</th><td>integer index of the highlighted row in the data table, starting from 0</td></tr>
+<tr><th>seriesName:</th><td>name of the highlighted series, only present if highlightSeriesOpts is set.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pointClickCallback"></a><b>pointClickCallback</b>
+  <a class="link" href="#pointClickCallback">#</a>
+  </p><p>
+  A function to call when a data point is clicked. and the point that was clicked.
+  </p><p>
+  <i>Type: function(e, point)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>e:</th><td>the event object for the click</td></tr>
+<tr><th>point:</th><td>the point that was clicked See <a href='#point_properties'>Point properties</a> for details</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="underlayCallback"></a><b>underlayCallback</b>
+  <a class="link" href="#underlayCallback">#</a>
+  </p><p>
+  When set, this callback gets called before the chart is drawn. It details on how to use this.
+  </p><p>
+  <i>Type: function(context, area, dygraph)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>context:</th><td>the canvas drawing context on which to draw</td></tr>
+<tr><th>area:</th><td>An object with {x,y,w,h} properties describing the drawing area.</td></tr>
+<tr><th>dygraph:</th><td>the reference graph</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-region">highlighted-region</a>; <a href="gallery/#g/highlighted-weekends">highlighted-weekends</a>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/linear-regression">linear-regression</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/highlighted-region.html">highlighted-region</a>; <a href="tests/interaction.html">interaction</a>; <a href="tests/linear-regression.html">linear-regression</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/underlay-callback.html">underlay-callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="unhighlightCallback"></a><b>unhighlightCallback</b>
+  <a class="link" href="#unhighlightCallback">#</a>
+  </p><p>
+  When set, this callback gets called every time the user stops highlighting any point by mousing out of the graph.
+  </p><p>
+  <i>Type: function(event)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>event:</th><td>the mouse event</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="zoomCallback"></a><b>zoomCallback</b>
+  <a class="link" href="#zoomCallback">#</a>
+  </p><p>
+  A function to call when the zoom window is changed (either by zooming in or out). When animatedZooms is set, zoomCallback is called once at the end of the transition (it will not be called for intermediate frames).
+  </p><p>
+  <i>Type: function(minDate, maxDate, yRanges)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>minDate:</th><td>milliseconds since epoch</td></tr>
+<tr><th>maxDate:</th><td>milliseconds since epoch.</td></tr>
+<tr><th>yRanges:</th><td>is an array of [bottom, top] pairs, one for each y-axis.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+<a name="Chart_20labels"></a><h3>Chart labels</h3>
+
+  <div class='option'><p>
+  <a name="axisLabelWidth"></a><b>axisLabelWidth</b>
+  <a class="link" href="#axisLabelWidth">#</a>
+  </p><p>
+  Width (in pixels) of the containing divs for x- and y-axis labels. For the y-axis, this also controls the width of the y-axis. Note that for the x-axis, this is independent from pixelsPerLabel, which controls the spacing between labels.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 50 (y-axis), 60 (x-axis)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a>; <a href="tests/x-axis-formatter.html">x-axis-formatter</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="title"></a><b>title</b>
+  <a class="link" href="#title">#</a>
+  </p><p>
+  Text to display above the chart. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-title” classes.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">border</font>; <font color="#9999FF" title="inactive">demo</font>; <font color="#9999FF" title="inactive">gallery</font>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/border.html">border</a>; <a href="tests/demo.html">demo</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="titleHeight"></a><b>titleHeight</b>
+  <a class="link" href="#titleHeight">#</a>
+  </p><p>
+  Height of the chart title, in pixels. This also controls the default font size of the title. If you style the title on your own, this controls how much space is set aside above the chart for the title’s div.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 18</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/styled-chart-labels">styled-chart-labels</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/styled-chart-labels.html">styled-chart-labels</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="xLabelHeight"></a><b>xLabelHeight</b>
+  <a class="link" href="#xLabelHeight">#</a>
+  </p><p>
+  Height of the x-axis label, in pixels. This also controls the default font size of the x-axis label. If you style the label on your own, this controls how much space is set aside below the chart for the x-axis label’s div.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 18</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="xlabel"></a><b>xlabel</b>
+  <a class="link" href="#xlabel">#</a>
+  </p><p>
+  Text to display below the chart’s x-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-xlabel” classes.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">border</font>; <font color="#9999FF" title="inactive">demo</font>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/border.html">border</a>; <a href="tests/demo.html">demo</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="y2label"></a><b>y2label</b>
+  <a class="link" href="#y2label">#</a>
+  </p><p>
+  Text to display to the right of the chart’s secondary y-axis. This label is only displayed if a secondary y-axis is present. See <a href='tests/two-axes.html'>this test</a> for an example of how to do this. The comments for the “ylabel” option generally apply here as well. This label gets a “dygraph-y2label” instead of a “dygraph-ylabel” class.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="yLabelWidth"></a><b>yLabelWidth</b>
+  <a class="link" href="#yLabelWidth">#</a>
+  </p><p>
+  Width of the div which contains the y-axis label. Since the y-axis label appears rotated 90 degrees, this actually affects the height of its div.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 18</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="ylabel"></a><b>ylabel</b>
+  <a class="link" href="#ylabel">#</a>
+  </p><p>
+  Text to display to the left of the chart’s y-axis. You can supply any HTML for this value, not just text. If you wish to style it using CSS, use the “dygraph-label” or “dygraph-ylabel” classes. The text will be rotated 90 degrees by default, so CSS rules may behave in unintuitive ways. No additional space is set aside for a y-axis label. If you need more space, increase the width of the y-axis tick labels using the per-axis <tt>axisLabelWidth</tt> option on the y axis. If you need a wider div for the y-axis label, either style it that way with CSS (but remember that it’s rotated, so width is controlled by the “height” property) or set the yLabelWidth option.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">border</font>; <font color="#9999FF" title="inactive">demo</font>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/border.html">border</a>; <a href="tests/demo.html">demo</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a></td></tr>
+  </table></div>
+<a name="Configuration"></a><h3>Configuration</h3>
+
+  <div class='option'><p>
+  <a name="axes"></a><b>axes</b>
+  <a class="link" href="#axes">#</a>
+  </p><p>
+  Defines per-axis options. Valid keys are 'x', 'y' and 'y2'. Only some options may be set on a per-axis basis. If an option may be set in this way, it will be noted on this page. See also documentation on <a href='per-axis.html'>per-series and per-axis options</a>.
+  </p><p>
+  <i>Type: Object</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/labelsKMB.html">labelsKMB</a>; <a href="tests/logscale.html">logscale</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/spacing.html">spacing</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a>; <a href="tests/x-axis-formatter.html">x-axis-formatter</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="plugins"></a><b>plugins</b>
+  <a class="link" href="#plugins">#</a>
+  </p><p>
+  Defines per-graph plugins. Useful for per-graph customization
+  </p><p>
+  <i>Type: Array of plugins</i><br />
+  <i>Default: []</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/crosshair.html">crosshair</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/straw-broom.html">straw-broom</a></td></tr>
+  </table></div>
+<a name="Data"></a><h3>Data</h3>
+
+  <div class='option'><p>
+  <a name="dataHandler"></a><b>dataHandler</b>
+  <a class="link" href="#dataHandler">#</a>
+  </p><p>
+  Custom DataHandler. This is an advanced customisation. See <a href='datahandler-proposal.pdf'><tt>docs/datahandler-proposal.pdf</tt></a>.
+  </p><p>
+  <i>Type: Dygraph.DataHandler</i><br />
+  <i>Default: (depends on data)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="file"></a><b>file</b>
+  <a class="link" href="#file">#</a>
+  </p><p>
+  Sets the data being displayed in the chart. This can only be set when calling updateOptions; it cannot be set from the constructor. For a full description of valid data formats, see the <a href='data.html'>Data Formats</a> page.
+  </p><p>
+  <i>Type: string (URL of CSV or CSV), GViz DataTable or 2D Array</i><br />
+  <i>Default: (set when constructed)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/hairlines.html">hairlines</a></td></tr>
+  </table></div>
+<a name="Data_20Line_20display"></a><h3>Data Line display</h3>
+
+  <div class='option'><p>
+  <a name="connectSeparatedPoints"></a><b>connectSeparatedPoints</b>
+  <a class="link" href="#connectSeparatedPoints">#</a>
+  </p><p>
+  Usually, when Dygraphs encounters a missing value in a data series, it interprets this as a gap and draws it as such. If, instead, the missing values represents an x-value for which only a different series has data, then you’ll want to connect the dots by setting this to true. To explicitly include a gap with this option set, use a value of NaN.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/independent-series">independent-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/connect-separated.html">connect-separated</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/missing-data.html">missing-data</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawGapEdgePoints"></a><b>drawGapEdgePoints</b>
+  <a class="link" href="#drawGapEdgePoints">#</a>
+  </p><p>
+  Draw points at the edges of gaps in the data. This improves visibility of small data segments or other data irregularities.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/isolated-points.html">isolated-points</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawHighlightPointCallback"></a><b>drawHighlightPointCallback</b>
+  <a class="link" href="#drawHighlightPointCallback">#</a>
+  </p><p>
+  Draw a custom item when a point is highlighted.  Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy) Also see <a href='#drawPointCallback'>drawPointCallback</a>
+  </p><p>
+  <i>Type: function(g, seriesName, canvasContext, cx, cy, color, pointSize, idx)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>g:</th><td>the reference graph</td></tr>
+<tr><th>seriesName:</th><td>the name of the series</td></tr>
+<tr><th>canvasContext:</th><td>the canvas to draw on</td></tr>
+<tr><th>cx:</th><td>center x coordinate</td></tr>
+<tr><th>cy:</th><td>center y coordinate</td></tr>
+<tr><th>color:</th><td>series color</td></tr>
+<tr><th>pointSize:</th><td>the radius of the image.</td></tr>
+<tr><th>idx:</th><td>the row-index of the point in the data.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawPointCallback"></a><b>drawPointCallback</b>
+  <a class="link" href="#drawPointCallback">#</a>
+  </p><p>
+  Draw a custom item when drawPoints is enabled. Default is a small dot matching the series color. This method should constrain drawing to within pointSize pixels from (cx, cy).  Also see <a href='#drawHighlightPointCallback'>drawHighlightPointCallback</a>
+  </p><p>
+  <i>Type: function(g, seriesName, canvasContext, cx, cy, color, pointSize, idx)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>g:</th><td>the reference graph</td></tr>
+<tr><th>seriesName:</th><td>the name of the series</td></tr>
+<tr><th>canvasContext:</th><td>the canvas to draw on</td></tr>
+<tr><th>cx:</th><td>center x coordinate</td></tr>
+<tr><th>cy:</th><td>center y coordinate</td></tr>
+<tr><th>color:</th><td>series color</td></tr>
+<tr><th>pointSize:</th><td>the radius of the image.</td></tr>
+<tr><th>idx:</th><td>the row-index of the point in the data.</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="drawPoints"></a><b>drawPoints</b>
+  <a class="link" href="#drawPoints">#</a>
+  </p><p>
+  Draw a small dot at each point, in addition to a line going through the point. This makes the individual data points easier to see, but can increase visual clutter in the chart. The small dot can be replaced with a custom rendering by supplying a <a href='#drawPointCallback'>drawPointCallback</a>.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/independent-series">independent-series</a>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/per-series">per-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/draw-points.html">draw-points</a>; <a href="tests/dynamic-update.html">dynamic-update</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/interaction.html">interaction</a>; <a href="tests/linear-regression.html">linear-regression</a>; <a href="tests/linear-regression-addseries.html">linear-regression-addseries</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/smooth-plots.html">smooth-plots</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="fillGraph"></a><b>fillGraph</b>
+  <a class="link" href="#fillGraph">#</a>
+  </p><p>
+  Should the area underneath the graph be filled? This option is not compatible with <tt>customBars</tt> nor <tt>errorBars</tt>. This may be set on a <a href='per-axis.html'>per-series</a> basis.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/fillGraph.html">fillGraph</a>; <a href="tests/fillGraph-alpha.html">fillGraph-alpha</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/steps.html">steps</a>; <a href="tests/two-axes.html">two-axes</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="plotter"></a><b>plotter</b>
+  <a class="link" href="#plotter">#</a>
+  </p><p>
+  A function (or array of functions) which plot each data series on the chart. TODO(danvk): more details! May be set per-series.
+  </p><p>
+  <i>Type: array or function</i><br />
+  <i>Default: [DygraphCanvasRenderer.Plotters.fillPlotter, DygraphCanvasRenderer.Plotters.errorPlotter, DygraphCanvasRenderer.Plotters.linePlotter]</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/plotters.html">plotters</a>; <a href="tests/smooth-plots.html">smooth-plots</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pointSize"></a><b>pointSize</b>
+  <a class="link" href="#pointSize">#</a>
+  </p><p>
+  The size of the dot to draw on each point in pixels (see drawPoints). A dot is always drawn when a point is "isolated", i.e. there is a missing point on either side of it. This also controls the size of those dots.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 1</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/per-series">per-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/isolated-points.html">isolated-points</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/smooth-plots.html">smooth-plots</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="stackedGraph"></a><b>stackedGraph</b>
+  <a class="link" href="#stackedGraph">#</a>
+  </p><p>
+  If set, stack series on top of one another rather than drawing them independently. The first series specified in the input data will wind up on top of the chart and the last will be on bottom. NaN values are drawn as white areas without a line on top, see stackedGraphNaNFill for details.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-series">highlighted-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/stacked.html">stacked</a>; <a href="tests/steps.html">steps</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="stackedGraphNaNFill"></a><b>stackedGraphNaNFill</b>
+  <a class="link" href="#stackedGraphNaNFill">#</a>
+  </p><p>
+  Controls handling of NaN values inside a stacked graph. NaN values are interpolated/extended for stacking purposes, but the actual point value remains NaN in the legend display. Valid option values are "all" (interpolate internally, repeat leftmost and rightmost value as needed), "inside" (interpolate internally only, use zero outside leftmost and rightmost value), and "none" (treat NaN as zero everywhere).
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: all</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="stepPlot"></a><b>stepPlot</b>
+  <a class="link" href="#stepPlot">#</a>
+  </p><p>
+  When set, display the graph as a step plot instead of a line plot. This option may either be set for the whole graph or for single series.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/steps.html">steps</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="strokeBorderColor"></a><b>strokeBorderColor</b>
+  <a class="link" href="#strokeBorderColor">#</a>
+  </p><p>
+  Color for the line border used if strokeBorderWidth is set.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: white</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="strokeBorderWidth"></a><b>strokeBorderWidth</b>
+  <a class="link" href="#strokeBorderWidth">#</a>
+  </p><p>
+  Draw a border around graph lines to make crossing lines more easily distinguishable. Useful for graphs with many lines.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-series">highlighted-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/series-highlight.html">series-highlight</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="strokePattern"></a><b>strokePattern</b>
+  <a class="link" href="#strokePattern">#</a>
+  </p><p>
+  A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed lines.
+  </p><p>
+  <i>Type: Array of integers</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/plotters.html">plotters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="strokeWidth"></a><b>strokeWidth</b>
+  <a class="link" href="#strokeWidth">#</a>
+  </p><p>
+  The width of the lines connecting data points. This can be used to increase the contrast or some graphs.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 1.0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a>; <a href="gallery/#g/highlighted-series">highlighted-series</a>; <a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/per-series">per-series</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/layout-options.html">layout-options</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/linear-regression.html">linear-regression</a>; <a href="tests/linear-regression-addseries.html">linear-regression-addseries</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="visibility"></a><b>visibility</b>
+  <a class="link" href="#visibility">#</a>
+  </p><p>
+  Which series should initially be visible? Once the Dygraph has been constructed, you can access and modify the visibility of each series using the <code>visibility</code> and <code>setVisibility</code> methods.
+  </p><p>
+  <i>Type: Array of booleans</i><br />
+  <i>Default: [true, true, ...]</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">color-visibility</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/color-visibility.html">color-visibility</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/visibility.html">visibility</a></td></tr>
+  </table></div>
+<a name="Data_20Series_20Colors"></a><h3>Data Series Colors</h3>
+
+  <div class='option'><p>
+  <a name="color"></a><b>color</b>
+  <a class="link" href="#color">#</a>
+  </p><p>
+  A per-series color definition. Used in conjunction with, and overrides, the colors option.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: (see description)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/smooth-plots.html">smooth-plots</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="colorSaturation"></a><b>colorSaturation</b>
+  <a class="link" href="#colorSaturation">#</a>
+  </p><p>
+  If <strong>colors</strong> is not specified, saturation of the automatically-generated data series colors.
+  </p><p>
+  <i>Type: float (0.0 - 1.0)</i><br />
+  <i>Default: 1.0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="colorValue"></a><b>colorValue</b>
+  <a class="link" href="#colorValue">#</a>
+  </p><p>
+  If colors is not specified, value of the data series colors, as in hue/saturation/value. (0.0-1.0, default 0.5)
+  </p><p>
+  <i>Type: float (0.0 - 1.0)</i><br />
+  <i>Default: 1.0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="colors"></a><b>colors</b>
+  <a class="link" href="#colors">#</a>
+  </p><p>
+  List of colors for the data series. These can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow", etc. If not specified, equally-spaced points around a color wheel are used. Overridden by the “color” option.
+  </p><p>
+  <i>Type: Array of strings</i><br />
+  <i>Default: (see description)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">color-cycle</font>; <font color="#9999FF" title="inactive">color-visibility</font>; <font color="#9999FF" title="inactive">demo</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/century-scale.html">century-scale</a>; <a href="tests/color-cycle.html">color-cycle</a>; <a href="tests/color-visibility.html">color-visibility</a>; <a href="tests/demo.html">demo</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="fillAlpha"></a><b>fillAlpha</b>
+  <a class="link" href="#fillAlpha">#</a>
+  </p><p>
+  Custom or sigma-based high/low bands for each series are drawn in the same colour as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the bands will not be drawn, whereas a value of 1.0 means that the bands will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point.
+  </p><p>
+  <i>Type: float (0.0 - 1.0)</i><br />
+  <i>Default: 0.15</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/fillGraph-alpha.html">fillGraph-alpha</a>; <a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+<a name="Debugging"></a><h3>Debugging</h3>
+
+  <div class='option'><p>
+  <a name="timingName"></a><b>timingName</b>
+  <a class="link" href="#timingName">#</a>
+  </p><p>
+  Set this option to log timing information. The value of the option will be logged along with the timimg, so that you can distinguish multiple dygraphs on the same page.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a></td></tr>
+  </table></div>
+<a name="Deprecated"></a><h3>Deprecated</h3>
+
+  <div class='option'><p>
+  <a name="timingName"></a><b>timingName</b>
+  <a class="link" href="#timingName">#</a>
+  </p><p>
+  Set this option to log timing information. The value of the option will be logged along with the timimg, so that you can distinguish multiple dygraphs on the same page.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a></td></tr>
+  </table></div>
+<a name="Error_20Bars"></a><h3>Error Bars</h3>
+<p>These are actually high/low bands, not error bars; the misnomer is historic.</p>
+
+  <div class='option'><p>
+  <a name="customBars"></a><b>customBars</b>
+  <a class="link" href="#customBars">#</a>
+  </p><p>
+  When set, parse each CSV cell as "low;middle;high". Custom high/low bands will be drawn for each point between low and high, with the series itself going through middle.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/stock">stock</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-bars.html">custom-bars</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/steps.html">steps</a>; <a href="tests/stock.html">stock</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/zero-series.html">zero-series</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="errorBars"></a><b>errorBars</b>
+  <a class="link" href="#errorBars">#</a>
+  </p><p>
+  Does the data contain standard deviations? Setting this to true alters the input format (see above).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <a href="gallery/#g/resizable">resizable</a>; <a href="gallery/#g/resize">resize</a>; <a href="gallery/#g/synchronize">synchronize</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a>; <a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/custom-bars.html">custom-bars</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/draw-points.html">draw-points</a>; <a href="tests/fractions.html">fractions</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/interaction.html">interaction</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/numeric-gviz.html">numeric-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/perf.html">perf</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/resize.html">resize</a>; <a href="tests/steps.html">steps</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/underlay-callback.html">underlay-callback</a>; <a href="tests/visibility.html">visibility</a>; <a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="fillAlpha"></a><b>fillAlpha</b>
+  <a class="link" href="#fillAlpha">#</a>
+  </p><p>
+  Custom or sigma-based high/low bands for each series are drawn in the same colour as the series, but with partial transparency. This sets the transparency. A value of 0.0 means that the bands will not be drawn, whereas a value of 1.0 means that the bands will be as dark as the line for the series itself. This can be used to produce chart lines whose thickness varies at each point.
+  </p><p>
+  <i>Type: float (0.0 - 1.0)</i><br />
+  <i>Default: 0.15</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/fillGraph-alpha.html">fillGraph-alpha</a>; <a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="fractions"></a><b>fractions</b>
+  <a class="link" href="#fractions">#</a>
+  </p><p>
+  When set, attempt to parse each cell in the CSV file as "a/b", where a and b are integers. The ratio will be plotted. This allows computation of Wilson confidence intervals (see below).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/fractions.html">fractions</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rollPeriod"></a><b>rollPeriod</b>
+  <a class="link" href="#rollPeriod">#</a>
+  </p><p>
+  Number of days over which to average data. Discussed extensively above.
+  </p><p>
+  <i>Type: integer &gt;= 1</i><br />
+  <i>Default: 1</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/link-interaction">link-interaction</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/resizable">resizable</a>; <a href="gallery/#g/resize">resize</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/synchronize">synchronize</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a>; <a href="tests/century-scale.html">century-scale</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/draw-points.html">draw-points</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/perf.html">perf</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/resize.html">resize</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/spacing.html">spacing</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a>; <a href="tests/underlay-callback.html">underlay-callback</a>; <a href="tests/visibility.html">visibility</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="sigma"></a><b>sigma</b>
+  <a class="link" href="#sigma">#</a>
+  </p><p>
+  When errorBars is set, shade this many standard deviations above/below each point.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 2.0</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="wilsonInterval"></a><b>wilsonInterval</b>
+  <a class="link" href="#wilsonInterval">#</a>
+  </p><p>
+  Use in conjunction with the "fractions" option. Instead of plotting +/- N standard deviations, dygraphs will compute a Wilson confidence interval and plot that. This has more reasonable behavior for ratios close to 0 or 1.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+<a name="Grid"></a><h3>Grid</h3>
+
+  <div class='option'><p>
+  <a name="drawGrid"></a><b>drawGrid</b>
+  <a class="link" href="#drawGrid">#</a>
+  </p><p>
+  Whether to display gridlines in the chart. This may be set on a per-axis basis to define the visibility of each axis’ grid separately.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true for x and y, false for y2</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="gridLineColor"></a><b>gridLineColor</b>
+  <a class="link" href="#gridLineColor">#</a>
+  </p><p>
+  The color of the gridlines. This may be set on a per-axis basis to define each axis’ grid separately.
+  </p><p>
+  <i>Type: red, blue</i><br />
+  <i>Default: rgb(128,128,128)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/smooth-plots.html">smooth-plots</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="gridLinePattern"></a><b>gridLinePattern</b>
+  <a class="link" href="#gridLinePattern">#</a>
+  </p><p>
+  A custom pattern array where the even index is a draw and odd is a space in pixels. If null then it draws a solid line. The array should have a even length as any odd lengthed array could be expressed as a smaller even length array. This is used to create dashed gridlines.
+  </p><p>
+  <i>Type: Array of integers</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/two-axes.html">two-axes</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="gridLineWidth"></a><b>gridLineWidth</b>
+  <a class="link" href="#gridLineWidth">#</a>
+  </p><p>
+  Thickness (in pixels) of the gridlines drawn under the chart. The vertical/horizontal gridlines can be turned off entirely by using the drawGrid option. This may be set on a per-axis basis to define each axis’ grid separately.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 0.3</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="independentTicks"></a><b>independentTicks</b>
+  <a class="link" href="#independentTicks">#</a>
+  </p><p>
+  Only valid for y and y2, has no effect on x: This option defines whether the y axes should align their ticks or if they should be independent. Possible combinations: [1.] y=true, y2=false (default): y is the primary axis and the y2 ticks are aligned to the the ones of y. (only 1 grid) [2.] y=false, y2=true: y2 is the primary axis and the y ticks are aligned to the the ones of y2. (only 1 grid) [3.] y=true, y2=true: Both axis are independent and have their own ticks. (2 grids) [4.] y=false, y2=false: Invalid configuration causes an error.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true for y, false for y2</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/two-axes.html">two-axes</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pixelsPerLabel"></a><b>pixelsPerLabel</b>
+  <a class="link" href="#pixelsPerLabel">#</a>
+  </p><p>
+  Number of pixels to require between each x- and y-label. Larger values will yield a sparser axis with fewer ticks. This is set on a <a href='per-axis.html'>per-axis</a> basis.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 70 (x-axis) or 30 (y-axes)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/hairlines.html">hairlines</a>; <a href="tests/spacing.html">spacing</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+<a name="Interactive_20Elements"></a><h3>Interactive Elements</h3>
+
+  <div class='option'><p>
+  <a name="animatedZooms"></a><b>animatedZooms</b>
+  <a class="link" href="#animatedZooms">#</a>
+  </p><p>
+  Set this option to animate the transition between zoom windows. Applies to programmatic and interactive zooms. Note that if you also set a drawCallback, it will be called several times on each zoom. If you set a zoomCallback, it will only be called after the animation is complete.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-region">highlighted-region</a>; <a href="gallery/#g/link-interaction">link-interaction</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/dense-fill.html">dense-fill</a>; <a href="tests/highlighted-region.html">highlighted-region</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/plotters.html">plotters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="hideOverlayOnMouseOut"></a><b>hideOverlayOnMouseOut</b>
+  <a class="link" href="#hideOverlayOnMouseOut">#</a>
+  </p><p>
+  Whether to hide the legend when the mouse leaves the chart area.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/gviz-selection.html">gviz-selection</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="highlightCircleSize"></a><b>highlightCircleSize</b>
+  <a class="link" href="#highlightCircleSize">#</a>
+  </p><p>
+  The size in pixels of the dot drawn over highlighted points.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 3</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-series">highlighted-series</a>; <a href="gallery/#g/per-series">per-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="highlightSeriesBackgroundAlpha"></a><b>highlightSeriesBackgroundAlpha</b>
+  <a class="link" href="#highlightSeriesBackgroundAlpha">#</a>
+  </p><p>
+  Fade the background while highlighting series. 1=fully visible background (disable fading), 0=hiddden background (show highlighted series only).
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 0.5</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="highlightSeriesBackgroundColor"></a><b>highlightSeriesBackgroundColor</b>
+  <a class="link" href="#highlightSeriesBackgroundColor">#</a>
+  </p><p>
+  Sets the background color used to fade out the series in conjunction with “highlightSeriesBackgroundAlpha”.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: rgb(255, 255, 255)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="highlightSeriesOpts"></a><b>highlightSeriesOpts</b>
+  <a class="link" href="#highlightSeriesOpts">#</a>
+  </p><p>
+  When set, the options from this object are applied to the timeseries closest to the mouse pointer for interactive highlighting. See also “highlightCallback”. Example: highlightSeriesOpts: { strokeWidth: 3 }.
+  </p><p>
+  <i>Type: Object</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/highlighted-series">highlighted-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/series-highlight.html">series-highlight</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="interactionModel"></a><b>interactionModel</b>
+  <a class="link" href="#interactionModel">#</a>
+  </p><p>
+  TODO(konigsberg): document this
+  </p><p>
+  <i>Type: Object</i><br />
+  <i>Default: ...</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/drawing">drawing</a>; <a href="gallery/#g/interaction">interaction</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/interaction.html">interaction</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="panEdgeFraction"></a><b>panEdgeFraction</b>
+  <a class="link" href="#panEdgeFraction">#</a>
+  </p><p>
+  A value representing the farthest a graph may be panned, in percent of the display. For example, a value of 0.1 means that the graph can only be panned 10% passed the edges of the displayed values. null means no bounds.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/zoom.html">zoom</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pointClickCallback"></a><b>pointClickCallback</b>
+  <a class="link" href="#pointClickCallback">#</a>
+  </p><p>
+  A function to call when a data point is clicked. and the point that was clicked.
+  </p><p>
+  <i>Type: function(e, point)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>e:</th><td>the event object for the click</td></tr>
+<tr><th>point:</th><td>the point that was clicked See <a href='#point_properties'>Point properties</a> for details</td></tr>
+  </table></div><p>
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showLabelsOnHighlight"></a><b>showLabelsOnHighlight</b>
+  <a class="link" href="#showLabelsOnHighlight">#</a>
+  </p><p>
+  Whether to show the legend upon mouseover.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showRoller"></a><b>showRoller</b>
+  <a class="link" href="#showRoller">#</a>
+  </p><p>
+  If the rolling average period text box should be shown.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/dynamic-update.html">dynamic-update</a>; <a href="tests/fractions.html">fractions</a>; <a href="tests/isolated-points.html">isolated-points</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/numeric-gviz.html">numeric-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/steps.html">steps</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/underlay-callback.html">underlay-callback</a></td></tr>
+  </table></div>
+<a name="Legend"></a><h3>Legend</h3>
+
+  <div class='option'><p>
+  <a name="hideOverlayOnMouseOut"></a><b>hideOverlayOnMouseOut</b>
+  <a class="link" href="#hideOverlayOnMouseOut">#</a>
+  </p><p>
+  Whether to hide the legend when the mouse leaves the chart area.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/gviz-selection.html">gviz-selection</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labels"></a><b>labels</b>
+  <a class="link" href="#labels">#</a>
+  </p><p>
+  A distinct name for each data series, including the independent (X) series. For CSV files and DataTable objects, this is determined by context. For raw data, this must be specified. If it is not, default values are supplied and a warning is logged. Make sure no two names are the same!
+  </p><p>
+  <i>Type: Array of strings</i><br />
+  <i>Default: ["X", "Y1", "Y2", ...]*</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">annotations-native</font>; <a href="gallery/#g/drawing">drawing</a>; <font color="#9999FF" title="inactive">dygraph-simple</font>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/highlighted-region">highlighted-region</a>; <a href="gallery/#g/highlighted-series">highlighted-series</a>; <a href="gallery/#g/highlighted-weekends">highlighted-weekends</a>; <a href="gallery/#g/independent-series">independent-series</a>; <a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <font color="#9999FF" title="inactive">negative</font>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation-native.html">annotation-native</a>; <a href="tests/connect-separated.html">connect-separated</a>; <a href="tests/custom-bars.html">custom-bars</a>; <a href="tests/dateWindow.html">dateWindow</a>; <a href="tests/daylight-savings.html">daylight-savings</a>; <a href="tests/dense-fill.html">dense-fill</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/dygraph.html">dygraph</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/dynamic-update.html">dynamic-update</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/highlighted-region.html">highlighted-region</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/isolated-points.html">isolated-points</a>; <a href="tests/label-div.html">label-div</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/labelsDateMilliseconds.html">labelsDateMilliseconds</a>; <a href="tests/labelsDateUTC.html">labelsDateUTC</a>; <a href="tests/labelsKMB.html">labelsKMB</a>; <a href="tests/linear-regression.html">linear-regression</a>; <a href="tests/linear-regression-addseries.html">linear-regression-addseries</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/native-format.html">native-format</a>; <a href="tests/negative.html">negative</a>; <a href="tests/perf.html">perf</a>; <a href="tests/plotter.html">plotter</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/small-range-zero.html">small-range-zero</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/steps.html">steps</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsDiv"></a><b>labelsDiv</b>
+  <a class="link" href="#labelsDiv">#</a>
+  </p><p>
+  Show data labels in an external div, rather than on the graph.  This value can either be a div element or a div id.
+  </p><p>
+  <i>Type: DOM element or string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">demo</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/century-scale.html">century-scale</a>; <a href="tests/demo.html">demo</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/label-div.html">label-div</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsSeparateLines"></a><b>labelsSeparateLines</b>
+  <a class="link" href="#labelsSeparateLines">#</a>
+  </p><p>
+  Put <code>&lt;br/&gt;</code> between lines in the label string. Often used in conjunction with <strong>labelsDiv</strong>.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">demo</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/century-scale.html">century-scale</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/demo.html">demo</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsShowZeroValues"></a><b>labelsShowZeroValues</b>
+  <a class="link" href="#labelsShowZeroValues">#</a>
+  </p><p>
+  Show zero value labels in the labelsDiv.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/label-div.html">label-div</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="legend"></a><b>legend</b>
+  <a class="link" href="#legend">#</a>
+  </p><p>
+  When to display the legend. By default, it only appears when a user mouses over the chart. Set it to "always" to always display a legend of some sort, "never" to hide it. When set to "follow", legend follows highlighted points.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: onmouseover</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">demo</font>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/css-positioning.html">css-positioning</a>; <a href="tests/demo.html">demo</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/label_v.html">label_v</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/old-yrange-behavior.html">old-yrange-behavior</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="legendFollowOffsetX"></a><b>legendFollowOffsetX</b>
+  <a class="link" href="#legendFollowOffsetX">#</a>
+  </p><p>
+  Number of pixels to use as horizontal offset from the point for a “floating” legend ("follow" mode). This should be positive (to the right) because the legend flips over to the left side if it’s too wide.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 50</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="legendFollowOffsetY"></a><b>legendFollowOffsetY</b>
+  <a class="link" href="#legendFollowOffsetY">#</a>
+  </p><p>
+  Number of pixels to use as vertical offset from the point for a “floating” legend ("follow" mode).
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: -50</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="legendFormatter"></a><b>legendFormatter</b>
+  <a class="link" href="#legendFormatter">#</a>
+  </p><p>
+  Set this to supply a custom formatter for the legend. See <a href="legend-formatter.md"><tt>docs/legend-formatter.md</tt></a> (<a href="https://github.com/danvk/dygraphs/blob/master/docs/legend-formatter.md">online</a>) and the <a href="tests/legend-formatter.html">legendFormatter demo</a> for usage.
+  </p><p>
+  <i>Type: function(data): string or DocumentFragment node</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/legend-formatter.html">legend-formatter</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showLabelsOnHighlight"></a><b>showLabelsOnHighlight</b>
+  <a class="link" href="#showLabelsOnHighlight">#</a>
+  </p><p>
+  Whether to show the legend upon mouseover.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">callbacks</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/callback.html">callback</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="valueFormatter"></a><b>valueFormatter</b>
+  <a class="link" href="#valueFormatter">#</a>
+  </p><p>
+  Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. .
+  </p><p>
+  <i>Type: function(num_or_millis, opts, seriesName, dygraph, row, col)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>num_or_millis:</th><td>The value to be formatted. This is always a number. For date axes, it’s millis since epoch. You can call new Date(millis) to get a Date object.</td></tr>
+<tr><th>opts:</th><td>This is a function you can call to access various options (e.g. opts('labelsKMB')). It returns per-axis values for the option when available.</td></tr>
+<tr><th>seriesName:</th><td>The name of the series from which the point came, e.g. 'X', 'Y', 'A', etc.</td></tr>
+<tr><th>dygraph:</th><td>The dygraph object for which the formatting is being done</td></tr>
+<tr><th>row:</th><td>The row of the data from which this point comes. g.getValue(row, 0) will return the x-value for this point.</td></tr>
+<tr><th>col:</th><td>The column of the data from which this point comes. g.getValue(row, col) will return the original y-value for this point. This can be used to get the full confidence interval for the point, or access un-rolled values for the point.</td></tr>
+  </table></div><p>
+  <i>Default: Depends on the type of your data.</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/hairlines.html">hairlines</a>; <a href="tests/labelsKMB.html">labelsKMB</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+<a name="Overall_20display"></a><h3>Overall display</h3>
+
+  <div class='option'><p>
+  <a name="animateBackgroundFade"></a><b>animateBackgroundFade</b>
+  <a class="link" href="#animateBackgroundFade">#</a>
+  </p><p>
+  Activate an animation effect for a gradual fade.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: true</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="height"></a><b>height</b>
+  <a class="link" href="#height">#</a>
+  </p><p>
+  Height, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 320</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">annotations-gviz</font>; <font color="#9999FF" title="inactive">border</font>; <font color="#9999FF" title="inactive">callbacks</font>; <font color="#9999FF" title="inactive">color-cycle</font>; <font color="#9999FF" title="inactive">color-visibility</font>; <font color="#9999FF" title="inactive">demo</font>; <a href="gallery/#g/drawing">drawing</a>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/highlighted-region">highlighted-region</a>; <a href="gallery/#g/highlighted-series">highlighted-series</a>; <a href="gallery/#g/highlighted-weekends">highlighted-weekends</a>; <a href="gallery/#g/independent-series">independent-series</a>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <font color="#9999FF" title="inactive">negative</font>; <font color="#9999FF" title="inactive">no-range</font>; <a href="gallery/#g/plotter">plotter</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/stock">stock</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/synchronize">synchronize</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/century-scale.html">century-scale</a>; <a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/color-cycle.html">color-cycle</a>; <a href="tests/color-visibility.html">color-visibility</a>; <a href="tests/demo.html">demo</a>; <a href="tests/dense-fill.html">dense-fill</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/iframe.html">iframe</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/no-range.html">no-range</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/small-range-zero.html">small-range-zero</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/straw-broom.html">straw-broom</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="pixelRatio"></a><b>pixelRatio</b>
+  <a class="link" href="#pixelRatio">#</a>
+  </p><p>
+  Overrides the pixel ratio scaling factor for the canvas’ 2d context. Ordinarily, this is set to the devicePixelRatio / (context.backingStoreRatio || 1), so on mobile devices, where the devicePixelRatio can be somewhere around 3, performance can be improved by overriding this value to something less precise, like 1, at the expense of resolution.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: (devicePixelRatio / context.backingStoreRatio)</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="resizable"></a><b>resizable</b>
+  <a class="link" href="#resizable">#</a>
+  </p><p>
+  Whether to add a ResizeObserver to the container div ("passive") and additionally make it resizable ("horizontal", "vertical", "both"). In any case, if the container div has CSS "overflow:visible;" it will be changed to "overflow:hidden;" to make CSS resizing possible. Note that this is distinct from resizing the graph when the window size changes, which is always active; this feature adds user-resizable “handles” to the container div.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: no</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/resizable">resizable</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/resizable.html">resizable</a>; <a href="tests/resize.html">resize</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rightGap"></a><b>rightGap</b>
+  <a class="link" href="#rightGap">#</a>
+  </p><p>
+  Number of pixels to leave blank at the right edge of the Dygraph. This makes it easier to highlight the right-most data point.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 5</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="width"></a><b>width</b>
+  <a class="link" href="#width">#</a>
+  </p><p>
+  Width, in pixels, of the chart. If the container div has been explicitly sized, this will be ignored.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 480</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">annotations-gviz</font>; <font color="#9999FF" title="inactive">border</font>; <font color="#9999FF" title="inactive">callbacks</font>; <font color="#9999FF" title="inactive">color-cycle</font>; <font color="#9999FF" title="inactive">color-visibility</font>; <font color="#9999FF" title="inactive">demo</font>; <a href="gallery/#g/drawing">drawing</a>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/highlighted-region">highlighted-region</a>; <a href="gallery/#g/highlighted-series">highlighted-series</a>; <a href="gallery/#g/highlighted-weekends">highlighted-weekends</a>; <a href="gallery/#g/independent-series">independent-series</a>; <a href="gallery/#g/interaction">interaction</a>; <a href="gallery/#g/linear-regression">linear-regression</a>; <a href="gallery/#g/link-interaction">link-interaction</a>; <font color="#9999FF" title="inactive">negative</font>; <font color="#9999FF" title="inactive">no-range</font>; <a href="gallery/#g/plotter">plotter</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/stock">stock</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/synchronize">synchronize</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/century-scale.html">century-scale</a>; <a href="tests/charting-combinations.html">charting-combinations</a>; <a href="tests/color-cycle.html">color-cycle</a>; <a href="tests/color-visibility.html">color-visibility</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/daylight-savings.html">daylight-savings</a>; <a href="tests/demo.html">demo</a>; <a href="tests/dense-fill.html">dense-fill</a>; <a href="tests/drawing.html">drawing</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/iframe.html">iframe</a>; <a href="tests/independent-series.html">independent-series</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/linear-regression.html">linear-regression</a>; <a href="tests/linear-regression-addseries.html">linear-regression-addseries</a>; <a href="tests/linear-regression-fractions.html">linear-regression-fractions</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/no-range.html">no-range</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/series-highlight.html">series-highlight</a>; <a href="tests/small-range-zero.html">small-range-zero</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/straw-broom.html">straw-broom</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+<a name="Range_20Selector"></a><h3>Range Selector</h3>
+
+  <div class='option'><p>
+  <a name="rangeSelectorAlpha"></a><b>rangeSelectorAlpha</b>
+  <a class="link" href="#rangeSelectorAlpha">#</a>
+  </p><p>
+  The transparency of the veil that is drawn over the unselected portions of the range selector mini plot. A value of 0 represents full transparency and the unselected portions of the mini plot will appear as normal. A value of 1 represents full opacity and the unselected portions of the mini plot will be hidden.
+  </p><p>
+  <i>Type: float (0.0 - 1.0)</i><br />
+  <i>Default: 0.6</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorBackgroundLineWidth"></a><b>rangeSelectorBackgroundLineWidth</b>
+  <a class="link" href="#rangeSelectorBackgroundLineWidth">#</a>
+  </p><p>
+  The width of the lines below and on both sides of the range selector mini plot.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 1</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorBackgroundStrokeColor"></a><b>rangeSelectorBackgroundStrokeColor</b>
+  <a class="link" href="#rangeSelectorBackgroundStrokeColor">#</a>
+  </p><p>
+  The color of the lines below and on both sides of the range selector mini plot. This can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow".
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: gray</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorForegroundLineWidth"></a><b>rangeSelectorForegroundLineWidth</b>
+  <a class="link" href="#rangeSelectorForegroundLineWidth">#</a>
+  </p><p>
+  The width the lines in the interactive layer of the range selector.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 1</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorForegroundStrokeColor"></a><b>rangeSelectorForegroundStrokeColor</b>
+  <a class="link" href="#rangeSelectorForegroundStrokeColor">#</a>
+  </p><p>
+  The color of the lines in the interactive layer of the range selector. This can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow".
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: black</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorHeight"></a><b>rangeSelectorHeight</b>
+  <a class="link" href="#rangeSelectorHeight">#</a>
+  </p><p>
+  Height, in pixels, of the range selector widget. This option can only be specified at Dygraph creation time.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 40</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorPlotFillColor"></a><b>rangeSelectorPlotFillColor</b>
+  <a class="link" href="#rangeSelectorPlotFillColor">#</a>
+  </p><p>
+  The range selector mini plot fill color. This can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow". You can also specify null or "" to turn off fill.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: #A7B1C4</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorPlotFillGradientColor"></a><b>rangeSelectorPlotFillGradientColor</b>
+  <a class="link" href="#rangeSelectorPlotFillGradientColor">#</a>
+  </p><p>
+  The top color for the range selector mini plot fill color gradient. This can be of the form "#AABBCC" or "rgb(255,100,200)" or "rgba(255,100,200,42)" or "yellow". You can also specify null or "" to disable the gradient and fill with one single color.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: white</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorPlotLineWidth"></a><b>rangeSelectorPlotLineWidth</b>
+  <a class="link" href="#rangeSelectorPlotLineWidth">#</a>
+  </p><p>
+  The width of the range selector mini plot line.
+  </p><p>
+  <i>Type: float</i><br />
+  <i>Default: 1.5</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorPlotStrokeColor"></a><b>rangeSelectorPlotStrokeColor</b>
+  <a class="link" href="#rangeSelectorPlotStrokeColor">#</a>
+  </p><p>
+  The range selector mini plot stroke color. This can be of the form "#AABBCC" or "rgb(255,100,200)" or "yellow". You can also specify null or "" to turn off stroke.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: #808FAB</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="rangeSelectorVeilColour"></a><b>rangeSelectorVeilColour</b>
+  <a class="link" href="#rangeSelectorVeilColour">#</a>
+  </p><p>
+  The fillStyle for the veil of the range selector (e.g. "rgba(240, 240, 240, 0.6)"); if set, the rangeSelectorAlpha option is ignored.
+  </p><p>
+  <i>Type: string</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showInRangeSelector"></a><b>showInRangeSelector</b>
+  <a class="link" href="#showInRangeSelector">#</a>
+  </p><p>
+  Mark this series for inclusion in the range selector. The mini plot curve will be an average of all such series. If this is not specified for any series, the default behavior is to average all the visible series. Setting it for one series will result in that series being charted alone in the range selector. Once it’s set for a single series, it needs to be set for all series which should be included (regardless of visibility).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showRangeSelector"></a><b>showRangeSelector</b>
+  <a class="link" href="#showRangeSelector">#</a>
+  </p><p>
+  Show or hide the range selector widget.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/range-selector">range-selector</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/iframe.html">iframe</a>; <a href="tests/range-selector.html">range-selector</a></td></tr>
+  </table></div>
+<a name="Rolling_20Averages"></a><h3>Rolling Averages</h3>
+
+  <div class='option'><p>
+  <a name="rollPeriod"></a><b>rollPeriod</b>
+  <a class="link" href="#rollPeriod">#</a>
+  </p><p>
+  Number of days over which to average data. Discussed extensively above.
+  </p><p>
+  <i>Type: integer &gt;= 1</i><br />
+  <i>Default: 1</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/link-interaction">link-interaction</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/resizable">resizable</a>; <a href="gallery/#g/resize">resize</a>; <a href="gallery/#g/styled-chart-labels">styled-chart-labels</a>; <a href="gallery/#g/synchronize">synchronize</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a>; <a href="tests/century-scale.html">century-scale</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/customLabel.html">customLabel</a>; <a href="tests/customLabelCss3.html">customLabelCss3</a>; <a href="tests/draw-points.html">draw-points</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/legend-values.html">legend-values</a>; <a href="tests/link-interaction.html">link-interaction</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/no-visibility.html">no-visibility</a>; <a href="tests/perf.html">perf</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/resize.html">resize</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/spacing.html">spacing</a>; <a href="tests/styled-chart-labels.html">styled-chart-labels</a>; <a href="tests/synchronize.html">synchronize</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/unboxed-spark.html">unboxed-spark</a>; <a href="tests/underlay-callback.html">underlay-callback</a>; <a href="tests/visibility.html">visibility</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="showRoller"></a><b>showRoller</b>
+  <a class="link" href="#showRoller">#</a>
+  </p><p>
+  If the rolling average period text box should be shown.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">callbacks</font>; <a href="gallery/#g/dynamic-update">dynamic-update</a>; <a href="gallery/#g/range-selector">range-selector</a>; <a href="gallery/#g/temperature-sf-ny">temperature-sf-ny</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/callback.html">callback</a>; <a href="tests/crosshair.html">crosshair</a>; <a href="tests/dynamic-update.html">dynamic-update</a>; <a href="tests/fractions.html">fractions</a>; <a href="tests/isolated-points.html">isolated-points</a>; <a href="tests/missing-data.html">missing-data</a>; <a href="tests/numeric-gviz.html">numeric-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/resizable.html">resizable</a>; <a href="tests/steps.html">steps</a>; <a href="tests/temperature-sf-ny.html">temperature-sf-ny</a>; <a href="tests/underlay-callback.html">underlay-callback</a></td></tr>
+  </table></div>
+<a name="Series"></a><h3>Series</h3>
+
+  <div class='option'><p>
+  <a name="series"></a><b>series</b>
+  <a class="link" href="#series">#</a>
+  </p><p>
+  Defines per-series options. Its keys match the y-axis label names, and the values are dictionaries themselves that contain options specific to that series.
+  </p><p>
+  <i>Type: Object</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><a href="gallery/#g/annotations">annotations</a>; <font color="#9999FF" title="inactive">annotations-native</font>; <a href="gallery/#g/independent-series">independent-series</a>; <a href="gallery/#g/per-series">per-series</a></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation.html">annotation</a>; <a href="tests/annotation-native.html">annotation-native</a>; <a href="tests/connect-separated.html">connect-separated</a>; <a href="tests/custom-circles.html">custom-circles</a>; <a href="tests/dygraph-many-points-benchmark.html">dygraph-many-points-benchmark</a>; <a href="tests/fillGraph.html">fillGraph</a>; <a href="tests/fillGraph-alpha.html">fillGraph-alpha</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/hairlines.html">hairlines</a>; <a href="tests/isolated-points.html">isolated-points</a>; <a href="tests/per-series.html">per-series</a>; <a href="tests/plotters.html">plotters</a>; <a href="tests/range-selector.html">range-selector</a>; <a href="tests/smooth-plots.html">smooth-plots</a>; <a href="tests/steps.html">steps</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+<a name="Value_20display_2Fformatting"></a><h3>Value display/formatting</h3>
+
+  <div class='option'><p>
+  <a name="digitsAfterDecimal"></a><b>digitsAfterDecimal</b>
+  <a class="link" href="#digitsAfterDecimal">#</a>
+  </p><p>
+  Unless it’s run in scientific mode (see the <code>sigFigs</code> option), dygraphs displays numbers with <code>digitsAfterDecimal</code> digits after the decimal point. Trailing zeros are not displayed, so with a value of 2 you’ll get '0', '0.1', '0.12', '123.45' but not '123.456' (it will be rounded to '123.46'). Numbers with absolute value less than 0.1^digitsAfterDecimal (i.e. those which would show up as '0.00') will be displayed in scientific notation.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 2</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsKMB"></a><b>labelsKMB</b>
+  <a class="link" href="#labelsKMB">#</a>
+  </p><p>
+  Show k/M/B for thousands/millions/billions on y-axis.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color="#9999FF" title="inactive">annotations-gviz</font>; <font color="#9999FF" title="inactive">demo</font>; <font color="#9999FF" title="inactive">no-range</font>; <font color="#9999FF" title="inactive">two-axes</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/annotation-gviz.html">annotation-gviz</a><b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>; <a href="tests/century-scale.html">century-scale</a>; <a href="tests/css-positioning.html">css-positioning</a>; <a href="tests/demo.html">demo</a>; <a href="tests/grid_dot.html">grid_dot</a>; <a href="tests/labelsKMB.html">labelsKMB</a>; <a href="tests/legend-formatter.html">legend-formatter</a>; <a href="tests/no-range.html">no-range</a>; <a href="tests/plugins.html">plugins</a>; <a href="tests/reverse-y-axis.html">reverse-y-axis</a>; <a href="tests/rtl.html">rtl</a>; <a href="tests/two-axes.html">two-axes</a>; <a href="tests/two-axes-vr.html">two-axes-vr</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsKMG2"></a><b>labelsKMG2</b>
+  <a class="link" href="#labelsKMG2">#</a>
+  </p><p>
+  Show Ki/Mi/Gi for powers of 1024 on y-axis. If used together with <code>labelsKMB</code> (deprecated), K/M/G are used instead.
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/labelsKMB.html">labelsKMB</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="labelsUTC"></a><b>labelsUTC</b>
+  <a class="link" href="#labelsUTC">#</a>
+  </p><p>
+  Show date/time labels according to UTC (instead of local time).
+  </p><p>
+  <i>Type: boolean</i><br />
+  <i>Default: false</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/drawing.html">drawing</a>; <a href="tests/labelsDateUTC.html">labelsDateUTC</a></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="maxNumberWidth"></a><b>maxNumberWidth</b>
+  <a class="link" href="#maxNumberWidth">#</a>
+  </p><p>
+  When displaying numbers in normal (not scientific) mode, large numbers will be displayed with many trailing zeros (e.g. 100000000 instead of 1e9). This can lead to unwieldy y-axis labels. If there are more than <code>maxNumberWidth</code> digits to the left of the decimal in a number, dygraphs will switch to scientific notation, even when not operating in scientific mode. If you’d like to see all those digits, set this to something large, like 20 or 30.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: 6</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="sigFigs"></a><b>sigFigs</b>
+  <a class="link" href="#sigFigs">#</a>
+  </p><p>
+  By default, dygraphs displays numbers with a fixed number of digits after the decimal point. If you’d prefer to have a fixed number of significant figures, set this option to that number of sig figs. A value of 2, for instance, would cause 1 to be display as 1.0 and 1234 to be displayed as 1.23e+3.
+  </p><p>
+  <i>Type: integer</i><br />
+  <i>Default: null</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><font color=red>NONE</font></td></tr>
+  </table></div>
+
+  <div class='option'><p>
+  <a name="valueFormatter"></a><b>valueFormatter</b>
+  <a class="link" href="#valueFormatter">#</a>
+  </p><p>
+  Function to provide a custom display format for the values displayed on mouseover. This does not affect the values that appear on tick marks next to the axes. To format those, see axisLabelFormatter. This is usually set on a <a href='per-axis.html'>per-axis</a> basis. .
+  </p><p>
+  <i>Type: function(num_or_millis, opts, seriesName, dygraph, row, col)</i><br />
+  </p><div class='parameters'><table>
+<tr><th>num_or_millis:</th><td>The value to be formatted. This is always a number. For date axes, it’s millis since epoch. You can call new Date(millis) to get a Date object.</td></tr>
+<tr><th>opts:</th><td>This is a function you can call to access various options (e.g. opts('labelsKMB')). It returns per-axis values for the option when available.</td></tr>
+<tr><th>seriesName:</th><td>The name of the series from which the point came, e.g. 'X', 'Y', 'A', etc.</td></tr>
+<tr><th>dygraph:</th><td>The dygraph object for which the formatting is being done</td></tr>
+<tr><th>row:</th><td>The row of the data from which this point comes. g.getValue(row, 0) will return the x-value for this point.</td></tr>
+<tr><th>col:</th><td>The column of the data from which this point comes. g.getValue(row, col) will return the original y-value for this point. This can be used to get the full confidence interval for the point, or access un-rolled values for the point.</td></tr>
+  </table></div><p>
+  <i>Default: Depends on the type of your data.</i>
+  </p><table class="gallerylinks">
+  <tr><th>Gallery Samples:</th><td><font color=red>NONE</font></td></tr>
+  <tr><th>Other Examples:</th><td><a href="tests/hairlines.html">hairlines</a>; <a href="tests/labelsKMB.html">labelsKMB</a>; <a href="tests/multi-scale.html">multi-scale</a>; <a href="tests/value-axis-formatters.html">value-axis-formatters</a></td></tr>
+  </table></div>
+
+<a name="point_properties"></a><h3>Point Properties</h3>
+Some callbacks take a point argument. Its properties are:<br />
+<ul>
+<li>xval/yval: The data coordinates of the point (with dates/times as millis since epoch)</li>
+<li>canvasx/canvasy: The canvas coordinates at which the point is drawn.</li>
+<li>name: The name of the data series to which the point belongs</li>
+<li>idx: The row number of the point in the data set</li>
+</ul>
+</div> <!-- #content -->
+
+    </div> <!--  .col-lg-12 -->
+  </div>  <!-- /div.row -->
+</div>  <!-- /div#main.container -->
+
+<!-- TODO(danvk): add a real footer -->
+<!--@@@IFIMPRINT:<div class="container" style="border:1px solid green; margin-bottom:1ex;">@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@</div>:FIIMPRINT@@@-->
+
+  </body>
+</html>
