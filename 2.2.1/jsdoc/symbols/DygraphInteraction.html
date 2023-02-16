@@ -1,0 +1,881 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - DygraphInteraction</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Dygraph.html">Dygraph</a></li>
+	
+	<li><a href="../symbols/DygraphCanvasRenderer.html">DygraphCanvasRenderer</a></li>
+	
+	<li><a href="../symbols/DygraphInteraction.html">DygraphInteraction</a></li>
+	
+	<li><a href="../symbols/DygraphLayout.html">DygraphLayout</a></li>
+	
+	<li><a href="../symbols/DygraphOptions.html">DygraphOptions</a></li>
+	
+	<li><a href="../symbols/grid.html">grid</a></li>
+	
+	<li><a href="../symbols/GVizChart.html">GVizChart</a></li>
+	
+	<li><a href="../symbols/GVizDataTable.html">GVizDataTable</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class DygraphInteraction
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/src_dygraph-interaction-model.js.html">dygraph-interaction-model.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class DygraphInteraction.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/DygraphInteraction.html#constructor">DygraphInteraction</a></b>()
+							</div>
+							<div class="description">A collection of functions to facilitate build custom interaction models.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class DygraphInteraction.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.defaultModel">defaultModel</a></b>
+								</div>
+								<div class="description">Default interation model for dygraphs.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.endPan">endPan</a></b>
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+responds to an event that ends panning.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class DygraphInteraction.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.endZoom">endZoom</a></b>(event, g, context)
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+responds to an event that performs a zoom based on previously defined
+bounds.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.maybeTreatMouseOpAsClick">maybeTreatMouseOpAsClick</a></b>(event, g, context)
+								</div>
+								<div class="description">Checks whether the beginning & ending of an event were close enough that it
+should be considered a click.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.movePan">movePan</a></b>(event, g, context)
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+responds to an event that pans the view.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.moveZoom">moveZoom</a></b>(event, g, context)
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+responds to an event that defines zoom boundaries.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.startPan">startPan</a></b>(event, g, context)
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+should start the default panning behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.startZoom">startZoom</a></b>(event, g, context)
+								</div>
+								<div class="description">Called in response to an interaction model operation that
+responds to an event that starts zooming.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">DygraphInteraction.<b><a href="../symbols/DygraphInteraction.html#.treatMouseOpAsClick">treatMouseOpAsClick</a></b>(g, event, context)
+								</div>
+								<div class="description">TODO(danvk): move this logic into dygraph.js</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>DygraphInteraction</b>()
+				</div>
+				
+				<div class="description">
+					A collection of functions to facilitate build custom interaction models.
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name=".defaultModel"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>defaultModel</b>
+					
+					</div>
+					<div class="description">
+						Default interation model for dygraphs. You can refer to specific elements of
+this when constructing your own interaction model, e.g.:
+g.updateOptions( {
+  interactionModel: {
+    mousedown: DygraphInteraction.defaultInteractionModel.mousedown
+  }
+} );
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".endPan"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>endPan</b>
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+responds to an event that ends panning.
+
+It's used in the default callback for "mouseup" operations.
+Custom interaction model builders can use it to provide the default
+panning behavior.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name=".endZoom"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>endZoom</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+responds to an event that performs a zoom based on previously defined
+bounds..
+
+It's used in the default callback for "mouseup" operations.
+Custom interaction model builders can use it to provide the default
+zooming behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd>the event object which led to the endZoom call.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd>The dygraph on which to end the zoom.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd>The dragging context object (with
+    dragStartX/dragStartY/etc. properties). This function modifies the
+    context.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".maybeTreatMouseOpAsClick"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>maybeTreatMouseOpAsClick</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Checks whether the beginning & ending of an event were close enough that it
+should be considered a click. If it should, dispatch appropriate events.
+Returns true if the event was treated as a click.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".movePan"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>movePan</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+responds to an event that pans the view.
+
+It's used in the default callback for "mousemove" operations.
+Custom interaction model builders can use it to provide the default
+panning behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd>the event object which led to the movePan call.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd>The dygraph on which to act.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd>The dragging context object (with
+    dragStartX/dragStartY/etc. properties). This function modifies the
+    context.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".moveZoom"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>moveZoom</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+responds to an event that defines zoom boundaries.
+
+It's used in the default callback for "mousemove" operations.
+Custom interaction model builders can use it to provide the default
+zooming behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd>the event object which led to the moveZoom call.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd>The dygraph on which to act.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd>The dragging context object (with
+    dragStartX/dragStartY/etc. properties). This function modifies the
+    context.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".startPan"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>startPan</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+should start the default panning behavior.
+
+It's used in the default callback for "mousedown" operations.
+Custom interaction model builders can use it to provide the default
+panning behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd>the event object which led to the startPan call.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd>The dygraph on which to act.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd>The dragging context object (with
+    dragStartX/dragStartY/etc. properties). This function modifies the
+    context.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".startZoom"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>startZoom</b>(event, g, context)
+					
+					</div>
+					<div class="description">
+						Called in response to an interaction model operation that
+responds to an event that starts zooming.
+
+It's used in the default callback for "mousedown" operations.
+Custom interaction model builders can use it to provide the default
+zooming behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd>the event object which led to the startZoom call.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd>The dygraph on which to act.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd>The dragging context object (with
+    dragStartX/dragStartY/etc. properties). This function modifies the
+    context.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".treatMouseOpAsClick"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">DygraphInteraction.</span><b>treatMouseOpAsClick</b>(g, event, context)
+					
+					</div>
+					<div class="description">
+						TODO(danvk): move this logic into dygraph.js
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span> <b>g</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Event}</span> <b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>context</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 for dygraph 2.2.1
+		</div>
+	</body>
+</html>

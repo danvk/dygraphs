@@ -1,0 +1,2493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - Dygraph</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Dygraph.html">Dygraph</a></li>
+	
+	<li><a href="../symbols/DygraphCanvasRenderer.html">DygraphCanvasRenderer</a></li>
+	
+	<li><a href="../symbols/DygraphInteraction.html">DygraphInteraction</a></li>
+	
+	<li><a href="../symbols/DygraphLayout.html">DygraphLayout</a></li>
+	
+	<li><a href="../symbols/DygraphOptions.html">DygraphOptions</a></li>
+	
+	<li><a href="../symbols/grid.html">grid</a></li>
+	
+	<li><a href="../symbols/GVizChart.html">GVizChart</a></li>
+	
+	<li><a href="../symbols/GVizDataTable.html">GVizDataTable</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class Dygraph
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				Creates an interactive, zoomable chart.
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/src_dygraph.js.html">dygraph.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Dygraph.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/Dygraph.html#constructor">Dygraph</a></b>(div, file, attrs)
+							</div>
+							<div class="description"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Dygraph.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								Dygraph.<b><a href="../symbols/Dygraph.html#.Plotters">Plotters</a></b>
+								</div>
+								<div class="description">Standard plotters.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								Dygraph.<b><a href="../symbols/Dygraph.html#.PointType">PointType</a></b>
+								</div>
+								<div class="description">Point structure.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Dygraph.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#adjustRoll">adjustRoll</a></b>(length)
+								</div>
+								<div class="description">Adjusts the number of points in the rolling average.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#annotations">annotations</a></b>()
+								</div>
+								<div class="description">Return the list of annotations.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#clearSelection">clearSelection</a></b>()
+								</div>
+								<div class="description">Clears the current selection (i.e.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#destroy">destroy</a></b>()
+								</div>
+								<div class="description">Detach DOM elements in the dygraph and null out all data references.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#eventToDomCoords">eventToDomCoords</a></b>(event)
+								</div>
+								<div class="description">Convert a mouse event to DOM coordinates relative to the graph origin.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getArea">getArea</a></b>()
+								</div>
+								<div class="description">Get the current graph's area object.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getColors">getColors</a></b>()
+								</div>
+								<div class="description">Return the list of colors.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getHighlightSeries">getHighlightSeries</a></b>()
+								</div>
+								<div class="description">Returns the name of the currently-highlighted series.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getLabels">getLabels</a></b>()
+								</div>
+								<div class="description">Get the list of label names for this graph.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getOption">getOption</a></b>(name, opt_seriesName)
+								</div>
+								<div class="description">Returns the current value for an option, as set in the constructor or via
+updateOptions.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getPropertiesForSeries">getPropertiesForSeries</a></b>(series_name)
+								</div>
+								<div class="description">Returns a few attributes of a series, i.e.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getRowForX">getRowForX</a></b>(xVal)
+								</div>
+								<div class="description">Find the row number corresponding to the given x-value.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getSelection">getSelection</a></b>()
+								</div>
+								<div class="description">Returns the number of the currently selected row.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#getValue">getValue</a></b>(row, col)
+								</div>
+								<div class="description">Returns the value in the given row and column.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#indexFromSetName">indexFromSetName</a></b>(name)
+								</div>
+								<div class="description">Get the index of a series (column) given its name.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#isSeriesLocked">isSeriesLocked</a></b>()
+								</div>
+								<div class="description">Returns true if the currently-highlighted series was locked
+via setSelection(.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#isZoomed">isZoomed</a></b>(axis)
+								</div>
+								<div class="description">Returns the zoomed status of the chart for one or both axes.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#numAxes">numAxes</a></b>()
+								</div>
+								<div class="description">Returns the number of y-axes on the chart.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#numColumns">numColumns</a></b>()
+								</div>
+								<div class="description">Returns the number of columns (including the independent variable).</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#numRows">numRows</a></b>()
+								</div>
+								<div class="description">Returns the number of rows (excluding any header/label row).</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#ready">ready</a></b>(callback)
+								</div>
+								<div class="description">Trigger a callback when the dygraph has drawn itself and is ready to be
+manipulated.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#resetZoom">resetZoom</a></b>()
+								</div>
+								<div class="description">Reset the zoom to the original view coordinates.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#resize">resize</a></b>(width, height)
+								</div>
+								<div class="description">Resizes the dygraph.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#rollPeriod">rollPeriod</a></b>()
+								</div>
+								<div class="description">Returns the current rolling period, as set by the user or an option.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#setAnnotations">setAnnotations</a></b>(ann, suppressDraw)
+								</div>
+								<div class="description">Update the list of annotations and redraw the chart.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#setSelection">setSelection</a></b>(row, optional, optional, optional)
+								</div>
+								<div class="description">Manually set the selected points and display information about them in the
+legend.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#setVisibility">setVisibility</a></b>(num, value)
+								</div>
+								<div class="description">Changes the visibility of one or more series.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDataCoords">toDataCoords</a></b>(x, y, axis)
+								</div>
+								<div class="description">Convert from canvas/div coords to data coordinates.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDataXCoord">toDataXCoord</a></b>(x)
+								</div>
+								<div class="description">Convert from canvas/div x coordinate to data coordinate.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDataYCoord">toDataYCoord</a></b>(y, axis)
+								</div>
+								<div class="description">Convert from canvas/div y coord to value.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDomCoords">toDomCoords</a></b>(x, y, axis)
+								</div>
+								<div class="description">Convert from data coordinates to canvas/div X/Y coordinates.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDomXCoord">toDomXCoord</a></b>(x)
+								</div>
+								<div class="description">Convert from data x coordinates to canvas/div X coordinate.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toDomYCoord">toDomYCoord</a></b>(y, axis)
+								</div>
+								<div class="description">Convert from data x coordinates to canvas/div Y coordinate and optional
+axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toPercentXCoord">toPercentXCoord</a></b>(x)
+								</div>
+								<div class="description">Converts an x value to a percentage from the left to the right of
+the drawing area.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toPercentYCoord">toPercentYCoord</a></b>(y, axis)
+								</div>
+								<div class="description">Converts a y for an axis to a percentage from the top to the
+bottom of the drawing area.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#toString">toString</a></b>()
+								</div>
+								<div class="description">Returns information about the Dygraph object, including its containing ID.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#updateOptions">updateOptions</a></b>(input_attrs, block_redraw)
+								</div>
+								<div class="description">Changes various properties of the graph.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#visibility">visibility</a></b>()
+								</div>
+								<div class="description">Returns a boolean array of visibility statuses.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#xAxisExtremes">xAxisExtremes</a></b>()
+								</div>
+								<div class="description">Returns the lower- and upper-bound x-axis values of the data set.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#xAxisRange">xAxisRange</a></b>()
+								</div>
+								<div class="description">Returns the currently-visible x-range.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#yAxisExtremes">yAxisExtremes</a></b>()
+								</div>
+								<div class="description">Returns the lower- and upper-bound y-axis values for each axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#yAxisRange">yAxisRange</a></b>(idx)
+								</div>
+								<div class="description">Returns the currently-visible y-range for an axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Dygraph.html#yAxisRanges">yAxisRanges</a></b>()
+								</div>
+								<div class="description">Returns the currently-visible y-ranges for each axis.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>Dygraph</b>(div, file, attrs)
+				</div>
+				
+				<div class="description">
+					
+					
+				</div>
+				
+				
+				
+				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{div | String}</span>  <b>div</b>
+								
+							</dt>
+								<dd>A div or the id of a div into which to construct
+the chart. Must not have any padding.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{String | Function}</span>  <b>file</b>
+								
+							</dt>
+								<dd>A file containing CSV data or a function
+that returns this data. The most basic expected format for each line is
+"YYYY/MM/DD,val1,val2,...". For more information, see
+http://dygraphs.com/data.html.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>attrs</b>
+								
+							</dt>
+								<dd>Various other attributes, e.g. errorBars determines
+whether the input data contains error ranges. For a complete list of
+options, see http://dygraphs.com/options.html.</dd>
+						
+						</dl>
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name=".Plotters"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">Dygraph.</span><b>Plotters</b>
+					
+					</div>
+					<div class="description">
+						Standard plotters. These may be used by clients.
+Available plotters are:
+- Dygraph.Plotters.linePlotter: draws central lines (most common)
+- Dygraph.Plotters.errorPlotter: draws high/low bands
+- Dygraph.Plotters.fillPlotter: draws fills under lines (used with fillGraph)
+
+By default, the plotter is [fillPlotter, errorPlotter, linePlotter].
+This causes all the lines to be drawn over all the fills/bands.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".PointType"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">Dygraph.</span><b>PointType</b>
+					
+					</div>
+					<div class="description">
+						Point structure.
+
+xval_* and yval_* are the original unscaled data values,
+while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
+yval_stacked is the cumulative Y value used for stacking graphs,
+and bottom/top/minus/plus are used for high/low band graphs.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="adjustRoll"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>adjustRoll</b>(length)
+					
+					</div>
+					<div class="description">
+						Adjusts the number of points in the rolling average. Updates the graph to
+reflect the new averaging period.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>length</b>
+									
+								</dt>
+								<dd>Number of points over which to average the data.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="annotations"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>annotations</b>()
+					
+					</div>
+					<div class="description">
+						Return the list of annotations.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="clearSelection"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>clearSelection</b>()
+					
+					</div>
+					<div class="description">
+						Clears the current selection (i.e. points that were highlighted by moving
+the mouse over the chart).
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="destroy"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>destroy</b>()
+					
+					</div>
+					<div class="description">
+						Detach DOM elements in the dygraph and null out all data references.
+Calling this when you're done with a dygraph can dramatically reduce memory
+usage. See, e.g., the tests/perf.html example.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="eventToDomCoords"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>eventToDomCoords</b>(event)
+					
+					</div>
+					<div class="description">
+						Convert a mouse event to DOM coordinates relative to the graph origin.
+
+Returns a two-element array: [X, Y].
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getArea"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getArea</b>()
+					
+					</div>
+					<div class="description">
+						Get the current graph's area object.
+
+Returns: {x, y, w, h}
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getColors"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Array.<string>}</span>
+					<b>getColors</b>()
+					
+					</div>
+					<div class="description">
+						Return the list of colors. This is either the list of colors passed in the
+attributes or the autogenerated list of rgb(r,g,b) strings.
+This does not return colors for invisible series.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Array.<string>}</span> The list of colors.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getHighlightSeries"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getHighlightSeries</b>()
+					
+					</div>
+					<div class="description">
+						Returns the name of the currently-highlighted series.
+Only available when the highlightSeriesOpts option is in use.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getLabels"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getLabels</b>()
+					
+					</div>
+					<div class="description">
+						Get the list of label names for this graph. The first column is the
+x-axis, so the data series names start at index 1.
+
+Returns null when labels have not yet been defined.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getOption"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>getOption</b>(name, opt_seriesName)
+					
+					</div>
+					<div class="description">
+						Returns the current value for an option, as set in the constructor or via
+updateOptions. You may pass in an (optional) series name to get per-series
+values for the option.
+
+All values returned by this method should be considered immutable. If you
+modify them, there is no guarantee that the changes will be honored or that
+dygraphs will remain in a consistent state. If you want to modify an option,
+use updateOptions() instead.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>The name of the option (e.g. 'strokeWidth')</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string=}</span> <b>opt_seriesName</b>
+									
+								</dt>
+								<dd>Series name to get per-series values.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> The value of the option.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPropertiesForSeries"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getPropertiesForSeries</b>(series_name)
+					
+					</div>
+					<div class="description">
+						Returns a few attributes of a series, i.e. its color, its visibility, which
+axis it's assigned to, and its column in the original data.
+Returns null if the series does not exist.
+Otherwise, returns an object with column, visibility, color and axis properties.
+The "axis" property will be set to 1 for y1 and 2 for y2.
+The "column" property can be fed back into getValue(row, column) to get
+values for this series.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>series_name</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getRowForX"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{?number}</span>
+					<b>getRowForX</b>(xVal)
+					
+					</div>
+					<div class="description">
+						Find the row number corresponding to the given x-value.
+Returns null if there is no such x-value in the data.
+If there are multiple rows with the same x-value, this will return the
+first one.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>xVal</b>
+									
+								</dt>
+								<dd>The x-value to look for (e.g. millis since epoch).</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{?number}</span> The row number, which you can pass to getValue(), or null.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getSelection"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>getSelection</b>()
+					
+					</div>
+					<div class="description">
+						Returns the number of the currently selected row. To get data for this row,
+you can use the getValue method.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> row number, or -1 if nothing is selected</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getValue"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>getValue</b>(row, col)
+					
+					</div>
+					<div class="description">
+						Returns the value in the given row and column. If the row and column exceed
+the bounds on the data, returns null. Also returns null if the value is
+missing.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>row</b>
+									
+								</dt>
+								<dd>The row number of the data (0-based). Row 0 is the
+    first row of data, not a header row.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>col</b>
+									
+								</dt>
+								<dd>The column number of the data (0-based)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> The value in the specified cell or null if the row/col
+    were out of range.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="indexFromSetName"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>indexFromSetName</b>(name)
+					
+					</div>
+					<div class="description">
+						Get the index of a series (column) given its name. The first column is the
+x-axis, so the data series start with index 1.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>name</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isSeriesLocked"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isSeriesLocked</b>()
+					
+					</div>
+					<div class="description">
+						Returns true if the currently-highlighted series was locked
+via setSelection(..., seriesName, true).
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isZoomed"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isZoomed</b>(axis)
+					
+					</div>
+					<div class="description">
+						Returns the zoomed status of the chart for one or both axes.
+
+Axis is an optional parameter. Can be set to 'x' or 'y'.
+
+The zoomed status for an axis is set whenever a user zooms using the mouse
+or when the dateWindow or valueRange are updated. Double-clicking or calling
+resetZoom() resets the zoom status for the chart.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="numAxes"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>numAxes</b>()
+					
+					</div>
+					<div class="description">
+						Returns the number of y-axes on the chart.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> the number of axes.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="numColumns"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>numColumns</b>()
+					
+					</div>
+					<div class="description">
+						Returns the number of columns (including the independent variable).
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> The number of columns.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="numRows"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>numRows</b>()
+					
+					</div>
+					<div class="description">
+						Returns the number of rows (excluding any header/label row).
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> The number of rows, less any header.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="ready"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>ready</b>(callback)
+					
+					</div>
+					<div class="description">
+						Trigger a callback when the dygraph has drawn itself and is ready to be
+manipulated. This is primarily useful when dygraphs has to do an XHR for the
+data (i.e. a URL is passed as the data source) and the chart is drawn
+asynchronously. If the chart has already drawn, the callback will fire
+immediately.
+
+This is a good place to call setAnnotation().
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function(!Dygraph)}</span> <b>callback</b>
+									
+								</dt>
+								<dd>The callback to trigger when the chart
+    is ready.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="resetZoom"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>resetZoom</b>()
+					
+					</div>
+					<div class="description">
+						Reset the zoom to the original view coordinates. This is the same as
+double-clicking on the graph.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="resize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>resize</b>(width, height)
+					
+					</div>
+					<div class="description">
+						Resizes the dygraph. If no parameters are specified, resizes to fill the
+containing div (which has presumably changed size since the dygraph was
+instantiated). If the width/height are specified, the div will be resized.
+
+This is far more efficient than destroying and re-instantiating a
+Dygraph, since it doesn't have to reparse the underlying data.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>width</b>
+									
+								</dt>
+								<dd>Width (in pixels)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>height</b>
+									
+								</dt>
+								<dd>Height (in pixels)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="rollPeriod"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>rollPeriod</b>()
+					
+					</div>
+					<div class="description">
+						Returns the current rolling period, as set by the user or an option.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> The number of points in the rolling window</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setAnnotations"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setAnnotations</b>(ann, suppressDraw)
+					
+					</div>
+					<div class="description">
+						Update the list of annotations and redraw the chart.
+See dygraphs.com/annotations.html for more info on how to use annotations.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>ann</b>
+									
+								</dt>
+								<dd>{Array} An array of annotation objects.</dd>
+							
+								<dt>
+									<b>suppressDraw</b>
+									
+								</dt>
+								<dd>{Boolean} Set to "true" to block chart redraw (optional).</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setSelection"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setSelection</b>(row, optional, optional, optional)
+					
+					</div>
+					<div class="description">
+						Manually set the selected points and display information about them in the
+legend. The selection can be cleared using clearSelection() and queried
+using getSelection().
+
+To set a selected series but not a selected point, call setSelection with
+row=false and the selected series name.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>row</b>
+									
+								</dt>
+								<dd>Row number that should be highlighted (i.e. appear with
+hover dots on the chart).</dd>
+							
+								<dt>
+									<span class="light fixedFont">{seriesName}</span> <b>optional</b>
+									
+								</dt>
+								<dd>series name to highlight that series with the
+the highlightSeriesOpts setting.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{locked}</span> <b>optional</b>
+									
+								</dt>
+								<dd>If true, keep seriesName selected when mousing
+over the graph, disabling closest-series highlighting. Call clearSelection()
+to unlock it.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{trigger_highlight_callback}</span> <b>optional</b>
+									
+								</dt>
+								<dd>If true, trigger any
+user-defined highlightCallback if highlightCallback has been set.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setVisibility"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setVisibility</b>(num, value)
+					
+					</div>
+					<div class="description">
+						Changes the visibility of one or more series.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number|number[]|object}</span> <b>num</b>
+									
+								</dt>
+								<dd>the series index or an array of series indices
+                                    or a boolean array of visibility states by index
+                                    or an object mapping series numbers, as keys, to
+                                    visibility state (boolean values)</dd>
+							
+								<dt>
+									<span class="light fixedFont">{boolean}</span> <b>value</b>
+									
+								</dt>
+								<dd>the visibility state expressed as a boolean</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDataCoords"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDataCoords</b>(x, y, axis)
+					
+					</div>
+					<div class="description">
+						Convert from canvas/div coords to data coordinates.
+If specified, do this conversion for the coordinate system of a particular
+axis. Uses the first axis by default.
+Returns a two-element array: [X, Y].
+
+Note: use toDataXCoord instead of toDataCoords(x, null) and use toDataYCoord
+instead of toDataCoords(null, y, axis).
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDataXCoord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDataXCoord</b>(x)
+					
+					</div>
+					<div class="description">
+						Convert from canvas/div x coordinate to data coordinate.
+
+If x is null, this returns null.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDataYCoord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDataYCoord</b>(y, axis)
+					
+					</div>
+					<div class="description">
+						Convert from canvas/div y coord to value.
+
+If y is null, this returns null.
+if axis is null, this uses the first axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDomCoords"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDomCoords</b>(x, y, axis)
+					
+					</div>
+					<div class="description">
+						Convert from data coordinates to canvas/div X/Y coordinates.
+If specified, do this conversion for the coordinate system of a particular
+axis. Uses the first axis by default.
+Returns a two-element array: [X, Y]
+
+Note: use toDomXCoord instead of toDomCoords(x, null) and use toDomYCoord
+instead of toDomCoords(null, y, axis).
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDomXCoord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDomXCoord</b>(x)
+					
+					</div>
+					<div class="description">
+						Convert from data x coordinates to canvas/div X coordinate.
+If specified, do this conversion for the coordinate system of a particular
+axis.
+Returns a single value or null if x is null.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toDomYCoord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toDomYCoord</b>(y, axis)
+					
+					</div>
+					<div class="description">
+						Convert from data x coordinates to canvas/div Y coordinate and optional
+axis. Uses the first axis by default.
+
+returns a single value or null if y is null.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="toPercentXCoord"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>toPercentXCoord</b>(x)
+					
+					</div>
+					<div class="description">
+						Converts an x value to a percentage from the left to the right of
+the drawing area.
+
+If the coordinate represents a value visible on the canvas, then
+the value will be between 0 and 1, where 0 is the left of the canvas.
+However, this method will return values outside the range, as
+values can fall outside the canvas.
+
+If x is null, this returns null.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>x</b>
+									
+								</dt>
+								<dd>The data x-coordinate.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> A fraction in [0, 1] where 0 = the left edge.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="toPercentYCoord"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>toPercentYCoord</b>(y, axis)
+					
+					</div>
+					<div class="description">
+						Converts a y for an axis to a percentage from the top to the
+bottom of the drawing area.
+
+If the coordinate represents a value visible on the canvas, then
+the value will be between 0 and 1, where 0 is the top of the canvas.
+However, this method will return values outside the range, as
+values can fall outside the canvas.
+
+If y is null, this returns null.
+if axis is null, this uses the first axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>y</b>
+									
+								</dt>
+								<dd>The data y-coordinate.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>axis</b>
+									<i>Optional</i>
+								</dt>
+								<dd>The axis number on which the data coordinate lives.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> A fraction in [0, 1] where 0 = the top edge.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="toString"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toString</b>()
+					
+					</div>
+					<div class="description">
+						Returns information about the Dygraph object, including its containing ID.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="updateOptions"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updateOptions</b>(input_attrs, block_redraw)
+					
+					</div>
+					<div class="description">
+						Changes various properties of the graph. These can include:
+<ul>
+<li>file: changes the source data for the graph</li>
+<li>errorBars: changes whether the data contains stddev</li>
+</ul>
+
+There's a huge variety of options that can be passed to this method. For a
+full list, see http://dygraphs.com/options.html.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>input_attrs</b>
+									
+								</dt>
+								<dd>The new properties and values</dd>
+							
+								<dt>
+									<span class="light fixedFont">{boolean}</span> <b>block_redraw</b>
+									
+								</dt>
+								<dd>Usually the chart is redrawn after every
+    call to updateOptions(). If you know better, you can pass true to
+    explicitly block the redraw. This can be useful for chaining
+    updateOptions() calls, avoiding the occasional infinite loop and
+    preventing redraws when it's not necessary (e.g. when updating a
+    callback).</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="visibility"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>visibility</b>()
+					
+					</div>
+					<div class="description">
+						Returns a boolean array of visibility statuses.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="xAxisExtremes"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>xAxisExtremes</b>()
+					
+					</div>
+					<div class="description">
+						Returns the lower- and upper-bound x-axis values of the data set.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="xAxisRange"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>xAxisRange</b>()
+					
+					</div>
+					<div class="description">
+						Returns the currently-visible x-range. This can be affected by zooming,
+panning or a call to updateOptions.
+Returns a two-element array: [left, right].
+If the Dygraph has dates on the x-axis, these will be millis since epoch.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="yAxisExtremes"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>yAxisExtremes</b>()
+					
+					</div>
+					<div class="description">
+						Returns the lower- and upper-bound y-axis values for each axis. These are
+the ranges you'll get if you double-click to zoom out or call resetZoom().
+The return value is an array of [low, high] tuples, one for each y-axis.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="yAxisRange"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>yAxisRange</b>(idx)
+					
+					</div>
+					<div class="description">
+						Returns the currently-visible y-range for an axis. This can be affected by
+zooming, panning or a call to updateOptions. Axis indices are zero-based. If
+called with no arguments, returns the range of the first axis.
+Returns a two-element array: [bottom, top].
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>idx</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="yAxisRanges"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>yAxisRanges</b>()
+					
+					</div>
+					<div class="description">
+						Returns the currently-visible y-ranges for each axis. This can be affected by
+zooming, panning, calls to updateOptions, etc.
+Returns an array of [bottom, top] pairs, one for each y-axis.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 for dygraph 2.2.1
+		</div>
+	</body>
+</html>

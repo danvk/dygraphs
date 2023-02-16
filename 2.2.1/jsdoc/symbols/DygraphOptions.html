@@ -1,0 +1,903 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - DygraphOptions</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/Dygraph.html">Dygraph</a></li>
+	
+	<li><a href="../symbols/DygraphCanvasRenderer.html">DygraphCanvasRenderer</a></li>
+	
+	<li><a href="../symbols/DygraphInteraction.html">DygraphInteraction</a></li>
+	
+	<li><a href="../symbols/DygraphLayout.html">DygraphLayout</a></li>
+	
+	<li><a href="../symbols/DygraphOptions.html">DygraphOptions</a></li>
+	
+	<li><a href="../symbols/grid.html">grid</a></li>
+	
+	<li><a href="../symbols/GVizChart.html">GVizChart</a></li>
+	
+	<li><a href="../symbols/GVizDataTable.html">GVizDataTable</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class DygraphOptions
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/src_dygraph-options.js.html">dygraph-options.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class DygraphOptions.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/DygraphOptions.html#constructor">DygraphOptions</a></b>(dygraph)
+							</div>
+							<div class="description">This parses attributes into an object that can be easily queried.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class DygraphOptions.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/DygraphOptions.html#dygraph_">dygraph_</a></b>
+								</div>
+								<div class="description">The dygraph.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/DygraphOptions.html#labels_">labels_</a></b>
+								</div>
+								<div class="description">A list of series in columnar order.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/DygraphOptions.html#xAxis_">xAxis_</a></b>
+								</div>
+								<div class="description">Contains x-axis specific options, which are stored in the options key.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/DygraphOptions.html#yAxes_">yAxes_</a></b>
+								</div>
+								<div class="description">Array of axis index to { series : [ series names ] , options : { axis-specific options.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class DygraphOptions.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#axisForSeries">axisForSeries</a></b>(series)
+								</div>
+								<div class="description">Return the y-axis for a given series, specified by name.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#axisOptions">axisOptions</a></b>(yAxis)
+								</div>
+								<div class="description">Returns the options for the specified axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#get">get</a></b>(name)
+								</div>
+								<div class="description">Get a global value.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#getForAxis">getForAxis</a></b>(name, axis)
+								</div>
+								<div class="description">Get a value for a specific axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#getForSeries">getForSeries</a></b>(name, series)
+								</div>
+								<div class="description">Get a value for a specific series.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#numAxes">numAxes</a></b>()
+								</div>
+								<div class="description">Returns the number of y-axes on the chart.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#reparseSeries">reparseSeries</a></b>()
+								</div>
+								<div class="description">Reparses options that are all related to series.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#seriesForAxis">seriesForAxis</a></b>(yAxis)
+								</div>
+								<div class="description">Return the series associated with an axis.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/DygraphOptions.html#seriesNames">seriesNames</a></b>()
+								</div>
+								<div class="description">Return the list of all series, in their columnar order.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>DygraphOptions</b>(dygraph)
+				</div>
+				
+				<div class="description">
+					This parses attributes into an object that can be easily queried.
+
+It doesn't necessarily mean that all options are available, specifically
+if labels are not yet available, since those drive details of the per-series
+and per-axis options.
+					
+				</div>
+				
+				
+				
+				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/Dygraph.html">Dygraph</a>}</span>  <b>dygraph</b>
+								
+							</dt>
+								<dd>The chart to which these options belong.</dd>
+						
+						</dl>
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="dygraph_"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>dygraph_</b>
+					
+					</div>
+					<div class="description">
+						The dygraph.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="labels_"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>labels_</b>
+					
+					</div>
+					<div class="description">
+						A list of series in columnar order.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="xAxis_"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{@private}</span>
+					<b>xAxis_</b>
+					
+					</div>
+					<div class="description">
+						Contains x-axis specific options, which are stored in the options key.
+This matches the yAxes_ object structure (by being a dictionary with an
+options element) allowing for shared code.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="yAxes_"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{@private}</span>
+					<b>yAxes_</b>
+					
+					</div>
+					<div class="description">
+						Array of axis index to { series : [ series names ] , options : { axis-specific options. } }
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="axisForSeries"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>axisForSeries</b>(series)
+					
+					</div>
+					<div class="description">
+						Return the y-axis for a given series, specified by name.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>series</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="axisOptions"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>axisOptions</b>(yAxis)
+					
+					</div>
+					<div class="description">
+						Returns the options for the specified axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>yAxis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="get"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>get</b>(name)
+					
+					</div>
+					<div class="description">
+						Get a global value.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>the name of the option.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getForAxis"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getForAxis</b>(name, axis)
+					
+					</div>
+					<div class="description">
+						Get a value for a specific axis. If there is no specific value for the axis,
+the global value is returned.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>the name of the option.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string|number}</span> <b>axis</b>
+									
+								</dt>
+								<dd>the axis to search. Can be the string representation
+("y", "y2") or the axis number (0, 1).</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getForSeries"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getForSeries</b>(name, series)
+					
+					</div>
+					<div class="description">
+						Get a value for a specific series. If there is no specific value for the series,
+the value for the axis is returned (and afterwards, the global value.)
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>name</b>
+									
+								</dt>
+								<dd>the name of the option.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>series</b>
+									
+								</dt>
+								<dd>the series to search.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="numAxes"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>numAxes</b>()
+					
+					</div>
+					<div class="description">
+						Returns the number of y-axes on the chart.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> the number of axes.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="reparseSeries"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>reparseSeries</b>()
+					
+					</div>
+					<div class="description">
+						Reparses options that are all related to series. This typically occurs when
+options are either updated, or source data has been made available.
+
+TODO(konigsberg): The method name is kind of weak; fix.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="seriesForAxis"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>seriesForAxis</b>(yAxis)
+					
+					</div>
+					<div class="description">
+						Return the series associated with an axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>yAxis</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="seriesNames"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>seriesNames</b>()
+					
+					</div>
+					<div class="description">
+						Return the list of all series, in their columnar order.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 for dygraph 2.2.1
+		</div>
+	</body>
+</html>

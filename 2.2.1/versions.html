@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dygraphs — version history</title>
+
+    <link rel="stylesheet" type="text/css" href=".jslibs/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="common/vextlnk.css" />
+    <link rel="stylesheet" type="text/css" href="site.css" />
+
+    <script type="text/javascript" src=".jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src=".jslibs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="dist/dygraph.js"></script>
+  </head>
+  <body>
+    <nav id="header" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-responsive-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">dygraphs</a>
+        </div><!-- /navbar-header -->
+        <div class="collapse navbar-collapse" id="navbar-responsive-collapse">
+
+          <!-- TODO(danvk): fill in relevant links here -->
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+              <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="jsdoc/symbols/Dygraph.html">API Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="data.html">Data Format</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="annotations.html">Annotations</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="css.html">CSS Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="versions.html">Version History</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="ie.html">Notes on Internet Explorer</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tests/">Test Cases</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://dygraphs.com/fiddle/">Play</a></li>
+              </ul>
+            </li>
+            <li><a class="xnavbar-link" href="download.html">Download</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+              <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com/">Blog</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/tagged/dygraphs">Stack Overflow</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://groups.google.com/g/dygraphs-users">Mailing List</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+              <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs">Source (Github)</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues">Issue Tracker</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues/new">Report a Bug</a></li>
+              </ul>
+            </li>
+          </ul><!-- /navbar-nav -->
+
+        </div><!-- /navbar-responsive-collapse -->
+      </div><!-- container-fluid -->
+    </nav>
+
+    <div class="container" id="main">
+      <div class="row">
+        <div class="col-lg-12">
+<h2>Version History</h2>
+
+<p>For links to download each release, see the <a href="/download.html">Downloads</a> page.</p>
+
+<table class="versions">
+  <tr id="v2.2.1">
+    <td><a href="#v2.2.1" title="link">&#x1F517;</a>v2.2.1<p class="date">2023-02-16</p></td>
+    <td class="notes">
+      <h4>Future incompatibilities</h4><ul>
+        <li><tt>window.smoothPlotter</tt> will not be set by <tt>extras/smooth-plotter.js</tt> any more RSN</li>
+      </ul>
+      <h4>New features</h4><ul>
+        <li>Permit initialising with <tt>[]</tt> as “no data yet” indicator (#597)</li>
+        <li>The modularisation of the test setup also allows stable access to exported functions (e.g. <tt>Dygraph._require('dygraphs/src/dygraph-utils.js').numberValueFormatter</tt>) which makes writing one’s own value formatters easier (as usual, proceed with care, exports with an underscore are internal); see &lt;https://dygraphs.com/tests/exported-symbols.html&gt; for the exposed surface</li>
+        <li>Provide Dygraph.onDOMready(cb) as lightweight jQuery(cb)/… alternative, to keep the demos/tests self-contained</li>
+      </ul>
+      <h4>Bugfixes</h4><ul>
+        <li>Fix synchroniser not calling user’s <tt>drawCallback</tt> when blocked (#953) plus do not redraw unnecessarily</li>
+        <li>Documentation fixes and improvements including self-checks where possible</li>
+        <li>Fix missing legend for <tt>x == -1</tt> (#1002)</li>
+        <li>Allow ES6-importing the extras (#848) (#989) (#1009)</li>
+        <li>Fix broken zoom also in the drawing test (same as #611/#953)</li>
+        <li>Resetting <tt>panEdgeFraction</tt> now works</li>
+        <li>Fix tests/unboxed-spark regression caused by PR #936</li>
+        <li>Synchroniser doesn’t force x axis range if unzoomed (#956)</li>
+      </ul>
+      <h4>Other user-visible changes</h4><ul>
+        <li>Fix issue #611 in the drawing demo gallery (#953)</li>
+        <li><tt>jq</tt> is now also required to build</li>
+        <li>Fix typos, wordings, apostrophes, etc.</li>
+        <li>Export <tt>pickDateTickGranularity</tt> so overriding <tt>dateTicker</tt> is easier</li>
+        <li>Error bars are now properly called high/low bands (#1004), but the options stay the same for compatibility</li>
+        <li>Document annotations xval for Date better (#970)</li>
+        <li>Document more strongly that series labels must be unique (#960)</li>
+        <li>Remove references to nōn-existing <tt>yAxisLabelWidth</tt> option</li>
+        <li>Fix jsFiddle links from gallery</li>
+      </ul>
+      <h4>Internal refactors/fixes</h4><ul>
+        <li>Shrink <tt>tests.js</tt> source map and make its build reproducible on Debian</li>
+        <li><tt>tests/resizable.html</tt> exposes the graph object, for quick F12 in-browser use</li>
+        <li>Generate <tt>versions.html</tt> and release notes from new top-level <a href="https://github.com/danvk/dygraphs/blob/master/CHANGES.md"><tt>CHANGES.md</tt></a></li>
+        <li>Modularise dygraphs/tests setup so we can now also test the minified prod css/js (#1028)</li>
+        <li>Generate stable orig tarballs for releases ourselves (we still use the NPM ones for binary tarballs)</li>
+        <li>Less fragility with arrow function <tt>this</tt> rebinding check</li>
+      </ul>
+    </td>
+  </tr>
+  <tr id="v2.2.0">
+    <td><a href="#v2.2.0" title="link">&#x1F517;</a>v2.2.0<p class="date">2023-01-25</p></td>
+    <td class="notes">
+      <p>This is the first “full” release after v2.1.0 with the following news:</p>
+      <h4>Breaking changes</h4><ul>
+        <li>Stop parsing the deprecated 8-digit ‘YYYYMMDD’ date format (#984) (#985) (#1023)</li>
+        <li>GWT “support” is no longer pertinent as we cannot recompile the binary JAR; the latter is still available from the website for now</li>
+      </ul>
+      <h4>New features</h4><ul>
+        <li>Add option to colour the range selector’s veil (#856)</li>
+        <li>Add <tt>strokeStyle</tt> option to crosshair plugin (#955)</li>
+        <li>Support <tt>DocumentFragment</tt> as a result from a <tt>legendFormatter</tt> function (#958) (#959)</li>
+        <li>Add data index to <tt>legendFormatter</tt> data (#965)</li>
+        <li>Implement <tt>#RRGGBB</tt>/`#RRGGBBAA` hex colour parsing</li>
+        <li>Make <tt>animateBackgroundFade</tt> into an option</li>
+        <li>Add new <tt>resizable</tt> option using <tt>ResizeObserver</tt> on maindiv + CSS</li>
+        <li>Add offset config for legend div in follow mode (#946)</li>
+      </ul>
+      <h4>Bugfixes</h4><ul>
+        <li>Fix duplicate annotation when having duplicate points (#826)</li>
+        <li>Make sure that <tt>canvasx</tt> and <tt>canvasy</tt> properties are initialised from the start (#896)</li>
+        <li>Fix issue #781 when the y range is zero (#909)</li>
+        <li>Synchroniser now calls <tt>highlightCallback</tt> (#935)</li>
+        <li>Fix <tt>drawAxes</tt> to allow one of two y axes to be drawn (#936)</li>
+        <li>LEGEND: Don’t show y if value is undefined (#853) (#947)</li>
+        <li>Fixed “Cannot read property 'length' of undefined” issue (#962) (#963)</li>
+        <li>Two fixes in the calculations of pinch-zoom (#990)</li>
+        <li>Fix for double paint of grid of x-axis (#1007)</li>
+        <li>Fix number of days in a year (#1012)</li>
+        <li>Fix <tt>labelsKMB</tt> and <tt>labelsKMG2</tt> (#571) (#994) (#1022)</li>
+        <li>Fix label position in <tt>onmouseover</tt> legend mode was never updated</li>
+        <li>Fix several cases of mispositioning/missizing by enabling elements before using <tt>offsetWidth</tt> etc.</li>
+        <li>Make it possible to use <tt>logscale</tt> (and <tt>sigma</tt>, <tt>wilsonInterval</tt>) per-axis (#986)</li>
+      </ul>
+      <h4>Other user-visible changes</h4><ul>
+        <li>Documentation is now shipped (mostly self-contained) in the release</li>
+        <li>Tests that use Google JSAPI are now marked ⚠ and no other external content is loaded anywhere</li>
+        <li>Calculate legend positioning relative to closest data point (#1013)</li>
+        <li>Add missing documentation about annotations <tt>xval</tt> option (#992)</li>
+        <li>source mapping URLs are now correct (#1027)</li>
+        <li>Ship ES5 versions of extras (#952), use them in examples</li>
+        <li>Fix documentation/website HTML/CSS/JS bugs (#979) (#1008)</li>
+        <li>On the website, external links are now clearly labelled</li>
+        <li>The documentation and website now have browsable subdirectories by manually generated directory index files</li>
+        <li>Link to UNPKG as CDN as well (to keep neutral; use of CDNs in websites violates the EU-GDPR)</li>
+        <li>Most issues with right-to-left languages should now be fixed (#1019)</li>
+        <li>Document that Dygraph will misbehave if the main div has padding</li>
+      </ul>
+      <h4>Internal refactors/fixes</h4><ul>
+        <li>Use link href, not link src (#904)</li>
+        <li>Add missing semicolon in externs (#964)</li>
+        <li>Large build system improvements relying in large parts on Debian and GHA</li>
+        <li>Full licence review as part of uploading to Debian (#1024) (#1025) (#1029); drop embedded code copies</li>
+        <li>Fix some JSDoc warnings</li>
+        <li>Update to contemporary versions of Python 3, jQuery, Babel, etc.</li>
+        <li>Add copies of design documents that were previously only available on Google Docs or part of GitHub issues to offline documentation</li>
+        <li>Nuke useless semicola after function declaration bodies</li>
+        <li>Fix closure type annotation in <tt>hairlines.js</tt></li>
+        <li>Remove already commented-out obsolete, or redundant, code</li>
+      </ul>
+    </td>
+  </tr>
+  <tr id="v2.1.0">
+    <td><a href="#v2.1.0" title="link">&#x1F517;</a>v2.1.0<p class="date">2017-12-08</p></td>
+    <td class="notes">
+      <h4>New features</h4><ul>
+        <li>Double click event can be captured and cancelled by plugins (#840)</li>
+        <li><tt>setAnnotations</tt>’ second parameter is now an optional boolean (#851)</li>
+        <li>Add <tt>pixelRatio</tt> option, which may allow improved performance on smaller screens by controlling the canvas’ pixel ratio (#877)</li>
+        <li>x axis label and tick logic can now operate at millisecond-level granularity (#893)</li>
+      </ul>
+      <h4>Bug fixes</h4><ul>
+        <li>Repair a bug in “Custom interaction models” demo (#825)</li>
+      </ul>
+      <h4>Internal refactors/fixes</h4><ul>
+        <li>Fix various spelling mistakes (#844)</li>
+        <li>Fix a couple of type signatures in <tt>dygraph-externs.js</tt> (#859)</li>
+      </ul>
+    </td>
+  </tr>
+  <tr id="v2.0.0">
+    <td><a href="#v2.0.0" title="link">&#x1F517;</a>v2.0.0<p class="date">2017-01-11</p></td>
+    <td class="notes">
+      <h4>Breaking changes</h4><ul>
+        <li>JS files were renamed to <tt>dygraph.js</tt> and <tt>dygraph.min.js</tt>.</li>
+        <li>There’s now a <tt>dygraph.css</tt> file that you must include.</li>
+        <li>Dropped support for old IE and other non-standard browsers. dygraphs works in IE11. I’m not sure about IE9 and IE10.</li>
+        <li>Double-click to unzoom zooms all the way out (and ignores <tt>valueRange</tt>).</li>
+        <li>Dropped old-style per-axis/per-series options.</li>
+      </ul>
+      <h4>New features</h4><ul>
+        <li>Add a <tt>legendFormatter</tt> option (#683)</li>
+        <li><tt>this</tt> is the Dygraph object in all callbacks</li>
+        <li>pass through (row, col) to <tt>valueFormatter</tt></li>
+        <li>Option to not sync range in <tt>extras/synchronizer.js</tt></li>
+        <li>Additional options for styling the range selector</li>
+        <li><tt>getRowForX</tt> method</li>
+        <li><tt>setVisibility</tt> can set the visibility of multiple series at once.</li>
+        <li>crosshair plugin extra</li>
+        <li>rebase/straw broom plugin (#590)</li>
+        <li><tt>highlightSeriesBackgroundColor</tt> option</li>
+        <li><tt>yAxisExtremes()</tt> method.</li>
+        <li>Passing strings in native format now throws. (Previously it kinda sorta worked.)</li>
+      </ul>
+      <h4>Bug fixes</h4><ul>
+        <li>Selections are always cleared with animations</li>
+        <li>synchronizer calls previously-set callbacks</li>
+        <li>synchronizer only syncs when graphs are ready</li>
+        <li>Reset on synchronized graphs failed (#524)</li>
+        <li>fix to improve synchronizer performance (#658)</li>
+        <li>binary search bug fix in synchronizer</li>
+        <li>Fix range selection when chart is located inside fullscreen element (#576)</li>
+        <li><tt>fillAlpha</tt> can be set per-series when <tt>fillGraph</tt> is set.</li>
+        <li><tt>xRangePad</tt> was ignored on unzoom (#657)</li>
+        <li>Allow selected points where canvas-y coordinate is 0 (#692)</li>
+        <li>Using <tt>valueRange</tt> with <tt>logscale</tt> and <tt>yRangePad</tt> has unexpected results (#661)</li>
+        <li>With <tt>drawGapEdgePoints</tt>, unwanted point often drawn at beginning of chart (#745)</li>
+      </ul>
+      <h4>Other user-visible changes</h4><ul>
+        <li><tt>legend: follow</tt> positioning changes</li>
+      </ul>
+      <h4>Internal refactors</h4><ul>
+        <li>Code moved into a <tt>src/</tt> directory</li>
+        <li>Tests use Mocha instead of jstd</li>
+        <li>dygraphs is split into ES6 modules and uses some ES6 features (e.g. arrows and destructuring).</li>
+        <li>dygraphs is built using Babel and browserify</li>
+        <li>Code coverage is tracked continuously</li>
+        <li>Bundle size is now tracked continuously</li>
+      </ul>
+    </td>
+  </tr>
+  <tr id="v1.1.1">
+    <td><a href="#v1.1.1" title="link">&#x1F517;</a>v1.1.1<p class="date">2015-06-01</p></td>
+    <td class="notes">
+      <ul>
+        <li>Set <tt>this</tt> to the dygraph in all callbacks.</li>
+        <li>Minor bug fixes.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr id="v1.1.0">
+    <td><a href="#v1.1.0" title="link">&#x1F517;</a>v1.1.0<p class="date">2014-12-03</p></td>
+    <td class="notes">
+      <h4>Highlights</h4><ul>
+        <li>dygraphs is now “retina” compatible.</li>
+        <li>Dramatically improved performance for filled charts (i.e. <tt>fillGraph</tt>)</li>
+        <li>More sensible date ticks: “Jan 08” → “Jan 2008”, “29Jan” → “29 Jan”</li>
+        <li>Using a non-existent option now throws (with <tt>dygraph-combined-dev.js</tt>)</li>
+        <li>x-axis log scales</li>
+        <li>The <tt>labelsUTC</tt> option forces UTC formatting for all labels.</li>
+        <li>The new DataHandler system allows for more flexibility in data loading.</li>
+        <li>dygraphs has shrunk, because we moved some stuff into “extras” (133 KiB → 122 KiB)</li>
+      </ul>
+      <p>This will be the last major release to support browsers without a native &lt;canvas&gt; implementation. See <a href="http://blog.dygraphs.com/2014/12/dygraphs-110.html">blog post</a> for more details.</p>
+    </td>
+  </tr>
+  <tr id="v1.0.1">
+    <td><a href="#v1.0.1" title="link">&#x1F517;</a>v1.0.1<p class="date">2013-08-29</p></td>
+    <td class="notes">
+      <p>Minor bug fixes and updates to web site.</p>
+    </td>
+  </tr>
+  <tr id="v1.0.0">
+    <td><a href="#v1.0.0" title="link">&#x1F517;</a>v1.0.0<p class="date">2013-08-14</p></td>
+    <td class="notes">
+      <p>Initial Release. See <a href="http://blog.dygraphs.com/2013/08/announcing-dygraphs-100.html">blog post</a>.</p>
+    </td>
+  </tr>
+</table>
+
+    </div> <!--  .col-lg-12 -->
+  </div>  <!-- /div.row -->
+</div>  <!-- /div#main.container -->
+
+<!-- TODO(danvk): add a real footer -->
+<!--@@@IFIMPRINT:<div class="container" style="border:1px solid green; margin-bottom:1ex;">@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@</div>:FIIMPRINT@@@-->
+
+  </body>
+</html>
