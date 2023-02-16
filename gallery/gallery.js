@@ -86,6 +86,7 @@ Gallery.start = function() {
       var jsfs = $(jsFiddleForm);
       jsFiddleForm.method = "post";
       jsFiddleForm.action = "http://jsfiddle.net/api/post/jquery/1.4/";
+      jsFiddleForm.target = "_blank";
 
       jsfs.html("<input type='submit' value='Edit in jsFiddle'/>\n" +
       "<span style='display:none'>\n" +
