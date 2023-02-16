@@ -195,6 +195,8 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         var opts = {
           dateWindow: me.xAxisRange()
         };
+        if (!me.isZoomed('x'))
+          opts.dateWindow = null;
         if (syncOpts.range)
           opts.valueRange = me.yAxisRange();
 

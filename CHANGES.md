@@ -19,6 +19,7 @@
 - Fix broken zoom also in the drawing test (same as #611/#953)
 - Resetting `panEdgeFraction` now works
 - Fix tests/unboxed-spark regression caused by PR #936
+- Synchroniser doesn’t force x axis range if unzoomed (#956)
 
 ## Other user-visible changes
 - Fix issue #611 in the drawing demo gallery (#953)
