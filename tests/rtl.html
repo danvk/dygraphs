@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ur">
+  <head>
+    <meta charset="UTF-8">
+    <title>&#x202B;غزل&#x202C;</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body dir="rtl" style="font-family:DejaVu Sans;">
+   <div style="max-width:900px; margin:auto; border:6px ridge #00CC00; padding:3px;">
+    <h2 style="font-size:60px;">ﻏﹷﺰﹶﻝ</h2>
+    <p style="font-size:32px;">
+      ﺷﺎﻡﹺ ﻏﹷﻢ ﻛﮯ ﺍﺳﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+      ﺳﹹﺒﺢﹺ ﻧﹷﻮ ﻛﮯ ﺳﹷﻔﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p>
+    <table><tr><td>
+    <div id="demodiv"></div>
+    </td><td style="vertical-align:top;">
+    <div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
+    </td>
+    </tr></table>
+    <p style="font-size:32px;">
+      ﺑﹹﺠﮫ ﭼﹹﲀ ﮨﹷﮯ ﭼﹷﺮﺍﻍ ﮔﻮ ﺩﹺﻝ ﰷ<br>
+      ﭘﮭﹻﺮ ﺑﮭﹻﯽ ﺭﻭﺷﹷﻦ ﺿﹷﻤﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﻳﺎﺱﻮ ﻏﹷﻢ ﻛﹻﯽ ﮨﹷﮯ ﮔﹷﺮ ﻛﻮﺋﹻﯽ ﻗﹻﻴﻤﹷﺖ<br>
+      ﭘﮭﹻﺮ ﺗﻮ ﺳﹷﺐ ﺳﮯ ﺍﻣﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﺍﻳﻚ ﻣﹷﻮﮨﯘﻡ ﺳﺎ ﺗﹷﺼﹷﻮﹽﹸﺭ ﮨﹷﻴﮟ<br>
+      ﺍﻳﻚ ﻣﹷﺪﹽﮬﹷﻢ ﻟﹷﻜﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﻗﺎﺗﹻﻠﻮﮞ ﻛﮯ ﻧﹷﮕﹷﺮ ﻣﻴﮟ ﺍﺋﮯ ﻳﺎﺭﻭ<br>
+      ﺍﮨﻞﹺ ﺩﹺﻝ ﻛﮯ ﻣﹹﺸﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﺍﻳﻚ ﻧﹷﻈﹷﺮ ﻛﹻﯽ ﮨﹷﻤﻴﮟ ﺑﮭﹻﯽ ﺩﮮ ﺩﻭ ﺑﮭﹻﻴﻚ<br>
+      ﺭﺍﻩ ﭼﹷﻠﺘﮯ ﻓﹷﻘﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﭘﮭﹻﺮ ﻣﹻﻠﻴﮕﺎ ﻧﹷﻪ ﺳﺎﺩﻩ ﺩﹺﻝ ﮨﹷﻢ ﺳﺎ<br>
+      ﻓﹻﯽ ﺯﹶﻣﺎﻧﻪ ﻧﹷﺰﹺﻳﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﺧﯘﺩ ﮨﹷﻤﻴﮟ ﺑﮭﹻﯽ ﮨﹷﮯ ﺁﺳﺮﺍ ﺩﹶﺭﰷﺭ<br>
+      ﻣﹷﺖ ﻛﹷﮩﻮ ﺩﹶﺳﺘﮕﹻﻴﺮ ﮨﹷﻴﮟ ﮨﹷﻢ ﻟﻮﮒ<br>
+    </p><p style="font-size:32px;">
+      ﺯﹶﻓﹷﺮ ﺍﻣﹷﺮ<br>
+    </p>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
+      g = new Dygraph(
+              document.getElementById("demodiv"),
+              function() {
+                var zp = function(x) { if (x < 10) return "0"+x; else return x; };
+                var r = "date,parabola,line,another line,sine wave\n";
+                for (var i=1; i<=31; i++) {
+                r += "2006-10-" + zp(i);
+                r += "," + 10*(i*(31-i));
+                r += "," + 10*(8*i);
+                r += "," + 10*(250 - 8*i);
+                r += "," + 10*(125 + 125 * Math.sin(0.3*i));
+                r += "\n";
+                }
+                return r;
+              },
+              {
+                labelsDiv: document.getElementById('status'),
+                labelsSeparateLines: true,
+                labelsKMB: true,
+                legend: 'always',
+                colors: ["rgb(51,204,204)",
+                         "rgb(255,100,100)",
+                         "#00DD55",
+                         "rgba(50,50,200,0.4)"],
+                width: 640,
+                height: 480,
+                title: 'Interesting Shapes',
+                xlabel: 'Date',
+                ylabel: 'Count',
+                axisLineColor: 'white',
+                // drawXGrid: false
+              }
+          );
+    });
+    //--><!]]></script>
+   <address>Poem sourced from: <tt>http://tabish.freeshell.org/u-font/ghazal.html</tt></address>
+   </div>
+  </body>
+</html>
