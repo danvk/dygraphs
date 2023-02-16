@@ -267,5 +267,5 @@ function attachSelectionHandlers(gs, prevCallbacks) {
 Dygraph.synchronize = synchronize;
 
 /* closure and loader wrapper */
-Dygraph._required('dygraphs/src/extras/synchronizer.js', /* exports */ {});
+Dygraph._require.add('dygraphs/src/extras/synchronizer.js', /* exports */ {});
 })();

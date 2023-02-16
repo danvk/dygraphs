@@ -468,5 +468,5 @@ return hairlines;
 })();
 
 /* loader wrapper */
-Dygraph._required('dygraphs/src/extras/hairlines.js', /* exports */ {});
+Dygraph._require.add('dygraphs/src/extras/hairlines.js', /* exports */ {});
 })();

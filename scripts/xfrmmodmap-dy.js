@@ -69,7 +69,7 @@ module.exports = function (b) {
 			assert(!hadsm, 'multiple source maps in file‽');
 			var post = ';var x=r(' +
 			    JSON.stringify(xfrm(mainmodule)) +
-			    ');x._req_=r;return x' +
+			    ');x._require._b=r;return x' +
 			    umd.postlude('Dygraph').trim();
 			assert(post.match(/\n/g) === null, 'UMD postlude contains newlines');
 			this.push(Buffer.from(post, 'utf8'));

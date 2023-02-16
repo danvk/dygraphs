@@ -484,5 +484,5 @@ return annotations;
 })();
 
 /* loader wrapper */
-Dygraph._required('dygraphs/src/extras/super-annotations.js', /* exports */ {});
+Dygraph._require.add('dygraphs/src/extras/super-annotations.js', /* exports */ {});
 })();

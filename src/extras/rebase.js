@@ -152,5 +152,5 @@ if (window.Dygraph) {
   })();
 
 /* closure and loader wrapper */
-Dygraph._required('dygraphs/src/extras/rebase.js', /* exports */ {});
+Dygraph._require.add('dygraphs/src/extras/rebase.js', /* exports */ {});
 })();
