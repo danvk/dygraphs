@@ -3,6 +3,9 @@
 ## Breaking changes
 - …
 
+## Future incompatibilities
+- `window.smoothPlotter` will not be set by `extras/smooth-plotter.js` any more RSN
+
 ## New features
 - Permit initialising with `[]` as “no data yet” indicator (#597)
 - The modularisation of the test setup also allows stable access to exported functions (e.g. `Dygraph._require('dygraphs/src/dygraph-utils.js').numberValueFormatter`) which makes writing one’s own value formatters easier (as usual, proceed with care, exports with an underscore are internal)
