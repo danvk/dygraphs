@@ -107,6 +107,10 @@ DygraphInteraction.startPan = function(event, g, context) {
       boundedValues[i] = [boundedTopValue, boundedBottomValue];
     }
     context.boundedValues = boundedValues;
+  } else {
+    // undo effect if it was once set
+    context.boundedDates = null;
+    context.boundedValues = null;
   }
 
   // Record the range of each y-axis at the start of the drag.
