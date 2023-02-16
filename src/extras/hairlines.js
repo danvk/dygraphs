@@ -101,7 +101,7 @@ hairlines.prototype.createHairline = function createHairline(props) {
   var h;
   var self = this;
 
-  var $lineContainerDiv = $('<div/>').css({
+  var $lineContainerDiv = $('<div />').css({
       'width': '6px',
       'margin-left': '-3px',
       'position': 'absolute',
@@ -109,7 +109,7 @@ hairlines.prototype.createHairline = function createHairline(props) {
     })
     .addClass('dygraph-hairline');
 
-  var $lineDiv = $('<div/>').css({
+  var $lineDiv = $('<div />').css({
     'width': '1px',
     'position': 'relative',
     'left': '3px',

@@ -8,7 +8,7 @@ Gallery.register(
     title: 'Stock Chart Demo',
     setup: function(parent) {
       parent.innerHTML = [
-          "<div id='stock_div' style='width: 600px; height: 300px;'></div><br/>",
+          "<div id='stock_div' style='width: 600px; height: 300px;'></div><br />",
           "<div style='width: 600px; text-align: center;'>",
           "  <button id='linear'>Linear Scale</button> ",
           "  <button id='log' disabled='true'>Log Scale</button>",

@@ -9,10 +9,10 @@ Gallery.register(
     title: 'Define your data with functions',
     setup: function(parent) {
       parent.innerHTML = [
-        "<p><b>Equation: </b><br/>",
+        "<p><b>Equation: </b><br />",
         "<textarea cols='80' rows='10' id='eq'>function(x) {",
         "  return [0.1 * x, 0.1 * x + Math.sin(x), 0.1*x + Math.cos(x)];",
-        "}</textarea><br/>",
+        "}</textarea><br />",
         "<b>Preset functions:</b> <select id='presets'>",
         "<option selected id='custom'>(custom)</option>",
         "<option id='id'>Identity</option>",

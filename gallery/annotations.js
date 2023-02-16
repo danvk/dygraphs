@@ -48,7 +48,7 @@ Gallery.register(
                     var name = nameAnnotation(ann[i]);
                     html += "<span id='" + name + "'>";
                     html += name + ": " + (ann[i].shortText || '(icon)');
-                    html += " -> " + ann[i].text + "</span><br/>";
+                    html += " -> " + ann[i].text + "</span><br />";
                   }
                   document.getElementById("list").innerHTML = html;
                 }
@@ -76,7 +76,7 @@ Gallery.register(
         text: 'Another one',
         cssClass: 'annotation',
         clickHandler: function() {
-          eventDiv.innerHTML += "special handler<br/>";
+          eventDiv.innerHTML += "special handler<br />";
         }
       } );
       g.setAnnotations(annotations);
@@ -116,10 +116,10 @@ Gallery.register(
       var num = 0;
       g.updateOptions( {
         annotationClickHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "click: " + nameAnnotation(ann) + "<br/>";
+          eventDiv.innerHTML += "click: " + nameAnnotation(ann) + "<br />";
         },
         annotationDblClickHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br/>";
+          eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br />";
         },
         annotationMouseOverHandler: function(ann, point, dg, event) {
           document.getElementById(nameAnnotation(ann)).style.fontWeight = 'bold';

@@ -66,7 +66,7 @@
                     var name = nameAnnotation(ann[i]);
                     html += "<span id='" + name + "'>"
                     html += name + ": " + (ann[i].shortText || '(icon)')
-                    html += " -> " + ann[i].text + "</span><br/>";
+                    html += " -> " + ann[i].text + "</span><br />";
                   }
                   document.getElementById("list").innerHTML = html;
                 }
@@ -95,7 +95,7 @@
         text: 'Another one',
         cssClass: 'annotation',
         clickHandler: function() {
-          document.getElementById("events").innerHTML += "special handler<br/>";
+          document.getElementById("events").innerHTML += "special handler<br />";
         }
       } );
       annotations.push( {
@@ -144,10 +144,10 @@
       var num = 0;
       g.updateOptions( {
         annotationClickHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "click: " + nameAnnotation(ann) + "<br/>";
+          eventDiv.innerHTML += "click: " + nameAnnotation(ann) + "<br />";
         },
         annotationDblClickHandler: function(ann, point, dg, event) {
-          eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br/>";
+          eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br />";
         },
         annotationMouseOverHandler: function(ann, point, dg, event) {
           document.getElementById(nameAnnotation(ann)).style.fontWeight = 'bold';

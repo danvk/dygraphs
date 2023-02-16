@@ -88,40 +88,40 @@ Gallery.start = function() {
       jsFiddleForm.action = "http://jsfiddle.net/api/post/jquery/1.4/";
       jsFiddleForm.target = "_blank";
 
-      jsfs.html("<input type='submit' value='Edit in jsFiddle'/>\n" +
+      jsfs.html("<input type='submit' value='Edit in jsFiddle' />\n" +
       "<span style='display:none'>\n" +
       "<textarea name='resources'>http://dygraphs.com/dygraph.js</textarea>\n" +
-      "<input type='text' name='dtd' value='html 5'/></span>\n");
+      "<input type='text' name='dtd' value='html 5' /></span>\n");
 
       var javascript = demo.run.toString();
       var html = Gallery.workareaChild.innerHTML;
 
       // tweak for use in jsfiddle
       javascript = " $(document).ready(" + javascript + "\n);";
-      jQuery('<textarea/>', { name: 'html' })
+      jQuery('<textarea></textarea>', { name: 'html' })
         .val(html)
         .hide()
         .appendTo(jsfs);
 
-      jQuery('<textarea/>', { name: 'js' })
+      jQuery('<textarea></textarea>', { name: 'js' })
         .val(javascript)
         .hide()
         .appendTo(jsfs);
 
       if (css) {
-        jQuery('<textarea/>', { name: 'css' })
+        jQuery('<textarea></textarea>', { name: 'css' })
           .val(css)
           .hide()
           .appendTo(jsfs);
       }
-      jQuery('<input/>', {
+      jQuery('<input />', {
         type: 'text',
         name: 'title',
         value: 'title tbd'
       })
         .hide()
         .appendTo(jsfs);
-      jQuery('<input/>', {
+      jQuery('<input />', {
         type: 'text',
         name: 'description',
         value: 'desc tbd'

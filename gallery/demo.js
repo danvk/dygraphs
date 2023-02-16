@@ -7,7 +7,7 @@ Gallery.register(
     title: 'The original demo!',
     setup: function(parent) {
       parent.innerHTML =
-        "<span style='font-size: small;'>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</span><br/>" +
+        "<span style='font-size: small;'>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</span><br />" +
         "<table><tr><td>" +
         "<div id='demodiv'></div>" +
         "</td><td valign=top>" +

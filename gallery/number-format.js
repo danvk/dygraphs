@@ -18,7 +18,7 @@ Gallery.register(
 
           "<p>Precision to use (1 to 21):" +
           "  <input type='text' id='p_input' size='20'></p>" +
-          "<p/>" +
+          "<p />" +
           "<div id='content' style='font-family:Courier New,monospace'></div>";
     },
     run: function() {

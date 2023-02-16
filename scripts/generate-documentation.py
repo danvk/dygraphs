@@ -257,7 +257,7 @@ for label in sorted(labels):
   </p><p>
   %(desc)s
   </p><p>
-  <i>Type: %(type)s</i><br/>%(parameters)s
+  <i>Type: %(type)s</i><br />%(parameters)s
   <i>Default: %(default)s</i>
   </p><table class="gallerylinks">
   <tr><th>Gallery Samples:</th><td>%(gallery_html)s</td></tr>
@@ -274,7 +274,7 @@ for label in sorted(labels):
 
 print("""
 <a name="point_properties"></a><h3>Point Properties</h3>
-Some callbacks take a point argument. Its properties are:<br/>
+Some callbacks take a point argument. Its properties are:<br />
 <ul>
 <li>xval/yval: The data coordinates of the point (with dates/times as millis since epoch)</li>
 <li>canvasx/canvasy: The canvas coordinates at which the point is drawn.</li>

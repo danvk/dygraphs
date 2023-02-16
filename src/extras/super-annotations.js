@@ -118,7 +118,7 @@ annotations.prototype.createAnnotation = function createAnnotation(a) {
 
   var color = this.getColorForSeries_(a.series);
 
-  var $lineDiv = $('<div/>').css({
+  var $lineDiv = $('<div />').css({
     'width': '1px',
     'left': '3px',
     'background': 'black',
