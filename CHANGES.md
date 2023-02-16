@@ -1,7 +1,4 @@
-# next (git)
-
-## Breaking changes
-- …
+# v2.2.1 (2023-02-16)
 
 ## Future incompatibilities
 - `window.smoothPlotter` will not be set by `extras/smooth-plotter.js` any more RSN

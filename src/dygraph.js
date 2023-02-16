@@ -95,7 +95,7 @@ var Dygraph = function Dygraph(div, data, opts) {
 };
 
 Dygraph.NAME = "Dygraph";
-Dygraph.VERSION = "2.2.1-alpha.0";
+Dygraph.VERSION = "2.2.1";
 
 // internal autoloader workaround
 var _addrequire = {};
