@@ -5,12 +5,16 @@
 
 ## New features
 - Permit initialising with `[]` as “no data yet” indicator (#597)
+- The modularisation of the test setup also allows stable access to exported functions (e.g. `Dygraph._require('dygraphs/src/dygraph-utils.js').numberValueFormatter`) which makes writing one’s own value formatters easier (as usual, proceed with care, exports with an underscore are internal)
+- Provide Dygraph.onDOMready(cb) as lightweight jQuery(cb)/… alternative, to keep the demos/tests self-contained
 
 ## Bugfixes
 - Fix synchroniser not calling user’s `drawCallback` when blocked (#953) plus do not redraw unnecessarily
 - Documentation fixes and improvements including self-checks where possible
 - Fix missing legend for `x == -1` (#1002)
 - Allow ES6-importing the extras (#848) (#989) (#1009)
+- Fix broken zoom also in the drawing test (same as #611/#953)
+- Resetting `panEdgeFraction` now works
 
 ## Other user-visible changes
 - Fix issue #611 in the drawing demo gallery (#953)
@@ -20,6 +24,7 @@
 - Error bars are now properly called high/low bands (#1004), but the options stay the same for compatibility
 - Document annotations xval for Date better (#970)
 - Document more strongly that series labels must be unique (#960)
+- Remove references to nōn-existing `yAxisLabelWidth` option
 
 ## Internal refactors/fixes
 - Shrink `tests.js` source map and make its build reproducible on Debian
@@ -27,6 +32,7 @@
 - Generate `versions.html` and release notes from new top-level [`CHANGES.md`](https://github.com/danvk/dygraphs/blob/master/CHANGES.md)
 - Modularise dygraphs/tests setup so we can now also test the minified prod css/js (#1028)
 - Generate stable orig tarballs for releases ourselves (we still use the NPM ones for binary tarballs)
+- Less fragility with arrow function `this` rebinding check
 
 # v2.2.0 (2023-01-25)
 
