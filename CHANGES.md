@@ -15,6 +15,7 @@
 - Allow ES6-importing the extras (#848) (#989) (#1009)
 - Fix broken zoom also in the drawing test (same as #611/#953)
 - Resetting `panEdgeFraction` now works
+- Fix tests/unboxed-spark regression caused by PR #936
 
 ## Other user-visible changes
 - Fix issue #611 in the drawing demo gallery (#953)

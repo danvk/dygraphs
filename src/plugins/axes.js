@@ -162,7 +162,8 @@ axes.prototype.willDrawChart = function(e) {
 
   const that = this;
 
-  if (g.getOptionForAxis('drawAxis', 'y') || g.getOptionForAxis('drawAxis', 'y2')) {
+  if (g.getOptionForAxis('drawAxis', 'y') ||
+      (g.numAxes() == 2 && g.getOptionForAxis('drawAxis', 'y2'))) {
     if (layout.yticks && layout.yticks.length > 0) {
       var num_axes = g.numAxes();
       var getOptions = [makeOptionGetter('y'), makeOptionGetter('y2')];
