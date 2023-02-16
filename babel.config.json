@@ -8,6 +8,9 @@
       "@babel/env",
       {
         "bugfixes": true,
+        "exclude": [
+          "@babel/plugin-transform-typeof-symbol"
+        ],
         "modules": "auto"
       }
     ]
