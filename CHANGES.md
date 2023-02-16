@@ -1,3 +1,20 @@
+# next (git)
+
+## Breaking changes
+- …
+
+## New features
+- …
+
+## Bugfixes
+- …
+
+## Other user-visible changes
+- …
+
+## Internal refactors/fixes
+- …
+
 # v2.2.1 (2023-02-16)
 
 ## Future incompatibilities
