@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dygraphs — development guide</title>
+
+    <link rel="stylesheet" type="text/css" href=".jslibs/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="common/vextlnk.css" />
+    <link rel="stylesheet" type="text/css" href="site.css" />
+
+    <script type="text/javascript" src=".jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src=".jslibs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="dist/dygraph.js"></script>
+  </head>
+  <body>
+    <nav id="header" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-responsive-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">dygraphs</a>
+        </div><!-- /navbar-header -->
+        <div class="collapse navbar-collapse" id="navbar-responsive-collapse">
+
+          <!-- TODO(danvk): fill in relevant links here -->
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+              <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="jsdoc/symbols/Dygraph.html">API Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="data.html">Data Format</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="annotations.html">Annotations</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="css.html">CSS Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="versions.html">Version History</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="ie.html">Notes on Internet Explorer</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tests/">Test Cases</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://dygraphs.com/fiddle/">Play</a></li>
+              </ul>
+            </li>
+            <li><a class="xnavbar-link" href="download.html">Download</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+              <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com/">Blog</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/tagged/dygraphs">Stack Overflow</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://groups.google.com/g/dygraphs-users">Mailing List</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+              <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs">Source (Github)</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues">Issue Tracker</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues/new">Report a Bug</a></li>
+              </ul>
+            </li>
+          </ul><!-- /navbar-nav -->
+
+        </div><!-- /navbar-responsive-collapse -->
+      </div><!-- container-fluid -->
+    </nav>
+
+    <div class="container" id="main">
+      <div class="row">
+        <div class="col-lg-12">
+<style type="text/css">
+  pre {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  ol > li { padding: 5px; }
+</style>
+
+<h2>Guide to making dygraphs changes</h2>
+
+<p>So you've made a change to dygraphs and would like to contribute it back
+to the open source project. Wonderful!</p>
+
+<p>This is a step-by-step guide explaining how to do it.</p>
+
+<h3>dygraphs style</h3>
+<p>First of all, please try to follow the style of the existing dygraphs
+code. This will make the review process go much more smoothly.<p>
+
+<p>A few salient points:</p>
+<ol>
+  <li>We try to adhere to Google's <a
+    href="http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml">
+    JS style guide</a> and would appreciate it if you try to as well. This
+  means:
+  <ul>
+    <li>No tabs! Indent using two spaces.
+    <li>Use camelCase for variable and function names.
+    <li>Limit lines to 80 characters.
+  </ul>
+
+  <li>Please run 'lint.sh' to see if you've introduced any new violations.
+
+  <li>If you've added a new feature, add a test for it (in the tests/
+  directory) or a gallery entry.
+
+  <li>If you've added an option, document it in
+  dygraph-options-reference.js. You'll get lots of warnings if you don't.
+
+  <li>If you've fixed a bug or added a feature, add an auto_test for
+  it.<br />
+  This ensures that we won't inadvertently break your feature in the
+  future. To do this, either add to an existing auto_test in
+  auto_tests/tests or run
+  <code>auto_tests/misc/new-test.sh your-test-name</code> to
+  create a new one. There are two easy ways to run tests:
+  <ul>
+  <li>You can run your auto_test in any browser by visiting
+  <code>auto_tests/misc/local.html</code>. This allows you to debug your
+  test, or test against a specific browser.
+  <li>You can run your auto_test on the command-line by running
+  <code>./test.sh</code>. (It requires installing
+  <a href="https://phantomjs.org/">phantomjs</a> on your computer.)
+  </ul>
+</ol>
+
+<h3>Sending a Pull Request</h3>
+
+<p>dygraphs is hosted on github, which uses a "pull request" model. They
+have a good writeup <a
+  href="http://web.archive.org/web/20160625121005/https://help.github.com/articles/using-pull-requests/">here</a>. These
+instructions discuss dygraphs more specifically.</p>
+
+<p>The list of steps may look a bit daunting, but it's not too bad,
+especially if you have any familiarity with git or github. If you run into
+any problems while following the instructions, feel free to contact
+dygraphs-users.</p>
+
+<p>Why not just take patches? This process means less work for me (the
+maintainer) and it also results in your name appearing in the list of
+dygraphs commits. This lets you take credit for your work.</p>
+
+<ol>
+  <li>Create an account on <a href="https://github.com/">github</a>. This is
+  free, painless and will let you claim credit for your changes.
+
+  <li>Install git. github has a good writeup <a
+    href="https://docs.github.com/en/get-started/quickstart/set-up-git">here</a>.
+
+  <li>Create a fork of the dygraphs repository on github by
+  clicking <a href="https://github.com/danvk/dygraphs">this link</a> and
+  then the "Fork" button.
+
+  <li>You should see a URL along the lines of
+  <code>git@github.com:yourname/dygraphs.git</code><br />Copy this, open up a
+  terminal and run<br />
+  <pre>git clone git@github.com:yourname/dygraphs.git</pre> This
+  pulls the dygraphs code down onto your local disk.
+
+  <li>cd into the dygraphs directory and make your changes.<br />
+  If you've already got them somewhere else, just copy them over.<br />
+
+  <li>Be a good citizen! Make sure your code follows the guidelines
+  above.<br />
+    You'll have to do this before we accept your changes, so you may as well
+    do it now
+
+  <li>Commit your changes locally: run
+    <pre>git add .
+git commit</pre>
+  Type in a description of your change. This will
+  eventually appear in the dygraphs <a
+    href="https://github.com/danvk/dygraphs/commits/master">commit list</a>.
+
+  <li>Push your changes to github by running <pre>git push</pre>This will
+    send your changes to your forked repository on github.
+
+  <li>Go to your fork of dygraphs on github (i.e.
+  github.com/yourname/dygraphs).<br />
+  Click the "Pull Request" button.<br />
+  This will send me an email with a pointer to your changes.
+
+  <li>We'll review your changes and (unless your code is perfect!) give you
+  some feedback. Make these suggested changes in your local git client and
+  re-run "git commit" and "git push" so that we can see them.
+
+  <li>Once your change is ready, we'll pull it into the main dygraphs
+  repository and publish it to the web.
+</ol>
+
+    </div> <!--  .col-lg-12 -->
+  </div>  <!-- /div.row -->
+</div>  <!-- /div#main.container -->
+
+<!-- TODO(danvk): add a real footer -->
+<!--@@@IFIMPRINT:<div class="container" style="border:1px solid green; margin-bottom:1ex;">@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@</div>:FIIMPRINT@@@-->
+
+  </body>
+</html>

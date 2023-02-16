@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>gadget border</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+
+    <style type="text/css">
+    #bordered {
+      border: 1px solid red;
+    }
+    .dygraph-legend {
+      border: 1px solid black;
+    }
+    </style>
+  </head>
+  <body>
+    <p>Hopefully this stays in its border:</p>
+    <div id="bordered" style="width:600px; height:300px;"></div>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
+      g = new Dygraph(document.getElementById('bordered'), data,
+        {
+          title: 'Chart Title',
+          xlabel: 'Date',
+          ylabel: 'Temperature (F)'
+        });
+    });
+    //--><!]]></script>
+  </body>
+</html>
