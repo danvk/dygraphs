@@ -2,10 +2,10 @@
 /*global NoisyData */
 //galleryActive=true
 Gallery.register(
-  'resize',
+  'resizable',
   {
-    name: 'resizable window',
-    title: 'Resize the window. The dygraph will resize with it.',
+    name: 'resizable graph div',
+    title: 'Drag the bottom-right handle and see the graph resize.',
     setup: function(parent) {
       parent.innerHTML = "<div id='div_g'>";
     },
@@ -13,6 +13,7 @@ Gallery.register(
       new Dygraph(
             document.getElementById("div_g"),
             NoisyData, {
+              resizable: "both",
               rollPeriod: 7,
               errorBars: true
             }
