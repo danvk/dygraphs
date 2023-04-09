@@ -56,9 +56,10 @@ var synchronize = function synchronize(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
 
-  var OPTIONS = ['selection', 'zoom', 'range'];
+  var OPTIONS = ['selection', 'selectionClosest', 'zoom', 'range'];
   var opts = {
     selection: true,
+    selectionClosest: false,
     zoom: true,
     range: true
   };
@@ -134,7 +135,7 @@ var synchronize = function synchronize(/* dygraphs..., opts */) {
         }
 
         if (opts.selection) {
-          attachSelectionHandlers(dygraphs, prevCallbacks);
+          attachSelectionHandlers(dygraphs, opts, prevCallbacks);
         }
       }
     });
@@ -170,6 +171,41 @@ function arraysAreEqual(a, b) {
     if (a[i] !== b[i]) return false;
   }
   return true;
+}
+
+function closestIdx(gs, x) {
+  // if graph has no data or single entry
+  var highestI = gs.numRows() - 1
+  if (highestI < 0) return null
+  if (highestI === 0) return 0
+  
+  var lowestI = 0
+  
+  // if values of x axis are in descending order, reverse searching borders
+  if (gs.getValue(0, 0) > gs.getValue(highestI, 0)) {
+    lowestI = highestI
+    highestI = 0
+  }
+  
+  while (true) {
+    var middleI = Math.round( (lowestI + highestI) * 0.5 )
+    if (middleI === lowestI || middleI === highestI) break
+    
+    var middleX = gs.getValue(middleI, 0)
+    if (middleX === x) return middleI
+    
+    if (x < middleX) {
+      highestI = middleI
+    } else {
+      lowestI = middleI
+    }
+  }
+  
+  var lowestValue = gs.getValue(lowestI, 0)
+  var highestValue = gs.getValue(highestI, 0)
+  var closestI = x - lowestValue < highestValue - x ? lowestI : highestI
+  
+  return closestI
 }
 
 function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
@@ -223,7 +259,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   }
 }
 
-function attachSelectionHandlers(gs, prevCallbacks) {
+function attachSelectionHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
@@ -240,7 +276,14 @@ function attachSelectionHandlers(gs, prevCallbacks) {
             }
             continue;
           }
-          var idx = gs[i].getRowForX(x);
+          var idx
+          if (!syncOpts.selectionClosest) {
+            idx = gs[i].getRowForX(x);
+          } else {
+            idx = null
+            if (gs[i].numRows() === me.numRows()) idx = gs[i].getRowForX(x);
+            if (idx === null) idx = closestIdx(gs[i], x)
+          }
           if (idx !== null) {
             gs[i].setSelection(idx, seriesName, undefined, true);
           }
