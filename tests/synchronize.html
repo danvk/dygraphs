@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>synchronize</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../extras/synchronizer.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+
+    <style>
+      .chart { width: 450px; height: 270px; }
+      .chart-container { overflow: hidden; }
+      #div1 { float: left; }
+      #div2 { float: left; }
+      #div3 { float: left; clear: left; }
+      #div4 { float: left; }
+    </style>
+  </head>
+  <body>
+    <p>Zooming and panning on any of the charts will zoom and pan all the
+    others. Selecting points on one will select points on the others.</p>
+
+    <p>To use this, source <a href="../extras/synchronizer.js"><code>extras/synchronizer.js</code></a>
+    on your page. See the comments in that file for usage. However, for better browser compatibility,
+    use the file from <tt>src-es5/extras/</tt> (<tt>dist/extras/</tt>) instead.</p>
+
+    <div class="chart-container">
+      <div id="div1" class="chart"></div>
+      <div id="div2" class="chart"></div>
+      <div id="div3" class="chart"></div>
+      <div id="div4" class="chart"></div>
+    </div>
+
+    <p>
+      Synchronize what?
+      <input type=checkbox id='chk-zoom' checked onChange='update()'><label for='chk-zoom'> Zoom</label>
+      <input type=checkbox id='chk-selection' checked onChange='update()'><label for='chk-selection'> Selection</label>
+      <input type=checkbox id='chk-range' checked onChange='update()'><label for='chk-range'> Range (y-axis)</label>
+    </p>
+
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
+      gs = [];
+      var blockRedraw = false;
+      for (var i = 1; i <= 4; i++) {
+        gs.push(
+          new Dygraph(
+            document.getElementById("div" + i),
+            NoisyData, {
+              rollPeriod: 7,
+              errorBars: true,
+            }
+          )
+        );
+      }
+      var sync = Dygraph.synchronize(gs);
+
+      update = function update() {
+        var zoom = document.getElementById('chk-zoom').checked,
+            selection = document.getElementById('chk-selection').checked,
+            syncRange = document.getElementById('chk-range').checked;
+        document.getElementById('chk-range').disabled = !zoom;
+
+        sync.detach();
+        sync = Dygraph.synchronize(gs, {
+          zoom: zoom,
+          selection: selection,
+          range: syncRange
+        });
+      }
+    });
+    //--><!]]></script>
+  </body>
+</html>
