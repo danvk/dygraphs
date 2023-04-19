@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dygraphs — CSS reference</title>
+
+    <link rel="stylesheet" type="text/css" href=".jslibs/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="common/vextlnk.css" />
+    <link rel="stylesheet" type="text/css" href="site.css" />
+
+    <script type="text/javascript" src=".jslibs/jquery.min.js"></script>
+    <script type="text/javascript" src=".jslibs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="dist/dygraph.js"></script>
+  </head>
+  <body>
+    <nav id="header" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-responsive-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">dygraphs</a>
+        </div><!-- /navbar-header -->
+        <div class="collapse navbar-collapse" id="navbar-responsive-collapse">
+
+          <!-- TODO(danvk): fill in relevant links here -->
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+              <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="jsdoc/symbols/Dygraph.html">API Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="data.html">Data Format</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="annotations.html">Annotations</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="css.html">CSS Reference</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="versions.html">Version History</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="ie.html">Notes on Internet Explorer</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="tests/">Test Cases</a></li>
+                <li role="separator" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://dygraphs.com/fiddle/">Play</a></li>
+              </ul>
+            </li>
+            <li><a class="xnavbar-link" href="download.html">Download</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+              <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com/">Blog</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/tagged/dygraphs">Stack Overflow</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://groups.google.com/g/dygraphs-users">Mailing List</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+              <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs">Source (Github)</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues">Issue Tracker</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs/issues/new">Report a Bug</a></li>
+              </ul>
+            </li>
+          </ul><!-- /navbar-nav -->
+
+        </div><!-- /navbar-responsive-collapse -->
+      </div><!-- container-fluid -->
+    </nav>
+
+    <div class="container" id="main">
+      <div class="row">
+        <div class="col-lg-12">
+<h2>CSS Reference</h2>
+
+<p>dygraphs charts are a combination of DOM elements and pixels on a
+<code>&lt;canvas&gt;</code>. The parts that are DOM elements can be styled
+using CSS.</p>
+
+<p>As a general rule of thumb, all the text on a chart (the legend, the axis
+labels, the chart labels) can be styled. The data series and gridlines are
+drawn on the canvas and must by styled using dygraphs <a
+  href="options.html">options</a>.</p>
+
+<p>This chart shows the CSS classes for chart labels:</p>
+
+<div id="demodiv"></div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+Dygraph.onDOMready(function onDOMready() {
+  g = new Dygraph(
+      document.getElementById("demodiv"),
+      "dow.txt",
+      {
+        customBars: true,
+        legend: 'always',
+        title: '.dygraph-label .dygraph-title',
+        xlabel: '.dygraph-label .dygraph-xlabel',
+        ylabel: '.dygraph-label .dygraph-ylabel',
+        y2label: '.dygraph-label .dygraph-y2label',
+        'series': {
+          'Real': {
+            axis: 'y2'
+          }
+        },
+        axes: {
+          y: {
+            axisLabelWidth: 75
+          },
+          y2: {
+            axisLabelWidth: 75
+          }
+        },
+        drawCallback: function() {
+          $('.dygraph-legend').text('.dygraph-legend');
+        },
+      });
+});
+//--><!]]></script>
+
+<p>The CSS classes for the chart labels are:</p>
+<ul>
+  <li>Title: <code>.dygraph-label.dygraph-title</code>
+  <li>x-axis label: <code>.dygraph-label.dygraph-xlabel</code>
+  <li>y-axis label: <code>.dygraph-label.dygraph-ylabel</code>
+  <li>y2-axis label: <code>.dygraph-label.dygraph-y2label</code>
+</ul>
+
+<p>The axis labels ("2000", "4000", "6000", … for the y-axis and "1920",
+"1930", "1940", … for the x-axis) also get CSS classes:</p>
+
+<ul>
+  <li>x-axis: <code>.dygraph-axis-label.dygraph-axis-label-x</code>
+  <li>y-axis: <code>.dygraph-axis-label.dygraph-axis-label-y</code>
+  <li>y2-axis: <code>.dygraph-axis-label.dygraph-axis-label-y.dygraph-axis-label-y2</code>
+</ul>
+
+<p>The legend has the <code>.dygraph-legend</code> class. When using <a
+  href="tests/series-highlight.html">highlightSeriesOpts</a>, the selected
+series' &lt;span&gt; gets a <code>.highlight</code> class. This can be used to
+show only a single series in the legend.</p>
+
+<p>For CSS classes and annotations, see the <a
+  href="annotations.html">annotations documentation.</a></p>
+
+    </div> <!--  .col-lg-12 -->
+  </div>  <!-- /div.row -->
+</div>  <!-- /div#main.container -->
+
+<!-- TODO(danvk): add a real footer -->
+<!--@@@IFIMPRINT:<div class="container" style="border:1px solid green; margin-bottom:1ex;">@@@PLACE_IMPRINT_LINK_HERE_IF_NECESSARY@@@</div>:FIIMPRINT@@@-->
+
+  </body>
+</html>

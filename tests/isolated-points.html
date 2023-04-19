@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>isolated points</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+  </head>
+  <body>
+    <div id="graph"></div>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+    Dygraph.onDOMready(function onDOMready() {
+     g = new Dygraph(
+      document.getElementById("graph"),
+      [
+        [ 1, 10, 11],
+        [ 2, 15, null],
+        [ 3, null, null],
+        [ 4, 20, 13],
+        [ 5, null, 10],
+        [ 6, 18, null],
+        [ 7, 12, 16]
+      ],
+      {
+        labels: ["X", "S1", "S2" ],
+        series: {
+          S1: {
+            drawGapEdgePoints: true
+          }
+        },
+        pointSize: 4,
+        showRoller: true
+      }
+     );
+    });
+    //--><!]]></script>
+  </body>
+</html>

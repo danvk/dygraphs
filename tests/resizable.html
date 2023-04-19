@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>resizable</title>
+
+    <link rel="stylesheet" type="text/css" href="../dist/dygraph.css" />
+    <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+  </head>
+  <body>
+    <h2>Demo for resizable</h2>
+    <div id="demodiv"></div>
+    <script type="text/javascript"><!--//--><![CDATA[//><!--
+      Dygraph.onDOMready(function onDOMready() {
+	thegraph = new Dygraph('demodiv', data_temp, {
+		title: 'NYC vs. SF',
+		showRoller: true,
+		rollPeriod: 14,
+		customBars: true,
+		ylabel: 'Temperature (°F)',
+		resizable: "both"
+	});
+      });
+    //--><!]]></script>
+  </body>
+</html>
