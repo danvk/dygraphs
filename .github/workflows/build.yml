@@ -19,6 +19,13 @@
           "run": "./.pages.sh"
         },
         {
+          "uses": "actions/upload-artifact@v3",
+          "with": {
+            "name": "package-lock.json",
+            "path": "package-lock.json"
+          }
+        },
+        {
           "uses": "actions/upload-pages-artifact@v1.0.7"
         },
         {
@@ -40,6 +47,13 @@
         },
         {
           "run": "./.pages.sh"
+        },
+        {
+          "uses": "actions/upload-artifact@v3",
+          "with": {
+            "name": "package-lock.json",
+            "path": "package-lock.json"
+          }
         },
         {
           "uses": "actions/upload-pages-artifact@v1.0.7"
