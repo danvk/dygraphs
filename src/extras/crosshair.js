@@ -28,10 +28,18 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
 
   var crosshair = function crosshair(opt_options) {
     this.canvas_ = document.createElement("canvas");
+    this.updateCanvasSize(0, 0)
     opt_options = opt_options || {};
     this.direction_ = opt_options.direction || null;
     this.strokeStyle_ = opt_options.strokeStyle || "rgba(0, 0, 0, 0.3)";
   };
+
+  crosshair.prototype.updateCanvasSize = function updateCanvasSize(width, height) {
+    this.canvas_.width = width
+    this.canvas_.height = height
+    this.canvas_.style.width = width.toString(10) + 'px'    // for IE
+    this.canvas_.style.height = height.toString(10) + 'px'  // for IE
+  }
 
   crosshair.prototype.toString = function toString() {
     return "Crosshair Plugin";
@@ -57,10 +65,7 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
 
     var width = e.dygraph.width_;
     var height = e.dygraph.height_;
-    this.canvas_.width = width;
-    this.canvas_.height = height;
-    this.canvas_.style.width = width + "px";    // for IE
-    this.canvas_.style.height = height + "px";  // for IE
+    this.updateCanvasSize(width, height)
 
     var ctx = this.canvas_.getContext("2d");
     ctx.clearRect(0, 0, width, height);
