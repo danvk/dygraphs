@@ -90,6 +90,14 @@ export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 /** @type {Ticker} */
+export var integerTicks = function(a, b, pixels, opts, dygraph, vals) {
+    var allTicks = numericTicks(a, b, pixels, opts, dygraph, vals);
+    return allTicks.filter(function(tick) {
+      return tick.v % 1 === 0;
+    });
+};
+
+/** @type {Ticker} */
 export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
