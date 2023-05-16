@@ -208,6 +208,21 @@ function closestIdx(gs, x) {
   return points[closestI].idx;
 }
 
+function isInsideDateWindow(gs, idx) {
+  if (idx === null) return false;
+  var xAxisRange = gs.xAxisRange();
+  var min, max;
+  if (xAxisRange[0] <= xAxisRange[1]) {
+    min = xAxisRange[0];
+    max = xAxisRange[1];
+  } else {
+    min = xAxisRange[1];
+    max = xAxisRange[0];
+  }
+  var xval = gs.getValue(idx, 0);
+  return xval >= min && xval <= max;
+}
+
 function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
@@ -284,8 +299,10 @@ function attachSelectionHandlers(gs, syncOpts, prevCallbacks) {
             if (gs[i].numRows() === me.numRows()) idx = gs[i].getRowForX(x);
             if (idx === null) idx = closestIdx(gs[i], x);
           }
-          if (idx !== null) {
+          if (isInsideDateWindow(gs[i], idx)) {
             gs[i].setSelection(idx, seriesName, undefined, true);
+          } else {
+            gs[i].clearSelection();
           }
         }
         block = false;
