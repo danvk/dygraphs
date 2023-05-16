@@ -174,15 +174,17 @@ function arraysAreEqual(a, b) {
 }
 
 function closestIdx(gs, x) {
+  var points = gs.layout_.points[0];
+  
   // if graph has no data or single entry
-  var highestI = gs.numRows() - 1;
+  var highestI = points.length - 1;
   if (highestI < 0) return null;
-  if (highestI === 0) return 0;
+  if (highestI === 0) return points[0].idx;
   
   var lowestI = 0;
   
   // if values of x axis are in descending order, reverse searching borders
-  if (gs.getValue(0, 0) > gs.getValue(highestI, 0)) {
+  if (points[0].xval > points[highestI].xval) {
     lowestI = highestI;
     highestI = 0;
   }
@@ -191,8 +193,8 @@ function closestIdx(gs, x) {
     var middleI = Math.round( (lowestI + highestI) * 0.5 );
     if (middleI === lowestI || middleI === highestI) break;
     
-    var middleX = gs.getValue(middleI, 0);
-    if (middleX === x) return middleI;
+    var middleX = points[middleI].xval;
+    if (middleX === x) return points[middleI].idx;
     
     if (x < middleX) {
       highestI = middleI;
@@ -201,11 +203,9 @@ function closestIdx(gs, x) {
     }
   }
   
-  var lowestValue = gs.getValue(lowestI, 0);
-  var highestValue = gs.getValue(highestI, 0);
-  var closestI = x - lowestValue < highestValue - x ? lowestI : highestI;
+  var closestI = x - points[lowestI].xval < points[highestI].xval - x ? lowestI : highestI;
   
-  return closestI;
+  return points[closestI].idx;
 }
 
 function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
