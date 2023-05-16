@@ -66,12 +66,15 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = this.strokeStyle_;
     ctx.beginPath();
-
-    var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
-
-    if (this.direction_ === "vertical" || this.direction_ === "both") {
-      ctx.moveTo(canvasx, 0);
-      ctx.lineTo(canvasx, height);
+    
+    var point = e.dygraph.selPoints_[0];
+    if (point.x >= 0 && point.x <= 1) {
+      var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
+  
+      if (this.direction_ === "vertical" || this.direction_ === "both") {
+        ctx.moveTo(canvasx, 0);
+        ctx.lineTo(canvasx, height);
+      }
     }
 
     if (this.direction_ === "horizontal" || this.direction_ === "both") {
