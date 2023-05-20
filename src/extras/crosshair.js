@@ -69,7 +69,7 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     
     var p_x = e.dygraph.selPoints_[0];
     if (p_x.x >= 0 && p_x.x <= 1) {
-      var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
+      var canvasx = Math.floor(p_x.canvasx) + 0.5; // crisper rendering
   
       if (this.direction_ === "vertical" || this.direction_ === "both") {
         ctx.moveTo(canvasx, 0);
