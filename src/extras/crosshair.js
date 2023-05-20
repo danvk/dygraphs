@@ -68,6 +68,7 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     ctx.beginPath();
 
     var canvasx = Math.floor(e.dygraph.selPoints_[0].canvasx) + 0.5; // crisper rendering
+    if (canvasx > width) canvasx = width - 0.5;
 
     if (this.direction_ === "vertical" || this.direction_ === "both") {
       ctx.moveTo(canvasx, 0);
@@ -77,6 +78,7 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     if (this.direction_ === "horizontal" || this.direction_ === "both") {
       for (var i = 0; i < e.dygraph.selPoints_.length; i++) {
         var canvasy = Math.floor(e.dygraph.selPoints_[i].canvasy) + 0.5; // crisper rendering
+        if (canvasy > height) canvasy = height - 0.5;
         ctx.moveTo(0, canvasy);
         ctx.lineTo(width, canvasy);
       }
