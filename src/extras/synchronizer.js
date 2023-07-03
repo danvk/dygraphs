@@ -203,7 +203,11 @@ function closestIdx(gs, x) {
     }
   }
   
-  var closestI = x - points[lowestI].xval < points[highestI].xval - x ? lowestI : highestI;
+  var closestI;
+  
+  // if graph in stepPlot mode, return left point, otherwise closest x value point
+  if (gs.getOption('stepPlot') === true) closestI = lowestI < highestI ? lowestI : highestI;
+  else closestI = x - points[lowestI].xval < points[highestI].xval - x ? lowestI : highestI;
   
   return points[closestI].idx;
 }
