@@ -3507,6 +3507,7 @@ Dygraph.PLUGINS = [
 // There are many symbols which have historically been available through the
 // Dygraph class. These are exported here for backwards compatibility.
 Dygraph.GVizChart = GVizChart;
+Dygraph.DOTTED_LINE = utils.DOTTED_LINE;
 Dygraph.DASHED_LINE = utils.DASHED_LINE;
 Dygraph.DOT_DASH_LINE = utils.DOT_DASH_LINE;
 Dygraph.dateAxisLabelFormatter = utils.dateAxisLabelFormatter;
