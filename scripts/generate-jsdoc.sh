@@ -59,11 +59,6 @@ jsdoc2 \
   $srcfiles \
 2>&1 | tee jsdoc.tmp/.errs
 
-ed -s jsdoc.tmp/.errs <<-\EOF
-	1g/java .*jsrun.jar/d
-	w
-	q
-EOF
 if test -s jsdoc.tmp/.errs; then errs=true; else errs=false; fi
 rm -rf jsdoc.tmp
 
