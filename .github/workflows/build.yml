@@ -13,7 +13,7 @@
       "runs-on": "ubuntu-latest",
       "steps": [
         {
-          "uses": "actions/checkout@v3.3.0"
+          "uses": "actions/checkout@v4.2.2"
         },
         {
           "run": "./.pages.sh"
@@ -26,11 +26,11 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v1.0.7"
+          "uses": "actions/upload-pages-artifact@v3.0.1"
         },
         {
           "id": "deployment",
-          "uses": "actions/deploy-pages@v1.2.3"
+          "uses": "actions/deploy-pages@v4.0.5"
         }
       ]
     },
@@ -43,7 +43,7 @@
       "runs-on": "ubuntu-latest",
       "steps": [
         {
-          "uses": "actions/checkout@v3.3.0"
+          "uses": "actions/checkout@v4.2.2"
         },
         {
           "run": "./.pages.sh"
@@ -56,7 +56,7 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v1.0.7"
+          "uses": "actions/upload-pages-artifact@v3.0.1"
         }
       ]
     }
