@@ -109,8 +109,12 @@ browserify \
 rm -rf src
 ../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
+uglifyjs=$(uglifyjs --help 2>&1)
+set -A compatopts -- --no-module --v8 --webkit
+[[ $uglifyjs = *--no-module* ]] || unset compatopts[0]
+
 uglifyjs \
-    --no-module --v8 --webkit \
+    "${compatopts[@]}" \
     --compress \
     --mangle \
     --output-opts "preamble='$header'" \
