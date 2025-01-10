@@ -13,7 +13,7 @@ test -n "$v" || {
 rm -rf jsdoc jsdoc.tmp
 mkdir jsdoc.tmp
 t=$PWD/jsdoc.tmp
-(cd /usr/share/jsdoc-toolkit/templates/jsdoc && pax -rw . "$t/")
+(cd /usr/share/nodejs/jsdoc2/templates/jsdoc && pax -rw . "$t/")
 find jsdoc.tmp -type f -print0 | xargs -0r perl -pi -e \
   "s! on [{][+]new Date[(][)][+][}]! for dygraph $v!g"
 
@@ -53,7 +53,7 @@ srcfiles+=\ src/plugins/grid.js
 #srcfiles+=\ src/extras/super-annotations.js
 #srcfiles+=\ src/extras/synchronizer.js
 #srcfiles+=\ src/extras/unzoom.js
-jsdoc \
+jsdoc2 \
   -t="$t" \
   -d=jsdoc \
   $srcfiles \

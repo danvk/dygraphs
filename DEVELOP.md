@@ -26,7 +26,7 @@ To run the tests, run:
 The prerequisites for a full “npm run build” are:
 
     # for building
-    apt-get install ed jsdoc-toolkit mksh pax python3
+    apt-get install ed node-jsdoc2 mksh pax python3
     # for docs
     apt-get install libjs-bootstrap libjs-jquery libjs-jquery-ui
 
