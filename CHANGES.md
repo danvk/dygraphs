@@ -7,12 +7,17 @@
 - …
 
 ## Bugfixes
+- Re-add missing `Dygraph.DOTTED_LINE` export
 - …
 
 ## Other user-visible changes
+- Add talk link to `tutorial.html`
 - …
 
 ## Internal refactors/fixes
+- Switch from `jsdoc-toolkit` to `node-jsdoc2` (Debian #1074595)
+- Bump some package versions matching Debian bookworm and \*buntu 24.04
+- Add support for newer babeljs and uglifyjs3
 - …
 
 # v2.2.1 (2023-02-16)
