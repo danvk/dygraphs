@@ -10,7 +10,7 @@
         "url": "${{ steps.deployment.outputs.page_url }}"
       },
       "if": "github.repository == 'mirabilos/dygraphs'",
-      "runs-on": "ubuntu-latest",
+      "runs-on": "ubuntu-24.04",
       "steps": [
         {
           "uses": "actions/checkout@v4.2.2"
@@ -43,7 +43,7 @@
         "url": "${{ steps.deployment.outputs.page_url }}"
       },
       "if": "github.repository == 'danvk/dygraphs'",
-      "runs-on": "ubuntu-latest",
+      "runs-on": "ubuntu-24.04",
       "steps": [
         {
           "uses": "actions/checkout@v4.2.2"
