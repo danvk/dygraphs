@@ -22,6 +22,9 @@ export LC_ALL=C
 unset LANGUAGE
 
 set -o pipefail
+rm -f .post.state
+if test -h .post.state || test -e .post.state; then exit 255; fi
+state=''
 
 $sudoagi eatmydata
 sudoapt clean
@@ -40,12 +43,12 @@ eatmydata env TMPDIR=/tmp npm install
 
 (eatmydata npm run clean || :)
 eatmydata npm run build
-eatmydata npm run test
-eatmydata npm run test-min
+eatmydata npm run test || state="$state test"
+eatmydata npm run test-min || state="$state test-min"
 if [[ $GITHUB_REPOSITORY = danvk/dygraphs ]]; then
-	eatmydata npm run coverage
-	eatmydata scripts/post-coverage.sh
-	eatmydata scripts/weigh-in.sh
+	eatmydata npm run coverage || state="$state coverage"
+	eatmydata scripts/post-coverage.sh || state="$state post-coverage"
+	eatmydata scripts/weigh-in.sh || state="$state weigh-in"
 fi
 
 rm -rf _site
@@ -65,3 +68,5 @@ if [[ -n $imprint_text ]]; then
 	    '
 fi
 cd ..
+set -o noglob
+echo $state >.post.state

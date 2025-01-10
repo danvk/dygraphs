@@ -29,6 +29,9 @@
           "uses": "actions/upload-pages-artifact@v3.0.1"
         },
         {
+          "run": "./.post.sh"
+        },
+        {
           "id": "deployment",
           "uses": "actions/deploy-pages@v4.0.5"
         }
@@ -57,6 +60,9 @@
         },
         {
           "uses": "actions/upload-pages-artifact@v3.0.1"
+        },
+        {
+          "run": "./.post.sh"
         }
       ]
     }
