@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2011 Robert Konigsberg (konigsberg@google.com)
@@ -11,7 +13,6 @@
  */
 
 /*global Dygraph:false */
-"use strict";
 
 import * as utils from './dygraph-utils';
 

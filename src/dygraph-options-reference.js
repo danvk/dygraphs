@@ -1,10 +1,10 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
  * MIT-licenced: https://opensource.org/licenses/MIT
  */
-
-"use strict";
 
 var OPTIONS_REFERENCE = null;
 

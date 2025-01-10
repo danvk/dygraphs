@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -62,7 +64,6 @@
 
 /*jshint sub:true */
 /*global Dygraph:false */
-"use strict";
 
 import * as utils from './dygraph-utils';
 

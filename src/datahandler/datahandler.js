@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
@@ -40,8 +42,6 @@
  */
 /*global Dygraph:false */
 /*global DygraphLayout:false */
-
-"use strict";
 
 /**
  *

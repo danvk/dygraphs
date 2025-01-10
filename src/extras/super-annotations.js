@@ -23,7 +23,7 @@ if (window.Dygraph) {
 
 Dygraph.Plugins.SuperAnnotations = (function _extras_superAnnotations_closure() {
 
-"use strict";
+'use strict';
 
 /**
  * These are just the basic requirements -- annotations can have whatever other

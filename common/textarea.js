@@ -1,3 +1,5 @@
+'use strict';
+
 // Copyright (c) 2012 Google, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +25,6 @@
  *
  * @author konigsberg@google.com (Robert Konigsberg)
  */
-"use strict";
 
 function TextArea(parent) {
   var body = document.getElementsByTagName("body")[0];

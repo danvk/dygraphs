@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
@@ -11,7 +13,6 @@
 
 // TODO: remove this jshint directive & fix the warnings.
 /*jshint sub:true */
-"use strict";
 
 import * as utils from './dygraph-utils';
 import DEFAULT_ATTRS from './dygraph-default-attrs';

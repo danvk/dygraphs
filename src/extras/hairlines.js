@@ -23,7 +23,7 @@ if (window.Dygraph) {
 
 Dygraph.Plugins.Hairlines = (function _extras_hairlines_closure() {
 
-"use strict";
+'use strict';
 
 /**
  * @typedef {

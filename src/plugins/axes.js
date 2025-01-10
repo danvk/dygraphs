@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
@@ -5,8 +7,6 @@
  */
 
 /*global Dygraph:false */
-
-'use strict';
 
 /*
 Bits of jankiness:

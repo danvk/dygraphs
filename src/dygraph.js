@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
@@ -72,8 +74,6 @@ import LegendPlugin from './plugins/legend';
 import RangeSelectorPlugin from './plugins/range-selector';
 
 import GVizChart from './dygraph-gviz';
-
-"use strict";
 
 /**
  * @class Creates an interactive, zoomable chart.

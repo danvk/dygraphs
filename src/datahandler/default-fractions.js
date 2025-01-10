@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
@@ -10,7 +12,6 @@
  */
 
 /*global Dygraph:false */
-"use strict";
 
 import DygraphDataHandler from './datahandler';
 import DefaultHandler from './default';

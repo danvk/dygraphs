@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import * as DygraphTickers from './dygraph-tickers';
 import DygraphInteraction from './dygraph-interaction-model';

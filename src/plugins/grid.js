@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
@@ -12,8 +14,6 @@ Current bits of jankiness:
 - Direct area access
 
 */
-
-"use strict";
 
 /**
  * Draws the gridlines, i.e. the gray horizontal & vertical lines running the

@@ -1,3 +1,5 @@
+'use strict';
+
 // Copyright 2012 Google Inc. All Rights Reserved.
 
 /**
@@ -6,8 +8,6 @@
  * @author danvk@google.com (Dan Vanderkam)
  * @license MIT
  */
-
-'use strict';
 
 /**
  * @constructor

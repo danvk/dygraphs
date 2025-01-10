@@ -1,11 +1,11 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
  * MIT-licenced: https://opensource.org/licenses/MIT
  */
 /*global Dygraph:false */
-
-"use strict";
 
 // TODO(danvk): move chart label options out of dygraphs and into the plugin.
 // TODO(danvk): only tear down & rebuild the DIVs when it's necessary.

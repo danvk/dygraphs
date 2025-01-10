@@ -37,8 +37,7 @@ if (window.Dygraph) {
  * @author konigsberg@google.com (Robert Konigsberg)
  */
 Dygraph.Plugins.Unzoom = (function _extras_unzoom_closure() {
-
-  "use strict";
+  'use strict';
 
   /**
    * Create a new instance.

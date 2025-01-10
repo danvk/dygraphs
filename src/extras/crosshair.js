@@ -18,7 +18,7 @@ if (window.Dygraph) {
 /* end of loader wrapper header */
 
 Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
-  "use strict";
+  'use strict';
 
   /**
    * Creates the crosshair

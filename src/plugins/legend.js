@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @license
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
@@ -15,7 +17,6 @@ Current bits of jankiness:
 */
 
 /*global Dygraph:false */
-"use strict";
 
 import * as utils from '../dygraph-utils';
 
