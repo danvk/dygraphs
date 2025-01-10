@@ -110,7 +110,7 @@ rm -rf src
 ../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
 uglifyjs \
-    --no-module --ie --v8 --webkit \
+    --no-module --v8 --webkit \
     --compress \
     --mangle \
     --output-opts "preamble='$header'" \
