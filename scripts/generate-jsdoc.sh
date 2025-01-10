@@ -15,7 +15,8 @@ mkdir jsdoc.tmp
 t=$PWD/jsdoc.tmp
 (cd /usr/share/nodejs/jsdoc2/templates/jsdoc && pax -rw . "$t/")
 find jsdoc.tmp -type f -print0 | xargs -0r perl -pi -e \
-  "s! on [{][+]new Date[(][)][+][}]! for dygraph $v!g"
+  "s/\r+$//;" -e \
+  "s! on [{][+]new Date[(][)][+][}]! for dygraph $v!g;"
 
 echo Generating JSDoc...
 srcfiles=src/dygraph.js
