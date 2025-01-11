@@ -13,6 +13,8 @@ test -n "$v" || {
 if [[ -n $IS_ACTUAL_DEBIAN_BUILD ]]; then
   dv=$(dpkg-parsechangelog -S Version)
   v="$v (Debian $dv)"
+elif [[ $GITHUB_REF = refs/heads/debian && $GITHUB_REPOSITORY = mirabilos/dygraphs ]]; then
+  v="$v+WIP"
 fi
 
 rm -rf jsdoc jsdoc.tmp
