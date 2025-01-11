@@ -248,12 +248,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
     var axis = this.dygraph_.axisPropertiesForSeries(setName);
     // TODO (konigsberg): use optionsForAxis instead.
     var logscale = this.dygraph_.attributes_.getForSeries("logscale", setName);
+    var outOfXBounds = 0, outOfYBounds = 0;
 
     for (var j = 0; j < points.length; j++) {
       var point = points[j];
 
       // Range from 0-1 where 0 represents left and 1 represents right.
       point.x = DygraphLayout.calcXNormal_(point.xval, this._xAxis, isLogscaleForX);
+      outOfXBounds += (point.x < 0) || (point.x > 1);
       // Range from 0-1 where 0 represents top and 1 represents bottom
       var yval = point.yval;
       if (isStacked) {
@@ -270,6 +272,14 @@ DygraphLayout.prototype._evaluateLineCharts = function() {
         }
       }
       point.y = DygraphLayout.calcYNormal_(axis, yval, logscale);
+      outOfYBounds += (point.y < 0) || (point.y > 1);
+    }
+
+    if (outOfXBounds > 2) {
+      console.warn(outOfXBounds + ' points out of X bounds:' + this._xAxis.minval + ' - ' + this._xAxis.maxval);
+    }
+    if (outOfYBounds > 0) {
+      console.warn(outOfYBounds + ' points out of Y bounds:' + axis.minyval + ' - ' + axis.maxyval);
     }
 
     this.dygraph_.dataHandler_.onLineEvaluated(points, axis, logscale);
