@@ -34,6 +34,9 @@ Parts of the documentation are or make use of code that is:
 Copyright (c) 2012 Google, Inc.
 - Robert Konigsberg <konigsberg@google.com>
 
+Further contributors can be found in the git history or on:
+https://github.com/danvk/dygraphs/graphs/contributors
+
 The automatically added browser-pack shim is:
 
 Copyright (c) 2013, 2014 James Halliday <mail@substack.net>
