@@ -91,7 +91,8 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     if (this.direction_ === "horizontal" || this.direction_ === "both") {
       for (var i = 0; i < e.dygraph.selPoints_.length; i++) {
         var p_y = e.dygraph.selPoints_[i];
-        if (p_y.y < 0 || p_y > 1) continue;
+        if (p_y.y < 0 || p_y.y > 1)
+          continue;
         var canvasy = Math.floor(p_y.canvasy) + 0.5; // crisper rendering
         if (canvasy > height)
           canvasy = height - 0.5;
