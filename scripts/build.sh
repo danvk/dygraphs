@@ -16,8 +16,10 @@ rm -rf site _site
 mkdir site
 cd docroot
 pax -rw . ../site/
-rm ../site/.jslibs/* ../site/LICENSE.txt ../site/dist
-cp -L .jslibs/* ../site/.jslibs/
+set -A torm -- ../site/.jslibs/* ../site/LICENSE.txt ../site/dist
+[[ -n $IS_ACTUAL_DEBIAN_BUILD ]] || set -A torm+ -- ../site/.jslibs/*
+rm "${torm[@]}"
+[[ -n $IS_ACTUAL_DEBIAN_BUILD ]] || cp -L .jslibs/* ../site/.jslibs/
 cd ..
 pax -rw LICENSE.txt dist site/
 rm -f site/dist/tests.js
