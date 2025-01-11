@@ -10,6 +10,11 @@ test -n "$v" || {
   exit 1
 }
 
+if [[ -d debian ]]; then
+  dv=$(dpkg-parsechangelog -S Version)
+  v="$v (Debian $dv)"
+fi
+
 rm -rf jsdoc jsdoc.tmp
 mkdir jsdoc.tmp
 t=$PWD/jsdoc.tmp
