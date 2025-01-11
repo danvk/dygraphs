@@ -74,30 +74,31 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
     ctx.strokeStyle = this.strokeStyle_;
     ctx.beginPath();
 
-    if (e.dygraph.selPoints_.length !== 0) {
-      var p_x = e.dygraph.selPoints_[0];
-      if (p_x.x >= 0 && p_x.x <= 1) {
-        var canvasx = Math.floor(p_x.canvasx) + 0.5; // crisper rendering
-        if (canvasx > width)
-          canvasx = width - 0.5;
+    if (this.direction_ === "both" || this.direction_ === "vertical") {
+      if (e.dygraph.selPoints_.length !== 0) {
+        var p = e.dygraph.selPoints_[0];
+        if (p.x >= 0 && p.x <= 1) {
+          var canvasx = Math.floor(p.canvasx) + 0.5; // crisper rendering
+          if (canvasx > width)
+            canvasx = width - 0.5;
 
-        if (this.direction_ === "vertical" || this.direction_ === "both") {
           ctx.moveTo(canvasx, 0);
           ctx.lineTo(canvasx, height);
         }
       }
     }
 
-    if (this.direction_ === "horizontal" || this.direction_ === "both") {
+    if (this.direction_ === "both" || this.direction_ === "horizontal") {
       for (var i = 0; i < e.dygraph.selPoints_.length; i++) {
-        var p_y = e.dygraph.selPoints_[i];
-        if (p_y.y < 0 || p_y.y > 1)
-          continue;
-        var canvasy = Math.floor(p_y.canvasy) + 0.5; // crisper rendering
-        if (canvasy > height)
-          canvasy = height - 0.5;
-        ctx.moveTo(0, canvasy);
-        ctx.lineTo(width, canvasy);
+        var p = e.dygraph.selPoints_[i];
+        if (p.y >= 0 && p.y <= 1) {
+          var canvasy = Math.floor(p.canvasy) + 0.5; // crisper rendering
+          if (canvasy > height)
+            canvasy = height - 0.5;
+
+          ctx.moveTo(0, canvasy);
+          ctx.lineTo(width, canvasy);
+        }
       }
     }
 
