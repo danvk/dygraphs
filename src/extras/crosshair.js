@@ -34,7 +34,8 @@ Dygraph.Plugins.Crosshair = (function _extras_crosshair_closure() {
   };
 
   crosshair.prototype.updateCanvasSize = function updateCanvasSize(width, height) {
-    if (width === this.canvas_.width && height === this.canvas_.height) return;
+    if (width === this.canvas_.width && height === this.canvas_.height)
+      return;
     this.canvas_.width = width;
     this.canvas_.height = height;
     this.canvas_.style.width = width + 'px';    // for IE
