@@ -46,7 +46,7 @@ fi
 pax -rw -l auto_tests src disttmp/
 
 # licence headers for unminified and minified js, respectively
-scripts/txt2js.sh LICENSE.txt disttmp/LICENCE.js
+mksh scripts/txt2js.sh LICENSE.txt disttmp/LICENCE.js
 header="/*! @license https://github.com/danvk/dygraphs/blob/v$relv/LICENSE.txt (MIT) */"
 
 # prepare for building; avoid bad relative paths
@@ -76,7 +76,7 @@ rm -rf auto_tests src
 
 # bundle dygraph.js{,.map} and tests.js with dev env
 cp -r es5 src
-../scripts/env-patcher.sh development src
+mksh ../scripts/env-patcher.sh development src
 browserify \
     -v \
     --debug \
@@ -93,16 +93,16 @@ browserify \
     tests5/tests/*.js \
     >tests.tmp.js
 rm -rf src
-../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
-../scripts/smap-out.py tests.tmp.js tests.tmp2.js tests.tmp.map
+python3 ../scripts/smap-out.py dygraph.tmp.js dygraph.js dygraph.js.map
+python3 ../scripts/smap-out.py tests.tmp.js tests.tmp2.js tests.tmp.map
 jq . <tests.tmp.map | perl -MCwd -pe \
     's!^ *"((?:\.\./)+)!Cwd::realpath($1) eq "/" ? "\"/" : $&!e;' \
     >tests.tmp2.map
-../scripts/smap-in.py tests.tmp2.js tests.tmp2.map tests.js #--nonl
+python3 ../scripts/smap-in.py tests.tmp2.js tests.tmp2.map tests.js #--nonl
 
 # bundle and minify dygraph.min.js{,.map} with prod env
 cp -r es5 src
-../scripts/env-patcher.sh production src
+mksh ../scripts/env-patcher.sh production src
 browserify \
     -v \
     --debug \
@@ -111,7 +111,7 @@ browserify \
     src/dygraph.js \
     >dygraph.min.tmp.js
 rm -rf src
-../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
+python3 ../scripts/smap-out.py dygraph.min.tmp.js /dev/null dygraph.min.tmp.js.map
 
 uglifyjs=$(uglifyjs --help 2>&1)
 set -A compatopts -- --no-module --v8 --webkit

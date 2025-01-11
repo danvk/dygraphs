@@ -5,11 +5,11 @@ browser.
 To iterate locally on the docs, run:
 
     cd (dygraphs)/docs
-    ./ssi_server.py
+    python3 ssi_server.py
 
 Then visit localhost:8000 in your browser. You can edit/save/reload to see changes.
 
 To push documentation to the web, run:
 
     cd (dygraphs)
-    ./push-to-web.sh user@site.com:directory
+    mksh scripts/push-to-web.sh user@site.com:directory

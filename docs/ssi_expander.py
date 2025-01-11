@@ -7,7 +7,7 @@ Only files that end in '.html' are processed, with the exceptions of
 
 Usage:
 
-  ./ssi_expander.py [source_directory] destination_directory
+  python3 ssi_expander.py [source_directory] destination_directory
 
 If source_directory is not specified, then the current directory is used.
 '''

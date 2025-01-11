@@ -19,9 +19,9 @@ else
 fi
 
 rm -f docs/download.html docs/options.html docs/versions.html
-scripts/generate-download.py ${dv:+"$dv"} >docs/download.html
-scripts/generate-documentation.py >docs/options.html
-scripts/generate-versions.sh >docs/versions.html
+python3 scripts/generate-download.py ${dv:+"$dv"} >docs/download.html
+python3 scripts/generate-documentation.py >docs/options.html
+mksh scripts/generate-versions.sh >docs/versions.html
 chmod a+r docs/download.html docs/options.html docs/versions.html
 for file in docs/download.html docs/options.html docs/versions.html; do
   test -s "$file" || {
@@ -30,13 +30,13 @@ for file in docs/download.html docs/options.html docs/versions.html; do
   }
 done
 
-scripts/generate-jsdoc.sh
+mksh scripts/generate-jsdoc.sh
 
 rm -rf docroot
 mkdir docroot
 cd docs
 pax -rw . ../docroot/
-./ssi_expander.py ../docroot/
+python3 ssi_expander.py ../docroot/
 cd ../docroot
 rm -f NOTES TODO common footer.html header.html *.py
 mv README README-docs.txt

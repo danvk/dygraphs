@@ -6,10 +6,10 @@ case $KSH_VERSION {
 }
 
 # Build code, tests, browser bundles.
-scripts/build-js.sh
+mksh scripts/build-js.sh
 
 # Build documentation.
-scripts/build-docs.sh
+mksh scripts/build-docs.sh
 
 # This is for on the webserver
 rm -rf site _site

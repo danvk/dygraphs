@@ -14,7 +14,7 @@ elif len(sys.argv) == 5 and sys.argv[4] == '--nonl':
     # evil hack for browserify
     donl = False
 else:
-    sys.stderr.write('E: syntax: smap-in.py in.js in.map out.js\n')
+    sys.stderr.write('E: syntax: python3 smap-in.py in.js in.map out.js\n')
     sys.exit(1)
 
 with open(sys.argv[1], 'r') as f:

@@ -62,17 +62,17 @@
     "watchify": "^4.0.0"
   },
   "scripts": {
-    "build": "./scripts/build.sh",
-    "build-jsonly": "./scripts/build-js.sh",
-    "clean": "./scripts/clean.sh",
-    "coverage": "./scripts/generate-coverage.sh",
-    "site": "./scripts/run-site.sh",
+    "build": "mksh scripts/build.sh",
+    "build-jsonly": "mksh scripts/build-js.sh",
+    "clean": "mksh scripts/clean.sh",
+    "coverage": "mksh scripts/generate-coverage.sh",
+    "site": "mksh scripts/run-site.sh",
     "prepack": "rm -rf _site && cp -Lr site _site && pax -rw -l LICENSE.txt README.md _site/ && jdupes -rL dist _site src src-es5 && cd _site && mksh ../scripts/mkdiridx.sh --ah '<a href=\"https://www.npmjs.com/package/dygraphs\">dygraphs</a> manual integration tests' ./tests",
     "postpack": "rm -rf _site",
-    "watch": "./scripts/watch.sh",
-    "test": "./scripts/run-tests.sh",
-    "test-min": "./scripts/run-tests.sh min",
-    "tests-ok": "./scripts/check-no-only.sh"
+    "watch": "mksh scripts/watch.sh",
+    "test": "mksh scripts/run-tests.sh",
+    "test-min": "mksh scripts/run-tests.sh min",
+    "tests-ok": "mksh scripts/check-no-only.sh"
   },
   "pre-commit": [
     "tests-ok"

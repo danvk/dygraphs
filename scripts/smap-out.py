@@ -63,7 +63,7 @@ if len(sys.argv) == 4:
 elif len(sys.argv) == 5:
     smapname = sys.argv[4]
 else:
-    sys.stderr.write('E: syntax: smap-out.py in.js out.js out.map [maplink]\n')
+    sys.stderr.write('E: syntax: python3 smap-out.py in.js out.js out.map [maplink]\n')
     sys.exit(1)
 
 with open(sys.argv[1], 'r') as f:

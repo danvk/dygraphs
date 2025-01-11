@@ -24,5 +24,5 @@ fi
 rm -f "$outfile" "$outfile.tmp.js" "$outfile.tmp.js.map"
 print -ru2 "I: converting $infile to $outfile"
 $node_js "$mydir"/txt2js.js "$infile" "$outfile.tmp.js"
-"$mydir"/smap-in.py "$outfile.tmp.js" "$outfile.tmp.js.map" "$outfile" --nonl
+python3 "$mydir"/smap-in.py "$outfile.tmp.js" "$outfile.tmp.js.map" "$outfile" --nonl
 rm -f "$outfile.tmp.js" "$outfile.tmp.js.map"

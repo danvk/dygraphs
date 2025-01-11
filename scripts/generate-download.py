@@ -2,7 +2,7 @@
 
 # Generates docs/download.html
 # Run:
-# ./generate-download.py > docs/download.html
+# python3 generate-download.py >docs/download.html
 
 import json
 import sys

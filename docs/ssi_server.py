@@ -2,7 +2,7 @@
 '''
 Use this in the same way as Python's SimpleHTTPServer:
 
-  ./ssi_server.py [port]
+  python3 ssi_server.py [port]
 
 The only difference is that, for files ending in '.html', ssi_server will
 inline SSI (Server Side Includes) of the form:

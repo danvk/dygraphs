@@ -47,8 +47,8 @@ eatmydata npm run test || state="$state test"
 eatmydata npm run test-min || state="$state test-min"
 if [[ $GITHUB_REPOSITORY = danvk/dygraphs ]]; then
 	eatmydata npm run coverage || state="$state coverage"
-	eatmydata scripts/post-coverage.sh || state="$state post-coverage"
-	eatmydata scripts/weigh-in.sh || state="$state weigh-in"
+	eatmydata mksh scripts/post-coverage.sh || state="$state post-coverage"
+	eatmydata mksh scripts/weigh-in.sh || state="$state weigh-in"
 fi
 
 rm -rf _site

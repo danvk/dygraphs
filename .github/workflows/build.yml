@@ -16,7 +16,7 @@
           "uses": "actions/checkout@v4.2.2"
         },
         {
-          "run": "./.pages.sh"
+          "run": "sh .pages.sh"
         },
         {
           "uses": "actions/upload-artifact@v4.6.0",
@@ -29,7 +29,7 @@
           "uses": "actions/upload-pages-artifact@v3.0.1"
         },
         {
-          "run": "./.post.sh"
+          "run": "mksh .post.sh"
         },
         {
           "id": "deployment",
@@ -49,7 +49,7 @@
           "uses": "actions/checkout@v4.2.2"
         },
         {
-          "run": "./.pages.sh"
+          "run": "sh .pages.sh"
         },
         {
           "uses": "actions/upload-artifact@v4.6.0",
@@ -62,7 +62,7 @@
           "uses": "actions/upload-pages-artifact@v3.0.1"
         },
         {
-          "run": "./.post.sh"
+          "run": "mksh .post.sh"
         }
       ]
     }
