@@ -2,6 +2,10 @@
 # © 2022 mirabilos <t.glaser@tarent.de> Ⓕ MIT
 
 set -eo pipefail
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 mydir=$(realpath "$0/..")
 
 if [[ $1 = development ]]; then

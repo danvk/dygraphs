@@ -13,6 +13,10 @@ export LC_ALL=C
 unset LANGUAGE
 set -e
 set -o pipefail
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 r=$(git rev-parse --show-toplevel)
 [[ $r != /* ]] || r=$(realpath "$r")

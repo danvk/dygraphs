@@ -2,6 +2,10 @@
 # © 2023 mirabilos <t.glaser@tarent.de> Ⓕ MIT
 
 set -eo pipefail
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 cat <<\EOF
 <!--#set var="pagetitle" value="version history" -->

@@ -1,7 +1,11 @@
 #!/bin/mksh
 # This tracks the effect of pull requests on the size of dygraphs.
 # See https://github.com/danvk/travis-weigh-in
-set -o errexit
+set -e
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 if [ -z "$GITHUB_TOKEN" ]; then
     echo "GITHUB_TOKEN not set. Skipping size checks."

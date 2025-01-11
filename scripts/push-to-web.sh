@@ -6,8 +6,7 @@ if [[ -n $1 ]]; then
   exit 1
 fi
 
-set -x
-set -o errexit
+set -ex
 site=$1
 
 # Produce dist/*.js and docroot/ and all in site/

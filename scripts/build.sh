@@ -1,5 +1,9 @@
 #!/bin/mksh
 set -ex
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 # Build code, tests, browser bundles.
 scripts/build-js.sh

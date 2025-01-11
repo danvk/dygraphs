@@ -29,6 +29,10 @@
 
 export LC_ALL=C
 unset LANGUAGE
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 fw=' <b class="extlink" title="WARNING: accesses external resources (Google jsapi)">⚠</b>'
 ah='<a href="/">dygraphs JavaScript charting library</a> Pages'

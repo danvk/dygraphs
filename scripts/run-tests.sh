@@ -4,7 +4,11 @@
 # `npm run build` or `npm run watch` before running this.
 # Additional arguments are passed to mocha-phantomjs, e.g.
 # run-tests.sh --grep interaction-model
-set -o errexit
+set -e
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 # Run http-server and save its PID
 http-server -p 8081 > /dev/null &

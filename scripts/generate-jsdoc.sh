@@ -3,6 +3,10 @@
 # Generates JSDoc in the /jsdoc dir. Clears any existing jsdoc there.
 
 set -e
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 v=$(sed -n '/^Dygraph.VERSION = "\(.*\)";$/s//\1/p' <src/dygraph.js)
 test -n "$v" || {

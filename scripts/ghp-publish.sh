@@ -1,5 +1,9 @@
 #!/bin/mksh
 set -exo pipefail
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 cd "$(dirname "$0")/.."
 

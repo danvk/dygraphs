@@ -1,4 +1,8 @@
 #!/bin/mksh
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 
 # initialisation
 set -e

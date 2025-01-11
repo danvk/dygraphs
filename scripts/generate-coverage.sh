@@ -3,7 +3,11 @@
 # This requires dist/*.js to be in place.
 # Output is coverage/lcov.info
 
-set -o errexit
+set -e
+case $KSH_VERSION {
+(*MIRBSD\ KSH*) ;;
+(*) echo E: do not call me with bash or something; exit 255 ;;
+}
 if [[ -e node_modules ]]; then
 	babel_js=babel
 else
