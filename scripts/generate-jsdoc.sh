@@ -10,7 +10,7 @@ test -n "$v" || {
   exit 1
 }
 
-if [[ -d debian ]]; then
+if [[ -n $IS_ACTUAL_DEBIAN_BUILD ]]; then
   dv=$(dpkg-parsechangelog -S Version)
   v="$v (Debian $dv)"
 fi
