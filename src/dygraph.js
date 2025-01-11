@@ -3495,6 +3495,11 @@ Dygraph.prototype.removeTrackedEvents_ = function() {
 };
 
 // Installed plugins, in order of precedence (most-general to most-specific).
+// This means that, in an event cascade, plugins which have registered
+// for that event will be called in reverse order.
+//
+// This is most relevant for plugins which register a layout event,
+// e.g. Axes, Legend and ChartLabels.
 Dygraph.PLUGINS = [
   LegendPlugin,
   AxesPlugin,

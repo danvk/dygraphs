@@ -34,7 +34,6 @@ srcfiles+=\ src/dygraph-internal.externs.js
 srcfiles+=\ src/dygraph-layout.js
 srcfiles+=\ src/dygraph-options-reference.js
 srcfiles+=\ src/dygraph-options.js
-srcfiles+=\ src/dygraph-plugin-install.js
 srcfiles+=\ src/dygraph-tickers.js
 srcfiles+=\ src/dygraph-types.js
 #srcfiles+=\ src/dygraph-utils.js
