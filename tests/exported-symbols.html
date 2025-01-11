@@ -17,7 +17,7 @@
     <ol id="list">
     </ol>
 
-    <p>It exports these symbols inside each of those symbols and <tt>Dygraph.{Circles,Plugins}</tt>:</p>
+    <p>It exports these symbols inside each of those symbols and <tt>Dygraph.{Circles,Plugins,prototype}</tt>:</p>
     <ol id="list2">
     </ol>
 
@@ -29,7 +29,7 @@
     <ol id="list4">
     </ol>
 
-    <p>New second-level and <tt>Dygraph.{Circles,Plugins}</tt> elements after loading extras:</p>
+    <p>New second-level and <tt>Dygraph.{Circles,Plugins,prototype}</tt> elements after loading extras:</p>
     <ol id="list5">
     </ol>
 
@@ -81,6 +81,10 @@
       }
       for (k in Dygraph.Plugins) {
         sym = 'Dygraph.Plugins.' + k;
+        level2props.push(sym);
+      }
+      for (k in Dygraph.prototype) {
+        sym = 'Dygraph.prototype.' + k;
         level2props.push(sym);
       }
 
@@ -156,6 +160,11 @@
 	}
 	for (k in Dygraph.Plugins) {
 	  sym = 'Dygraph.Plugins.' + k;
+	  if (!level2props.includes(sym))
+	    newl2props.push(sym);
+	}
+	for (k in Dygraph.prototype) {
+	  sym = 'Dygraph.prototype.' + k;
 	  if (!level2props.includes(sym))
 	    newl2props.push(sym);
 	}

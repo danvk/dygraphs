@@ -11,6 +11,7 @@
 ## Bugfixes
 - Re-add missing `Dygraph.DOTTED_LINE` export
 - Some edge cases in the crosshair plugin (#1034, #1038, #1039, #1040)
+- Update list of exported symbols
 - …
 
 ## Other user-visible changes

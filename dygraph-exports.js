@@ -6,18 +6,30 @@
 
 goog.exportSymbol('Dygraph', Dygraph);
 
+goog.exportSymbol('Dygraph.prototype.addAndTrackEvent', Dygraph.prototype.addAndTrackEvent);
 goog.exportSymbol('Dygraph.prototype.adjustRoll', Dygraph.prototype.adjustRoll);
 goog.exportSymbol('Dygraph.prototype.annotations', Dygraph.prototype.annotations);
+goog.exportSymbol('Dygraph.prototype.axisPropertiesForSeries', Dygraph.prototype.axisPropertiesForSeries);
 goog.exportSymbol('Dygraph.prototype.clearSelection', Dygraph.prototype.clearSelection);
 goog.exportSymbol('Dygraph.prototype.destroy', Dygraph.prototype.destroy);
+goog.exportSymbol('Dygraph.prototype.doAnimatedZoom', Dygraph.prototype.doAnimatedZoom);
 goog.exportSymbol('Dygraph.prototype.eventToDomCoords', Dygraph.prototype.eventToDomCoords);
+goog.exportSymbol('Dygraph.prototype.findClosestPoint', Dygraph.prototype.findClosestPoint);
+goog.exportSymbol('Dygraph.prototype.findClosestRow', Dygraph.prototype.findClosestRow);
+goog.exportSymbol('Dygraph.prototype.findStackedPoint', Dygraph.prototype.findStackedPoint);
 goog.exportSymbol('Dygraph.prototype.getArea', Dygraph.prototype.getArea);
+goog.exportSymbol('Dygraph.prototype.getBooleanOption', Dygraph.prototype.getBooleanOption);
 goog.exportSymbol('Dygraph.prototype.getColors', Dygraph.prototype.getColors);
+goog.exportSymbol('Dygraph.prototype.getFunctionOption', Dygraph.prototype.getFunctionOption);
 goog.exportSymbol('Dygraph.prototype.getHighlightSeries', Dygraph.prototype.getHighlightSeries);
 goog.exportSymbol('Dygraph.prototype.getLabels', Dygraph.prototype.getLabels);
+goog.exportSymbol('Dygraph.prototype.getNumericOption', Dygraph.prototype.getNumericOption);
 goog.exportSymbol('Dygraph.prototype.getOption', Dygraph.prototype.getOption);
+goog.exportSymbol('Dygraph.prototype.getOptionForAxis', Dygraph.prototype.getOptionForAxis);
 goog.exportSymbol('Dygraph.prototype.getPropertiesForSeries', Dygraph.prototype.getPropertiesForSeries);
+goog.exportSymbol('Dygraph.prototype.getRowForX', Dygraph.prototype.getRowForX);
 goog.exportSymbol('Dygraph.prototype.getSelection', Dygraph.prototype.getSelection);
+goog.exportSymbol('Dygraph.prototype.getStringOption', Dygraph.prototype.getStringOption);
 goog.exportSymbol('Dygraph.prototype.getValue', Dygraph.prototype.getValue);
 goog.exportSymbol('Dygraph.prototype.indexFromSetName', Dygraph.prototype.indexFromSetName);
 goog.exportSymbol('Dygraph.prototype.isSeriesLocked', Dygraph.prototype.isSeriesLocked);
@@ -32,6 +44,7 @@ goog.exportSymbol('Dygraph.prototype.rollPeriod', Dygraph.prototype.rollPeriod);
 goog.exportSymbol('Dygraph.prototype.setAnnotations', Dygraph.prototype.setAnnotations);
 goog.exportSymbol('Dygraph.prototype.setSelection', Dygraph.prototype.setSelection);
 goog.exportSymbol('Dygraph.prototype.setVisibility', Dygraph.prototype.setVisibility);
+goog.exportSymbol('Dygraph.prototype.size', Dygraph.prototype.size);
 goog.exportSymbol('Dygraph.prototype.toDataCoords', Dygraph.prototype.toDataCoords);
 goog.exportSymbol('Dygraph.prototype.toDataXCoord', Dygraph.prototype.toDataXCoord);
 goog.exportSymbol('Dygraph.prototype.toDataYCoord', Dygraph.prototype.toDataYCoord);
@@ -45,6 +58,7 @@ goog.exportSymbol('Dygraph.prototype.updateOptions', Dygraph.prototype.updateOpt
 goog.exportSymbol('Dygraph.prototype.visibility', Dygraph.prototype.visibility);
 goog.exportSymbol('Dygraph.prototype.xAxisExtremes', Dygraph.prototype.xAxisExtremes);
 goog.exportSymbol('Dygraph.prototype.xAxisRange', Dygraph.prototype.xAxisRange);
+goog.exportSymbol('Dygraph.prototype.yAxisExtremes', Dygraph.prototype.yAxisExtremes);
 goog.exportSymbol('Dygraph.prototype.yAxisRange', Dygraph.prototype.yAxisRange);
 goog.exportSymbol('Dygraph.prototype.yAxisRanges', Dygraph.prototype.yAxisRanges);
 
