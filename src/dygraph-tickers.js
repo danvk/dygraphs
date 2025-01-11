@@ -82,8 +82,8 @@ var TickList = undefined;  // the ' = undefined' keeps jshint happy.
 var Ticker = undefined;  // the ' = undefined' keeps jshint happy.
 
 /** @type {Ticker} */
-export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
-  var nonLogscaleOpts = function(opt) {
+export var numericLinearTicks = function (a, b, pixels, opts, dygraph, vals) {
+  var nonLogscaleOpts = function (opt) {
     if (opt === 'logscale') return false;
     return opts(opt);
   };
@@ -91,7 +91,7 @@ export var numericLinearTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 /** @type {Ticker} */
-export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
+export var numericTicks = function (a, b, pixels, opts, dygraph, vals) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   var ticks = [];
   var i, j, tickV, nTicks;
@@ -209,7 +209,15 @@ export var numericTicks = function(a, b, pixels, opts, dygraph, vals) {
 };
 
 /** @type {Ticker} */
-export var dateTicker = function(a, b, pixels, opts, dygraph, vals) {
+export var integerTicks = function (a, b, pixels, opts, dygraph, vals) {
+    var allTicks = numericTicks(a, b, pixels, opts, dygraph, vals);
+    return allTicks.filter(function (tick) {
+      return tick.v % 1 === 0;
+    });
+};
+
+/** @type {Ticker} */
+export var dateTicker = function (a, b, pixels, opts, dygraph, vals) {
   var chosen = pickDateTickGranularity(a, b, pixels, opts);
 
   if (chosen >= 0) {
@@ -318,7 +326,7 @@ TICK_PLACEMENT[Granularity.CENTENNIAL]      = {datefield: DateField.DATEFIELD_Y,
  * NOTE: this assumes that utils.LOG_SCALE = 10.
  * @type {Array.<number>}
  */
-var PREFERRED_LOG_TICK_VALUES = (function() {
+var PREFERRED_LOG_TICK_VALUES = (function () {
   var vals = [];
   for (var power = -39; power <= 39; power++) {
     var range = Math.pow(10, power);
@@ -340,7 +348,7 @@ var PREFERRED_LOG_TICK_VALUES = (function() {
  * @return {number} The appropriate axis granularity for this chart. See the
  *     enumeration of possible values in dygraph-tickers.js.
  */
-export var pickDateTickGranularity = function(a, b, pixels, opts) {
+export var pickDateTickGranularity = function (a, b, pixels, opts) {
   var pixels_per_tick = /** @type{number} */(opts('pixelsPerLabel'));
   for (var i = 0; i < Granularity.NUM_GRANULARITIES; i++) {
     var num_ticks = numDateTicks(a, b, i);
@@ -358,7 +366,7 @@ export var pickDateTickGranularity = function(a, b, pixels, opts) {
  * @param {number} granularity (one of the granularities enumerated above)
  * @return {number} (Approximate) number of ticks that would result.
  */
-var numDateTicks = function(start_time, end_time, granularity) {
+var numDateTicks = function (start_time, end_time, granularity) {
   var spacing = TICK_PLACEMENT[granularity].spacing;
   return Math.round(1.0 * (end_time - start_time) / spacing);
 };
@@ -372,7 +380,7 @@ var numDateTicks = function(start_time, end_time, granularity) {
  * @param {Dygraph=} dg
  * @return {!TickList}
  */
-export var getDateAxis = function(start_time, end_time, granularity, opts, dg) {
+export var getDateAxis = function (start_time, end_time, granularity, opts, dg) {
   var formatter = /** @type{AxisLabelFormatter} */(
       opts("axisLabelFormatter"));
   var utc = opts("labelsUTC");
