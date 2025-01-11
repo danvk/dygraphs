@@ -4,10 +4,13 @@
 - …
 
 ## New features
+- Define `Dygraph.integerTicks` (#925)
+- Warn in console if points are out of range (#1050)
 - …
 
 ## Bugfixes
 - Re-add missing `Dygraph.DOTTED_LINE` export
+- Some edge cases in the crosshair plugin (#1034, #1038, #1039, #1040)
 - …
 
 ## Other user-visible changes
