@@ -23,4 +23,5 @@ rm "${torm[@]}"
 cd ..
 pax -rw LICENSE.txt dist site/
 rm -f site/dist/tests.js
-find site -print0 | xargs -0r chmod a+rX --
+find site -type d -print0 | xargs -0r chmod 0755 --
+find site -type f -print0 | xargs -0r chmod 0644 --
