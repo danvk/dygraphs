@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * To create a "drag" interaction, you typically register a mousedown event
  * handler on the element where the drag begins. In that handler, you register a
