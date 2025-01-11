@@ -3555,6 +3555,7 @@ Dygraph.numericTicks = DygraphTickers.numericTicks;
 Dygraph.integerTicks = DygraphTickers.integerTicks;
 Dygraph.dateTicker = DygraphTickers.dateTicker;
 Dygraph.Granularity = DygraphTickers.Granularity;
+Dygraph.pickDateTickGranularity = DygraphTickers.pickDateTickGranularity;
 Dygraph.getDateAxis = DygraphTickers.getDateAxis;
 Dygraph.floatFormat = utils.floatFormat;
 

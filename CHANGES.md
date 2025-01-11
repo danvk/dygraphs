@@ -4,7 +4,7 @@
 - …
 
 ## New features
-- Define `Dygraph.integerTicks` (#925)
+- Define `Dygraph.integerTicks` (#925), `Dygraph.pickDateTickGranularity`
 - Warn in console if points are out of range (#1050)
 - …
 
