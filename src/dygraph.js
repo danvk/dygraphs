@@ -3547,6 +3547,7 @@ Dygraph.endZoom = DygraphInteraction.endZoom;
 
 Dygraph.numericLinearTicks = DygraphTickers.numericLinearTicks;
 Dygraph.numericTicks = DygraphTickers.numericTicks;
+Dygraph.integerTicks = DygraphTickers.integerTicks;
 Dygraph.dateTicker = DygraphTickers.dateTicker;
 Dygraph.Granularity = DygraphTickers.Granularity;
 Dygraph.getDateAxis = DygraphTickers.getDateAxis;
