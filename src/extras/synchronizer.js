@@ -194,8 +194,12 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         block = true;
         
         var opts = {};
-        opts.dateWindow = me.isZoomed('x') ? me.xAxisRange() : null;
-        if (syncOpts.range) opts.valueRange = me.isZoomed('y') ? me.yAxisRange() : null;
+        if (me.isZoomed('x')) opts.dateWindow = me.xAxisRange();
+        else opts.dateWindow = null;
+        if (syncOpts.range) {
+            if (me.isZoomed('y')) opts.valueRange = me.yAxisRange();
+            else opts.valueRange = null;
+        }
 
         for (let j = 0; j < gs.length; j++) {
           if (gs[j] == me) {
@@ -205,14 +209,14 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
             continue;
           }
 
-            // If X-zoom differs, update
-            var update = !arraysAreEqual(opts.dateWindow, gs[j].getOption('dateWindow'))
-            // If Y-zoom differs and syncing, update
-            if (!update && syncOpts.range && !arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange'))) update = true;
-            // If about to update, but not syncing Y-zoom, pass current value
-            if (update && !syncOpts.range) opts.valueRange = gs[j].yAxisRange()
-
-            if (update) gs[j].updateOptions(opts)
+          // If X-zoom differs, update
+          var update = !arraysAreEqual(opts.dateWindow, gs[j].getOption('dateWindow'));
+          // If Y-zoom differs and syncing, update
+          if (!update && syncOpts.range && !arraysAreEqual(opts.valueRange, gs[j].getOption('valueRange'))) update = true;
+          // If about to update, but not syncing Y-zoom, pass current value
+          if (update && !syncOpts.range) opts.valueRange = gs[j].yAxisRange();
+          
+          if (update) gs[j].updateOptions(opts);
         }
         block = false;
       }
