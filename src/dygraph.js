@@ -1715,27 +1715,20 @@ Dygraph.prototype.animateSelection_ = function(direction) {
 
   var thisId = ++this.animateId;
   var that = this;
-  var cleanupIfClearing = function() {
-    // if we haven't reached fadeLevel 0 in the max frame time,
-    // ensure that the clear happens and just go to 0
-    if (that.fadeLevel !== 0 && direction < 0) {
-      that.fadeLevel = 0;
-      that.clearSelection();
-    }
-  };
+
   utils.repeatAndCleanup(
-    function(n) {
+    function(step) {
       // ignore simultaneous animations
       if (that.animateId != thisId) return;
 
-      that.fadeLevel += direction;
+      that.fadeLevel = start + (step + 1) * direction;
       if (that.fadeLevel === 0) {
         that.clearSelection();
       } else {
         that.updateSelection_(that.fadeLevel / totalSteps);
       }
     },
-    steps, millis, cleanupIfClearing);
+    steps, millis, function() {});
 };
 
 /**

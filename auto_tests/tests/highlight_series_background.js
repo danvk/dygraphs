@@ -123,6 +123,35 @@ describe("highlight-series-background", function() {
     }, 500);
   });
 
+  it('testSelectionAnimationWithReducedFPS', function() {
+    var graph = setupGraph(0.7,'rgb(255,0,0)');
+    var frameCallback, middleFrameNum, lastFrameNum, cleanupCallback;
+    utils.repeatAndCleanup = function (repeatFn, maxFrames, framePeriodInMillis, cleanupFn) {
+      frameCallback = repeatFn;
+      cleanupCallback = cleanupFn;
+      middleFrameNum = Math.round(maxFrames / 2) - 1;
+      lastFrameNum = maxFrames - 1;
+      frameCallback(0);
+    }
+    var expectedFinalAlpha = 76;
+
+    assert.deepEqual(Util.samplePixel(graph.canvas_, 100, 100), [0,0,0,0]);
+
+    graph.setSelection(0, 'y', true);
+
+    frameCallback(middleFrameNum);
+    var colorAfterMiddleFrame = Util.samplePixel(graph.canvas_, 100, 100);
+
+    frameCallback(lastFrameNum);
+    cleanupCallback();
+    var colorAtTheEnd = Util.samplePixel(graph.canvas_, 100, 100);
+
+    assert.deepEqual(
+      [colorAfterMiddleFrame, colorAtTheEnd],
+      [[255,0,0, expectedFinalAlpha / 2], [255,0,0, expectedFinalAlpha]],
+    );
+  });
+
   it('testGetSelectionZeroCanvasY', function () {
     var graph = document.getElementById("graph");
     var calls = []
