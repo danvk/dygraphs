@@ -30,21 +30,21 @@
   </div>
 
   <script type="text/javascript"><!--//--><![CDATA[//><!--
-    $(function () {
-	if (window.location.hostname === 'dygraphs.com')
-		document.getElementById('mirrornote').style.display = 'none';
+    Dygraph.onDOMready(function onDOMready() {
+      if (window.location.hostname === 'dygraphs.com')
+      document.getElementById('mirrornote').style.display = 'none';
 
-	g = new Dygraph(
-	    document.getElementById("demodiv"),
-	    "ny-vs-sf.txt", {
-		rollPeriod: 14,
-		showRoller: true,
-		customBars: true,
-		title: 'NYC vs. SF',
-		ylabel: 'Temperature (F)',
-		legend: 'always'
-	    }
-	  );
+      g = new Dygraph(
+        document.getElementById("demodiv"),
+        "ny-vs-sf.txt", {
+          rollPeriod: 14,
+          showRoller: true,
+          customBars: true,
+          title: 'NYC vs. SF',
+          ylabel: 'Temperature (F)',
+          legend: 'always'
+        }
+      );
     });
   //--><!]]></script>
 

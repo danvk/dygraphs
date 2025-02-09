@@ -41,7 +41,9 @@ Dygraph.onDOMready(function onDOMready() {
           }
         },
         drawCallback: function() {
-          $('.dygraph-legend').text('.dygraph-legend');
+          const legend = document.getElementsByClassName('dygraph-legend')[0];
+          if (legend !== undefined)
+            legend.innerHTML = '.dygraph-legend';
         },
       });
 });
