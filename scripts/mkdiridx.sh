@@ -150,6 +150,7 @@ for dir in "$@"; do
 		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head>
 		 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		 <meta http-equiv="Content-Style-Type" content="text/css" />
+		 <meta name="tdm-reservation" content="1" />
 		 <meta name="MSSmartTagsPreventParsing" content="TRUE" />
 		 <title>$t</title>
 		</head><body>
