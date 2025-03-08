@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Colored Ribbon demo</title>
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../src/extras/ribbon.js"></script>
+  </head>
+  <body>
+    <h1>Colored Ribbon demo</h1>
+
+    <h2>Colored Ribbon with default options</h2>
+    <div id="div_g1" style="width:600px; height:300px;"></div>
+
+    <h2>Colored Ribbon with Encoded colors in data column</h2>
+    <div id="div_g2" style="width:600px; height:300px;"></div>
+
+    <h2>Colored Ribbon with customized height</h2>
+    <div id="div_g3" style="width:600px; height:300px;"></div>
+
+    <h2>Colored Ribbon with customized position</h2>
+    <div id="div_g4" style="width:600px; height:300px;"></div>
+
+    <h2>Colored Ribbon with customized colors</h2>
+    <div id="div_g5" style="width:600px; height:300px;"></div>
+
+    <script type="text/javascript">
+      function data() {
+        return "Date,High,Low\n" +
+        "20070101,62,39\n" +
+        "20070102,62,44\n" +
+        "20070103,62,42\n" +
+        "20070104,57,45\n" +
+        "20070105,54,44\n" +
+        "20070106,55,36\n" +
+        "20070107,62,45\n" +
+        "20070108,66,48\n" +
+        "20070109,63,39\n" +
+        "20070110,57,37\n";
+      }
+
+      var ribbon = new Dygraph.Plugins.Ribbon({
+        data: [0, 0.5, 0.5, 1, 1, 1, 0, 0, 0, 0.5]
+      });
+
+      var g1 = new Dygraph(
+        document.getElementById("div_g1"),
+        data,
+        {
+          plugins: [ribbon]
+        }
+      );
+
+      function data_color() {
+        return "Date,High,Low,Color\n" +
+        "20070101,62,39,0\n" +
+        "20070102,62,44,0.5\n" +
+        "20070103,62,42,0.5\n" +
+        "20070104,57,45,1\n" +
+        "20070105,54,44,1\n" +
+        "20070106,55,36,1\n" +
+        "20070107,62,45,0\n" +
+        "20070108,66,48,0\n" +
+        "20070109,63,39,0\n" +
+        "20070110,57,37,0.5\n";
+      }
+
+      ribbon = new Dygraph.Plugins.Ribbon({
+        parser: function(data) {
+          var colorIdx = 3;
+          var colors = [];
+          for (var i = 0; i < data.length; i++) {
+            var row = data[i];
+            if (row[colorIdx]) {
+              colors.push(row[colorIdx]);
+            } else {
+              colors.push(0);
+            }
+          }
+          return colors;
+        }
+      });
+
+      var g2 = new Dygraph(
+        document.getElementById("div_g2"),
+        data_color,
+        {
+          visibility: [true, true, false], // Hide colors column
+          plugins: [ribbon]
+        }
+      );
+
+      ribbon = new Dygraph.Plugins.Ribbon({
+        data: [0, 0.5, 0.5, 1, 1, 1, 0, 0, 0, 0.5],
+        options: {
+          top: 0.75
+        }
+      });
+
+      var g3 = new Dygraph(
+        document.getElementById("div_g3"),
+        data,
+        {
+          plugins: [ribbon]
+        }
+      );
+
+      ribbon = new Dygraph.Plugins.Ribbon({
+        data: [0, 0.5, 0.5, 1, 1, 1, 0, 0, 0, 0.5],
+        options: {
+          top: 0.75,
+          bottom: 0.25
+        }
+      });
+
+      var g4 = new Dygraph(
+        document.getElementById("div_g4"),
+        data,
+        {
+          plugins: [ribbon]
+        }
+      );
+
+      ribbon = new Dygraph.Plugins.Ribbon({
+        data: [0, 0.5, 0.5, 1, 1, 1, 0, 0, 0, 0.5],
+        options: {
+          palette: [
+            "#ad7fa8",
+            "#75507b",
+            "#5c3566"
+          ]
+        }
+      });
+
+      var g5 = new Dygraph(
+        document.getElementById("div_g5"),
+        data,
+        {
+          plugins: [ribbon]
+        }
+      );
+    </script>
+  </body>
+</html>
