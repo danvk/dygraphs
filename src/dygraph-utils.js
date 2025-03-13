@@ -36,7 +36,7 @@ export var LN_TEN = Math.log(LOG_SCALE);
  */
 export var log10 = function(x) {
   return Math.log(x) / LN_TEN;
-};
+}
 
 /**
  * @private
@@ -69,7 +69,7 @@ export var logRangeFraction = function(r0, r1, pct) {
   var exponent = logr0 + (pct * (logr1 - logr0));
   var value = Math.pow(LOG_SCALE, exponent);
   return value;
-};
+}
 
 /** A dotted line stroke pattern. */
 export var DOTTED_LINE = [2, 2];
@@ -95,7 +95,18 @@ export var VERTICAL = 2;
  */
 export var getContext = function(canvas) {
   return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
-};
+}
+
+/**
+ * EventListener options
+ */
+function _eventListenerOptions(type) {
+  const options = { capture: false };
+  if (type === 'touchstart' || type === 'touchmove') {
+      options.passive = true;
+  }
+  return options;
+}
 
 /**
  * Add an event handler.
@@ -106,8 +117,8 @@ export var getContext = function(canvas) {
  * @private
  */
 export var addEvent = function addEvent(elem, type, fn) {
-  elem.addEventListener(type, fn, false);
-};
+  elem.addEventListener(type, fn, _eventListenerOptions(type));
+}
 
 /**
  * Remove an event handler.
@@ -117,7 +128,7 @@ export var addEvent = function addEvent(elem, type, fn) {
  *     on the event. The function takes one parameter: the event object.
  */
 export function removeEvent(elem, type, fn) {
-  elem.removeEventListener(type, fn, false);
+  elem.removeEventListener(type, fn, _eventListenerOptions(type));
 }
 
 /**
