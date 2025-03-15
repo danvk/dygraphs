@@ -34,7 +34,7 @@ export var LN_TEN = Math.log(LOG_SCALE);
  * @param {number} x
  * @return {number}
  */
-export var log10 = function(x) {
+export function log10(x) {
   return Math.log(x) / LN_TEN;
 }
 
@@ -45,7 +45,7 @@ export var log10 = function(x) {
  * @param {number} pct
  * @return {number}
  */
-export var logRangeFraction = function(r0, r1, pct) {
+export function logRangeFraction(r0, r1, pct) {
   // Computing the inverse of toPercentXCoord. The function was arrived at with
   // the following steps:
   //
@@ -93,7 +93,7 @@ export var VERTICAL = 2;
  * @return {!CanvasRenderingContext2D}
  * @private
  */
-export var getContext = function(canvas) {
+export function getContext(canvas) {
   return /** @type{!CanvasRenderingContext2D}*/(canvas.getContext("2d"));
 }
 
@@ -115,7 +115,7 @@ function _eventListenerOptions(type) {
  *     on the event. The function takes one parameter: the event object.
  * @private
  */
-export var addEvent = function addEvent(elem, type, fn) {
+export function addEvent(elem, type, fn) {
   elem.addEventListener(type, fn, _eventListenerOptions(type));
 }
 
