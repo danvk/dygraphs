@@ -101,11 +101,10 @@ export var getContext = function(canvas) {
  * EventListener options
  */
 function _eventListenerOptions(type) {
-  const options = { capture: false };
-  if (type === 'touchstart' || type === 'touchmove') {
-      options.passive = true;
-  }
-  return options;
+  return ((type === 'touchstart' || type === 'touchmove') ? {
+    "capture": false,
+    "passive": true
+  } : false);
 }
 
 /**
