@@ -1,0 +1,67 @@
+/*
+ * CSS for the options reference page.
+ * Putting it in its own file allows for iteration w/o re-running
+ * generate-documentation.py
+ */
+
+p.option {
+  padding-left: 25px;
+}
+div.parameters {
+  padding-left: 15px;
+  margin-bottom: 10px;
+}
+div.parameters table {
+  width: 100%;
+  table-layout: auto;
+}
+div.parameters th {
+  font-style: italic;
+  font-weight: normal;
+  text-align: right;
+  vertical-align: top;
+  width: 2em; /* more due to nowrap and table-layout=auto */
+  white-space: nowrap;
+  padding-right: 0.5em;
+}
+table.gallerylinks {
+  width: 100%;
+  table-layout: auto;
+  margin-bottom: 12px;
+}
+table.gallerylinks th {
+  font-style: normal;
+  font-weight: normal;
+  text-align: right;
+  vertical-align: top;
+  width: 2em; /* more due to nowrap and table-layout=auto */
+  white-space: nowrap;
+  padding-right: 0.5em;
+}
+#main { margin-top: 0; }
+.row { margin-top: 0; }
+.dygraphs-side-nav .nav>li>a {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.dygraphs-side-nav {
+  background: #f9f9f9;
+  border-radius: 5px;
+  display: table;
+  overflow-y: scroll;
+  min-width: 200px;
+}
+
+/* This prevents the sidenav from floating on top of the content on small
+ * screens, tablet and mobile.
+ * The 1199px are the -lg- grid size. */
+@media screen and (max-width:1199px) {
+  .dygraphs-side-nav.affix {
+    position: relative;
+  }
+}
+
+.extlink {
+  color: #3300FF;
+}
