@@ -36,6 +36,11 @@
  *
  * You may also set `range: false` if you wish to only sync the x-axis.
  * The `range` option has no effect unless `zoom` is true (the default).
+ *
+ * Synchronizer selection option selects points by exact values on x-axes.
+ * If graphs have different x-axes values, you may use
+ * `selectionClosest: true` to select points closest to hovered ones,
+ * corresponding to their x values.
  */
 
 /* loader wrapper to allow browser use and ES6 imports */
@@ -56,9 +61,10 @@ var synchronize = function synchronize(/* dygraphs..., opts */) {
     throw 'Invalid invocation of Dygraph.synchronize(). Need >= 1 argument.';
   }
 
-  var OPTIONS = ['selection', 'zoom', 'range'];
+  var OPTIONS = ['selection', 'selectionClosest', 'zoom', 'range'];
   var opts = {
     selection: true,
+    selectionClosest: false,
     zoom: true,
     range: true
   };
@@ -134,7 +140,7 @@ var synchronize = function synchronize(/* dygraphs..., opts */) {
         }
 
         if (opts.selection) {
-          attachSelectionHandlers(dygraphs, prevCallbacks);
+          attachSelectionHandlers(dygraphs, opts, prevCallbacks);
         }
       }
     });
@@ -170,6 +176,86 @@ function arraysAreEqual(a, b) {
     if (a[i] !== b[i]) return false;
   }
   return true;
+}
+
+function closestIdx(gs, x) {
+  var points = gs.layout_.points[0];
+  
+  // If graph has no data or single entry
+  if (points.length === 0)
+    return null;
+  if (points.length === 1)
+    return points[0].idx;
+  
+  var lowestI = 0;
+  var highestI = points.length - 1;
+  
+  // If values of x axis are in descending order, reverse searching borders
+  if (points[0].xval > points[highestI].xval) {
+    lowestI = highestI;
+    highestI = 0;
+  }
+  
+  while (true) {
+    var middleI = Math.round((lowestI + highestI) * 0.5);
+    if (middleI === lowestI || middleI === highestI)
+        break;
+    
+    var middleX = points[middleI].xval;
+    if (middleX === x)
+        return points[middleI].idx;
+    
+    if (x < middleX) {
+      highestI = middleI;
+    } else {
+      lowestI = middleI;
+    }
+  }
+  
+  var closestI;
+  
+  /* 
+   * If graph in stepPlot mode, check right point for match
+   * If right point matched, return it, otherwise return left point
+   * If graph is not in stepPlot mode, return closest by x value point
+   */
+  if (gs.getOption('stepPlot') === true) {
+    if (lowestI < highestI) {
+      if (points[highestI].xval === x)
+        closestI = highestI;
+      else
+        closestI = lowestI;
+    } else {
+      if (points[lowestI].xval === x)
+        closestI = lowestI;
+      else
+        closestI = highestI;
+    }
+  } else {
+    if (x - points[lowestI].xval <= points[highestI].xval - x)
+      closestI = lowestI;
+    else
+      closestI = highestI;
+  }
+  
+  return points[closestI].idx;
+}
+
+function isInsideDateWindow(gs, idx) {
+  if (idx === null)
+    return false;
+  
+  var xAxisRange = gs.xAxisRange();
+  var min, max;
+  if (xAxisRange[0] <= xAxisRange[1]) {
+    min = xAxisRange[0];
+    max = xAxisRange[1];
+  } else {
+    min = xAxisRange[1];
+    max = xAxisRange[0];
+  }
+  var xval = gs.getValue(idx, 0);
+  return xval >= min && xval <= max;
 }
 
 function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
@@ -225,7 +311,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
   }
 }
 
-function attachSelectionHandlers(gs, prevCallbacks) {
+function attachSelectionHandlers(gs, syncOpts, prevCallbacks) {
   var block = false;
   for (var i = 0; i < gs.length; i++) {
     var g = gs[i];
@@ -242,10 +328,20 @@ function attachSelectionHandlers(gs, prevCallbacks) {
             }
             continue;
           }
-          var idx = gs[i].getRowForX(x);
-          if (idx !== null) {
-            gs[i].setSelection(idx, seriesName, undefined, true);
+          var idx;
+          if (!syncOpts.selectionClosest) {
+            idx = gs[i].getRowForX(x);
+          } else {
+            idx = null;
+            if (gs[i].numRows() === me.numRows())
+              idx = gs[i].getRowForX(x);
+            if (idx === null)
+              idx = closestIdx(gs[i], x);
           }
+          if (isInsideDateWindow(gs[i], idx))
+            gs[i].setSelection(idx, seriesName, undefined, true);
+          else
+            gs[i].clearSelection();
         }
         block = false;
       },
