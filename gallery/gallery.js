@@ -83,53 +83,44 @@ Gallery.start = function() {
       }
 
       var jsFiddleForm = Gallery.create("form", codeSpan);
-      var jsfs = $(jsFiddleForm);
       jsFiddleForm.method = "post";
       jsFiddleForm.action = "http://jsfiddle.net/api/post/jquery/1.4/";
       jsFiddleForm.target = "_blank";
-
-      jsfs.html("<input type='submit' value='Edit in jsFiddle' />\n" +
+      jsFiddleForm.innerHTML = "<input type='submit' value='Edit in jsFiddle' />\n" +
       "<span style='display:none'>\n" +
       "<textarea name='resources'>https://dygraphs.com/dist/dygraph.css," +
       "https://dygraphs.com/gallery/data.js," +
       "https://dygraphs.com/dist/dygraph.js</textarea>\n" +
-      "<input type='text' name='dtd' value='html 5' /></span>\n");
+      "<input type='text' name='dtd' value='html 5' /></span>\n";
 
       var javascript = demo.run.toString();
       var html = Gallery.workareaChild.innerHTML;
 
       // tweak for use in jsfiddle
       javascript = " $(document).ready(" + javascript + "\n);";
-      jQuery('<textarea></textarea>', { name: 'html' })
-        .val(html)
-        .hide()
-        .appendTo(jsfs);
-
-      jQuery('<textarea></textarea>', { name: 'js' })
-        .val(javascript)
-        .hide()
-        .appendTo(jsfs);
-
-      if (css) {
-        jQuery('<textarea></textarea>', { name: 'css' })
-          .val(css)
-          .hide()
-          .appendTo(jsfs);
+      
+      const addFormElement = (tag, name, innerHTML) => {
+        const element = document.createElement(tag);
+        element.style.display = 'none';
+        element.setAttribute('name', name);
+        if (innerHTML !== undefined)
+          element.innerHTML = innerHTML;
+        jsFiddleForm.append(element);
+        return element;
       }
-      jQuery('<input />', {
-        type: 'text',
-        name: 'title',
-        value: 'title tbd'
-      })
-        .hide()
-        .appendTo(jsfs);
-      jQuery('<input />', {
-        type: 'text',
-        name: 'description',
-        value: 'desc tbd'
-      })
-        .hide()
-        .appendTo(jsfs);
+      
+      addFormElement('textarea', 'html', html);
+      addFormElement('textarea', 'js', javascript);
+      if (css)
+        addFormElement('textarea', 'css', css);
+      
+      const inputTitle = addFormElement('input', 'title');
+      inputTitle.setAttribute('type', 'text');
+      inputTitle.setAttribute('value', 'title tbd');
+      
+      const inputDescription = addFormElement('input', 'description');
+      inputDescription.setAttribute('type', 'text');
+      inputDescription.setAttribute('value', 'desc tbd');
 
       htmlLink.onclick = function() {
         Gallery.textarea.show("HTML", html);
