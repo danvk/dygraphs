@@ -12,11 +12,7 @@
 - Re-add missing `Dygraph.DOTTED_LINE` export
 - Some edge cases in the crosshair plugin (#1034, #1038, #1039, #1040)
 - Update list of exported symbols
-- Drop “comments are OK on data lines” from the CSV documentation,
-  as the CSV file format has no notion of a comment, and the current
-  code merely strips lines beginning with an octothorpe and reportedly
-  sometimes also parts of fields, but (obviously) the field separator
-  can then not be used within a comment
+- Drop “comments are OK on data lines” from the CSV documentation, as the CSV file format has no notion of a comment, and the current code merely strips lines beginning with an octothorpe and reportedly sometimes also parts of fields, but (obviously) the field separator can then not be used within a comment
 - …
 
 ## Other user-visible changes
