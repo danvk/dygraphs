@@ -13,10 +13,13 @@
 - Some edge cases in the crosshair plugin (#1034, #1038, #1039, #1040)
 - Update list of exported symbols
 - Drop “comments are OK on data lines” from the CSV documentation, as the CSV file format has no notion of a comment, and the current code merely strips lines beginning with an octothorpe and reportedly sometimes also parts of fields, but (obviously) the field separator can then not be used within a comment
+- Document that the input data should be sorted (#503)
+- Make date parsing more robust and in particular, allow the epoch (#1062)
 - …
 
 ## Other user-visible changes
 - Add talk link to `tutorial.html`
+- Documentation: make clear that use of so-called “AI” / LLMs to prepare a contribution or to communicate with the project or its users is not permitted
 - …
 
 ## Internal refactors/fixes
