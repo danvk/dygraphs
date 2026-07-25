@@ -6,11 +6,9 @@ Copyright (c) 2011 Paul Felix <paul.eric.felix@gmail.com>
 Copyright (c) 2011, 2013 Robert Konigsberg <konigsberg@google.com>
 Copyright (c) 2013 David Eberlein <david.eberlein@ch.sauter-bc.com>
 Copyright (c) 2013 Google, Inc.
-Copyright (c) 2014 mirabilos <m@mirbsd.org>
 Copyright (c) 2015 Petr Shevtsov <petr.shevtsov@gmail.com>
-Copyright (c) 2022, 2023 mirabilos <t.glaser@tarent.de>
-                   Deutsche Telekom LLCTO
-Copyright (c) 2025 mirabilos <tg@debian.org>
+Copyright (c) 2014, 2022, 2023, 2025, 2026
+	mirabilos <m$(date +%Y)@mirbsd.de>
 and numerous contributors (see git log)
 
 Some tests additionally are:
@@ -33,6 +31,8 @@ Parts of the documentation are or make use of code that is:
 
 Copyright (c) 2012 Google, Inc.
 - Robert Konigsberg <konigsberg@google.com>
+
+Parts contributed by Deutsche Telekom LLCTO.
 
 Further contributors can be found in the git history or on:
 https://github.com/danvk/dygraphs/graphs/contributors
@@ -67,6 +67,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 The documentation and gallery uses Bootstrap and jQuery; see the
 relevant licence files of those external libraries for details.
+
+docs/aint.png is CC0-licenced, by Bethan Tovey-Walsh, via
+https://linguacelta.com/aint/
 
 The icons under common/ are CC0-licenced and adapted by mirabilos.
 In Debian, /usr/share/common-licenses/CC0-1.0 has the full text.
