@@ -1,0 +1,27 @@
+/* From MirOS: www/files/vstyle.css,v 1.70 2022/11/28 19:42:48 tg Exp $ */
+
+/* © mirabilos Ⓕ CC0 */
+
+/*
+ * Display an “external link” marker after absolute links.
+ * Unfortunately, form buttons cannot be styled like this,
+ * so check any action= targets and apply a span.vextform
+ * around each submit button these have (only those whose
+ * form @action actually goes externally, no autodetect).
+ */
+
+a[href^="//"]:after,
+a[href^="ftp://"]:after,
+a[href^="http://"]:after,
+a[href^="https://"]:after,
+a[href^="irc://"]:after,
+a[href^="mailto:"]:after,
+a[href^="news:"]:after,
+a[href^="nntp://"]:after,
+span.vextform:after {
+	content:url(vextlnk.png);
+	margin:0 0 0 3px;
+	white-space:nowrap;
+}
+
+/* none are whitelisted as “internal link” */

@@ -1,0 +1,36 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">// This file:</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="COMM">// - declares symbols that are provided outisde of dygraphs</span><span class="WHIT">
+<span class='line'>  3</span> </span><span class="COMM">// - defines custom types used internally</span><span class="WHIT">
+<span class='line'>  4</span> 
+<span class='line'>  5</span> </span><span class="COMM">/**
+<span class='line'>  6</span>  * @typedef {function(
+<span class='line'>  7</span>  *   (number|Date),
+<span class='line'>  8</span>  *   number,
+<span class='line'>  9</span>  *   function(string):*,
+<span class='line'> 10</span>  *   (Dygraph|undefined)
+<span class='line'> 11</span>  * ):string}
+<span class='line'> 12</span>  */</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">AxisLabelFormatter</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 14</span> 
+<span class='line'> 15</span> </span><span class="COMM">/**
+<span class='line'> 16</span>  * @typedef {function(number,function(string),Dygraph):string}
+<span class='line'> 17</span>  */</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ValueFormatter</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> 
+<span class='line'> 20</span> </span><span class="COMM">/**
+<span class='line'> 21</span>  * @typedef {Array.&lt;Array.&lt;string|number|Array.&lt;number>>>}
+<span class='line'> 22</span>  */</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">DygraphDataArray</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> 
+<span class='line'> 25</span> </span><span class="COMM">/**
+<span class='line'> 26</span>  * @constructor
+<span class='line'> 27</span>  */</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GVizDataTable</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 29</span> </span></pre></body></html>

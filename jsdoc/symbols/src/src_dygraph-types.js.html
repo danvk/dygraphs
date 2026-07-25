@@ -1,0 +1,54 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * @license
+<span class='line'>  3</span>  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
+<span class='line'>  4</span>  * MIT-licenced: https://opensource.org/licenses/MIT
+<span class='line'>  5</span>  */</span><span class="WHIT">
+<span class='line'>  6</span> 
+<span class='line'>  7</span> </span><span class="COMM">// This file contains typedefs and externs that are needed by the Closure Compiler.</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="COMM">/**
+<span class='line'> 10</span>  * @typedef {{
+<span class='line'> 11</span>  *   px: number,
+<span class='line'> 12</span>  *   py: number,
+<span class='line'> 13</span>  *   isZooming: boolean,
+<span class='line'> 14</span>  *   isPanning: boolean,
+<span class='line'> 15</span>  *   is2DPan: boolean,
+<span class='line'> 16</span>  *   cancelNextDblclick: boolean,
+<span class='line'> 17</span>  *   initializeMouseDown:
+<span class='line'> 18</span>  *       function(!Event, !Dygraph, !DygraphInteractionContext)
+<span class='line'> 19</span>  * }}
+<span class='line'> 20</span>  */</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">DygraphInteractionContext</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="COMM">/**
+<span class='line'> 24</span>  * Point structure.
+<span class='line'> 25</span>  *
+<span class='line'> 26</span>  * xval_* and yval_* are the original unscaled data values,
+<span class='line'> 27</span>  * while x_* and y_* are scaled to the range (0.0-1.0) for plotting.
+<span class='line'> 28</span>  * yval_stacked is the cumulative Y value used for stacking graphs,
+<span class='line'> 29</span>  * and bottom/top/minus/plus are used for error bar graphs.
+<span class='line'> 30</span>  *
+<span class='line'> 31</span>  * @typedef {{
+<span class='line'> 32</span>  *     idx: number,
+<span class='line'> 33</span>  *     name: string,
+<span class='line'> 34</span>  *     x: ?number,
+<span class='line'> 35</span>  *     xval: ?number,
+<span class='line'> 36</span>  *     y_bottom: ?number,
+<span class='line'> 37</span>  *     y: ?number,
+<span class='line'> 38</span>  *     y_stacked: ?number,
+<span class='line'> 39</span>  *     y_top: ?number,
+<span class='line'> 40</span>  *     yval_minus: ?number,
+<span class='line'> 41</span>  *     yval: ?number,
+<span class='line'> 42</span>  *     yval_plus: ?number,
+<span class='line'> 43</span>  *     yval_stacked
+<span class='line'> 44</span>  * }}
+<span class='line'> 45</span>  */</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="NAME">Dygraph.PointType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 47</span> </span></pre></body></html>
