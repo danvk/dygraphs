@@ -13,7 +13,7 @@
       "runs-on": "ubuntu-24.04",
       "steps": [
         {
-          "uses": "actions/checkout@v4.2.2"
+          "uses": "actions/checkout@v7.0.1"
         },
         {
           "run": "sh .pages.sh"
@@ -26,14 +26,14 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v3.0.1"
+          "uses": "actions/upload-pages-artifact@v5.0.0"
         },
         {
           "run": "mksh .post.sh"
         },
         {
           "id": "deployment",
-          "uses": "actions/deploy-pages@v4.0.5"
+          "uses": "actions/deploy-pages@v5.0.0"
         }
       ]
     },
@@ -46,7 +46,7 @@
       "runs-on": "ubuntu-24.04",
       "steps": [
         {
-          "uses": "actions/checkout@v4.2.2"
+          "uses": "actions/checkout@v7.0.1"
         },
         {
           "run": "sh .pages.sh"
@@ -59,7 +59,7 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v3.0.1"
+          "uses": "actions/upload-pages-artifact@v5.0.0"
         },
         {
           "run": "mksh .post.sh"
