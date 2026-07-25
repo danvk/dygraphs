@@ -28,7 +28,10 @@ parameter.</p>
 <p>These are all discussed below. If you're trying to debug why your input
 won't parse, <b>check the JS error console</b>. dygraphs tries to log
 informative errors explaining what's wrong with your data, and these can
-often point you in the right direction.</p>
+often point you in the right direction. For example, you may see a console
+message telling you that your data source is out of order, in which case
+you will want to sort the input correctly, so that it does not need to be
+sorted at runtime each time it’s loaded.</p>
 
 <p>There are several options which affect how your input data is
 interpreted. These are:</p>
