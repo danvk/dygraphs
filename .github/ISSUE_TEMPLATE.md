@@ -1,6 +1,6 @@
 Filing a bug report? Please include the following:
 
-1. Link to a page which demonstrates the problem, preferably a jsfiddle (use http://dygraphs.com/fiddle as a template)
+1. Link to a page which demonstrates the problem, preferably a jsfiddle (use <https://dygraphs.com/fiddle> as a template)
 2. Browser and Operating System that exhibit the problem
 3. Version of dygraphs that you're using
 
@@ -18,3 +18,5 @@ do this:
 ```
 
 This makes error messages and debugging simpler. The jsfiddle does this automatically.
+
+Sending a Pull Request? See our [guide to making dygraphs contributions](/DEVELOP.md).
