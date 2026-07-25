@@ -26,7 +26,10 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v5.0.0"
+          "uses": "actions/upload-pages-artifact@v5.0.0",
+          "with": {
+            "include-hidden-files": true
+          }
         },
         {
           "run": "mksh .post.sh"
@@ -59,7 +62,10 @@
           }
         },
         {
-          "uses": "actions/upload-pages-artifact@v5.0.0"
+          "uses": "actions/upload-pages-artifact@v5.0.0",
+          "with": {
+            "include-hidden-files": true
+          }
         },
         {
           "run": "mksh .post.sh"
