@@ -87,7 +87,17 @@ Then open `tests/demo.html` in your browser.
 Read more about the dygraphs development process in the [developer guide](/DEVELOP.md).
 
 ## License(s)
-dygraphs is available under the MIT license, included in [LICENSE.txt](./LICENSE.txt).
+
+<img width="121" height="121"
+ alt="AIn’t badge: made from 100% natural brains; CC0 by Bethan Tovey-Walsh via https://linguacelta.com/aint/" title="AIn’t: made from 100% natural brains; badge CC0 by Bethan Tovey-Walsh via https://linguacelta.com/aint/"
+ src="https://github.com/danvk/dygraphs/blob/master/docs/aint.png?raw=true"
+ style="float:right; margin-left:1em; margin-bottom:3px;" />
+
+dygraphs is 100% human-written and available under the MIT licence,
+included in [LICENSE.txt](./LICENSE.txt).
+
+Use of so-called “AI” / LLMs to prepare a contribution or interact
+with anyone in the project or its users is not welcome.
 
 [UNPKG]: https://unpkg.com/dygraphs/
 [cdnjs]: https://cdnjs.com/libraries/dygraph

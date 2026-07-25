@@ -4,6 +4,16 @@ So you've made a change to dygraphs and would like to contribute it back to the 
 
 This is a step-by-step guide explaining how to do it.
 
+### Things to be aware of beforehand
+
+Use of so-called “AI” / LLMs is not permitted.
+
+You may only submit a contribution if it was made without the use
+of LLMs / so-called “AI”.
+
+You may not use “AI”/LLMs to communicate with others on the project,
+either developers or users.
+
 ### How-to
 
 To install dependencies, run:
