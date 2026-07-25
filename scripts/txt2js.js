@@ -1,5 +1,5 @@
 #!/usr/bin/env nodejs
-// © 2022 mirabilos <t.glaser@tarent.de> Ⓕ MIT
+// © 2022 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 const fs = require('fs');
 const { SourceMapGenerator } = require('source-map');

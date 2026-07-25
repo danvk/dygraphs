@@ -1,5 +1,5 @@
 #!/bin/mksh
-# © 2023 mirabilos <t.glaser@tarent.de> Ⓕ MIT
+# © 2023 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 set -eo pipefail
 case $KSH_VERSION {

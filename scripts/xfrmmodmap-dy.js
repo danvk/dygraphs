@@ -1,4 +1,4 @@
-// © 2023 mirabilos <t.glaser@tarent.de> Ⓕ MIT
+// © 2023 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 const assert = require('assert');
 const through = require('through2');

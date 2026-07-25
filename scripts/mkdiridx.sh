@@ -1,10 +1,8 @@
 #!/bin/mksh
 # From MirOS: www/mk/common,v 1.12 2021/12/11 20:10:49 tg Exp $'
 #-
-# Copyright © 2022
-#	mirabilos <t.glaser@tarent.de>
-# Copyright © 2007, 2008, 2012, 2013, 2014, 2018, 2021
-#	mirabilos <m@mirbsd.org>
+# Copyright © 2007, 2008, 2012, 2013, 2014, 2018, 2021, 2022
+#	mirabilos <m$(date +%Y)@mirbsd.de>
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation

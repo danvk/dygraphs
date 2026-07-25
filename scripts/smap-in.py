@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# © 2022 mirabilos <t.glaser@tarent.de> Ⓕ MIT
+# © 2022 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 import base64
 import json
