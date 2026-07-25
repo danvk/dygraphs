@@ -7,6 +7,7 @@ Pull Requests will only be accepted if:
   improvement. For example: "Fixes issue #123".
 - You adhere to the style of the rest of the dygraphs code base.
 - You write an `auto_test` for the code that you're adding.
+- You certify that no “AI”/LLMs were used while preparing the PR.
 
 Be sure to document any new options you add. Also be aware that PRs which add
 options are likely to be rejected. dygraphs already has many options. If you
