@@ -4,14 +4,15 @@
       "runs-on": "ubuntu-latest",
       "steps": [
         {
-          "uses": "actions/checkout@v4.2.2",
+          "uses": "actions/checkout@v6.0.2",
           "with": {
             "token": "${{ secrets.WORKFLOW_SECRET }}"
           }
         },
         {
-          "uses": "saadmk11/github-actions-version-updater@v0.8.1",
+          "uses": "saadmk11/github-actions-version-updater@v0.9.0",
           "with": {
+            "ignore": "github/codeql-action/init@v4,github/codeql-action/analyze@v4,msys2/setup-msys2@v2",
             "pull_request_user_reviewers": "mirabilos",
             "token": "${{ secrets.WORKFLOW_SECRET }}"
           }
