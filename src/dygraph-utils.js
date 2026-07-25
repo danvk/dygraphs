@@ -502,8 +502,8 @@ export function binarySearch(val, arry, abs, low, high) {
  * @return {number} Milliseconds since epoch.
  * @private
  */
+var _dateParser_re = /-/g;
 export function dateParser(dateStr) {
-  var dateStrSlashed;
   var d;
 
   // Let the system try the format first, with one caveat:
@@ -515,25 +515,22 @@ export function dateParser(dateStr) {
   if (dateStr.search("-") == -1 ||
       dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
     d = dateStrToMillis(dateStr);
-    if (d && !isNaN(d)) return d;
+    if (d != null && !isNaN(d)) return d;
   }
 
   if (dateStr.search("-") != -1) {  // e.g. '2009-7-12' or '2009-07-12'
-    dateStrSlashed = dateStr.replace("-", "/", "g");
-    while (dateStrSlashed.search("-") != -1) {
-      dateStrSlashed = dateStrSlashed.replace("-", "/");
-    }
+    var dateStrSlashed = dateStr.replace(_dateParser_re, "/");
     d = dateStrToMillis(dateStrSlashed);
-  } else {
-    // Any format that Date.parse will accept, e.g. "2009/07/12" or
-    // "2009/07/12 12:34:56"
-    d = dateStrToMillis(dateStr);
+    if (d != null && !isNaN(d)) return d;
   }
 
-  if (!d || isNaN(d)) {
-    console.error("Couldn't parse " + dateStr + " as a date");
-  }
-  return d;
+  // Any format that Date.parse will accept, e.g. "2009/07/12" or
+  // "2009/07/12 12:34:56"
+  d = dateStrToMillis(dateStr);
+  if (d != null && !isNaN(d)) return d;
+
+  console.error("Couldn't parse " + dateStr + " as a date");
+  return NaN;
 }
 
 /**
