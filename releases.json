@@ -1,9 +1,10 @@
 [
   {
     "files": [
+      "dygraph.min.css",
       "dygraph.min.js",
-      "dygraph.js",
-      "dygraph.css"
+      "dygraph.css",
+      "dygraph.js"
     ],
     "version": "2.2.1"
   },
