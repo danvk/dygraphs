@@ -7,6 +7,11 @@ case $KSH_VERSION {
 # initialisation
 set -e
 set -o pipefail
+if command -v nodejs >/dev/null 2>&1; then
+	node_js=nodejs
+else
+	node_js=node
+fi
 if [[ -e node_modules ]]; then
 	# NPM setup
 	babel_js=babel
@@ -56,6 +61,45 @@ if [[ -e node_modules ]]; then
 	export PATH
 fi
 
+# interpose browser-pack so we get the unminified prelude,
+# as recently the minified file shipped will not work on
+# PhantomJS or (other) older browsers
+origbrowserpack=$(realpath "$($node_js -e 'process.stdout.write(require.resolve("browser-pack"));')")
+origpreludefile=$(realpath "$origbrowserpack/../prelude.js")
+mkdir .node_override
+patchedbrowserpack=$PWD/.node_override/browser-pack.js
+export origbrowserpack origpreludefile patchedbrowserpack
+cat >"$patchedbrowserpack" <<\EOF
+	const fs = require('fs');
+	const orig = require(process.env.origbrowserpack);
+
+	module.exports = function (opts) {
+		if (!opts)
+			opts = {};
+		if (!opts.prelude && !opts.preludePath) {
+			var pf = process.env.origpreludefile;
+			var pc = fs.readFileSync(pf, 'utf8');
+			pc = pc.trimEnd() + '/*}}}browser-pack*//*Dygraph(((*/';
+			opts.preludePath = pf;
+			opts.prelude = pc;
+		}
+		return orig(opts);
+	}
+EOF
+export origbrowserify=$(realpath $(command -v browserify))
+patchedbrowserify=$PWD/.node_override/browserify-patched.js
+cat >"$patchedbrowserify" <<\EOF
+	// monkey-patching require required 🙀
+	const _Module = require('module');
+	const _orig_require = _Module.prototype.require;
+	_Module.prototype.require = function require(name) {
+		if (typeof(name) === 'string' && name === 'browser-pack')
+			return _orig_require(process.env.patchedbrowserpack);
+		return _orig_require.apply(this, arguments);
+	}
+	require(process.env.origbrowserify);
+EOF
+
 # ES5-compatible source
 $babel_js \
     --config-file "$babelrc" \
@@ -77,7 +121,7 @@ rm -rf auto_tests src
 # bundle dygraph.js{,.map} and tests.js with dev env
 cp -r es5 src
 mksh ../scripts/env-patcher.sh development src
-browserify \
+$node_js "$patchedbrowserify" \
     -v \
     --debug \
     -p ../scripts/xfrmmodmap-dy.js \
@@ -85,7 +129,7 @@ browserify \
     LICENCE.js \
     src/dygraph.js \
     >dygraph.tmp.js
-browserify \
+$node_js "$patchedbrowserify" \
     -v \
     --debug \
     -p ../scripts/xfrmmodmap-t.js \
@@ -103,7 +147,7 @@ python3 ../scripts/smap-in.py tests.tmp2.js tests.tmp2.map tests.js #--nonl
 # bundle and minify dygraph.min.js{,.map} with prod env
 cp -r es5 src
 mksh ../scripts/env-patcher.sh production src
-browserify \
+$node_js "$patchedbrowserify" \
     -v \
     --debug \
     -p ../scripts/xfrmmodmap-dy.js \

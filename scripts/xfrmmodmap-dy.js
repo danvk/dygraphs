@@ -1,4 +1,4 @@
-// © 2023 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
+// © 2023, 2026 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 const assert = require('assert');
 const through = require('through2');
@@ -61,16 +61,18 @@ module.exports = function (b) {
 	var first = true, hadsm = false;
 	b.pipeline.get('pack').push(through.obj(function transform(row, enc, next) {
 		if (first) {
-			var pre = umd.prelude('Dygraph').trim() + 'var r=';
+			var pre = '/*UMD<<<*/' +
+			    umd.prelude('Dygraph').trim() +
+			    '/*>>>UMD*/var r=(/*browser-pack{{{*/';
 			assert(pre.match(/\n/g) === null, 'UMD prelude contains newlines');
 			this.push(Buffer.from(pre, 'utf8'));
 			first = false;
 		} else if (row.toString().startsWith('\n//# sourceMappingURL')) {
 			assert(!hadsm, 'multiple source maps in file‽');
-			var post = ';var x=r(' +
+			var post = '/*)))Dygraph*/);var x=r(' +
 			    JSON.stringify(xfrm(mainmodule)) +
-			    ');x._require._b=r;return x' +
-			    umd.postlude('Dygraph').trim();
+			    ');x._require._b=r;return x/*UMD<<<*/' +
+			    umd.postlude('Dygraph').trim() + '/*>>>UMD*/';
 			assert(post.match(/\n/g) === null, 'UMD postlude contains newlines');
 			this.push(Buffer.from(post, 'utf8'));
 			hadsm = true;
