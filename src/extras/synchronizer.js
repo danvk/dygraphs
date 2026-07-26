@@ -192,7 +192,7 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
         }
 
         block = true;
-        
+
         var opts = {
           dateWindow: me.xAxisRange()
         };
