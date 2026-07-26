@@ -58,7 +58,8 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 
 %(debian_text)s
 
-<p>The current version of dygraphs is <b>%(version)s</b>.
+<p>The current version of dygraphs is <b>%(version)s</b> (<a
+ href="%(version_docs)s">docs</a>).
  Most users will want to download minified files for this version:</p>
 
 <div id="current-release" class="panel">
@@ -126,6 +127,7 @@ npm run build-jsonly
 
 <!--#include virtual="footer.html" -->''' % {
     'version': releases[0]['version'],
+    'version_docs': "%s/" % releases[0]['version'],
     'current_html': current_html,
     'current_link': current_link,
     'debian_text': debian_text,
