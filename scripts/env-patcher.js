@@ -1,5 +1,5 @@
 #!/usr/bin/env nodejs
-// © 2022 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
+// © 2022, 2026 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 const fs = require('fs');
 const {
@@ -37,7 +37,9 @@ for (lno = 0; lno < thefile.length; ++lno) {
 const outScript = thefile.join('\n');
 fs.writeFileSync('env-patcher.tmp.js', outScript, 'UTF-8');
 
-const smc = new SourceMapConsumer(JSON.parse(inMap));
+const smc_ = new SourceMapConsumer(JSON.parse(inMap));
+// work around breaking change in source-map
+const smc = ('sourceRoot' in smc_) ? smc_ : await smc_;
 // like SourceMapGenerator.fromSourceMap()
 const sr = smc.sourceRoot;
 const smg = new SourceMapGenerator({
