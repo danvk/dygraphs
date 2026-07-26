@@ -1,6 +1,9 @@
 #!/usr/bin/env nodejs
 // © 2022, 2026 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
+// whole-file wrap, work around nodejs weirdness wrt. await
+export async function main(nstr) {
+
 const fs = require('fs');
 const {
 	SourceMapConsumer,
@@ -8,12 +11,11 @@ const {
 } = require('source-map');
 const { relative } = require('source-map/lib/util');
 
-const inScript = fs.readFileSync('env-patcher.tmp.js', 'UTF-8');
-const inMap = fs.readFileSync('env-patcher.tmp.map', 'UTF-8');
+const inScript = fs.readFileSync('env-patcher.tmp-in.js', 'UTF-8');
+const inMap = fs.readFileSync('env-patcher.tmp-in.map', 'UTF-8');
 
 const thefile = inScript.split('\n');
 const ostr = "typeof process !== 'undefined' && process.env.NODE_ENV != 'production'";
-const nstr = process.argv[2];
 const olen = ostr.length;
 const nlen = nstr.length;
 const dlen = nlen - olen;
@@ -35,7 +37,7 @@ for (lno = 0; lno < thefile.length; ++lno) {
 }
 
 const outScript = thefile.join('\n');
-fs.writeFileSync('env-patcher.tmp.js', outScript, 'UTF-8');
+fs.writeFileSync('env-patcher.tmp-out.js', outScript, 'UTF-8');
 
 const smc_ = new SourceMapConsumer(JSON.parse(inMap));
 // work around breaking change in source-map
@@ -83,4 +85,8 @@ smc.sources.forEach(function (sourceFile) {
 		smg.setSourceContent(sourceFile, content);
 });
 
-fs.writeFileSync('env-patcher.tmp.map', smg.toString(), 'UTF-8');
+fs.writeFileSync('env-patcher.tmp-out.map', smg.toString(), 'UTF-8');
+
+// end of whole-file wrapper
+	return 'done';
+}

@@ -1,5 +1,5 @@
 #!/bin/mksh
-# © 2022 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
+# © 2022, 2026 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
 set -eo pipefail
 case $KSH_VERSION {
@@ -25,10 +25,13 @@ else
 fi
 
 grep -FrlZ process.env.NODE_ENV "$@" | while IFS= read -d '' -r fn; do
+	rm -f env-patcher.tmp*
 	print -ru2 "I: patching $fn for !prod=$rpl"
-	python3 "$mydir"/smap-out.py "$fn" env-patcher.tmp.js env-patcher.tmp.map
-	$node_js "$mydir"/env-patcher.js "$rpl"
-	python3 "$mydir"/smap-in.py env-patcher.tmp.js env-patcher.tmp.map "$fn" --nonl
+	python3 "$mydir"/smap-out.py "$fn" env-patcher.tmp-in.js env-patcher.tmp-in.map
+	print -r -- 'await require(process.env.s).main(process.env.r);' | \
+	    s="$mydir"/env-patcher.js r="$rpl" \
+	    NODE_REPL_HISTORY= NODE_NO_READLINE=1 $node_js -i
+	python3 "$mydir"/smap-in.py env-patcher.tmp-out.js env-patcher.tmp-out.map "$fn" --nonl
 done
-rm -f env-patcher.tmp.js env-patcher.tmp.map
+rm -f env-patcher.tmp*
 print -ru2 "I: done patching"
