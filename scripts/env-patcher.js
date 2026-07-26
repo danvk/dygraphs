@@ -1,8 +1,8 @@
 #!/usr/bin/env nodejs
 // © 2022, 2026 mirabilos <m$(date +%Y)@mirbsd.de> Ⓕ MIT
 
-// whole-file wrap, work around nodejs weirdness wrt. await
-export async function main(nstr) {
+// whole-file wrap, workaround for nodejs await weirdness
+module.exports = async function main(nstr) {
 
 const fs = require('fs');
 const {

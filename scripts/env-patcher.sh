@@ -28,7 +28,7 @@ grep -FrlZ process.env.NODE_ENV "$@" | while IFS= read -d '' -r fn; do
 	rm -f env-patcher.tmp*
 	print -ru2 "I: patching $fn for !prod=$rpl"
 	python3 "$mydir"/smap-out.py "$fn" env-patcher.tmp-in.js env-patcher.tmp-in.map
-	print -r -- 'await require(process.env.s).main(process.env.r);' | \
+	print -r -- 'await require(process.env.s)(process.env.r);' | \
 	    s="$mydir"/env-patcher.js r="$rpl" \
 	    NODE_REPL_HISTORY= NODE_NO_READLINE=1 $node_js -i
 	python3 "$mydir"/smap-in.py env-patcher.tmp-out.js env-patcher.tmp-out.map "$fn" --nonl
