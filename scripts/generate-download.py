@@ -26,7 +26,7 @@ def file_links(release):
     sd = ''
   else:
     sd = 'dist/'
-  return ['<a href="%(v)s/%(sd)s%(f)s">%(f)s</a>' % {
+  return ['<a href="/%(v)s/%(sd)s%(f)s">%(f)s</a>' % {
     'f': f, 'sd': sd, 'v': v} for f in release['files']]
 
 # Validation of releases.json
@@ -42,7 +42,7 @@ current_link = 'https://github.com/danvk/dygraphs/releases/tag/v' + releases[0][
 
 previous_lis = []
 for release in releases[1:]:
-  previous_lis.append('<li>%(v)s: %(files)s (<a href="%(v)s/">%(v)s docs</a>)' % {
+  previous_lis.append('<li>%(v)s: %(files)s (<a href="/%(v)s/">%(v)s docs</a>)' % {
       'v': release['version'],
       'files': ', '.join(file_links(release))
     })
@@ -122,12 +122,12 @@ npm run build-jsonly
 %(previous_lis)s
 </ul>
 
-<p>See <a href="https://dygraphs.com/versions.html">Version History</a>
+<p>See <a href="/versions.html">Version History</a>
  for more information on each release.</p>
 
 <!--#include virtual="footer.html" -->''' % {
     'version': releases[0]['version'],
-    'version_docs': "%s/" % releases[0]['version'],
+    'version_docs': "/%s/" % releases[0]['version'],
     'current_html': current_html,
     'current_link': current_link,
     'debian_text': debian_text,
