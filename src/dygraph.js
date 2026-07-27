@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /**
@@ -46,7 +46,7 @@
 
  And high/low bands will be calculated automatically using a binomial distribution.
 
- For further documentation and examples, see http://dygraphs.com/
+ For further documentation and examples, see https://dygraphs.com/
  */
 
 import DygraphLayout from './dygraph-layout';
@@ -83,12 +83,13 @@ import GVizChart from './dygraph-gviz';
  * @param {div | String} div A div or the id of a div into which to construct
  * the chart. Must not have any padding.
  * @param {String | Function} file A file containing CSV data or a function
- * that returns this data. The most basic expected format for each line is
- * "YYYY/MM/DD,val1,val2,...". For more information, see
- * http://dygraphs.com/data.html.
+ * that returns this data. The most basic expected format for each line is:
+ * "YYYY/MM/DD,val1,val2,..."
+ * For more information, see: https://dygraphs.com/data.html
+ *
  * @param {Object} attrs Various other attributes, e.g. errorBars determines
  * whether the input data contains error ranges. For a complete list of
- * options, see http://dygraphs.com/options.html.
+ * options, see: https://dygraphs.com/options.html
  */
 var Dygraph = function Dygraph(div, data, opts) {
   this.__init__(div, data, opts);
@@ -3157,7 +3158,7 @@ Dygraph.prototype.start_ = function() {
  * </ul>
  *
  * There's a huge variety of options that can be passed to this method. For a
- * full list, see http://dygraphs.com/options.html.
+ * full list, see: https://dygraphs.com/options.html
  *
  * @param {Object} input_attrs The new properties and values
  * @param {boolean} block_redraw Usually the chart is redrawn after every

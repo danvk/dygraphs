@@ -1,7 +1,7 @@
 /**
  * @fileoverview Tests input data which uses scientific notation.
  * This is a regression test for
- * http://code.google.com/p/dygraphs/issues/detail?id=186
+ * https://code.google.com/archive/p/dygraphs/issues/186
  *
  * @author danvk@google.com (Dan Vanderkam)
  */

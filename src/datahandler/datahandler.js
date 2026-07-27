@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2013 David Eberlein (david.eberlein@ch.sauter-bc.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /**

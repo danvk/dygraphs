@@ -56,7 +56,7 @@ it('testCorrectColors', function() {
   assert.deepEqual([0, 255, 0, 38], Util.samplePixel(g.hidden_, 200, 150));
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=358
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/358
 it('testSelectionValues', function() {
   var opts = {
     stackedGraph: true
@@ -91,7 +91,7 @@ it('testSelectionValues', function() {
   assert.equal("0: Y1: 1 Y2: 1", Util.getLegend());
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=176
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/176
 it('testDuplicatedXValue', function() {
   var opts = {
     stackedGraph: true,
@@ -151,7 +151,7 @@ it('testNullValues', function() {
   assert.equal("4: Y1: 3 Y2: 2 Y3: 3", Util.getLegend());
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=438
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/438
 it('testMissingValueAtZero', function() {
   var opts = {
     stackedGraph: true

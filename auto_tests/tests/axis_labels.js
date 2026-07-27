@@ -711,7 +711,7 @@ it('testLogScale', function() {
 /**
  * Verify that log scale axis range works with yRangePad.
  *
- * This is a regression test for https://github.com/danvk/dygraphs/issues/661 .
+ * This is a regression test for: https://github.com/danvk/dygraphs/issues/661
  */
 it('testLogScalePad', function() {
   var g = new Dygraph("graph",
@@ -861,7 +861,7 @@ it('testLabelsKMBPerAxis', function() {
       });
 
   // labelsKMB doesn't apply to the x axis. This value should be different.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // Bug: https://code.google.com/archive/p/dygraphs/issues/488
   assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1k","1.5k","2k"], Util.getYLabels(2));
@@ -891,7 +891,7 @@ it('testLabelsKMG2PerAxis', function() {
   // It is weird that labelsKMG2 does something on the x axis but KMB does not.
   // Plus I can't be sure they're doing the same thing as they're done in different
   // bits of code.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // Bug: https://code.google.com/archive/p/dygraphs/issues/488
   assert.deepEqual(["1024","2048","3072"], Util.getXLabels());
   assert.deepEqual(["0","500","1000","1500","2000"], Util.getYLabels(1));
   assert.deepEqual(["0","500","1000","1.46Ki","1.95Ki"], Util.getYLabels(2));
@@ -919,7 +919,7 @@ it('testSigFigsPerAxis', function() {
 
       });
   // sigFigs doesn't apply to the x axis. This value should be different.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // Bug: https://code.google.com/archive/p/dygraphs/issues/488
   assert.deepEqual(["1000","2000","3000"], Util.getXLabels());
   assert.deepEqual(["0.0","5.0e+2","1.0e+3","1.5e+3","2.0e+3"], Util.getYLabels(1));
   assert.deepEqual(["0.00000","500.000","1000.00","1500.00","2000.00"], Util.getYLabels(2));
@@ -962,7 +962,7 @@ it('testDigitsAfterDecimalPerAxis', function() {
   assert.deepEqual(["5e-3","6e-3","6e-3","7e-3","7e-3","7e-3","8e-3"], Util.getYLabels(2));
 
   // digitsAfterDecimal is ignored for the x-axis.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // Bug: https://code.google.com/archive/p/dygraphs/issues/488
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 3 }}});
   assert.deepEqual(["0.006","0.007","0.008"], Util.getXLabels());
   g.updateOptions({ axes: { x: { digitsAfterDecimal: 4 }}});
@@ -1005,7 +1005,7 @@ it('testMaxNumberWidthPerAxis', function() {
   assert.deepEqual(["1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4","1.28e+4"], Util.getYLabels(2));
 
   // maxNumberWidth is ignored for the x-axis.
-  // BUG : https://code.google.com/p/dygraphs/issues/detail?id=488
+  // Bug: https://code.google.com/archive/p/dygraphs/issues/488
   g.updateOptions({ axes: { x: { maxNumberWidth: 4 }}});
   assert.deepEqual(["12401","12402","12403"], Util.getXLabels());
   g.updateOptions({ axes: { x: { maxNumberWidth: 5 }}});
@@ -1015,7 +1015,7 @@ it('testMaxNumberWidthPerAxis', function() {
 });
 
 /*
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=147
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/147
 // Checks that axis labels stay sane across a DST change.
 it('testLabelsCrossDstChange', function() {
   // (From tests/daylight-savings.html)
@@ -1092,7 +1092,7 @@ it('testLabelsCrossDstChangeHighFreq', function() {
 });
 
 // Tests data which crosses a "spring forward" at a low frequency.
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=433
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/433
 it('testLabelsCrossSpringForward', function() {
   var g = new Dygraph(
       document.getElementById("graph"),

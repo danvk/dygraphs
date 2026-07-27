@@ -122,7 +122,7 @@ it('testUpdateLabelsDivDoesntInfiniteLoop', function() {
   graph.updateOptions({labelsDiv : labelsDiv});
 });
 
-// Test https://github.com/danvk/dygraphs/issues/247
+// Test https://github.com/danvk/dygraphs/pull/247
 it('testUpdateColors', function() {
   var graphDiv = document.getElementById("graph");
   var graph = new Dygraph(graphDiv, data, opts);
@@ -150,7 +150,7 @@ it('testUpdateColors', function() {
   assert.deepEqual(defaultColors, graph.getColors());
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=249
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/249
 // Verifies that setting 'legend: always' via update immediately shows the
 // legend.
 it('testUpdateLegendAlways', function() {

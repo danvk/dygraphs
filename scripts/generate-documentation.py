@@ -286,4 +286,4 @@ Some callbacks take a point argument. Its properties are:<br />
 <!--#include virtual="footer.html" -->""")
 
 # This page was super-helpful:
-# http://jsbeautifier.org/
+# https://beautifier.io/

@@ -77,7 +77,7 @@ Adding a unit test ensures that we won't inadvertently break your feature in the
 
 ### Sending a Pull Request
 
-To make a change, you'll need to send a Pull Request. See GitHub's documentation [here][pr].
+To make a change, you'll need to send a Pull Request. See Microslop GitHub's documentation [here][pr].
 
 [gstyle]: https://google.github.io/styleguide/javascriptguide.xml
-[pr]: http://help.github.com/send-pull-requests/
+[pr]: https://docs.github.com/en/pull-requests/reference/pull-requests

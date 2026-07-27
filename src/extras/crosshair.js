@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /* loader wrapper to allow browser use and ES6 imports */

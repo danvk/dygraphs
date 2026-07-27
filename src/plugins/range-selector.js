@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2011 Paul Felix (paul.eric.felix@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 /*global Dygraph:false,TouchEvent:false */
 

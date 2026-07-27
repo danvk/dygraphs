@@ -4,7 +4,7 @@ The dygraphs JavaScript library produces interactive, zoomable charts of time se
 
 ![sample graph](Screenshot.png)
 
-Learn more about it at [dygraphs.com](http://www.dygraphs.com).
+Learn more about it at [dygraphs.com](https://dygraphs.com/).
 
 Get help with dygraphs on [Stack Overflow][] (preferred) and [Google Groups][].
 
@@ -101,15 +101,15 @@ with anyone in the project or its users is not welcome.
 
 [UNPKG]: https://unpkg.com/dygraphs/
 [cdnjs]: https://cdnjs.com/libraries/dygraph
-[the tutorial]: http://www.dygraphs.com/tutorial.html
-[gallery]: http://www.dygraphs.com/gallery
-[error bands]: http://dygraphs.com/tests/legend-values.html
-[pan and zoom]: http://dygraphs.com/tests/link-interaction.html
-[on mouseover]: http://dygraphs.com/tests/legend-values.html
-[averaging period]: http://dygraphs.com/tests/temperature-sf-ny.html
-[options]: http://www.dygraphs.com/options.html
+[the tutorial]: https://dygraphs.com/tutorial.html
+[gallery]: https://dygraphs.com/gallery/
+[error bands]: https://dygraphs.com/tests/legend-values.html
+[pan and zoom]: https://dygraphs.com/tests/link-interaction.html
+[on mouseover]: https://dygraphs.com/tests/legend-values.html
+[averaging period]: https://dygraphs.com/tests/temperature-sf-ny.html
+[options]: https://dygraphs.com/options.html
 [Stack Overflow]: https://stackoverflow.com/questions/tagged/dygraphs?sort=votes&pageSize=50
-[Google Groups]: http://groups.google.com/group/dygraphs-users
-[gviz]: http://dygraphs.com/data.html#datatable
+[Google Groups]: https://groups.google.com/g/dygraphs-users
+[gviz]: https://dygraphs.com/data.html#datatable
 [npm]: https://www.npmjs.com/package/dygraphs
 [dygraphs-es6 repo]: https://github.com/danvk/dygraphs-es6

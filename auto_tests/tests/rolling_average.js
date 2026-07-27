@@ -81,7 +81,7 @@ it('testRollBoxDoesntDisapper', function() {
   assert.equal("1", roll_box[0].value);
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=426
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/426
 it('testRollShortFractions', function() {
   var opts = {
     customBars: true,

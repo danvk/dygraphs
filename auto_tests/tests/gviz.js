@@ -46,7 +46,7 @@ describe('gviz', function() {
     throw 'Not Implemented';
   };
 
-  // This mirrors http://dygraphs.com/tests/gviz.html
+  // This mirrors https://dygraphs.com/tests/gviz.html
   var numericData = new FakeDataTable({
     cols: [{id:"",label:"X",type:"number"},
            {id:"",label:"A",type:"number"},
@@ -115,7 +115,7 @@ describe('gviz', function() {
   });
 
   it('should parse tables with dates', function() {
-    // This mirrors http://dygraphs.com/tests/gviz.html
+    // This mirrors https://dygraphs.com/tests/gviz.html
     var data = new FakeDataTable({
       cols: [{id:"",label:"Date",type:"datetime"},
              {id:"",label:"Column A",type:"number"},

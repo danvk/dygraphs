@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2013 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  *
  * Note: This plugin requires jQuery and jQuery UI Draggable.
  *

@@ -185,7 +185,7 @@ it('testErrorBarsForAlphaSeriesCorrectColors', function() {
   assert.deepEqual([0, 255, 0, 38],  Util.samplePixel(g.hidden_, 1, 225));
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=392
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/392
 it('testRollingAveragePreservesNaNs', function() {
   var graph = document.getElementById("graph");
   var data =

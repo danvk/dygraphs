@@ -384,7 +384,7 @@ Dygraph.onDOMready(function onDOMready() {
     }
   ];
 
-// From http://www.econstats.com/eqty/eq_d_mi_3.csv
+// From https://www.econstats.com/eqty/eq_d_mi_3.csv
   stockchart = new Dygraph(
     document.getElementById('dow_chart'),
     "dow.txt",
@@ -417,7 +417,7 @@ Dygraph.onDOMready(function onDOMready() {
 Here is a script to regenerate the Dow Jones plot:
 
 # Get unadjusted DJIA data in a nice format:
-curl -O http://www.econstats.com/eqty/eq_d_mi_3.csv
+curl -O https://www.econstats.com/eqty/eq_d_mi_3.csv
 sed '1,17d' eq_d_mi_3.csv | cut -d, -f1,6 | perl -pe 's/(\d{4}-\d\d)-\d\d/$1/g' | perl -pe 's/, */\t/' | grep -v 'na' | perl -ne 'chomp; ($m,$v) = split/\t/; $close{$m} = $v; if ($low{$m} == 0 || $v < $low{$m}) { $low{$m}=$v } if ($v > $high{$m}) { $high{$m} = $v } END { for $x(sort keys %close) { print "$x\t$low{$x}\t$close{$x}\t$high{$x}\n" } } ' > monthly-djia.tsv
 
 # Fetch and format the CPI data:

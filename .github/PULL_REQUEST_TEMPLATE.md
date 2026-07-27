@@ -1,5 +1,5 @@
 Please read the guide to making dygraphs changes:
-http://dygraphs.com/changes.html
+https://dygraphs.com/changes.html
 
 Pull Requests will only be accepted if:
 

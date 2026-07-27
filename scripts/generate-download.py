@@ -93,7 +93,7 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 
 <p>But note that use of CDNs violates the EU-GDPR. Besides the tarballs
  (see above) you can also install dygraphs locally into your project
- instead using <a href="https://www.npmjs.org/package/dygraphs">NPM</a>:</p>
+ instead using <a href="https://www.npmjs.com/package/dygraphs">NPM</a>:</p>
 
 <pre>$ npm install dygraphs
   # dygraphs is now in node_modules/dygraphs/dist/dygraph.{css,js} for

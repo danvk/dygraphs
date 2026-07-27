@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2011 Robert Konigsberg (konigsberg@google.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /**
@@ -383,7 +383,7 @@ DygraphInteraction.endZoom = function(event, g, context) {
 
   // The zoom rectangle is visibly clipped to the plot area, so its behavior
   // should be as well.
-  // See http://code.google.com/p/dygraphs/issues/detail?id=280
+  // See https://code.google.com/archive/p/dygraphs/issues/280
   var plotArea = g.getArea();
   if (context.regionWidth >= 10 &&
       context.dragDirection == utils.HORIZONTAL) {

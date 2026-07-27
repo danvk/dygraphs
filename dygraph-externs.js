@@ -1,7 +1,7 @@
 /**
  * @license
  * Copyright 2006 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 // TODO(danvk): move the Dygraph definitions out of here once I closure-ify dygraphs.js

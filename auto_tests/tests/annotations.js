@@ -206,7 +206,7 @@ it('testAnnotationsDrawnInDrawCallback', function() {
 });
 
 // Test that annotations on the same point are stacked.
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=256
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/256
 it('testAnnotationsStacked', function() {
   var data = 'X,Y1,Y2\n' +
       '0,1,2\n' +

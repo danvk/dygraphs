@@ -323,7 +323,7 @@ it('testDrawPointCallback', function() {
   assert.equal(1, results.y2["Y4"]);
 });
 
-// Test for http://code.google.com/p/dygraphs/issues/detail?id=436
+// Test for https://code.google.com/archive/p/dygraphs/issues/436
 it('testRemovingSecondAxis', function() {
   var data = getData();
 

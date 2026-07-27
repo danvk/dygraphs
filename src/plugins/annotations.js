@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2012 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /*global Dygraph:false */

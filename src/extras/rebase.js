@@ -1,14 +1,14 @@
 /**
  * @license
  * Copyright 2015 Petr Shevtsov (petr.shevtsov@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  *
  * Rebase plugin
  *
  * On pan/zoom event, each series will rebase to a specified value (e.g. 100) at the
  * start of the displayed period.
  *
- * See http://stats.oecd.org/glossary/detail.asp?ID=2249
+ * See https://web.archive.org/web/20210711110044/https://stats.oecd.org/glossary/detail.asp?ID=2249
  *
  * Options:
  *  Value to rebase. Must be either Number or 'percent' or null.

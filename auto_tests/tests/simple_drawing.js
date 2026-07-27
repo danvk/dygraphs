@@ -65,7 +65,7 @@ it('testDrawSimpleRangePlusOne', function() {
   CanvasAssertions.assertBalancedSaveRestore(htx);
 });
 
-// See http://code.google.com/p/dygraphs/issues/detail?id=185
+// See https://code.google.com/archive/p/dygraphs/issues/185
 it('testDrawSimpleRangeZeroToFifty', function() {
   var opts = {
     axes : {
@@ -140,7 +140,7 @@ it('testDrawSimpleDash', function() {
 
 /**
  * Tests that thick lines are drawn continuously.
- * Regression test for http://code.google.com/p/dygraphs/issues/detail?id=328
+ * Regression test for https://code.google.com/archive/p/dygraphs/issues/328
  */
 it('testDrawThickLine', function() {
   var opts = {

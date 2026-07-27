@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /**
@@ -134,7 +134,7 @@ export function removeEvent(elem, type, fn) {
  * Cancels further processing of an event. This is useful to prevent default
  * browser actions, e.g. highlighting text on a double-click.
  * Based on the article at
- * http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
+ * https://web.archive.org/web/20121026013839/http://www.switchonthecode.com/tutorials/javascript-tutorial-the-scroll-wheel
  * @param {!Event} e The event whose normal behavior should be canceled.
  * @private
  */
@@ -511,7 +511,7 @@ export function dateParser(dateStr) {
   // dygraphs displays dates in local time, so this will result in surprising
   // inconsistencies. But if you specify "T" or "Z" (i.e. YYYY-MM-DDTHH:MM:SS),
   // then you probably know what you're doing, so we'll let you go ahead.
-  // Issue: http://code.google.com/p/dygraphs/issues/detail?id=255
+  // Issue: https://code.google.com/archive/p/dygraphs/issues/255
   if (dateStr.search("-") == -1 ||
       dateStr.search("T") != -1 || dateStr.search("Z") != -1) {
     d = dateStrToMillis(dateStr);
@@ -682,8 +682,8 @@ export function createCanvas() {
 /**
  * Returns the context's pixel ratio, which is the ratio between the device
  * pixel ratio and the backing store ratio. Typically this is 1 for conventional
- * displays, and > 1 for HiDPI displays (such as the Retina MBP).
- * See http://www.html5rocks.com/en/tutorials/canvas/hidpi/ for more details.
+ * displays, and > 1 for HiDPI displays (such as the Retina MBP). For more, see:
+ * https://web.archive.org/web/20200806170103/https://html5rocks.com/en/tutorials/canvas/hidpi/
  *
  * @param {!CanvasRenderingContext2D} context The canvas's 2d context.
  * @return {number} The ratio of the device pixel ratio and the backing store
@@ -778,7 +778,7 @@ export function createIterator(array, start, length, opt_predicate) {
 }
 
 // Shim layer with setTimeout fallback.
-// From: http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// From: https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
 // Should be called with the window context:
 //   Dygraph.requestAnimFrame.call(window, function() {})
 export var requestAnimFrame = (function() {

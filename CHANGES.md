@@ -33,6 +33,7 @@
 ## Other user-visible changes
 - Add talk link to `tutorial.html`
 - Documentation: make clear that use of so-called “AI” / LLMs to prepare a contribution or to communicate with the project or its users is not permitted
+- Fix most broken links
 
 ## Internal refactors/fixes
 - Switch from `jsdoc-toolkit` to `node-jsdoc2` (Debian #1074595)

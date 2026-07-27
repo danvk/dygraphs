@@ -539,7 +539,7 @@ it('testFailedResponse', function() {
   assert.isFalse(failed, "exception thrown during mouseout");
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=355
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/355
 it('testHighlightCallbackRow', function() {
   var highlightRow;
   var highlightCallback = function(e, x, pts, row) {

@@ -14,7 +14,7 @@ it('testISO8601', function() {
   // zone of the machine on which it is run.
 
   // Firefox <4 does not support this format:
-  // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/parse
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse
   if (navigator.userAgent.indexOf("Firefox/3.5") == -1) {
     assert.equal(946816496789, utils.dateParser("2000-01-02T12:34:56.789012Z"));
   }

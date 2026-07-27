@@ -3,7 +3,7 @@
 /**
  * @license
  * Copyright 2011 Dan Vanderkam (danvdk@gmail.com)
- * MIT-licenced: https://opensource.org/licenses/MIT
+ * MIT-licenced: https://opensource.org/license/MIT
  */
 
 /**
@@ -11,12 +11,12 @@
  * interface for a GViz (aka Google Visualization API) visualization.
  * It is designed to be a drop-in replacement for Google's AnnotatedTimeline,
  * so the documentation at
- * http://code.google.com/apis/chart/interactive/docs/gallery/annotatedtimeline.html
+ * https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline
  * translates over directly.
  *
  * For a full demo, see:
- * - http://dygraphs.com/tests/gviz.html
- * - http://dygraphs.com/tests/annotation-gviz.html
+ * - https://dygraphs.com/tests/gviz.html
+ * - https://dygraphs.com/tests/annotation-gviz.html
  */
 
 /*global Dygraph:false */

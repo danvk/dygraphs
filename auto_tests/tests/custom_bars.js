@@ -71,7 +71,7 @@ it('testCustomBarsNoHang', function() {
   var g = new Dygraph(graph, data, opts);
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=201
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/201
 it('testCustomBarsZero', function() {
   var opts = {
     customBars: true
@@ -89,7 +89,7 @@ it('testCustomBarsZero', function() {
   assert.isTrue(range[1] >= 5, 'y-axis must include 5');
 });
 
-// Regression test for http://code.google.com/p/dygraphs/issues/detail?id=229
+// Regression test for https://code.google.com/archive/p/dygraphs/issues/229
 it('testCustomBarsAtTop', function() {
   var g = new Dygraph(document.getElementById("graph"),
       [
