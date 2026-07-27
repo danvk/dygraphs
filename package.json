@@ -19,12 +19,13 @@
   "license": "MIT",
   "author": "Dan Vanderkam <danvdk@gmail.com>",
   "files": [
-    "_site",
     "dist",
+    "src",
+    "src-es5",
+    "CHANGES.md",
     "index.es5.js",
     "index.js",
-    "src",
-    "src-es5"
+    "_site"
   ],
   "main": "index.es5",
   "module": "index",
