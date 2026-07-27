@@ -183,5 +183,5 @@ cleancss css/dygraph.css -o dist/dygraph.min.css --source-map --source-map-inlin
 
 # add (ES5-compatible) extras to dist
 cd src-es5
-pax -rw -l extras ../dist/
+pax -rw extras ../dist/
 cd ..
