@@ -21,8 +21,8 @@ Get help with dygraphs on [Stack Overflow][] (preferred) and [Google Groups][].
 ```html
 <html>
 <head>
-<script type="text/javascript" src="dygraph.js"></script>
 <link rel="stylesheet" type="text/css" href="dygraph.css" />
+<script type="text/javascript" src="dygraph.js"></script>
 </head>
 <body>
 <div id="graphdiv"></div>

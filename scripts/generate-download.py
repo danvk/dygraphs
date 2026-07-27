@@ -80,15 +80,15 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <p>There's a hosted version of dygraphs on <a
  href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
 
-<pre>&lt;script type="text/javascript" src="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" type="text/css" href="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.css" /&gt;
+<pre>&lt;link rel="stylesheet" type="text/css" href="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.css" /&gt;
+&lt;script type="text/javascript" src="https://unpkg.com/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
 </pre>
 
 <p>There's a hosted version of dygraphs on <a
  href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
 
-<pre>&lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
-&lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
+<pre>&lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
+&lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
 </pre>
 
 <p>But note that use of CDNs violates the EU-GDPR. Besides the tarballs
