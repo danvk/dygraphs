@@ -6,6 +6,15 @@
       "dygraph.css",
       "dygraph.js"
     ],
+    "version": "2.2.2"
+  },
+  {
+    "files": [
+      "dygraph.min.css",
+      "dygraph.min.js",
+      "dygraph.css",
+      "dygraph.js"
+    ],
     "version": "2.2.1"
   },
   {
