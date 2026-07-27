@@ -71,6 +71,7 @@ patchedbrowserpack=$PWD/.node_override/browser-pack.js
 export origbrowserpack origpreludefile patchedbrowserpack
 cat >"$patchedbrowserpack" <<\EOF
 	const fs = require('fs');
+	const path = require('path');
 	const orig = require(process.env.origbrowserpack);
 
 	module.exports = function (opts) {
@@ -78,6 +79,8 @@ cat >"$patchedbrowserpack" <<\EOF
 			opts = {};
 		if (!opts.prelude && !opts.preludePath) {
 			var pf = process.env.origpreludefile;
+			if (!pf.startsWith('/usr/'))
+				pf = path.relative(process.cwd(), pf);
 			var pc = fs.readFileSync(pf, 'utf8');
 			pc = pc.trimEnd() + '/*}}}browser-pack*//*Dygraph(((*/';
 			opts.preludePath = pf;
