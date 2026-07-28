@@ -77,7 +77,7 @@
   "on": {
     "push": {
       "branches": [
-        "debian",
+        "staging",
         "master"
       ]
     },

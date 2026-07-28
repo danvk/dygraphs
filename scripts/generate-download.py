@@ -77,6 +77,8 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
  The former only contains the source code needed to build all of it;
  distro packagers will want that file.</p>
 
+<fieldset><legend>Content Delivery Networks</legend>
+
 <p>There's a hosted version of dygraphs on <a
  href="https://unpkg.com/dygraphs/">UNPKG</a>:</p>
 
@@ -99,7 +101,11 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 &lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
 </pre>
 
-<p>But note that use of CDNs violates the EU-GDPR. Besides the tarballs
+<p class="nomarginbottom">But note that use of CDNs violates the EU-GDPR.</p>
+
+</fieldset>
+
+<p>Besides the tarballs
  (see above) you can also install dygraphs locally into your project
  instead using <a href="https://www.npmjs.com/package/dygraphs">NPM</a>:</p>
 

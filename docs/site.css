@@ -169,3 +169,15 @@ pre.sitedata {
 .versions td.notes h4:first-child {
   margin-top: 0;
 }
+fieldset,
+legend,
+.reset {
+  all: revert;
+}
+fieldset {
+  /* match margin-bottom on p/ul in bootstrap */
+  margin-bottom: 10px;
+}
+.nomarginbottom {
+  margin-bottom: 0;
+}
