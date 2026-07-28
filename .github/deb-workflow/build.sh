@@ -49,7 +49,7 @@ switchstate envsetup
 switchgroup Set up build environment
 cp -r repo "$db"
 echo include-binaries >>"$db/debian/source/local-options"
-adduser --system --group --shell /bin/bash --home "$db" bauer
+adduser --system --group --shell /bin/bash --home "$dr" --no-create-home bauer
 chown -R bauer:bauer "$db"
 chgrp bauer "$dr"
 chmod 2775 "$dr"
@@ -58,11 +58,11 @@ apt-get -y build-dep "$db"
 
 switchstate uscan
 switchgroup Acquire origtgz
-su - bauer -c 'uscan --verbose --rename --force-download'
+su - bauer -c 'cd build && exec uscan --verbose --rename --force-download'
 
 switchstate building
 switchgroup Build the package
-su - bauer -c 'dpkg-buildpackage -e"Autobuilder <nobody@example.org>" --sanitize-env -us -uc'
+su - bauer -c 'cd build && exec dpkg-buildpackage -e"Autobuilder <nobody@example.org>" --sanitize-env -us -uc'
 
 switchstate postbuild
 switchgroup Post-build steps
@@ -73,7 +73,7 @@ switchstate apt-lintian
 apt-get install -y --install-recommends lintian
 switchstate lintian
 switchgroup Run lintian
-su - bauer -c 'cd .. && lintian -vIiE --pedantic ../*.changes'
+su - bauer -c 'lintian -vIiE --pedantic *.changes'
 
 echo ::endgroup::
 switchstate klaar
