@@ -67,6 +67,7 @@ su - bauer -c 'cd build && exec dpkg-buildpackage -e"Autobuilder <nobody@example
 
 switchstate postbuild
 switchgroup Post-build steps
+cp -r "$db"/dist "$wd/repo/"
 # saves space in the upload thingy
 (cd "$dr" && tar -cf - build | xz -e >build.txz && rm -rf build || rm -f build.txz)
 
@@ -75,6 +76,18 @@ eatmydata apt-get install -y --install-recommends lintian
 switchstate lintian
 switchgroup Run lintian
 su - bauer -c 'lintian -vIiE --pedantic --fail-on none *.changes'
+
+switchgroup Set up NPM, to run the tests
+switchstate npm-setup
+# phantomjs needs libfontconfig and libfreetype
+eatmydata apt-get install -y fontconfig npm
+eatmydata env TMPDIR=/tmp npm install -g phantomjs@1.9.7-15
+su - bauer -c 'cd ../repo && eatmydata env TMPDIR=/tmp npm install'
+switchstate npm-test-source
+switchgroup Run tests
+su - bauer -c 'cd ../repo && eatmydata npm run test'
+switchstate npm-test-min
+su - bauer -c 'cd ../repo && eatmydata npm run test-min'
 
 echo ::endgroup::
 switchstate klaar
