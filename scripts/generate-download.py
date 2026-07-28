@@ -93,6 +93,13 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 &lt;script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
 </pre>
 
+<p>Note: if you wish to use jsDelivr’s ESM feature, you need to replace
+ <tt>import * as dygraphs from 'https://esm.run/dygraphs';</tt>, which is the string they give you, with
+ <tt>import Dygraph from 'https://esm.run/dygraphs';</tt>, i.e. replace
+ the <tt>* as dygraphs</tt> part with <tt>Dygraph</tt> so to have that
+ symbol available.<br />You’ll <em>also</em> still need to include the
+ CSS separately.</p>
+
 <p>There's a hosted version of dygraphs on <a
  href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>
  (note that it may take some time to update to new releases):</p>
