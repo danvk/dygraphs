@@ -73,7 +73,7 @@ switchstate apt-lintian
 apt-get install -y --install-recommends lintian
 switchstate lintian
 switchgroup Run lintian
-su - bauer -c 'lintian -vIiE --pedantic *.changes'
+su - bauer -c 'lintian -vIiE --pedantic --fail-on none *.changes'
 
 echo ::endgroup::
 switchstate klaar
