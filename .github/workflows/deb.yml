@@ -1,6 +1,6 @@
 {
   "jobs": {
-    "deb": {
+    "r13": {
       "runs-on": "ubuntu-latest",
       "steps": [
         {
@@ -10,9 +10,9 @@
           }
         },
         {
-          "uses": "${{ matrix.release.image }}",
+          "uses": "docker://debian:trixie",
           "with": {
-            "args": "bash repo/.github/deb-workflow/build.sh ${{ matrix.release.name }} ${{ matrix.release.nr }} || echo W: nonzero exit status, failing later"
+            "args": "bash repo/.github/deb-workflow/build.sh trixie 13 || echo W: nonzero exit status, failing later"
           }
         },
         {
@@ -21,33 +21,50 @@
             "archive": true,
             "compression-level": 9,
             "if-no-files-found": "error",
-            "name": "result-${{ matrix.release.nr }}",
-            "path": "result-${{ matrix.release.nr }}"
+            "name": "result-13",
+            "path": "result-13"
           }
         },
         {
-          "uses": "${{ matrix.release.image }}",
+          "uses": "docker://debian:trixie",
           "with": {
             "args": "bash repo/.github/deb-workflow/post.sh"
           }
         }
-      ],
-      "strategy": {
-        "matrix": {
-          "release": [
-            {
-              "image": "docker://debian:trixie",
-              "name": "trixie",
-              "nr": "13"
-            },
-            {
-              "image": "docker://debian:sid",
-              "name": "sid",
-              "nr": "sid"
-            }
-          ]
+      ]
+    },
+    "sid": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v7.0.1",
+          "with": {
+            "path": "repo"
+          }
+        },
+        {
+          "uses": "docker://debian:sid",
+          "with": {
+            "args": "bash repo/.github/deb-workflow/build.sh sid sid || echo W: nonzero exit status, failing later"
+          }
+        },
+        {
+          "uses": "actions/upload-artifact@v7.0.1",
+          "with": {
+            "archive": true,
+            "compression-level": 9,
+            "if-no-files-found": "error",
+            "name": "result-sid",
+            "path": "result-sid"
+          }
+        },
+        {
+          "uses": "docker://debian:sid",
+          "with": {
+            "args": "bash repo/.github/deb-workflow/post.sh"
+          }
         }
-      }
+      ]
     }
   },
   "name": "deb packages",
