@@ -10,6 +10,7 @@
 - …
 
 ## Other user-visible changes
+- Link to jsDelivr as CDN as well (to keep neutral; use of CDNs in websites violates the EU-GDPR)
 - …
 
 ## Internal refactors/fixes

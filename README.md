@@ -44,7 +44,7 @@ Get help with dygraphs on [Stack Overflow][] (preferred) and [Google Groups][].
 
 Learn more by reading [the tutorial][] and seeing demonstrations of what
 dygraphs can do in the [gallery][]. You can get `dygraph.js` and `dygraph.css`
-from [UNPKG][], [cdnjs][] or [from NPM][npm] (see below).
+from [UNPKG][], [jsDelivr][], [cdnjs][] or [NPM][] (see below).
 
 ## Usage with a module loader
 
@@ -101,6 +101,8 @@ with anyone in the project or its users is not welcome.
 
 [UNPKG]: https://unpkg.com/dygraphs/
 [cdnjs]: https://cdnjs.com/libraries/dygraph
+[jsDelivr]: https://www.jsdelivr.com/package/npm/dygraphs
+[NPM]: https://www.npmjs.com/package/dygraphs
 [the tutorial]: https://dygraphs.com/tutorial.html
 [gallery]: https://dygraphs.com/gallery/
 [error bands]: https://dygraphs.com/tests/legend-values.html
@@ -111,5 +113,4 @@ with anyone in the project or its users is not welcome.
 [Stack Overflow]: https://stackoverflow.com/questions/tagged/dygraphs?sort=votes&pageSize=50
 [Google Groups]: https://groups.google.com/g/dygraphs-users
 [gviz]: https://dygraphs.com/data.html#datatable
-[npm]: https://www.npmjs.com/package/dygraphs
 [dygraphs-es6 repo]: https://github.com/danvk/dygraphs-es6

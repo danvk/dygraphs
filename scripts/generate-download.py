@@ -85,7 +85,15 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 </pre>
 
 <p>There's a hosted version of dygraphs on <a
- href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>:</p>
+ href="https://www.jsdelivr.com/package/npm/dygraphs">jsDelivr</a>:</p>
+
+<pre>&lt;link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/dygraphs@%(version)s/dist/dygraph.min.css" /&gt;
+&lt;script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
+</pre>
+
+<p>There's a hosted version of dygraphs on <a
+ href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>
+ (note that it may take some time to update to new releases):</p>
 
 <pre>&lt;link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.css" /&gt;
 &lt;script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/%(version)s/dygraph.min.js"&gt;&lt;/script&gt;
