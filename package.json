@@ -30,6 +30,8 @@
   "main": "index.es5",
   "module": "index",
   "jsnext:main": "index",
+  "browser": "dist/dygraph.js",
+  "style": "dist/dygraph.css",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/danvk/dygraphs.git"
