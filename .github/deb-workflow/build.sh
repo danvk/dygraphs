@@ -42,8 +42,9 @@ switchstate apt
 cp "$me/$1.sources" /etc/apt/sources.list.d/
 apt-get clean
 apt-get update
-apt-get --purge -y dist-upgrade
-apt-get install -y adduser build-essential debhelper devscripts
+apt-get install -y eatmydata
+eatmydata apt-get --purge -y dist-upgrade
+eatmydata apt-get install -y adduser build-essential debhelper devscripts
 
 switchstate envsetup
 switchgroup Set up build environment
@@ -54,7 +55,7 @@ chown -R bauer:bauer "$db"
 chgrp bauer "$dr"
 chmod 2775 "$dr"
 switchstate b-d
-apt-get -y build-dep "$db"
+eatmydata apt-get -y build-dep "$db"
 
 switchstate uscan
 switchgroup Acquire origtgz
@@ -70,7 +71,7 @@ switchgroup Post-build steps
 (cd "$dr" && tar -cf - build | xz -e >build.txz && rm -rf build || rm -f build.txz)
 
 switchstate apt-lintian
-apt-get install -y --install-recommends lintian
+eatmydata apt-get install -y --install-recommends lintian
 switchstate lintian
 switchgroup Run lintian
 su - bauer -c 'lintian -vIiE --pedantic --fail-on none *.changes'
