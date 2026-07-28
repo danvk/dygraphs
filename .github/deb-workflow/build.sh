@@ -62,7 +62,7 @@ su - bauer -c 'uscan --verbose --rename --force-download'
 
 switchstate building
 switchgroup Build the package
-su - bauer -c 'dpkg-buildpackage -e "Autobuilder <nobody@example.org>" --sanitize-env -us -uc'
+su - bauer -c 'dpkg-buildpackage -e"Autobuilder <nobody@example.org>" --sanitize-env -us -uc'
 
 switchstate postbuild
 switchgroup Post-build steps
