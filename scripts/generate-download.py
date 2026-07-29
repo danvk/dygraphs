@@ -93,6 +93,13 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 &lt;script type="text/javascript" src="https://cdn.jsdelivr.net/npm/dygraphs@%(version)s/dist/dygraph.min.js"&gt;&lt;/script&gt;
 </pre>
 
+<p>Note: if you wish to use jsDelivr’s ESM feature, you need to replace
+ <tt>import * as dygraphs from 'https://esm.run/dygraphs';</tt>, which is the string they give you, with
+ <tt>import Dygraph from 'https://esm.run/dygraphs';</tt>, i.e. replace
+ the <tt>* as dygraphs</tt> part with <tt>Dygraph</tt> so to have that
+ symbol available.<br />You’ll <em>also</em> still need to include the
+ CSS separately.</p>
+
 <p>There's a hosted version of dygraphs on <a
  href="https://cdnjs.com/libraries/dygraph">cdnjs.com</a>
  (note that it may take some time to update to new releases):</p>
@@ -104,6 +111,7 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <p class="nomarginbottom">But note that use of CDNs violates the EU-GDPR.</p>
 
 </fieldset>
+<fieldset><legend>Install from binary packages</legend>
 
 <p>Besides the tarballs
  (see above) you can also install dygraphs locally into your project
@@ -113,7 +121,26 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
   # dygraphs is now in node_modules/dygraphs/dist/dygraph.{css,js} for
   # the browser, and node_modules/dygraphs/index{,.es5}.js for nodejs</pre>
 
+<p>There’s also a Debian package available:</p>
+
+<pre>$ sudo apt-get install libjs-dygraphs
+  # dygraphs is now in /usr/share/javascript/dygraphs/dygraph.{css,js}
+
+  # To access the documentation locally, run in a terminal:
+$ cd /usr/share/doc/libjs-dygraphs/site &amp;&amp; python3 -m http.server
+  # Navigate to http://127.0.0.1:8000/ while this is running.
+
+  # When a webserver is running, do:
+$ sudo apt-get install javascript-common
+$ sudo a2enconf javascript-common.conf &amp;&amp; sudo service apache2 reload
+  # dygraphs is now also available at /javascript/dygraphs/dygraph.{css,js}
+  # so it can be used from webpages served by the system in question</pre>
+
+</fieldset>
+
 <p>Most distributions include a source map to facilitate debugging.</p>
+
+<fieldset><legend>Build from source</legend>
 
 <p>To generate your own minified JS, install the prerequisites…</p><ul>
 <li><tt>mksh</tt></li>
@@ -129,6 +156,11 @@ npm run build-jsonly
 
 <p>This will create a <tt>dygraph.min.css</tt> and a <tt>dygraph.min.js</tt>
  file in the <code>dist</code> directory.</p>
+
+<p class="nomarginbottom">Building and testing the full distribution
+ is slightly more intricate.</p>
+
+</fieldset>
 
 <p>You may also download files for previously-released versions:</p>
 

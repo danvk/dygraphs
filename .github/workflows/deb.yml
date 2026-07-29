@@ -1,0 +1,83 @@
+{
+  "jobs": {
+    "r13": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v7.0.1",
+          "with": {
+            "path": "repo"
+          }
+        },
+        {
+          "uses": "docker://debian:trixie",
+          "with": {
+            "args": "sh -c 'bash repo/.github/deb-workflow/build.sh trixie 13 || echo W: nonzero exit status, failing later'"
+          }
+        },
+        {
+          "uses": "actions/upload-artifact@v7.0.1",
+          "with": {
+            "archive": true,
+            "compression-level": 9,
+            "if-no-files-found": "error",
+            "name": "result-13",
+            "path": "result-13"
+          }
+        },
+        {
+          "uses": "docker://debian:trixie",
+          "with": {
+            "args": "bash repo/.github/deb-workflow/post.sh"
+          }
+        }
+      ]
+    },
+    "sid": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v7.0.1",
+          "with": {
+            "path": "repo"
+          }
+        },
+        {
+          "uses": "docker://debian:sid",
+          "with": {
+            "args": "sh -c 'bash repo/.github/deb-workflow/build.sh sid sid || echo W: nonzero exit status, failing later'"
+          }
+        },
+        {
+          "uses": "actions/upload-artifact@v7.0.1",
+          "with": {
+            "archive": true,
+            "compression-level": 9,
+            "if-no-files-found": "error",
+            "name": "result-sid",
+            "path": "result-sid"
+          }
+        },
+        {
+          "uses": "docker://debian:sid",
+          "with": {
+            "args": "bash repo/.github/deb-workflow/post.sh"
+          }
+        }
+      ]
+    }
+  },
+  "name": "deb packages",
+  "on": {
+    "push": {
+      "branches": [
+        "deb-test"
+      ]
+    },
+    "workflow_dispatch": null
+  },
+  "permissions": {
+    "contents": "read",
+    "id-token": "write"
+  }
+}
