@@ -12,7 +12,7 @@
         {
           "uses": "docker://debian:trixie",
           "with": {
-            "args": "sh -c 'bash repo/.github/deb-workflow/build.sh trixie 13 || echo W: nonzero exit status, failing later'"
+            "args": "sh repo/.github/deb-workflow/build.sh trixie 13"
           }
         },
         {
@@ -45,7 +45,7 @@
         {
           "uses": "docker://debian:sid",
           "with": {
-            "args": "sh -c 'bash repo/.github/deb-workflow/build.sh sid sid || echo W: nonzero exit status, failing later'"
+            "args": "sh repo/.github/deb-workflow/build.sh sid sid"
           }
         },
         {
