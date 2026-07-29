@@ -111,6 +111,7 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
 <p class="nomarginbottom">But note that use of CDNs violates the EU-GDPR.</p>
 
 </fieldset>
+<fieldset><legend>Install from binary packages</legend>
 
 <p>Besides the tarballs
  (see above) you can also install dygraphs locally into your project
@@ -120,7 +121,24 @@ print('''<!--#set var="pagetitle" value="downloads list" -->
   # dygraphs is now in node_modules/dygraphs/dist/dygraph.{css,js} for
   # the browser, and node_modules/dygraphs/index{,.es5}.js for nodejs</pre>
 
+<p>There’s also a Debian package available:</p>
+
+<pre>$ sudo apt-get install libjs-dygraphs
+  # dygraphs is now in /usr/share/javascript/dygraphs/dygraph.{css,js}
+  # To access the documentation locally, run:
+  # $ cd /usr/share/doc/libjs-dygraphs/site &amp;&amp; python3 -m http.server
+  # Navigate to http://127.0.0.1:8000/ while this is running.
+  #
+  # When a webserver is running, do:
+$ sudo apt-get install javascript-common
+$ sudo a2enconf javascript-common.conf &amp;&amp; sudo service apache2 reload
+  # dygraphs is now also available at /javascript/dygraphs/dygraph.{css,js}</pre>
+
+</fieldset>
+
 <p>Most distributions include a source map to facilitate debugging.</p>
+
+<fieldset><legend>Build from source</legend>
 
 <p>To generate your own minified JS, install the prerequisites…</p><ul>
 <li><tt>mksh</tt></li>
@@ -136,6 +154,10 @@ npm run build-jsonly
 
 <p>This will create a <tt>dygraph.min.css</tt> and a <tt>dygraph.min.js</tt>
  file in the <code>dist</code> directory.</p>
+
+<p>Building and testing the full distribution is slightly more intricate.</p>
+
+</fieldset>
 
 <p>You may also download files for previously-released versions:</p>
 
