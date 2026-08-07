@@ -6,20 +6,19 @@
     <meta name="tdm-reservation" content="1" />
     <title>Dygraphs — <!--#echo var="pagetitle" --></title>
 
-    <link rel="stylesheet" type="text/css" href=".jslibs/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bs_replace.css" />
     <link rel="stylesheet" type="text/css" href="dist/dygraph.css" />
     <link rel="stylesheet" type="text/css" href="common/vextlnk.css" />
     <link rel="stylesheet" type="text/css" href="site.css" />
 
-    <script type="text/javascript" src=".jslibs/jquery.min.js"></script>
-    <script type="text/javascript" src=".jslibs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="site.js"></script>
     <script type="text/javascript" src="dist/dygraph.js"></script>
   </head>
   <body>
     <nav id="header" class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-responsive-collapse" aria-expanded="false">
+          <button type="button" class="navbar-toggle collapsed" id="navtoggle">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -27,12 +26,12 @@
           </button>
           <a class="navbar-brand" href="/">dygraphs</a>
         </div><!-- /navbar-header -->
-        <div class="collapse navbar-collapse" id="navbar-responsive-collapse">
+        <div class="collapse navbar-collapse" id="navbody">
 
           <!-- TODO(danvk): fill in relevant links here -->
           <ul class="nav navbar-nav">
             <li class="dropdown">
-              <a class="dropdown-toggle" id="drop3" role="button" data-toggle="dropdown" href="#">Documentation<b class="caret"></b></a>
+              <a class="dropdown-toggle" role="button" href="#">Documentation<b class="caret"></b></a>
               <ul id="menu0" class="dropdown-menu" role="menu" aria-labelledby="drop3">
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="tutorial.html">Tutorial</a></li>
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="options.html">Options Reference</a></li>
@@ -46,7 +45,7 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#">Examples<b class="caret"></b></a>
+              <a class="dropdown-toggle" role="button" href="#">Examples<b class="caret"></b></a>
               <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="gallery/">Demo Gallery</a></li>
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="users.html">List of Users</a></li>
@@ -58,7 +57,7 @@
             </li>
             <li><a class="xnavbar-link" href="download.html">Download</a></li>
             <li class="dropdown">
-              <a class="dropdown-toggle" id="drop7" role="button" data-toggle="dropdown" href="#">Community <b class="caret"></b></a>
+              <a class="dropdown-toggle" role="button" href="#">Community <b class="caret"></b></a>
               <ul id="menu4" class="dropdown-menu" role="menu" aria-labelledby="drop7">
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="http://blog.dygraphs.com/">Blog</a></li>
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="https://stackoverflow.com/questions/ask?tags=dygraphs+javascript">Ask a Question</a></li>
@@ -67,7 +66,7 @@
               </ul>
             </li>
             <li class="dropdown">
-              <a class="dropdown-toggle" id="drop6" role="button" data-toggle="dropdown" href="#">Contribute <b class="caret"></b></a>
+              <a class="dropdown-toggle" role="button" href="#">Contribute <b class="caret"></b></a>
               <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="changes.html">Contributors Guide</a></li>
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/danvk/dygraphs">Source (Github)</a></li>

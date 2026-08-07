@@ -10,7 +10,6 @@
     <link rel="stylesheet" type="text/css" href="../common/vextlnk.css" />
     <link rel="stylesheet" type="text/css" href="gallery.css" title="gallery" />
 
-    <script type="text/javascript" src="../.jslibs/jquery.min.js"></script>
     <script type="text/javascript" src="../dist/dygraph.js"></script>
     <script type="text/javascript" src="../extras/synchronizer.js"></script>
     <script type="text/javascript" src="../common/textarea.js"></script>
@@ -75,7 +74,9 @@
       </tr>
     </table>
   <script type="text/javascript"><!--//--><![CDATA[//><!--
-    $(Gallery.start);
+    document.addEventListener('DOMContentLoaded', () => {
+      Gallery.start();
+    });
   //--><!]]></script>
   </body>
 </html>
