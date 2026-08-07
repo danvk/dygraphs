@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Candlestick Chart Demo</title>
+    <!--
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <!--
+    For production (minified) code, use:
+    <script type="text/javascript" src="dygraph-combined.js"></script>
+    -->
+    <script type="text/javascript" src="../dist/dygraph.js"></script>
+    <script type="text/javascript" src="../src/extras/candlestick-plotter.js"></script>
+    <script type="text/javascript" src="../src/extras/compress.js"></script>
+
+    <style type="text/css">
+      body {
+        max-width: 750px;
+      }
+      div.chart {
+        width: 640px;
+        height: 320px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Candlestick chart</h2>
+    <p>
+      Candlesticks are traditional way of displaying price ranges as well as trend in
+      which a financial stock traded during a day (or week, month, etc.), from the
+      stock exchange <em>open</em> till <em>close</em> during the period, marking the
+      <em>highest</em> and <em>lowest</em> price reached during that period and
+      color-coding the trend.
+    </p>
+    <p>
+      The data argument is a table containing a <code>Date</code> column and columns
+      with names <code>Open</code>, <code>Close</code>, <code>High</code> and
+      <code>Low</code> (in the exact order). <code>High</code> value is always the
+      highest of the four, <code>Low</code> value is always the lowest. If
+      <code>Close</code> is higher than <code>Open</code> for that period, the
+      candlestick will be green, otherwise it will be red.
+    </p>
+    <div id="candlechart" class=chart></div>
+
+    <h2>Candlestick chart with data compression</h2>
+    <p>
+      It is possible to compress data (annualy, quarterly, monthly, weekly or daily)
+      depending on the current chart zoom level to prevent chart bars overflow using
+      the <code>CompressHandler</code> data handler.
+    </p>
+    <div id="candlechart-compress" class=chart></div>
+
+    <h2>Line chart alongside with Candlestick chart</h2>
+    <div id="candlechart-line" class=chart></div>
+
+    <script type="text/javascript">
+      var candleData =
+      "Date,Open,High,Low,Close\n";
+      for (var i = 0; i <= 25; i++) {
+        var d = new Date(i
+                         * 1000 // ms
+                         * 60   // sec
+                         * 60   // min
+                         * 24   // hr
+                        );
+        var dateStr = d.toISOString().match(/^\d{4}-\d{2}-\d{2}/)[0];
+        var min = 100;
+        var max = 400;
+        var open = Math.random() * (max - min) + min;
+        var high = Math.max(open, close) * 1.25;
+        var low = Math.min(open, close) * 0.75;
+        var close = Math.random() * (max - min) + min;
+
+        candleData += [dateStr, open, high, low, close].join(",") + "\n";
+      }
+      g1 = new Dygraph(
+        document.getElementById("candlechart"),
+        candleData,
+        {
+          plotter: Dygraph.candlestickPlotter
+        }
+      );
+
+      var candleData =
+      "Date,Open,High,Low,Close\n";
+      for (var i = 0; i <= 365 * 10; i++) {
+        var d = new Date(i
+                         * 1000 // ms
+                         * 60   // sec
+                         * 60   // min
+                         * 24   // hr
+                        );
+        var dateStr = d.toISOString().match(/^\d{4}-\d{2}-\d{2}/)[0];
+        var min = 100;
+        var max = 400;
+        var open = Math.random() * (max - min) + min;
+        var high = Math.max(open, close) * 1.25;
+        var low = Math.min(open, close) * 0.75;
+        var close = Math.random() * (max - min) + min;
+
+        candleData += [dateStr, open, high, low, close].join(",") + "\n";
+      }
+      g2 = new Dygraph(
+        document.getElementById("candlechart-compress"),
+        candleData,
+        {
+          plotter: Dygraph.candlestickPlotter,
+          dataHandler: Dygraph.DataHandlers.CompressHandler
+        }
+      );
+
+      var candleData =
+      "Date,Open,High,Low,Close,Avg\n";
+      for (var i = 0; i <= 25; i++) {
+        var d = new Date(i
+                         * 1000 // ms
+                         * 60   // sec
+                         * 60   // min
+                         * 24   // hr
+                        );
+        var dateStr = d.toISOString().match(/^\d{4}-\d{2}-\d{2}/)[0];
+        var min = 100;
+        var max = 400;
+        var open = Math.random() * (max - min) + min;
+        var high = Math.max(open, close) * 1.25;
+        var low = Math.min(open, close) * 0.75;
+        var close = Math.random() * (max - min) + min;
+        var avg = (open + high + low + close) / 4;
+
+        candleData += [dateStr, open, high, low, close, avg].join(",") + "\n";
+      }
+      g1 = new Dygraph(
+        document.getElementById("candlechart-line"),
+        candleData,
+        {
+          plotter: Dygraph.candlestickPlotter
+        }
+      );
+    </script>
+  </body>
+</html>
