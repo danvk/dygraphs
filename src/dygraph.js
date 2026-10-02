@@ -2392,6 +2392,8 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
         this.hidden_ctx_, this.layout_.getPlotArea(), this, this);
   }
 
+  var oldHighlightSet = this.highlightSet_;
+  this.highlightSet_ = null;
   var e = {
     canvas: this.hidden_,
     drawingContext: this.hidden_ctx_
@@ -2416,6 +2418,7 @@ Dygraph.prototype.renderGraph_ = function(is_initial_draw) {
       fn(this);
     }
   }
+  this.highlightSet_ = oldHighlightSet;
 };
 
 /**
